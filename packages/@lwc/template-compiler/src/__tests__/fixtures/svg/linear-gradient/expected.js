@@ -1,7 +1,7 @@
 import { parseSVGFragment, registerTemplate } from "lwc";
-const $fragment1 = parseSVGFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}></stop>`;
-const $fragment2 = parseSVGFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}></stop>`;
-const $fragment3 = parseSVGFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}>`;
+const $fragment1 = parseSVGFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/>`;
+const $fragment2 = parseSVGFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/>`;
+const $fragment3 = parseSVGFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/>`;
 const stc0 = {
   attrs: {
     height: "150",

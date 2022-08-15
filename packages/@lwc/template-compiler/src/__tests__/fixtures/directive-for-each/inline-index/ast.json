@@ -1,0 +1,269 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 162,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 151,
+                "end": 162
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "ul",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 10,
+                    "start": 15,
+                    "end": 150,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 9,
+                        "start": 15,
+                        "end": 19
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 10,
+                        "start": 145,
+                        "end": 150
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "ForEach",
+                        "expression": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "items",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 27,
+                                "endLine": 3,
+                                "endColumn": 43,
+                                "start": 46,
+                                "end": 62
+                            }
+                        },
+                        "item": {
+                            "type": "Identifier",
+                            "name": "item",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 44,
+                                "endLine": 3,
+                                "endColumn": 59,
+                                "start": 63,
+                                "end": 78
+                            }
+                        },
+                        "index": {
+                            "type": "Identifier",
+                            "name": "index",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 60,
+                                "endLine": 3,
+                                "endColumn": 77,
+                                "start": 79,
+                                "end": 96
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 14,
+                            "start": 28,
+                            "end": 140
+                        },
+                        "directiveLocation": {
+                            "startLine": 3,
+                            "startColumn": 27,
+                            "endLine": 3,
+                            "endColumn": 43,
+                            "start": 46,
+                            "end": 62
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "li",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 9,
+                                    "endLine": 5,
+                                    "endColumn": 14,
+                                    "start": 28,
+                                    "end": 140,
+                                    "startTag": {
+                                        "startLine": 3,
+                                        "startColumn": 9,
+                                        "endLine": 3,
+                                        "endColumn": 78,
+                                        "start": 28,
+                                        "end": 97
+                                    },
+                                    "endTag": {
+                                        "startLine": 5,
+                                        "startColumn": 9,
+                                        "endLine": 5,
+                                        "endColumn": 14,
+                                        "start": 135,
+                                        "end": 140
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [
+                                    {
+                                        "type": "Directive",
+                                        "name": "Key",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 8,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 5,
+                                                "name": "item"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 6,
+                                                "end": 8,
+                                                "name": "id"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 3,
+                                                "startColumn": 13,
+                                                "endLine": 3,
+                                                "endColumn": 26,
+                                                "start": 32,
+                                                "end": 45
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 13,
+                                            "endLine": 3,
+                                            "endColumn": 26,
+                                            "start": 32,
+                                            "end": 45
+                                        }
+                                    }
+                                ],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "{index}",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 6,
+                                            "name": "index",
+                                            "location": {
+                                                "startLine": 3,
+                                                "startColumn": 78,
+                                                "endLine": 5,
+                                                "endColumn": 9,
+                                                "start": 97,
+                                                "end": 135
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 78,
+                                            "endLine": 5,
+                                            "endColumn": 9,
+                                            "start": 97,
+                                            "end": 135
+                                        }
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "raw": " - ",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": " - "
+                                        },
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 78,
+                                            "endLine": 5,
+                                            "endColumn": 9,
+                                            "start": 97,
+                                            "end": 135
+                                        }
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "raw": "{item}",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 5,
+                                            "name": "item",
+                                            "location": {
+                                                "startLine": 3,
+                                                "startColumn": 78,
+                                                "endLine": 5,
+                                                "endColumn": 9,
+                                                "start": 97,
+                                                "end": 135
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 78,
+                                            "endLine": 5,
+                                            "endColumn": 9,
+                                            "start": 97,
+                                            "end": 135
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

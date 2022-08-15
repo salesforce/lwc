@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<th${3}></th>`;
+const $fragment2 = parseFragment`<td${3}></td>`;
 const stc0 = {
   key: 0,
 };
@@ -6,16 +8,15 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 3,
-};
-const stc3 = {
-  key: 4,
-};
-const stc4 = {
-  key: 6,
+  key: 5,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { k: api_key, h: api_element, i: api_iterator } = $api;
+  const {
+    k: api_key,
+    st: api_static_fragment,
+    h: api_element,
+    i: api_iterator,
+  } = $api;
   return [
     api_element("table", stc0, [
       api_element(
@@ -27,20 +28,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(2, row.id),
             },
-            [api_element("th", stc2)]
+            [api_static_fragment($fragment1(), 4)]
           );
         })
       ),
       api_element(
         "tbody",
-        stc3,
+        stc2,
         api_iterator($cmp.rows, function (row) {
           return api_element(
             "tr",
             {
-              key: api_key(5, row.id),
+              key: api_key(6, row.id),
             },
-            [api_element("td", stc4)]
+            [api_static_fragment($fragment2(), 8)]
           );
         })
       ),

@@ -22,6 +22,7 @@ import {
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
+import { getScopeTokenClass } from './stylesheet';
 import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
@@ -73,7 +74,7 @@ export function patchChildren(
     }
 }
 
-function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
+function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {
     if (n1 === n2) {
         return;
     }
@@ -109,7 +110,7 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2, n2.data.renderer ?? renderer);
+            patchCustomElement(n1 as VCustomElement, n2, parent, n2.data.renderer ?? renderer);
             break;
     }
 }
@@ -200,11 +201,12 @@ function mountElement(
     const { createElement } = renderer;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
-    const elm = createElement(sel, namespace);
-    linkNodeToShadow(elm, owner, renderer);
+    const elm = (vnode.elm = createElement(sel, namespace));
 
-    fallbackElmHook(elm, vnode, renderer);
-    vnode.elm = elm;
+    linkNodeToShadow(elm, owner, renderer);
+    applyStyleScoping(elm, owner, renderer);
+    applyDomManual(elm, vnode);
+    applyElementRestrictions(elm, vnode);
 
     patchElementPropsAndAttrs(null, vnode, renderer);
 
@@ -230,6 +232,7 @@ function mountStatic(
     const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
     linkNodeToShadow(elm, owner, renderer);
+    applyElementRestrictions(elm, vnode);
 
     // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
     const { renderMode, shadowMode } = owner;
@@ -238,11 +241,6 @@ function mountStatic(
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
             (elm as any)[KEY__SHADOW_STATIC] = true;
         }
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        const isLight = renderMode === RenderMode.Light;
-        patchElementWithRestrictions(elm, { isPortal: false, isLight });
     }
 
     insertNode(elm, parent, anchor, renderer);
@@ -268,9 +266,11 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     });
 
-    linkNodeToShadow(elm, owner, renderer);
     vnode.elm = elm;
     vnode.vm = vm;
+
+    linkNodeToShadow(elm, owner, renderer);
+    applyStyleScoping(elm, owner, renderer);
 
     if (vm) {
         allocateChildren(vnode, vm);
@@ -295,25 +295,40 @@ function mountCustomElement(
     }
 }
 
-function patchCustomElement(n1: VCustomElement, n2: VCustomElement, renderer: RendererAPI) {
-    const elm = (n2.elm = n1.elm!);
-    const vm = (n2.vm = n1.vm);
+function patchCustomElement(
+    n1: VCustomElement,
+    n2: VCustomElement,
+    parent: ParentNode,
+    renderer: RendererAPI
+) {
+    if (n1.ctor !== n2.ctor) {
+        // If the constructor, unmount the current component and mount a new one using the new
+        // constructor.
+        const anchor = renderer.nextSibling(n1.elm);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
-    if (!isUndefined(vm)) {
-        // in fallback mode, the allocation will always set children to
-        // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
-    }
+        unmount(n1, parent, renderer, true);
+        mountCustomElement(n2, parent, anchor, renderer);
+    } else {
+        // Otherwise patch the existing component with new props/attrs/etc.
+        const elm = (n2.elm = n1.elm!);
+        const vm = (n2.vm = n1.vm);
 
-    // in fallback mode, the children will be always empty, so, nothing
-    // will happen, but in native, it does allocate the light dom
-    patchChildren(n1.children, n2.children, elm, renderer);
+        patchElementPropsAndAttrs(n1, n2, renderer);
+        if (!isUndefined(vm)) {
+            // in fallback mode, the allocation will always set children to
+            // empty and delegate the real allocation to the slot elements
+            allocateChildren(n2, vm);
+        }
 
-    if (!isUndefined(vm)) {
-        // this will probably update the shadowRoot, but only if the vm is in a dirty state
-        // this is important to preserve the top to bottom synchronous rendering phase.
-        rerenderVM(vm);
+        // in fallback mode, the children will be always empty, so, nothing
+        // will happen, but in native, it does allocate the light dom
+        patchChildren(n1.children, n2.children, elm, renderer);
+
+        if (!isUndefined(vm)) {
+            // this will probably update the shadowRoot, but only if the vm is in a dirty state
+            // this is important to preserve the top to bottom synchronous rendering phase.
+            rerenderVM(vm);
+        }
     }
 }
 
@@ -391,26 +406,6 @@ function isVNode(vnode: any): vnode is VNode {
     return vnode != null;
 }
 
-function observeElementChildNodes(elm: Element) {
-    (elm as any).$domManual$ = true;
-}
-
-function setElementShadowToken(elm: Element, token: string) {
-    (elm as any).$shadowToken$ = token;
-}
-
-// Set the scope token class for *.scoped.css styles
-function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
-    const { cmpTemplate, context } = owner;
-    const { getClassList } = renderer;
-    const token = cmpTemplate?.stylesheetToken;
-    if (!isUndefined(token) && context.hasScopedStyles) {
-        // TODO [#2762]: this dot notation with add is probably problematic
-        // probably we should have a renderer api for just the add operation
-        getClassList(elm).add(token);
-    }
-}
-
 function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
     const { renderRoot, renderMode, shadowMode } = owner;
     const { isSyntheticShadowDefined } = renderer;
@@ -474,38 +469,42 @@ function patchElementPropsAndAttrs(
     patchProps(oldVnode, vnode, renderer);
 }
 
-function fallbackElmHook(elm: Element, vnode: VBaseElement, renderer: RendererAPI) {
-    const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner, renderer);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const {
-            data: { context },
-        } = vnode;
-        const { stylesheetToken } = owner.context;
-        if (
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.Manual
-        ) {
-            // this element will now accept any manual content inserted into it
-            observeElementChildNodes(elm);
-        }
-        if (!isUndefined(stylesheetToken)) {
-            // when running in synthetic shadow mode, we need to set the shadowToken value
-            // into each element from the template, so they can be styled accordingly.
-            setElementShadowToken(elm, stylesheetToken);
-        }
+function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+    // Set the class name for `*.scoped.css` style scoping.
+    const scopeToken = getScopeTokenClass(owner);
+    if (!isNull(scopeToken)) {
+        const { getClassList } = renderer;
+        // TODO [#2762]: this dot notation with add is probably problematic
+        // probably we should have a renderer api for just the add operation
+        getClassList(elm).add(scopeToken);
     }
+
+    // Set property element for synthetic shadow DOM style scoping.
+    const { stylesheetToken: syntheticToken } = owner.context;
+    if (owner.shadowMode === ShadowMode.Synthetic && !isUndefined(syntheticToken)) {
+        (elm as any).$shadowToken$ = syntheticToken;
+    }
+}
+
+function applyDomManual(elm: Element, vnode: VBaseElement) {
+    const {
+        owner,
+        data: { context },
+    } = vnode;
+    if (owner.shadowMode === ShadowMode.Synthetic && context?.lwc?.dom === LwcDomMode.Manual) {
+        (elm as any).$domManual$ = true;
+    }
+}
+
+function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     if (process.env.NODE_ENV !== 'production') {
-        const {
-            data: { context },
-        } = vnode;
         const isPortal =
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.Manual;
-        const isLight = owner.renderMode === RenderMode.Light;
-        patchElementWithRestrictions(elm, { isPortal, isLight });
+            vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === LwcDomMode.Manual;
+        const isLight = vnode.owner.renderMode === RenderMode.Light;
+        patchElementWithRestrictions(elm, {
+            isPortal,
+            isLight,
+        });
     }
 }
 
@@ -546,17 +545,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     }
 
     const { sel, mode, ctor, owner } = vnode;
-
-    setScopeTokenClassIfNecessary(elm, owner, renderer);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const { stylesheetToken } = owner.context;
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        if (!isUndefined(stylesheetToken)) {
-            setElementShadowToken(elm, stylesheetToken);
-        }
-    }
-
     vm = createVM(elm, ctor, renderer, {
         mode,
         owner,
@@ -679,16 +667,16 @@ function updateDynamicChildren(
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode, renderer);
+            patch(oldStartVnode, newStartVnode, parent, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode, renderer);
+            patch(oldEndVnode, newEndVnode, parent, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode, renderer);
+            patch(oldStartVnode, newEndVnode, parent, renderer);
             insertNode(
                 oldStartVnode.elm!,
                 parent,
@@ -699,7 +687,7 @@ function updateDynamicChildren(
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode, renderer);
+            patch(oldEndVnode, newStartVnode, parent, renderer);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -719,7 +707,7 @@ function updateDynamicChildren(
                         // New element
                         mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode, renderer);
+                        patch(elmToMove, newStartVnode, parent, renderer);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -784,7 +772,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2, renderer);
+                    patch(n1, n2, parent, renderer);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null

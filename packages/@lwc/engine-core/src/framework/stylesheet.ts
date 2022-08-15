@@ -189,6 +189,16 @@ function getNearestShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
+/**
+ * If the component that is currently being rendered uses scoped styles,
+ * this returns the unique token for that scoped stylesheet. Otherwise
+ * it returns null.
+ */
+export function getScopeTokenClass(owner: VM): string | null {
+    const { cmpTemplate, context } = owner;
+    return (context.hasScopedStyles && cmpTemplate?.stylesheetToken) || null;
+}
+
 function getNearestNativeShadowComponent(vm: VM): VM | null {
     const owner = getNearestShadowComponent(vm);
     if (!isNull(owner) && owner.shadowMode === ShadowMode.Synthetic) {
@@ -203,13 +213,13 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null 
     const {
         renderMode,
         shadowMode,
-        renderer: { ssr, insertStylesheet },
+        renderer: { insertStylesheet },
     } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             insertStylesheet(stylesheets[i]);
         }
-    } else if (ssr || vm.hydrated) {
+    } else if (!process.env.IS_BROWSER || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.

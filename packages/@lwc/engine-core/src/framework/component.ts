@@ -6,7 +6,7 @@
  */
 import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
 
-import { ReactiveObserver } from '../libs/mutation-tracker';
+import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
@@ -44,7 +44,7 @@ export function getComponentRegisteredTemplate(
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
-    return new ReactiveObserver(() => {
+    return createReactiveObserver(() => {
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);

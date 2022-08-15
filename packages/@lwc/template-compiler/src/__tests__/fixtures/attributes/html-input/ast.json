@@ -1,0 +1,157 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 107,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 96,
+                "end": 107
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 85,
+                    "start": 15,
+                    "end": 95,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 85,
+                        "start": 15,
+                        "end": 95
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "type",
+                        "value": {
+                            "type": "Literal",
+                            "value": "checkbox"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 27,
+                            "start": 22,
+                            "end": 37
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "required",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 28,
+                            "endLine": 2,
+                            "endColumn": 36,
+                            "start": 38,
+                            "end": 46
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "readonly",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 37,
+                            "endLine": 2,
+                            "endColumn": 45,
+                            "start": 47,
+                            "end": 55
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "minlength",
+                        "value": {
+                            "type": "Literal",
+                            "value": "5"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 54,
+                            "endLine": 2,
+                            "endColumn": 67,
+                            "start": 64,
+                            "end": 77
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "maxlength",
+                        "value": {
+                            "type": "Literal",
+                            "value": "10"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 68,
+                            "endLine": 2,
+                            "endColumn": 82,
+                            "start": 78,
+                            "end": 92
+                        }
+                    }
+                ],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "checked",
+                        "attributeName": "checked",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 46,
+                            "endLine": 2,
+                            "endColumn": 53,
+                            "start": 56,
+                            "end": 63
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

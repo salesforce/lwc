@@ -2,6 +2,9 @@ import { LightningElement } from 'lwc';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
+import WithChildElms from 'x/withChildElms';
+import DefinedComponent from 'x/definedComponent';
+import UndefinedComponent from 'x/undefinedComponent';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -22,6 +25,20 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
+    it('CustomElementConstructor cannot be `new`ed before being defined', () => {
+        const func = () => {
+            new UndefinedComponent.CustomElementConstructor();
+        };
+        expect(func).toThrowError(TypeError);
+        expect(func).toThrowError(/(Illegal constructor|does not define a custom element)/);
+    });
+
+    it('CustomElementConstructor can be `new`ed after being defined', () => {
+        customElements.define('x-my-defined-component', DefinedComponent.CustomElementConstructor);
+        const elm = new DefinedComponent.CustomElementConstructor();
+        expect(elm.tagName.toLowerCase()).toEqual('x-my-defined-component');
+    });
+
     it('should create a custom element with shadow mode set to "open" by default', () => {
         class Test extends LightningElement {}
 
@@ -33,6 +50,37 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
         expect(elm.shadowRoot).not.toBe(null);
         expect(elm.shadowRoot.mode).toBe('open');
+    });
+
+    describe('implicit hydration', () => {
+        let consoleSpy;
+        beforeEach(() => {
+            // eslint-disable-next-line no-undef
+            consoleSpy = TestUtils.spyConsole();
+        });
+        afterEach(() => {
+            consoleSpy.reset();
+        });
+
+        it('should occur when element exists before customElements.define', () => {
+            const elm = document.createElement('test-custom-element-preexisting');
+            document.body.appendChild(elm);
+
+            expect(elm.shadowRoot).toBe(null);
+            customElements.define(
+                'test-custom-element-preexisting',
+                WithChildElms.CustomElementConstructor
+            );
+            expect(elm.shadowRoot).not.toBe(null);
+
+            const observedErrors = consoleSpy.calls.error
+                .flat()
+                .map((err) => (err instanceof Error ? err.message : err));
+            expect(observedErrors).toContain(
+                '[LWC error]: Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.\n'
+            );
+            expect(observedErrors).toContain('[LWC error]: Hydration completed with errors.\n');
+        });
     });
 
     describe('lifecycle', () => {

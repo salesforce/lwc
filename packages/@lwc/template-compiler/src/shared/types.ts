@@ -6,15 +6,14 @@
  */
 import { CompilerDiagnostic } from '@lwc/errors';
 
-export type TemplateCompileResult = {
-    code: string;
-    warnings: CompilerDiagnostic[];
-};
-
-export type TemplateParseResult = {
+export interface TemplateParseResult {
     root?: Root;
     warnings: CompilerDiagnostic[];
-};
+}
+
+export interface TemplateCompileResult extends TemplateParseResult {
+    code: string;
+}
 
 export enum LWCDirectiveDomMode {
     manual = 'manual',
@@ -41,7 +40,7 @@ export interface SourceLocation {
 
 export interface ElementSourceLocation extends SourceLocation {
     startTag: SourceLocation;
-    endTag?: SourceLocation;
+    endTag: SourceLocation;
 }
 
 export interface Literal<Value = string | boolean> {
@@ -153,7 +152,7 @@ export interface AbstractBaseElement extends BaseParentNode {
     attributes: Attribute[];
     listeners: EventListener[];
     directives: ElementDirective[];
-    namespace?: string;
+    namespace: string;
 }
 
 export interface Element extends AbstractBaseElement {

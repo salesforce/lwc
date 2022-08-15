@@ -5,12 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, toString } from '@lwc/shared';
-import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
+import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
-import { reactiveMembrane } from '../membrane';
+import { getReactiveProxy } from '../membrane';
 import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import { updateComponentValue } from '../update-component-value';
 
 /**
  * @track decorator function to mark field value as reactive in
@@ -24,7 +25,7 @@ export default function track(
 ): any;
 export default function track(target: any): any {
     if (arguments.length === 1) {
-        return reactiveMembrane.getProxy(target);
+        return getReactiveProxy(target);
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(
@@ -58,12 +59,8 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
                     )}`
                 );
             }
-            const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
-            if (reactiveOrAnyValue !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = reactiveOrAnyValue;
-
-                componentValueMutated(vm, key);
-            }
+            const reactiveOrAnyValue = getReactiveProxy(newValue);
+            updateComponentValue(vm, key, reactiveOrAnyValue);
         },
         enumerable: true,
         configurable: true,

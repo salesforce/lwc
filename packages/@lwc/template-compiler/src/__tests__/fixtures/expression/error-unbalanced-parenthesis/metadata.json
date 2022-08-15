@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression { (foo } - Unexpected token (1:7)",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 10,
+                "start": 20,
+                "length": 8
+            }
+        },
+        {
+            "code": 1083,
+            "message": "Invalid expression { foo) } - LWC1083: Error parsing template expression: Unexpected end of expression",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 10,
+                "start": 44,
+                "length": 8
+            }
+        },
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression { ((foo.bar) } - Unexpected token (1:13)",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 10,
+                "start": 68,
+                "length": 14
+            }
+        }
+    ]
+}

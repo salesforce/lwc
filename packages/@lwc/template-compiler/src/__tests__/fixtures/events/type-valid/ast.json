@@ -1,0 +1,344 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 193,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 182,
+                "end": 193
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 42,
+                    "start": 15,
+                    "end": 52,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 31,
+                        "start": 15,
+                        "end": 41
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 36,
+                        "endLine": 2,
+                        "endColumn": 42,
+                        "start": 46,
+                        "end": 52
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "a123",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "handleClick",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 10,
+                                "endLine": 2,
+                                "endColumn": 30,
+                                "start": 20,
+                                "end": 40
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 30,
+                            "start": 20,
+                            "end": 40
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Click",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Click"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 31,
+                            "endLine": 2,
+                            "endColumn": 36,
+                            "start": 41,
+                            "end": 46
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 45,
+                    "start": 57,
+                    "end": 97,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 34,
+                        "start": 57,
+                        "end": 86
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 39,
+                        "endLine": 3,
+                        "endColumn": 45,
+                        "start": 91,
+                        "end": 97
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "foo_bar",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "handleClick",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 10,
+                                "endLine": 3,
+                                "endColumn": 33,
+                                "start": 62,
+                                "end": 85
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 10,
+                            "endLine": 3,
+                            "endColumn": 33,
+                            "start": 62,
+                            "end": 85
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Click",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Click"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 34,
+                            "endLine": 3,
+                            "endColumn": 39,
+                            "start": 86,
+                            "end": 91
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 42,
+                    "start": 102,
+                    "end": 139,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 31,
+                        "start": 102,
+                        "end": 128
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 36,
+                        "endLine": 4,
+                        "endColumn": 42,
+                        "start": 133,
+                        "end": 139
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "foo_",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "handleClick",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 10,
+                                "endLine": 4,
+                                "endColumn": 30,
+                                "start": 107,
+                                "end": 127
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 10,
+                            "endLine": 4,
+                            "endColumn": 30,
+                            "start": 107,
+                            "end": 127
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Click",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Click"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 31,
+                            "endLine": 4,
+                            "endColumn": 36,
+                            "start": 128,
+                            "end": 133
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 42,
+                    "start": 144,
+                    "end": 181,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 31,
+                        "start": 144,
+                        "end": 170
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 36,
+                        "endLine": 5,
+                        "endColumn": 42,
+                        "start": 175,
+                        "end": 181
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "a123",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "handleClick",
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 10,
+                                "endLine": 5,
+                                "endColumn": 30,
+                                "start": 149,
+                                "end": 169
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 10,
+                            "endLine": 5,
+                            "endColumn": 30,
+                            "start": 149,
+                            "end": 169
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Click",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Click"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 31,
+                            "endLine": 5,
+                            "endColumn": 36,
+                            "start": 170,
+                            "end": 175
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

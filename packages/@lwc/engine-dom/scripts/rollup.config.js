@@ -9,6 +9,7 @@
 
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
@@ -37,6 +38,12 @@ module.exports = {
         typescript(),
         writeDistAndTypes(),
         lwcFeatures(),
+        replace({
+            values: {
+                'process.env.IS_BROWSER': 'true',
+            },
+            preventAssignment: true,
+        }),
     ],
 
     onwarn({ code, message }) {

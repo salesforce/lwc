@@ -459,14 +459,6 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * Map to store an index value assigned to any dynamic component reference ingested
- * by dc() api. This allows us to generate a unique unique per template per dynamic
- * component reference to avoid diffing algo mismatches.
- */
-const DynamicImportedComponentMap: Map<LightningElementConstructor, number> = new Map();
-let dynamicImportedComponentCounter = 0;
-
-/**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 function dc(
@@ -490,18 +482,8 @@ function dc(
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
-    let idx = DynamicImportedComponentMap.get(Ctor);
-    if (isUndefined(idx)) {
-        idx = dynamicImportedComponentCounter++;
-        DynamicImportedComponentMap.set(Ctor, idx);
-    }
-    // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
-    // to identify different constructors as vnodes with different keys to avoid reusing the
-    // element used for previous constructors.
-    // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
-    // hoisting optimization.
-    const newData = { ...data, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+
+    return c(sel, Ctor, data, children);
 }
 
 /**

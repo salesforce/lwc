@@ -16,9 +16,10 @@ import {
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
+    isNull,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
-
+import { createFragment } from './createFragment';
 let getCustomElement: any;
 let defineCustomElement: any;
 let HTMLElementConstructor;
@@ -82,18 +83,6 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-let hydrating = false;
-
-export function setIsHydrating(value: boolean) {
-    hydrating = value;
-}
-
-const ssr: boolean = false;
-
-function isHydrating(): boolean {
-    return hydrating;
-}
-
 const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
@@ -102,10 +91,6 @@ export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
-}
-
-function createFragment(html: string): Node | null {
-    return document.createRange().createContextualFragment(html).firstChild;
 }
 
 function createElement(tagName: string, namespace?: string): Element {
@@ -135,8 +120,12 @@ function nextSibling(node: Node): Node | null {
 }
 
 function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    if (hydrating) {
-        return element.shadowRoot!;
+    // `shadowRoot` will be non-null in two cases:
+    //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
+    //   2. when a webapp author places <c-app> in their static HTML and mounts their
+    //      root component with customElement.define('c-app', Ctor)
+    if (!isNull(element.shadowRoot)) {
+        return element.shadowRoot;
     }
     return element.attachShadow(options);
 }
@@ -287,11 +276,9 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
-    isHydrating,
     insert,
     remove,
     cloneNode,

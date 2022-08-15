@@ -5,9 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isVoidElement, htmlEscape } from '@lwc/shared';
+import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 
-import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
+import {
+    HostElement,
+    HostShadowRoot,
+    HostAttribute,
+    HostChildNode,
+    HostNodeType,
+    HostTypeKey,
+    HostNamespaceKey,
+    HostShadowRootKey,
+    HostAttributesKey,
+    HostChildrenKey,
+    HostValueKey,
+} from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
@@ -20,13 +32,13 @@ function serializeAttributes(attributes: HostAttribute[]): string {
 function serializeChildNodes(children: HostChildNode[]): string {
     return children
         .map((child): string => {
-            switch (child.type) {
+            switch (child[HostTypeKey]) {
                 case HostNodeType.Text:
-                    return child.value === '' ? '\u200D' : htmlEscape(child.value);
+                    return child[HostValueKey] === '' ? '\u200D' : htmlEscape(child[HostValueKey]);
                 case HostNodeType.Comment:
-                    return `<!--${htmlEscape(child.value)}-->`;
+                    return `<!--${htmlEscape(child[HostValueKey])}-->`;
                 case HostNodeType.Raw:
-                    return child.value;
+                    return child[HostValueKey];
                 case HostNodeType.Element:
                     return serializeElement(child);
             }
@@ -41,26 +53,41 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
         attrs.push('shadowrootdelegatesfocus');
     }
 
-    return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
+    return `<template ${attrs.join(' ')}>${serializeChildNodes(
+        shadowRoot[HostChildrenKey]
+    )}</template>`;
 }
 
 export function serializeElement(element: HostElement): string {
     let output = '';
-    const { name } = element;
 
-    const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
-    const children = serializeChildNodes(element.children);
+    const tagName = element.tagName;
+    const namespace = element[HostNamespaceKey];
+    const isForeignElement = namespace !== HTML_NAMESPACE;
+    const hasChildren = element[HostChildrenKey].length > 0;
 
-    output += `<${name}${attrs}>`;
+    const attrs = element[HostAttributesKey].length
+        ? ` ${serializeAttributes(element[HostAttributesKey])}`
+        : '';
 
-    if (element.shadowRoot) {
-        output += serializeShadowRoot(element.shadowRoot);
+    output += `<${tagName}${attrs}`;
+
+    // Note that foreign elements can have children but not shadow roots
+    if (isForeignElement && !hasChildren) {
+        output += '/>';
+        return output;
     }
 
-    output += children;
+    output += '>';
 
-    if (!isVoidElement(name)) {
-        output += `</${name}>`;
+    if (element[HostShadowRootKey]) {
+        output += serializeShadowRoot(element[HostShadowRootKey]);
+    }
+
+    output += serializeChildNodes(element[HostChildrenKey]);
+
+    if (!isVoidElement(tagName, namespace) || hasChildren) {
+        output += `</${tagName}>`;
     }
 
     return output;

@@ -32,7 +32,7 @@ const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
 BENCHMARK_SAMPLE_SIZE = toInt(BENCHMARK_SAMPLE_SIZE);
 BENCHMARK_TIMEOUT = toInt(BENCHMARK_TIMEOUT);
 
-const benchmarkComponentsDir = path.join(__dirname, '../../@lwc/perf-benchmarks-components');
+const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
 const swappablePackages = [

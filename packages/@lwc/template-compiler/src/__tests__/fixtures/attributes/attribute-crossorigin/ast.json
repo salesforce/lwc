@@ -1,0 +1,238 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 285,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 274,
+                "end": 285
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Issue #917 ",
+                "value": " Issue #917 ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 24,
+                    "start": 15,
+                    "end": 34
+                }
+            },
+            {
+                "type": "Element",
+                "name": "img",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 73,
+                    "start": 39,
+                    "end": 107,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 73,
+                        "start": 39,
+                        "end": 107
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "src",
+                        "value": {
+                            "type": "Literal",
+                            "value": "http://www.example.com/image.png"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 10,
+                            "endLine": 3,
+                            "endColumn": 48,
+                            "start": 44,
+                            "end": 82
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "crossorigin",
+                        "value": {
+                            "type": "Literal",
+                            "value": "anonymous"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 49,
+                            "endLine": 3,
+                            "endColumn": 72,
+                            "start": 83,
+                            "end": 106
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "video",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 83,
+                    "start": 112,
+                    "end": 190,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 75,
+                        "start": 112,
+                        "end": 182
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 75,
+                        "endLine": 4,
+                        "endColumn": 83,
+                        "start": 182,
+                        "end": 190
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "src",
+                        "value": {
+                            "type": "Literal",
+                            "value": "http://www.example.com/video.mp4"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 12,
+                            "endLine": 4,
+                            "endColumn": 50,
+                            "start": 119,
+                            "end": 157
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "crossorigin",
+                        "value": {
+                            "type": "Literal",
+                            "value": "anonymous"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 51,
+                            "endLine": 4,
+                            "endColumn": 74,
+                            "start": 158,
+                            "end": 181
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "audio",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 83,
+                    "start": 195,
+                    "end": 273,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 75,
+                        "start": 195,
+                        "end": 265
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 75,
+                        "endLine": 5,
+                        "endColumn": 83,
+                        "start": 265,
+                        "end": 273
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "src",
+                        "value": {
+                            "type": "Literal",
+                            "value": "http://www.example.com/video.mp3"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 12,
+                            "endLine": 5,
+                            "endColumn": 50,
+                            "start": 202,
+                            "end": 240
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "crossorigin",
+                        "value": {
+                            "type": "Literal",
+                            "value": "anonymous"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 51,
+                            "endLine": 5,
+                            "endColumn": 74,
+                            "start": 241,
+                            "end": 264
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

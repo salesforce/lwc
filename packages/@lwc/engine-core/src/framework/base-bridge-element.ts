@@ -24,7 +24,7 @@ import {
 } from '@lwc/shared';
 
 import { getAssociatedVM } from './vm';
-import { reactiveMembrane } from './membrane';
+import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { isAttributeLocked } from './attributes';
@@ -54,7 +54,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
             const { setHook } = vm;
-            newValue = reactiveMembrane.getReadOnlyProxy(newValue);
+            newValue = getReadOnlyProxy(newValue);
             setHook(vm.component, key, newValue);
         };
     }

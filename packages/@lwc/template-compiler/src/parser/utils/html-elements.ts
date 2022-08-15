@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export { VOID_ELEMENTS as HTML_VOID_ELEMENTS } from '@lwc/shared';
-
 /*
  * MIT License
  *

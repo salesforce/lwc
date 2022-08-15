@@ -14,8 +14,7 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
-import { createTreeWalker } from '../env/document';
-import { getOwnerDocument } from '../shared/utils';
+import { childNodesGetter } from '../env/node';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -50,24 +49,21 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     configurable: true,
 });
 
+function recursivelySetShadowResolver(node: Node, fn: any) {
+    (node as any)[KEY__SHADOW_RESOLVER] = fn;
+
+    const childNodes = childNodesGetter.call(node);
+    for (let i = 0, n = childNodes.length; i < n; i++) {
+        recursivelySetShadowResolver(childNodes[i], fn);
+    }
+}
+
 defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
     set(this: Element, v: boolean) {
         // Marking an element as static will propagate the shadow resolver to the children.
-        const fn = (this as any)[KEY__SHADOW_RESOLVER];
         if (v) {
-            const treeWalker = createTreeWalker.call(
-                getOwnerDocument(this),
-                this,
-                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT,
-                () => NodeFilter.FILTER_ACCEPT,
-                false
-            );
-
-            let currentNode: Node | null;
-
-            while ((currentNode = treeWalker.nextNode())) {
-                (currentNode as any)[KEY__SHADOW_RESOLVER] = fn;
-            }
+            const fn = (this as any)[KEY__SHADOW_RESOLVER];
+            recursivelySetShadowResolver(this, fn);
         }
         (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
     },
