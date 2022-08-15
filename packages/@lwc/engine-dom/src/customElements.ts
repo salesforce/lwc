@@ -43,7 +43,7 @@ function isCustomElementRegistryAvailable() {
 if (isCustomElementRegistryAvailable()) {
     const defineScopedElement = createScopedRegistry();
 
-    // It's important to cache window.HTMLElement immediately after calling patchCustomElementRegistry().
+    // It's important to cache window.HTMLElement immediately after calling createScopedRegistry().
     // Otherwise, someone else could overwrite window.HTMLElement (e.g. another copy of the engine, or another pivot
     // implementation) and we would get "Illegal constructor" errors because the HTMLElement prototypes are mixed up.
     const { HTMLElement } = window;
