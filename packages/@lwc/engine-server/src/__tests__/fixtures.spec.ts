@@ -13,6 +13,7 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
+import { setFeatureFlagForTest } from '../index';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -116,7 +117,7 @@ function formatHTML(src: string): string {
     return res.trim();
 }
 
-describe('fixtures', () => {
+function testFixtures() {
     testFixtureDir(
         {
             root: path.resolve(__dirname, 'fixtures'),
@@ -172,4 +173,22 @@ describe('fixtures', () => {
             };
         }
     );
+}
+
+describe('fixtures', () => {
+    describe('synthetic custom element lifecycle', () => {
+        testFixtures();
+    });
+
+    describe('native custom element lifecycle', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', true);
+        });
+
+        afterEach(() => {
+            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', false);
+        });
+
+        testFixtures();
+    });
 });

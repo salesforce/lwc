@@ -286,7 +286,13 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (process.env.IS_BROWSER) {
+            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                runConnectedCallback(vm);
+            }
+        } else {
+            // On the server, we don't have native custom element lifecycle callbacks, so we must
+            // manually invoke the connectedCallback for a child component.
             runConnectedCallback(vm);
         }
     }
