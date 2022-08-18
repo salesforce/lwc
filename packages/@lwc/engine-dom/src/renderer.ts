@@ -7,8 +7,6 @@
 
 import { globalThis } from '@lwc/shared';
 import { insertStylesheet } from './styles';
-import { createFragment } from './createFragment';
-
 import { rendererFactory } from './renderer-factory';
 
-export const renderer = rendererFactory(createFragment, globalThis, insertStylesheet);
+export const renderer = rendererFactory(globalThis, insertStylesheet);
