@@ -511,7 +511,7 @@ LightningElement.prototype = {
             return;
         }
         // For templates that are using `lwc:ref`, if there are no refs currently available
-        // (e.g. refs inside of a falsy `if:true` block, we return an empty object.
+        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
         if (isNull(refVNodes)) {
             return EMPTY_REFS;
         }
