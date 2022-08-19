@@ -175,6 +175,8 @@ function testFixtures() {
     );
 }
 
+// Run the fixtures with both synthetic and native custom element lifecycle.
+// The expectation is that the fixtures will be exactly the same for both.
 describe('fixtures', () => {
     describe('synthetic custom element lifecycle', () => {
         testFixtures();
