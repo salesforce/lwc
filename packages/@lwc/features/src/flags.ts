@@ -25,7 +25,7 @@ if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-export const runtimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
+export const lwcRuntimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
@@ -54,10 +54,10 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
     }
     if (process.env.NODE_ENV !== 'production') {
         // Allow the same flag to be set more than once outside of production to enable testing
-        runtimeFlags[name] = value;
+        lwcRuntimeFlags[name] = value;
     } else {
         // Disallow the same flag to be set more than once in production
-        const runtimeValue = runtimeFlags[name];
+        const runtimeValue = lwcRuntimeFlags[name];
         if (!isUndefined(runtimeValue)) {
             // eslint-disable-next-line no-console
             console.error(
@@ -65,7 +65,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
             );
             return;
         }
-        defineProperty(runtimeFlags, name, { value });
+        defineProperty(lwcRuntimeFlags, name, { value });
     }
 }
 
@@ -78,5 +78,7 @@ export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagV
         setFeatureFlag(name, value);
     }
 }
+
+export const runtimeFlags = lwcRuntimeFlags; // backwards compatibility for before this was renamed
 
 export default features;
