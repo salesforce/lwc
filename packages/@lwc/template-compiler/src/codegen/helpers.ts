@@ -102,6 +102,25 @@ export function hasIdAttribute(node: Node): boolean {
     return false;
 }
 
+/**
+ * Returns true if the AST element or any of its descendants uses the `lwc:ref` directive.
+ */
+export function hasRefDirective(node: Node): boolean {
+    if (isBaseElement(node)) {
+        const hasRef = node.directives.some((directive) => directive.name === 'Ref');
+
+        if (hasRef) {
+            return true;
+        }
+    }
+
+    if (isParentNode(node)) {
+        return node.children.some((child) => hasRefDirective(child));
+    }
+
+    return false;
+}
+
 export function memorizeHandler(
     codeGen: CodeGen,
     componentHandler: t.Expression,
@@ -160,6 +179,15 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
             t.literal('light')
         );
         metadataExpressions.push(t.expressionStatement(renderModeMetadata));
+    }
+
+    if (codeGen.hasRefs) {
+        const refsMetadata = t.assignmentExpression(
+            '=',
+            t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('hasRefs')),
+            t.literal(true)
+        );
+        metadataExpressions.push(t.expressionStatement(refsMetadata));
     }
 
     return metadataExpressions;

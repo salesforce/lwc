@@ -2424,6 +2424,11 @@
   version "0.0.0"
   uid ""
 
+"@lwc/shared@2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@lwc/shared/-/shared-2.22.0.tgz#0517b47f35bb5bdaf78f0777167a8e56b27d4f2d"
+  integrity sha512-ugCSqFvf1TqoJZUZTU7ibSINEyuTmxUyriL1W00JD0JNkC24Z05yo3PJHb5uM4aFE4nO0NdMozHSzlcHQLMwpQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

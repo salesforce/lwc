@@ -111,8 +111,10 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
-    /** References to elements rendered using lwc:ref */
+    /** References to elements rendered using lwc:ref (template refs) */
     refVNodes: RefVNodes | null;
+    /** Whether this template has any references to elements (template refs) */
+    hasRefVNodes: boolean;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -293,6 +295,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         refVNodes: null,
+        hasRefVNodes: false,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

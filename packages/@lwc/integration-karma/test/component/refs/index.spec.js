@@ -2,7 +2,9 @@ import { createElement } from 'lwc';
 
 import Basic from 'x/basic';
 import None from 'x/none';
+import NoneActive from 'x/noneActive';
 import Multi from 'x/multi';
+import MultiNoRefsInOne from 'x/multiNoRefsInOne';
 import Overwrite from 'x/overwrite';
 import Conflict from 'x/conflict';
 import Parent from 'x/parent';
@@ -41,6 +43,15 @@ describe('refs', () => {
 
         const refs = elm.getRefs();
 
+        expect(refs).toBeUndefined();
+    });
+
+    it('no active refs', () => {
+        const elm = createElement('x-none-active', { is: NoneActive });
+        document.body.appendChild(elm);
+
+        const refs = elm.getRefs();
+
         expect(Object.getPrototypeOf(refs)).toBeNull();
         expect(Object.keys(refs)).toEqual([]);
 
@@ -73,6 +84,24 @@ describe('refs', () => {
                 expect(elm.getRef('shared').textContent).toEqual('a-shared');
                 expect(elm.getRef('deepShared').textContent).toEqual('a-deepShared');
                 expect(elm.getRef('b')).toBeUndefined();
+            });
+    });
+
+    it('multi templates - no refs in one', () => {
+        const elm = createElement('x-multi-no-refs-in-one', { is: MultiNoRefsInOne });
+
+        document.body.appendChild(elm);
+
+        expect(elm.getRefs()).toBeUndefined();
+
+        elm.next();
+        return Promise.resolve()
+            .then(() => {
+                expect(elm.getRefs().foo.textContent).toEqual('foo');
+                elm.next();
+            })
+            .then(() => {
+                expect(elm.getRefs()).toBeUndefined();
             });
     });
 

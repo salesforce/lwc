@@ -497,10 +497,21 @@ LightningElement.prototype = {
         return vm.shadowRoot;
     },
 
-    get refs(): RefNodes {
+    get refs(): RefNodes | undefined {
         const vm = getAssociatedVM(this);
 
-        const { refVNodes } = vm;
+        const { refVNodes, hasRefVNodes } = vm;
+        // For backwards compatibility with component written before template refs
+        // were introduced, we return undefined if the template has no refs defined
+        // anywhere. This fixes components that may already have a property called `refs`
+        // and are checking it with `if (this.refs)`.
+        // Note it is not sufficient to just check if `refVNodes` is null or empty,
+        // because a template may have `lwc:ref` defined within a falsy `if:true` block.
+        if (!hasRefVNodes) {
+            return;
+        }
+        // For templates that are using `lwc:ref`, if there are no refs currently available
+        // (e.g. refs inside of a falsy `if:true` block, we return an empty object.
         if (isNull(refVNodes)) {
             return EMPTY_REFS;
         }
