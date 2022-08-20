@@ -16,13 +16,8 @@ import type { RendererAPI } from '@lwc/engine-core';
  * Renderer encapsulates operations that are required to render an LWC component into the underlying
  * runtime environment. In the case of @lwc/enigne-dom, it is meant to be used in a DOM environment.
  * @param globalThis https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
- * @param insertStylesheet
- * @returns {@link RendererAPI}
  */
-export function rendererFactory(
-    globalThis: any,
-    insertStylesheet: (content: string, target?: ShadowRoot) => void
-): RendererAPI {
+export function rendererFactory(globalThis: any): Omit<RendererAPI, 'insertStylesheet'> {
     // Util functions
     function assertFail(msg: string): never {
         throw new Error(msg);
@@ -399,7 +394,6 @@ export function rendererFactory(
         getLastChild,
         getLastElementChild,
         isConnected,
-        insertStylesheet,
         assertInstanceOfHTMLElement,
         defineCustomElement,
         getCustomElement,
