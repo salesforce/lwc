@@ -25,7 +25,7 @@ import {
     isText,
     isComment,
     isIfBlock,
-    isElseifBlock,
+    isConditionalParentBlock,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -69,16 +69,10 @@ function isDynamic(element: BaseElement): boolean {
 
 export function containsDynamicChildren(parent: ParentNode): boolean {
     const hasDynamicChildren = parent.children.some((child) => {
-        if (isForBlock(child) || isIf(child)) {
+        // The child in the children array will only ever contain an IfBlock.
+        // ElseIfBlock and ElseBlock are chained together starting from the IfBlock.
+        if (isForBlock(child) || isIf(child) || isIfBlock(child)) {
             return containsDynamicChildren(child);
-        }
-
-        if (isIfBlock(child)) {
-            const trueConditionHasDynamicChildren = containsDynamicChildren(child);
-            const elseConditionHasDynamicChildren = child.else
-                ? containsDynamicChildren(child.else)
-                : false;
-            return trueConditionHasDynamicChildren || elseConditionHasDynamicChildren;
         }
 
         if (isBaseElement(child)) {
@@ -88,14 +82,14 @@ export function containsDynamicChildren(parent: ParentNode): boolean {
         return false;
     });
 
-    // In order to check the if-elseif-else chain fully, if the parent is an ElseIfBlock
+    // In order to check the if-elseif-else chain fully, if the parent is an IfBlock or ElseIfBlock
     // the else branch must be checked as well.
-    // Note that the ElseIfBlock can only occur when it is inside an if-elseif-else chain
-    // meaning that the children passed from transformChildren will not contain an ElseifBlock or ElseBlock
-    const elseIfHasDynamicChildren =
-        isElseifBlock(parent) && parent.else ? containsDynamicChildren(parent.else) : false;
+    const elseConditionHasDynamicChildren =
+        isConditionalParentBlock(parent) && parent.else
+            ? containsDynamicChildren(parent.else)
+            : false;
 
-    return hasDynamicChildren || elseIfHasDynamicChildren;
+    return hasDynamicChildren || elseConditionHasDynamicChildren;
 }
 
 /**
