@@ -11,6 +11,11 @@ import Parent from 'x/parent';
 import Light from 'x/light';
 import Dynamic from 'x/dynamic';
 import Conditional from 'x/conditional';
+import Construct from 'x/construct';
+import Connect from 'x/connect';
+import Rendered from 'x/rendered';
+import Disconnect from 'x/disconnect';
+import Render from 'x/render';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -181,5 +186,59 @@ describe('refs', () => {
                 expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
                 expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
             });
+    });
+
+    describe('lifecycle', () => {
+        it('throws error in constructor', () => {
+            let elm;
+
+            expect(() => {
+                elm = createElement('x-construct', { is: Construct });
+            }).toLogErrorDev(
+                /Error: \[LWC error]: this.refs should not be called during the construction of the custom element for <x-construct> because the element is not yet in the DOM or has no children yet\./
+            );
+            document.body.appendChild(elm);
+            expect(elm.result).toBeUndefined();
+        });
+
+        it('does not work in connectedCallback', () => {
+            const elm = createElement('x-connect', { is: Connect });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogErrorDev(
+                /Error: \[LWC error]: this\.refs is undefined for <x-connect>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
+            );
+            expect(elm.result).toBeUndefined();
+        });
+
+        it('works in renderedCallback', () => {
+            const elm = createElement('x-rendered', { is: Rendered });
+            document.body.appendChild(elm);
+            expect(elm.result).toEqual('foo');
+        });
+
+        it('works in disconnectedCallback', () => {
+            const elm = createElement('x-disconnect', { is: Disconnect });
+            document.body.appendChild(elm);
+            document.body.removeChild(elm);
+            expect(elm.result).toEqual('foo');
+        });
+
+        it('works in render', () => {
+            const elm = createElement('x-render', { is: Render });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogErrorDev(
+                /Error: \[LWC error]: this\.refs is undefined for <x-render>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
+            );
+            return Promise.resolve()
+                .then(() => {
+                    expect(elm.results).toEqual([undefined]);
+                    elm.next();
+                })
+                .then(() => {
+                    expect(elm.results).toEqual([undefined, 'foo']);
+                });
+        });
     });
 });
