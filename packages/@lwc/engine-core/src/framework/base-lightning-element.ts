@@ -506,10 +506,10 @@ LightningElement.prototype = {
 
         const { refVNodes, hasRefVNodes, cmpTemplate } = vm;
 
-        // If the cmpTemplate is null, that means that the template has not been rendered yet. Most likely
-        // this occurs if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been
-        // rendered yet, so log a warning. Note we also check `isBeingConstructed()` to avoid a double warning
-        // (due to `warnIfInvokedDuringConstruction` above).
+        // If the `cmpTemplate` is null, that means that the template has not been rendered yet. Most likely this occurs
+        // if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been rendered yet,
+        // so log a warning. Note we also check `isBeingConstructed()` to avoid a double warning (due to
+        // `warnIfInvokedDuringConstruction` above).
         if (
             process.env.NODE_ENV !== 'production' &&
             isNull(cmpTemplate) &&
@@ -518,8 +518,9 @@ LightningElement.prototype = {
             logError(
                 `this.refs is undefined for ${getComponentTag(
                     vm
-                )}. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback(). ` +
-                    `Use this.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback() or disconnectedCallback().`
+                )}. This is either because the attached template has no "lwc:ref" directive, or this.refs was ` +
+                    `invoked before renderedCallback(). Use this.refs only when the referenced HTML elements have ` +
+                    `been rendered to the DOM, such as within renderedCallback() or disconnectedCallback().`
             );
         }
 
