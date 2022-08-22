@@ -159,7 +159,7 @@ function transform(codeGen: CodeGen): t.Expression {
             } else if (isIfBlock(child)) {
                 // IfBlock should always appear as the parent in the if-elseif-else chain which means
                 // ElseIfBlock and ElseBlock should never appear in the children array
-                res.push(transformIfBlock(child));
+                res.push(transformConditionalParentBlock(child));
             }
         }
 
@@ -203,13 +203,15 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformIfBlock(conditionalParentBlock: IfBlock | ElseifBlock): t.Expression {
+    function transformConditionalParentBlock(
+        conditionalParentBlock: IfBlock | ElseifBlock
+    ): t.Expression {
         const childrenExpression = transformChildren(conditionalParentBlock);
         let elseExpression: t.Expression = t.arrayExpression([]);
 
         if (conditionalParentBlock.else) {
             elseExpression = isElseifBlock(conditionalParentBlock.else)
-                ? transformIfBlock(conditionalParentBlock.else)
+                ? transformConditionalParentBlock(conditionalParentBlock.else)
                 : transformChildren(conditionalParentBlock.else);
         }
 
