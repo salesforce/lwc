@@ -15,15 +15,16 @@ import type { RendererAPI } from '@lwc/engine-core';
  * A factory function that produces a renderer.
  * Renderer encapsulates operations that are required to render an LWC component into the underlying
  * runtime environment. In the case of @lwc/enigne-dom, it is meant to be used in a DOM environment.
+ * Example usage:
+ * import { renderer, rendererFactory } from 'lwc';
+ * const customRenderer = rendererFactory(renderer);
+ *
+ * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
-export function rendererFactory(): Omit<
-    RendererAPI,
-    'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'
-> {
+export function rendererFactory(
+    baseRenderer: RendererAPI | null
+): Omit<RendererAPI, 'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'> {
     // Util functions
-    function assertFail(msg: string): never {
-        throw new Error(msg);
-    }
     function assertInvariant(value: any, msg: string): asserts value {
         if (!value) {
             throw new Error(`Invariant Violation: ${msg}`);
@@ -213,16 +214,7 @@ export function rendererFactory(): Omit<
         return (node as any)[key];
     }
 
-    function setProperty(node: Node, key: string, value: any, attributeName: string): void {
-        if (process.env.NODE_ENV !== 'production') {
-            if (node instanceof Element && !(key in node)) {
-                // TODO [#1297]: Move this validation to the compiler
-                assertFail(
-                    `Unknown public property "${key}" of element <${node.tagName}>. This is likely a typo on the corresponding attribute "${attributeName}".`
-                );
-            }
-        }
-
+    function setProperty(node: Node, key: string, value: any): void {
         (node as any)[key] = value;
     }
 
@@ -350,7 +342,7 @@ export function rendererFactory(): Omit<
 
     const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
-    return {
+    const renderer = {
         HTMLElementExported,
         insert,
         remove,
@@ -388,4 +380,7 @@ export function rendererFactory(): Omit<
         defineCustomElement,
         getCustomElement,
     };
+    // Meant to inherit any properties passed via the base renderer as the argument to the factory.
+    Object.setPrototypeOf(renderer, baseRenderer);
+    return renderer;
 }

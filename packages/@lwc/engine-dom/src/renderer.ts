@@ -22,7 +22,9 @@ import type { RendererAPI } from '@lwc/engine-core';
  * This will be used for DOM operations when lwc is running in a browser environment.
  */
 export const renderer: RendererAPI = assign(
-    rendererFactory(),
+    // The base renderer will invoke the factory with null and assign additional properties that are
+    // shared across renderers
+    rendererFactory(null),
     // Properties that are either not required to be sandboxed or rely on a globally shared information
     {
         // insertStyleSheet implementation shares a global cache of stylesheet data

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { htmlPropertyToAttribute, isNull, isUndefined, assert } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -43,7 +43,21 @@ export function patchProps(
             isFirstPatch ||
             cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key])
         ) {
-            setProperty(elm!, key, cur, htmlPropertyToAttribute(key));
+            // Additional verification if properties are supported by the element
+            // Validation relies on html properties and public properties being defined on the element,
+            // SSR has its own custom validation.
+            if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
+                if (!(key in elm!)) {
+                    assert.fail(
+                        `Unknown public property "${key}" of element <${
+                            elm!.tagName
+                        }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                            key
+                        )}".`
+                    );
+                }
+            }
+            setProperty(elm!, key, cur);
         }
     }
 }

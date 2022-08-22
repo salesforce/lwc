@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, htmlPropertyToAttribute } from '@lwc/shared';
+import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -138,12 +138,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    setProperty(
-        node,
-        NODE_VALUE_PROP,
-        vnode.text ?? null,
-        htmlPropertyToAttribute(NODE_VALUE_PROP)
-    );
+    setProperty(node, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;
