@@ -35,6 +35,6 @@
         "access": "public"
     },
     "dependencies": {
-        "@lwc/shared": "2.22.0"
+        "@lwc/shared": "2.23.0"
     }
 }
