@@ -121,6 +121,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
     const { sourceCodeLocation: rootLocation } = parse5Elm;
 
+    /* istanbul ignore if */
     if (!rootLocation) {
         // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
@@ -325,6 +326,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
     const parsedTextNodes: Text[] = [];
     const location = parse5Text.sourceCodeLocation;
 
+    /* istanbul ignore if */
     if (!location) {
         // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
@@ -366,6 +368,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
 function parseComment(parse5Comment: parse5.CommentNode): Comment {
     const location = parse5Comment.sourceCodeLocation;
 
+    /* istanbul ignore if */
     if (!location) {
         // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
@@ -1110,6 +1113,7 @@ function parseAttributes(
 
     for (const attr of attributes) {
         const attrLocation = attrLocations?.[attributeName(attr).toLowerCase()];
+        /* istanbul ignore if */
         if (!attrLocation) {
             throw new Error(
                 'An internal parsing error occurred while parsing attributes; attributes were found without a location.'

@@ -1,0 +1,93 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 66,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 55,
+                "end": 66
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 44,
+                    "start": 15,
+                    "end": 54,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 34,
+                        "start": 15,
+                        "end": 44
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 34,
+                        "endLine": 2,
+                        "endColumn": 44,
+                        "start": 44,
+                        "end": 54
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "customStyle",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 14,
+                                "endLine": 2,
+                                "endColumn": 33,
+                                "start": 24,
+                                "end": 43
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 14,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 24,
+                            "end": 43
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

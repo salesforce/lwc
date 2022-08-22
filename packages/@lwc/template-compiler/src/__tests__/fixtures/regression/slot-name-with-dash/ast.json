@@ -1,0 +1,136 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 97,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 86,
+                "end": 97
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "secret-slot",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 12,
+                    "start": 15,
+                    "end": 85,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 30,
+                        "start": 15,
+                        "end": 40
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 12,
+                        "start": 78,
+                        "end": 85
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "secret-slot"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 11,
+                            "endLine": 2,
+                            "endColumn": 29,
+                            "start": 21,
+                            "end": 39
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 33,
+                            "start": 49,
+                            "end": 73,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 12,
+                                "start": 49,
+                                "end": 52
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 29,
+                                "endLine": 3,
+                                "endColumn": 33,
+                                "start": 69,
+                                "end": 73
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Test slot content",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Test slot content"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 29,
+                                    "start": 52,
+                                    "end": 69
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

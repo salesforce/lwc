@@ -1,0 +1,83 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 114,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 103,
+                "end": 114
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "h1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 10,
+                    "start": 15,
+                    "end": 102,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 82,
+                        "start": 15,
+                        "end": 92
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 10,
+                        "start": 97,
+                        "end": 102
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "data-foo",
+                        "value": {
+                            "type": "Literal",
+                            "value": "\">\\x3Cscript>alert('pwned')\\x3C/script>\\x3Ch1 foo=\""
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 9,
+                            "endLine": 2,
+                            "endColumn": 81,
+                            "start": 19,
+                            "end": 91
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

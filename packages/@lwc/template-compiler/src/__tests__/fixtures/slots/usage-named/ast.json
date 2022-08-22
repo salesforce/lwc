@@ -1,0 +1,171 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 131,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 120,
+                "end": 131
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 119,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 15,
+                        "start": 109,
+                        "end": 119
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "test",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 16,
+                            "start": 33,
+                            "end": 104,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 27,
+                                "start": 33,
+                                "end": 51
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 16,
+                                "start": 97,
+                                "end": 104
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "name",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "test"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 15,
+                                    "endLine": 3,
+                                    "endColumn": 26,
+                                    "start": 39,
+                                    "end": 50
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "p",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 37,
+                                    "start": 64,
+                                    "end": 88,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 13,
+                                        "endLine": 4,
+                                        "endColumn": 16,
+                                        "start": 64,
+                                        "end": 67
+                                    },
+                                    "endTag": {
+                                        "startLine": 4,
+                                        "startColumn": 33,
+                                        "endLine": 4,
+                                        "endColumn": 37,
+                                        "start": 84,
+                                        "end": 88
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "Test slot content",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "Test slot content"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 16,
+                                            "endLine": 4,
+                                            "endColumn": 33,
+                                            "start": 67,
+                                            "end": 84
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

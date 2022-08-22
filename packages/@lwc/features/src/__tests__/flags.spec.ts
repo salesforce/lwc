@@ -38,13 +38,13 @@ pluginTester({
                 }
             `,
             output: `
-                import features, { runtimeFlags } from '@lwc/features';
+                import features, { lwcRuntimeFlags } from '@lwc/features';
 
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                if (lwcRuntimeFlags.ENABLE_FEATURE_NULL) {
                     console.log('features.ENABLE_FEATURE_NULL');
                 }
 
-                if (!runtimeFlags.ENABLE_FEATURE_NULL) {
+                if (!lwcRuntimeFlags.ENABLE_FEATURE_NULL) {
                     console.log('!features.ENABLE_FEATURE_NULL');
                 }
             `,
@@ -62,13 +62,13 @@ pluginTester({
                 }
             `,
             output: `
-                import features, { runtimeFlags } from '@lwc/features';
+                import features, { lwcRuntimeFlags } from '@lwc/features';
 
-                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
+                if (lwcRuntimeFlags.ENABLE_FEATURE_TRUE) {
                     console.log('features.ENABLE_FEATURE_TRUE');
                 }
 
-                if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
+                if (!lwcRuntimeFlags.ENABLE_FEATURE_TRUE) {
                     console.log('!features.ENABLE_FEATURE_TRUE');
                 }
             `,
@@ -86,13 +86,13 @@ pluginTester({
                 }
             `,
             output: `
-                import features, { runtimeFlags } from '@lwc/features';
+                import features, { lwcRuntimeFlags } from '@lwc/features';
 
-                if (runtimeFlags.ENABLE_FEATURE_FALSE) {
+                if (lwcRuntimeFlags.ENABLE_FEATURE_FALSE) {
                     console.log('features.ENABLE_FEATURE_FALSE');
                 }
 
-                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
+                if (!lwcRuntimeFlags.ENABLE_FEATURE_FALSE) {
                     console.log('!features.ENABLE_FEATURE_FALSE');
                 }
             `,
@@ -106,7 +106,7 @@ pluginTester({
                 }
             `,
             output: `
-                import FEATURES, { runtimeFlags } from '@lwc/features';
+                import FEATURES, { lwcRuntimeFlags } from '@lwc/features';
 
                 if (isTrue(FEATURES.ENABLE_FEATURE_TRUE)) {
                     console.log('isTrue(ENABLE_FEATURE_TRUE)');
@@ -119,17 +119,17 @@ pluginTester({
                 console.log(feats.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
             `,
             output: `
-                import feats, { runtimeFlags } from '@lwc/features';
+                import feats, { lwcRuntimeFlags } from '@lwc/features';
                 console.log(feats.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
             `,
         },
-        'should throw an error if runtimeFlags are imported': {
-            error: 'Invalid import of "runtimeFlags" from "@lwc/features". Use the default export from "@lwc/features" instead of the "runtimeFlags" export when implementing your feature behind a flag.',
+        'should throw an error if lwcRuntimeFlags are imported': {
+            error: 'Invalid import of "lwcRuntimeFlags" from "@lwc/features". Use the default export from "@lwc/features" instead of the "lwcRuntimeFlags" export when implementing your feature behind a flag.',
             code: `
-                import { runtimeFlags } from '@lwc/features';
+                import { lwcRuntimeFlags } from '@lwc/features';
 
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_NULL');
+                if (lwcRuntimeFlags.ENABLE_FEATURE_NULL) {
+                    console.log('lwcRuntimeFlags.ENABLE_FEATURE_NULL');
                 }
             `,
         },
@@ -170,16 +170,16 @@ pluginTester({
                 }
             `,
             output: `
-                import features, { runtimeFlags } from '@lwc/features';
+                import features, { lwcRuntimeFlags } from '@lwc/features';
 
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                    if (runtimeFlags.ENABLE_FEATURE_TRUE) {
+                if (lwcRuntimeFlags.ENABLE_FEATURE_NULL) {
+                    if (lwcRuntimeFlags.ENABLE_FEATURE_TRUE) {
                         console.log('nested feature flags sounds like a vary bad idea');
                     }
                 }
 
-                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                if (lwcRuntimeFlags.ENABLE_FEATURE_TRUE) {
+                    if (lwcRuntimeFlags.ENABLE_FEATURE_NULL) {
                         console.log('nested feature flags sounds like a vary bad idea');
                     }
                 }
@@ -204,7 +204,7 @@ pluginTester({
                 }
             `,
             output: `
-                import featureFlag, { runtimeFlags } from '@lwc/features';
+                import featureFlag, { lwcRuntimeFlags } from '@lwc/features';
 
                 function awesome() {
                     const featureFlag = {
@@ -230,7 +230,7 @@ pluginTester({
                 }
             `,
             output: `
-                import featureFlags, { runtimeFlags } from '@lwc/features';
+                import featureFlags, { lwcRuntimeFlags } from '@lwc/features';
 
                 if (churroteria.ENABLE_FEATURE_TRUE) {
                     console.log('churroteria.ENABLE_FEATURE_TRUE');
@@ -246,7 +246,7 @@ pluginTester({
                 }
             `,
             output: `
-                import featureFlags, { runtimeFlags } from '@lwc/features';
+                import featureFlags, { lwcRuntimeFlags } from '@lwc/features';
 
                 if (featureFlags['ENABLE_FEATURE_TRUE']) {
                     console.log("featureFlags['ENABLE_FEATURE_TRUE']");

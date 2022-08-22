@@ -1,0 +1,476 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 292,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 281,
+                "end": 292
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 149,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 23,
+                        "start": 15,
+                        "end": 33
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 11,
+                        "start": 143,
+                        "end": 149
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "city"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 22,
+                            "start": 20,
+                            "end": 32
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "h2",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 24,
+                            "start": 42,
+                            "end": 57,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 13,
+                                "start": 42,
+                                "end": 46
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 19,
+                                "endLine": 3,
+                                "endColumn": 24,
+                                "start": 52,
+                                "end": 57
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "London",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "London"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 13,
+                                    "endLine": 3,
+                                    "endColumn": 19,
+                                    "start": 46,
+                                    "end": 52
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 81,
+                            "start": 66,
+                            "end": 138,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 12,
+                                "start": 66,
+                                "end": 69
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 77,
+                                "endLine": 4,
+                                "endColumn": 81,
+                                "start": 134,
+                                "end": 138
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "London is the capital of ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "London is the capital of "
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 12,
+                                    "endLine": 4,
+                                    "endColumn": 37,
+                                    "start": 69,
+                                    "end": 94
+                                }
+                            },
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 37,
+                                    "endLine": 4,
+                                    "endColumn": 77,
+                                    "start": 94,
+                                    "end": 134,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 37,
+                                        "endLine": 4,
+                                        "endColumn": 62,
+                                        "start": 94,
+                                        "end": 119
+                                    },
+                                    "endTag": {
+                                        "startLine": 4,
+                                        "startColumn": 70,
+                                        "endLine": 4,
+                                        "endColumn": 77,
+                                        "start": 127,
+                                        "end": 134
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "style",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "color:blue"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 43,
+                                            "endLine": 4,
+                                            "endColumn": 61,
+                                            "start": 100,
+                                            "end": 118
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "England.",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "England."
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 62,
+                                            "endLine": 4,
+                                            "endColumn": 70,
+                                            "start": 119,
+                                            "end": 127
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 7,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 11,
+                    "start": 155,
+                    "end": 280,
+                    "startTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 23,
+                        "start": 155,
+                        "end": 173
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 11,
+                        "start": 274,
+                        "end": 280
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "city"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 10,
+                            "endLine": 7,
+                            "endColumn": 22,
+                            "start": 160,
+                            "end": 172
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "h2",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 23,
+                            "start": 182,
+                            "end": 196,
+                            "startTag": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 13,
+                                "start": 182,
+                                "end": 186
+                            },
+                            "endTag": {
+                                "startLine": 8,
+                                "startColumn": 18,
+                                "endLine": 8,
+                                "endColumn": 23,
+                                "start": 191,
+                                "end": 196
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Paris",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Paris"
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 18,
+                                    "start": 186,
+                                    "end": 191
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 73,
+                            "start": 205,
+                            "end": 269,
+                            "startTag": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 12,
+                                "start": 205,
+                                "end": 208
+                            },
+                            "endTag": {
+                                "startLine": 9,
+                                "startColumn": 69,
+                                "endLine": 9,
+                                "endColumn": 73,
+                                "start": 265,
+                                "end": 269
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Paris is the capital of ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Paris is the capital of "
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 12,
+                                    "endLine": 9,
+                                    "endColumn": 36,
+                                    "start": 208,
+                                    "end": 232
+                                }
+                            },
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 36,
+                                    "endLine": 9,
+                                    "endColumn": 69,
+                                    "start": 232,
+                                    "end": 265,
+                                    "startTag": {
+                                        "startLine": 9,
+                                        "startColumn": 36,
+                                        "endLine": 9,
+                                        "endColumn": 55,
+                                        "start": 232,
+                                        "end": 251
+                                    },
+                                    "endTag": {
+                                        "startLine": 9,
+                                        "startColumn": 62,
+                                        "endLine": 9,
+                                        "endColumn": 69,
+                                        "start": 258,
+                                        "end": 265
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "class",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "bold"
+                                        },
+                                        "location": {
+                                            "startLine": 9,
+                                            "startColumn": 42,
+                                            "endLine": 9,
+                                            "endColumn": 54,
+                                            "start": 238,
+                                            "end": 250
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "France.",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "France."
+                                        },
+                                        "location": {
+                                            "startLine": 9,
+                                            "startColumn": 55,
+                                            "endLine": 9,
+                                            "endColumn": 62,
+                                            "start": 251,
+                                            "end": 258
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

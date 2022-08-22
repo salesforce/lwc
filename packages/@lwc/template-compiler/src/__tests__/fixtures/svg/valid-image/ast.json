@@ -1,0 +1,215 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 151,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 140,
+                "end": 151
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 139,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 35,
+                        "start": 15,
+                        "end": 45
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 133,
+                        "end": 139
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "width",
+                        "value": {
+                            "type": "Literal",
+                            "value": "200"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 21,
+                            "start": 20,
+                            "end": 31
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "height",
+                        "value": {
+                            "type": "Literal",
+                            "value": "200"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 22,
+                            "endLine": 2,
+                            "endColumn": 34,
+                            "start": 32,
+                            "end": 44
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "image",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 83,
+                            "start": 54,
+                            "end": 128,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 75,
+                                "start": 54,
+                                "end": 120
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 75,
+                                "endLine": 3,
+                                "endColumn": 83,
+                                "start": 120,
+                                "end": 128
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "xlink:href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "/foo.png"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 16,
+                                    "endLine": 3,
+                                    "endColumn": 37,
+                                    "start": 61,
+                                    "end": 82
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "x",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "1"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 38,
+                                    "endLine": 3,
+                                    "endColumn": 43,
+                                    "start": 83,
+                                    "end": 88
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "y",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "2"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 44,
+                                    "endLine": 3,
+                                    "endColumn": 49,
+                                    "start": 89,
+                                    "end": 94
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "height",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "200"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 50,
+                                    "endLine": 3,
+                                    "endColumn": 62,
+                                    "start": 95,
+                                    "end": 107
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "width",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "200"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 63,
+                                    "endLine": 3,
+                                    "endColumn": 74,
+                                    "start": 108,
+                                    "end": 119
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

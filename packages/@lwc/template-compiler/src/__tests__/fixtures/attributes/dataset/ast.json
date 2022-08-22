@@ -1,0 +1,134 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 91,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 80,
+                "end": 91
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 3,
+                    "endLine": 4,
+                    "endColumn": 13,
+                    "start": 13,
+                    "end": 79,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 3,
+                        "endLine": 2,
+                        "endColumn": 12,
+                        "start": 13,
+                        "end": 22
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 3,
+                        "endLine": 4,
+                        "endColumn": 13,
+                        "start": 69,
+                        "end": 79
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 5,
+                            "endLine": 3,
+                            "endColumn": 44,
+                            "start": 27,
+                            "end": 66,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 5,
+                                "endLine": 3,
+                                "endColumn": 40,
+                                "start": 27,
+                                "end": 62
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 40,
+                                "endLine": 3,
+                                "endColumn": 44,
+                                "start": 62,
+                                "end": 66
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-foo",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "1"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 8,
+                                    "endLine": 3,
+                                    "endColumn": 20,
+                                    "start": 30,
+                                    "end": 42
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "data-bar-baz",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "xyz"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 21,
+                                    "endLine": 3,
+                                    "endColumn": 39,
+                                    "start": 43,
+                                    "end": 61
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

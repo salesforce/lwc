@@ -1,0 +1,134 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 178,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 167,
+                "end": 178
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 83,
+                    "start": 15,
+                    "end": 93,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 73,
+                        "start": 15,
+                        "end": 83
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 73,
+                        "endLine": 2,
+                        "endColumn": 83,
+                        "start": 83,
+                        "end": 93
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "font-size: 12px; color: red; margin: 10px 5px 10px"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 14,
+                            "endLine": 2,
+                            "endColumn": 72,
+                            "start": 24,
+                            "end": 82
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 73,
+                    "start": 98,
+                    "end": 166,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 63,
+                        "start": 98,
+                        "end": 156
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 63,
+                        "endLine": 3,
+                        "endColumn": 73,
+                        "start": 156,
+                        "end": 166
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "--my-color: blue; color: var(--my-color)"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 14,
+                            "endLine": 3,
+                            "endColumn": 62,
+                            "start": 107,
+                            "end": 155
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
