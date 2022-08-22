@@ -15,9 +15,11 @@ import type { RendererAPI } from '@lwc/engine-core';
  * A factory function that produces a renderer.
  * Renderer encapsulates operations that are required to render an LWC component into the underlying
  * runtime environment. In the case of @lwc/enigne-dom, it is meant to be used in a DOM environment.
- * @param globalThis https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
  */
-export function rendererFactory(globalThis: any): Omit<RendererAPI, 'insertStylesheet'> {
+export function rendererFactory(): Omit<
+    RendererAPI,
+    'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'
+> {
     // Util functions
     function assertFail(msg: string): never {
         throw new Error(msg);
@@ -35,10 +37,6 @@ export function rendererFactory(globalThis: any): Omit<RendererAPI, 'insertStyle
     function isUndefined(obj: any): obj is undefined {
         return obj === undefined;
     }
-
-    // Note: These keys have to be kept in sync with @lwc/shared
-    const KEY__IS_NATIVE_SHADOW_ROOT_DEFINED = '$isNativeShadowRootDefined$';
-    const KEY__SHADOW_TOKEN = '$shadowToken$';
 
     let getCustomElement: any;
     let defineCustomElement: any;
@@ -102,12 +100,6 @@ export function rendererFactory(globalThis: any): Omit<RendererAPI, 'insertStyle
         };
         HTMLElementConstructor.prototype = HTMLElement.prototype;
     }
-
-    const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
-    const isSyntheticShadowDefined: boolean = Object.hasOwnProperty.call(
-        Element.prototype,
-        KEY__SHADOW_TOKEN
-    );
 
     function cloneNode(node: Node, deep: boolean): Node {
         return node.cloneNode(deep);
@@ -359,8 +351,6 @@ export function rendererFactory(globalThis: any): Omit<RendererAPI, 'insertStyle
     const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
     return {
-        isNativeShadowDefined,
-        isSyntheticShadowDefined,
         HTMLElementExported,
         insert,
         remove,
