@@ -32,6 +32,7 @@
 import { hasOwnProperty } from '@lwc/shared';
 
 // This mapping is based on https://github.com/wooorm/html-element-attributes/blob/270d8ce/index.js
+// TODO [#3019]: use the package directly instead of vendor'ing it
 const HTML_ELEMENT_ATTRIBUTE_MAP = {
     '*': [
         'accesskey',
