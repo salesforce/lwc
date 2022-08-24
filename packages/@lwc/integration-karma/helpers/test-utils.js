@@ -328,6 +328,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     var customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
+        toLogWarningDev: consoleDevMatcherFactory('warn'),
         toThrowErrorDev: errorMatcherFactory(directErrorListener),
         toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener),
     };
