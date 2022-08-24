@@ -213,6 +213,8 @@ jobs:
       - run_karma:
           force_native_shadow_mode: true
       - run_karma:
+          enable_native_custom_element_lifecycle: true
+      - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
       - retry_command:
