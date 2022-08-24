@@ -275,9 +275,6 @@ function mountCustomElement(
 
     if (vm) {
         allocateChildren(vnode, vm);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-        }
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
