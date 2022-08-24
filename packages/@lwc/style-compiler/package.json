@@ -16,8 +16,7 @@
     "types": "dist/types/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental",
-        "test": "jest"
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "files": [
         "dist/"

@@ -16,8 +16,7 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc && node ./scripts/update-compiler-version.js",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental",
-        "test": "jest"
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "files": [
         "dist/"

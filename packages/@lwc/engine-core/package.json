@@ -17,8 +17,7 @@
     "license": "MIT",
     "scripts": {
         "build": "rollup --config scripts/rollup.config.js",
-        "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen",
-        "test": "jest"
+        "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
     "files": [
         "dist/",

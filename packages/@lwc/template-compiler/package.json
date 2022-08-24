@@ -16,8 +16,7 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental",
-        "test": "jest"
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "devDependencies": {
         "@types/estree": "0.0.51",
