@@ -24,7 +24,7 @@ executors:
 # Custom commands definition
 commands:
   # Based on https://circleci.com/developer/orbs/orb/kimh/run-with-retry
-  retry_karma:
+  retry_command:
     description: Retry command multiple times until it succeeds
     parameters:
       command:
@@ -149,15 +149,18 @@ commands:
     parameters:
       disable_synthetic:
         type: boolean
+        default: false
       force_native_shadow_mode:
         type: boolean
+        default: false
       compat:
         type: boolean
+        default: false
       coverage:
         type: boolean
         default: true
     steps:
-      - retry_karma:
+      - retry_command:
           command_name: Run karma integration tests
           working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
@@ -211,23 +214,14 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run_karma:
-          disable_synthetic: false
-          compat: false
-          force_native_shadow_mode: false
+      - run_karma
       - run_karma:
           disable_synthetic: true
-          compat: false
-          force_native_shadow_mode: false
       - run_karma:
-          disable_synthetic: false
           compat: true
-          force_native_shadow_mode: false
       - run_karma:
-          disable_synthetic: false
-          compat: false
           force_native_shadow_mode: true
-      - retry_karma:
+      - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce
           working_directory: packages/@lwc/integration-karma
@@ -245,7 +239,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_karma:
+      - retry_command:
           command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/@lwc/integration-tests
@@ -258,7 +252,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_karma:
+      - retry_command:
           command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/@lwc/integration-tests
