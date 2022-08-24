@@ -93,13 +93,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - nx-v1-{{ checksum "yarn.lock" }}
+            - nx-v2-{{ checksum "yarn.lock" }}
 
   save_nx_cache:
     description: Save nx cache for future builds
     steps:
       - save_cache:
-          key: nx-v1-{{ checksum "yarn.lock" }}
+          key: nx-v2-{{ checksum "yarn.lock" }}
           paths:
             - '.nx-cache'
 
