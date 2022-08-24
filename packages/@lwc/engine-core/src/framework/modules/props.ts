@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined, assert } from '@lwc/shared';
+import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -48,12 +49,10 @@ export function patchProps(
             // SSR has its own custom validation.
             if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
                 if (!(key in elm!)) {
-                    assert.fail(
-                        `Unknown public property "${key}" of element <${
-                            elm!.tagName
-                        }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                    logWarn(
+                        `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
                             key
-                        )}".`
+                        )}", or the attribute does not exist in this browser or DOM implementation.`
                     );
                 }
             }
