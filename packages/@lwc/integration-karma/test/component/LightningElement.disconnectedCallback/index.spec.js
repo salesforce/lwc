@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { customElementConnectedErrorListener } from 'test-utils';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
@@ -148,12 +149,9 @@ it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
     document.body.appendChild(elm);
 
-    let error;
-    try {
+    const error = customElementConnectedErrorListener(() => {
         document.body.removeChild(elm);
-    } catch (e) {
-        error = e;
-    }
+    });
 
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in disconnected');

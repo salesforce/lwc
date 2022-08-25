@@ -14,6 +14,7 @@ import {
     toString,
     StringToLowerCase,
 } from '@lwc/shared';
+import features from '@lwc/features';
 import {
     createVM,
     connectRootElement,
@@ -45,29 +46,31 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-// Monkey patching Node methods to be able to detect the insertions and removal of root elements
-// created via createElement.
-const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
-assign(_Node.prototype, {
-    appendChild(newChild) {
-        const appendedNode = appendChild.call(this, newChild);
-        return callNodeSlot(appendedNode, ConnectingSlot);
-    },
-    insertBefore(newChild, referenceNode) {
-        const insertedNode = insertBefore.call(this, newChild, referenceNode);
-        return callNodeSlot(insertedNode, ConnectingSlot);
-    },
-    removeChild(oldChild) {
-        const removedNode = removeChild.call(this, oldChild);
-        return callNodeSlot(removedNode, DisconnectingSlot);
-    },
-    replaceChild(newChild, oldChild) {
-        const replacedNode = replaceChild.call(this, newChild, oldChild);
-        callNodeSlot(replacedNode, DisconnectingSlot);
-        callNodeSlot(newChild, ConnectingSlot);
-        return replacedNode;
-    },
-} as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
+if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    // Monkey patching Node methods to be able to detect the insertions and removal of root elements
+    // created via createElement.
+    const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
+    assign(_Node.prototype, {
+        appendChild(newChild) {
+            const appendedNode = appendChild.call(this, newChild);
+            return callNodeSlot(appendedNode, ConnectingSlot);
+        },
+        insertBefore(newChild, referenceNode) {
+            const insertedNode = insertBefore.call(this, newChild, referenceNode);
+            return callNodeSlot(insertedNode, ConnectingSlot);
+        },
+        removeChild(oldChild) {
+            const removedNode = removeChild.call(this, oldChild);
+            return callNodeSlot(removedNode, DisconnectingSlot);
+        },
+        replaceChild(newChild, oldChild) {
+            const replacedNode = replaceChild.call(this, newChild, oldChild);
+            callNodeSlot(replacedNode, DisconnectingSlot);
+            callNodeSlot(newChild, ConnectingSlot);
+            return replacedNode;
+        },
+    } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
+}
 
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
@@ -122,8 +125,10 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        ConnectingSlot.set(elm, connectRootElement);
-        DisconnectingSlot.set(elm, disconnectRootElement);
+        if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            ConnectingSlot.set(elm, connectRootElement);
+            DisconnectingSlot.set(elm, disconnectRootElement);
+        }
         wasComponentUpgraded = true;
     };
     const element = createCustomElement(tagName, upgradeCallback);

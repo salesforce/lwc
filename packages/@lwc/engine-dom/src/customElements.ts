@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isFunction, setPrototypeOf } from '@lwc/shared';
+import features from '@lwc/features';
+import { connectRootElement, disconnectRootElement } from '@lwc/engine-core';
 import { createScopedRegistry } from './patches/global-registry';
 
 export type UpgradeCallback = (elm: HTMLElement) => void;
@@ -15,7 +17,9 @@ export interface UpgradableCustomElementConstructor extends CustomElementConstru
 let HTMLElementConstructor;
 let getUpgradableElement: (tagName: string) => CustomElementConstructor;
 let getUserConstructor: (
-    upgradeCallback: UpgradeCallback
+    upgradeCallback: UpgradeCallback,
+    connectedCallback?: UpgradeCallback,
+    disconnectedCallback?: UpgradeCallback
 ) => UpgradableCustomElementConstructor | UpgradeCallback;
 
 function isCustomElementRegistryAvailable() {
@@ -61,12 +65,21 @@ if (isCustomElementRegistryAvailable()) {
         return Ctor;
     };
     getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-        return class UserElement extends HTMLElement {
+        class UserElement extends HTMLElement {
             constructor() {
                 super();
                 upgradeCallback(this);
             }
-        };
+        }
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            (UserElement.prototype as any).connectedCallback = function () {
+                connectRootElement(this);
+            };
+            (UserElement.prototype as any).disconnectedCallback = function () {
+                disconnectRootElement(this);
+            };
+        }
+        return UserElement;
     };
 } else {
     // no registry available here
@@ -101,9 +114,15 @@ if (isCustomElementRegistryAvailable()) {
 
 export function createCustomElement(
     tagName: string,
-    upgradeCallback: UpgradeCallback
+    upgradeCallback: UpgradeCallback,
+    connectedCallback?: UpgradeCallback,
+    disconnectedCallback?: UpgradeCallback
 ): HTMLElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
-    const UserConstructor = getUserConstructor(upgradeCallback);
+    const UserConstructor = getUserConstructor(
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
     return new UpgradableConstructor(UserConstructor);
 }

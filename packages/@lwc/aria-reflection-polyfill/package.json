@@ -1,0 +1,40 @@
+{
+    "name": "@lwc/aria-reflection-polyfill",
+    "version": "2.23.1",
+    "description": "ARIA element reflection polyfill for strings",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/aria-reflection-polyfill"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.js",
+    "license": "MIT",
+    "typings": "types/index.d.ts",
+    "scripts": {
+        "clean": "rm -rf dist/ types/",
+        "build": "rollup --config scripts/rollup.config.js",
+        "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
+    },
+    "files": [
+        "dist/",
+        "types/"
+    ],
+    "keywords": [
+        "lwc",
+        "aria",
+        "polyfill",
+        "reflection",
+        "aom"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@lwc/shared": "2.23.1"
+    }
+}

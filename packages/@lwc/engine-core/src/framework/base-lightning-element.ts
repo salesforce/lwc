@@ -32,7 +32,7 @@ import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, RenderMode, ShadowMode, ShadowSupportMode, VM } from './vm';
-import { componentValueMutated, componentValueObserved } from './mutation-tracker';
+import { componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
     patchShadowRootWithRestrictions,
@@ -42,6 +42,7 @@ import {
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
+import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 
 /**
@@ -112,11 +113,7 @@ function createBridgeToElementDescriptor(
                 );
             }
 
-            if (newValue !== vm.cmpProps[propName]) {
-                vm.cmpProps[propName] = newValue;
-
-                componentValueMutated(vm, propName);
-            }
+            updateComponentValue(vm, propName, newValue);
             return set.call(vm.elm, newValue);
         },
     };

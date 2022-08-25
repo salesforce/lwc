@@ -78,12 +78,11 @@ function setProperty(node: Node, key: string, value: any): void {
     if (process.env.NODE_ENV !== 'production') {
         if (node instanceof Element && !(key in node)) {
             // TODO [#1297]: Move this validation to the compiler
-            assert.fail(
-                `Unknown public property "${key}" of element <${
-                    node.tagName
-                }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+            // eslint-disable-next-line no-console
+            console.warn(
+                `Unknown public property "${key}" of element <${node.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
                     key
-                )}".`
+                )}", or the attribute does not exist in this browser or DOM implementation.`
             );
         }
     }

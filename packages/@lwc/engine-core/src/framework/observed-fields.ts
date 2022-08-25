@@ -6,7 +6,8 @@
  */
 import { LightningElement } from './base-lightning-element';
 import { getAssociatedVM } from './vm';
-import { componentValueMutated, componentValueObserved } from './mutation-tracker';
+import { componentValueObserved } from './mutation-tracker';
+import { updateComponentValue } from './update-component-value';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
@@ -18,11 +19,7 @@ export function createObservedFieldPropertyDescriptor(key: string): PropertyDesc
         set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
 
-            if (newValue !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = newValue;
-
-                componentValueMutated(vm, key);
-            }
+            updateComponentValue(vm, key, newValue);
         },
         enumerable: true,
         configurable: true,
