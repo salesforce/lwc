@@ -189,7 +189,7 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInRender });
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowErrorDev(Error, /render\(\) method has side effects on the state of/);
+        }).toThrowConnectedError(Error, /render\(\) method has side effects on the state of/);
     });
 
     it('should throw if setting tabIndex during construction', function () {
