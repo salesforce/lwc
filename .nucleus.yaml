@@ -74,7 +74,7 @@ steps:
       registry-url: https://registry.npmjs.org
   node-save-dep-cache: &node-save-dep-cache
     params:
-      key: "dep-cache-v3-{{ env.NUCLEUS_DEP_CACHE_VERSION }}-{{ project.owner }}-{{ project.repo }}-{nodeLockFileChecksum}"
+      key: "dep-cache-v4-{{ env.NUCLEUS_DEP_CACHE_VERSION }}-{{ project.owner }}-{{ project.repo }}-{nodeLockFileChecksum}"
       paths:
         # it's necessary to redeclare **/node_modules because this overrides the default behavior
         - '**/node_modules'
