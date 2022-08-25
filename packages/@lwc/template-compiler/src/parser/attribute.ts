@@ -180,16 +180,17 @@ export function isValidTabIndexAttributeValue(value: any): boolean {
     return value === '0' || value === '-1';
 }
 
-export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
-    return isAriaAttribute(attrName) || isFmkAttribute(attrName) || isDataAttribute(attrName);
+export function isAriaOrDataOrFrameworkAttribute(attrName: string): boolean {
+    return isAriaAttribute(attrName) || isFrameworkAttribute(attrName) || isDataAttribute(attrName);
 }
 
 function isDataAttribute(attrName: string): boolean {
     return !!attrName.match(DATA_RE);
 }
 
-function isFmkAttribute(attrName: string): boolean {
-    return attrName === 'key' || attrName === 'slot';
+function isFrameworkAttribute(attrName: string): boolean {
+    // 'key' is currently the only LWC framework-specific attribute that doesn't start with "lwc:"
+    return attrName === 'key';
 }
 
 export function isAttribute(element: BaseElement, attrName: string): boolean {
@@ -217,7 +218,7 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
     if (
         isGlobalHtmlAttribute(attrName) ||
-        isAriaOrDataOrFmkAttribute(attrName) ||
+        isAriaOrDataOrFrameworkAttribute(attrName) ||
         isTemplateDirective(attrName) ||
         SUPPORTED_SVG_TAGS.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
