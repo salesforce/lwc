@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, setPrototypeOf } from '@lwc/shared';
+import { setPrototypeOf } from '@lwc/shared';
 import features from '@lwc/features';
 import { connectRootElement, disconnectRootElement } from '@lwc/engine-core';
 import { createPivotConstructor } from './patches/global-registry';
@@ -15,11 +15,7 @@ export interface UpgradableCustomElementConstructor extends CustomElementConstru
     new (upgradeCallback: UpgradeCallback): HTMLElement;
 }
 
-let HTMLElementConstructor;
-let getUpgradableElement: (tagName: string) => CustomElementConstructor;
-let getUserConstructor: (
-    upgradeCallback: UpgradeCallback
-) => UpgradableCustomElementConstructor | UpgradeCallback;
+export let createCustomElement: (tagName: string, upgradeCallback: UpgradeCallback) => HTMLElement;
 
 if (hasCustomElements) {
     // It's important to cache window.HTMLElement here. Otherwise, someone else could overwrite window.HTMLElement (e.g.
@@ -27,14 +23,8 @@ if (hasCustomElements) {
     // because the HTMLElement prototypes are mixed up.
     const { HTMLElement } = window;
 
-    HTMLElementConstructor = HTMLElement;
-
-    getUpgradableElement = (tagName: string) => {
+    const createUserConstructor = (upgradeCallback: UpgradeCallback) => {
         // TODO [#2972]: this class should expose observedAttributes as necessary
-        class LWCUpgradableElement extends HTMLElement {}
-        return createPivotConstructor(tagName, LWCUpgradableElement);
-    };
-    getUserConstructor = (upgradeCallback: UpgradeCallback) => {
         class UserElement extends HTMLElement {
             constructor() {
                 super();
@@ -51,11 +41,16 @@ if (hasCustomElements) {
         }
         return UserElement;
     };
+    createCustomElement = (tagName: string, upgradeCallback: UpgradeCallback) => {
+        const UserConstructor = createUserConstructor(upgradeCallback);
+        const UpgradableConstructor = createPivotConstructor(tagName, UserConstructor);
+        return new UpgradableConstructor(UserConstructor);
+    };
 } else {
     // no registry available here
     const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
 
-    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
+    const HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
         if (!(this instanceof HTMLElement)) {
             throw new TypeError(`Invalid Invocation`);
         }
@@ -70,23 +65,9 @@ if (hasCustomElements) {
     };
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 
-    getUpgradableElement = (tagName: string): UpgradableCustomElementConstructor => {
-        return function (upgradeCallback: UpgradeCallback) {
-            const elm = document.createElement(tagName);
-            if (isFunction(upgradeCallback)) {
-                upgradeCallback(elm); // nothing to do with the result for now
-            }
-            return elm;
-        } as unknown as UpgradableCustomElementConstructor;
+    createCustomElement = (tagName: string, upgradeCallback: UpgradeCallback) => {
+        const elm = document.createElement(tagName);
+        upgradeCallback(elm); // nothing to do with the result for now
+        return elm;
     };
-    getUserConstructor = (upgradeCallback: UpgradeCallback) => upgradeCallback;
-}
-
-export function createCustomElement(
-    tagName: string,
-    upgradeCallback: UpgradeCallback
-): HTMLElement {
-    const UpgradableConstructor = getUpgradableElement(tagName);
-    const UserConstructor = getUserConstructor(upgradeCallback);
-    return new UpgradableConstructor(UserConstructor);
 }

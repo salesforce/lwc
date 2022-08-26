@@ -428,24 +428,26 @@ if (hasCustomElements) {
 
     // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
-    createPivotConstructor = (tagName: string, constructor: CustomElementConstructor) => {
+    createPivotConstructor = (tagName: string, UserCtor: CustomElementConstructor) => {
         tagName = tagName.toLowerCase();
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
-            const definition = getOrCreateDefinitionForConstructor(constructor);
+            const definition = getOrCreateDefinitionForConstructor(UserCtor);
             PivotCtor = createPivotingClass(tagName, definition);
             // Register a pivoting class as a global custom element
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
             definition.PivotCtor = PivotCtor;
             // Only cache after nativeDefine has been called, because if it throws an error
             // (e.g. for an invalid tag name), then we don't want to cache anything.
-            definitionForConstructor.set(constructor, definition);
+            definitionForConstructor.set(UserCtor, definition);
             pivotCtorByTag.set(tagName, PivotCtor);
         }
         return PivotCtor;
     };
 } else {
     createPivotConstructor = () => {
+        // This code should never be reached, because we don't use the pivot registry if
+        // custom elements are unavailable.
         throw new Error('Custom elements are not supported in this environment.');
     };
 }
