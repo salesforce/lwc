@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setPrototypeOf, isUndefined, defineProperties, isObject, isFunction } from '@lwc/shared';
+import {
+    setPrototypeOf,
+    isUndefined,
+    defineProperties,
+    isObject,
+    isFunction,
+    StringToLowerCase,
+} from '@lwc/shared';
 import { hasCustomElements } from '../hasCustomElements';
 
 const { HTMLElement: NativeHTMLElement } = window;
@@ -65,7 +72,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
             // definition, we use that one, otherwise fallback to the global
             // internal registry.
             super();
-            const definition = UserCtor
+            const definition = !isUndefined(UserCtor)
                 ? getOrCreateDefinitionForConstructor(UserCtor)
                 : globalDefinitionsByTag.get(tagName);
             if (!isUndefined(definition)) {
@@ -431,7 +438,7 @@ if (hasCustomElements) {
     // whose observedAttributes match the UserCtor. So if the UserCtor is always the same, we can
     // rely on the native observedAttributes behavior rather than patching.
     createPivotConstructor = (tagName: string, UserCtor: CustomElementConstructor) => {
-        tagName = tagName.toLowerCase();
+        tagName = StringToLowerCase.call(tagName);
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             const definition = getOrCreateDefinitionForConstructor(UserCtor);
