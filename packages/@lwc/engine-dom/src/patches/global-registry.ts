@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { setPrototypeOf, isUndefined, defineProperties, isObject, isFunction } from '@lwc/shared';
+import { hasCustomElements } from '../hasCustomElements';
 
 const { HTMLElement: NativeHTMLElement } = window;
 const {
@@ -287,7 +288,12 @@ function getOrCreateDefinitionForConstructor(constructor: CustomElementConstruct
     return createDefinitionRecord(constructor);
 }
 
-export function createScopedRegistry() {
+export let createPivotConstructor: (
+    tagName: string,
+    constructor: CustomElementConstructor
+) => CustomElementConstructor;
+
+if (hasCustomElements) {
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
 
@@ -390,7 +396,8 @@ export function createScopedRegistry() {
     };
 
     // This constructor is invoked when we call `new instanceDefinition.UserCtor()`
-    function HTMLElement(this: HTMLElement) {
+    // @ts-ignore
+    window.HTMLElement = function HTMLElement(this: HTMLElement) {
         // Upgrading case: the pivoting class constructor was run by the browser's
         // native custom elements and we're in the process of running the
         // "constructor-call trick" on the natively constructed instance, so just
@@ -416,17 +423,12 @@ export function createScopedRegistry() {
         // an element via new Ctor while Ctor is a registered global constructor.
         const { PivotCtor, UserCtor } = definition;
         return new PivotCtor(UserCtor);
-    }
+    };
     HTMLElement.prototype = NativeHTMLElement.prototype;
-    // @ts-ignore
-    window.HTMLElement = HTMLElement;
 
     // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
-    return function defineScopedElement(
-        tagName: string,
-        constructor: CustomElementConstructor
-    ): CustomElementConstructor {
+    createPivotConstructor = (tagName: string, constructor: CustomElementConstructor) => {
         tagName = tagName.toLowerCase();
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
@@ -441,5 +443,9 @@ export function createScopedRegistry() {
             pivotCtorByTag.set(tagName, PivotCtor);
         }
         return PivotCtor;
+    };
+} else {
+    createPivotConstructor = () => {
+        throw new Error('Custom elements are not supported in this environment.');
     };
 }
