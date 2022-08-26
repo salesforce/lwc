@@ -27,6 +27,7 @@ import {
     isKeyDirective,
     isDomDirective,
     isElement,
+    isElseifBlock,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -43,6 +44,7 @@ import {
     Comment,
     ForOf,
     BaseElement,
+    ElseifBlock,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -155,15 +157,14 @@ function transform(codeGen: CodeGen): t.Expression {
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
-                const children = transformIfBlock(child);
-                Array.isArray(children) ? res.push(...children) : res.push(children);
-            } else {
-                // Todo: create validation for case when there's invalid AST nodes
+                // IfBlock should always appear as the parent in the if-elseif-else chain which means
+                // ElseIfBlock and ElseBlock should never appear in the children array
+                res.push(transformConditionalParentBlock(child));
             }
         }
 
         if (shouldFlatten(codeGen, children)) {
-            if (children.length === 1 && !containsDynamicChildren(children)) {
+            if (children.length === 1 && !containsDynamicChildren(parent)) {
                 return res[0];
             } else {
                 return codeGen.genFlatten([t.arrayExpression(res)]);
@@ -202,39 +203,23 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformIfBlock(ifBlockNode: IfBlock): t.Expression | t.Expression[] {
-        const expression = transformChildren(ifBlockNode);
-        let res: t.Expression | t.Expression[];
+    function transformConditionalParentBlock(
+        conditionalParentBlock: IfBlock | ElseifBlock
+    ): t.Expression {
+        const childrenExpression = transformChildren(conditionalParentBlock);
+        let elseExpression: t.Expression = t.arrayExpression([]);
 
-        if (t.isArrayExpression(expression)) {
-            // Bind the expression once for all the template children
-            const testExpression = codeGen.bindExpression(ifBlockNode.condition);
-
-            res = t.arrayExpression(
-                expression.elements.map((element) =>
-                    element !== null
-                        ? applyInlineIfBlock(ifBlockNode, element as t.Expression, testExpression)
-                        : null
-                )
-            );
-        } else {
-            throw new Error('TODO!');
-            // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIfBlock(
-                ifBlockNode,
-                expression,
-                undefined as any,
-                t.arrayExpression([])
-            );
+        if (conditionalParentBlock.else) {
+            elseExpression = isElseifBlock(conditionalParentBlock.else)
+                ? transformConditionalParentBlock(conditionalParentBlock.else)
+                : transformChildren(conditionalParentBlock.else);
         }
 
-        if (t.isArrayExpression(res)) {
-            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-            // typecast it to t.Expression[]
-            res = res.elements as t.Expression[];
-        }
-
-        return res;
+        return t.conditionalExpression(
+            codeGen.bindExpression(conditionalParentBlock.condition),
+            childrenExpression,
+            elseExpression
+        );
     }
 
     function applyInlineIf(
@@ -265,19 +250,6 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
-    }
-
-    function applyInlineIfBlock(
-        ifNode: IfBlock,
-        node: t.Expression,
-        testExpression: t.Expression,
-        falseValue?: t.Expression
-    ): t.Expression {
-        if (!testExpression) {
-            testExpression = codeGen.bindExpression(ifNode.condition);
-        }
-
-        return t.conditionalExpression(testExpression, node, falseValue ?? t.literal(null));
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {

@@ -1,0 +1,451 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 21,
+            "endColumn": 12,
+            "start": 0,
+            "end": 540,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 21,
+                "startColumn": 1,
+                "endLine": 21,
+                "endColumn": 12,
+                "start": 529,
+                "end": 540
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 10,
+                    "name": "condition",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 15,
+                        "endLine": 2,
+                        "endColumn": 33,
+                        "start": 25,
+                        "end": 43
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 16,
+                    "start": 15,
+                    "end": 85
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 15,
+                    "endLine": 2,
+                    "endColumn": 33,
+                    "start": 25,
+                    "end": 43
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Conditional Text",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Conditional Text"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 34,
+                            "endLine": 4,
+                            "endColumn": 5,
+                            "start": 44,
+                            "end": 74
+                        }
+                    }
+                ],
+                "else": {
+                    "type": "ElseifBlock",
+                    "condition": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 13,
+                        "name": "altCondition",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 15,
+                            "endLine": 5,
+                            "endColumn": 40,
+                            "start": 100,
+                            "end": 125
+                        }
+                    },
+                    "location": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 16,
+                        "start": 90,
+                        "end": 217
+                    },
+                    "directiveLocation": {
+                        "startLine": 5,
+                        "startColumn": 15,
+                        "endLine": 5,
+                        "endColumn": 40,
+                        "start": 100,
+                        "end": 125
+                    },
+                    "children": [
+                        {
+                            "type": "Element",
+                            "name": "div",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 15,
+                                "start": 135,
+                                "end": 201,
+                                "startTag": {
+                                    "startLine": 6,
+                                    "startColumn": 9,
+                                    "endLine": 6,
+                                    "endColumn": 14,
+                                    "start": 135,
+                                    "end": 140
+                                },
+                                "endTag": {
+                                    "startLine": 8,
+                                    "startColumn": 9,
+                                    "endLine": 8,
+                                    "endColumn": 15,
+                                    "start": 195,
+                                    "end": 201
+                                }
+                            },
+                            "attributes": [],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": [
+                                {
+                                    "type": "Slot",
+                                    "name": "slot",
+                                    "namespace": "http://www.w3.org/1999/xhtml",
+                                    "slotName": "outside-slot",
+                                    "location": {
+                                        "startLine": 7,
+                                        "startColumn": 13,
+                                        "endLine": 7,
+                                        "endColumn": 46,
+                                        "start": 153,
+                                        "end": 186,
+                                        "startTag": {
+                                            "startLine": 7,
+                                            "startColumn": 13,
+                                            "endLine": 7,
+                                            "endColumn": 39,
+                                            "start": 153,
+                                            "end": 179
+                                        },
+                                        "endTag": {
+                                            "startLine": 7,
+                                            "startColumn": 39,
+                                            "endLine": 7,
+                                            "endColumn": 46,
+                                            "start": 179,
+                                            "end": 186
+                                        }
+                                    },
+                                    "attributes": [
+                                        {
+                                            "type": "Attribute",
+                                            "name": "name",
+                                            "value": {
+                                                "type": "Literal",
+                                                "value": "outside-slot"
+                                            },
+                                            "location": {
+                                                "startLine": 7,
+                                                "startColumn": 19,
+                                                "endLine": 7,
+                                                "endColumn": 38,
+                                                "start": 159,
+                                                "end": 178
+                                            }
+                                        }
+                                    ],
+                                    "properties": [],
+                                    "directives": [],
+                                    "listeners": [],
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ],
+                    "else": {
+                        "type": "ElseBlock",
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 5,
+                            "endLine": 12,
+                            "endColumn": 16,
+                            "start": 222,
+                            "end": 299
+                        },
+                        "directiveLocation": {
+                            "startLine": 10,
+                            "startColumn": 15,
+                            "endLine": 10,
+                            "endColumn": 23,
+                            "start": 232,
+                            "end": 240
+                        },
+                        "children": [
+                            {
+                                "type": "Slot",
+                                "name": "slot",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "slotName": "outside-slot",
+                                "location": {
+                                    "startLine": 11,
+                                    "startColumn": 9,
+                                    "endLine": 11,
+                                    "endColumn": 42,
+                                    "start": 250,
+                                    "end": 283,
+                                    "startTag": {
+                                        "startLine": 11,
+                                        "startColumn": 9,
+                                        "endLine": 11,
+                                        "endColumn": 35,
+                                        "start": 250,
+                                        "end": 276
+                                    },
+                                    "endTag": {
+                                        "startLine": 11,
+                                        "startColumn": 35,
+                                        "endLine": 11,
+                                        "endColumn": 42,
+                                        "start": 276,
+                                        "end": 283
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "outside-slot"
+                                        },
+                                        "location": {
+                                            "startLine": 11,
+                                            "startColumn": 15,
+                                            "endLine": 11,
+                                            "endColumn": 34,
+                                            "start": 256,
+                                            "end": 275
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 17,
+                    "name": "anotherCondition",
+                    "location": {
+                        "startLine": 13,
+                        "startColumn": 15,
+                        "endLine": 13,
+                        "endColumn": 40,
+                        "start": 314,
+                        "end": 339
+                    }
+                },
+                "location": {
+                    "startLine": 13,
+                    "startColumn": 5,
+                    "endLine": 15,
+                    "endColumn": 16,
+                    "start": 304,
+                    "end": 389
+                },
+                "directiveLocation": {
+                    "startLine": 13,
+                    "startColumn": 15,
+                    "endLine": 13,
+                    "endColumn": 40,
+                    "start": 314,
+                    "end": 339
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Another Conditional Text",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Another Conditional Text"
+                        },
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 41,
+                            "endLine": 15,
+                            "endColumn": 5,
+                            "start": 340,
+                            "end": 378
+                        }
+                    }
+                ],
+                "else": {
+                    "type": "ElseifBlock",
+                    "condition": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 20,
+                        "name": "anotherAltCondition",
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 15,
+                            "endLine": 16,
+                            "endColumn": 47,
+                            "start": 404,
+                            "end": 436
+                        }
+                    },
+                    "location": {
+                        "startLine": 16,
+                        "startColumn": 5,
+                        "endLine": 20,
+                        "endColumn": 16,
+                        "start": 394,
+                        "end": 528
+                    },
+                    "directiveLocation": {
+                        "startLine": 16,
+                        "startColumn": 15,
+                        "endLine": 16,
+                        "endColumn": 47,
+                        "start": 404,
+                        "end": 436
+                    },
+                    "children": [
+                        {
+                            "type": "Element",
+                            "name": "div",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 17,
+                                "startColumn": 9,
+                                "endLine": 19,
+                                "endColumn": 15,
+                                "start": 446,
+                                "end": 512,
+                                "startTag": {
+                                    "startLine": 17,
+                                    "startColumn": 9,
+                                    "endLine": 17,
+                                    "endColumn": 14,
+                                    "start": 446,
+                                    "end": 451
+                                },
+                                "endTag": {
+                                    "startLine": 19,
+                                    "startColumn": 9,
+                                    "endLine": 19,
+                                    "endColumn": 15,
+                                    "start": 506,
+                                    "end": 512
+                                }
+                            },
+                            "attributes": [],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": [
+                                {
+                                    "type": "Slot",
+                                    "name": "slot",
+                                    "namespace": "http://www.w3.org/1999/xhtml",
+                                    "slotName": "outside-slot",
+                                    "location": {
+                                        "startLine": 18,
+                                        "startColumn": 13,
+                                        "endLine": 18,
+                                        "endColumn": 46,
+                                        "start": 464,
+                                        "end": 497,
+                                        "startTag": {
+                                            "startLine": 18,
+                                            "startColumn": 13,
+                                            "endLine": 18,
+                                            "endColumn": 39,
+                                            "start": 464,
+                                            "end": 490
+                                        },
+                                        "endTag": {
+                                            "startLine": 18,
+                                            "startColumn": 39,
+                                            "endLine": 18,
+                                            "endColumn": 46,
+                                            "start": 490,
+                                            "end": 497
+                                        }
+                                    },
+                                    "attributes": [
+                                        {
+                                            "type": "Attribute",
+                                            "name": "name",
+                                            "value": {
+                                                "type": "Literal",
+                                                "value": "outside-slot"
+                                            },
+                                            "location": {
+                                                "startLine": 18,
+                                                "startColumn": 19,
+                                                "endLine": 18,
+                                                "endColumn": 38,
+                                                "start": 470,
+                                                "end": 489
+                                            }
+                                        }
+                                    ],
+                                    "properties": [],
+                                    "directives": [],
+                                    "listeners": [],
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

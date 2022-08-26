@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1155,
+            "message": "LWC1155: lwc:else directive cannot have a value",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 74,
+                "length": 52
+            }
+        }
+    ]
+}
