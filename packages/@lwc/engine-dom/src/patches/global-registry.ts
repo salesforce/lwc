@@ -426,8 +426,10 @@ if (hasCustomElements) {
     };
     HTMLElement.prototype = NativeHTMLElement.prototype;
 
-    // This method patches the DOM and returns a helper function for LWC to register names and associate
-    // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
+    // This returns a PivotCtor, ready to instantiate via `new PivotCtor(UserCtor)`.
+    // The point of passing in a UserCtor here is that we can optimistically define a custom element
+    // whose observedAttributes match the UserCtor. So if the UserCtor is always the same, we can
+    // rely on the native observedAttributes behavior rather than patching.
     createPivotConstructor = (tagName: string, UserCtor: CustomElementConstructor) => {
         tagName = tagName.toLowerCase();
         let PivotCtor = pivotCtorByTag.get(tagName);
