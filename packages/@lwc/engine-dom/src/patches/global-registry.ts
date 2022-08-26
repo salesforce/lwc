@@ -290,7 +290,7 @@ function getOrCreateDefinitionForConstructor(constructor: CustomElementConstruct
 
 export let createPivotConstructor: (
     tagName: string,
-    constructor: CustomElementConstructor
+    UserCtor: CustomElementConstructor
 ) => CustomElementConstructor;
 
 if (hasCustomElements) {
