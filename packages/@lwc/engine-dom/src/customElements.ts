@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isFunction, setPrototypeOf } from '@lwc/shared';
+import { isFunction, setPrototypeOf } from '@lwc/shared';
 import features from '@lwc/features';
 import { connectRootElement, disconnectRootElement } from '@lwc/engine-core';
 import { createPivotConstructor } from './patches/global-registry';
@@ -18,9 +18,7 @@ export interface UpgradableCustomElementConstructor extends CustomElementConstru
 let HTMLElementConstructor;
 let getUpgradableElement: (tagName: string) => CustomElementConstructor;
 let getUserConstructor: (
-    upgradeCallback: UpgradeCallback,
-    connectedCallback?: UpgradeCallback,
-    disconnectedCallback?: UpgradeCallback
+    upgradeCallback: UpgradeCallback
 ) => UpgradableCustomElementConstructor | UpgradeCallback;
 
 if (hasCustomElements) {
@@ -30,16 +28,11 @@ if (hasCustomElements) {
     const { HTMLElement } = window;
 
     HTMLElementConstructor = HTMLElement;
-    const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
 
     getUpgradableElement = (tagName: string) => {
-        let Ctor = cachedConstructor[tagName];
-        if (!Ctor) {
-            // TODO [#2972]: this class should expose observedAttributes as necessary
-            class LWCUpgradableElement extends HTMLElement {}
-            Ctor = createPivotConstructor(tagName, LWCUpgradableElement);
-        }
-        return Ctor;
+        // TODO [#2972]: this class should expose observedAttributes as necessary
+        class LWCUpgradableElement extends HTMLElement {}
+        return createPivotConstructor(tagName, LWCUpgradableElement);
     };
     getUserConstructor = (upgradeCallback: UpgradeCallback) => {
         class UserElement extends HTMLElement {
@@ -91,15 +84,9 @@ if (hasCustomElements) {
 
 export function createCustomElement(
     tagName: string,
-    upgradeCallback: UpgradeCallback,
-    connectedCallback?: UpgradeCallback,
-    disconnectedCallback?: UpgradeCallback
+    upgradeCallback: UpgradeCallback
 ): HTMLElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
-    const UserConstructor = getUserConstructor(
-        upgradeCallback,
-        connectedCallback,
-        disconnectedCallback
-    );
+    const UserConstructor = getUserConstructor(upgradeCallback);
     return new UpgradableConstructor(UserConstructor);
 }
