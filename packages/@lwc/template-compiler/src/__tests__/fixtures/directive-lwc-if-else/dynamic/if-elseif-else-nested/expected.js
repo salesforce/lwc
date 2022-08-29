@@ -24,27 +24,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     dc: api_dynamic_component,
-    f: api_flatten,
   } = $api;
-  return api_flatten([
-    $cmp.outer.if
-      ? [api_static_fragment($fragment1(), 1)]
-      : $cmp.outer.elseif1
-      ? [api_element("h1", stc0, [api_text("outer elseif")])]
-      : $cmp.outer.elseif2
-      ? api_flatten([
-          $cmp.inner.if
-            ? [api_element("h1", stc1, [api_text("inner if")])]
-            : $cmp.inner.elseif
-            ? [api_element("h1", stc2, [api_text("inner elseif")])]
-            : $cmp.inner.elseif2
-            ? api_flatten([
-                api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc3),
-              ])
-            : [api_element("h1", stc4, [api_text("inner else")])],
-        ])
-      : [api_element("h1", stc5, [api_text("outer else")])],
-  ]);
+  return $cmp.outer.if
+    ? [api_static_fragment($fragment1(), 1)]
+    : $cmp.outer.elseif1
+    ? [api_element("h1", stc0, [api_text("outer elseif")])]
+    : $cmp.outer.elseif2
+    ? $cmp.inner.if
+      ? [api_element("h1", stc1, [api_text("inner if")])]
+      : $cmp.inner.elseif
+      ? [api_element("h1", stc2, [api_text("inner elseif")])]
+      : $cmp.inner.elseif2
+      ? [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc3)]
+      : [api_element("h1", stc4, [api_text("inner else")])]
+    : [api_element("h1", stc5, [api_text("outer else")])];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
