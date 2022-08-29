@@ -6,7 +6,7 @@
  */
 
 // Polyfills ---------------------------------------------------------------------------------------
-import './polyfills/aria-properties/main';
+import '@lwc/aria-reflection-polyfill';
 
 // Tests -------------------------------------------------------------------------------------------
 import './testFeatureFlag.ts';

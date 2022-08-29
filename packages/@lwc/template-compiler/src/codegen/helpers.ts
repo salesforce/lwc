@@ -20,7 +20,6 @@ import {
     isForBlock,
     isBaseElement,
     isIf,
-    isDynamicDirective,
     isElement,
     isText,
     isComment,
@@ -63,20 +62,12 @@ export function objectToAST(
     );
 }
 
-function isDynamic(element: BaseElement): boolean {
-    return element.directives.some(isDynamicDirective);
-}
-
 export function containsDynamicChildren(parent: ParentNode): boolean {
     const hasDynamicChildren = parent.children.some((child) => {
         // The child in the children array will only ever contain an IfBlock.
         // ElseIfBlock and ElseBlock are chained together starting from the IfBlock.
         if (isForBlock(child) || isIf(child) || isIfBlock(child)) {
             return containsDynamicChildren(child);
-        }
-
-        if (isBaseElement(child)) {
-            return isDynamic(child);
         }
 
         return false;
@@ -105,8 +96,6 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
             isForBlock(child) ||
             // IfBlock, ElseIfBlock, and Else children will always be an array
             isIfBlock(child) ||
-            // Dynamic children
-            (isBaseElement(child) && isDynamic(child)) ||
             // light DOM slots
             (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.

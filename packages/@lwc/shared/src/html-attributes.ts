@@ -49,24 +49,36 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
     );
 }
 
+// This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 const GLOBAL_ATTRIBUTE = new Set([
-    'role',
     'accesskey',
+    'autocapitalize',
+    'autofocus',
     'class',
     'contenteditable',
     'contextmenu',
     'dir',
     'draggable',
-    'dropzone',
+    'enterkeyhint',
+    'exportparts',
     'hidden',
     'id',
+    'inputmode',
+    'is',
+    'itemid',
     'itemprop',
+    'itemref',
+    'itemscope',
+    'itemtype',
     'lang',
+    'nonce',
+    'part',
     'slot',
     'spellcheck',
     'style',
     'tabindex',
     'title',
+    'translate',
 ]);
 
 export function isGlobalHtmlAttribute(attrName: string): boolean {

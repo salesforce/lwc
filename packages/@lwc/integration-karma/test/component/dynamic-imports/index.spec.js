@@ -1,8 +1,14 @@
 import { createElement } from 'lwc';
+
 import Container from 'x/dynamic';
 import DynamicCtor from 'x/ctor';
 import AlterCtor from 'x/alter';
-import { registerForLoad, clearRegister } from 'test-utils';
+
+import DynamicSlotted from 'x/dynamicSlotted';
+import ContainerFoo from 'x/containerFoo';
+import ContainerBar from 'x/containerBar';
+
+import { registerForLoad, clearRegister, spyConsole } from 'test-utils';
 
 beforeEach(() => {
     clearRegister();
@@ -95,6 +101,54 @@ it('should not cache DOM elements', () => {
                 const secondCtorElm = elm.shadowRoot.querySelector('x-ctor');
                 expect(secondCtorElm).not.toBe(childElm);
             });
+        });
+    });
+});
+
+describe('slotted content', () => {
+    let consoleSpy;
+    beforeEach(() => {
+        consoleSpy = spyConsole();
+    });
+    afterEach(() => {
+        consoleSpy.reset();
+    });
+
+    it('reallocate slotted content after changing constructor', () => {
+        const elm = createElement('x-dynamic-slotted', { is: DynamicSlotted });
+        elm.ctor = ContainerFoo;
+
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot).toBeDefined();
+        expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBeDefined();
+
+        if (process.env.NATIVE_SHADOW) {
+            expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
+        } else {
+            expect(consoleSpy.calls.error[0][0].message).toContain(
+                'Ignoring unknown provided slot name "bar"'
+            );
+        }
+
+        // Swap construstor and check if nodes have been reallocated.
+        elm.ctor = ContainerBar;
+
+        return Promise.resolve().then(() => {
+            expect(
+                elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot
+            ).toBeDefined();
+            expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
+
+            if (process.env.NATIVE_SHADOW) {
+                expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
+                    null
+                );
+            } else {
+                expect(consoleSpy.calls.error[1][0].message).toContain(
+                    'Ignoring unknown provided slot name "foo"'
+                );
+            }
         });
     });
 });

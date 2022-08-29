@@ -6,7 +6,7 @@
  */
 const defaultFeatureFlags = require('../../').default;
 
-const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
+const RUNTIME_FLAGS_IDENTIFIER = 'lwcRuntimeFlags';
 const FEATURES_PACKAGE_NAME = '@lwc/features';
 
 function validate(name, value) {

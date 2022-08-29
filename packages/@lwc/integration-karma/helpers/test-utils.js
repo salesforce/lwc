@@ -192,13 +192,14 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
-    var customMatchers = {
-        toLogErrorDev: consoleDevMatcherFactory('error'),
-        toThrowErrorDev: function toThrowErrorDev() {
+    function errorMatcherFactory(errorListener) {
+        return function toThrowError() {
             return {
                 compare: function (actual, expectedErrorCtor, expectedMessage) {
                     function matchMessage(message) {
-                        if (typeof expectedMessage === 'string') {
+                        if (typeof expectedMessage === 'undefined') {
+                            return true;
+                        } else if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
                         } else {
                             return expectedMessage.test(message);
@@ -213,14 +214,27 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         return thrown.name + ' with message "' + thrown.message + '"';
                     }
 
+                    if (typeof expectedMessage === 'undefined') {
+                        if (typeof expectedErrorCtor === 'undefined') {
+                            // 0 arguments provided
+                            expectedMessage = undefined;
+                            expectedErrorCtor = Error;
+                        } else {
+                            // 1 argument provided
+                            expectedMessage = expectedErrorCtor;
+                            expectedErrorCtor = Error;
+                        }
+                    }
+
                     if (typeof actual !== 'function') {
                         throw new Error('Expected function to throw error.');
                     } else if (
-                        typeof actual !== 'function' ||
-                        expectedErrorCtor.prototype instanceof Error
+                        expectedErrorCtor !== Error &&
+                        !(expectedErrorCtor.prototype instanceof Error)
                     ) {
                         throw new Error('Expected an error constructor.');
                     } else if (
+                        typeof expectedMessage !== 'undefined' &&
                         typeof expectedMessage !== 'string' &&
                         !(expectedMessage instanceof RegExp)
                     ) {
@@ -229,13 +243,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         );
                     }
 
-                    let thrown;
-
-                    try {
-                        actual();
-                    } catch (error) {
-                        thrown = error;
-                    }
+                    var thrown = errorListener(actual);
 
                     if (process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
@@ -252,16 +260,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                             return fail(
                                 'Expected function to throw an ' +
                                     expectedErrorCtor.name +
-                                    ' error in development mode with message "' +
-                                    expectedMessage +
+                                    ' error in development mode"' +
+                                    (expectedMessage ? 'with message ' + expectedMessage : '') +
                                     '".'
                             );
                         } else if (!matchError(thrown)) {
                             return fail(
                                 'Expected function to throw an ' +
                                     expectedErrorCtor.name +
-                                    ' error in development mode with message "' +
-                                    expectedMessage +
+                                    ' error in development mode "' +
+                                    (expectedMessage ? 'with message ' + expectedMessage : '') +
                                     '", but it threw ' +
                                     throwDescription(thrown) +
                                     '.'
@@ -272,7 +280,57 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     }
                 },
             };
-        },
+        };
+    }
+
+    // Listen for errors thrown directly by the callback
+    function directErrorListener(callback) {
+        try {
+            callback();
+        } catch (error) {
+            return error;
+        }
+    }
+
+    // Listen for errors using window.addEventListener('error')
+    function windowErrorListener(callback) {
+        var error;
+        function onError(event) {
+            event.preventDefault(); // don't log the error
+            error = event.error;
+        }
+
+        // Prevent jasmine from handling the global error. There doesn't seem to be another
+        // way to disable this behavior: https://github.com/jasmine/jasmine/pull/1860
+        var originalOnError = window.onerror;
+        window.onerror = null;
+        window.addEventListener('error', onError);
+
+        try {
+            callback();
+        } finally {
+            window.onerror = originalOnError;
+            window.removeEventListener('error', onError);
+        }
+        return error;
+    }
+
+    // For errors we expect to be thrown in the connectedCallback() phase
+    // of a custom element, there are two possibilities:
+    // 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
+    // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
+    //    only be caught with window.addEventListener('error')
+    function customElementConnectedErrorListener(callback) {
+        return window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            ? windowErrorListener(callback)
+            : directErrorListener(callback);
+    }
+
+    var customMatchers = {
+        toLogErrorDev: consoleDevMatcherFactory('error'),
+        toLogWarningDev: consoleDevMatcherFactory('warn'),
+        toThrowErrorDev: errorMatcherFactory(directErrorListener),
+        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener),
     };
 
     beforeAll(function () {
@@ -396,5 +454,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getHooks: getHooks,
         setHooks: setHooks,
         spyConsole: spyConsole,
+        customElementConnectedErrorListener: customElementConnectedErrorListener,
     };
 })(LWC, jasmine, beforeAll);

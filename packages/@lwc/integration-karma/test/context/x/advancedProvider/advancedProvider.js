@@ -62,20 +62,6 @@ function createNewConsumerMeta(consumer) {
     return meta;
 }
 
-function decommissionConsumer(consumer) {
-    const meta = ConsumerMetaMap.get(consumer);
-    if (meta === undefined) {
-        // this should never happen unless you decommission consumers
-        // manually without waiting for the disconnect to occur.
-        throw new TypeError(`Invalid context operation.`);
-    }
-    // take care of disconnecting everything for this consumer
-    // ...
-    // then remove the identity and consumer from maps
-    IdentityMetaMap.delete(meta.identity);
-    ConsumerMetaMap.delete(consumer.identity);
-}
-
 const contextualizer = createContextProvider(WireAdapter);
 
 export function installCustomContext(target) {
@@ -86,9 +72,6 @@ export function installCustomContext(target) {
             const consumerMeta = createNewConsumerMeta(target, consumer);
             // emit the identity value
             consumer.provide({ value: consumerMeta.identity });
-        },
-        consumerDisconnectedCallback(consumer) {
-            decommissionConsumer(consumer);
         },
     });
 }
