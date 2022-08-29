@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
-import { parentNodeGetter } from '../env/node';
 
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
@@ -47,13 +46,14 @@ export function getNodeOwnerKey(node: Node): number | undefined {
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let host: Node | null = node;
     let hostKey: number | undefined;
-    // search for the first element with owner identity (just in case of manually inserted elements)
+    // search for the first element with owner identity
+    // in case of manually inserted elements and elements slotted from Light DOM
     while (!isNull(host)) {
         hostKey = getNodeOwnerKey(host);
         if (!isUndefined(hostKey)) {
             return hostKey;
         }
-        host = parentNodeGetter.call(host) as ShadowedNode | null;
+        host = host.parentNode as ShadowedNode | null;
     }
 }
 
