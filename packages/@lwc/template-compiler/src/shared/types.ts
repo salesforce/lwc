@@ -171,20 +171,6 @@ interface DirectiveParentNode extends BaseParentNode {
     directiveLocation: SourceLocation;
 }
 
-/**
- * 
- * 
-if - else
-  true Expression
-  false Expression
-
-if - else if - else
-   <parent node>
-      true child <Expression>
-      false child 
-          <parent node> IfBlock
-            
- */
 export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
