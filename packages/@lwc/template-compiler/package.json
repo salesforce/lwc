@@ -20,7 +20,7 @@
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "devDependencies": {
-        "@types/estree": "0.0.51",
+        "@types/estree": "1.0.0",
         "@types/he": "^1.1.1",
         "@types/parse5": "^6.0.2"
     },
@@ -28,7 +28,7 @@
     "dependencies": {
         "@lwc/errors": "2.23.1",
         "@lwc/shared": "2.23.1",
-        "acorn": "~8.7.1",
+        "acorn": "~8.8.0",
         "astring": "~1.8.3",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0",
