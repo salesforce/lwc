@@ -41,7 +41,7 @@
             "build": {
                 "outputs": [
                     "./dist",
-                    "types/"
+                    "./types"
                 ]
             }
         }
