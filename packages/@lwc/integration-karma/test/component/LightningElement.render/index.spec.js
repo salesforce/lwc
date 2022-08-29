@@ -1,4 +1,5 @@
 import { createElement, registerTemplate } from 'lwc';
+import { customElementConnectedErrorListener } from 'test-utils';
 
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
@@ -12,7 +13,7 @@ function testInvalidTemplate(type, template) {
         // Once the error is fixed, we should add the error message to the assertion.
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrow();
+        }).toThrowConnectedError();
     });
 }
 
@@ -30,7 +31,7 @@ it(`throws an error if returns an invalid template`, () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowError(
+    }).toThrowConnectedError(
         Error,
         /Invalid template returned by the render\(\) method on .+\. It must return an imported template \(e\.g\.: `import html from "\.\/DynamicTemplate.html"`\), instead, it has returned: .+\./
     );
@@ -46,7 +47,7 @@ it(`throws an error if the returned compiled template is invalid`, () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowError(
+    }).toThrowConnectedError(
         Error,
         /Invariant Violation: Compiler should produce html functions that always return an array\./
     );
@@ -55,12 +56,9 @@ it(`throws an error if the returned compiled template is invalid`, () => {
 it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-render-throw', { is: RenderThrow });
 
-    let error;
-    try {
+    const error = customElementConnectedErrorListener(() => {
         document.body.appendChild(elm);
-    } catch (e) {
-        error = e;
-    }
+    });
 
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in render');

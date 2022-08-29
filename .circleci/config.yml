@@ -48,6 +48,9 @@ commands:
       force_native_shadow_mode:
         type: boolean
         default: false
+      enable_native_custom_element_lifecycle:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -69,6 +72,7 @@ commands:
             }
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
+            <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -153,6 +157,9 @@ commands:
       force_native_shadow_mode:
         type: boolean
         default: false
+      enable_native_custom_element_lifecycle:
+        type: boolean
+        default: false
       compat:
         type: boolean
         default: false
@@ -165,6 +172,7 @@ commands:
           working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
+          enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -221,6 +229,11 @@ jobs:
           compat: true
       - run_karma:
           force_native_shadow_mode: true
+      - run_karma:
+          enable_native_custom_element_lifecycle: true
+      - run_karma:
+          disable_synthetic: true
+          enable_native_custom_element_lifecycle: true
       - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce

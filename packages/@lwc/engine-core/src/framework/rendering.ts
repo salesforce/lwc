@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
 } from '@lwc/shared';
+import features from '@lwc/features';
 
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -282,10 +283,20 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        if (process.env.IS_BROWSER) {
+            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
+                    // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
+                    assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+                }
+                runConnectedCallback(vm);
+            }
+        } else {
+            // On the server, we don't have native custom element lifecycle callbacks, so we must
+            // manually invoke the connectedCallback for a child component.
+            runConnectedCallback(vm);
         }
-        runConnectedCallback(vm);
     }
 
     mountVNodes(vnode.children, elm, renderer, null);

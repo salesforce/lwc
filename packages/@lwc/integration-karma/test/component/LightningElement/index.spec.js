@@ -74,6 +74,8 @@ it('should fail when the constructor return an instance of LightningElement', ()
 it("[W-6981076] shouldn't throw when a component with an invalid child in unmounted", () => {
     const elm = createElement('x-parent-throwing-before-super', { is: ParentThrowingBeforeSuper });
 
-    expect(() => document.body.appendChild(elm)).toThrowError(/Throwing before calling super/);
+    expect(() => document.body.appendChild(elm)).toThrowConnectedError(
+        /Throwing before calling super/
+    );
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
