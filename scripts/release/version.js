@@ -61,7 +61,7 @@ function updatePackages(newVersion) {
 
         // Update package.json files and print updated packges
         for (const { originalVersion, packageJson, packageJsonPath } of packagesToUpdate) {
-            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4));
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4) + '\n');
             console.log(
                 `Updated ${packageJson.name} from ${originalVersion} to ${packageJson.version}`
             );
