@@ -114,7 +114,9 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         owner: vmBeingRendered,
     };
 
-    setRefVNode(vmBeingRendered, ref, vnode);
+    if (!isUndefined(ref)) {
+        setRefVNode(vmBeingRendered, ref, vnode);
+    }
 
     return vnode;
 }
@@ -235,7 +237,9 @@ function c(
     };
     addVNodeToChildLWC(vnode);
 
-    setRefVNode(vmBeingRendered, ref, vnode);
+    if (!isUndefined(ref)) {
+        setRefVNode(vmBeingRendered, ref, vnode);
+    }
 
     return vnode;
 }

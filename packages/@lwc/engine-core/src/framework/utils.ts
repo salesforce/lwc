@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from '@lwc/shared';
+import { ArrayPush, create, isFunction, isNull, seal } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { RefVNodes, VM } from './vm';
 import { VBaseElement } from './vnodes';
@@ -102,18 +102,16 @@ export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): St
 }
 
 // Set a ref (lwc:ref) on a VM, from a template API
-export function setRefVNode(vm: VM, ref: string | undefined, vnode: VBaseElement) {
-    if (!isUndefined(ref)) {
-        // Create the refVNodes object on-demand. This ensures that templates with no refs
-        // don't pay the perf tax of creating objects unnecessarily.
-        const refVNodes: RefVNodes = isNull(vm.refVNodes)
-            ? (vm.refVNodes = create(null))
-            : vm.refVNodes;
+export function setRefVNode(vm: VM, ref: string, vnode: VBaseElement) {
+    // Create the refVNodes object on-demand. This ensures that templates with no refs
+    // don't pay the perf tax of creating objects unnecessarily.
+    const refVNodes: RefVNodes = isNull(vm.refVNodes)
+        ? (vm.refVNodes = create(null))
+        : vm.refVNodes;
 
-        // In cases of conflict (two elements with the same ref), prefer, the last one,
-        // in depth-first traversal order.
-        if (!(ref in refVNodes) || refVNodes[ref].key < vnode.key) {
-            refVNodes[ref] = vnode;
-        }
+    // In cases of conflict (two elements with the same ref), prefer, the last one,
+    // in depth-first traversal order.
+    if (!(ref in refVNodes) || refVNodes[ref].key < vnode.key) {
+        refVNodes[ref] = vnode;
     }
 }
