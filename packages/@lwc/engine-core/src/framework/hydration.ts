@@ -46,7 +46,6 @@ const enum EnvNodeTypes {
 
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
-
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
@@ -99,13 +98,14 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
     return renderer.nextSibling(hydratedNode);
 }
 
+const NODE_VALUE_PROP = 'nodeValue';
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
     if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, renderer)) {
         return handleMismatch(node, vnode, renderer);
     }
     if (process.env.NODE_ENV !== 'production') {
         const { getProperty } = renderer;
-        const nodeValue = getProperty(node, 'nodeValue');
+        const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
         if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
@@ -127,7 +127,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
     if (process.env.NODE_ENV !== 'production') {
         const { getProperty } = renderer;
-        const nodeValue = getProperty(node, 'nodeValue');
+        const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
         if (nodeValue !== vnode.text) {
             logWarn(
@@ -138,7 +138,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    setProperty(node, 'nodeValue', vnode.text ?? null);
+    setProperty(node, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;
@@ -524,7 +524,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
             return false;
         }
 
-        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+        return getProperty(client, NODE_VALUE_PROP) === getProperty(ssr, NODE_VALUE_PROP);
     }
 
     if (getProperty(client, 'nodeType') === EnvNodeTypes.COMMENT) {
@@ -532,7 +532,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
             return false;
         }
 
-        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+        return getProperty(client, NODE_VALUE_PROP) === getProperty(ssr, NODE_VALUE_PROP);
     }
 
     if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.ELEMENT, renderer)) {
