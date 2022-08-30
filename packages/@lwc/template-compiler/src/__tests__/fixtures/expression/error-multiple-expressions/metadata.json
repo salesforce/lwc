@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1074,
+            "message": "Invalid expression {foo;title} - LWC1074: Multiple expressions found",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 17
+            }
+        }
+    ]
+}

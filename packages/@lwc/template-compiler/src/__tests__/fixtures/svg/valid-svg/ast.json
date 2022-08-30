@@ -1,0 +1,807 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 27,
+            "endColumn": 12,
+            "start": 0,
+            "end": 615,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 27,
+                "startColumn": 1,
+                "endLine": 27,
+                "endColumn": 12,
+                "start": 604,
+                "end": 615
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 26,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 603,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 26,
+                        "startColumn": 5,
+                        "endLine": 26,
+                        "endColumn": 11,
+                        "start": 597,
+                        "end": 603
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "a",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 16,
+                            "start": 29,
+                            "end": 36,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 12,
+                                "start": 29,
+                                "end": 32
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 16,
+                                "start": 32,
+                                "end": 36
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "circle",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 26,
+                            "start": 45,
+                            "end": 62,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 17,
+                                "start": 45,
+                                "end": 53
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 17,
+                                "endLine": 4,
+                                "endColumn": 26,
+                                "start": 53,
+                                "end": 62
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " <clipPath></clipPath> ",
+                        "value": " <clipPath></clipPath> ",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 39,
+                            "start": 71,
+                            "end": 101
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "defs",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 22,
+                            "start": 110,
+                            "end": 123,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 15,
+                                "start": 110,
+                                "end": 116
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 15,
+                                "endLine": 6,
+                                "endColumn": 22,
+                                "start": 116,
+                                "end": 123
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "desc",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 22,
+                            "start": 132,
+                            "end": 145,
+                            "startTag": {
+                                "startLine": 7,
+                                "startColumn": 9,
+                                "endLine": 7,
+                                "endColumn": 15,
+                                "start": 132,
+                                "end": 138
+                            },
+                            "endTag": {
+                                "startLine": 7,
+                                "startColumn": 15,
+                                "endLine": 7,
+                                "endColumn": 22,
+                                "start": 138,
+                                "end": 145
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "ellipse",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 28,
+                            "start": 154,
+                            "end": 173,
+                            "startTag": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 18,
+                                "start": 154,
+                                "end": 163
+                            },
+                            "endTag": {
+                                "startLine": 8,
+                                "startColumn": 18,
+                                "endLine": 8,
+                                "endColumn": 28,
+                                "start": 163,
+                                "end": 173
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "filter",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 26,
+                            "start": 182,
+                            "end": 199,
+                            "startTag": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 17,
+                                "start": 182,
+                                "end": 190
+                            },
+                            "endTag": {
+                                "startLine": 9,
+                                "startColumn": 17,
+                                "endLine": 9,
+                                "endColumn": 26,
+                                "start": 190,
+                                "end": 199
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "g",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 9,
+                            "endLine": 10,
+                            "endColumn": 16,
+                            "start": 208,
+                            "end": 215,
+                            "startTag": {
+                                "startLine": 10,
+                                "startColumn": 9,
+                                "endLine": 10,
+                                "endColumn": 12,
+                                "start": 208,
+                                "end": 211
+                            },
+                            "endTag": {
+                                "startLine": 10,
+                                "startColumn": 12,
+                                "endLine": 10,
+                                "endColumn": 16,
+                                "start": 211,
+                                "end": 215
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "line",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 11,
+                            "endColumn": 22,
+                            "start": 224,
+                            "end": 237,
+                            "startTag": {
+                                "startLine": 11,
+                                "startColumn": 9,
+                                "endLine": 11,
+                                "endColumn": 15,
+                                "start": 224,
+                                "end": 230
+                            },
+                            "endTag": {
+                                "startLine": 11,
+                                "startColumn": 15,
+                                "endLine": 11,
+                                "endColumn": 22,
+                                "start": 230,
+                                "end": 237
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "marker",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 9,
+                            "endLine": 12,
+                            "endColumn": 26,
+                            "start": 246,
+                            "end": 263,
+                            "startTag": {
+                                "startLine": 12,
+                                "startColumn": 9,
+                                "endLine": 12,
+                                "endColumn": 17,
+                                "start": 246,
+                                "end": 254
+                            },
+                            "endTag": {
+                                "startLine": 12,
+                                "startColumn": 17,
+                                "endLine": 12,
+                                "endColumn": 26,
+                                "start": 254,
+                                "end": 263
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "mask",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 9,
+                            "endLine": 13,
+                            "endColumn": 22,
+                            "start": 272,
+                            "end": 285,
+                            "startTag": {
+                                "startLine": 13,
+                                "startColumn": 9,
+                                "endLine": 13,
+                                "endColumn": 15,
+                                "start": 272,
+                                "end": 278
+                            },
+                            "endTag": {
+                                "startLine": 13,
+                                "startColumn": 15,
+                                "endLine": 13,
+                                "endColumn": 22,
+                                "start": 278,
+                                "end": 285
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "path",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 14,
+                            "startColumn": 9,
+                            "endLine": 14,
+                            "endColumn": 22,
+                            "start": 294,
+                            "end": 307,
+                            "startTag": {
+                                "startLine": 14,
+                                "startColumn": 9,
+                                "endLine": 14,
+                                "endColumn": 15,
+                                "start": 294,
+                                "end": 300
+                            },
+                            "endTag": {
+                                "startLine": 14,
+                                "startColumn": 15,
+                                "endLine": 14,
+                                "endColumn": 22,
+                                "start": 300,
+                                "end": 307
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "pattern",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 15,
+                            "startColumn": 9,
+                            "endLine": 15,
+                            "endColumn": 28,
+                            "start": 316,
+                            "end": 335,
+                            "startTag": {
+                                "startLine": 15,
+                                "startColumn": 9,
+                                "endLine": 15,
+                                "endColumn": 18,
+                                "start": 316,
+                                "end": 325
+                            },
+                            "endTag": {
+                                "startLine": 15,
+                                "startColumn": 18,
+                                "endLine": 15,
+                                "endColumn": 28,
+                                "start": 325,
+                                "end": 335
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "polygon",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 9,
+                            "endLine": 16,
+                            "endColumn": 28,
+                            "start": 344,
+                            "end": 363,
+                            "startTag": {
+                                "startLine": 16,
+                                "startColumn": 9,
+                                "endLine": 16,
+                                "endColumn": 18,
+                                "start": 344,
+                                "end": 353
+                            },
+                            "endTag": {
+                                "startLine": 16,
+                                "startColumn": 18,
+                                "endLine": 16,
+                                "endColumn": 28,
+                                "start": 353,
+                                "end": 363
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "polyline",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 17,
+                            "startColumn": 9,
+                            "endLine": 17,
+                            "endColumn": 30,
+                            "start": 372,
+                            "end": 393,
+                            "startTag": {
+                                "startLine": 17,
+                                "startColumn": 9,
+                                "endLine": 17,
+                                "endColumn": 19,
+                                "start": 372,
+                                "end": 382
+                            },
+                            "endTag": {
+                                "startLine": 17,
+                                "startColumn": 19,
+                                "endLine": 17,
+                                "endColumn": 30,
+                                "start": 382,
+                                "end": 393
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "rect",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 18,
+                            "startColumn": 9,
+                            "endLine": 18,
+                            "endColumn": 22,
+                            "start": 402,
+                            "end": 415,
+                            "startTag": {
+                                "startLine": 18,
+                                "startColumn": 9,
+                                "endLine": 18,
+                                "endColumn": 15,
+                                "start": 402,
+                                "end": 408
+                            },
+                            "endTag": {
+                                "startLine": 18,
+                                "startColumn": 15,
+                                "endLine": 18,
+                                "endColumn": 22,
+                                "start": 408,
+                                "end": 415
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "stop",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 19,
+                            "startColumn": 9,
+                            "endLine": 19,
+                            "endColumn": 22,
+                            "start": 424,
+                            "end": 437,
+                            "startTag": {
+                                "startLine": 19,
+                                "startColumn": 9,
+                                "endLine": 19,
+                                "endColumn": 15,
+                                "start": 424,
+                                "end": 430
+                            },
+                            "endTag": {
+                                "startLine": 19,
+                                "startColumn": 15,
+                                "endLine": 19,
+                                "endColumn": 22,
+                                "start": 430,
+                                "end": 437
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "symbol",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 20,
+                            "startColumn": 9,
+                            "endLine": 20,
+                            "endColumn": 26,
+                            "start": 446,
+                            "end": 463,
+                            "startTag": {
+                                "startLine": 20,
+                                "startColumn": 9,
+                                "endLine": 20,
+                                "endColumn": 17,
+                                "start": 446,
+                                "end": 454
+                            },
+                            "endTag": {
+                                "startLine": 20,
+                                "startColumn": 17,
+                                "endLine": 20,
+                                "endColumn": 26,
+                                "start": 454,
+                                "end": 463
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "text",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 21,
+                            "startColumn": 9,
+                            "endLine": 21,
+                            "endColumn": 22,
+                            "start": 472,
+                            "end": 485,
+                            "startTag": {
+                                "startLine": 21,
+                                "startColumn": 9,
+                                "endLine": 21,
+                                "endColumn": 15,
+                                "start": 472,
+                                "end": 478
+                            },
+                            "endTag": {
+                                "startLine": 21,
+                                "startColumn": 15,
+                                "endLine": 21,
+                                "endColumn": 22,
+                                "start": 478,
+                                "end": 485
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " <textPath></textPath> ",
+                        "value": " <textPath></textPath> ",
+                        "location": {
+                            "startLine": 22,
+                            "startColumn": 9,
+                            "endLine": 22,
+                            "endColumn": 39,
+                            "start": 494,
+                            "end": 524
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "title",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 23,
+                            "startColumn": 9,
+                            "endLine": 23,
+                            "endColumn": 24,
+                            "start": 533,
+                            "end": 548,
+                            "startTag": {
+                                "startLine": 23,
+                                "startColumn": 9,
+                                "endLine": 23,
+                                "endColumn": 16,
+                                "start": 533,
+                                "end": 540
+                            },
+                            "endTag": {
+                                "startLine": 23,
+                                "startColumn": 16,
+                                "endLine": 23,
+                                "endColumn": 24,
+                                "start": 540,
+                                "end": 548
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "tspan",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 24,
+                            "startColumn": 9,
+                            "endLine": 24,
+                            "endColumn": 24,
+                            "start": 557,
+                            "end": 572,
+                            "startTag": {
+                                "startLine": 24,
+                                "startColumn": 9,
+                                "endLine": 24,
+                                "endColumn": 16,
+                                "start": 557,
+                                "end": 564
+                            },
+                            "endTag": {
+                                "startLine": 24,
+                                "startColumn": 16,
+                                "endLine": 24,
+                                "endColumn": 24,
+                                "start": 564,
+                                "end": 572
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "use",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 25,
+                            "startColumn": 9,
+                            "endLine": 25,
+                            "endColumn": 20,
+                            "start": 581,
+                            "end": 592,
+                            "startTag": {
+                                "startLine": 25,
+                                "startColumn": 9,
+                                "endLine": 25,
+                                "endColumn": 14,
+                                "start": 581,
+                                "end": 586
+                            },
+                            "endTag": {
+                                "startLine": 25,
+                                "startColumn": 14,
+                                "endLine": 25,
+                                "endColumn": 20,
+                                "start": 586,
+                                "end": 592
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

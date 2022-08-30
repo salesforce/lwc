@@ -1,0 +1,172 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 99,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 88,
+                "end": 99
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 37,
+                    "start": 15,
+                    "end": 47,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 28,
+                        "start": 15,
+                        "end": 38
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 33,
+                        "endLine": 2,
+                        "endColumn": 37,
+                        "start": 43,
+                        "end": 47
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "tabindex",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "name": "computed",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 8,
+                                "endLine": 2,
+                                "endColumn": 27,
+                                "start": 18,
+                                "end": 37
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 27,
+                            "start": 18,
+                            "end": 37
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "valid",
+                        "value": {
+                            "type": "Literal",
+                            "value": "valid"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 28,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 38,
+                            "end": 43
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 40,
+                    "start": 52,
+                    "end": 87,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 32,
+                        "start": 52,
+                        "end": 79
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 32,
+                        "endLine": 3,
+                        "endColumn": 40,
+                        "start": 79,
+                        "end": 87
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "tabIndex",
+                        "attributeName": "tabindex",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "name": "computed",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 31,
+                                "start": 59,
+                                "end": 78
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 31,
+                            "start": 59,
+                            "end": 78
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

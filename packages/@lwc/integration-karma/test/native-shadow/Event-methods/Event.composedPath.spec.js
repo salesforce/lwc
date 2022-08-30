@@ -167,7 +167,7 @@ if (process.env.COMPAT !== true) {
     describe('Event.composedPath() method', () => {
         describe('dispatched on shadow root', () => {
             it('{bubbles: true, composed: true}', (done) => {
-                const native = document.createElement('x-native');
+                const native = document.createElement('x-native-name-unique-to-this-test-1');
                 native.attachShadow({ mode: 'open' });
                 document.body.appendChild(native);
 
@@ -190,7 +190,7 @@ if (process.env.COMPAT !== true) {
         });
         describe('dispatched on shadowed element', () => {
             it('{bubbles: true, composed: true}', (done) => {
-                const native = document.createElement('x-native');
+                const native = document.createElement('x-native-name-unique-to-this-test-2');
                 const span = document.createElement('span');
                 const sr = native.attachShadow({ mode: 'open' });
                 sr.appendChild(span);

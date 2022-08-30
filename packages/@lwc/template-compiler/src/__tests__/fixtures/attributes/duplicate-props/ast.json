@@ -1,0 +1,136 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 10,
+            "endColumn": 12,
+            "start": 0,
+            "end": 221,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 10,
+                "startColumn": 1,
+                "endLine": 10,
+                "endColumn": 12,
+                "start": 210,
+                "end": 221
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "ns-baz-1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 17,
+                    "start": 15,
+                    "end": 110,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 99
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 6,
+                        "endLine": 5,
+                        "endColumn": 17,
+                        "start": 99,
+                        "end": 110
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "accessKey",
+                        "attributeName": "access-key",
+                        "value": {
+                            "type": "Literal",
+                            "value": "with-hyphen"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 33,
+                            "start": 69,
+                            "end": 93
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "ns-baz-2",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 17,
+                    "start": 115,
+                    "end": 209,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 6,
+                        "start": 115,
+                        "end": 198
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 6,
+                        "endLine": 9,
+                        "endColumn": 17,
+                        "start": 198,
+                        "end": 209
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "accessKey",
+                        "attributeName": "accesskey",
+                        "value": {
+                            "type": "Literal",
+                            "value": "without-hyphen"
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 35,
+                            "start": 166,
+                            "end": 192
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

@@ -368,6 +368,7 @@ export default class CodeGen {
     }
 
     endScope(): void {
+        /* istanbul ignore if */
         if (!this.scope.parent) {
             throw new Error("Can't invoke endScope if the current scope has no parent");
         }

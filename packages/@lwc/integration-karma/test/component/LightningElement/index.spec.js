@@ -1,19 +1,44 @@
-import { LightningElement } from 'lwc';
-import { createElement } from 'lwc';
+import { LightningElement, createElement } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
+import DefinedComponent from 'x/definedComponent';
+import UndefinedComponent from 'x/undefinedComponent';
 
 it('should throw when trying to invoke the constructor manually', () => {
-    expect(() => {
+    const func = () => {
         new LightningElement();
-    }).toThrowError(ReferenceError);
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
 
-    expect(() => {
+it('should throw when trying to `new` a subclass of LightningElement manually', () => {
+    const func = () => {
         class Test extends LightningElement {}
         new Test();
-    }).toThrowError(ReferenceError);
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+it('should throw when trying to `new` a compiled subclass of LightningElement', () => {
+    const func = () => {
+        new UndefinedComponent();
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+// TODO [#2970]: component constructor cannot be new-ed even after being defined
+it('should throw when trying to `new` a compiled subclass of LightningElement after definition', () => {
+    createElement('x-defined-component', { is: DefinedComponent });
+    const func = () => {
+        new DefinedComponent();
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
 });
 
 it('should have no property enumerable on the component instance', () => {
@@ -49,6 +74,8 @@ it('should fail when the constructor return an instance of LightningElement', ()
 it("[W-6981076] shouldn't throw when a component with an invalid child in unmounted", () => {
     const elm = createElement('x-parent-throwing-before-super', { is: ParentThrowingBeforeSuper });
 
-    expect(() => document.body.appendChild(elm)).toThrowError(/Throwing before calling super/);
+    expect(() => document.body.appendChild(elm)).toThrowConnectedError(
+        /Throwing before calling super/
+    );
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });

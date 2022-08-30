@@ -24,7 +24,7 @@ executors:
 # Custom commands definition
 commands:
   # Based on https://circleci.com/developer/orbs/orb/kimh/run-with-retry
-  retry_karma:
+  retry_command:
     description: Retry command multiple times until it succeeds
     parameters:
       command:
@@ -48,6 +48,9 @@ commands:
       force_native_shadow_mode:
         type: boolean
         default: false
+      enable_native_custom_element_lifecycle:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -69,6 +72,7 @@ commands:
             }
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
+            <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -134,19 +138,26 @@ commands:
     parameters:
       disable_synthetic:
         type: boolean
+        default: false
       force_native_shadow_mode:
         type: boolean
+        default: false
+      enable_native_custom_element_lifecycle:
+        type: boolean
+        default: false
       compat:
         type: boolean
+        default: false
       coverage:
         type: boolean
         default: true
     steps:
-      - retry_karma:
+      - retry_command:
           command_name: Run karma integration tests
           working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
+          enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -194,23 +205,19 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run_karma:
-          disable_synthetic: false
-          compat: false
-          force_native_shadow_mode: false
+      - run_karma
       - run_karma:
           disable_synthetic: true
-          compat: false
-          force_native_shadow_mode: false
       - run_karma:
-          disable_synthetic: false
           compat: true
-          force_native_shadow_mode: false
       - run_karma:
-          disable_synthetic: false
-          compat: false
           force_native_shadow_mode: true
-      - retry_karma:
+      - run_karma:
+          enable_native_custom_element_lifecycle: true
+      - run_karma:
+          disable_synthetic: true
+          enable_native_custom_element_lifecycle: true
+      - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce
           working_directory: packages/@lwc/integration-karma
@@ -228,7 +235,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_karma:
+      - retry_command:
           command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/@lwc/integration-tests
@@ -241,7 +248,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_karma:
+      - retry_command:
           command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/@lwc/integration-tests

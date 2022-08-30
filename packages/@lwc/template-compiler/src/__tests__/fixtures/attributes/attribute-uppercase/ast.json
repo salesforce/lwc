@@ -1,0 +1,186 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 215,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 204,
+                "end": 215
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 17,
+                    "start": 15,
+                    "end": 203,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 192
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 6,
+                        "endLine": 10,
+                        "endColumn": 17,
+                        "start": 192,
+                        "end": 203
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "Class",
+                        "attributeName": "-class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "r"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 19,
+                            "start": 34,
+                            "end": 44
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "DataXx",
+                        "attributeName": "-data-xx",
+                        "value": {
+                            "type": "Literal",
+                            "value": "foo"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 23,
+                            "start": 53,
+                            "end": 67
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "AriaHidden",
+                        "attributeName": "-aria-hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "hidden"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 30,
+                            "start": 76,
+                            "end": 97
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "Role",
+                        "attributeName": "-role",
+                        "value": {
+                            "type": "Literal",
+                            "value": "xx"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 19,
+                            "start": 106,
+                            "end": 116
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "FooBar",
+                        "attributeName": "-foo-bar",
+                        "value": {
+                            "type": "Literal",
+                            "value": "x"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 21,
+                            "start": 125,
+                            "end": 137
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "FooZaz",
+                        "attributeName": "--foo-zaz",
+                        "value": {
+                            "type": "Literal",
+                            "value": "z"
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 22,
+                            "start": 146,
+                            "end": 159
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "Foo_bar_baz",
+                        "attributeName": "-foo_bar_baz",
+                        "value": {
+                            "type": "Literal",
+                            "value": "baz"
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 27,
+                            "start": 168,
+                            "end": 186
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

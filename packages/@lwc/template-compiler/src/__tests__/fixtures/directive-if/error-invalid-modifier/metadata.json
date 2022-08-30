@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1084,
+            "message": "LWC1084: Unexpected if modifier foo",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 15,
+                "start": 25,
+                "length": 12
+            }
+        }
+    ]
+}

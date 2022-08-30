@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
 } from '@lwc/shared';
+import features from '@lwc/features';
 
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -74,7 +75,7 @@ export function patchChildren(
     }
 }
 
-function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
+function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {
     if (n1 === n2) {
         return;
     }
@@ -110,7 +111,7 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2, n2.data.renderer ?? renderer);
+            patchCustomElement(n1 as VCustomElement, n2, parent, n2.data.renderer ?? renderer);
             break;
     }
 }
@@ -282,10 +283,20 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        if (process.env.IS_BROWSER) {
+            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
+                    // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
+                    assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+                }
+                runConnectedCallback(vm);
+            }
+        } else {
+            // On the server, we don't have native custom element lifecycle callbacks, so we must
+            // manually invoke the connectedCallback for a child component.
+            runConnectedCallback(vm);
         }
-        runConnectedCallback(vm);
     }
 
     mountVNodes(vnode.children, elm, renderer, null);
@@ -295,25 +306,40 @@ function mountCustomElement(
     }
 }
 
-function patchCustomElement(n1: VCustomElement, n2: VCustomElement, renderer: RendererAPI) {
-    const elm = (n2.elm = n1.elm!);
-    const vm = (n2.vm = n1.vm);
+function patchCustomElement(
+    n1: VCustomElement,
+    n2: VCustomElement,
+    parent: ParentNode,
+    renderer: RendererAPI
+) {
+    if (n1.ctor !== n2.ctor) {
+        // If the constructor, unmount the current component and mount a new one using the new
+        // constructor.
+        const anchor = renderer.nextSibling(n1.elm);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
-    if (!isUndefined(vm)) {
-        // in fallback mode, the allocation will always set children to
-        // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
-    }
+        unmount(n1, parent, renderer, true);
+        mountCustomElement(n2, parent, anchor, renderer);
+    } else {
+        // Otherwise patch the existing component with new props/attrs/etc.
+        const elm = (n2.elm = n1.elm!);
+        const vm = (n2.vm = n1.vm);
 
-    // in fallback mode, the children will be always empty, so, nothing
-    // will happen, but in native, it does allocate the light dom
-    patchChildren(n1.children, n2.children, elm, renderer);
+        patchElementPropsAndAttrs(n1, n2, renderer);
+        if (!isUndefined(vm)) {
+            // in fallback mode, the allocation will always set children to
+            // empty and delegate the real allocation to the slot elements
+            allocateChildren(n2, vm);
+        }
 
-    if (!isUndefined(vm)) {
-        // this will probably update the shadowRoot, but only if the vm is in a dirty state
-        // this is important to preserve the top to bottom synchronous rendering phase.
-        rerenderVM(vm);
+        // in fallback mode, the children will be always empty, so, nothing
+        // will happen, but in native, it does allocate the light dom
+        patchChildren(n1.children, n2.children, elm, renderer);
+
+        if (!isUndefined(vm)) {
+            // this will probably update the shadowRoot, but only if the vm is in a dirty state
+            // this is important to preserve the top to bottom synchronous rendering phase.
+            rerenderVM(vm);
+        }
     }
 }
 
@@ -652,16 +678,16 @@ function updateDynamicChildren(
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode, renderer);
+            patch(oldStartVnode, newStartVnode, parent, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode, renderer);
+            patch(oldEndVnode, newEndVnode, parent, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode, renderer);
+            patch(oldStartVnode, newEndVnode, parent, renderer);
             insertNode(
                 oldStartVnode.elm!,
                 parent,
@@ -672,7 +698,7 @@ function updateDynamicChildren(
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode, renderer);
+            patch(oldEndVnode, newStartVnode, parent, renderer);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -692,7 +718,7 @@ function updateDynamicChildren(
                         // New element
                         mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode, renderer);
+                        patch(elmToMove, newStartVnode, parent, renderer);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -757,7 +783,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2, renderer);
+                    patch(n1, n2, parent, renderer);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null

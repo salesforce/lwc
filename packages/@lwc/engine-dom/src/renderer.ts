@@ -16,6 +16,7 @@ import {
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
+    isNull,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
 import { createFragment } from './createFragment';
@@ -82,18 +83,6 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-let hydrating = false;
-
-export function setIsHydrating(value: boolean) {
-    hydrating = value;
-}
-
-const ssr: boolean = false;
-
-function isHydrating(): boolean {
-    return hydrating;
-}
-
 const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
@@ -131,15 +120,11 @@ function nextSibling(node: Node): Node | null {
 }
 
 function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    // `hydrating` will be true in two cases:
+    // `shadowRoot` will be non-null in two cases:
     //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
     //   2. when a webapp author places <c-app> in their static HTML and mounts their
-    //      root component with customeElement.define('c-app', Ctor)
-    //
-    // The second case can be treated as a failed hydration with nominal impact
-    // to performance. However, because <c-app> won't have a <template shadowroot>
-    // declarative child, `element.shadowRoot` is `null`.
-    if (hydrating && element.shadowRoot) {
+    //      root component with customElement.define('c-app', Ctor)
+    if (!isNull(element.shadowRoot)) {
         return element.shadowRoot;
     }
     return element.attachShadow(options);
@@ -157,12 +142,11 @@ function setProperty(node: Node, key: string, value: any): void {
     if (process.env.NODE_ENV !== 'production') {
         if (node instanceof Element && !(key in node)) {
             // TODO [#1297]: Move this validation to the compiler
-            assert.fail(
-                `Unknown public property "${key}" of element <${
-                    node.tagName
-                }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+            // eslint-disable-next-line no-console
+            console.warn(
+                `Unknown public property "${key}" of element <${node.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
                     key
-                )}".`
+                )}", or the attribute does not exist in this browser or DOM implementation.`
             );
         }
     }
@@ -291,11 +275,9 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
-    isHydrating,
     insert,
     remove,
     cloneNode,

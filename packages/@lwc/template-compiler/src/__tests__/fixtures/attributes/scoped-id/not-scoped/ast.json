@@ -1,0 +1,152 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 289,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 278,
+                "end": 289
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "lightning-combobox",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 27,
+                    "start": 15,
+                    "end": 277,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 256
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 6,
+                        "endLine": 8,
+                        "endColumn": 27,
+                        "start": 256,
+                        "end": 277
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "ariaDescribedBy",
+                        "attributeName": "aria-described-by",
+                        "value": {
+                            "type": "Literal",
+                            "value": "not-scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 43,
+                            "start": 44,
+                            "end": 78
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaActiveDescendant",
+                        "attributeName": "aria-active-descendant",
+                        "value": {
+                            "type": "Literal",
+                            "value": "not-scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 48,
+                            "start": 87,
+                            "end": 126
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaErrorMessage",
+                        "attributeName": "aria-error-message",
+                        "value": {
+                            "type": "Literal",
+                            "value": "not-scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 44,
+                            "start": 135,
+                            "end": 170
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaFlowTo",
+                        "attributeName": "aria-flow-to",
+                        "value": {
+                            "type": "Literal",
+                            "value": "not-scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 38,
+                            "start": 179,
+                            "end": 208
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLabelledBy",
+                        "attributeName": "aria-labelled-by",
+                        "value": {
+                            "type": "Literal",
+                            "value": "not-scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 42,
+                            "start": 217,
+                            "end": 250
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

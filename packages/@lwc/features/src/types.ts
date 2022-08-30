@@ -61,6 +61,13 @@ export interface FeatureFlagMap {
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
 
     /**
+     * When enabled, we use the native custom element lifecycle hooks for callbacks such as
+     * connectedCallback and disconnectedCallback, rather than a synthetic system based
+     * on global DOM patching.
+     */
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
+
+    /**
      * Synthetic shadow DOM flag to enable `Node.prototype` global patching. The following APIs are
      * affected by this flag:
      *  - `Node.prototype.textContent`

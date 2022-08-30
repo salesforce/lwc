@@ -1,0 +1,83 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 64,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 53,
+                "end": 64
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "somefancytag",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 42,
+                    "start": 15,
+                    "end": 52,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 27,
+                        "start": 15,
+                        "end": 37
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 27,
+                        "endLine": 2,
+                        "endColumn": 42,
+                        "start": 37,
+                        "end": 52
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "min",
+                        "value": {
+                            "type": "Literal",
+                            "value": "4"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 19,
+                            "endLine": 2,
+                            "endColumn": 26,
+                            "start": 29,
+                            "end": 36
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
