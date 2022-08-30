@@ -46,7 +46,7 @@ function updatePackages(newVersion) {
             // Look for different types of dependencies
             // ex: dependencies, devDependencies, peerDependencies
             const pkgDependencyTypes = Object.keys(packageJson).filter((key) =>
-                key.match(/.*[dD]ependencies.*/g)
+                key.match(/.*[dD]ependencies/)
             );
             // Update dependencies in package.json
             for (const pkgDependencyType of pkgDependencyTypes) {
