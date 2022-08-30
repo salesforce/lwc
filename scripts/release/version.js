@@ -29,6 +29,7 @@ async function promptVersion() {
         return answer;
     } catch (error) {
         console.error(error);
+        process.exit(1);
     } finally {
         rl.close();
     }

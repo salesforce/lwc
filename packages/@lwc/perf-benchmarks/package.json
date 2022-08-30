@@ -21,7 +21,7 @@
     "devDependencies": {
         "glob-hash": "^1.0.5",
         "markdown-table": "^3.0.2",
-        "tachometer": "^0.5.10"
+        "tachometer": "0.5.10"
     },
     "nx": {
         "targets": {
