@@ -13,7 +13,7 @@
         "lwc": "2.23.2",
         "rollup": "^2.78.1",
         "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-serve": "^2.0.0"
+        "rollup-plugin-serve": "^2.0.1"
     },
     "nx": {
         "targets": {
