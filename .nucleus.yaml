@@ -82,4 +82,4 @@ steps:
     after: node-build
   # disable automatic package version bumping, lwc does this manually
   npm-bump-package-versions: &npm-bump-package-versions
-    skip: true
+    enabled: false
