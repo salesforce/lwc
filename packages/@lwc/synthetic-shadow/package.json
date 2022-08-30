@@ -15,7 +15,6 @@
     "main": "index.js",
     "module": "dist/synthetic-shadow.js",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -39,5 +38,14 @@
     "devDependencies": {
         "@lwc/features": "2.23.2",
         "@lwc/shared": "2.23.2"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

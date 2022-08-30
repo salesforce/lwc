@@ -15,7 +15,6 @@
     "typings": "dist/types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "tsc && node ./scripts/update-compiler-version.js",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
@@ -34,5 +33,14 @@
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

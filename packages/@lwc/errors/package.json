@@ -15,7 +15,6 @@
     "license": "MIT",
     "typings": "dist/types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "tsc",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
@@ -27,5 +26,14 @@
     ],
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }
