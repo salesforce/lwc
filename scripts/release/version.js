@@ -73,13 +73,17 @@ function updatePackages(newVersion) {
 
 function getPackagesToUpdate() {
     const rootPath = path.resolve(__dirname, '../../');
-    const rootPackageJson = JSON.parse(fs.readFileSync(`${rootPath}/package.json`, 'utf-8'));
+    const rootPackageJsonPath = `${rootPath}/package.json`;
+    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
     const packagesToUpdate = [];
 
-    const workspacePkgs = rootPackageJson.workspaces.reduce((accWorkspacePkgs, workspace) => {
-        const workspacePkg = glob.sync(`${workspace}/package.json`);
-        return [...accWorkspacePkgs, ...workspacePkg];
-    }, []);
+    const workspacePkgs = rootPackageJson.workspaces.reduce(
+        (accWorkspacePkgs, workspace) => {
+            const workspacePkg = glob.sync(`${workspace}/package.json`);
+            return [...accWorkspacePkgs, ...workspacePkg];
+        },
+        [rootPackageJsonPath]
+    );
 
     for (const pkgName of workspacePkgs) {
         const packageJsonPath = path.resolve(rootPath, pkgName);
