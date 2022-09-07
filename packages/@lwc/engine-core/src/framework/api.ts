@@ -43,6 +43,7 @@ import {
     VNodeType,
     VStatic,
     Key,
+    VFragment,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -59,6 +60,18 @@ function st(fragment: Element, key: Key): VStatic {
         key,
         elm: undefined,
         fragment,
+        owner: getVMBeingRendered()!,
+    };
+}
+
+// [fr]agment node
+function fr(key: Key, children: VNodes): VFragment {
+    return {
+        type: VNodeType.Fragment,
+        sel: undefined,
+        key,
+        elm: undefined,
+        children: [t(''), ...children, t('')],
         owner: getVMBeingRendered()!,
     };
 }
@@ -541,6 +554,7 @@ const api = ObjectFreeze({
     k,
     co,
     dc,
+    fr,
     ti,
     st,
     gid,
