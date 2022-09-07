@@ -230,7 +230,7 @@ export default class ParserCtx {
         }
 
         const currentIfContext = this.currentIfContext();
-        if (!currentIfContext) {
+        if (currentIfContext) {
             throw new Error(
                 'Should not invoke beginIfChain if an if context already exists. First end the current chain before starting a new one.'
             );
