@@ -229,9 +229,11 @@ export default class ParserCtx {
             throw new Error('Cannot invoke beginIfChain if there is currently no sibling context');
         }
 
-        // An if block always starts a new chain.
-        if (this.isParsingSiblingIfBlock()) {
-            this.endIfChain();
+        const currentIfContext = this.currentIfContext();
+        if (!currentIfContext) {
+            throw new Error(
+                'Should not invoke beginIfChain if an if context already exists. First end the current chain before starting a new one.'
+            );
         }
 
         const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();

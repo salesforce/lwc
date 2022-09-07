@@ -529,6 +529,11 @@ function parseIfBlock(
         );
     }
 
+    // An if block always starts a new chain.
+    if (ctx.isParsingSiblingIfBlock()) {
+        ctx.endIfChain();
+    }
+
     const ifNode = ast.ifBlockNode(
         ifBlockAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
