@@ -1002,8 +1002,7 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
-    const hasDirectives =
-        ctx.findInCurrentElementScope(ast.isForBlock) || ctx.findInCurrentElementScope(ast.isIf);
+    const hasDirectives = ctx.findInCurrentElementScope(ast.isElementDirective);
     if (hasDirectives) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
     }

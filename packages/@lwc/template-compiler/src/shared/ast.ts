@@ -428,6 +428,12 @@ export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBloc
     return isIfBlock(node) || isElseifBlock(node) || isElseBlock(node);
 }
 
+export function isElementDirective(
+    node: BaseNode
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node);
+}
+
 export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
