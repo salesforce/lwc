@@ -279,12 +279,17 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
     } else if (isComment(node)) {
         nodeIsStatic = true;
     } else {
-        // it is ForBlock | If | BaseElement
+        // it is ElseBlock | ForBlock | If | BaseElement
         node.children.forEach((childNode) => {
             collectStaticNodes(childNode, staticNodes, state);
 
             childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
         });
+
+        // for IfBlock and ElseifBlock, traverse down the else branch
+        if (isConditionalParentBlock(node) && node.else) {
+            collectStaticNodes(node.else, staticNodes, state);
+        }
 
         nodeIsStatic =
             isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);
