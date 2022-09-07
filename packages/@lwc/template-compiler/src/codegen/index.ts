@@ -202,6 +202,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     /**
+     * Transforms an IfBlock or ElseifBlock along with both its direct descendants and its 'else' descendants.
      *
      * @param conditionalParentBlock The IfBlock or ElseifBlock to transform into a conditional expression
      * @returns A conditional expression representing the full conditional tree with conditionalParentBlock as the root node
