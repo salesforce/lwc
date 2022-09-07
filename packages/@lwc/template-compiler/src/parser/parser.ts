@@ -58,6 +58,17 @@ interface IfContext {
     seenSlots: Set<string>[];
 }
 
+/**
+ * A SiblingScope object keeps track of the context needed to parse a series of if-elseif-else nodes.
+ *
+ * @param {IfContext} ifContext Context for the if-elseif-else chain currently being parsed at this level. This
+ * IfContext keeps track of the most recently parsed node in the chain and the set of slot names we've seen in all
+ * previous siblings in the chain.
+ * @param {IfContext} ancestorIfContext Reference to the nearest ancestor IfContext. The existence of an ancestor
+ * IfContext means that we are currently parsing nodes nested within an if-elseif-else chain. Context from that ancestor
+ * is needed to track which slot names have already been seen in and only in the current scope. This reference is also needed
+ * so we know where to merge all visited slot names from the current IfContext.
+ */
 interface SiblingScope {
     ifContext?: IfContext;
     ancestorIfContext?: IfContext;
@@ -77,8 +88,8 @@ export default class ParserCtx {
      * traverses the parse5 AST. Each 'elementScope' is an array where each node in
      * the array corresponds to either an IfBlock, ElseifBlock, ElseBlock, ForEach, ForOf, If, Element, Component, or Slot.
      *
-     * Currently, each elementScope has a hierarchy of IfBlock > ForBlock > IfBlock > Element | Component | Slot.
-     * Note: Not all scopes will have all, but when they do, they will appear in this order.
+     * Currently, each elementScope has a hierarchy of IfBlock > ForBlock > If > Element | Component | Slot.
+     * Note: Not all elementScopes will have all the nodes listed above, but when they do, they will appear in this order.
      * We do not keep track of template nodes.
      *
      * Each scope corresponds to the original parse5.Element node.
@@ -87,7 +98,7 @@ export default class ParserCtx {
 
     /**
      * 'siblingScopes' keeps track of the context from one sibling node to another.
-     * This is currently used to hold the info needed to properly parse lwc:if, lwc:elseif, and lwc:else directives.
+     * This holds the info needed to properly parse lwc:if, lwc:elseif, and lwc:else directives.
      */
     private readonly siblingScopes: SiblingScope[] = [];
 
@@ -116,7 +127,7 @@ export default class ParserCtx {
      * This method flattens the scopes into a single array for traversal.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
-        const ancestors = ([] as ParentNode[]).concat(...this.elementScopes);
+        const ancestors = this.elementScopes.flat();
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -186,7 +197,7 @@ export default class ParserCtx {
     }
 
     hasSeenSlot(name: string): boolean {
-        return this.hasSeenSlotInAncestorIfTree(name);
+        return this.seenSlotsFromAncestorIfTree().has(name);
     }
 
     addSeenSlot(name: string): void {
@@ -212,8 +223,6 @@ export default class ParserCtx {
         this.siblingScopes.pop();
     }
 
-    // Next goal is to try and move some of the "business logic" from here out into the parser's index.ts itself
-    // so that ParserCtx can be more of an utility than handling specific logic for how to handle the nodes.
     beginIfChain(node: IfBlock) {
         const currentSiblingContext = this.currentSiblingContext();
         if (!currentSiblingContext) {
@@ -221,37 +230,33 @@ export default class ParserCtx {
         }
 
         // An if block always starts a new chain.
-        if (this.isParsingIfBlock()) {
+        if (this.isParsingSiblingIfBlock()) {
             this.endIfChain();
         }
 
         const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
         currentSiblingContext.ifContext = {
             currentNode: node,
-            seenSlots: [
-                previouslySeenSlots ? new Set<string>(previouslySeenSlots) : new Set<string>(),
-            ],
+            seenSlots: [new Set<string>(previouslySeenSlots)],
         };
     }
 
     updateIfChain(node: ElseifBlock | ElseBlock) {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
-            throw new Error();
+            throw new Error('Cannot invoke updateIfChain without first setting the if context.');
         }
 
         currentIfContext.currentNode = node;
 
         const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
-        currentIfContext.seenSlots.push(
-            previouslySeenSlots ? new Set<string>(previouslySeenSlots) : new Set<string>()
-        );
+        currentIfContext.seenSlots.push(new Set<string>(previouslySeenSlots));
     }
 
     endIfChain() {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
-            return;
+            throw new Error('Cannot invoke endIfChain if there is currently no if context');
         }
 
         // Merge seen slot names from the current if chain into the parent scope.
@@ -268,17 +273,12 @@ export default class ParserCtx {
         }
     }
 
-    getSiblingIfNode(): ParentNode | undefined {
+    getSiblingIfNode(): IfBlock | ElseifBlock | ElseBlock | undefined {
         return this.currentIfContext()?.currentNode;
     }
 
-    isParsingIfBlock(): boolean {
-        return !!this.currentIfContext() || !!this.ancestorIfContext();
-    }
-
-    private hasSeenSlotInAncestorIfTree(name: string): boolean {
-        const seenSlots = this.seenSlotsFromAncestorIfTree();
-        return !!seenSlots && seenSlots.has(name);
+    isParsingSiblingIfBlock(): boolean {
+        return !!this.currentIfContext();
     }
 
     private currentSiblingContext(): SiblingScope | undefined {

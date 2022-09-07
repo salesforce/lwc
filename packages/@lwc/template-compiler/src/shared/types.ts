@@ -171,24 +171,36 @@ interface DirectiveParentNode extends BaseParentNode {
     directiveLocation: SourceLocation;
 }
 
+/**
+ * Node representing the if:true and if:false directives
+ */
 export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
     condition: Expression;
 }
 
+/**
+ * Node representing the lwc:if directive
+ */
 export interface IfBlock extends DirectiveParentNode {
     type: 'IfBlock';
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
 
+/**
+ * Node representing the lwc:elseif directive
+ */
 export interface ElseifBlock extends DirectiveParentNode {
     type: 'ElseifBlock';
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
 
+/**
+ * Node representing the lwc:else directive
+ */
 export interface ElseBlock extends DirectiveParentNode {
     type: 'ElseBlock';
 }

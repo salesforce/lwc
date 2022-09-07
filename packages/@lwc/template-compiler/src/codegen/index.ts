@@ -157,8 +157,6 @@ function transform(codeGen: CodeGen): t.Expression {
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
-                // IfBlock should always appear as the parent in the if-elseif-else chain which means
-                // ElseIfBlock and ElseBlock should never appear in the children array
                 res.push(transformConditionalParentBlock(child));
             }
         }
@@ -203,6 +201,11 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
+    /**
+     *
+     * @param conditionalParentBlock The IfBlock or ElseifBlock to transform into a conditional expression
+     * @returns A conditional expression representing the full conditional tree with conditionalParentBlock as the root node
+     */
     function transformConditionalParentBlock(
         conditionalParentBlock: IfBlock | ElseifBlock
     ): t.Expression {

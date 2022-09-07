@@ -325,7 +325,7 @@ function parseChildren(
                 const node = ctx.endElementScope();
                 if (
                     node &&
-                    ctx.isParsingIfBlock() &&
+                    ctx.isParsingSiblingIfBlock() &&
                     !ast.isIfBlock(node) &&
                     !ast.isElseifBlock(node)
                 ) {
@@ -335,7 +335,7 @@ function parseChildren(
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
                 // Non whitespace text nodes end any if chain we may be parsing
-                if (ctx.isParsingIfBlock() && textNodes.length > 0) {
+                if (ctx.isParsingSiblingIfBlock() && textNodes.length > 0) {
                     ctx.endIfChain();
                 }
             } else if (parse5Utils.isCommentNode(child)) {
@@ -343,7 +343,7 @@ function parseChildren(
                 parent.children.push(commentNode);
                 // If preserveComments is enabled, comments become syntactically meaningful and
                 // end any if chain we may be parsing
-                if (ctx.isParsingIfBlock() && ctx.preserveComments) {
+                if (ctx.isParsingSiblingIfBlock() && ctx.preserveComments) {
                     ctx.endIfChain();
                 }
             }
@@ -634,10 +634,7 @@ function parseElseBlock(
     }
 
     // Must not have a value
-    if (
-        ast.isExpression(elseBlockAttribute.value) ||
-        ast.isStringLiteral(elseBlockAttribute.value)
-    ) {
+    if (!ast.isBooleanLiteral(elseBlockAttribute.value)) {
         ctx.throwAtLocation(
             ParserDiagnostics.ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE,
             ast.sourceLocation(parse5ElmLocation)
