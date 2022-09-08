@@ -51,7 +51,7 @@ export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
     text: string;
-    key: undefined;
+    key: Key | undefined;
 }
 
 export interface VComment extends BaseVNode {
