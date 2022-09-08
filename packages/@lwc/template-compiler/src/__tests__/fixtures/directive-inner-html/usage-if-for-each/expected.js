@@ -17,29 +17,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
     k: api_key,
     i: api_iterator,
-    f: api_flatten,
+    fr: api_fragment,
     c: api_custom_element,
   } = $api;
   return [
-    api_custom_element(
-      "a-b",
-      _aB,
-      stc0,
-      api_flatten([
-        $cmp.isTrue
-          ? api_element("div", {
-              props: {
-                innerHTML:
-                  $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.ifRawHtml)
-                    ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
-                        $cmp.ifRawHtml
-                      ))
-                    : $ctx._sanitizedHtml$0,
-              },
-              context: stc1,
-              key: 1,
-            })
-          : null,
+    api_custom_element("a-b", _aB, stc0, [
+      $cmp.isTrue
+        ? api_element("div", {
+            props: {
+              innerHTML:
+                $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.ifRawHtml)
+                  ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
+                      $cmp.ifRawHtml
+                    ))
+                  : $ctx._sanitizedHtml$0,
+            },
+            context: stc1,
+            key: 1,
+          })
+        : null,
+      api_fragment(
+        "it-fr3",
         api_iterator($cmp.items, function (item) {
           return api_element("div", {
             props: {
@@ -53,9 +51,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             context: stc1,
             key: api_key(2, item.id),
           });
-        }),
-      ])
-    ),
+        })
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

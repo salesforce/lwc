@@ -9,30 +9,32 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     i: api_iterator,
+    fr: api_fragment,
   } = $api;
   return [
-    api_element(
-      "section",
-      stc0,
-      api_iterator($cmp.items, function (item) {
-        return [
-          api_element(
-            "p",
-            {
-              key: api_key(1, item.keyOne),
-            },
-            [api_text("1" + api_dynamic_text(item))]
-          ),
-          api_element(
-            "p",
-            {
-              key: api_key(2, item.keyTwo),
-            },
-            [api_text("2" + api_dynamic_text(item))]
-          ),
-        ];
-      })
-    ),
+    api_element("section", stc0, [
+      api_fragment(
+        "it-fr3",
+        api_iterator($cmp.items, function (item) {
+          return [
+            api_element(
+              "p",
+              {
+                key: api_key(1, item.keyOne),
+              },
+              [api_text("1" + api_dynamic_text(item))]
+            ),
+            api_element(
+              "p",
+              {
+                key: api_key(2, item.keyTwo),
+              },
+              [api_text("2" + api_dynamic_text(item))]
+            ),
+          ];
+        })
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

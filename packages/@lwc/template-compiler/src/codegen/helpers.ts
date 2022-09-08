@@ -92,8 +92,6 @@ export function containsDynamicChildren(parent: ParentNode): boolean {
 export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
     return children.some((child) => {
         return (
-            // ForBlock will generate a list of iterable vnodes
-            isForBlock(child) ||
             // IfBlock, ElseIfBlock, and Else children will always be an array
             isIfBlock(child) ||
             // light DOM slots

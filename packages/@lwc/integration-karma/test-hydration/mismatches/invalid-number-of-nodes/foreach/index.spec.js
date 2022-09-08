@@ -15,10 +15,12 @@ export default {
 
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
 
-        expect(consoleCalls.error).toHaveSize(2);
-        expect(consoleCalls.error[0][0].message).toContain(
+        expect(consoleCalls.error).toHaveSize(3);
+        // extra li does not matches with the fragmentEnd text node delimiter
+        expect(consoleCalls.error[0][0].message).toContain('incorrect node type received');
+        expect(consoleCalls.error[1][0].message).toContain(
             'Server rendered more nodes than the client.'
         );
-        expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
+        expect(consoleCalls.error[2][0].message).toContain('Hydration completed with errors.');
     },
 };

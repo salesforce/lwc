@@ -15,6 +15,10 @@ function createTestElement(tag, component) {
     return extractDataIds(elm);
 }
 
+function filterEmptyTextNodes(node) {
+    return !(node.nodeType === Node.TEXT_NODE && node.nodeValue === '');
+}
+
 describe('Slotting', () => {
     it('should render properly', () => {
         const nodes = createTestElement('x-default-slot', BasicSlot);
@@ -28,7 +32,9 @@ describe('Slotting', () => {
 
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+        expect(
+            Array.from(nodes['x-light-container'].childNodes).filter(filterEmptyTextNodes)
+        ).toEqual([
             nodes['container-upper-slot-default'],
             nodes['1'],
             nodes['2'],
@@ -41,7 +47,9 @@ describe('Slotting', () => {
         nodes.button.click();
         await Promise.resolve();
 
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+        expect(
+            Array.from(nodes['x-light-container'].childNodes).filter(filterEmptyTextNodes)
+        ).toEqual([
             nodes['container-upper-slot-default'],
             nodes['5'],
             nodes['4'],

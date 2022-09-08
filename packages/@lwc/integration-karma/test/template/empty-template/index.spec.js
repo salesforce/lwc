@@ -88,6 +88,9 @@ describe('non-root templates without lwc directives', () => {
             { nodeType: Node.ELEMENT_NODE, tagName: 'LI', textContent: 'two' },
             { nodeType: Node.ELEMENT_NODE, tagName: 'LI', textContent: 'three' },
         ];
-        testTemplateRendering(expected, elm.shadowRoot.childNodes);
+        testTemplateRendering(
+            expected,
+            Array.from(elm.shadowRoot.childNodes).filter((node) => node.textContent !== '')
+        );
     });
 });

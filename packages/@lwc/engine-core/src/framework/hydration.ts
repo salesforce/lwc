@@ -30,6 +30,7 @@ import {
     VElement,
     VCustomElement,
     VStatic,
+    VFragment,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -86,6 +87,11 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
         case VNodeType.Static:
             // VStatic are cacheable and cannot have custom renderer associated to them
             hydratedNode = hydrateStaticElement(node, vnode, renderer);
+            break;
+
+        case VNodeType.Fragment:
+            // @todo: what's vnode.data.renderer? do we need to update the fragment vnode?
+            hydratedNode = hydrateFragment(node, vnode, renderer);
             break;
 
         case VNodeType.Element:
@@ -152,6 +158,12 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     vnode.elm = elm;
 
     return elm;
+}
+
+function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): Node | null {
+    hydrateChildren(elm, vnode.children, renderer.getProperty(elm, 'parentNode'), vnode.owner);
+
+    return vnode.children[vnode.children.length - 1]!.elm as Node;
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
