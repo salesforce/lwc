@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1057,
+            "message": "LWC1057: label is not valid attribute for menuitem. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/menuitem",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 19,
+                "start": 40,
+                "length": 19
+            }
+        }
+    ]
+}

@@ -27,6 +27,15 @@ const VOID_ELEMENTS_SET = new Set([
     'wbr',
 ]);
 
+// These elements have been deprecated but preserving their usage for backwards compatibility
+// until we can officially deprecate them from LWC.
+// See:  https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+const DEPRECATED_ELEMENTS_SET = new Set(['param', 'keygen', 'menuitem']);
+
 export function isVoidElement(name: string, namespace: string): boolean {
-    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
+    return (
+        namespace === HTML_NAMESPACE &&
+        (VOID_ELEMENTS_SET.has(name.toLowerCase()) ||
+            DEPRECATED_ELEMENTS_SET.has(name.toLowerCase()))
+    );
 }
