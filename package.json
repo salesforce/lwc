@@ -25,8 +25,8 @@
         "release:version": "./scripts/release/version.js"
     },
     "devDependencies": {
-        "@babel/core": "^7.18.13",
-        "@babel/preset-env": "^7.18.10",
+        "@babel/core": "^7.19.0",
+        "@babel/preset-env": "^7.19.0",
         "@commitlint/cli": "^17.1.2",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
