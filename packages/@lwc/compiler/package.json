@@ -1,6 +1,6 @@
 {
     "name": "@lwc/compiler",
-    "version": "2.23.2",
+    "version": "2.23.3",
     "description": "LWC compiler",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -15,7 +15,6 @@
     "typings": "dist/types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "tsc && node ./scripts/update-compiler-version.js",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
@@ -26,13 +25,22 @@
         "@babel/core": "~7.18.13",
         "@babel/plugin-proposal-class-properties": "~7.18.6",
         "@babel/plugin-proposal-object-rest-spread": "~7.18.9",
-        "@lwc/babel-plugin-component": "2.23.2",
-        "@lwc/errors": "2.23.2",
-        "@lwc/shared": "2.23.2",
-        "@lwc/style-compiler": "2.23.2",
-        "@lwc/template-compiler": "2.23.2"
+        "@lwc/babel-plugin-component": "2.23.3",
+        "@lwc/errors": "2.23.3",
+        "@lwc/shared": "2.23.3",
+        "@lwc/style-compiler": "2.23.3",
+        "@lwc/template-compiler": "2.23.3"
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

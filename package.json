@@ -1,92 +1,92 @@
 {
-  "name": "lwc-monorepo",
-  "private": true,
-  "description": "Lightning Web Components",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/salesforce/lwc.git"
-  },
-  "scripts": {
-    "prepare": "husky install && yarn build",
-    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
-    "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
-    "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
-    "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
-    "build": "lerna run build --ignore @lwc/perf-benchmarks --ignore @lwc/perf-benchmarks-components --ignore @lwc/integration-tests",
-    "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
-    "build:performance:components": "lerna exec --scope @lwc/perf-benchmarks-components -- yarn build",
-    "build:performance:benchmarks": "lerna exec --scope @lwc/perf-benchmarks -- yarn build",
-    "dev": "lerna run dev --parallel --ignore @lwc/perf-benchmarks --ignore @lwc/perf-benchmarks-components --ignore @lwc/integration-tests",
-    "test": "jest --config ./scripts/jest/root.config.js",
-    "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
-    "test:ci": "yarn test --no-cache --coverage --runInBand",
-    "test:integration": "lerna exec --scope @lwc/integration-tests -- yarn sauce",
-    "test:performance": "lerna exec --scope @lwc/perf-benchmarks -- yarn test",
-    "release:publish:ci": "./scripts/release/publish.mjs",
-    "release:version": "./scripts/release/version.mjs"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.18.13",
-    "@babel/preset-env": "^7.18.10",
-    "@commitlint/cli": "^17.1.2",
-    "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
-    "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-replace": "^4.0.0",
-    "@rollup/plugin-typescript": "^8.4.0",
-    "@types/babel__core": "^7.1.19",
-    "@types/glob": "^7.2.0",
-    "@types/jest": "^28.1.8",
-    "@types/node": "^18.7.13",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "babel-plugin-tester": "^10.1.0",
-    "bundlesize": "^0.18.1",
-    "es5-proxy-compat": "^0.22.4",
-    "eslint": "^8.23.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^27.0.1",
-    "execa": "^6.1.0",
-    "fs-extra": "^10.1.0",
-    "glob": "^8.0.3",
-    "husky": "^8.0.1",
-    "is-ci": "^3.0.1",
-    "isbinaryfile": "^5.0.0",
-    "jest": "^28.1.3",
-    "jest-environment-jsdom": "^28.1.3",
-    "lerna": "^5.4.3",
-    "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "rollup": "^2.78.1",
-    "rollup-plugin-compat": "^0.22.4",
-    "terser": "^5.15.0",
-    "ts-jest": "^28.0.8",
-    "tslib": "^2.4.0",
-    "typescript": "4.7.4",
-    "workerpool": "^6.2.0"
-  },
-  "lint-staged": {
-    "**/*.{js,mjs,ts}": "eslint",
-    "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write"
-  },
-  "workspaces": [
-    "packages/@lwc/*",
-    "packages/lwc",
-    "playground"
-  ],
-  "engines": {
-    "node": ">=10"
-  },
-  "volta": {
-    "node": "16.15.1",
-    "yarn": "1.22.19"
-  },
-  "resolutions": {
-    "//": [
-      "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
-      "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
+    "name": "lwc-monorepo",
+    "version": "2.23.3",
+    "private": true,
+    "description": "Lightning Web Components",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git"
+    },
+    "scripts": {
+        "prepare": "husky install && yarn build",
+        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
+        "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
+        "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
+        "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
+        "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
+        "build:performance:components": "nx build @lwc/perf-benchmarks-components",
+        "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
+        "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
+        "test": "jest --config ./scripts/jest/root.config.js",
+        "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
+        "test:ci": "yarn test --no-cache --coverage --runInBand",
+        "test:integration": "nx sauce @lwc/integration-tests",
+        "test:performance": "nx test @lwc/perf-benchmarks",
+        "release:version": "./scripts/release/version.js"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.18.13",
+        "@babel/preset-env": "^7.18.10",
+        "@commitlint/cli": "^17.1.2",
+        "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
+        "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
+        "@rollup/plugin-node-resolve": "^13.3.0",
+        "@rollup/plugin-replace": "^4.0.0",
+        "@rollup/plugin-typescript": "^8.4.0",
+        "@types/babel__core": "^7.1.19",
+        "@types/glob": "^7.2.0",
+        "@types/jest": "^28.1.8",
+        "@types/node": "^18.7.13",
+        "@typescript-eslint/eslint-plugin": "^5.35.1",
+        "@typescript-eslint/parser": "^5.35.1",
+        "babel-plugin-tester": "^10.1.0",
+        "bundlesize": "^0.18.1",
+        "es5-proxy-compat": "^0.22.4",
+        "eslint": "^8.23.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jest": "^27.0.1",
+        "execa": "^6.1.0",
+        "fs-extra": "^10.1.0",
+        "glob": "^8.0.3",
+        "husky": "^8.0.1",
+        "is-ci": "^3.0.1",
+        "isbinaryfile": "^5.0.0",
+        "jest": "^28.1.3",
+        "jest-environment-jsdom": "^28.1.3",
+        "lerna": "^5.4.3",
+        "lint-staged": "^13.0.3",
+        "nx": "14.4.3",
+        "prettier": "^2.7.1",
+        "rollup": "^2.78.1",
+        "rollup-plugin-compat": "^0.22.4",
+        "terser": "^5.15.0",
+        "ts-jest": "^28.0.8",
+        "tslib": "^2.4.0",
+        "typescript": "4.7.4",
+        "workerpool": "^6.2.0"
+    },
+    "lint-staged": {
+        "**/*.{js,mjs,ts}": "eslint",
+        "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write"
+    },
+    "workspaces": [
+        "packages/@lwc/*",
+        "packages/lwc",
+        "playground"
     ],
-    "jasmine-core": "3.10.1",
-    "iltorb": "npm:@stdlib/utils-noop@0.0.10"
-  }
+    "engines": {
+        "node": ">=10"
+    },
+    "volta": {
+        "node": "16.15.1",
+        "yarn": "1.22.19"
+    },
+    "resolutions": {
+        "//": [
+            "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
+            "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
+        ],
+        "jasmine-core": "3.10.1",
+        "iltorb": "npm:@stdlib/utils-noop@0.0.10"
+    }
 }

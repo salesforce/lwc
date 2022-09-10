@@ -1,0 +1,31 @@
+{
+    "extends": "nx/presets/npm.json",
+    "tasksRunnerOptions": {
+        "default": {
+            "runner": "nx/tasks-runners/default",
+            "options": {
+                "cacheDirectory": "./.nx-cache",
+                "cacheableOperations": ["build", "dev"]
+            }
+        }
+    },
+    "targetDefaults": {
+        "build": {
+            "dependsOn": ["^build"]
+        },
+        "dev": {
+            "dependsOn": ["^build"]
+        },
+        "//": "Build @lwc/perf-benchmarks dependencies and build target when invoking the test:performance script on the root package.json.",
+        "test": {
+            "dependsOn": ["build"]
+        },
+        "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
+        "sauce": {
+            "dependsOn": ["^build"]
+        }
+    },
+    "affected": {
+        "defaultBase": "master"
+    }
+}
