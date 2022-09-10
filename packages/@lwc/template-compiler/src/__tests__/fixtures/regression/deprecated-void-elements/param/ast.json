@@ -1,0 +1,91 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 61,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 50,
+                "end": 61
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "param",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 39,
+                    "start": 15,
+                    "end": 49,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 39,
+                        "start": 15,
+                        "end": 49
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "hello"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 24,
+                            "start": 22,
+                            "end": 34
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "value",
+                        "value": {
+                            "type": "Literal",
+                            "value": "world"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 25,
+                            "endLine": 2,
+                            "endColumn": 38,
+                            "start": 35,
+                            "end": 48
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
