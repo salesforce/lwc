@@ -1,0 +1,182 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 154,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 143,
+                "end": 154
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 24,
+                    "start": 15,
+                    "end": 34,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 24,
+                        "start": 15,
+                        "end": 34
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "type",
+                        "value": {
+                            "type": "Literal",
+                            "value": "text"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 23,
+                            "start": 22,
+                            "end": 33
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "keygen",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 9,
+                    "endLine": 3,
+                    "endColumn": 95,
+                    "start": 43,
+                    "end": 129,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 9,
+                        "endLine": 3,
+                        "endColumn": 95,
+                        "start": 43,
+                        "end": 129
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "name"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 17,
+                            "endLine": 3,
+                            "endColumn": 28,
+                            "start": 51,
+                            "end": 62
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "challenge",
+                        "value": {
+                            "type": "Literal",
+                            "value": "some challenge"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 29,
+                            "endLine": 3,
+                            "endColumn": 55,
+                            "start": 63,
+                            "end": 89
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "keytype",
+                        "value": {
+                            "type": "Literal",
+                            "value": "type"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 56,
+                            "endLine": 3,
+                            "endColumn": 70,
+                            "start": 90,
+                            "end": 104
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "keyparams",
+                        "value": {
+                            "type": "Literal",
+                            "value": "some-params"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 71,
+                            "endLine": 3,
+                            "endColumn": 94,
+                            "start": 105,
+                            "end": 128
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Text",
+                "raw": "</input>",
+                "value": {
+                    "type": "Literal",
+                    "value": "</input>"
+                },
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 95,
+                    "endLine": 5,
+                    "endColumn": 1,
+                    "start": 129,
+                    "end": 143
+                }
+            }
+        ]
+    }
+}
