@@ -25,17 +25,17 @@ describe('customRendererConfig normalization', () => {
                 },
             })
         ).toMatchInlineSnapshot(`
-            Object {
-              "customRendererConfig": Object {
-                "directives": Array [],
-                "elements": Array [
-                  Object {
+            {
+              "customRendererConfig": {
+                "directives": [],
+                "elements": [
+                  {
                     "attributes": undefined,
                     "namespace": undefined,
                     "tagName": "div",
                   },
-                  Object {
-                    "attributes": Array [
+                  {
+                    "attributes": [
                       "style",
                     ],
                     "namespace": undefined,
