@@ -32,7 +32,7 @@
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
         "@rollup/plugin-node-resolve": "^13.3.0",
         "@rollup/plugin-replace": "^4.0.0",
-        "@rollup/plugin-typescript": "^8.4.0",
+        "@rollup/plugin-typescript": "^8.5.0",
         "@types/babel__core": "^7.1.19",
         "@types/glob": "^7.2.0",
         "@types/jest": "^28.1.8",
@@ -57,12 +57,12 @@
         "lint-staged": "^13.0.3",
         "nx": "14.4.3",
         "prettier": "^2.7.1",
-        "rollup": "^2.78.1",
+        "rollup": "^2.79.0",
         "rollup-plugin-compat": "^0.22.4",
         "terser": "^5.15.0",
         "ts-jest": "^28.0.8",
         "tslib": "^2.4.0",
-        "typescript": "4.7.4",
+        "typescript": "4.8.3",
         "workerpool": "^6.2.0"
     },
     "lint-staged": {
