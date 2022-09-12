@@ -1,12 +1,16 @@
 import _cCustom from "c/custom";
 import { registerTemplate } from "lwc";
 const stc0 = {
-  key: 0,
+  key: 1,
 };
 const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element } = $api;
-  return $cmp.visible ? [api_custom_element("c-custom", _cCustom, stc0)] : stc1;
+  const { c: api_custom_element, fr: api_fragment } = $api;
+  return [
+    $cmp.visible
+      ? api_fragment("if-fr0", [api_custom_element("c-custom", _cCustom, stc0)])
+      : api_fragment("if-fr0", stc1),
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
