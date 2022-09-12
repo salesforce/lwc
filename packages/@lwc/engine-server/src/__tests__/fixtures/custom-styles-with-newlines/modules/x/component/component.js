@@ -5,7 +5,6 @@ export default class Component extends LightningElement {
     margin = 8;
 
     get customStyles() {
-        debugger;
         return `
             color: ${this.color};
             margin: ${this.margin}px;
