@@ -58,19 +58,17 @@ interface IfContext {
     seenSlots: Set<string>[];
 }
 
-/**
- * A SiblingScope object keeps track of the context needed to parse a series of if-elseif-else nodes.
- *
- * @param {IfContext} ifContext Context for the if-elseif-else chain currently being parsed at this level. This
- * IfContext keeps track of the most recently parsed node in the chain and the set of slot names we've seen in all
- * previous siblings in the chain.
- * @param {IfContext} ancestorIfContext Reference to the nearest ancestor IfContext. The existence of an ancestor
- * IfContext means that we are currently parsing nodes nested within an if-elseif-else chain. Context from that ancestor
- * is needed to track which slot names have already been seen in and only in the current scope. This reference is also needed
- * so we know where to merge all visited slot names from the current IfContext.
- */
+// A SiblingScope object keeps track of the context needed to parse a series of if-elseif-else nodes.
 interface SiblingScope {
+    // Context for the if-elseif-else chain currently being parsed at this level. This
+    // IfContext keeps track of the most recently parsed node in the chain and the set of slot names we've seen in all
+    // previous siblings in the chain.
     ifContext?: IfContext;
+
+    // Reference to the nearest ancestor IfContext. The existence of an ancestor
+    // IfContext means that we are currently parsing nodes nested within an if-elseif-else chain. Context from that ancestor
+    // is needed to track which slot names have already been seen in and only in the current scope. This reference is also needed
+    // so we know where to merge all visited slot names from the current IfContext.
     ancestorIfContext?: IfContext;
 }
 
