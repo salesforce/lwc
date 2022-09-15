@@ -10,6 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     k: api_key,
     d: api_dynamic_text,
     i: api_iterator,
+    fr: api_fragment,
   } = $api;
   const { _m0 } = $ctx;
   return [
@@ -23,31 +24,32 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("New")]
     ),
-    api_element(
-      "ul",
-      stc0,
-      api_iterator($cmp.list, function (task) {
-        return api_element(
-          "li",
-          {
-            key: api_key(2, task.id),
-          },
-          [
-            api_text(api_dynamic_text(task.title)),
-            api_element(
-              "button",
-              {
-                key: 3,
-                on: {
-                  click: api_bind(task.delete),
+    api_element("ul", stc0, [
+      api_fragment(
+        "it-fr4",
+        api_iterator($cmp.list, function (task) {
+          return api_element(
+            "li",
+            {
+              key: api_key(2, task.id),
+            },
+            [
+              api_text(api_dynamic_text(task.title)),
+              api_element(
+                "button",
+                {
+                  key: 3,
+                  on: {
+                    click: api_bind(task.delete),
+                  },
                 },
-              },
-              [api_text("[X]")]
-            ),
-          ]
-        );
-      })
-    ),
+                [api_text("[X]")]
+              ),
+            ]
+          );
+        })
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

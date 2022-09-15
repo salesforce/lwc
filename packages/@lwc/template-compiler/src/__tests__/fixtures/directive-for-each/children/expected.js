@@ -12,76 +12,72 @@ const stc1 = {
   classMap: {
     s2: true,
   },
-  key: 3,
+  key: 4,
 };
-const stc2 = [];
-const stc3 = {
+const stc2 = {
   classMap: {
     s3: true,
   },
-  key: 6,
+  key: 8,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
     i: api_iterator,
+    fr: api_fragment,
     st: api_static_fragment,
-    f: api_flatten,
     h: api_element,
     k: api_key,
   } = $api;
   return [
-    api_element(
-      "section",
-      stc0,
-      api_flatten([
-        api_text("Other Child"),
+    api_element("section", stc0, [
+      api_text("Other Child"),
+      api_fragment(
+        "it-fr1",
         api_iterator($cmp.items, function (item) {
           return api_text("X");
-        }),
-        api_static_fragment($fragment1(), 2),
-      ])
-    ),
-    api_element(
-      "section",
-      stc1,
-      api_flatten([
-        api_text("Other Child"),
-        $cmp.isTrue
-          ? api_iterator($cmp.items, function (item) {
+        })
+      ),
+      api_static_fragment($fragment1(), 3),
+    ]),
+    api_element("section", stc1, [
+      api_text("Other Child"),
+      $cmp.isTrue
+        ? api_fragment(
+            "it-fr7",
+            api_iterator($cmp.items, function (item) {
               return [
                 api_element(
                   "p",
                   {
-                    key: api_key(4, item.id),
+                    key: api_key(5, item.id),
                   },
                   [api_text("X1")]
                 ),
                 api_element(
                   "p",
                   {
-                    key: api_key(5, item.id),
+                    key: api_key(6, item.id),
                   },
                   [api_text("X2")]
                 ),
               ];
             })
-          : stc2,
-      ])
-    ),
-    api_element(
-      "section",
-      stc3,
-      api_flatten([
-        api_static_fragment($fragment2(), 8),
+          )
+        : null,
+    ]),
+    api_element("section", stc2, [
+      api_static_fragment($fragment2(), 10),
+      api_fragment(
+        "it-fr12",
         api_iterator($cmp.items, function (item) {
           return api_element("div", {
-            key: api_key(9, item.id),
+            key: api_key(11, item.id),
           });
-        }),
-      ])
-    ),
-    api_static_fragment($fragment3(), 11),
+        })
+      ),
+    ]),
+    api_static_fragment($fragment3(), 14),
   ];
   /*LWC compiler vX.X.X*/
 }

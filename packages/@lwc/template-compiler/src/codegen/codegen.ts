@@ -43,6 +43,7 @@ type RenderPrimitive =
     | 'scopedFragId'
     | 'comment'
     | 'sanitizeHtmlContent'
+    | 'fragment'
     | 'staticFragment';
 
 interface RenderPrimitiveDefinition {
@@ -66,6 +67,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
 };
 
@@ -147,8 +149,9 @@ export default class CodeGen {
         this.state = state;
     }
 
-    generateKey() {
-        return this.currentKey++;
+    generateKey(prefix?: string) {
+        // to avoid the extra " in the key when prefix is not defined
+        return prefix ? prefix + this.currentKey++ : this.currentKey++;
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
@@ -212,8 +215,18 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
     }
 
+    genFragment(key: t.Expression | t.SimpleLiteral, children: t.Expression): t.Expression {
+        return this._renderApiCall(RENDER_APIS.fragment, [key, children]);
+    }
+
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
-        return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
+        // when slotting content, keys may collide with default content
+        // since isSameVnode does not take into account the type, some times it will try to patch a fragment with another type of vnode.
+        // note: this is hackery, maybe there's a better way?
+        return this.genFragment(
+            t.literal(this.generateKey('it-fr')),
+            this._renderApiCall(RENDER_APIS.iterator, [iterable, callback])
+        );
     }
 
     genBind(handler: t.Expression) {

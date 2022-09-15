@@ -12,22 +12,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
     h: api_element,
     i: api_iterator,
+    fr: api_fragment,
   } = $api;
   return [
-    api_element(
-      "section",
-      stc0,
-      api_iterator($cmp.items, function (item) {
-        return api_element(
-          "div",
-          {
-            classMap: stc1,
-            key: api_key(1, item.id),
-          },
-          [api_static_fragment($fragment1(), 3)]
-        );
-      })
-    ),
+    api_element("section", stc0, [
+      api_fragment(
+        "it-fr4",
+        api_iterator($cmp.items, function (item) {
+          return api_element(
+            "div",
+            {
+              classMap: stc1,
+              key: api_key(1, item.id),
+            },
+            [api_static_fragment($fragment1(), 3)]
+          );
+        })
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -52,6 +52,7 @@ import {
     isSameVnode,
     VNodeType,
     VStatic,
+    VFragment,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -106,6 +107,10 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
             n2.elm = n1.elm;
             break;
 
+        case VNodeType.Fragment:
+            patchFragment(n1 as VFragment, n2, parent, renderer);
+            break;
+
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
@@ -131,6 +136,10 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
         case VNodeType.Static:
             // VStatic cannot have a custom renderer associated to them, using owner's renderer
             mountStatic(node, parent, anchor, renderer);
+            break;
+
+        case VNodeType.Fragment:
+            mountFragment(node, parent, anchor, renderer);
             break;
 
         case VNodeType.Element:
@@ -186,6 +195,20 @@ function mountComment(
     linkNodeToShadow(commentNode, owner, renderer);
 
     insertNode(commentNode, parent, anchor, renderer);
+}
+
+function mountFragment(
+    vnode: VFragment,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    mountVNodes(vnode.children, parent, renderer, anchor);
+}
+
+function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
+    // @todo: atm, all fragments are dynamic, so the diffing must be the slow one.
+    updateDynamicChildren(n1.children, n2.children, parent, renderer);
 }
 
 function mountElement(
@@ -370,9 +393,13 @@ function unmount(
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        // The vnode might or might not have a data.renderer associated to it
-        // but the removal used here is from the owner instead.
-        removeNode(elm!, parent, renderer);
+        if (type === VNodeType.Fragment) {
+            unmountVNodes(vnode.children, parent, renderer, doRemove);
+        } else {
+            // The vnode might or might not have a data.renderer associated to it
+            // but the removal used here is from the owner instead.
+            removeNode(elm!, parent, renderer);
+        }
     }
 
     switch (type) {
