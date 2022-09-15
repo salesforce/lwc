@@ -360,13 +360,13 @@ function t(text: string): VText {
 
 // [co]mment node
 function co(text: string): VComment {
-    let sel, key, elm;
+    let sel, elm;
     return {
         type: VNodeType.Comment,
         sel,
         text,
         elm,
-        key,
+        key: 'c',
         owner: getVMBeingRendered()!,
     };
 }
