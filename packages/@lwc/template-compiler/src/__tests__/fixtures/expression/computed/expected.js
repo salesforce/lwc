@@ -4,9 +4,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     d: api_dynamic_text,
     t: api_text,
     i: api_iterator,
-    fr: api_fragment,
+    f: api_flatten,
   } = $api;
-  return [
+  return api_flatten([
     api_text(
       api_dynamic_text($cmp.val) +
         " " +
@@ -14,17 +14,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         " " +
         api_dynamic_text($cmp.val[$cmp.state.foo][$cmp.state.bar])
     ),
-    api_fragment(
-      "it-fr0",
-      api_iterator($cmp.arr, function (item, index) {
-        return api_text(
-          api_dynamic_text($cmp.arr[index]) +
-            " " +
-            api_dynamic_text($cmp.arr[$cmp.state.val])
-        );
-      })
-    ),
-  ];
+    api_iterator($cmp.arr, function (item, index) {
+      return api_text(
+        api_dynamic_text($cmp.arr[index]) +
+          " " +
+          api_dynamic_text($cmp.arr[$cmp.state.val])
+      );
+    }),
+  ]);
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

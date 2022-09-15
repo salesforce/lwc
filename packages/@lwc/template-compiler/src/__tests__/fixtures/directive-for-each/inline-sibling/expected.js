@@ -10,13 +10,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     i: api_iterator,
-    fr: api_fragment,
     st: api_static_fragment,
+    f: api_flatten,
   } = $api;
   return [
-    api_element("ul", stc0, [
-      api_fragment(
-        "it-fr2",
+    api_element(
+      "ul",
+      stc0,
+      api_flatten([
         api_iterator($cmp.items, function (item) {
           return api_element(
             "li",
@@ -26,10 +27,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             [api_text(api_dynamic_text(item))]
           );
-        })
-      ),
-      api_static_fragment($fragment1(), 4),
-    ]),
+        }),
+        api_static_fragment($fragment1(), 3),
+      ])
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

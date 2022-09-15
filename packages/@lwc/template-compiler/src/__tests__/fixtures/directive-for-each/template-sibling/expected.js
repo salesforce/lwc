@@ -3,7 +3,7 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 4,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -12,12 +12,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     i: api_iterator,
-    fr: api_fragment,
+    f: api_flatten,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_fragment(
-        "it-fr3",
+    api_element(
+      "section",
+      stc0,
+      api_flatten([
         api_iterator($cmp.items, function (item) {
           return [
             api_element(
@@ -35,10 +36,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               [api_text("2" + api_dynamic_text(item))]
             ),
           ];
-        })
-      ),
-      api_element("p", stc1, [api_text("3" + api_dynamic_text($cmp.item))]),
-    ]),
+        }),
+        api_element("p", stc1, [api_text("3" + api_dynamic_text($cmp.item))]),
+      ])
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

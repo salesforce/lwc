@@ -10,26 +10,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     i: api_iterator,
-    fr: api_fragment,
   } = $api;
   return [
-    api_element("ul", stc0, [
-      api_fragment(
-        "it-fr2",
-        api_iterator($cmp.colors, function (color) {
-          return [
-            api_comment(" color "),
-            api_element(
-              "li",
-              {
-                key: api_key(1, color),
-              },
-              [api_text(api_dynamic_text(color))]
-            ),
-          ];
-        })
-      ),
-    ]),
+    api_element(
+      "ul",
+      stc0,
+      api_iterator($cmp.colors, function (color) {
+        return [
+          api_comment(" color "),
+          api_element(
+            "li",
+            {
+              key: api_key(1, color),
+            },
+            [api_text(api_dynamic_text(color))]
+          ),
+        ];
+      })
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

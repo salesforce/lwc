@@ -232,9 +232,14 @@ function transform(codeGen: CodeGen): t.Expression {
             expression = expression.elements[0] as t.Expression;
         }
 
-        return isForEach(forBlock)
-            ? applyInlineFor(forBlock, expression)
-            : applyInlineForOf(forBlock, expression);
+        let res: t.Expression;
+        if (isForEach(forBlock)) {
+            res = applyInlineFor(forBlock, expression);
+        } else {
+            res = applyInlineForOf(forBlock, expression);
+        }
+
+        return res;
     }
 
     function transformForChildren(forBlock: ForBlock): t.Expression {

@@ -72,11 +72,12 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
 export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
     return children.some(
         (child) =>
-            isParentNode(child) &&
-            // If node is only a control flow node and does not map to a stand alone element.
-            // Search children to determine if it should be flattened.
-            ((isIf(child) && shouldFlatten(codeGen, child.children)) ||
-                (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child)))
+            isForBlock(child) ||
+            (isParentNode(child) &&
+                // If node is only a control flow node and does not map to a stand alone element.
+                // Search children to determine if it should be flattened.
+                ((isIf(child) && shouldFlatten(codeGen, child.children)) ||
+                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
     );
 }
 

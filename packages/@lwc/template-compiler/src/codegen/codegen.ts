@@ -149,9 +149,8 @@ export default class CodeGen {
         this.state = state;
     }
 
-    generateKey(prefix?: string) {
-        // to avoid the extra " in the key when prefix is not defined
-        return prefix ? prefix + this.currentKey++ : this.currentKey++;
+    generateKey() {
+        return this.currentKey++;
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
@@ -215,18 +214,17 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
     }
 
-    genFragment(key: t.Expression | t.SimpleLiteral, children: t.Expression): t.Expression {
-        return this._renderApiCall(RENDER_APIS.fragment, [key, children]);
+    genFragment(
+        key: t.Expression | t.SimpleLiteral,
+        children: t.Expression,
+        stable: boolean = false
+    ): t.Expression {
+        const isStable = stable ? t.literal(1) : t.literal(0);
+        return this._renderApiCall(RENDER_APIS.fragment, [key, children, isStable]);
     }
 
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
-        // when slotting content, keys may collide with default content
-        // since isSameVnode does not take into account the type, some times it will try to patch a fragment with another type of vnode.
-        // note: this is hackery, maybe there's a better way?
-        return this.genFragment(
-            t.literal(this.generateKey('it-fr')),
-            this._renderApiCall(RENDER_APIS.iterator, [iterable, callback])
-        );
+        return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
     }
 
     genBind(handler: t.Expression) {
