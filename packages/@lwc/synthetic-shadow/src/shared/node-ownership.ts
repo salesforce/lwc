@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
+import featureFlags from '@lwc/features';
+
 import { parentNodeGetter } from '../env/node';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
@@ -56,8 +58,11 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
             return hostKey;
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
-        if (!isNull(host) && isSyntheticSlotElement(host)) {
-            return undefined;
+
+        if (featureFlags.ENABLE_LIGHT_GET_ROOT_NODE_PATCH) {
+            if (!isNull(host) && isSyntheticSlotElement(host)) {
+                return undefined;
+            }
         }
     }
 }

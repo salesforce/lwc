@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import LightElement from 'x/light';
@@ -39,8 +39,27 @@ function dispatchEventWithLog(target, nodes, event) {
 }
 
 describe('root light element', () => {
-    // eslint-disable-next-line jest/no-focused-tests
-    it('should throw events properly', () => {
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', false);
+    });
+    it('should not dispatch events to window from elements slotted into synthetic shadow', () => {
+        const nodes = createTestElement('x-root', LightElement);
+
+        const log = dispatchEventWithLog(
+            nodes.button,
+            nodes,
+            new CustomEvent('test', { bubbles: true, composed: false })
+        );
+
+        const composedPath = [nodes.button, nodes.slot, nodes['x-list'].shadowRoot];
+        expect(log).toEqual([
+            [nodes.button, nodes.button, composedPath],
+            [nodes.slot, nodes.button, composedPath],
+            [nodes['x-list'].shadowRoot, nodes.button, composedPath],
+        ]);
+    });
+    it('should throw events properly with flag ENABLE_LIGHT_GET_ROOT_NODE_PATCH', () => {
+        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
         const nodes = createTestElement('x-root', LightElement);
 
         const log = dispatchEventWithLog(
