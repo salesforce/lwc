@@ -203,12 +203,24 @@ function mountFragment(
     anchor: Node | null,
     renderer: RendererAPI
 ) {
-    mountVNodes(vnode.children, parent, renderer, anchor);
+    const { children } = vnode;
+    mountVNodes(children, parent, renderer, anchor);
+
+    // children of a fragment will always have at least the two delimiters.
+    vnode.elm = children[children.length - 1]!.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
-    // @todo: atm, all fragments are dynamic, so the diffing must be the slow one.
-    updateDynamicChildren(n1.children, n2.children, parent, renderer);
+    const { children, stable } = n2;
+
+    if (stable) {
+        updateStaticChildren(n1.children, children, parent, renderer);
+    } else {
+        updateDynamicChildren(n1.children, children, parent, renderer);
+    }
+
+    // Note: not reusing n1.elm, because after patching, it may not be upper delimiter.
+    n2.elm = children[children.length - 1]!.elm;
 }
 
 function mountElement(

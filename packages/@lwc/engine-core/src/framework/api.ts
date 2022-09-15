@@ -65,13 +65,14 @@ function st(fragment: Element, key: Key): VStatic {
 }
 
 // [fr]agment node
-function fr(key: Key, children: VNodes): VFragment {
+function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
     return {
         type: VNodeType.Fragment,
         sel: undefined,
         key,
         elm: undefined,
         children: [t(''), ...children, t('')],
+        stable,
         owner: getVMBeingRendered()!,
     };
 }

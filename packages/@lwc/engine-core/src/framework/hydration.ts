@@ -89,7 +89,7 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
             break;
 
         case VNodeType.Fragment:
-            // @todo: what's vnode.data.renderer? do we need to update the fragment vnode?
+            // a fragment does not represent any element, therefore there is no need to use a custom renderer.
             hydratedNode = hydrateFragment(node, vnode, renderer);
             break;
 
@@ -161,9 +161,11 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 }
 
 function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): Node | null {
-    hydrateChildren(elm, vnode.children, renderer.getProperty(elm, 'parentNode'), vnode.owner);
+    const { children, owner } = vnode;
 
-    return vnode.children[vnode.children.length - 1]!.elm as Node;
+    hydrateChildren(elm, children, renderer.getProperty(elm, 'parentNode'), owner);
+
+    return (vnode.elm = children[children.length - 1]!.elm as Node);
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
