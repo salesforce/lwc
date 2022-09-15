@@ -195,7 +195,13 @@ function parseElement(
         validateProperties(ctx, element);
     } else {
         // parseBaseElement will always return an element EXCEPT when processing a <template>
-        validateTemplate(ctx, parsedAttr, parse5Elm as TemplateElement, parse5ElmLocation);
+        validateTemplate(
+            ctx,
+            parsedAttr,
+            parse5Elm as TemplateElement,
+            directive,
+            parse5ElmLocation
+        );
     }
 
     const currentNode = element ?? directive;
@@ -1009,6 +1015,7 @@ function validateTemplate(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     template: TemplateElement,
+    validTemplateAttributes: ParentNode | undefined,
     parse5ElmLocation: parse5.ElementLocation
 ): void {
     const location = ast.sourceLocation(parse5ElmLocation);
@@ -1026,11 +1033,19 @@ function validateTemplate(
 
     // At this point in the parsing all supported attributes from a non root template
     // should have been validated and removed from ParsedAttribute.
-    const templateAttrs = parsedAttr.getAttributes();
-    if (templateAttrs.length) {
-        ctx.throwAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
-            templateAttrs.map((attr) => attr.name).join(', '),
-        ]);
+    const invalidTemplateAttributes = parsedAttr.getAttributes();
+    if (invalidTemplateAttributes.length) {
+        // Warn when there are valid template attributes attached to the template
+        if (validTemplateAttributes) {
+            ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE_WARNING, location, [
+                invalidTemplateAttributes.map((attr) => attr.name).join(', '),
+            ]);
+        } else {
+            // Throw an error when there are no valid attributes attached to the template
+            ctx.throwAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
+                invalidTemplateAttributes.map((attr) => attr.name).join(', '),
+            ]);
+        }
     }
 }
 

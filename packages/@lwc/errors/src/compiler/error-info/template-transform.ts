@@ -625,4 +625,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+    INVALID_TEMPLATE_ATTRIBUTE_WARNING: {
+        code: 1153,
+        message:
+            'A mix of valid and invalid attributes detected on an LWC template. The following attributes will be ignored: {0}. For more information, ' +
+            'please visit https://lwc.dev/guide/reference#html-template-directives',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };
