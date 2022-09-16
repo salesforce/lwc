@@ -44,6 +44,7 @@ describe('customRendererConfig normalization', () => {
                 ],
               },
               "enableStaticContentOptimization": true,
+              "enableStrictTemplateSyntax": false,
               "experimentalComputedMemberExpression": false,
               "experimentalDynamicDirective": false,
               "preserveHtmlComments": false,

@@ -1,0 +1,10 @@
+
+<template>
+    <section>
+        <template if:true={showItems} for:each={items} for:item="item">
+            <template class="slds-hello-world">
+                <p key={item.id}>{item}</p>
+            </template>
+        </template>
+    </section>
+</template>

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1153,
+            "message": "LWC1153: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: class. For more information, please visit https://lwc.dev/guide/reference#html-template-directives",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 13,
+                "start": 110,
+                "length": 103
+            }
+        }
+    ]
+}

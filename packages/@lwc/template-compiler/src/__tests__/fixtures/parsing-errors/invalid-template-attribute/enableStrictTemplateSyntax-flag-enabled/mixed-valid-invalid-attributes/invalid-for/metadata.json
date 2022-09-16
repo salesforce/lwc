@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1154,
+            "message": "LWC1154: A mix of valid and invalid attributes detected on an LWC template. The following attributes will be ignored: onfoo. For more information, please visit https://lwc.dev/guide/reference#html-template-directives",
+            "level": 2,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 113
+            }
+        }
+    ]
+}
