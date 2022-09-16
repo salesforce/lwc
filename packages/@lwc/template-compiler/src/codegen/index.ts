@@ -205,18 +205,30 @@ function transform(codeGen: CodeGen): t.Expression {
      * Transforms an IfBlock or ElseifBlock along with both its direct descendants and its 'else' descendants.
      *
      * @param conditionalParentBlock The IfBlock or ElseifBlock to transform into a conditional expression
+     * @param key The key to use for this chain of IfBlock/ElseifBlock branches, if applicable
      * @returns A conditional expression representing the full conditional tree with conditionalParentBlock as the root node
      */
     function transformConditionalParentBlock(
-        conditionalParentBlock: IfBlock | ElseifBlock
+        conditionalParentBlock: IfBlock | ElseifBlock,
+        key?: number
     ): t.Expression {
-        const childrenExpression = transformChildren(conditionalParentBlock);
-        let elseExpression: t.Expression = t.arrayExpression([]);
+        const ifBlockKey = key || codeGen.generateKey();
 
+        const childrenExpression = codeGen.genFragment(
+            t.literal(ifBlockKey),
+            transformChildren(conditionalParentBlock)
+        );
+
+        let elseExpression: t.Expression = t.literal(null);
         if (conditionalParentBlock.else) {
-            elseExpression = isElseifBlock(conditionalParentBlock.else)
-                ? transformConditionalParentBlock(conditionalParentBlock.else)
-                : transformChildren(conditionalParentBlock.else);
+            elseExpression = codeGen.genFragment(
+                t.literal(ifBlockKey),
+                isElseifBlock(conditionalParentBlock.else)
+                    ? t.arrayExpression([
+                          transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey),
+                      ])
+                    : transformChildren(conditionalParentBlock.else)
+            );
         }
 
         return t.conditionalExpression(

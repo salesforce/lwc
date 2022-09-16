@@ -94,8 +94,6 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
         return (
             // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
-            // IfBlock, ElseIfBlock, and Else children will always be an array
-            isIfBlock(child) ||
             // light DOM slots
             (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.

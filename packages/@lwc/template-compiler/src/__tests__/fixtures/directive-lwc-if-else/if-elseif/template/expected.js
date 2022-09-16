@@ -1,12 +1,15 @@
 import { registerTemplate } from "lwc";
-const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text } = $api;
-  return $cmp.visible
-    ? [api_text("Conditional Text")]
-    : $cmp.displayAlt
-    ? [api_text("Elseif!")]
-    : stc0;
+  const { t: api_text, fr: api_fragment } = $api;
+  return [
+    $cmp.visible
+      ? api_fragment(0, [api_text("Conditional Text")], 0)
+      : api_fragment(
+          0,
+          [$cmp.displayAlt ? api_fragment(1, [api_text("Elseif!")], 0) : null],
+          0
+        ),
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
