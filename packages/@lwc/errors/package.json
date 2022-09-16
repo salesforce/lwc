@@ -1,6 +1,6 @@
 {
     "name": "@lwc/errors",
-    "version": "2.23.1",
+    "version": "2.23.4",
     "description": "LWC Error Utilities",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -15,7 +15,6 @@
     "license": "MIT",
     "typings": "dist/types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "tsc",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
@@ -27,5 +26,14 @@
     ],
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }
