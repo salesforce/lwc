@@ -16,11 +16,16 @@ export const enum VNodeType {
     Element,
     CustomElement,
     Static,
+    Fragment,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement | VStatic;
-export type VParentElement = VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VCustomElement | VStatic | VFragment;
+export type VParentElement = VElement | VCustomElement | VFragment;
 export type VNodes = Readonly<Array<VNode | null>>;
+
+export interface BaseVParent {
+    children: VNodes;
+}
 
 export interface BaseVNode {
     type: VNodeType;
@@ -37,6 +42,17 @@ export interface VStatic extends BaseVNode {
     fragment: Element;
 }
 
+export interface VFragment extends BaseVNode, BaseVParent {
+    // In a fragment elm represents the last node of the fragment,
+    // which is the end delimiter text node ([start, ...children, end]). Used in the updateStaticChildren routine.
+    // elm: Node | undefined; (inherited from BaseVNode)
+    sel: undefined;
+    type: VNodeType.Fragment;
+
+    // which diffing strategy to use.
+    stable: 0 | 1;
+}
+
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
@@ -51,10 +67,9 @@ export interface VComment extends BaseVNode {
     key: 'c';
 }
 
-export interface VBaseElement extends BaseVNode {
+export interface VBaseElement extends BaseVNode, BaseVParent {
     sel: string;
     data: VElementData;
-    children: VNodes;
     elm: Element | undefined;
     key: Key;
 }
