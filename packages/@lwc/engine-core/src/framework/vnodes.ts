@@ -44,7 +44,7 @@ export interface VStatic extends BaseVNode {
 
 export interface VFragment extends BaseVNode, BaseVParent {
     // In a fragment elm represents the last node of the fragment,
-    // which is the upper text node delimiter. Used in the updateStaticChildren routine.
+    // which is the end delimiter text node ([start, ...children, end]). Used in the updateStaticChildren routine.
     // elm: Node | undefined; (inherited from BaseVNode)
     sel: undefined;
     type: VNodeType.Fragment;

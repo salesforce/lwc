@@ -219,7 +219,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
         updateDynamicChildren(n1.children, children, parent, renderer);
     }
 
-    // Note: not reusing n1.elm, because after patching, it may not be upper delimiter.
+    // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
     n2.elm = children[children.length - 1]!.elm;
 }
 
