@@ -32,6 +32,7 @@ export default function templateTransform(
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
+        enableStrictTemplateSyntax,
     } = options;
     const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
@@ -42,6 +43,7 @@ export default function templateTransform(
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
+            enableStrictTemplateSyntax,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

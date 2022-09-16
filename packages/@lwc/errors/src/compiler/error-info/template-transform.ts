@@ -594,7 +594,7 @@ export const ParserDiagnostics = {
         message:
             'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
             'please visit https://lwc.dev/guide/reference#html-template-directives',
-        level: DiagnosticLevel.Error,
+        level: DiagnosticLevel.Warning,
         url: '',
     },
     PRESERVE_COMMENTS_MUST_BE_BOOLEAN: {
@@ -625,8 +625,18 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-    INVALID_TEMPLATE_ATTRIBUTE_WARNING: {
+    // This error is the same as 1145 which is a warning and will eventually replace 1145 but keeping the error and warning
+    // separate for now to preserve backwards compatibility.
+    INVALID_TEMPLATE_ATTRIBUTE_ERROR: {
         code: 1153,
+        message:
+            'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
+            'please visit https://lwc.dev/guide/reference#html-template-directives',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    MIXED_VALID_AND_INVALID_TEMPLATE_ATTRIBUTES: {
+        code: 1154,
         message:
             'A mix of valid and invalid attributes detected on an LWC template. The following attributes will be ignored: {0}. For more information, ' +
             'please visit https://lwc.dev/guide/reference#html-template-directives',

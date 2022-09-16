@@ -205,19 +205,25 @@ function parseElement(
     }
 
     const currentNode = element ?? directive;
-    /* istanbul ignore if */
-    if (!currentNode) {
-        // The only scenarios when currentNode can be undefined is when a non-root template element is either empty
-        // or it has invalid attributes.
-        // These two scenarios should be handled in validateTemplate and this branch should be unreachable.
-        throw new Error(
-            `An internal parsing error occurred, no BaseElement or Directive created for ${parse5Elm.tagName}`
-        );
+    if (!ctx.config.enableStrictTemplateSyntax) {
+        parseChildren(ctx, parse5Elm, currentNode ?? parentNode, parse5ElmLocation);
+        validateChildren(ctx, element);
+    } else {
+        /* istanbul ignore else */
+        if (currentNode) {
+            // parseChildren will iterate through parse5Elm's children and assign newly created AST nodes as children of currentNode.
+            parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
+            validateChildren(ctx, element);
+        } else {
+            // The only scenarios when currentNode can be undefined is when a non-root template element is either empty
+            // or it has invalid attributes.
+            // These two scenarios should be handled in validateTemplate when enableStrictTemplateSyntax is enabled,
+            // which means this branch should be unreachable when it is.
+            throw new Error(
+                `An internal parsing error occurred, no BaseElement or Directive created for ${parse5Elm.tagName}`
+            );
+        }
     }
-
-    // parseChildren will iterate through parse5Elm's children and assign newly created AST nodes as children of currentNode.
-    parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-    validateChildren(ctx, element);
 }
 
 function parseElementLocation(
@@ -1034,17 +1040,26 @@ function validateTemplate(
     // At this point in the parsing all supported attributes from a non root template
     // should have been validated and removed from ParsedAttribute.
     const invalidTemplateAttributes = parsedAttr.getAttributes();
+    /* istanbul ignore else */
     if (invalidTemplateAttributes.length) {
-        // Warn when there are valid template attributes attached to the template
-        if (validTemplateAttributes) {
-            ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE_WARNING, location, [
+        if (!ctx.config.enableStrictTemplateSyntax) {
+            ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
                 invalidTemplateAttributes.map((attr) => attr.name).join(', '),
             ]);
         } else {
-            // Throw an error when there are no valid attributes attached to the template
-            ctx.throwAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
-                invalidTemplateAttributes.map((attr) => attr.name).join(', '),
-            ]);
+            // Warn when there are a mix of valid and invalid template attributes.
+            if (validTemplateAttributes) {
+                ctx.warnAtLocation(
+                    ParserDiagnostics.MIXED_VALID_AND_INVALID_TEMPLATE_ATTRIBUTES,
+                    location,
+                    [invalidTemplateAttributes.map((attr) => attr.name).join(', ')]
+                );
+            } else {
+                // Throw an error when there are no valid attributes attached to the template.
+                ctx.throwAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE_ERROR, location, [
+                    invalidTemplateAttributes.map((attr) => attr.name).join(', '),
+                ]);
+            }
         }
     }
 }
