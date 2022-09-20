@@ -71,19 +71,17 @@ export interface TransformOptions {
     scopedStyles?: boolean;
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
-    enableStrictTemplateSyntax?: boolean;
 }
 
 type RequiredTransformOptions = Omit<
     TransformOptions,
-    'name' | 'namespace' | 'scopedStyles' | 'customRendererConfig' | 'enableStrictTemplateSyntax'
+    'name' | 'namespace' | 'scopedStyles' | 'customRendererConfig'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
     namespace?: string;
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
-    enableStrictTemplateSyntax?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {

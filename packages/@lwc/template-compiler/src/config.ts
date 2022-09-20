@@ -37,16 +37,6 @@ export interface Config {
      * When false, the template compiler will not generate optimized code for static content.
      */
     enableStaticContentOptimization?: boolean;
-
-    /**
-     * Enable throwing error when only unsupported template attributes are used on a non-root template. eg:
-     * <template>
-     *      <template class='slds-hello-world'>
-     *          <span>hi</span>
-     *      </template>
-     * </template>
-     */
-    enableStrictTemplateSyntax?: boolean;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
@@ -58,7 +48,6 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalDynamicDirective',
     'preserveHtmlComments',
     'enableStaticContentOptimization',
-    'enableStrictTemplateSyntax',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -117,7 +106,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
         enableStaticContentOptimization: true,
-        enableStrictTemplateSyntax: false,
         ...config,
         ...{ customRendererConfig },
     };
