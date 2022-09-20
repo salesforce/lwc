@@ -43,6 +43,7 @@ type RenderPrimitive =
     | 'scopedFragId'
     | 'comment'
     | 'sanitizeHtmlContent'
+    | 'fragment'
     | 'staticFragment';
 
 interface RenderPrimitiveDefinition {
@@ -66,6 +67,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
 };
 
@@ -213,6 +215,15 @@ export default class CodeGen {
 
     genSanitizeHtmlContent(content: t.Expression): t.Expression {
         return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
+    }
+
+    genFragment(
+        key: t.Expression | t.SimpleLiteral,
+        children: t.Expression,
+        stable: boolean = false
+    ): t.Expression {
+        const isStable = stable ? t.literal(1) : t.literal(0);
+        return this._renderApiCall(RENDER_APIS.fragment, [key, children, isStable]);
     }
 
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {

@@ -63,7 +63,7 @@ it('should throw an error when the passing a non iterable', () => {
     elm.items = {};
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-    expect(() => document.body.appendChild(elm)).toThrowError(
+    expect(() => document.body.appendChild(elm)).toThrowConnectedError(
         /Invalid template iteration for value `\[object (ProxyObject|Object)\]` in \[object:vm Test \(\d+\)\]. It must be an array-like object and not `null` nor `undefined`./
     );
 });
@@ -80,7 +80,7 @@ it('throws when passing an invalid key', () => {
     elm.items = [{ key: null, value: 'one' }];
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-    expect(() => document.body.appendChild(elm)).toThrowError(
+    expect(() => document.body.appendChild(elm)).toThrowConnectedError(
         /Invalid key value "null" in \[object:vm Test \(\d+\)\]. Key must be a string or number./
     );
 });

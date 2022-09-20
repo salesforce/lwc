@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-server",
-    "version": "2.23.0",
+    "version": "2.23.4",
     "description": "Renders LWC components in a server environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -16,7 +16,6 @@
     "typings": "types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/ types/",
         "build": "rollup --config scripts/rollup.config.js",
         "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -25,13 +24,23 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.23.0",
-        "@lwc/rollup-plugin": "2.23.0",
-        "@lwc/shared": "2.23.0",
+        "@lwc/engine-core": "2.23.4",
+        "@lwc/rollup-plugin": "2.23.4",
+        "@lwc/shared": "2.23.4",
         "@rollup/plugin-virtual": "^2.1.0",
         "parse5": "^6.0.1"
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

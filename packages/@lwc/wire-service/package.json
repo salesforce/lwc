@@ -1,6 +1,6 @@
 {
     "name": "@lwc/wire-service",
-    "version": "2.23.0",
+    "version": "2.23.4",
     "description": "@wire service",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -16,7 +16,6 @@
     "module": "dist/wire-service.js",
     "typings": "types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/ types/",
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -25,8 +24,8 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.23.0",
-        "@lwc/shared": "2.23.0"
+        "@lwc/engine-core": "2.23.4",
+        "@lwc/shared": "2.23.4"
     },
     "lwc": {
         "modules": [
@@ -46,5 +45,15 @@
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

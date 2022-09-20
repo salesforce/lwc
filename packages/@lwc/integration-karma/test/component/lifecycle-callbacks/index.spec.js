@@ -146,28 +146,53 @@ if (process.env.NATIVE_SHADOW) {
     it(`should invoke connectedCallback and renderedCallback in the expected order (native shadow)`, () => {
         const elm = createElement('order-container', { is: Container });
         document.body.appendChild(elm);
-        expect(window.timingBuffer).toEqual([
-            'foo-a:connectedCallback',
-            'foo-b:connectedCallback',
-            'foo-c:connectedCallback',
-            'foo-internal-c:connectedCallback',
-            'foo-internal-c:renderedCallback',
-            'foo-c:renderedCallback',
-            'foo-internal-b:connectedCallback',
-            'foo-internal-b:renderedCallback',
-            'foo-b:renderedCallback',
-            'foo-d:connectedCallback',
-            'foo-internal-d:connectedCallback',
-            'foo-internal-d:renderedCallback',
-            'foo-d:renderedCallback',
-            'foo-internal-a:connectedCallback',
-            'foo-internal-a:renderedCallback',
-            'foo-a:renderedCallback',
-            'foo-e:connectedCallback',
-            'foo-internal-e:connectedCallback',
-            'foo-internal-e:renderedCallback',
-            'foo-e:renderedCallback',
-        ]);
+        expect(window.timingBuffer).toEqual(
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'foo-a:connectedCallback',
+                      'foo-internal-a:connectedCallback',
+                      'foo-internal-a:renderedCallback',
+                      'foo-a:renderedCallback',
+                      'foo-b:connectedCallback',
+                      'foo-internal-b:connectedCallback',
+                      'foo-internal-b:renderedCallback',
+                      'foo-b:renderedCallback',
+                      'foo-c:connectedCallback',
+                      'foo-internal-c:connectedCallback',
+                      'foo-internal-c:renderedCallback',
+                      'foo-c:renderedCallback',
+                      'foo-d:connectedCallback',
+                      'foo-internal-d:connectedCallback',
+                      'foo-internal-d:renderedCallback',
+                      'foo-d:renderedCallback',
+                      'foo-e:connectedCallback',
+                      'foo-internal-e:connectedCallback',
+                      'foo-internal-e:renderedCallback',
+                      'foo-e:renderedCallback',
+                  ]
+                : [
+                      'foo-a:connectedCallback',
+                      'foo-b:connectedCallback',
+                      'foo-c:connectedCallback',
+                      'foo-internal-c:connectedCallback',
+                      'foo-internal-c:renderedCallback',
+                      'foo-c:renderedCallback',
+                      'foo-internal-b:connectedCallback',
+                      'foo-internal-b:renderedCallback',
+                      'foo-b:renderedCallback',
+                      'foo-d:connectedCallback',
+                      'foo-internal-d:connectedCallback',
+                      'foo-internal-d:renderedCallback',
+                      'foo-d:renderedCallback',
+                      'foo-internal-a:connectedCallback',
+                      'foo-internal-a:renderedCallback',
+                      'foo-a:renderedCallback',
+                      'foo-e:connectedCallback',
+                      'foo-internal-e:connectedCallback',
+                      'foo-internal-e:renderedCallback',
+                      'foo-e:renderedCallback',
+                  ]
+        );
     });
 } else {
     it(`should invoke connectedCallback and renderedCallback in the expected order (synthetic shadow)`, () => {

@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
 } from '@lwc/shared';
+import features from '@lwc/features';
 
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -51,6 +52,7 @@ import {
     isSameVnode,
     VNodeType,
     VStatic,
+    VFragment,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -105,6 +107,10 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
             n2.elm = n1.elm;
             break;
 
+        case VNodeType.Fragment:
+            patchFragment(n1 as VFragment, n2, parent, renderer);
+            break;
+
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
@@ -130,6 +136,10 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
         case VNodeType.Static:
             // VStatic cannot have a custom renderer associated to them, using owner's renderer
             mountStatic(node, parent, anchor, renderer);
+            break;
+
+        case VNodeType.Fragment:
+            mountFragment(node, parent, anchor, renderer);
             break;
 
         case VNodeType.Element:
@@ -185,6 +195,32 @@ function mountComment(
     linkNodeToShadow(commentNode, owner, renderer);
 
     insertNode(commentNode, parent, anchor, renderer);
+}
+
+function mountFragment(
+    vnode: VFragment,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    const { children } = vnode;
+    mountVNodes(children, parent, renderer, anchor);
+
+    // children of a fragment will always have at least the two delimiters.
+    vnode.elm = children[children.length - 1]!.elm;
+}
+
+function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
+    const { children, stable } = n2;
+
+    if (stable) {
+        updateStaticChildren(n1.children, children, parent, renderer);
+    } else {
+        updateDynamicChildren(n1.children, children, parent, renderer);
+    }
+
+    // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
+    n2.elm = children[children.length - 1]!.elm;
 }
 
 function mountElement(
@@ -282,10 +318,20 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        if (process.env.IS_BROWSER) {
+            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
+                    // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
+                    assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+                }
+                runConnectedCallback(vm);
+            }
+        } else {
+            // On the server, we don't have native custom element lifecycle callbacks, so we must
+            // manually invoke the connectedCallback for a child component.
+            runConnectedCallback(vm);
         }
-        runConnectedCallback(vm);
     }
 
     mountVNodes(vnode.children, elm, renderer, null);
@@ -359,9 +405,13 @@ function unmount(
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        // The vnode might or might not have a data.renderer associated to it
-        // but the removal used here is from the owner instead.
-        removeNode(elm!, parent, renderer);
+        if (type === VNodeType.Fragment) {
+            unmountVNodes(vnode.children, parent, renderer, doRemove);
+        } else {
+            // The vnode might or might not have a data.renderer associated to it
+            // but the removal used here is from the owner instead.
+            removeNode(elm!, parent, renderer);
+        }
     }
 
     switch (type) {

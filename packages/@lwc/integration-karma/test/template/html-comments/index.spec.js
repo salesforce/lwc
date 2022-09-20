@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import Test from 'x/test';
+import ConfusedWithText from 'x/confusedWithText';
 
 const COMMENT_NODE = 8;
 
@@ -60,6 +61,21 @@ describe('html comments', () => {
         return Promise.resolve().then(() => {
             comments = getChildrenComments(child);
             expect(comments).not.toContain('slotted:odd comment');
+        });
+    });
+
+    it('should not confuse comments with text nodes', () => {
+        const elm = createElement('x-confused-with-text', { is: ConfusedWithText });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.textContent).toBe('helloworld');
+
+        elm.comments = ['comment'];
+
+        return Promise.resolve().then(() => {
+            const comments = getChildrenComments(elm.shadowRoot);
+            expect(comments).toContain('Comment inside for:each');
+            expect(elm.shadowRoot.textContent).toBe('hellocommentworld');
         });
     });
 });

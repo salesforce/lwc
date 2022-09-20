@@ -61,6 +61,13 @@ export interface FeatureFlagMap {
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
 
     /**
+     * When enabled, we use the native custom element lifecycle hooks for callbacks such as
+     * connectedCallback and disconnectedCallback, rather than a synthetic system based
+     * on global DOM patching.
+     */
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
+
+    /**
      * Synthetic shadow DOM flag to enable `Node.prototype` global patching. The following APIs are
      * affected by this flag:
      *  - `Node.prototype.textContent`
@@ -91,6 +98,13 @@ export interface FeatureFlagMap {
      * of next tick. It only affects wire configurations that depend on component values.
      */
     ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
+
+    /**
+     * Flag to fix `getRootNode` on elements slotted from root into Synthetic Shadow.
+     * The following API is affected by this flag:
+     *  - `Node.prototype.getRootNode`
+     */
+    ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

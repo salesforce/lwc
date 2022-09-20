@@ -23,16 +23,27 @@ const fixtures = [
         tagName: 'x-shadow-parent',
         ctor: ShadowParent,
         connect: process.env.NATIVE_SHADOW
-            ? [
-                  'shadowParent:connectedCallback',
-                  'leaf:before-container:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:slotted-a:connectedCallback',
-                  'leaf:slotted-b:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-                  'leaf:after-container:connectedCallback',
-              ]
+            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'shadowParent:connectedCallback',
+                      'leaf:before-container:connectedCallback',
+                      'shadowContainer:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                      'leaf:slotted-a:connectedCallback',
+                      'leaf:slotted-b:connectedCallback',
+                      'leaf:after-container:connectedCallback',
+                  ]
+                : [
+                      'shadowParent:connectedCallback',
+                      'leaf:before-container:connectedCallback',
+                      'shadowContainer:connectedCallback',
+                      'leaf:slotted-a:connectedCallback',
+                      'leaf:slotted-b:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                      'leaf:after-container:connectedCallback',
+                  ]
             : [
                   'shadowParent:connectedCallback',
                   'leaf:before-container:connectedCallback',
@@ -108,13 +119,21 @@ const fixtures = [
         tagName: 'x-light-shadow-parent',
         ctor: LightShadowParent,
         connect: process.env.NATIVE_SHADOW
-            ? [
-                  'lightShadowContainer:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:slotted-light:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-              ]
+            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'lightShadowContainer:connectedCallback',
+                      'shadowContainer:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                      'leaf:slotted-light:connectedCallback',
+                  ]
+                : [
+                      'lightShadowContainer:connectedCallback',
+                      'shadowContainer:connectedCallback',
+                      'leaf:slotted-light:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                  ]
             : [
                   'lightShadowContainer:connectedCallback',
                   'shadowContainer:connectedCallback',
@@ -152,15 +171,25 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
     document.body.appendChild(elm);
     expect(window.timingBuffer).toEqual(
         process.env.NATIVE_SHADOW
-            ? [
-                  'shadowContainer:connectedCallback',
-                  'parent:a:connectedCallback',
-                  'leaf:a:connectedCallback',
-                  'parent:b:connectedCallback',
-                  'leaf:b:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-              ]
+            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'shadowContainer:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                      'parent:a:connectedCallback',
+                      'leaf:a:connectedCallback',
+                      'parent:b:connectedCallback',
+                      'leaf:b:connectedCallback',
+                  ]
+                : [
+                      'shadowContainer:connectedCallback',
+                      'parent:a:connectedCallback',
+                      'leaf:a:connectedCallback',
+                      'parent:b:connectedCallback',
+                      'leaf:b:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                  ]
             : [
                   'shadowContainer:connectedCallback',
                   'leaf:before-slot:connectedCallback',
@@ -176,14 +205,26 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
 
     elm.hide = true;
     return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual([
-            'shadowContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'parent:a:disconnectedCallback',
-            'leaf:a:disconnectedCallback',
-            'parent:b:disconnectedCallback',
-            'leaf:b:disconnectedCallback',
-        ]);
+        expect(window.timingBuffer).toEqual(
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'shadowContainer:disconnectedCallback',
+                      'leaf:after-slot:disconnectedCallback',
+                      'leaf:before-slot:disconnectedCallback',
+                      'parent:a:disconnectedCallback',
+                      'leaf:a:disconnectedCallback',
+                      'parent:b:disconnectedCallback',
+                      'leaf:b:disconnectedCallback',
+                  ]
+                : [
+                      'shadowContainer:disconnectedCallback',
+                      'leaf:after-slot:disconnectedCallback',
+                      'leaf:before-slot:disconnectedCallback',
+                      'parent:a:disconnectedCallback',
+                      'leaf:a:disconnectedCallback',
+                      'parent:b:disconnectedCallback',
+                      'leaf:b:disconnectedCallback',
+                  ]
+        );
     });
 });
