@@ -195,34 +195,21 @@ function parseElement(
         validateProperties(ctx, element);
     } else {
         // parseBaseElement will always return an element EXCEPT when processing a <template>
-        validateTemplate(
-            ctx,
-            parsedAttr,
-            parse5Elm as TemplateElement,
-            directive,
-            parse5ElmLocation
-        );
+        validateTemplate(ctx, parsedAttr, parse5Elm as TemplateElement, parse5ElmLocation);
     }
 
     const currentNode = element ?? directive;
-    if (!ctx.config.enableStrictTemplateSyntax) {
-        parseChildren(ctx, parse5Elm, currentNode ?? parentNode, parse5ElmLocation);
+    if (currentNode) {
+        parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
         validateChildren(ctx, element);
     } else {
-        /* istanbul ignore else */
-        if (currentNode) {
-            // parseChildren will iterate through parse5Elm's children and assign newly created AST nodes as children of currentNode.
-            parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-            validateChildren(ctx, element);
-        } else {
-            // The only scenarios when currentNode can be undefined is when a non-root template element is either empty
-            // or it has invalid attributes.
-            // These two scenarios should be handled in validateTemplate when enableStrictTemplateSyntax is enabled,
-            // which means this branch should be unreachable when it is.
-            throw new Error(
-                `An internal parsing error occurred, no BaseElement or Directive created for ${parse5Elm.tagName}`
-            );
-        }
+        // The only scenario where currentNode can be undefined is when there are only invalid attributes on a template element.
+        // For example, <template class='slds-hello-world'>, these attributes are ignored and the children of the template
+        // will not be rendered.
+        ctx.warnAtLocation(
+            ParserDiagnostics.INVALID_TEMPLATE_WARNING,
+            ast.sourceLocation(parse5ElmLocation)
+        );
     }
 }
 
@@ -1021,7 +1008,6 @@ function validateTemplate(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     template: TemplateElement,
-    validTemplateAttributes: ParentNode | undefined,
     parse5ElmLocation: parse5.ElementLocation
 ): void {
     const location = ast.sourceLocation(parse5ElmLocation);
@@ -1037,30 +1023,13 @@ function validateTemplate(
         ]);
     }
 
-    // At this point in the parsing all supported attributes from a non root template
-    // should have been validated and removed from ParsedAttribute.
+    // At this point in the parsing all supported attributes from a non root template element
+    // should have been removed from ParsedAttribute and all other attributes will be ignored.
     const invalidTemplateAttributes = parsedAttr.getAttributes();
-    /* istanbul ignore else */
     if (invalidTemplateAttributes.length) {
-        if (!ctx.config.enableStrictTemplateSyntax) {
-            ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
-                invalidTemplateAttributes.map((attr) => attr.name).join(', '),
-            ]);
-        } else {
-            // Warn when there are a mix of valid and invalid template attributes.
-            if (validTemplateAttributes) {
-                ctx.warnAtLocation(
-                    ParserDiagnostics.MIXED_VALID_AND_INVALID_TEMPLATE_ATTRIBUTES,
-                    location,
-                    [invalidTemplateAttributes.map((attr) => attr.name).join(', ')]
-                );
-            } else {
-                // Throw an error when there are no valid attributes attached to the template.
-                ctx.throwAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE_ERROR, location, [
-                    invalidTemplateAttributes.map((attr) => attr.name).join(', '),
-                ]);
-            }
-        }
+        ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
+            invalidTemplateAttributes.map((attr) => attr.name).join(', '),
+        ]);
     }
 }
 
