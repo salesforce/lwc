@@ -116,6 +116,10 @@ describe('refs', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('yolo');
+        elm.next();
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('woohoo');
+        });
     });
 
     it('refs not accessible externally', () => {
