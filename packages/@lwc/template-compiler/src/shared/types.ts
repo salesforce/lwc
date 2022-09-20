@@ -127,6 +127,7 @@ export type ElementDirective =
     | DomDirective
     | InnerHTMLDirective
     | RefDirective;
+
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
