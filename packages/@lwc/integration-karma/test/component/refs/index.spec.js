@@ -17,6 +17,7 @@ import Rendered from 'x/rendered';
 import Disconnect from 'x/disconnect';
 import Render from 'x/render';
 import Expando from 'x/expando';
+import ExpandoCheck from 'x/expandoCheck';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -133,6 +134,14 @@ describe('refs', () => {
         expect(elm.getRefs()).toEqual(undefined);
         elm.setRefs('bar');
         expect(elm.getRefs()).toEqual('bar');
+    });
+
+    it('can overwrite refs with an expando after checking the expando for truthiness', () => {
+        const elm = createElement('x-expando-check', { is: ExpandoCheck });
+
+        document.body.appendChild(elm);
+        elm.checkAndSet();
+        expect(elm.getRefs()).toEqual('foo');
     });
 
     it('refs not accessible externally', () => {
