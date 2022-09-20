@@ -540,7 +540,8 @@ LightningElement.prototype = {
         }
 
         // The refNodes can be cached based on the refVNodes, since the refVNodes
-        // are recreated every time the template is rendered.
+        // are recreated from scratch every time the template is rendered.
+        // This happens with `vm.refVNodes = null` in `template.ts` in `@lwc/engine-core`.
         let refs = refsCache.get(refVNodes);
 
         if (isUndefined(refs)) {
