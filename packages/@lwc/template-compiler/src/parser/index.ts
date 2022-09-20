@@ -677,7 +677,7 @@ function applyRefDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, element, [`<${element.name}>`]);
     }
 
-    if (ctx.isInsideIteration()) {
+    if (isInIteration(ctx)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_LOCATION_INSIDE_ITERATION, element, [
             `<${element.name}>`,
         ]);
