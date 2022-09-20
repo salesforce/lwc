@@ -16,6 +16,7 @@ import Connect from 'x/connect';
 import Rendered from 'x/rendered';
 import Disconnect from 'x/disconnect';
 import Render from 'x/render';
+import Expando from 'x/expando';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -120,6 +121,18 @@ describe('refs', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('woohoo');
         });
+    });
+
+    it('can overwrite refs with an expando', () => {
+        const elm = createElement('x-expando', { is: Expando });
+
+        document.body.appendChild(elm);
+        elm.setRefs('foo');
+        expect(elm.getRefs()).toEqual('foo');
+        elm.deleteRefs();
+        expect(elm.getRefs()).toEqual(undefined);
+        elm.setRefs('bar');
+        expect(elm.getRefs()).toEqual('bar');
     });
 
     it('refs not accessible externally', () => {

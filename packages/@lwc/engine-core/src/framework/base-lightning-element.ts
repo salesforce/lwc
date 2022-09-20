@@ -555,6 +555,16 @@ LightningElement.prototype = {
         return refs!;
     },
 
+    // For backwards compat, we allow component authors to set `refs` as an expando
+    set refs(value: any) {
+        defineProperty(this, 'refs', {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value,
+        });
+    },
+
     get shadowRoot(): null {
         // From within the component instance, the shadowRoot is always reported as "closed".
         // Authors should rely on this.template instead.
