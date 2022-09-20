@@ -628,7 +628,7 @@ export const ParserDiagnostics = {
     INVALID_TEMPLATE_WARNING: {
         code: 1153,
         message:
-            'Non-root template elements must contain valid LWC template directives, otherwise, the template and its children will be ignored. ' +
+            'Non-root template elements must contain valid LWC template directives. Otherwise, the template and its children will be ignored. ' +
             'For more information please visit https://lwc.dev/guide/reference#html-template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
