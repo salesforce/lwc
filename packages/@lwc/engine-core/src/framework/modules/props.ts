@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { assign, htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
@@ -21,14 +21,24 @@ export function patchProps(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    const { props } = vnode.data;
-    if (isUndefined(props)) {
+    let { props } = vnode.data;
+    const { spread } = vnode.data;
+
+    if (isUndefined(props) && isUndefined(spread)) {
         return;
     }
 
-    const oldProps = isNull(oldVnode) ? EmptyObject : oldVnode.data.props;
-    if (oldProps === props) {
-        return;
+    let oldProps = EmptyObject;
+    if (!isNull(oldVnode)) {
+        oldProps = oldVnode.data.props;
+        const oldSpread = oldVnode.data.spread;
+        if (oldProps === props && oldSpread !== spread) {
+            return;
+        }
+    }
+
+    if (!isUndefined(spread)) {
+        props = assign({}, props, spread);
     }
 
     const isFirstPatch = isNull(oldVnode);
