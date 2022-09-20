@@ -1,0 +1,9 @@
+<template>
+    <section>
+        <template if:true={showItems} for:each={items} for:item="item" onfoo={handleFoo}>
+            <template class="slds-m-around_medium">
+                <p key={item.id}>1{item}</p>
+            </template>
+        </template>
+    </section>
+</template>
