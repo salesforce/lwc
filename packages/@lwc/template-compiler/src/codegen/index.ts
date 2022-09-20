@@ -496,6 +496,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Properties: lwc:ref directive
         if (ref) {
             data.push(t.property(t.identifier('ref'), ref.value));
+            codeGen.hasRefs = true;
         }
 
         if (propsObj.properties.length) {

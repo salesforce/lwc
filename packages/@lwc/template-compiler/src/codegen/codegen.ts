@@ -24,7 +24,7 @@ import {
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes, hasRefDirective } from './helpers';
+import { getStaticNodes } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 
 type RenderPrimitive =
@@ -148,7 +148,6 @@ export default class CodeGen {
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
         this.state = state;
-        this.hasRefs = hasRefDirective(root);
     }
 
     generateKey() {

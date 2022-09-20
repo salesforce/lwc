@@ -102,25 +102,6 @@ export function hasIdAttribute(node: Node): boolean {
     return false;
 }
 
-/**
- * Returns true if the AST element or any of its descendants uses the `lwc:ref` directive.
- */
-export function hasRefDirective(node: Node): boolean {
-    if (isBaseElement(node)) {
-        const hasRef = node.directives.some((directive) => directive.name === 'Ref');
-
-        if (hasRef) {
-            return true;
-        }
-    }
-
-    if (isParentNode(node)) {
-        return node.children.some((child) => hasRefDirective(child));
-    }
-
-    return false;
-}
-
 export function memorizeHandler(
     codeGen: CodeGen,
     componentHandler: t.Expression,
