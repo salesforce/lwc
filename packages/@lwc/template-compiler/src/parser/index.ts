@@ -204,8 +204,7 @@ function parseElement(
         validateChildren(ctx, element);
     } else {
         // The only scenario where currentNode can be undefined is when there are only invalid attributes on a template element.
-        // For example, <template class='slds-hello-world'>, these attributes are ignored and the children of the template
-        // will not be rendered.
+        // For example, <template class='slds-hello-world'>, these template elements and their children will not be rendered.
         ctx.warnAtLocation(
             ParserDiagnostics.INVALID_TEMPLATE_WARNING,
             ast.sourceLocation(parse5ElmLocation)
