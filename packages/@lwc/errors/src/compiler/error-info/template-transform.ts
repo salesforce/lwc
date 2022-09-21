@@ -625,4 +625,18 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+    INVALID_OPTS_LWC_SPREAD: {
+        code: 1150,
+        message:
+            'Invalid lwc:spread usage. The `lwc:spread` Directive must be enabled in order to use this feature.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_LWC_SPREAD_LITERAL_PROP: {
+        code: 1151,
+        message:
+            'Invalid lwc:spread usage on element "{0}". The directive binding must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

@@ -574,9 +574,13 @@ function applyLwcSpreadDirective(
         return;
     }
 
+    if (!ctx.config.enableLwcSpread) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SPREAD, element);
+    }
+
     const { value: lwcSpreadAttr } = lwcSpread;
     if (!ast.isExpression(lwcSpreadAttr)) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
     element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpreadAttr.location));
