@@ -103,11 +103,8 @@ export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): St
 
 // Set a ref (lwc:ref) on a VM, from a template API
 export function setRefVNode(vm: VM, ref: string, vnode: VBaseElement) {
-    // Create the refVNodes object on-demand. This ensures that templates with no refs
-    // don't pay the perf tax of creating objects unnecessarily.
-    const refVNodes: RefVNodes = isNull(vm.refVNodes)
-        ? (vm.refVNodes = create(null))
-        : vm.refVNodes;
+    // if this method is called, then vm.refVNodes is set as the template has refs.
+    const refVNodes: RefVNodes = vm.refVNodes!;
 
     // In cases of conflict (two elements with the same ref), prefer, the last one,
     // in depth-first traversal order.
