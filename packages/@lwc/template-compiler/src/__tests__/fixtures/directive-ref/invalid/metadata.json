@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1154,
-            "message": "LWC1154: Invalid lwc:ref usage on element \"<div>\". The directive binding must be a non-empty string.",
+            "code": 1155,
+            "message": "LWC1155: Invalid lwc:ref usage on element \"<div>\". The directive binding must be a non-empty string.",
             "level": 1,
             "location": {
                 "line": 3,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1153,
-            "message": "LWC1153: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "code": 1154,
+            "message": "LWC1154: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
             "level": 1,
             "location": {
                 "line": 6,
@@ -23,8 +23,8 @@
             }
         },
         {
-            "code": 1153,
-            "message": "LWC1153: Invalid lwc:ref usage on element \"<template>\". The directive can't be used on a slot or a template element.",
+            "code": 1154,
+            "message": "LWC1154: Invalid lwc:ref usage on element \"<template>\". The directive can't be used on a slot or a template element.",
             "level": 1,
             "location": {
                 "line": 9,
@@ -34,8 +34,8 @@
             }
         },
         {
-            "code": 1153,
-            "message": "LWC1153: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "code": 1154,
+            "message": "LWC1154: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
             "level": 1,
             "location": {
                 "line": 12,
@@ -45,8 +45,8 @@
             }
         },
         {
-            "code": 1153,
-            "message": "LWC1153: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "code": 1154,
+            "message": "LWC1154: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
             "level": 1,
             "location": {
                 "line": 15,
@@ -56,8 +56,8 @@
             }
         },
         {
-            "code": 1155,
-            "message": "LWC1155: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
             "level": 1,
             "location": {
                 "line": 19,
@@ -67,8 +67,8 @@
             }
         },
         {
-            "code": 1155,
-            "message": "LWC1155: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
             "level": 1,
             "location": {
                 "line": 24,
