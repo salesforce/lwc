@@ -274,7 +274,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                 // reset the refs; they will be set during the tmpl() instantiation
                 const hasRefVNodes = Boolean(html.hasRefs);
-                vm.hasRefVNodes = hasRefVNodes
+                vm.hasRefVNodes = hasRefVNodes;
                 vm.refVNodes = hasRefVNodes ? create(null) : null;
 
                 // right before producing the vnodes, we clear up all internal references
