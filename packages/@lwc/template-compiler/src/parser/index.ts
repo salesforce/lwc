@@ -180,7 +180,7 @@ function parseElement(
         ctx,
         parsedAttr,
         parse5Elm,
-        directive || parentNode,
+        directive ?? parentNode,
         parse5ElmLocation
     );
 
@@ -198,17 +198,18 @@ function parseElement(
         validateTemplate(ctx, parsedAttr, parse5Elm as TemplateElement, parse5ElmLocation);
     }
 
-    // The next step is to assign children to the last AST node created by this function.
-    // If no element or directive was created, the HTML element is a template tag element without LWC HTML directives.
-    //
-    // ex: <template style="foo">hello</template>
-    //
-    // These type of templates should be ignored and throw an error however, for backwards compatibility,
-    // we will reparent their children to the template's parent.
-    const currentNode = element ?? directive ?? parentNode;
-    // pareChildren will iterate through parse5Elm's children and assign newly created AST nodes as children of currentNode.
-    parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-    validateChildren(ctx, element);
+    const currentNode = element ?? directive;
+    if (currentNode) {
+        parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
+        validateChildren(ctx, element);
+    } else {
+        // The only scenario where currentNode can be undefined is when there are only invalid attributes on a template element.
+        // For example, <template class='slds-hello-world'>, these template elements and their children will not be rendered.
+        ctx.warnAtLocation(
+            ParserDiagnostics.INVALID_TEMPLATE_WARNING,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
 }
 
 function parseElementLocation(
@@ -1021,12 +1022,12 @@ function validateTemplate(
         ]);
     }
 
-    // At this point in the parsing all supported attributes from a non root template
-    // should have been validated and removed from ParsedAttribute.
-    const templateAttrs = parsedAttr.getAttributes();
-    if (templateAttrs.length) {
+    // At this point in the parsing all supported attributes from a non root template element
+    // should have been removed from ParsedAttribute and all other attributes will be ignored.
+    const invalidTemplateAttributes = parsedAttr.getAttributes();
+    if (invalidTemplateAttributes.length) {
         ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
-            templateAttrs.map((attr) => attr.name).join(', '),
+            invalidTemplateAttributes.map((attr) => attr.name).join(', '),
         ]);
     }
 }
