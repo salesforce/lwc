@@ -1,0 +1,8 @@
+
+<template>
+    <section>
+        <template if:true={showItems} for:each={items} for:item="item" onfoo={handleFoo}>
+            <p key={item.id}>1{item}</p>
+        </template>
+    </section>
+</template>
