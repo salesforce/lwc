@@ -5,3 +5,5 @@ coverage/
 fixtures/
 public/
 types/
+
+.rollup.cache
