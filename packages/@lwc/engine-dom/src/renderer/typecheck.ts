@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// This file is purely for typechcking the renderer API
+// This file is purely for typechecking the renderer API
 
 import * as renderer from './index';
 import type { SandboxableRendererAPI } from '../renderer-factory';
