@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
@@ -38,9 +38,6 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.consumer.parentElement).toEqual(elm);
         });
 
-        // Issue [#2424]: Synthetic shadow returns an incorrect root node because the <p>
-        // doesn't have an owner key. However, synthetic shadow is no longer being changed.
-        // This test verifies that the existing behavior in synthetic shadow does not regress.
         it('getRootNode', () => {
             const expectedRootNode = process.env.NATIVE_SHADOW
                 ? document // native, correct behavior
@@ -76,6 +73,25 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(elm.outerHTML).toEqual(
                 '<x-light-container><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
             );
+        });
+
+        describe('light -> shadow with ENABLE_LIGHT_GET_ROOT_NODE_PATCH', () => {
+            let elm, nodes;
+            beforeEach(() => {
+                setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
+                elm = createElement('x-light-container', {
+                    is: LightContainer,
+                });
+                document.body.appendChild(elm);
+                nodes = extractDataIds(elm);
+            });
+            afterEach(() => {
+                setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', false);
+            });
+            it('with getRootNode', () => {
+                expect(nodes.p.getRootNode()).toEqual(document);
+                expect(nodes.consumer.getRootNode()).toEqual(document);
+            });
         });
     });
 

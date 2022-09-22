@@ -1,6 +1,6 @@
 {
     "name": "@lwc/aria-reflection-polyfill",
-    "version": "2.23.1",
+    "version": "2.23.5",
     "description": "ARIA element reflection polyfill for strings",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -16,7 +16,6 @@
     "license": "MIT",
     "typings": "types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/ types/",
         "build": "rollup --config scripts/rollup.config.js",
         "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -35,6 +34,16 @@
         "access": "public"
     },
     "dependencies": {
-        "@lwc/shared": "2.23.1"
+        "@lwc/shared": "2.23.5"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

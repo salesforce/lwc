@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "version": "2.23.1",
+    "version": "2.23.5",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
     "scripts": {
@@ -26,5 +26,14 @@
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

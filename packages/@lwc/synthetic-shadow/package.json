@@ -1,6 +1,6 @@
 {
     "name": "@lwc/synthetic-shadow",
-    "version": "2.23.1",
+    "version": "2.23.5",
     "description": "Synthetic Shadow Root for LWC",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -15,7 +15,6 @@
     "main": "index.js",
     "module": "dist/synthetic-shadow.js",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -37,7 +36,16 @@
         "access": "public"
     },
     "devDependencies": {
-        "@lwc/features": "2.23.1",
-        "@lwc/shared": "2.23.1"
+        "@lwc/features": "2.23.5",
+        "@lwc/shared": "2.23.5"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ const features: FeatureFlagMap = {
     ENABLE_NODE_PATCH: null,
     ENABLE_REACTIVE_SETTER: null,
     ENABLE_WIRE_SYNC_EMIT: null,
+    ENABLE_LIGHT_GET_ROOT_NODE_PATCH: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {

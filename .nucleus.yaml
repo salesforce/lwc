@@ -30,13 +30,11 @@ branches:
         - ris-gpta/core_via_components
         - salesforce/builder-framework
         - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-everywhere
+        - salesforce-experience-platform/luvio
+        - salesforce-experience-platform/lwr
         - salesforce/lwr-lightning-platform
-        - salesforce/lwr-recipes
+        - salesforce-experience-platform/lwr-recipes
         - salesforce/o11y-sample-app
-        - salesforce/utam-docs
         - salesforcedevs/doc-framework-monorepo
         - uiplatform/aura-hotswap-bundle
   release:
@@ -72,3 +70,11 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
+  node-save-dep-cache: &node-save-dep-cache
+    params:
+      paths:
+        # it's necessary to redeclare **/node_modules because this overrides the default behavior
+        - '**/node_modules'
+        # add NX cache
+        - '.nx-cache'
+    after: node-build
