@@ -31,8 +31,8 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
 export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
-    const renderer = process.env.RENDERER;
+    const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
     Object.setPrototypeOf(renderer, baseRenderer);
-    return renderer as unknown as RendererAPIType<T>;
+    return renderer;
 }
