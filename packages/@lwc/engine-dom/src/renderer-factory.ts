@@ -11,10 +11,14 @@
  */
 import type { RendererAPI } from '@lwc/engine-core';
 
+// Properties that are either not required to be sandboxed or rely on a globally shared information
+// are omitted here
 export type SandboxableRendererAPI = Omit<
     RendererAPI,
     'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'
 >;
+
+export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : SandboxableRendererAPI;
 
 /**
  * A factory function that produces a renderer.
@@ -26,9 +30,9 @@ export type SandboxableRendererAPI = Omit<
  *
  * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
-export function rendererFactory(baseRenderer: RendererAPI | null): SandboxableRendererAPI {
+export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
     const renderer = process.env.RENDERER;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
     Object.setPrototypeOf(renderer, baseRenderer);
-    return renderer as unknown as RendererAPI;
+    return renderer as unknown as RendererAPIType<T>;
 }
