@@ -12,7 +12,7 @@ import {
     isFunction,
     StringToLowerCase,
 } from '@lwc/shared';
-import { hasCustomElements } from '../hasCustomElements';
+import { hasCustomElements } from './has-custom-elements';
 
 const { HTMLElement: NativeHTMLElement } = window;
 const {

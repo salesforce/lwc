@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { setPrototypeOf } from '@lwc/shared';
-import { createPivotConstructor } from './patches/global-registry';
-import { hasCustomElements } from './hasCustomElements';
+import { createPivotConstructor } from './create-pivot-constructor';
+import { hasCustomElements } from './has-custom-elements';
 
 export type LifecycleCallback = (elm: HTMLElement) => void;
 export interface UpgradableCustomElementConstructor extends CustomElementConstructor {

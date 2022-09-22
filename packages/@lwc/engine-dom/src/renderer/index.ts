@@ -6,7 +6,7 @@
  */
 
 import { assert, isNull, isUndefined } from '@lwc/shared';
-import { createCustomElement } from '../customElements';
+import { createCustomElement } from '../custom-elements/create-custom-element';
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
