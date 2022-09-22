@@ -69,11 +69,11 @@ function injectInlineRenderer() {
                     this.addWatchFile(filename);
                 }
 
-                // The IIFE will contain the string `var renderer =`, which we don't actually need. We just need the
+                // The IIFE will contain the string `var renderer = `, which we don't actually need. We just need the
                 // part after, which is the actual IIFE (e.g. `(function () { /* code */ })()`)
                 return source.replace(
                     RENDERER_REPLACEMENT_STRING,
-                    code.replace('var renderer =', '')
+                    code.replace('var renderer = ', '')
                 );
             }
         },
