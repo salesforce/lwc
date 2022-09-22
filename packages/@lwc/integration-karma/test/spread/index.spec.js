@@ -31,4 +31,8 @@ describe('lwc:spread', () => {
             jasmine.any(Object) /* component */
         );
     });
+
+    it('should assign props to standard elements', () => {
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('spanclass');
+    });
 });
