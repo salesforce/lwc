@@ -35,4 +35,9 @@ describe('lwc:spread', () => {
     it('should assign props to standard elements', () => {
         expect(elm.shadowRoot.querySelector('span').className).toEqual('spanclass');
     });
+    it('should assign props to dynamic elements', () => {
+        expect(
+            elm.shadowRoot.querySelector('x-cmp').shadowRoot.querySelector('span').textContent
+        ).toEqual('Name: Dynamic');
+    });
 });
