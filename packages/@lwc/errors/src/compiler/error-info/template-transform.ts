@@ -625,18 +625,25 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-    INVALID_OPTS_LWC_SPREAD: {
+    INVALID_TEMPLATE_WARNING: {
         code: 1153,
+        message:
+            'Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. ' +
+            'For more information please visit https://lwc.dev/guide/reference#html-template-directives',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    INVALID_OPTS_LWC_SPREAD: {
+        code: 1154,
         message:
             'Invalid lwc:spread usage. The `lwc:spread` Directive must be enabled in order to use this feature.',
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_LWC_SPREAD_LITERAL_PROP: {
-        code: 1154,
+        code: 1155,
         message:
             'Invalid lwc:spread usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
-        url: '',
     },
 };
