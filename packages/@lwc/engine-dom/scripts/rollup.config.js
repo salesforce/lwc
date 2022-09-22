@@ -59,6 +59,7 @@ function injectInlineRenderer() {
                 const { output } = await bundle.generate({
                     name: 'renderer',
                     format: 'iife',
+                    esModule: false, // no need for `Object.defineProperty(exports, '__esModule', { value: true })`
                 });
                 const { code, modules } = output[0];
 
