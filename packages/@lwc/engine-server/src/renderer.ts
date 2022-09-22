@@ -368,13 +368,13 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 /* noop */
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
-type UpgradeCallback = (elm: HostElement) => void;
-type CreateElementAndUpgrade = (upgradeCallback: UpgradeCallback) => HostElement;
+type LifecycleCallback = (elm: HostElement) => void;
+type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
 
 const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
 
 function createUpgradableElementConstructor(tagName: string) {
-    return function Ctor(upgradeCallback: UpgradeCallback) {
+    return function Ctor(upgradeCallback: LifecycleCallback) {
         const elm = createElement(tagName);
         if (isFunction(upgradeCallback)) {
             upgradeCallback(elm); // nothing to do with the result for now
@@ -394,7 +394,7 @@ function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
     return ctor;
 }
 
-function createCustomElement(tagName: string, upgradeCallback: UpgradeCallback): HostElement {
+function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
     // @ts-ignore
     return new UpgradableConstructor(upgradeCallback);

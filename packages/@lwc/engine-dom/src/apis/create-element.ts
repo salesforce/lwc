@@ -131,7 +131,25 @@ export function createElement(
         }
         wasComponentUpgraded = true;
     };
-    const element = createCustomElement(tagName, upgradeCallback);
+
+    const connectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm);
+        }
+    };
+
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm);
+        }
+    };
+
+    const element = createCustomElement(
+        tagName,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(

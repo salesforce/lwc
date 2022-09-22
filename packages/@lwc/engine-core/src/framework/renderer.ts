@@ -16,7 +16,7 @@ export interface CustomElementConstructor {
 export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
     new (UserCtor?: CustomElementConstructor): HTMLElement;
 }
-export type UpgradeCallback = (elm: E) => void;
+export type LifecycleCallback = (elm: E) => void;
 
 export interface RendererAPI {
     isNativeShadowDefined: boolean;
@@ -65,5 +65,10 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    createCustomElement: (tagName: string, upgradeCallback: UpgradeCallback) => E;
+    createCustomElement: (
+        tagName: string,
+        upgradeCallback: LifecycleCallback,
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback
+    ) => E;
 }

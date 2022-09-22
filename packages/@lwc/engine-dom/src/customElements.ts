@@ -5,17 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { setPrototypeOf } from '@lwc/shared';
-import features from '@lwc/features';
-import { connectRootElement, disconnectRootElement } from '@lwc/engine-core';
 import { createPivotConstructor } from './patches/global-registry';
 import { hasCustomElements } from './hasCustomElements';
 
-export type UpgradeCallback = (elm: HTMLElement) => void;
+export type LifecycleCallback = (elm: HTMLElement) => void;
 export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback: UpgradeCallback): HTMLElement;
+    new (upgradeCallback: LifecycleCallback): HTMLElement;
 }
 
-export let createCustomElement: (tagName: string, upgradeCallback: UpgradeCallback) => HTMLElement;
+export let createCustomElement: (
+    tagName: string,
+    upgradeCallback: LifecycleCallback,
+    connectedCallback: LifecycleCallback,
+    disconnectedCallback: LifecycleCallback
+) => HTMLElement;
 
 if (hasCustomElements) {
     // It's important to cache window.HTMLElement here. Otherwise, someone else could overwrite window.HTMLElement (e.g.
@@ -23,26 +26,36 @@ if (hasCustomElements) {
     // because the HTMLElement prototypes are mixed up.
     const { HTMLElement } = window;
 
-    const createUserConstructor = (upgradeCallback: UpgradeCallback) => {
+    const createUserConstructor = (
+        upgradeCallback: LifecycleCallback,
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback
+    ) => {
         // TODO [#2972]: this class should expose observedAttributes as necessary
-        class UserElement extends HTMLElement {
+        return class UserElement extends HTMLElement {
             constructor() {
                 super();
                 upgradeCallback(this);
             }
-        }
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            (UserElement.prototype as any).connectedCallback = function () {
-                connectRootElement(this);
-            };
-            (UserElement.prototype as any).disconnectedCallback = function () {
-                disconnectRootElement(this);
-            };
-        }
-        return UserElement;
+            connectedCallback() {
+                connectedCallback(this);
+            }
+            disconnectedCallback() {
+                disconnectedCallback(this);
+            }
+        };
     };
-    createCustomElement = (tagName: string, upgradeCallback: UpgradeCallback) => {
-        const UserConstructor = createUserConstructor(upgradeCallback);
+    createCustomElement = (
+        tagName: string,
+        upgradeCallback: LifecycleCallback,
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback
+    ) => {
+        const UserConstructor = createUserConstructor(
+            upgradeCallback,
+            connectedCallback,
+            disconnectedCallback
+        );
         const UpgradableConstructor = createPivotConstructor(tagName, UserConstructor);
         return new UpgradableConstructor(UserConstructor);
     };
@@ -65,7 +78,7 @@ if (hasCustomElements) {
     };
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 
-    createCustomElement = (tagName: string, upgradeCallback: UpgradeCallback) => {
+    createCustomElement = (tagName: string, upgradeCallback: LifecycleCallback) => {
         const elm = document.createElement(tagName);
         upgradeCallback(elm); // nothing to do with the result for now
         return elm;

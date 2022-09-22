@@ -37,6 +37,8 @@ import {
     ShadowMode,
     RenderMode,
     LwcDomMode,
+    connectRootElement,
+    disconnectRootElement,
 } from './vm';
 import {
     VNode,
@@ -302,7 +304,19 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const elm = createCustomElement(sel, upgradeCallback);
+    const connectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm);
+        }
+    };
+
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm);
+        }
+    };
+
+    const elm = createCustomElement(sel, upgradeCallback, connectedCallback, disconnectedCallback);
 
     vnode.elm = elm;
     vnode.vm = vm;
