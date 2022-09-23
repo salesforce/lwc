@@ -22,34 +22,6 @@ const formats = ['es', 'cjs'];
 
 const RENDERER_ENTRY_POINT = path.resolve(__dirname, '../src/renderer/index.ts');
 
-async function genCreateRenderer() {
-    const bundle = await rollup({
-        input: RENDERER_ENTRY_POINT,
-
-        plugins: [
-            nodeResolve({
-                resolveOnly: ['@lwc/shared'],
-            }),
-            typescript(),
-            replace({
-                values: {
-                    'process.env.IS_BROWSER': 'true',
-                },
-                preventAssignment: true,
-            }),
-        ],
-    });
-    const { output } = await bundle.generate({
-        name: 'createRenderer',
-        format: 'iife',
-        exports: 'default', // only the default export
-        esModule: false, // no need for `Object.defineProperty(exports, '__esModule', { value: true })`
-    });
-    const { code, modules } = output[0];
-
-    return { code, files: Object.keys(modules) };
-}
-
 // These plugins are used both by the main Rollup build as well as our sub-Rollup build (injectInlineRenderer).
 function sharedPlugins() {
     return [
@@ -61,6 +33,28 @@ function sharedPlugins() {
             preventAssignment: true,
         }),
     ];
+}
+
+async function genCreateRenderer() {
+    const bundle = await rollup({
+        input: RENDERER_ENTRY_POINT,
+
+        plugins: [
+            nodeResolve({
+                resolveOnly: ['@lwc/shared'],
+            }),
+            ...sharedPlugins(),
+        ],
+    });
+    const { output } = await bundle.generate({
+        name: 'createRenderer',
+        format: 'iife',
+        exports: 'default', // only the default export
+        esModule: false, // no need for `Object.defineProperty(exports, '__esModule', { value: true })`
+    });
+    const { code, modules } = output[0];
+
+    return { code, files: Object.keys(modules) };
 }
 
 function resolveBaseRenderer() {
@@ -93,7 +87,7 @@ function resolveBaseRenderer() {
         }
      */
     return {
-        name: 'inject-inline-renderer',
+        name: 'resolve-base-renderer',
 
         async load(id) {
             if (id === RENDERER_ENTRY_POINT) {
