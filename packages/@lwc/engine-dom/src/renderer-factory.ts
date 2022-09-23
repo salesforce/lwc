@@ -8,17 +8,10 @@
 /**
  * Note: This module cannot import any modules because it is meant to be a pure function.
  *   Type-Only imports are allowed.
+ *   and the createRender function, which is pure (ensured via rollup plugin)
  */
+import createBaseRenderer from './renderer/index';
 import type { RendererAPI } from '@lwc/engine-core';
-
-// Properties that are either not required to be sandboxed or rely on a globally shared information
-// are omitted here
-export type SandboxableRendererAPI = Omit<
-    RendererAPI,
-    'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'
->;
-
-export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : SandboxableRendererAPI;
 
 /**
  * A factory function that produces a renderer.
@@ -30,8 +23,11 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  *
  * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
-export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
-    const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
+export function rendererFactory(
+    baseRenderer: RendererAPI | null
+): Omit<RendererAPI, 'insertStylesheet' | 'isNativeShadowDefined' | 'isSyntheticShadowDefined'> {
+    const renderer = createBaseRenderer();
+
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
     Object.setPrototypeOf(renderer, baseRenderer);
     return renderer;

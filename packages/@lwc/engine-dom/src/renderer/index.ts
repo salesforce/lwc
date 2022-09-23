@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Important: The only allowed imports are within the renderer folder, and from '@lwc/shared'.
 import { assert, isNull, isUndefined } from '@lwc/shared';
 
 let getCustomElement: any;
@@ -306,7 +307,7 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
-export {
+const renderer = {
     HTMLElementExported,
     insert,
     remove,
@@ -344,3 +345,13 @@ export {
     defineCustomElement,
     getCustomElement,
 };
+
+/**
+ * Creates a default renderer
+ *
+ * Note: At build time, this module will be re-created by converting this function into a pure function
+ *       by wrapping the module output into an iife.
+ */
+export default function () {
+    return renderer;
+}
