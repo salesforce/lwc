@@ -6,7 +6,14 @@
  */
 
 /**
- * Note: This module cannot import any modules because it is meant to be a pure function.
+ * Note: This module cannot import any modules because it is meant to be a self-contained function.
+ * This is to allow external libraries to access the rendererFactory, toString it and recreate it.
+ * For example:
+ *  import { rendererFactory } from 'lwc';
+ *  import sanitize from 'sanitizeLibrary';
+ *
+ *  const sandboxedRendererFactory = sanitize(rendererFactory.toString());
+ *
  *   Type-Only imports are allowed.
  */
 import type { RendererAPI } from '@lwc/engine-core';
