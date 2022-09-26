@@ -18,8 +18,13 @@ describe('lwc:spread', () => {
         // eslint-disable-next-line no-console
         expect(console.log).toHaveBeenCalledWith('spread click called', simpleChild);
     });
-    it('should override values in template', () => {
+    it('should override values in template', async () => {
         expect(overriddenChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Aura');
+        elm.modify(function () {
+            this.overriddenProps = {};
+        });
+        await Promise.resolve();
+        expect(overriddenChild.shadowRoot.querySelector('span').textContent).toEqual('Name: lwc');
     });
     it('should assign onclick along with the one in template', () => {
         overriddenChild.click();
@@ -32,8 +37,32 @@ describe('lwc:spread', () => {
         );
     });
 
-    it('should assign props to standard elements', () => {
+    it('should assign props to standard elements', async () => {
         expect(elm.shadowRoot.querySelector('span').className).toEqual('spanclass');
+
+        elm.modify(function () {
+            this.spanProps = { className: 'spanclass2' };
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('spanclass2');
+
+        elm.modify(function () {
+            this.spanProps = {};
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('spanclass2');
+
+        elm.modify(function () {
+            this.spanProps = { className: undefined };
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('undefined');
+
+        elm.modify(function () {
+            this.spanProps = { className: '' };
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('');
     });
     it('should assign props to dynamic elements', () => {
         expect(

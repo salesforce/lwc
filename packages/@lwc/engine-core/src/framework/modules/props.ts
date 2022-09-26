@@ -28,12 +28,20 @@ export function patchProps(
         return;
     }
 
-    let oldProps = EmptyObject;
+    let oldProps;
     if (!isNull(oldVnode)) {
         oldProps = oldVnode.data.props;
         const oldSpread = oldVnode.data.spread;
-        if (oldProps === props && oldSpread !== spread) {
+        if (oldProps === props && oldSpread === spread) {
             return;
+        }
+
+        if (isUndefined(oldProps)) {
+            oldProps = EmptyObject;
+        }
+
+        if (!isUndefined(oldSpread)) {
+            oldProps = assign({}, oldProps, oldSpread);
         }
     }
 
@@ -52,7 +60,8 @@ export function patchProps(
         // different than the one previously set.
         if (
             isFirstPatch ||
-            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key])
+            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key]) ||
+            !(key in oldProps) // this is required because the above case will pass when `cur` is `undefined` and key is missing in `oldProps`
         ) {
             // Additional verification if properties are supported by the element
             // Validation relies on html properties and public properties being defined on the element,

@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import Child from 'x/child';
 
 export default class Test extends LightningElement {
@@ -16,5 +16,9 @@ export default class Test extends LightningElement {
     templateClick() {
         // eslint-disable-next-line no-console
         console.log('template click called', this);
+    }
+
+    @api modify(fn) {
+        fn.call(this);
     }
 }
