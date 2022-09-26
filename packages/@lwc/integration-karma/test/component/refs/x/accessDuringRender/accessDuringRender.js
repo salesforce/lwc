@@ -9,6 +9,6 @@ export default class extends LightningElement {
         if (!refs) {
             return 'refs are undefined';
         }
-        return refs && refs.ref && refs.ref.textContent;
+        return refs.ref.textContent;
     }
 }
