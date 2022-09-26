@@ -547,7 +547,7 @@ LightningElement.prototype = {
         if (isUndefined(refs)) {
             refs = create(null) as RefNodes;
             for (const key of keys(refVNodes)) {
-                refs[key] = refVNodes[key].elm as Element;
+                refs[key] = refVNodes[key].elm!;
             }
             freeze(refs);
             refsCache.set(refVNodes, refs);
