@@ -39,7 +39,7 @@ describe('refs', () => {
         expect(Object.getPrototypeOf(refs)).toBeNull();
         expect(Object.keys(refs).sort()).toEqual(['deepInner', 'first', 'inner', 'second']);
 
-        expect(Object.isFrozen(refs)).toBe(true);
+        expect(Object.isFrozen(refs)).toEqual(true);
     });
 
     it('no refs', () => {
@@ -60,9 +60,7 @@ describe('refs', () => {
         expect(Object.getPrototypeOf(refs)).toBeNull();
         expect(Object.keys(refs)).toEqual([]);
 
-        expect(() => {
-            refs.hahaha = 'yolo';
-        }).toThrowError(TypeError);
+        expect(Object.isFrozen(refs)).toEqual(true);
     });
 
     it('multi templates', () => {
