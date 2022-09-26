@@ -592,7 +592,7 @@ function parseElseifBlock(
 
     // Attach the node as a child of the preceding IfBlock
     ctx.addNodeCurrentElementScope(elseifNode);
-    ctx.updateIfChain(elseifNode);
+    ctx.appendToIfChain(elseifNode);
     conditionalParent.else = elseifNode;
 
     return elseifNode;
@@ -656,7 +656,7 @@ function parseElseBlock(
     ctx.addNodeCurrentElementScope(elseNode);
 
     // Avoid ending the if-chain until we finish parsing all children
-    ctx.updateIfChain(elseNode);
+    ctx.appendToIfChain(elseNode);
     conditionalParent.else = elseNode;
 
     return elseNode;

@@ -241,10 +241,10 @@ export default class ParserCtx {
         };
     }
 
-    updateIfChain(node: ElseifBlock | ElseBlock) {
+    appendToIfChain(node: ElseifBlock | ElseBlock) {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
-            throw new Error('Cannot invoke updateIfChain without first setting the if context.');
+            throw new Error('Cannot invoke appendToIfChain without first setting the if context.');
         }
 
         currentIfContext.currentNode = node;
