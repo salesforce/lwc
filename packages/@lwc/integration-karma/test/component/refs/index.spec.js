@@ -39,9 +39,7 @@ describe('refs', () => {
         expect(Object.getPrototypeOf(refs)).toBeNull();
         expect(Object.keys(refs).sort()).toEqual(['deepInner', 'first', 'inner', 'second']);
 
-        expect(() => {
-            refs.hahaha = 'yolo';
-        }).toThrowError(TypeError);
+        expect(Object.isFrozen(refs)).toBe(true);
     });
 
     it('no refs', () => {
