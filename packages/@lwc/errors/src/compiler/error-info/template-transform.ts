@@ -625,52 +625,59 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-
-    IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
+    INVALID_TEMPLATE_WARNING: {
         code: 1153,
+        message:
+            'Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. ' +
+            'For more information please visit https://lwc.dev/guide/reference#html-template-directives',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
+        code: 1154,
         message: 'lwc:if directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
     ELSEIF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
-        code: 1154,
+        code: 1155,
         message: 'lwc:elseif directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
     ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE: {
-        code: 1155,
+        code: 1156,
         message: 'lwc:else directive cannot have a value',
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1156,
+        code: 1157,
         message: "Invalid usage of 'lwc:if' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1157,
+        code: 1158,
         message: "Invalid usage of 'lwc:elseif' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1158,
+        code: 1159,
         message: "Invalid usage of 'lwc:else' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_IF_SCOPE_NOT_FOUND: {
-        code: 1159,
+        code: 1160,
         message:
             "'{0}' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE: {
-        code: 1160,
+        code: 1161,
         message:
             "'{0}' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
         level: DiagnosticLevel.Error,
