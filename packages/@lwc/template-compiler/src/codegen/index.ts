@@ -212,7 +212,7 @@ function transform(codeGen: CodeGen): t.Expression {
         conditionalParentBlock: IfBlock | ElseifBlock,
         key?: number
     ): t.Expression {
-        const ifBlockKey = key || codeGen.generateKey();
+        const ifBlockKey = key ?? codeGen.generateKey();
 
         const childrenExpression = codeGen.genFragment(
             t.literal(ifBlockKey),
@@ -221,14 +221,12 @@ function transform(codeGen: CodeGen): t.Expression {
 
         let elseExpression: t.Expression = t.literal(null);
         if (conditionalParentBlock.else) {
-            elseExpression = codeGen.genFragment(
-                t.literal(ifBlockKey),
-                isElseifBlock(conditionalParentBlock.else)
-                    ? t.arrayExpression([
-                          transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey),
-                      ])
-                    : transformChildren(conditionalParentBlock.else)
-            );
+            elseExpression = isElseifBlock(conditionalParentBlock.else)
+                ? transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey)
+                : codeGen.genFragment(
+                      t.literal(ifBlockKey),
+                      transformChildren(conditionalParentBlock.else)
+                  );
         }
 
         return t.conditionalExpression(

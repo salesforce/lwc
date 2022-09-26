@@ -1,7 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<h1${3}>if condition</h1>`;
 const stc0 = {
-  key: 4,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -12,19 +12,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.visible.if
       ? api_fragment(0, [api_static_fragment($fragment1(), 2)], 0)
-      : api_fragment(
+      : $cmp.visible.elseif
+      ? api_fragment(
           0,
-          [
-            $cmp.visible.elseif
-              ? api_fragment(
-                  3,
-                  [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
-                  0
-                )
-              : null,
-          ],
+          [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
           0
-        ),
+        )
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -4,11 +4,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.visible
       ? api_fragment(0, [api_text("Conditional Text")], 0)
-      : api_fragment(
-          0,
-          [$cmp.displayAlt ? api_fragment(1, [api_text("Elseif!")], 0) : null],
-          0
-        ),
+      : $cmp.displayAlt
+      ? api_fragment(0, [api_text("Elseif!")], 0)
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }

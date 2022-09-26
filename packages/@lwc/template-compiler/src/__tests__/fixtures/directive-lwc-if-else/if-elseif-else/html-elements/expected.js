@@ -7,15 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.visible
       ? api_fragment(0, [api_static_fragment($fragment1(), 2)], 0)
-      : api_fragment(
-          0,
-          [
-            $cmp.elseifCondition
-              ? api_fragment(3, [api_static_fragment($fragment2(), 5)], 0)
-              : api_fragment(3, [api_static_fragment($fragment3(), 7)], 0),
-          ],
-          0
-        ),
+      : $cmp.elseifCondition
+      ? api_fragment(0, [api_static_fragment($fragment2(), 4)], 0)
+      : api_fragment(0, [api_static_fragment($fragment3(), 6)], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

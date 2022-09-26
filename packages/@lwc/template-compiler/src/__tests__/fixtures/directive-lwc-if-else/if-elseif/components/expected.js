@@ -4,7 +4,7 @@ const stc0 = {
   key: 1,
 };
 const stc1 = {
-  key: 3,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, c: api_custom_element, fr: api_fragment } = $api;
@@ -19,23 +19,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ],
           0
         )
-      : api_fragment(
+      : $cmp.elseifCondition
+      ? api_fragment(
           0,
           [
-            $cmp.elseifCondition
-              ? api_fragment(
-                  2,
-                  [
-                    api_custom_element("c-custom", _cCustom, stc1, [
-                      api_text("First Alternative Header"),
-                    ]),
-                  ],
-                  0
-                )
-              : null,
+            api_custom_element("c-custom", _cCustom, stc1, [
+              api_text("First Alternative Header"),
+            ]),
           ],
           0
-        ),
+        )
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }
