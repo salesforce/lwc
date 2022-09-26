@@ -285,7 +285,7 @@ describe('refs', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogErrorDev(
-                /Error: \[LWC error]: this\.refs should not be called while <x-access-during-render> is rendering\. use this\.refs only when the DOM is stable, e\.g\. in renderedCallback\(\)\./
+                /Error: \[LWC error]: this\.refs should not be called while <x-access-during-render> is rendering\. Use this\.refs only when the DOM is stable, e\.g\. in renderedCallback\(\)\./
             );
             const ids = extractDataIds(elm);
 

@@ -505,7 +505,7 @@ LightningElement.prototype = {
                 logError(
                     `this.refs should not be called while ${getComponentTag(
                         vm
-                    )} is rendering. use this.refs only when the DOM is stable, e.g. in renderedCallback().`
+                    )} is rendering. Use this.refs only when the DOM is stable, e.g. in renderedCallback().`
                 );
             }
             // If the template is in the process of being updated, then we don't want to go through the normal
