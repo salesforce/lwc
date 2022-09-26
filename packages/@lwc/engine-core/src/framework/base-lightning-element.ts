@@ -511,7 +511,7 @@ LightningElement.prototype = {
             // If the template is in the process of being updated, then we don't want to go through the normal
             // process of returning the refs and caching them, because the state of the refs is unstable.
             // This can happen if e.g. a template contains `<div class={foo}></div>` and `foo` is computed
-            // based on this.refs.bar.
+            // based on `this.refs.bar`.
             return;
         }
 
