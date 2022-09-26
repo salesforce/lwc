@@ -225,7 +225,7 @@ describe('refs', () => {
             expect(elm.result).toBeUndefined();
         });
 
-        it('does not work in connectedCallback', () => {
+        it('throws error in connectedCallback', () => {
             const elm = createElement('x-connect', { is: Connect });
             expect(() => {
                 document.body.appendChild(elm);
