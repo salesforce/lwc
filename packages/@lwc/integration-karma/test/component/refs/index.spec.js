@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-
+import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
 import None from 'x/none';
 import NoneActive from 'x/noneActive';
@@ -18,6 +18,7 @@ import Disconnect from 'x/disconnect';
 import Render from 'x/render';
 import Expando from 'x/expando';
 import ExpandoCheck from 'x/expandoCheck';
+import Slotter from 'x/slotter';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -208,6 +209,21 @@ describe('refs', () => {
                 expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
                 expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
             });
+    });
+
+    it('ref with slot', () => {
+        const elm = createElement('x-slotter', { is: Slotter });
+        document.body.appendChild(elm);
+
+        const ids = extractDataIds(elm);
+
+        expect(elm.getRefs().beforeSlottable).toBe(ids.beforeSlottable);
+        expect(elm.getRefs().slottable).toBe(ids.slottable);
+        expect(elm.getRefs().inSlottable).toBe(ids.inSlottable);
+        expect(elm.getRefs().afterSlottable).toBe(ids.afterSlottable);
+
+        expect(ids.slottable.getRefs().beforeSlot).toBe(ids.beforeSlot);
+        expect(ids.slottable.getRefs().afterSlot).toBe(ids.afterSlot);
     });
 
     describe('lifecycle', () => {
