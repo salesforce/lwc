@@ -526,7 +526,7 @@ LightningElement.prototype = {
 
         // For backwards compatibility with component written before template refs
         // were introduced, we return undefined if the template has no refs defined
-        // anywhere. This fixes components that may want to add an expando called `refs` 
+        // anywhere. This fixes components that may want to add an expando called `refs`
         // and are checking if it exists with `if (this.refs)`  before adding it.
         // Note it is not sufficient to just check if `refVNodes` is null or empty,
         // because a template may have `lwc:ref` defined within a falsy `if:true` block.
