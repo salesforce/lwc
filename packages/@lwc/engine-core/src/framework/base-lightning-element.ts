@@ -500,6 +500,21 @@ LightningElement.prototype = {
     get refs(): RefNodes | undefined {
         const vm = getAssociatedVM(this);
 
+        if (isUpdatingTemplate) {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `this.refs should not be called while ${getComponentTag(
+                        vm
+                    )} is rendering. use this.refs only when the DOM is stable, e.g. in renderedCallback().`
+                );
+            }
+            // If the template is in the process of being updated, then we don't want to go through the normal
+            // process of returning the refs and caching them, because the state of the refs is unstable.
+            // This can happen if e.g. a template contains `<div class={foo}></div>` and `foo` is computed
+            // based on this.refs.bar.
+            return;
+        }
+
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'refs');
         }

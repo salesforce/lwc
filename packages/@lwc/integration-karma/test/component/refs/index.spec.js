@@ -19,6 +19,7 @@ import Render from 'x/render';
 import Expando from 'x/expando';
 import ExpandoCheck from 'x/expandoCheck';
 import Slotter from 'x/slotter';
+import AccessDuringRender from 'x/accessDuringRender';
 
 describe('refs', () => {
     it('basic refs example', () => {
@@ -227,7 +228,7 @@ describe('refs', () => {
     });
 
     describe('lifecycle', () => {
-        it('throws error in constructor', () => {
+        it('logs error in constructor', () => {
             let elm;
 
             expect(() => {
@@ -239,7 +240,7 @@ describe('refs', () => {
             expect(elm.result).toBeUndefined();
         });
 
-        it('throws error in connectedCallback', () => {
+        it('logs error in connectedCallback', () => {
             const elm = createElement('x-connect', { is: Connect });
             expect(() => {
                 document.body.appendChild(elm);
@@ -277,6 +278,23 @@ describe('refs', () => {
                 .then(() => {
                     expect(elm.results).toEqual([undefined, 'foo']);
                 });
+        });
+
+        it('logs error if this.refs is accessed during render', () => {
+            const elm = createElement('x-access-during-render', { is: AccessDuringRender });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogErrorDev(
+                /Error: \[LWC error]: this\.refs should not be called while <x-access-during-render> is rendering\. use this\.refs only when the DOM is stable, e\.g\. in renderedCallback\(\)\./
+            );
+            const ids = extractDataIds(elm);
+
+            // this.refs should be undefined during rendering
+            expect(ids.refTextContent.textContent).toEqual('refs are undefined');
+            return Promise.resolve().then(() => {
+                expect(ids.refTextContent.textContent).toEqual('refs are undefined');
+                expect(elm.refTextContent).toEqual('content in ref');
+            });
         });
     });
 });
