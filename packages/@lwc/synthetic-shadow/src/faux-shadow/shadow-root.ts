@@ -137,7 +137,7 @@ export function isSyntheticShadowRoot(node: unknown): node is ShadowRoot {
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.shadowRoot;
 }
 
-let uid = 0;
+let uid = 1;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot {
     if (InternalSlot.has(elm)) {

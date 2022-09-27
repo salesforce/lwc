@@ -254,11 +254,11 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
-        if (isNull(owner)) {
-            return null;
-        } else if (getNodeKey(this)) {
+        if (getNodeKey(this)) {
             // it is a custom element, and we should then filter by slotted elements
             return getFirstSlottedMatch(this, nodeList);
+        } else if (isNull(owner)) {
+            return null;
         } else {
             // regular element, we should then filter by ownership
             return getFirstMatch(owner, nodeList);
@@ -312,11 +312,11 @@ function getFilteredArrayOfNodes<T extends Node>(
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
-        if (isNull(owner)) {
-            filtered = [];
-        } else if (getNodeKey(context)) {
+        if (getNodeKey(context)) {
             // it is a custom element, and we should then filter by slotted elements
             filtered = getAllSlottedMatches(context, unfilteredNodes);
+        } else if (isNull(owner)) {
+            filtered = [];
         } else {
             // regular element, we should then filter by ownership
             filtered = getAllMatches(owner, unfilteredNodes);

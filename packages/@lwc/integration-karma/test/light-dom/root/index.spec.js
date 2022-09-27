@@ -93,4 +93,13 @@ describe('root light element', () => {
             [window, nodes.button, composedPath],
         ]);
     });
+
+    it('querySelector should return slotted elements', () => {
+        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
+        const nodes = createTestElement('x-root', LightElement);
+        expect(nodes['x-list'].querySelectorAll('button')[0]).toEqual(nodes.button);
+        expect(nodes['x-list'].querySelector('button')).toEqual(nodes.button);
+        expect(nodes['x-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
+        expect(nodes['x-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
+    });
 });
