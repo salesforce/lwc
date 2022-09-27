@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { assign, htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
@@ -21,14 +21,32 @@ export function patchProps(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    const { props } = vnode.data;
-    if (isUndefined(props)) {
+    let { props } = vnode.data;
+    const { spread } = vnode.data;
+
+    if (isUndefined(props) && isUndefined(spread)) {
         return;
     }
 
-    const oldProps = isNull(oldVnode) ? EmptyObject : oldVnode.data.props;
-    if (oldProps === props) {
-        return;
+    let oldProps;
+    if (!isNull(oldVnode)) {
+        oldProps = oldVnode.data.props;
+        const oldSpread = oldVnode.data.spread;
+        if (oldProps === props && oldSpread === spread) {
+            return;
+        }
+
+        if (isUndefined(oldProps)) {
+            oldProps = EmptyObject;
+        }
+
+        if (!isUndefined(oldSpread)) {
+            oldProps = assign({}, oldProps, oldSpread);
+        }
+    }
+
+    if (!isUndefined(spread)) {
+        props = assign({}, props, spread);
     }
 
     const isFirstPatch = isNull(oldVnode);
@@ -42,7 +60,8 @@ export function patchProps(
         // different than the one previously set.
         if (
             isFirstPatch ||
-            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key])
+            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key]) ||
+            !(key in oldProps) // this is required because the above case will pass when `cur` is `undefined` and key is missing in `oldProps`
         ) {
             // Additional verification if properties are supported by the element
             // Validation relies on html properties and public properties being defined on the element,

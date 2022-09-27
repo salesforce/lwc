@@ -101,6 +101,11 @@ export interface DomDirective extends Directive {
     value: Literal<'manual'>;
 }
 
+export interface SpreadDirective extends Directive {
+    name: 'Spread';
+    value: Expression;
+}
+
 export interface InnerHTMLDirective extends Directive {
     name: `InnerHTML`;
     value: Expression | Literal<string>;
@@ -126,7 +131,8 @@ export type ElementDirective =
     | DynamicDirective
     | DomDirective
     | InnerHTMLDirective
-    | RefDirective;
+    | RefDirective
+    | SpreadDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 

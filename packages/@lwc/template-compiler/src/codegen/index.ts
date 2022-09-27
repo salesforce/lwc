@@ -26,6 +26,7 @@ import {
     isKeyDirective,
     isDomDirective,
     isRefDirective,
+    isSpreadDirective,
     isElement,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
@@ -414,6 +415,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
         const ref = element.directives.find(isRefDirective);
+        const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
 
         // Attributes
@@ -512,6 +514,10 @@ function transform(codeGen: CodeGen): t.Expression {
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
+        }
+
+        if (spread) {
+            data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
         }
 
         // Key property on VNode

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1155,
+            "message": "LWC1155: Invalid lwc:spread usage on element \"<a>\". The directive binding must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 3,
+                "start": 13,
+                "length": 26
+            }
+        }
+    ]
+}

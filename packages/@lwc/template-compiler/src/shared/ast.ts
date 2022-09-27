@@ -39,6 +39,7 @@ import {
     BaseElement,
     LWCDirectiveDomMode,
     RefDirective,
+    SpreadDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -234,6 +235,15 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
+export function spreadDirective(value: Expression, location: SourceLocation): SpreadDirective {
+    return {
+        type: 'Directive',
+        name: 'Spread',
+        value,
+        location,
+    };
+}
+
 export function domDirective(
     lwcDomAttr: LWCDirectiveDomMode,
     location: SourceLocation
@@ -385,6 +395,10 @@ export function isDynamicDirective(directive: Directive): directive is DynamicDi
 
 export function isDomDirective(directive: Directive): directive is DomDirective {
     return directive.name === 'Dom';
+}
+
+export function isSpreadDirective(directive: Directive): directive is SpreadDirective {
+    return directive.name === 'Spread';
 }
 
 export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
