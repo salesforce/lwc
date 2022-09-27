@@ -32,6 +32,7 @@ import {
     HostValueKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import type { LifecycleCallback } from '@lwc/engine-core';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -368,7 +369,6 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 /* noop */
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
-type LifecycleCallback = (elm: HostElement) => void;
 type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
 
 const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();

@@ -7,11 +7,7 @@
 import { setPrototypeOf } from '@lwc/shared';
 import { createPivotConstructor } from './create-pivot-constructor';
 import { hasCustomElements } from './has-custom-elements';
-
-export type LifecycleCallback = (elm: HTMLElement) => void;
-export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback: LifecycleCallback): HTMLElement;
-}
+import type { LifecycleCallback } from '@lwc/engine-core';
 
 export let createCustomElement: (
     tagName: string,
