@@ -241,7 +241,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(engineScripts);
                 evaluate(`(${createLWC})({ skipInject: true })`);
 
-                // TODO [#2984]: element is not upgraded
+                // TODO [#2970]: element is not upgraded
                 expect(iframe.contentDocument.querySelector('x-foo').shadowRoot).toBeNull();
                 // expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
             });
