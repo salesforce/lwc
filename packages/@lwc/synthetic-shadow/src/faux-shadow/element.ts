@@ -254,7 +254,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
-        if (getNodeKey(this)) {
+        if (!isUndefined(getNodeKey(this))) {
             // it is a custom element, and we should then filter by slotted elements
             return getFirstSlottedMatch(this, nodeList);
         } else if (isNull(owner)) {
@@ -312,7 +312,7 @@ function getFilteredArrayOfNodes<T extends Node>(
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
-        if (getNodeKey(context)) {
+        if (!isUndefined(getNodeKey(context))) {
             // it is a custom element, and we should then filter by slotted elements
             filtered = getAllSlottedMatches(context, unfilteredNodes);
         } else if (isNull(owner)) {

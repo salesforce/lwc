@@ -39,9 +39,6 @@ function dispatchEventWithLog(target, nodes, event) {
 }
 
 describe('root light element', () => {
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', false);
-    });
     if (!process.env.NATIVE_SHADOW) {
         it('should not dispatch events to window from elements slotted into synthetic shadow', () => {
             const nodes = createTestElement('x-root', LightElement);
@@ -60,46 +57,53 @@ describe('root light element', () => {
             ]);
         });
     }
-    it('should throw events properly with flag ENABLE_LIGHT_GET_ROOT_NODE_PATCH', () => {
-        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
-        const nodes = createTestElement('x-root', LightElement);
+    describe('with flag set', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
+        });
+        afterEach(() => {
+            setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', false);
+        });
 
-        const log = dispatchEventWithLog(
-            nodes.button,
-            nodes,
-            new CustomEvent('test', { bubbles: true, composed: false })
-        );
+        it('should throw events properly with flag ENABLE_LIGHT_GET_ROOT_NODE_PATCH', () => {
+            const nodes = createTestElement('x-root', LightElement);
 
-        const composedPath = [
-            nodes.button,
-            nodes.slot,
-            nodes['x-list'].shadowRoot,
-            nodes['x-list'],
-            nodes['x-root'],
-            document.body,
-            document.documentElement,
-            document,
-            window,
-        ];
-        expect(log).toEqual([
-            [nodes.button, nodes.button, composedPath],
-            [nodes.slot, nodes.button, composedPath],
-            [nodes['x-list'].shadowRoot, nodes.button, composedPath],
-            [nodes['x-list'], nodes.button, composedPath],
-            [nodes['x-root'], nodes.button, composedPath],
-            [document.body, nodes.button, composedPath],
-            [document.documentElement, nodes.button, composedPath],
-            [document, nodes.button, composedPath],
-            [window, nodes.button, composedPath],
-        ]);
-    });
+            const log = dispatchEventWithLog(
+                nodes.button,
+                nodes,
+                new CustomEvent('test', { bubbles: true, composed: false })
+            );
 
-    it('querySelector should return slotted elements', () => {
-        setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
-        const nodes = createTestElement('x-root', LightElement);
-        expect(nodes['x-list'].querySelectorAll('button')[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].querySelector('button')).toEqual(nodes.button);
-        expect(nodes['x-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
+            const composedPath = [
+                nodes.button,
+                nodes.slot,
+                nodes['x-list'].shadowRoot,
+                nodes['x-list'],
+                nodes['x-root'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+            expect(log).toEqual([
+                [nodes.button, nodes.button, composedPath],
+                [nodes.slot, nodes.button, composedPath],
+                [nodes['x-list'].shadowRoot, nodes.button, composedPath],
+                [nodes['x-list'], nodes.button, composedPath],
+                [nodes['x-root'], nodes.button, composedPath],
+                [document.body, nodes.button, composedPath],
+                [document.documentElement, nodes.button, composedPath],
+                [document, nodes.button, composedPath],
+                [window, nodes.button, composedPath],
+            ]);
+        });
+
+        it('querySelector should return slotted elements', () => {
+            const nodes = createTestElement('x-root', LightElement);
+            expect(nodes['x-list'].querySelectorAll('button')[0]).toEqual(nodes.button);
+            expect(nodes['x-list'].querySelector('button')).toEqual(nodes.button);
+            expect(nodes['x-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
+            expect(nodes['x-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
+        });
     });
 });
