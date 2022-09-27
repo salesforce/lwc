@@ -47,6 +47,7 @@ function createPreprocessor(config, emitter, logger) {
                     loader: 'test-utils',
                     strict: true,
                 },
+                enableLwcSpread: true,
             }),
         ];
 

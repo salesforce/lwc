@@ -560,6 +560,31 @@ function applyLwcDirectives(
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
+    applyLwcSpreadDirective(ctx, parsedAttr, element);
+}
+
+function applyLwcSpreadDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+
+    const lwcSpread = parsedAttr.pick('lwc:spread');
+    if (!lwcSpread) {
+        return;
+    }
+
+    if (!ctx.config.enableLwcSpread) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SPREAD, element);
+    }
+
+    const { value: lwcSpreadAttr } = lwcSpread;
+    if (!ast.isExpression(lwcSpreadAttr)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
+    }
+
+    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpreadAttr.location));
 }
 
 function applyLwcDynamicDirective(

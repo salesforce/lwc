@@ -54,6 +54,7 @@ export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
     Dynamic: 'lwc:dynamic',
     InnerHTML: 'lwc:inner-html',
     Key: 'key',
+    Spread: 'lwc:spread',
 };
 
 function checkElement(element: BaseElement, state: State): boolean {
