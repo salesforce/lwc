@@ -26,6 +26,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isSpreadDirective,
     isElement,
     isElseifBlock,
 } from '../shared/ast';
@@ -453,6 +454,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
 
         // Attributes
@@ -545,6 +547,10 @@ function transform(codeGen: CodeGen): t.Expression {
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
+        }
+
+        if (spread) {
+            data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
         }
 
         // Key property on VNode
