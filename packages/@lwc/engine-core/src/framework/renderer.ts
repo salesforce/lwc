@@ -10,12 +10,6 @@ export type HostElement = any;
 type N = HostNode;
 type E = HostElement;
 
-export interface CustomElementConstructor {
-    new (...params: any[]): HTMLElement;
-}
-export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (UserCtor?: CustomElementConstructor): HTMLElement;
-}
 export type LifecycleCallback = (elm: E) => void;
 
 export interface RendererAPI {
