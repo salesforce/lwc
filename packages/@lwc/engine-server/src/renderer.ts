@@ -396,8 +396,7 @@ function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
 
 function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
-    // @ts-ignore
-    return new UpgradableConstructor(upgradeCallback);
+    return new (UpgradableConstructor as any)(upgradeCallback);
 }
 
 export const renderer = {
