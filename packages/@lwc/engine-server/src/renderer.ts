@@ -373,7 +373,7 @@ type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostEleme
 
 const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
 
-function createUpgradableElementConstructor(tagName: string) {
+function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
     return function Ctor(upgradeCallback: LifecycleCallback) {
         const elm = createElement(tagName);
         if (isFunction(upgradeCallback)) {
