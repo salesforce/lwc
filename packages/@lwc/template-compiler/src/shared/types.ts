@@ -214,3 +214,12 @@ export type ParentNode = Root | ForBlock | If | BaseElement;
 export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
 
 export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
+
+export enum ElementDirectiveName {
+    Dom = 'lwc:dom',
+    Dynamic = 'lwc:dynamic',
+    InnerHTML = 'lwc:inner-html',
+    Ref = 'lwc:ref',
+    Spread = 'lwc:spread',
+    Key = 'key',
+}
