@@ -18,7 +18,7 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
-    it('should return a custom element', () => {
+    it('CustomElementConstructor should be a function', () => {
         class Test extends LightningElement {}
         const TestCustomElement = Test.CustomElementConstructor;
 
