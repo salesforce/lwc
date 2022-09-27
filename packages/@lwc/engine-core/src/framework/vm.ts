@@ -41,7 +41,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './accessor-reactive-observer';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -98,6 +98,8 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
+export type RefVNodes = { [name: string]: VBaseElement };
+
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
     readonly elm: HostElement;
@@ -109,6 +111,10 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
+    /** References to elements rendered using lwc:ref (template refs) */
+    refVNodes: RefVNodes | null;
+    /** Whether this template has any references to elements (template refs) */
+    hasRefVNodes: boolean;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -288,6 +294,8 @@ export function createVM<HostNode, HostElement>(
         tagName,
         mode,
         owner,
+        refVNodes: null,
+        hasRefVNodes: false,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

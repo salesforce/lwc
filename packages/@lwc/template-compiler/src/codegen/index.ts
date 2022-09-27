@@ -25,6 +25,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isRefDirective,
     isSpreadDirective,
     isElement,
 } from '../shared/ast';
@@ -413,6 +414,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const ref = element.directives.find(isRefDirective);
         const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
 
@@ -491,6 +493,12 @@ function transform(codeGen: CodeGen): t.Expression {
                     addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr)
                 )
             );
+        }
+
+        // Properties: lwc:ref directive
+        if (ref) {
+            data.push(t.property(t.identifier('ref'), ref.value));
+            codeGen.hasRefs = true;
         }
 
         if (propsObj.properties.length) {

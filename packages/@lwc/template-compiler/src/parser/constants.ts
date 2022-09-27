@@ -25,6 +25,7 @@ export const LWC_DIRECTIVES = {
     DOM: 'lwc:dom',
     DYNAMIC: 'lwc:dynamic',
     INNER_HTML: 'lwc:inner-html',
+    REF: 'lwc:ref',
     SPREAD: 'lwc:spread',
 };
 

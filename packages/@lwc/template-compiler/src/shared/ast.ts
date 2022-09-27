@@ -38,6 +38,7 @@ import {
     Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    RefDirective,
     SpreadDirective,
 } from './types';
 
@@ -267,6 +268,15 @@ export function innerHTMLDirective(
     };
 }
 
+export function refDirective(value: Literal<string>, location: SourceLocation): RefDirective {
+    return {
+        type: 'Directive',
+        name: 'Ref',
+        value,
+        location,
+    };
+}
+
 export function preserveCommentsDirective(
     preserveComments: boolean,
     location: SourceLocation
@@ -393,6 +403,10 @@ export function isSpreadDirective(directive: Directive): directive is SpreadDire
 
 export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
     return directive.name === 'InnerHTML';
+}
+
+export function isRefDirective(directive: Directive): directive is RefDirective {
+    return directive.name === 'Ref';
 }
 
 export function isKeyDirective(directive: Directive): directive is KeyDirective {

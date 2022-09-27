@@ -646,4 +646,25 @@ export const ParserDiagnostics = {
             'Invalid lwc:spread usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
     },
+    LWC_REF_INVALID_ELEMENT: {
+        code: 1156,
+        message:
+            'Invalid lwc:ref usage on element "{0}". The directive can\'t be used on a slot or a template element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    LWC_REF_INVALID_VALUE: {
+        code: 1157,
+        message:
+            'Invalid lwc:ref usage on element "{0}". The directive binding must be a non-empty string.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    LWC_REF_INVALID_LOCATION_INSIDE_ITERATION: {
+        code: 1158,
+        message:
+            'Invalid lwc:ref usage on element "{0}". lwc:ref cannot be used inside for:each or an iterator.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

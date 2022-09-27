@@ -121,12 +121,19 @@ export interface PreserveCommentsDirective extends Directive {
     value: Literal<boolean>;
 }
 
+export interface RefDirective extends Directive {
+    name: 'Ref';
+    value: Literal<string>;
+}
+
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
     | DomDirective
     | InnerHTMLDirective
+    | RefDirective
     | SpreadDirective;
+
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {

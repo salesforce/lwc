@@ -18,10 +18,13 @@ import {
     create,
     defineProperties,
     defineProperty,
+    freeze,
     isFunction,
     isNull,
     isObject,
+    isUndefined,
     KEY__SYNTHETIC_MODE,
+    keys,
     setPrototypeOf,
 } from '@lwc/shared';
 
@@ -31,7 +34,15 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, RenderMode, ShadowMode, ShadowSupportMode, VM } from './vm';
+import {
+    associateVM,
+    getAssociatedVM,
+    RefVNodes,
+    RenderMode,
+    ShadowMode,
+    ShadowSupportMode,
+    VM,
+} from './vm';
 import { componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -167,8 +178,15 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
+type RefNodes = { [name: string]: Element };
+
+const EMPTY_REFS: RefNodes = freeze(create(null));
+
+const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
+
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot | null;
+    refs: RefNodes;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -477,6 +495,90 @@ LightningElement.prototype = {
         }
 
         return vm.shadowRoot;
+    },
+
+    get refs(): RefNodes | undefined {
+        const vm = getAssociatedVM(this);
+
+        if (isUpdatingTemplate) {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `this.refs should not be called while ${getComponentTag(
+                        vm
+                    )} is rendering. Use this.refs only when the DOM is stable, e.g. in renderedCallback().`
+                );
+            }
+            // If the template is in the process of being updated, then we don't want to go through the normal
+            // process of returning the refs and caching them, because the state of the refs is unstable.
+            // This can happen if e.g. a template contains `<div class={foo}></div>` and `foo` is computed
+            // based on `this.refs.bar`.
+            return;
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'refs');
+        }
+
+        const { refVNodes, hasRefVNodes, cmpTemplate } = vm;
+
+        // If the `cmpTemplate` is null, that means that the template has not been rendered yet. Most likely this occurs
+        // if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been rendered yet,
+        // so log a warning. Note we also check `isBeingConstructed()` to avoid a double warning (due to
+        // `warnIfInvokedDuringConstruction` above).
+        if (
+            process.env.NODE_ENV !== 'production' &&
+            isNull(cmpTemplate) &&
+            !isBeingConstructed(vm)
+        ) {
+            logError(
+                `this.refs is undefined for ${getComponentTag(
+                    vm
+                )}. This is either because the attached template has no "lwc:ref" directive, or this.refs was ` +
+                    `invoked before renderedCallback(). Use this.refs only when the referenced HTML elements have ` +
+                    `been rendered to the DOM, such as within renderedCallback() or disconnectedCallback().`
+            );
+        }
+
+        // For backwards compatibility with component written before template refs
+        // were introduced, we return undefined if the template has no refs defined
+        // anywhere. This fixes components that may want to add an expando called `refs`
+        // and are checking if it exists with `if (this.refs)`  before adding it.
+        // Note it is not sufficient to just check if `refVNodes` is null or empty,
+        // because a template may have `lwc:ref` defined within a falsy `if:true` block.
+        if (!hasRefVNodes) {
+            return;
+        }
+        // For templates that are using `lwc:ref`, if there are no refs currently available
+        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
+        if (isNull(refVNodes)) {
+            return EMPTY_REFS;
+        }
+
+        // The refNodes can be cached based on the refVNodes, since the refVNodes
+        // are recreated from scratch every time the template is rendered.
+        // This happens with `vm.refVNodes = null` in `template.ts` in `@lwc/engine-core`.
+        let refs = refsCache.get(refVNodes);
+
+        if (isUndefined(refs)) {
+            refs = create(null) as RefNodes;
+            for (const key of keys(refVNodes)) {
+                refs[key] = refVNodes[key].elm!;
+            }
+            freeze(refs);
+            refsCache.set(refVNodes, refs);
+        }
+
+        return refs!;
+    },
+
+    // For backwards compat, we allow component authors to set `refs` as an expando
+    set refs(value: any) {
+        defineProperty(this, 'refs', {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value,
+        });
     },
 
     get shadowRoot(): null {
