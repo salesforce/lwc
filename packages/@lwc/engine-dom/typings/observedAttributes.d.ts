@@ -7,5 +7,6 @@
 // TypeScript seems to be missing this definition from dom.d.ts. It can be removed when
 // this is fixed: https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1338
 declare interface CustomElementConstructor {
+     new (...params: any[]): HTMLElement;
     observedAttributes?: string[];
 }
