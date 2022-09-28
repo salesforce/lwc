@@ -67,7 +67,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition):
             // a) the browser instantiating  an element from parsing or via document.createElement.
             // b) LWC new PivotClass (This constructor is NOT observable/accessible in user-land).
             // b) new UserClass.
-            // When LWC construct it, it will pass the upgrading definition as an argument
+            // When LWC instantiates it, it will pass the upgrading definition as an argument
             // If the caller signals via UserCtor that this is in fact a controlled
             // definition, we use that one, otherwise fallback to the global
             // internal registry.
