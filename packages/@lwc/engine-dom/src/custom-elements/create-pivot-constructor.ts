@@ -92,7 +92,7 @@ function createPivotingClass(
             const definition = definitionForElement.get(this);
             if (!isUndefined(definition)) {
                 // Delegate out to user callback
-                definition.connectedCallback && definition.connectedCallback.call(this);
+                definition.connectedCallback?.call(this);
             } else {
                 // Register for upgrade when defined (only when connected, so we don't leak)
                 let awaiting = awaitingUpgrade.get(tagName);
