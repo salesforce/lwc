@@ -1,0 +1,6 @@
+<template>
+    <template for:each={items} for:item="item">
+        <div lwc:if={item.visible} key={item.key}>Conditional Iteration</div>
+        <div lwc:else key={item.key}>Else</div>
+    </template>
+</template>

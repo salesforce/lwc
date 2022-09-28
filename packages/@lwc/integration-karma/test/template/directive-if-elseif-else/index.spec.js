@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import XComplex from 'x/complex';
 import XTest from 'x/test';
+import XForEach from 'x/forEach';
 
 describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     it('should render if branch if the value for lwc:if is truthy', () => {
@@ -77,31 +78,71 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     it('should rerender list content when updated', () => {
-        const element = createElement('x-complex', { is: XComplex });
+        const element = createElement('x-for-each', { is: XForEach });
+        element.showList = true;
         document.body.appendChild(element);
 
-        expect(element.shadowRoot.querySelector('.else')).not.toBeNull();
+        expect(element.shadowRoot.querySelector('.if').textContent).toBe('123');
 
-        element.showList = true;
+        element.appendToList({
+            value: 4,
+            show: true,
+        });
+
         return Promise.resolve()
-            .then(() => {
-                expect(element.shadowRoot.querySelector('.if').textContent).toBe('123');
-
-                element.refreshList();
-            })
             .then(() => {
                 expect(element.shadowRoot.querySelector('.if').textContent).toBe('1234');
 
                 element.showList = false;
-                element.refreshList();
+                element.appendToList({
+                    value: 5,
+                    show: true,
+                });
+                element.prependToList({
+                    value: 0,
+                    show: true,
+                });
             })
             .then(() => {
-                expect(element.shadowRoot.querySelector('.else')).not.toBeNull();
+                expect(element.shadowRoot.querySelector('.if')).toBeNull();
 
                 element.showList = true;
             })
             .then(() => {
-                expect(element.shadowRoot.querySelector('.if').textContent).toBe('12345');
+                expect(element.shadowRoot.querySelector('.if').textContent).toBe('012345');
+            });
+    });
+
+    it('should rerender list items when conditional expressions change', () => {
+        const element = createElement('x-for-each', { is: XForEach });
+        element.showList = true;
+        document.body.appendChild(element);
+
+        expect(element.shadowRoot.querySelector('.if').textContent).toBe('123');
+
+        element.appendToList({
+            value: 4,
+            show: false,
+        });
+
+        return Promise.resolve()
+            .then(() => {
+                expect(element.shadowRoot.querySelector('.if').textContent).toBe('123');
+
+                element.show(4);
+            })
+            .then(() => {
+                expect(element.shadowRoot.querySelector('.if').textContent).toBe('1234');
+
+                element.hide(1);
+                element.hide(3);
+                element.prependToList({
+                    value: 0,
+                    show: true,
+                });
+            })
+            .then(() => {
+                expect(element.shadowRoot.querySelector('.if').textContent).toBe('024');
             });
     });
 });
