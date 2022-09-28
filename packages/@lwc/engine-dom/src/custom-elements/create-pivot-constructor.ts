@@ -139,7 +139,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
 function getNewObservedAttributes(
     registeredDefinition: Definition,
     instanceDefinition: Definition
-) {
+): Set<string> {
     const { observedAttributes, attributeChangedCallback } = instanceDefinition;
     if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
         // This instance does not need to observe any attributes, no need to patch
