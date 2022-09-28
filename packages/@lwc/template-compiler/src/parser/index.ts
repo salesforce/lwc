@@ -32,6 +32,7 @@ import {
     If,
     Property,
     ElementDirectiveName,
+    RootDirectiveName,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -61,7 +62,6 @@ import {
     KNOWN_HTML_AND_SVG_ELEMENTS,
     LWC_DIRECTIVE_SET,
     LWC_RE,
-    ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
@@ -481,7 +481,7 @@ function applyLwcRenderModeDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcRenderModeAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
+    const lwcRenderModeAttribute = parsedAttr.pick(RootDirectiveName.RenderMode);
     if (!lwcRenderModeAttribute) {
         return;
     }
@@ -506,7 +506,7 @@ function applyLwcPreserveCommentsDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcPreserveCommentAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS);
+    const lwcPreserveCommentAttribute = parsedAttr.pick(RootDirectiveName.PreserveComments);
     if (!lwcPreserveCommentAttribute) {
         return;
     }
@@ -543,16 +543,16 @@ function applyLwcDirectives(
     }
 
     // Should not allow render mode or preserve comments on non root nodes
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE)) {
+    if (parsedAttr.get(RootDirectiveName.RenderMode)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            RootDirectiveName.RenderMode,
             `<${element.name}>`,
         ]);
     }
 
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS)) {
+    if (parsedAttr.get(RootDirectiveName.PreserveComments)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
+            RootDirectiveName.PreserveComments,
             `<${element.name}>`,
         ]);
     }

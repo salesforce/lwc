@@ -217,7 +217,8 @@ export enum ElementDirectiveName {
     Spread = 'lwc:spread',
     Key = 'key',
 }
+
 export enum RootDirectiveName {
-    PreserveComments = 'lwc:presere-comments',
+    PreserveComments = 'lwc:preserve-comments',
     RenderMode = 'lwc:render-mode',
 }

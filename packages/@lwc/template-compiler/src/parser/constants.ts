@@ -23,11 +23,6 @@ export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(ElementDirectiveName));
 
-export const ROOT_TEMPLATE_DIRECTIVES = {
-    PRESERVE_COMMENTS: 'lwc:preserve-comments',
-    RENDER_MODE: 'lwc:render-mode',
-};
-
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
     'aria-activedescendant',
