@@ -60,7 +60,10 @@ function createDefinitionRecord(constructor: CustomElementConstructor): Definiti
 
 // Helper to create stand-in element for each tagName registered that delegates
 // out to the registry for the given element
-function createPivotingClass(tagName: string, registeredDefinition: Definition): CustomElementConstructor {
+function createPivotingClass(
+    tagName: string,
+    registeredDefinition: Definition
+): CustomElementConstructor {
     class PivotCtor extends NativeHTMLElement {
         constructor(UserCtor?: CustomElementConstructor) {
             // This constructor can only be invoked by:
@@ -83,10 +86,6 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition):
                 // so we need to add it to the pending queue just in case it eventually
                 // gets defined in the global registry.
                 pendingRegistryForElement.set(this, registeredDefinition);
-                // We need to install the minimum HTMLElement prototype so that
-                // this instance works like a regular element without a registered
-                // definition; internalUpgrade will eventually install the full CE prototype
-                setPrototypeOf(this, HTMLElement.prototype);
             }
         }
         connectedCallback(this: HTMLElement) {
