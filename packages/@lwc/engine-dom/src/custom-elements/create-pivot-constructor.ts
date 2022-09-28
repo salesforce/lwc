@@ -182,7 +182,7 @@ function patchAttributes(
         registeredDefinition,
         instanceDefinition
     );
-    if (getNewObservedAttributes(registeredDefinition, instanceDefinition).size === 0) {
+    if (newObservedAttributes.size === 0) {
         return;
     }
     const { attributeChangedCallback } = instanceDefinition;
