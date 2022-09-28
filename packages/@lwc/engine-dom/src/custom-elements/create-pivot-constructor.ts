@@ -143,7 +143,7 @@ function getNewObservedAttributes(
     const { observedAttributes, attributeChangedCallback } = instanceDefinition;
     if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
         // This instance does not need to observe any attributes, no need to patch
-        return EMPTY_SET as Set<string>;
+        return EMPTY_SET;
     }
 
     // Natively, the attributes observed by the registered definition are going to be taken
