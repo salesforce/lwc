@@ -31,7 +31,7 @@ const globalDefinitionsByTag = new Map<string, Definition>();
 const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
 
-const EMPTY_SET = new Set();
+const EMPTY_SET: Set<string> = new Set();
 
 interface Definition {
     UserCtor: CustomElementConstructor;
