@@ -105,6 +105,16 @@ export interface FeatureFlagMap {
      *  - `Node.prototype.getRootNode`
      */
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
+
+    /**
+     * Flag to enable the "frozen template" feature. With this flag enabled, the template object
+     * imported from HTML files is frozen and cannot be modified. E.g. this will throw:
+     * ```js
+     * import template from './template.html';
+     * template.stylesheets = [];
+     * ```
+     */
+    ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

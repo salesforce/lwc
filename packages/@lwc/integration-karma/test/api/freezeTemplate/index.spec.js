@@ -1,4 +1,4 @@
-import { registerTemplate, freezeTemplate } from 'lwc';
+import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 
 describe('freezeTemplate', () => {
     it('should warn when setting tmpl.stylesheetToken', () => {
@@ -152,5 +152,34 @@ describe('freezeTemplate', () => {
             expect(descriptor.enumerable).toEqual(true);
             expect(descriptor.configurable).toEqual(true);
         }
+    });
+
+    describe('ENABLE_FROZEN_TEMPLATE set to true', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_FROZEN_TEMPLATE', true);
+        });
+
+        afterAll(() => {
+            setFeatureFlagForTest('ENABLE_FROZEN_TEMPLATE', false);
+        });
+
+        it('deep-freezes the template', () => {
+            const template = registerTemplate(() => []);
+            const stylesheet = () => 'div { color: red }';
+            template.stylesheets = [stylesheet];
+            template.stylesheetToken = 'myToken';
+            freezeTemplate(template);
+
+            expect(Object.isFrozen(template)).toEqual(true);
+            expect(Object.isFrozen(template.stylesheets)).toEqual(true);
+        });
+
+        it('freezes a template with no stylesheets', () => {
+            const template = registerTemplate(() => []);
+            freezeTemplate(template);
+
+            expect(Object.isFrozen(template)).toEqual(true);
+            expect(template.stylesheets).toEqual(undefined);
+        });
     });
 });
