@@ -20,6 +20,11 @@ if (hasCustomElements) {
     // It's important to cache window.HTMLElement here. Otherwise, someone else could overwrite window.HTMLElement (e.g.
     // another copy of the engine, or another pivot implementation) and we would get "Illegal constructor" errors
     // because the HTMLElement prototypes are mixed up.
+    //
+    // The reason this happens is that the pivot implementation overwrites window.HTMLElement and expects to work
+    // with that version of HTMLElement. So if you load two copies of the pivot implementation in the same environment,
+    // the second one may accidentally grab window.HTMLElement from the first (when doing `class extends HTMLElement`).
+    // Caching avoids this problem.
     const { HTMLElement } = window;
 
     const createUserConstructor = (
