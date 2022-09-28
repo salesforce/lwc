@@ -156,7 +156,7 @@ function getNewObservedAttributes(
     );
 }
 
-function throwAsyncError(error: unknown) {
+function throwAsyncError(error: unknown): void {
     // Per native custom element behavior, errors thrown in attributeChangedCallback
     // become unhandled async errors. We use setTimeout() instead of Promise.resolve()
     // to make it an unhandled error rather than an unhandled rejection.
