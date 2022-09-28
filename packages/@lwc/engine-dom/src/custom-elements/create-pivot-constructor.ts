@@ -60,7 +60,7 @@ function createDefinitionRecord(constructor: CustomElementConstructor): Definiti
 
 // Helper to create stand-in element for each tagName registered that delegates
 // out to the registry for the given element
-function createPivotingClass(tagName: string, registeredDefinition: Definition) {
+function createPivotingClass(tagName: string, registeredDefinition: Definition): CustomElementConstructor {
     class PivotCtor extends NativeHTMLElement {
         constructor(UserCtor?: CustomElementConstructor) {
             // This constructor can only be invoked by:
