@@ -35,11 +35,11 @@ const EMPTY_SET = new Set();
 
 interface Definition {
     UserCtor: CustomElementConstructor;
-    PivotCtor: CustomElementConstructor | undefined;
-    connectedCallback: (() => void) | undefined;
-    disconnectedCallback: (() => void) | undefined;
-    adoptedCallback: (() => void) | undefined;
-    attributeChangedCallback: ((name: string, oldValue: any, newValue: any) => void) | undefined;
+    PivotCtor?: CustomElementConstructor;
+    connectedCallback?: () => void;
+    disconnectedCallback?: () => void;
+    adoptedCallback?: () => void;
+    attributeChangedCallback?: (name: string, oldValue: any, newValue: any) => void;
     observedAttributes: Set<string>;
 }
 
