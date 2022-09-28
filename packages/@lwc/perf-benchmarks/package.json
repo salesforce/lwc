@@ -28,6 +28,24 @@
             "build": {
                 "outputs": [
                     "./dist"
+                ],
+                "//": "The build output depends on these env variables. See: https://nx.dev/concepts/how-caching-works#runtime-hash-inputs",
+                "inputs": [
+                    {
+                        "env": "BENCHMARK_REPO"
+                    },
+                    {
+                        "env": "BENCHMARK_REF"
+                    },
+                    {
+                        "env": "BENCHMARK_AUTO_SAMPLE_CONDITIONS"
+                    },
+                    {
+                        "env": "BENCHMARK_SAMPLE_SIZE"
+                    },
+                    {
+                        "env": "BENCHMARK_TIMEOUT"
+                    }
                 ]
             }
         }
