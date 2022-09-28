@@ -58,8 +58,10 @@ function createDefinitionRecord(constructor: CustomElementConstructor): Definiti
     };
 }
 
-// Helper to create stand-in element for each tagName registered that delegates
-// out to the registry for the given element
+// Helper to create stand-in element for each tagName registered that delegates out to the registry for the given
+// element. Note that the `registeredDefinition` represents the constructor that was used to register during
+// `customElements.define()`. Whereas the `pivotDefinition` represents the constructor that is passed when the pivot
+// constructor is invoked with another constructor.
 function createPivotingClass(
     tagName: string,
     registeredDefinition: Definition
@@ -137,9 +139,9 @@ function createPivotingClass(
 
 function getNewObservedAttributes(
     registeredDefinition: Definition,
-    instanceDefinition: Definition
+    pivotDefinition: Definition
 ): Set<string> {
-    const { observedAttributes, attributeChangedCallback } = instanceDefinition;
+    const { observedAttributes, attributeChangedCallback } = pivotDefinition;
     if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
         // This instance does not need to observe any attributes, no need to patch
         return EMPTY_SET;
@@ -149,7 +151,7 @@ function getNewObservedAttributes(
     // care of by the browser, only the difference between the two sets has to be taken
     // care by the patched version.
     return new Set(
-        [...instanceDefinition.observedAttributes].filter(
+        [...pivotDefinition.observedAttributes].filter(
             (x) => !registeredDefinition.observedAttributes.has(x)
         )
     );
@@ -175,16 +177,13 @@ function throwAsyncError(error: unknown): void {
 function patchAttributes(
     instance: HTMLElement,
     registeredDefinition: Definition,
-    instanceDefinition: Definition
+    pivotDefinition: Definition
 ) {
-    const newObservedAttributes = getNewObservedAttributes(
-        registeredDefinition,
-        instanceDefinition
-    );
+    const newObservedAttributes = getNewObservedAttributes(registeredDefinition, pivotDefinition);
     if (newObservedAttributes.size === 0) {
         return;
     }
-    const { attributeChangedCallback } = instanceDefinition;
+    const { attributeChangedCallback } = pivotDefinition;
 
     // Patch the instance.
     // Note we use the native `getAttribute` rather than the super's `getAttribute` because
@@ -234,18 +233,15 @@ function patchAttributes(
 function patchAttributesDuringUpgrade(
     instance: HTMLElement,
     registeredDefinition: Definition,
-    instanceDefinition: Definition
+    pivotDefinition: Definition
 ) {
     // The below case patches observed attributes for the case where the HTML element is upgraded
     // from a pre-existing one in the DOM.
-    const newObservedAttributes = getNewObservedAttributes(
-        registeredDefinition,
-        instanceDefinition
-    );
-    if (getNewObservedAttributes(registeredDefinition, instanceDefinition).size === 0) {
+    const newObservedAttributes = getNewObservedAttributes(registeredDefinition, pivotDefinition);
+    if (getNewObservedAttributes(registeredDefinition, pivotDefinition).size === 0) {
         return;
     }
-    const { attributeChangedCallback } = instanceDefinition;
+    const { attributeChangedCallback } = pivotDefinition;
     // Approximate observedAttributes from the user class, but only for the new observed attributes
     newObservedAttributes.forEach((name) => {
         if (nativeHasAttribute.call(instance, name)) {
@@ -262,13 +258,13 @@ let upgradingInstance: HTMLElement | undefined;
 function internalUpgrade(
     instance: HTMLElement,
     registeredDefinition: Definition,
-    instanceDefinition: Definition
+    pivotDefinition: Definition
 ) {
-    setPrototypeOf(instance, instanceDefinition.UserCtor.prototype);
-    definitionForElement.set(instance, instanceDefinition);
+    setPrototypeOf(instance, pivotDefinition.UserCtor.prototype);
+    definitionForElement.set(instance, pivotDefinition);
     // attributes patches when needed
-    if (instanceDefinition !== registeredDefinition) {
-        patchAttributes(instance, registeredDefinition, instanceDefinition);
+    if (pivotDefinition !== registeredDefinition) {
+        patchAttributes(instance, registeredDefinition, pivotDefinition);
     }
     // Tricking the construction path to believe that a new instance is being created,
     // that way it will execute the super initialization mechanism but the HTMLElement
@@ -278,9 +274,9 @@ function internalUpgrade(
     // By `new`ing the UserCtor, we now jump to the constructor for the overridden global HTMLElement
     // The reason this happens is that the UserCtor extends HTMLElement, so it calls the `super()`.
     // Note that `upgradingInstance` is explicitly handled in the HTMLElement constructor.
-    new instanceDefinition.UserCtor();
+    new pivotDefinition.UserCtor();
 
-    patchAttributesDuringUpgrade(instance, registeredDefinition, instanceDefinition);
+    patchAttributesDuringUpgrade(instance, registeredDefinition, pivotDefinition);
 }
 
 function getOrCreateDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
@@ -401,7 +397,7 @@ if (hasCustomElements) {
         });
     };
 
-    // This constructor is invoked when we call `new instanceDefinition.UserCtor()`
+    // This constructor is invoked when we call `new pivotDefinition.UserCtor()`
     // @ts-ignore
     window.HTMLElement = function HTMLElement(this: HTMLElement) {
         // Upgrading case: the pivoting class constructor was run by the browser's
