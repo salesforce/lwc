@@ -202,7 +202,7 @@ export function getScopeTokenClass(owner: VM): string | null {
 
 /**
  * This function returns the host style token for a custom element if it
- * exists. Otherwise it will return an empty string.
+ * exists. Otherwise it returns an empty string.
  */
 export function getStylesheetTokenHost(vnode: VCustomElement): string {
     const {
