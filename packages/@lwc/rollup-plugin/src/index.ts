@@ -31,6 +31,8 @@ export interface RollupLwcOptions {
     preserveHtmlComments?: boolean;
     /** The configuration to pass to `@lwc/compiler`. */
     experimentalDynamicComponent?: DynamicComponentConfig;
+    /** The configuration to pass to the `@lwc/template-compiler`. */
+    enableLwcSpread?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -114,6 +116,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         sourcemap = false,
         preserveHtmlComments,
         experimentalDynamicComponent,
+        enableLwcSpread,
     } = pluginOptions;
 
     return {
@@ -216,6 +219,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 experimentalDynamicComponent,
                 preserveHtmlComments,
                 scopedStyles: scoped,
+                enableLwcSpread,
             });
 
             if (warnings) {

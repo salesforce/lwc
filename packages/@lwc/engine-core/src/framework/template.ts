@@ -54,6 +54,8 @@ export interface Template {
     stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
+    /** True if this template contains template refs, undefined or false otherwise */
+    hasRefs?: boolean;
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -269,6 +271,11 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
                 }
+
+                // reset the refs; they will be set during the tmpl() instantiation
+                const hasRefVNodes = Boolean(html.hasRefs);
+                vm.hasRefVNodes = hasRefVNodes;
+                vm.refVNodes = hasRefVNodes ? create(null) : null;
 
                 // right before producing the vnodes, we clear up all internal references
                 // to custom elements from the template.
