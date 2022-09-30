@@ -44,6 +44,8 @@ import {
     SpreadDirective,
     ElementDirective,
     RootDirective,
+    SlotBindDirective,
+    SlotDataDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -481,6 +483,14 @@ export function isRefDirective(directive: ElementDirective): directive is RefDir
 
 export function isKeyDirective(directive: ElementDirective): directive is KeyDirective {
     return directive.name === 'Key';
+}
+
+export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+    return directive.name === 'SlotData';
+}
+
+export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
+    return directive.name === 'SlotBind';
 }
 
 export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {

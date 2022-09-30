@@ -120,12 +120,22 @@ export interface RefDirective extends Directive<'Ref'> {
     value: Literal<string>;
 }
 
+export interface SlotBindDirective extends Directive<'SlotBind'> {
+    value: Expression;
+}
+
+export interface SlotDataDirective extends Directive<'SlotData'> {
+    value: Literal<string>;
+}
+
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
     | DomDirective
     | InnerHTMLDirective
     | RefDirective
+    | SlotBindDirective
+    | SlotDataDirective
     | SpreadDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
@@ -259,6 +269,8 @@ export enum ElementDirectiveName {
     Dynamic = 'lwc:dynamic',
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',
+    SlotBind = 'lwc:slot-bind',
+    SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
     Key = 'key',
 }
