@@ -133,7 +133,9 @@ function evaluateStylesheetsContent(
 
             if (features.DISABLE_LIGHT_DOM_UNSCOPED_CSS) {
                 if (!isScopedCss && vm.renderMode === RenderMode.Light) {
-                    logError('Unscoped CSS is not supported in Light DOM.');
+                    logError(
+                        'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
+                    );
                     continue;
                 }
             }
