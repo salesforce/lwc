@@ -430,7 +430,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             classMap = {
                 ...classMap,
                 [scopedToken]: true,
-                ...(stylesheetTokenHost && { [stylesheetTokenHost]: true }),
+                ...(!isUndefined(stylesheetTokenHost) && { [stylesheetTokenHost]: true }),
             };
         } else {
             className = `${scopedToken} ${stylesheetTokenHost}`.trim();
