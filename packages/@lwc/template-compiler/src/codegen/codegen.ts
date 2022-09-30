@@ -107,6 +107,9 @@ export default class CodeGen {
     readonly staticNodes: Set<ChildNode> = new Set<ChildNode>();
     readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
 
+    /** True if this template contains the lwc:ref directive */
+    hasRefs: boolean = false;
+
     /**
      * State maintains information about the current compilation configs.
      */

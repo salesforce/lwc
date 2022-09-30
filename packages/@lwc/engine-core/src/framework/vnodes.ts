@@ -99,11 +99,13 @@ export interface VNodeData {
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
     readonly renderer?: RendererAPI;
+    readonly spread?: Readonly<Record<string, any>>;
 }
 
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly ref?: string;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {

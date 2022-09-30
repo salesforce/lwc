@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, seal } from '@lwc/shared';
+import { ArrayPush, create, isFunction, isUndefined, seal } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { RefVNodes, VM } from './vm';
+import { VBaseElement } from './vnodes';
 
 type Callback = () => void;
 
@@ -97,4 +99,21 @@ export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): St
         }
     }
     return list;
+}
+
+// Set a ref (lwc:ref) on a VM, from a template API
+export function setRefVNode(vm: VM, ref: string, vnode: VBaseElement) {
+    if (process.env.NODE_ENV !== 'production' && isUndefined(vm.refVNodes)) {
+        throw new Error('refVNodes must be defined when setting a ref');
+    }
+
+    // If this method is called, then vm.refVNodes is set as the template has refs.
+    // If not, then something went wrong and we threw an error above.
+    const refVNodes: RefVNodes = vm.refVNodes!;
+
+    // In cases of conflict (two elements with the same ref), prefer, the last one,
+    // in depth-first traversal order.
+    if (!(ref in refVNodes) || refVNodes[ref].key < vnode.key) {
+        refVNodes[ref] = vnode;
+    }
 }

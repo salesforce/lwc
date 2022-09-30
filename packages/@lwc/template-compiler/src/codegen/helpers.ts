@@ -162,6 +162,15 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(renderModeMetadata));
     }
 
+    if (codeGen.hasRefs) {
+        const refsMetadata = t.assignmentExpression(
+            '=',
+            t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('hasRefs')),
+            t.literal(true)
+        );
+        metadataExpressions.push(t.expressionStatement(refsMetadata));
+    }
+
     return metadataExpressions;
 }
 

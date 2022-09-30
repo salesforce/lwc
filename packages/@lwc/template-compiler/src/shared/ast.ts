@@ -35,9 +35,12 @@ import {
     If,
     ElementSourceLocation,
     InnerHTMLDirective,
-    Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    RefDirective,
+    SpreadDirective,
+    ElementDirective,
+    RootDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -233,6 +236,15 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
+export function spreadDirective(value: Expression, location: SourceLocation): SpreadDirective {
+    return {
+        type: 'Directive',
+        name: 'Spread',
+        value,
+        location,
+    };
+}
+
 export function domDirective(
     lwcDomAttr: LWCDirectiveDomMode,
     location: SourceLocation
@@ -252,6 +264,15 @@ export function innerHTMLDirective(
     return {
         type: 'Directive',
         name: 'InnerHTML',
+        value,
+        location,
+    };
+}
+
+export function refDirective(value: Literal<string>, location: SourceLocation): RefDirective {
+    return {
+        type: 'Directive',
+        name: 'Ref',
         value,
         location,
     };
@@ -369,28 +390,36 @@ export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
 
-export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
+export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
     return directive.name === 'Dynamic';
 }
 
-export function isDomDirective(directive: Directive): directive is DomDirective {
+export function isDomDirective(directive: ElementDirective): directive is DomDirective {
     return directive.name === 'Dom';
 }
 
-export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
+export function isSpreadDirective(directive: ElementDirective): directive is SpreadDirective {
+    return directive.name === 'Spread';
+}
+
+export function isInnerHTMLDirective(directive: ElementDirective): directive is InnerHTMLDirective {
     return directive.name === 'InnerHTML';
 }
 
-export function isKeyDirective(directive: Directive): directive is KeyDirective {
+export function isRefDirective(directive: ElementDirective): directive is RefDirective {
+    return directive.name === 'Ref';
+}
+
+export function isKeyDirective(directive: ElementDirective): directive is KeyDirective {
     return directive.name === 'Key';
 }
 
-export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
+export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
     return directive.name === 'RenderMode';
 }
 
 export function isPreserveCommentsDirective(
-    directive: Directive
+    directive: RootDirective
 ): directive is PreserveCommentsDirective {
     return directive.name === 'PreserveComments';
 }
