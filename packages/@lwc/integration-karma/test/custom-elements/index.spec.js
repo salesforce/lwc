@@ -15,6 +15,8 @@ import Nonce13 from 'x/nonce13';
 import Nonce14 from 'x/nonce14';
 import Nonce15 from 'x/nonce15';
 import Nonce16 from 'x/nonce16';
+import Nonce17 from 'x/nonce17';
+import Nonce18 from 'x/nonce18';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrow from 'x/observeNothingThrow';
@@ -301,6 +303,31 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             );
 
             expect(vanilla.notLWC).toEqual(true);
+        });
+
+        it('does not allow passing arbitrary UserCtors into the PivotCtor', () => {
+            const tagName = 'x-nonce-17';
+            document.body.appendChild(createElement(tagName, { is: Nonce17 }));
+            const Ctor = document.createElement(tagName).constructor;
+            class MyUserCtor extends HTMLElement {
+                isMyUserCtor = true;
+            }
+            expect(() => {
+                new Ctor(MyUserCtor);
+            }).toThrowError(
+                /Failed to create custom element: the provided constructor is unregistered: MyUserCtor\./
+            );
+        });
+
+        it('does not allow passing non-functions into the PivotCtor', () => {
+            const tagName = 'x-nonce-18';
+            document.body.appendChild(createElement(tagName, { is: Nonce18 }));
+            const Ctor = document.createElement(tagName).constructor;
+            expect(() => {
+                new Ctor(null);
+            }).toThrowError(
+                /Failed to create custom element: the provided constructor is not a constructor\./
+            );
         });
     });
 

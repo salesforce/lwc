@@ -25,6 +25,7 @@ const {
 const definitionForElement = new WeakMap<HTMLElement, Definition>();
 const pendingRegistryForElement = new WeakMap<HTMLElement, Definition>();
 const definitionForConstructor = new WeakMap<CustomElementConstructor, Definition>();
+const registeredUserCtors = new WeakSet<CustomElementConstructor>();
 
 const pivotCtorByTag = new Map<string, CustomElementConstructor>();
 const globalDefinitionsByTag = new Map<string, Definition>();
@@ -77,7 +78,23 @@ function createPivotingClass(
             // definition, we use that one, otherwise fallback to the global
             // internal registry.
             super();
-            const definition = !isUndefined(UserCtor)
+
+            const userCtorIsDefined = !isUndefined(UserCtor);
+
+            if (userCtorIsDefined) {
+                if (!isConstructor(UserCtor)) {
+                    throw new TypeError(
+                        `Failed to create custom element: the provided constructor is not a constructor.`
+                    );
+                }
+                if (!registeredUserCtors.has(UserCtor)) {
+                    throw new Error(
+                        `Failed to create custom element: the provided constructor is unregistered: ${UserCtor.name}.`
+                    );
+                }
+            }
+
+            const definition = userCtorIsDefined
                 ? getOrCreateDefinitionForConstructor(UserCtor)
                 : globalDefinitionsByTag.get(tagName);
             if (!isUndefined(definition)) {
@@ -279,8 +296,12 @@ function internalUpgrade(
     patchAttributesDuringUpgrade(instance, registeredDefinition, pivotDefinition);
 }
 
+function isConstructor(constructor: CustomElementConstructor): boolean {
+    return isFunction(constructor) && isObject(constructor.prototype);
+}
+
 function getOrCreateDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
-    if (!isFunction(constructor) || !isObject(constructor.prototype)) {
+    if (!isConstructor(constructor)) {
         throw new TypeError('The referenced constructor is not a constructor.');
     }
     const definition = definitionForConstructor.get(constructor);
@@ -290,6 +311,17 @@ function getOrCreateDefinitionForConstructor(constructor: CustomElementConstruct
     return createDefinitionRecord(constructor);
 }
 
+/**
+ * Create a new PivotConstructor for the given tagName, which is capable of being constructed
+ * with a UserConstructor defining the behavior. Passing in the UserConstructor here
+ * is a hint that can be used when registering a custom element with the global custom elements
+ * registry for the first time, which provides certain optimizations. It also marks the UserConstructor
+ * as "safe" to be used when passed in to a PivotConstructor.
+ *
+ * @param tagName - element tag name
+ * @param UserCtor - userland custom element constructor
+ * @returns a new custom element constructor
+ */
 export let createPivotConstructor: (
     tagName: string,
     UserCtor: CustomElementConstructor
@@ -323,6 +355,7 @@ if (hasCustomElements) {
             );
         }
         const definition = getOrCreateDefinitionForConstructor(constructor);
+        registeredUserCtors.add(constructor);
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             PivotCtor = createPivotingClass(tagName, definition);
@@ -373,7 +406,8 @@ if (hasCustomElements) {
             if (!isUndefined(definition)) {
                 return definition.UserCtor; // defined by the patched custom elements registry
             }
-            return NativeCtor; // defined before the patched custom elements registry loaded
+            // TODO [#3073]: return undefined rather than the pivot constructor (NativeCtor)
+            return NativeCtor; // return the pivot constructor or constructor that existed before patching
         }
     };
 
@@ -386,6 +420,8 @@ if (hasCustomElements) {
             if (!isUndefined(definition)) {
                 return definition.UserCtor;
             }
+            // TODO [#3073]: return undefined rather than the pivot constructor (NativeCtor)
+
             // In this case, the custom element must have been defined before the registry patches
             // were applied. So return the non-pivot constructor
             if (isUndefined(NativeCtor)) {
@@ -446,6 +482,8 @@ if (hasCustomElements) {
             definitionForConstructor.set(UserCtor, definition);
             pivotCtorByTag.set(tagName, PivotCtor);
         }
+        // Register a UserConstructor as "safe" to be used within a PivotConstructor
+        registeredUserCtors.add(UserCtor);
         return PivotCtor;
     };
 } else {
