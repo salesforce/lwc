@@ -208,7 +208,7 @@ export function getStylesheetTokenHost(vnode: VCustomElement): string {
     const {
         template: { stylesheetToken },
     } = getComponentInternalDef(vnode.ctor);
-    return stylesheetToken ? makeHostToken(stylesheetToken) : '';
+    return !isUndefined(stylesheetToken) ? makeHostToken(stylesheetToken) : '';
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {
