@@ -380,7 +380,7 @@ export const ParserDiagnostics = {
 
     ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES: {
         code: 1080,
-        message: 'Root template has unknown attributes',
+        message: 'Root template has unknown or disallowed attributes: {0}',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -394,7 +394,7 @@ export const ParserDiagnostics = {
 
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
-        message: "Slot tag can't be associated with directives",
+        message: "Slot tag can't be associated with for:each, for:of or if:true/false directives",
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -714,6 +714,52 @@ export const ParserDiagnostics = {
         code: 1166,
         message:
             "'{0}' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
+        url: '',
+    },
+    INVALID_OPTS_LWC_SLOT_BIND: {
+        code: 1167,
+        message:
+            'Invalid `lwc:slot-bind` usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_OPTS_LWC_SLOT_DATA: {
+        code: 1168,
+        message:
+            'Invalid `lwc:slot-data` usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    SCOPED_SLOT_IN_LIGHT_DOM_ONLY: {
+        code: 1169,
+        message:
+            'Invalid `lwc:slot-bind` usage on <slot> element. Scoped slots usage is allowed in Light DOM templates only.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_LWC_SLOT_BIND_LITERAL_PROP: {
+        code: 1170,
+        message:
+            'Invalid `lwc:slot-bind` usage on element "{0}". The directive binding must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT: {
+        code: 1171,
+        message:
+            'Invalid `lwc:slot-bind` usage on element "{0}". The directive can be used on a `<slot>` element only.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    NO_DUPLICATE_SCOPED_SLOT: {
+        code: 1172,
+        message: 'Invalid duplicate scoped slots ({0})',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    NO_MIXED_SLOT_TYPES: {
+        code: 1173,
+        message: 'Mixing slot types disallowed for same ({0}) slot.',
         level: DiagnosticLevel.Error,
         url: '',
     },

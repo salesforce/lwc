@@ -1,0 +1,186 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 252,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 241,
+                "end": 252
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-child",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 240,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 15,
+                        "start": 230,
+                        "end": 240
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 50,
+                            "start": 151,
+                            "end": 192,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 32,
+                                "start": 151,
+                                "end": 174
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 43,
+                                "endLine": 6,
+                                "endColumn": 50,
+                                "start": 185,
+                                "end": 192
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "slot",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "slotname2"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 15,
+                                    "endLine": 6,
+                                    "endColumn": 31,
+                                    "start": 157,
+                                    "end": 173
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Willy Wonka",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Willy Wonka"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 32,
+                                    "endLine": 6,
+                                    "endColumn": 43,
+                                    "start": 174,
+                                    "end": 185
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 33,
+                            "start": 201,
+                            "end": 225,
+                            "startTag": {
+                                "startLine": 7,
+                                "startColumn": 9,
+                                "endLine": 7,
+                                "endColumn": 15,
+                                "start": 201,
+                                "end": 207
+                            },
+                            "endTag": {
+                                "startLine": 7,
+                                "startColumn": 26,
+                                "endLine": 7,
+                                "endColumn": 33,
+                                "start": 218,
+                                "end": 225
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Chocolatier",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Chocolatier"
+                                },
+                                "location": {
+                                    "startLine": 7,
+                                    "startColumn": 15,
+                                    "endLine": 7,
+                                    "endColumn": 26,
+                                    "start": 207,
+                                    "end": 218
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

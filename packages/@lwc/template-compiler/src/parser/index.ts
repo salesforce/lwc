@@ -6,7 +6,13 @@
  */
 import * as parse5 from 'parse5';
 
-import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import {
+    HTML_NAMESPACE,
+    SVG_NAMESPACE,
+    MATHML_NAMESPACE,
+    isVoidElement,
+    isUndefined,
+} from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
 import * as t from '../shared/estree';
@@ -758,6 +764,38 @@ function applyLwcDirectives(
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
     applyRefDirective(ctx, parsedAttr, element);
     applyLwcSpreadDirective(ctx, parsedAttr, element);
+    applyLwcSlotBindDirective(ctx, parsedAttr, element);
+}
+
+function applyLwcSlotBindDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+    const slotBindAttribute = parsedAttr.pick(ElementDirectiveName.SlotBind);
+    if (!slotBindAttribute) {
+        return;
+    }
+
+    if (!ctx.config.enableScopedSlots) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, element);
+    }
+
+    if (!ast.isSlot(element)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    const { value: slotBindValue } = slotBindAttribute;
+    if (!ast.isExpression(slotBindValue)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SLOT_BIND_LITERAL_PROP, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    element.directives.push(ast.slotBindDirective(slotBindValue, slotBindAttribute.location));
 }
 
 function applyLwcSpreadDirective(
@@ -781,7 +819,7 @@ function applyLwcSpreadDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpreadAttr.location));
+    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpread.location));
 }
 
 function applyLwcDynamicDirective(
@@ -811,7 +849,7 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location));
+    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttribute.location));
 }
 
 function applyLwcDomDirective(
@@ -1064,6 +1102,12 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
+    const isScopedSlot = !isUndefined(parsedAttr.get(ElementDirectiveName.SlotBind));
+    if (isScopedSlot && ctx.renderMode !== LWCDirectiveRenderMode.light) {
+        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_IN_LIGHT_DOM_ONLY, location);
+    }
+
+    // Restrict specific template directives on <slot> element
     const hasDirectives = ctx.findInCurrentElementScope(ast.isElementDirective);
     if (hasDirectives) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
@@ -1073,7 +1117,9 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => name !== 'name')
+            .filter(({ name }) => {
+                return name !== 'name' && name !== ElementDirectiveName.SlotBind;
+            })
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {
@@ -1109,13 +1155,31 @@ function parseSlot(
     ctx.addSeenSlot(name);
 
     if (alreadySeen) {
-        ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
-            name === '' ? 'default' : `name="${name}"`,
-        ]);
-    } else if (isInIteration(ctx)) {
+        // If slot name has been shared with a prior scoped slot, throw an error.
+        // Scoped slots do not allow duplicate or mixed slots
+        // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#restricting-ambigious-bindings
+        // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#invalid-usages
+        if (ctx.seenScopedSlots.has(name)) {
+            // Differentiate between mixed type or duplicate scoped slot
+            const errorInfo = isScopedSlot
+                ? ParserDiagnostics.NO_DUPLICATE_SCOPED_SLOT
+                : ParserDiagnostics.NO_MIXED_SLOT_TYPES;
+            ctx.throwAtLocation(errorInfo, location, [name === '' ? 'default' : `name="${name}"`]);
+        } else {
+            // for standard slots, preserve old behavior of warnings
+            ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
+                name === '' ? 'default' : `name="${name}"`,
+            ]);
+        }
+    } else if (!isScopedSlot && isInIteration(ctx)) {
+        // Scoped slots are allowed to be placed in iteration blocks
         ctx.warnAtLocation(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, location, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
+    }
+
+    if (isScopedSlot) {
+        ctx.seenScopedSlots.add(name);
     }
 
     return ast.slot(name, parse5ElmLocation);
@@ -1210,7 +1274,12 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
 
 function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
     if (parsedAttr.getAttributes().length) {
-        ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
+        ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root, [
+            parsedAttr
+                .getAttributes()
+                .map(({ name }) => name)
+                .join(','),
+        ]);
     }
 
     if (!root.location.endTag) {

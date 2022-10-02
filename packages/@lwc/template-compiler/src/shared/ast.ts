@@ -290,6 +290,15 @@ export function spreadDirective(value: Expression, location: SourceLocation): Sp
     };
 }
 
+export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
 export function domDirective(
     lwcDomAttr: LWCDirectiveDomMode,
     location: SourceLocation

@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1164,
+            "message": "LWC1164: Invalid duplicate scoped slots (default)",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 83,
+                "length": 39
+            }
+        },
+        {
+            "code": 1164,
+            "message": "LWC1164: Invalid duplicate scoped slots (default)",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 149,
+                "length": 39
+            }
+        }
+    ]
+}

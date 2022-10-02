@@ -80,6 +80,7 @@ export default class ParserCtx {
 
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
+    readonly seenScopedSlots: Set<string> = new Set();
 
     /**
      * 'elementScopes' keeps track of the hierarchy of ParentNodes as the parser
