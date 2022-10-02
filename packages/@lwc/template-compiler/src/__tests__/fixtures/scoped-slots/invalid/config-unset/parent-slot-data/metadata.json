@@ -1,25 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1145,
-            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: lwc:slot-data. For more information, please visit https://lwc.dev/guide/reference#html-template-directives",
-            "level": 2,
+            "code": 1159,
+            "message": "LWC1159: Invalid `lwc:slot-bind` usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
             "location": {
                 "line": 3,
-                "column": 9,
-                "start": 33,
-                "length": 100
-            }
-        },
-        {
-            "code": 1153,
-            "message": "LWC1153: Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. For more information please visit https://lwc.dev/guide/reference#html-template-directives",
-            "level": 2,
-            "location": {
-                "line": 3,
-                "column": 9,
-                "start": 33,
-                "length": 100
+                "column": 19,
+                "start": 43,
+                "length": 20
             }
         }
     ]

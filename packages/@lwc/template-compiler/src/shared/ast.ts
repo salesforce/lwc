@@ -45,7 +45,8 @@ import {
     ElementDirective,
     RootDirective,
     SlotBindDirective,
-    SlotDataDirective,
+    /* SlotDataDirective, */
+    ScopedSlotContent,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -191,6 +192,22 @@ export function forOf(
         location: elementLocation,
         directiveLocation,
         children: [],
+    };
+}
+
+export function scopedSlotContent(
+    identifier: Identifier,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation,
+    slotName?: Literal
+): ScopedSlotContent {
+    return {
+        type: 'ScopedSlotContent',
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+        identifier,
+        slotName: slotName,
     };
 }
 
@@ -494,9 +511,9 @@ export function isKeyDirective(directive: ElementDirective): directive is KeyDir
     return directive.name === 'Key';
 }
 
-export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+/* export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
     return directive.name === 'SlotData';
-}
+} */
 
 export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
     return directive.name === 'SlotBind';
@@ -514,4 +531,8 @@ export function isPreserveCommentsDirective(
 
 export function isProperty(node: BaseNode): node is Property {
     return node.type === 'Property';
+}
+
+export function isScopedSlotContent(node: BaseNode): node is ScopedSlotContent {
+    return node.type === 'ScopedSlotContent';
 }

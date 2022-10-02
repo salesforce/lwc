@@ -1,0 +1,409 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 15,
+            "endColumn": 12,
+            "start": 0,
+            "end": 445,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 15,
+                "startColumn": 1,
+                "endLine": 15,
+                "endColumn": 12,
+                "start": 434,
+                "end": 445
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-child",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 14,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 433,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 14,
+                        "startColumn": 5,
+                        "endLine": 14,
+                        "endColumn": 15,
+                        "start": 423,
+                        "end": 433
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " no `lwc:slot-data` on the component tag ",
+                        "value": " no `lwc:slot-data` on the component tag ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 15,
+                            "endLine": 2,
+                            "endColumn": 63,
+                            "start": 25,
+                            "end": 73
+                        }
+                    },
+                    {
+                        "type": "ScopedSlotContent",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 20,
+                            "start": 82,
+                            "end": 191
+                        },
+                        "directiveLocation": {
+                            "startLine": 3,
+                            "startColumn": 36,
+                            "endLine": 3,
+                            "endColumn": 61,
+                            "start": 109,
+                            "end": 134
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "p",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 36,
+                                    "start": 148,
+                                    "end": 171,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 13,
+                                        "endLine": 4,
+                                        "endColumn": 16,
+                                        "start": 148,
+                                        "end": 151
+                                    },
+                                    "endTag": {
+                                        "startLine": 4,
+                                        "startColumn": 32,
+                                        "endLine": 4,
+                                        "endColumn": 36,
+                                        "start": 167,
+                                        "end": 171
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "{slot1data.name}",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 15,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 10,
+                                                "name": "slot1data"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 11,
+                                                "end": 15,
+                                                "name": "name"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 4,
+                                                "startColumn": 16,
+                                                "endLine": 4,
+                                                "endColumn": 32,
+                                                "start": 151,
+                                                "end": 167
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 16,
+                                            "endLine": 4,
+                                            "endColumn": 32,
+                                            "start": 151,
+                                            "end": 167
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "identifier": {
+                            "type": "Identifier",
+                            "name": "slot1data",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 36,
+                                "endLine": 3,
+                                "endColumn": 61,
+                                "start": 109,
+                                "end": 134
+                            }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": "slotname1"
+                        }
+                    },
+                    {
+                        "type": "ScopedSlotContent",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 20,
+                            "start": 201,
+                            "end": 311
+                        },
+                        "directiveLocation": {
+                            "startLine": 7,
+                            "startColumn": 36,
+                            "endLine": 7,
+                            "endColumn": 61,
+                            "start": 228,
+                            "end": 253
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "p",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 37,
+                                    "start": 267,
+                                    "end": 291,
+                                    "startTag": {
+                                        "startLine": 8,
+                                        "startColumn": 13,
+                                        "endLine": 8,
+                                        "endColumn": 16,
+                                        "start": 267,
+                                        "end": 270
+                                    },
+                                    "endTag": {
+                                        "startLine": 8,
+                                        "startColumn": 33,
+                                        "endLine": 8,
+                                        "endColumn": 37,
+                                        "start": 287,
+                                        "end": 291
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "{slot2data.title}",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 16,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 10,
+                                                "name": "slot2data"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 11,
+                                                "end": 16,
+                                                "name": "title"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 8,
+                                                "startColumn": 16,
+                                                "endLine": 8,
+                                                "endColumn": 33,
+                                                "start": 270,
+                                                "end": 287
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 8,
+                                            "startColumn": 16,
+                                            "endLine": 8,
+                                            "endColumn": 33,
+                                            "start": 270,
+                                            "end": 287
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "identifier": {
+                            "type": "Identifier",
+                            "name": "slot2data",
+                            "location": {
+                                "startLine": 7,
+                                "startColumn": 36,
+                                "endLine": 7,
+                                "endColumn": 61,
+                                "start": 228,
+                                "end": 253
+                            }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": "slotname2"
+                        }
+                    },
+                    {
+                        "type": "ScopedSlotContent",
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 13,
+                            "endColumn": 20,
+                            "start": 321,
+                            "end": 418
+                        },
+                        "directiveLocation": {
+                            "startLine": 11,
+                            "startColumn": 19,
+                            "endLine": 11,
+                            "endColumn": 46,
+                            "start": 331,
+                            "end": 358
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "p",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 12,
+                                    "startColumn": 13,
+                                    "endLine": 12,
+                                    "endColumn": 39,
+                                    "start": 372,
+                                    "end": 398,
+                                    "startTag": {
+                                        "startLine": 12,
+                                        "startColumn": 13,
+                                        "endLine": 12,
+                                        "endColumn": 16,
+                                        "start": 372,
+                                        "end": 375
+                                    },
+                                    "endTag": {
+                                        "startLine": 12,
+                                        "startColumn": 35,
+                                        "endLine": 12,
+                                        "endColumn": 39,
+                                        "start": 394,
+                                        "end": 398
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "{defaultdata.title}",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 18,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 12,
+                                                "name": "defaultdata"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 13,
+                                                "end": 18,
+                                                "name": "title"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 12,
+                                                "startColumn": 16,
+                                                "endLine": 12,
+                                                "endColumn": 35,
+                                                "start": 375,
+                                                "end": 394
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 12,
+                                            "startColumn": 16,
+                                            "endLine": 12,
+                                            "endColumn": 35,
+                                            "start": 375,
+                                            "end": 394
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "identifier": {
+                            "type": "Identifier",
+                            "name": "defaultdata",
+                            "location": {
+                                "startLine": 11,
+                                "startColumn": 19,
+                                "endLine": 11,
+                                "endColumn": 46,
+                                "start": 331,
+                                "end": 358
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

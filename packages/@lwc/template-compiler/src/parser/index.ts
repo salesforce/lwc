@@ -42,6 +42,7 @@ import {
     Property,
     ElementDirectiveName,
     RootDirectiveName,
+    ScopedSlotContent,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -183,7 +184,13 @@ function parseElement(
     const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
     // Create an AST node for each LWC template directive and chain them into a parent child hierarchy
-    const directive = parseElementDirectives(ctx, parsedAttr, parentNode, parse5ElmLocation);
+    const directive = parseElementDirectives(
+        ctx,
+        parsedAttr,
+        parentNode,
+        parse5ElmLocation,
+        parse5Elm
+    );
     // Create an AST node for the HTML element (excluding template tag elements) and add as child to parent
     const element = parseBaseElement(
         ctx,
@@ -210,7 +217,7 @@ function parseElement(
     const currentNode = element ?? directive;
     if (currentNode) {
         parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-        validateChildren(ctx, element);
+        validateChildren(ctx, element, directive);
     } else {
         // The only scenario where currentNode can be undefined is when there are only invalid attributes on a template element.
         // For example, <template class='slds-hello-world'>, these template elements and their children will not be rendered.
@@ -258,7 +265,8 @@ function parseElementDirectives(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     parent: ParentNode,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
+    parse5Elm: parse5.Element
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
@@ -269,10 +277,11 @@ function parseElementDirectives(
         parseForEach,
         parseForOf,
         parseIf,
+        parseScopedSlotContent
     ];
     for (const parser of parsers) {
         const prev = current || parent;
-        const node = parser(ctx, parsedAttr, parse5ElmLocation, prev);
+        const node = parser(ctx, parsedAttr, parse5ElmLocation, prev, parse5Elm);
         if (node) {
             current = node;
         }
@@ -1054,6 +1063,59 @@ function parseForOf(
     return node;
 }
 
+function parseScopedSlotContent(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation,
+    _parent: ParentNode,
+    parse5Elm: parse5.Element
+): ScopedSlotContent | undefined {
+    const slotDataAttr = parsedAttr.pick('lwc:slot-data');
+    if (!slotDataAttr) {
+        return;
+    }
+
+    if (!ctx.config.enableScopedSlots) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, slotDataAttr);
+    }
+
+    // TODO [#99999]: Should this(shadow-dom parent/light-dom child) restriction be removed?
+    // If a shadow dom parent passes a scoped slot content to the child, how will the parent be able to
+    // query for the light dom elements?
+    /*     if (ctx.renderMode !== LWCDirectiveRenderMode.light) {
+        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_DATA_IN_LIGHT_DOM_ONLY, slotDataAttr.location);
+    } */
+
+    if (parse5Elm.tagName !== 'template') {
+        ctx.throwOnNode(ParserDiagnostics.SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY, slotDataAttr);
+    }
+
+    const slotDataAttrValue = slotDataAttr.value;
+    if (!ast.isStringLiteral(slotDataAttrValue)) {
+        ctx.throwOnNode(ParserDiagnostics.SLOT_DATA_VALUE_SHOULD_BE_STRING, slotDataAttr);
+    }
+
+    // Extract name of slot if incase its a named slot
+    const slotAttr = parsedAttr.pick('slot');
+    let slotName: Literal | undefined;
+    // Prevent usage of the slot attribute with expression.
+    if (slotAttr) {
+        if (ast.isExpression(slotAttr.value)) {
+            ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, slotAttr);
+        } else {
+            slotName = slotAttr.value;
+        }
+    }
+
+    const identifier = parseIdentifier(ctx, slotDataAttrValue.value, slotDataAttr.location);
+    return ast.scopedSlotContent(
+        identifier,
+        ast.sourceLocation(parse5ElmLocation),
+        slotDataAttr.location,
+        slotName
+    );
+}
+
 function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
     const keyAttribute = parsedAttr.pick(ElementDirectiveName.Key);
@@ -1104,7 +1166,7 @@ function parseSlot(
 
     const isScopedSlot = !isUndefined(parsedAttr.get(ElementDirectiveName.SlotBind));
     if (isScopedSlot && ctx.renderMode !== LWCDirectiveRenderMode.light) {
-        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_IN_LIGHT_DOM_ONLY, location);
+        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY, location);
     }
 
     // Restrict specific template directives on <slot> element
@@ -1369,7 +1431,17 @@ function validateTemplate(
     }
 }
 
-function validateChildren(ctx: ParserCtx, element?: BaseElement): void {
+function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: ParentNode): void {
+    // Note: An assumption here that ScopedSlotContent is the last processed directive in parseElementDirectives()
+    if (directive && ast.isScopedSlotContent(directive)) {
+        const commentOrTextChild = directive.children.find(
+            (child) => ast.isComment(child) || ast.isText(child)
+        );
+        if (commentOrTextChild) {
+            ctx.warnOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, commentOrTextChild);
+        }
+    }
+
     if (!element) {
         return;
     }

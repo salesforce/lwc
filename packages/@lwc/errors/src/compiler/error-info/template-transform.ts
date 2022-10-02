@@ -232,6 +232,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_EVENT_NAME: {
         code: 1056,
         message:
@@ -473,6 +474,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS: {
         code: 1126,
         message:
@@ -480,12 +482,14 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     UNKNOWN_LWC_DIRECTIVE: {
         code: 1127,
         message: 'Invalid directive "{0}" on element {1}.',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_OPTS_LWC_DYNAMIC: {
         code: 1128,
         message:
@@ -493,6 +497,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT: {
         code: 1129,
         message:
@@ -500,6 +505,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_LWC_DYNAMIC_LITERAL_PROP: {
         code: 1130,
         message:
@@ -515,6 +521,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_LIGHT_SLOT_INVALID_ATTRIBUTES: {
         code: 1134,
         message:
@@ -522,6 +529,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_DOM_INVALID_IN_LIGHT_DOM: {
         code: 1135,
         message:
@@ -529,24 +537,28 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_FOR_EACH_WITH_ITERATOR: {
         code: 1136,
         message: "Invalid usage for 'for:each' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     NO_DUPLICATE_SLOTS: {
         code: 1137,
         message: 'Invalid duplicate slot ({0}).',
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     NO_SLOTS_IN_ITERATOR: {
         code: 1138,
         message: 'Invalid slot ({0}). A slot cannot appear inside of an iterator.',
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER: {
         code: 1139,
         message:
@@ -554,6 +566,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT: {
         code: 1140,
         message:
@@ -561,6 +574,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_INNER_HTML_INVALID_ELEMENT: {
         code: 1141,
         message:
@@ -568,6 +582,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_INNER_HTML_INVALID_CONTENTS: {
         code: 1142,
         message:
@@ -575,6 +590,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_INNER_HTML_INVALID_VALUE: {
         code: 1143,
         message:
@@ -582,6 +598,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_HTML_RECOVERY: {
         code: 1144,
         message:
@@ -589,6 +606,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     INVALID_TEMPLATE_ATTRIBUTE: {
         code: 1145,
         message:
@@ -597,12 +615,14 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     PRESERVE_COMMENTS_MUST_BE_BOOLEAN: {
         code: 1146,
         message: 'lwc:preserve-comments must be a boolean attribute.',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     DUPLICATE_ATTR_PROP_TRANSFORM: {
         code: 1147,
         message:
@@ -610,6 +630,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     INVALID_HTML_SYNTAX_WARNING: {
         code: 1148,
         message:
@@ -618,6 +639,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     KEY_SHOULD_BE_IN_ITERATION: {
         code: 1149,
         message:
@@ -625,6 +647,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     INVALID_TEMPLATE_WARNING: {
         code: 1153,
         message:
@@ -633,6 +656,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
     INVALID_OPTS_LWC_SPREAD: {
         code: 1154,
         message:
@@ -640,12 +664,14 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_LWC_SPREAD_LITERAL_PROP: {
         code: 1155,
         message:
             'Invalid lwc:spread usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
     },
+
     LWC_REF_INVALID_ELEMENT: {
         code: 1156,
         message:
@@ -653,6 +679,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_REF_INVALID_VALUE: {
         code: 1157,
         message:
@@ -660,6 +687,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_REF_INVALID_LOCATION_INSIDE_ITERATION: {
         code: 1158,
         message:
@@ -667,42 +695,49 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1159,
         message: 'lwc:if directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     ELSEIF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1160,
         message: 'lwc:elseif directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE: {
         code: 1161,
         message: 'lwc:else directive cannot have a value',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1162,
         message: "Invalid usage of 'lwc:if' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
+    
     INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1163,
         message: "Invalid usage of 'lwc:elseif' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
+    
     INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1164,
         message: "Invalid usage of 'lwc:else' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_IF_SCOPE_NOT_FOUND: {
         code: 1165,
         message:
@@ -710,12 +745,15 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE: {
         code: 1166,
         message:
             "'{0}' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
+        level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_OPTS_LWC_SLOT_BIND: {
         code: 1167,
         message:
@@ -723,6 +761,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_OPTS_LWC_SLOT_DATA: {
         code: 1168,
         message:
@@ -730,13 +769,15 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    SCOPED_SLOT_IN_LIGHT_DOM_ONLY: {
+
+    SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY: {
         code: 1169,
         message:
             'Invalid `lwc:slot-bind` usage on <slot> element. Scoped slots usage is allowed in Light DOM templates only.',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_LWC_SLOT_BIND_LITERAL_PROP: {
         code: 1170,
         message:
@@ -744,6 +785,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT: {
         code: 1171,
         message:
@@ -751,15 +793,47 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     NO_DUPLICATE_SCOPED_SLOT: {
         code: 1172,
         message: 'Invalid duplicate scoped slots ({0})',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     NO_MIXED_SLOT_TYPES: {
         code: 1173,
         message: 'Mixing slot types disallowed for same ({0}) slot.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    SLOT_DATA_VALUE_SHOULD_BE_STRING: {
+        code: 1174,
+        message: '`lwc:slot-data` attribute value is expected to be a string.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    SCOPED_SLOT_DATA_IN_LIGHT_DOM_ONLY: {
+        code: 1175,
+        message:
+            'Invalid `lwc:slot-data` usage on <template> element. Scoped slots usage is allowed in Light DOM templates only.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY: {
+        code: 1176,
+        message: '`lwc:slot-data` directive can be used on `<template>` elements only.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    NON_ELEMENT_SCOPED_SLOT_CONTENT: {
+        code: 1177,
+        message:
+            '`<template>` tag with `lwc:slot-data` directive cannot contain a comment or text node as a direct child.',
         level: DiagnosticLevel.Error,
         url: '',
     },

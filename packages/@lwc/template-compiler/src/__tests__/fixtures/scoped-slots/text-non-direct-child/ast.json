@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 7,
+            "endLine": 11,
             "endColumn": 12,
             "start": 0,
-            "end": 160,
+            "end": 315,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,42 +17,42 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 7,
+                "startLine": 11,
                 "startColumn": 1,
-                "endLine": 7,
+                "endLine": 11,
                 "endColumn": 12,
-                "start": 149,
-                "end": 160
+                "start": 304,
+                "end": 315
             }
         },
         "directives": [],
         "children": [
             {
                 "type": "Component",
-                "name": "x-child",
+                "name": "x-list",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 6,
-                    "endColumn": 15,
+                    "endLine": 10,
+                    "endColumn": 14,
                     "start": 15,
-                    "end": 148,
+                    "end": 303,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
                         "endLine": 2,
-                        "endColumn": 14,
+                        "endColumn": 13,
                         "start": 15,
-                        "end": 24
+                        "end": 23
                     },
                     "endTag": {
-                        "startLine": 6,
+                        "startLine": 10,
                         "startColumn": 5,
-                        "endLine": 6,
-                        "endColumn": 15,
-                        "start": 138,
-                        "end": 148
+                        "endLine": 10,
+                        "endColumn": 14,
+                        "start": 294,
+                        "end": 303
                     }
                 },
                 "attributes": [],
@@ -65,18 +65,18 @@
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
-                            "endLine": 5,
+                            "endLine": 9,
                             "endColumn": 20,
-                            "start": 33,
-                            "end": 133
+                            "start": 32,
+                            "end": 289
                         },
                         "directiveLocation": {
                             "startLine": 3,
                             "startColumn": 19,
                             "endLine": 3,
                             "endColumn": 39,
-                            "start": 43,
-                            "end": 63
+                            "start": 42,
+                            "end": 62
                         },
                         "children": [
                             {
@@ -86,25 +86,25 @@
                                 "location": {
                                     "startLine": 4,
                                     "startColumn": 13,
-                                    "endLine": 4,
-                                    "endColumn": 49,
-                                    "start": 77,
-                                    "end": 113,
+                                    "endLine": 7,
+                                    "endColumn": 20,
+                                    "start": 76,
+                                    "end": 215,
                                     "startTag": {
                                         "startLine": 4,
                                         "startColumn": 13,
                                         "endLine": 4,
                                         "endColumn": 19,
-                                        "start": 77,
-                                        "end": 83
+                                        "start": 76,
+                                        "end": 82
                                     },
                                     "endTag": {
-                                        "startLine": 4,
-                                        "startColumn": 42,
-                                        "endLine": 4,
-                                        "endColumn": 49,
-                                        "start": 106,
-                                        "end": 113
+                                        "startLine": 7,
+                                        "startColumn": 13,
+                                        "endLine": 7,
+                                        "endColumn": 20,
+                                        "start": 208,
+                                        "end": 215
                                     }
                                 },
                                 "attributes": [],
@@ -112,6 +112,19 @@
                                 "directives": [],
                                 "listeners": [],
                                 "children": [
+                                    {
+                                        "type": "Comment",
+                                        "raw": " Comment: Access bindings from child component  ",
+                                        "value": " Comment: Access bindings from child component  ",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 17,
+                                            "endLine": 5,
+                                            "endColumn": 72,
+                                            "start": 100,
+                                            "end": 155
+                                        }
+                                    },
                                     {
                                         "type": "Text",
                                         "raw": "{item.id}",
@@ -134,21 +147,21 @@
                                             "computed": false,
                                             "optional": false,
                                             "location": {
-                                                "startLine": 4,
-                                                "startColumn": 19,
-                                                "endLine": 4,
-                                                "endColumn": 42,
-                                                "start": 83,
-                                                "end": 106
+                                                "startLine": 5,
+                                                "startColumn": 72,
+                                                "endLine": 7,
+                                                "endColumn": 13,
+                                                "start": 155,
+                                                "end": 208
                                             }
                                         },
                                         "location": {
-                                            "startLine": 4,
-                                            "startColumn": 19,
-                                            "endLine": 4,
-                                            "endColumn": 42,
-                                            "start": 83,
-                                            "end": 106
+                                            "startLine": 5,
+                                            "startColumn": 72,
+                                            "endLine": 7,
+                                            "endColumn": 13,
+                                            "start": 155,
+                                            "end": 208
                                         }
                                     },
                                     {
@@ -159,12 +172,12 @@
                                             "value": " - "
                                         },
                                         "location": {
-                                            "startLine": 4,
-                                            "startColumn": 19,
-                                            "endLine": 4,
-                                            "endColumn": 42,
-                                            "start": 83,
-                                            "end": 106
+                                            "startLine": 5,
+                                            "startColumn": 72,
+                                            "endLine": 7,
+                                            "endColumn": 13,
+                                            "start": 155,
+                                            "end": 208
                                         }
                                     },
                                     {
@@ -189,21 +202,72 @@
                                             "computed": false,
                                             "optional": false,
                                             "location": {
-                                                "startLine": 4,
-                                                "startColumn": 19,
-                                                "endLine": 4,
-                                                "endColumn": 42,
-                                                "start": 83,
-                                                "end": 106
+                                                "startLine": 5,
+                                                "startColumn": 72,
+                                                "endLine": 7,
+                                                "endColumn": 13,
+                                                "start": 155,
+                                                "end": 208
                                             }
                                         },
                                         "location": {
-                                            "startLine": 4,
-                                            "startColumn": 19,
-                                            "endLine": 4,
-                                            "endColumn": 42,
-                                            "start": 83,
-                                            "end": 106
+                                            "startLine": 5,
+                                            "startColumn": 72,
+                                            "endLine": 7,
+                                            "endColumn": 13,
+                                            "start": 155,
+                                            "end": 208
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Element",
+                                "name": "div",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 54,
+                                    "start": 228,
+                                    "end": 269,
+                                    "startTag": {
+                                        "startLine": 8,
+                                        "startColumn": 13,
+                                        "endLine": 8,
+                                        "endColumn": 18,
+                                        "start": 228,
+                                        "end": 233
+                                    },
+                                    "endTag": {
+                                        "startLine": 8,
+                                        "startColumn": 48,
+                                        "endLine": 8,
+                                        "endColumn": 54,
+                                        "start": 263,
+                                        "end": 269
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "Content from parent's template",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "Content from parent's template"
+                                        },
+                                        "location": {
+                                            "startLine": 8,
+                                            "startColumn": 18,
+                                            "endLine": 8,
+                                            "endColumn": 48,
+                                            "start": 233,
+                                            "end": 263
                                         }
                                     }
                                 ]
@@ -217,8 +281,8 @@
                                 "startColumn": 19,
                                 "endLine": 3,
                                 "endColumn": 39,
-                                "start": 43,
-                                "end": 63
+                                "start": 42,
+                                "end": 62
                             }
                         }
                     }

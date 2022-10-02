@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1159,
+            "message": "LWC1159: Invalid `lwc:slot-bind` usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 39,
+                "length": 56
+            }
+        },
+        {
+            "code": 1159,
+            "message": "LWC1159: Invalid `lwc:slot-bind` usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 100,
+                "length": 56
+            }
+        },
+        {
+            "code": 1159,
+            "message": "LWC1159: Invalid `lwc:slot-bind` usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 161,
+                "length": 41
+            }
+        }
+    ]
+}

@@ -124,10 +124,6 @@ export interface SlotBindDirective extends Directive<'SlotBind'> {
     value: Expression;
 }
 
-export interface SlotDataDirective extends Directive<'SlotData'> {
-    value: Literal<string>;
-}
-
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
@@ -135,7 +131,6 @@ export type ElementDirective =
     | InnerHTMLDirective
     | RefDirective
     | SlotBindDirective
-    | SlotDataDirective
     | SpreadDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
@@ -239,9 +234,15 @@ export interface ForOf extends DirectiveParentNode {
     iterator: Identifier;
 }
 
+export interface ScopedSlotContent extends DirectiveParentNode {
+    type: 'ScopedSlotContent';
+    identifier: Identifier;
+    slotName?: Literal; // To refer named slot
+}
+
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement;
+export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement | ScopedSlotContent;
 
 export type ChildNode =
     | ForBlock
@@ -251,7 +252,8 @@ export type ChildNode =
     | ElseBlock
     | BaseElement
     | Comment
-    | Text;
+    | Text
+    | ScopedSlotContent;
 
 export type Node =
     | Root
@@ -262,7 +264,8 @@ export type Node =
     | ElseBlock
     | BaseElement
     | Comment
-    | Text;
+    | Text
+    | ScopedSlotContent;
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
@@ -270,7 +273,6 @@ export enum ElementDirectiveName {
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',
     SlotBind = 'lwc:slot-bind',
-    SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
     Key = 'key',
 }
