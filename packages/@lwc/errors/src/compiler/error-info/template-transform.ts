@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel, DiagnosticLevel } from '../../shared/types';
+import { DiagnosticLevel } from '../../shared/types';
 
 /**
  * TODO [W-5678919]: implement script to determine the next available error code
