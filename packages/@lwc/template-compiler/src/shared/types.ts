@@ -80,45 +80,44 @@ export interface EventListener extends BaseNode {
     handler: Expression;
 }
 
-export interface Directive extends BaseNode {
+export interface Directive<
+    T extends keyof typeof ElementDirectiveName | keyof typeof RootDirectiveName
+> extends BaseNode {
     type: 'Directive';
-    name: string;
+    name: T;
     value: Expression | Literal;
 }
 
-export interface KeyDirective extends Directive {
-    name: 'Key';
+export interface KeyDirective extends Directive<'Key'> {
     value: Expression;
 }
 
-export interface DynamicDirective extends Directive {
-    name: 'Dynamic';
+export interface DynamicDirective extends Directive<'Dynamic'> {
     value: Expression;
 }
 
-export interface DomDirective extends Directive {
-    name: 'Dom';
+export interface DomDirective extends Directive<'Dom'> {
     value: Literal<'manual'>;
 }
 
-export interface SpreadDirective extends Directive {
-    name: 'Spread';
+export interface SpreadDirective extends Directive<'Spread'> {
     value: Expression;
 }
 
-export interface InnerHTMLDirective extends Directive {
-    name: `InnerHTML`;
+export interface InnerHTMLDirective extends Directive<'InnerHTML'> {
     value: Expression | Literal<string>;
 }
 
-export interface RenderModeDirective extends Directive {
-    name: 'RenderMode';
+export interface RenderModeDirective extends Directive<'RenderMode'> {
     value: Literal<LWCDirectiveRenderMode>;
 }
 
-export interface PreserveCommentsDirective extends Directive {
-    name: 'PreserveComments';
+export interface PreserveCommentsDirective extends Directive<'PreserveComments'> {
     value: Literal<boolean>;
+}
+
+export interface RefDirective extends Directive<'Ref'> {
+    value: Literal<string>;
 }
 
 export type ElementDirective =
@@ -126,7 +125,9 @@ export type ElementDirective =
     | DynamicDirective
     | DomDirective
     | InnerHTMLDirective
+    | RefDirective
     | SpreadDirective;
+
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
@@ -252,3 +253,17 @@ export type Node =
     | BaseElement
     | Comment
     | Text;
+
+export enum ElementDirectiveName {
+    Dom = 'lwc:dom',
+    Dynamic = 'lwc:dynamic',
+    InnerHTML = 'lwc:inner-html',
+    Ref = 'lwc:ref',
+    Spread = 'lwc:spread',
+    Key = 'key',
+}
+
+export enum RootDirectiveName {
+    PreserveComments = 'lwc:preserve-comments',
+    RenderMode = 'lwc:render-mode',
+}

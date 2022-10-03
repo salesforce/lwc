@@ -1,0 +1,10 @@
+<template>
+  <template if:true={heads}>
+    <div lwc:ref="coinflip">heads</div>
+    <div lwc:ref='onlyHeads'>only heads</div>
+  </template>
+  <template if:false={heads}>
+    <div lwc:ref="coinflip">tails</div>
+    <div lwc:ref='onlyTails'>only tails</div>
+  </template>
+</template>

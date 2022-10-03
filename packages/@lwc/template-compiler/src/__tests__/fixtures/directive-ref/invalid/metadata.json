@@ -1,0 +1,81 @@
+{
+    "warnings": [
+        {
+            "code": 1157,
+            "message": "LWC1157: Invalid lwc:ref usage on element \"<div>\". The directive binding must be a non-empty string.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 67,
+                "length": 19
+            }
+        },
+        {
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 5,
+                "start": 133,
+                "length": 27
+            }
+        },
+        {
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<template>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 9,
+                "column": 5,
+                "start": 211,
+                "length": 35
+            }
+        },
+        {
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 12,
+                "column": 5,
+                "start": 297,
+                "length": 35
+            }
+        },
+        {
+            "code": 1156,
+            "message": "LWC1156: Invalid lwc:ref usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 15,
+                "column": 5,
+                "start": 381,
+                "length": 38
+            }
+        },
+        {
+            "code": 1158,
+            "message": "LWC1158: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
+            "level": 1,
+            "location": {
+                "line": 19,
+                "column": 9,
+                "start": 520,
+                "length": 36
+            }
+        },
+        {
+            "code": 1158,
+            "message": "LWC1158: Invalid lwc:ref usage on element \"<div>\". lwc:ref cannot be used inside for:each or an iterator.",
+            "level": 1,
+            "location": {
+                "line": 24,
+                "column": 9,
+                "start": 660,
+                "length": 34
+            }
+        }
+    ]
+}

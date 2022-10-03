@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaAttrNameToPropNameMap } from '@lwc/shared';
-
+import { ElementDirectiveName } from '../shared/types';
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 import { HTML_ELEMENTS } from './utils/html-elements';
 import { SVG_ELEMENTS } from './utils/svg-elements';
@@ -21,19 +21,7 @@ export const ITERATOR_RE = /^iterator:.*$/;
 export const EVENT_HANDLER_RE = /^on/;
 export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 
-export const LWC_DIRECTIVES = {
-    DOM: 'lwc:dom',
-    DYNAMIC: 'lwc:dynamic',
-    INNER_HTML: 'lwc:inner-html',
-    SPREAD: 'lwc:spread',
-};
-
-export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
-
-export const ROOT_TEMPLATE_DIRECTIVES = {
-    PRESERVE_COMMENTS: 'lwc:preserve-comments',
-    RENDER_MODE: 'lwc:render-mode',
-};
+export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(ElementDirectiveName));
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([

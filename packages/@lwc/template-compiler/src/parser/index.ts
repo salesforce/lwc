@@ -31,9 +31,11 @@ import {
     LWCDirectiveDomMode,
     If,
     IfBlock,
-    Property,
     ElseBlock,
     ElseifBlock,
+    Property,
+    ElementDirectiveName,
+    RootDirectiveName,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -61,10 +63,8 @@ import {
     IF_RE,
     ITERATOR_RE,
     KNOWN_HTML_AND_SVG_ELEMENTS,
-    LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
     LWC_RE,
-    ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
@@ -677,7 +677,7 @@ function applyLwcRenderModeDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcRenderModeAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
+    const lwcRenderModeAttribute = parsedAttr.pick(RootDirectiveName.RenderMode);
     if (!lwcRenderModeAttribute) {
         return;
     }
@@ -702,7 +702,7 @@ function applyLwcPreserveCommentsDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcPreserveCommentAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS);
+    const lwcPreserveCommentAttribute = parsedAttr.pick(RootDirectiveName.PreserveComments);
     if (!lwcPreserveCommentAttribute) {
         return;
     }
@@ -739,16 +739,16 @@ function applyLwcDirectives(
     }
 
     // Should not allow render mode or preserve comments on non root nodes
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE)) {
+    if (parsedAttr.get(RootDirectiveName.RenderMode)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            RootDirectiveName.RenderMode,
             `<${element.name}>`,
         ]);
     }
 
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS)) {
+    if (parsedAttr.get(RootDirectiveName.PreserveComments)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
+            RootDirectiveName.PreserveComments,
             `<${element.name}>`,
         ]);
     }
@@ -756,6 +756,7 @@ function applyLwcDirectives(
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
+    applyRefDirective(ctx, parsedAttr, element);
     applyLwcSpreadDirective(ctx, parsedAttr, element);
 }
 
@@ -766,7 +767,7 @@ function applyLwcSpreadDirective(
 ): void {
     const { name: tag } = element;
 
-    const lwcSpread = parsedAttr.pick('lwc:spread');
+    const lwcSpread = parsedAttr.pick(ElementDirectiveName.Spread);
     if (!lwcSpread) {
         return;
     }
@@ -790,7 +791,7 @@ function applyLwcDynamicDirective(
 ): void {
     const { name: tag } = element;
 
-    const lwcDynamicAttribute = parsedAttr.pick('lwc:dynamic');
+    const lwcDynamicAttribute = parsedAttr.pick(ElementDirectiveName.Dynamic);
     if (!lwcDynamicAttribute) {
         return;
     }
@@ -854,7 +855,7 @@ function applyLwcInnerHtmlDirective(
     parsedAttr: ParsedAttribute,
     element: BaseElement
 ): void {
-    const lwcInnerHtmlDirective = parsedAttr.pick(LWC_DIRECTIVES.INNER_HTML);
+    const lwcInnerHtmlDirective = parsedAttr.pick(ElementDirectiveName.InnerHTML);
 
     if (!lwcInnerHtmlDirective) {
         return;
@@ -881,6 +882,36 @@ function applyLwcInnerHtmlDirective(
     }
 
     element.directives.push(ast.innerHTMLDirective(innerHTMLVal, lwcInnerHtmlDirective.location));
+}
+
+function applyRefDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const lwcRefDirective = parsedAttr.pick(ElementDirectiveName.Ref);
+
+    if (!lwcRefDirective) {
+        return;
+    }
+
+    if (ast.isSlot(element)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, element, [`<${element.name}>`]);
+    }
+
+    if (isInIteration(ctx)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_LOCATION_INSIDE_ITERATION, element, [
+            `<${element.name}>`,
+        ]);
+    }
+
+    const { value: refName } = lwcRefDirective;
+
+    if (!ast.isStringLiteral(refName) || refName.value.length === 0) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_VALUE, element, [`<${element.name}>`]);
+    }
+
+    element.directives.push(ast.refDirective(refName, lwcRefDirective.location));
 }
 
 function parseForEach(
@@ -987,7 +1018,7 @@ function parseForOf(
 
 function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
-    const keyAttribute = parsedAttr.pick('key');
+    const keyAttribute = parsedAttr.pick(ElementDirectiveName.Key);
 
     if (keyAttribute) {
         if (!ast.isExpression(keyAttribute.value)) {
@@ -1249,10 +1280,14 @@ function validateTemplate(
         ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
     }
 
-    if (parsedAttr.get(LWC_DIRECTIVES.INNER_HTML)) {
+    if (parsedAttr.get(ElementDirectiveName.InnerHTML)) {
         ctx.throwAtLocation(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, location, [
             '<template>',
         ]);
+    }
+
+    if (parsedAttr.get(ElementDirectiveName.Ref)) {
+        ctx.throwAtLocation(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, location, ['<template>']);
     }
 
     // At this point in the parsing all supported attributes from a non root template element

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel } from '../../shared/types';
+import { DiagnosticLevel, DiagnosticLevel } from '../../shared/types';
 
 /**
  * TODO [W-5678919]: implement script to determine the next available error code
@@ -646,51 +646,72 @@ export const ParserDiagnostics = {
             'Invalid lwc:spread usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
     },
-    IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
+    LWC_REF_INVALID_ELEMENT: {
         code: 1156,
+        message:
+            'Invalid lwc:ref usage on element "{0}". The directive can\'t be used on a slot or a template element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    LWC_REF_INVALID_VALUE: {
+        code: 1157,
+        message:
+            'Invalid lwc:ref usage on element "{0}". The directive binding must be a non-empty string.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    LWC_REF_INVALID_LOCATION_INSIDE_ITERATION: {
+        code: 1158,
+        message:
+            'Invalid lwc:ref usage on element "{0}". lwc:ref cannot be used inside for:each or an iterator.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
+        code: 1159,
         message: 'lwc:if directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
     ELSEIF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
-        code: 1157,
+        code: 1160,
         message: 'lwc:elseif directive value should be an expression',
         level: DiagnosticLevel.Error,
         url: '',
     },
     ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE: {
-        code: 1158,
+        code: 1161,
         message: 'lwc:else directive cannot have a value',
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1159,
+        code: 1162,
         message: "Invalid usage of 'lwc:if' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1160,
+        code: 1163,
         message: "Invalid usage of 'lwc:elseif' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
-        code: 1161,
+        code: 1164,
         message: "Invalid usage of 'lwc:else' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_IF_SCOPE_NOT_FOUND: {
-        code: 1162,
+        code: 1165,
         message:
             "'{0}' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.",
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE: {
-        code: 1163,
+        code: 1166,
         message:
             "'{0}' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
         level: DiagnosticLevel.Error,
