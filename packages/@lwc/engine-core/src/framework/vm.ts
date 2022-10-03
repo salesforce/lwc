@@ -171,6 +171,10 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Renderer API */
     renderer: RendererAPI;
+
+    /**
+     * Debug info bag. Stores useful debug information about the component. */
+    debugInfo?: Record<symbol, any>;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -333,6 +337,10 @@ export function createVM<HostNode, HostElement>(
 
         renderer,
     };
+
+    if (process.env.NODE_ENV !== 'production') {
+        vm.debugInfo = create(null);
+    }
 
     vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
