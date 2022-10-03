@@ -11,11 +11,10 @@ const ESCAPED_CHARS: { [char: string]: string } = {
     '<': '&lt;',
     '>': '&gt;',
     '&': '&amp;',
-    '\n': '&#10',
 };
 
 export function htmlEscape(str: string, attrMode: boolean = false): string {
-    const searchValue = attrMode ? /["&]/g : /["'<>&\n]/g;
+    const searchValue = attrMode ? /["&]/g : /["'<>&]/g;
 
     return str.replace(searchValue, (char) => ESCAPED_CHARS[char]);
 }
