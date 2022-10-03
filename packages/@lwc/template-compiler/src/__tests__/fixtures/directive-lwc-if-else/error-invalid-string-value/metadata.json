@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1158,
-            "message": "LWC1158: lwc:else directive cannot have a value",
+            "code": 1161,
+            "message": "LWC1161: lwc:else directive cannot have a value",
             "level": 1,
             "location": {
                 "line": 3,

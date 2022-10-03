@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1160,
-            "message": "LWC1160: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.",
+            "code": 1163,
+            "message": "LWC1163: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.",
             "level": 1,
             "location": {
                 "line": 3,
