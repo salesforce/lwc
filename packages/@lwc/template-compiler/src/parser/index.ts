@@ -1179,9 +1179,7 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => {
-                return name !== 'name' && name !== ElementDirectiveName.SlotBind;
-            })
+            .filter(({ name }) => !['name', ElementDirectiveName.SlotBind].includes(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {

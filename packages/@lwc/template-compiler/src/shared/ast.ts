@@ -47,6 +47,7 @@ import {
     SlotBindDirective,
     /* SlotDataDirective, */
     ScopedSlotContent,
+    SlotDataDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -206,7 +207,7 @@ export function scopedSlotContent(
         location: elementLocation,
         directiveLocation,
         children: [],
-        identifier,
+        directive: slotDataDirective(identifier, directiveLocation),
         slotName: slotName,
     };
 }
@@ -311,6 +312,15 @@ export function slotBindDirective(value: Expression, location: SourceLocation): 
     return {
         type: 'Directive',
         name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
+export function slotDataDirective(value: Identifier, location: SourceLocation): SlotDataDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotData',
         value,
         location,
     };
@@ -511,9 +521,9 @@ export function isKeyDirective(directive: ElementDirective): directive is KeyDir
     return directive.name === 'Key';
 }
 
-/* export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
     return directive.name === 'SlotData';
-} */
+}
 
 export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
     return directive.name === 'SlotBind';

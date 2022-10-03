@@ -209,9 +209,21 @@
                                 ]
                             }
                         ],
-                        "identifier": {
-                            "type": "Identifier",
-                            "name": "item",
+                        "directive": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "item",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 19,
+                                    "endLine": 3,
+                                    "endColumn": 39,
+                                    "start": 43,
+                                    "end": 63
+                                }
+                            },
                             "location": {
                                 "startLine": 3,
                                 "startColumn": 19,

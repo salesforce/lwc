@@ -154,9 +154,21 @@
                                 ]
                             }
                         ],
-                        "identifier": {
-                            "type": "Identifier",
-                            "name": "slot1data",
+                        "directive": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "slot1data",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 36,
+                                    "endLine": 3,
+                                    "endColumn": 61,
+                                    "start": 60,
+                                    "end": 85
+                                }
+                            },
                             "location": {
                                 "startLine": 3,
                                 "startColumn": 36,

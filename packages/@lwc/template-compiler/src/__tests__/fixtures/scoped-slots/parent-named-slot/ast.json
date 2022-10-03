@@ -167,9 +167,21 @@
                                 ]
                             }
                         ],
-                        "identifier": {
-                            "type": "Identifier",
-                            "name": "slot1data",
+                        "directive": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "slot1data",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 36,
+                                    "endLine": 3,
+                                    "endColumn": 61,
+                                    "start": 109,
+                                    "end": 134
+                                }
+                            },
                             "location": {
                                 "startLine": 3,
                                 "startColumn": 36,
@@ -278,9 +290,21 @@
                                 ]
                             }
                         ],
-                        "identifier": {
-                            "type": "Identifier",
-                            "name": "slot2data",
+                        "directive": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "slot2data",
+                                "location": {
+                                    "startLine": 7,
+                                    "startColumn": 36,
+                                    "endLine": 7,
+                                    "endColumn": 61,
+                                    "start": 228,
+                                    "end": 253
+                                }
+                            },
                             "location": {
                                 "startLine": 7,
                                 "startColumn": 36,
@@ -389,9 +413,21 @@
                                 ]
                             }
                         ],
-                        "identifier": {
-                            "type": "Identifier",
-                            "name": "defaultdata",
+                        "directive": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "defaultdata",
+                                "location": {
+                                    "startLine": 11,
+                                    "startColumn": 19,
+                                    "endLine": 11,
+                                    "endColumn": 46,
+                                    "start": 331,
+                                    "end": 358
+                                }
+                            },
                             "location": {
                                 "startLine": 11,
                                 "startColumn": 19,

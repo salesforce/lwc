@@ -124,6 +124,10 @@ export interface SlotBindDirective extends Directive<'SlotBind'> {
     value: Expression;
 }
 
+export interface SlotDataDirective extends Directive<'SlotData'> {
+    value: Identifier;
+}
+
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
@@ -131,6 +135,7 @@ export type ElementDirective =
     | InnerHTMLDirective
     | RefDirective
     | SlotBindDirective
+    | SlotDataDirective
     | SpreadDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
@@ -236,8 +241,8 @@ export interface ForOf extends DirectiveParentNode {
 
 export interface ScopedSlotContent extends DirectiveParentNode {
     type: 'ScopedSlotContent';
-    identifier: Identifier;
-    slotName?: Literal; // To refer named slot
+    directive: SlotDataDirective;
+    slotName?: Literal;
 }
 
 export type ForBlock = ForEach | ForOf;
@@ -273,6 +278,7 @@ export enum ElementDirectiveName {
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',
     SlotBind = 'lwc:slot-bind',
+    SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
     Key = 'key',
 }
