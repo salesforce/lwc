@@ -10,14 +10,16 @@ function getCode(src) {
 
 function getEngineCode() {
     const engineDomSrc = document.querySelector('script[src*="engine-dom"]').src;
+
+    const syntheticShadowSrc =
+        !process.env.NATIVE_SHADOW &&
+        getCode(document.querySelector('script[src*="synthetic-shadow"]').src);
+
     const scripts = [
         `window.lwcRuntimeFlags = ${JSON.stringify(window.lwcRuntimeFlags)};`, // copy runtime flags to iframe
+        syntheticShadowSrc,
         getCode(engineDomSrc),
-    ];
-    if (!process.env.NATIVE_SHADOW) {
-        const syntheticShadowSrc = document.querySelector('script[src*="synthetic-shadow"]').src;
-        scripts.unshift(getCode(syntheticShadowSrc));
-    }
+    ].filter(Boolean);
     return Promise.all(scripts);
 }
 
