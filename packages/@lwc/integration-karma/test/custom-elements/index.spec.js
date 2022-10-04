@@ -26,6 +26,14 @@ const invalidTagNameError = /(not a valid custom element name|must contain a hyp
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
+const alreadyDefinedError =
+    /(has already been used with this registry|has already been defined as a custom element|Cannot define multiple custom elements with the same tag name)/;
+const sameConstructorError =
+    /(has already been used with this registry|have the same constructor|Cannot define multiple custom elements with the same class)/;
+const notAConstructorError =
+    /(not of type 'Function'|not an object|The referenced constructor is not a constructor|is not callable|must be an object|must be a constructor)/;
+const undefinedElementError = /(Illegal constructor|does not define a custom element)/;
+
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     describe('customElements.get and customElements.whenDefined', () => {
         // Nonce elements should be defined only once in the entire Karma test suite
@@ -79,15 +87,17 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
     });
 
     describe('patched registry', () => {
-        it('throws error for unsupported "extends" option', () => {
-            expect(() => {
-                customElements.define('x-unsupported-extends', class extends HTMLElement {}, {
-                    extends: 'button',
-                });
-            }).toThrowError(
-                'NotSupportedError: "extends" key in customElements.define() options is not supported.'
-            );
-        });
+        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            it('throws error for unsupported "extends" option', () => {
+                expect(() => {
+                    customElements.define('x-unsupported-extends', class extends HTMLElement {}, {
+                        extends: 'button',
+                    });
+                }).toThrowError(
+                    'NotSupportedError: "extends" key in customElements.define() options is not supported.'
+                );
+            });
+        }
 
         it('throws error for duplicate tag definition', () => {
             class Foo extends HTMLElement {}
@@ -96,9 +106,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             expect(() => {
                 customElements.define('x-string-defined-twice', Foo);
-            }).toThrowError(
-                "Failed to execute 'define' on 'CustomElementRegistry': the name \"x-string-defined-twice\" has already been used with this registry"
-            );
+            }).toThrowError(alreadyDefinedError);
         });
 
         it('throws error for duplicate class definition', () => {
@@ -108,24 +116,24 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             expect(() => {
                 customElements.define('x-class-defined-twice-2', Foo);
-            }).toThrowError(
-                "Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry"
-            );
+            }).toThrowError(sameConstructorError);
         });
 
-        it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
-            const elm = createElement('x-nonce3', { is: Nonce3 });
-            document.body.appendChild(elm);
-            expect(elm.tagName.toLowerCase()).toEqual('x-nonce3');
-            expect(elm.expectedTagName).toEqual('x-nonce3');
+        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
+                const elm = createElement('x-nonce3', { is: Nonce3 });
+                document.body.appendChild(elm);
+                expect(elm.tagName.toLowerCase()).toEqual('x-nonce3');
+                expect(elm.expectedTagName).toEqual('x-nonce3');
 
-            class Foo extends HTMLElement {}
+                class Foo extends HTMLElement {}
 
-            customElements.define('x-nonce3', Foo);
-            const elm2 = new Foo();
-            document.body.appendChild(elm2);
-            expect(elm2.tagName.toLowerCase()).toEqual('x-nonce3');
-        });
+                customElements.define('x-nonce3', Foo);
+                const elm2 = new Foo();
+                document.body.appendChild(elm2);
+                expect(elm2.tagName.toLowerCase()).toEqual('x-nonce3');
+            });
+        }
 
         it('allows two LWC custom elements to use the same tag name', () => {
             const elm1 = createElement('x-nonce4', { is: Nonce4 });
@@ -285,50 +293,54 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
 
-        it('pre-existing custom element, LWC defined first', () => {
-            const tagName = 'x-preexisting-in-dom';
-            const vanilla = document.createElement(tagName);
-            document.body.appendChild(vanilla);
-            const lwcElm = createElement(tagName, { is: Component });
-            document.body.appendChild(lwcElm);
+        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            it('pre-existing custom element, LWC defined first', () => {
+                const tagName = 'x-preexisting-in-dom';
+                const vanilla = document.createElement(tagName);
+                document.body.appendChild(vanilla);
+                const lwcElm = createElement(tagName, { is: Component });
+                document.body.appendChild(lwcElm);
 
-            customElements.define(
-                tagName,
-                class extends HTMLElement {
-                    constructor() {
-                        super();
-                        this.notLWC = true;
+                customElements.define(
+                    tagName,
+                    class extends HTMLElement {
+                        constructor() {
+                            super();
+                            this.notLWC = true;
+                        }
                     }
+                );
+
+                expect(vanilla.notLWC).toEqual(true);
+            });
+
+            it('does not allow passing arbitrary UserCtors into the PivotCtor', () => {
+                const tagName = 'x-nonce-17';
+                document.body.appendChild(createElement(tagName, { is: Nonce17 }));
+                const Ctor = document.createElement(tagName).constructor;
+
+                class MyUserCtor extends HTMLElement {
+                    isMyUserCtor = true;
                 }
-            );
 
-            expect(vanilla.notLWC).toEqual(true);
-        });
+                expect(() => {
+                    new Ctor(MyUserCtor);
+                }).toThrowError(
+                    /Failed to create custom element: the provided constructor is unregistered: MyUserCtor\./
+                );
+            });
 
-        it('does not allow passing arbitrary UserCtors into the PivotCtor', () => {
-            const tagName = 'x-nonce-17';
-            document.body.appendChild(createElement(tagName, { is: Nonce17 }));
-            const Ctor = document.createElement(tagName).constructor;
-            class MyUserCtor extends HTMLElement {
-                isMyUserCtor = true;
-            }
-            expect(() => {
-                new Ctor(MyUserCtor);
-            }).toThrowError(
-                /Failed to create custom element: the provided constructor is unregistered: MyUserCtor\./
-            );
-        });
-
-        it('does not allow passing non-functions into the PivotCtor', () => {
-            const tagName = 'x-nonce-18';
-            document.body.appendChild(createElement(tagName, { is: Nonce18 }));
-            const Ctor = document.createElement(tagName).constructor;
-            expect(() => {
-                new Ctor(null);
-            }).toThrowError(
-                /Failed to create custom element: the provided constructor is not a constructor\./
-            );
-        });
+            it('does not allow passing non-functions into the PivotCtor', () => {
+                const tagName = 'x-nonce-18';
+                document.body.appendChild(createElement(tagName, { is: Nonce18 }));
+                const Ctor = document.createElement(tagName).constructor;
+                expect(() => {
+                    new Ctor(null);
+                }).toThrowError(
+                    /Failed to create custom element: the provided constructor is not a constructor\./
+                );
+            });
+        }
     });
 
     describe('errors', () => {
@@ -338,7 +350,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 new MyComponent();
             };
             expect(callNew).toThrowError(TypeError);
-            expect(callNew).toThrowError(/Illegal constructor/);
+            expect(callNew).toThrowError(undefinedElementError);
         });
 
         describe('throws when defining an invalid constructor', () => {
@@ -371,174 +383,13 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                         );
                     };
                     expect(define).toThrowError(TypeError);
-                    expect(define).toThrowError(/The referenced constructor is not a constructor/);
+                    expect(define).toThrowError(notAConstructorError);
                 });
             });
         });
     });
 
-    describe('Observed attributes on vanilla component with same tag as LWC component', () => {
-        let observations;
-
-        beforeEach(() => {
-            observations = [];
-        });
-
-        function createVanillaElement(tagName) {
-            class Observed extends HTMLElement {
-                static observedAttributes = ['foo'];
-
-                attributeChangedCallback(name, oldValue, newValue) {
-                    observations.push({ name, oldValue, newValue });
-                }
-            }
-
-            customElements.define(tagName, Observed);
-
-            const observed = new Observed();
-            document.body.appendChild(observed);
-            return observed;
-        }
-
-        function createVanillaElementWithSuper(tagName) {
-            class Observed extends HTMLElement {
-                static observedAttributes = ['foo'];
-
-                attributeChangedCallback(name, oldValue, newValue) {
-                    observations.push({ name, oldValue, newValue });
-                }
-            }
-
-            customElements.define(tagName, Observed);
-
-            const observed = new Observed();
-            document.body.appendChild(observed);
-            return observed;
-        }
-
-        function createVanillaElementUpgradedWithNoPreexistingAttrs(tagName) {
-            const elm = document.createElement(tagName);
-            document.body.appendChild(elm);
-
-            class Observed extends HTMLElement {
-                static observedAttributes = ['foo'];
-
-                attributeChangedCallback(name, oldValue, newValue) {
-                    observations.push({ name, oldValue, newValue });
-                }
-            }
-
-            customElements.define(tagName, Observed);
-
-            return elm;
-        }
-
-        function createVanillaElementUpgradedWithPreexistingAttr(tagName) {
-            const elm = document.createElement(tagName);
-            elm.setAttribute('foo', 'preexisting');
-            document.body.appendChild(elm);
-
-            class Observed extends HTMLElement {
-                static observedAttributes = ['foo'];
-
-                attributeChangedCallback(name, oldValue, newValue) {
-                    observations.push({ name, oldValue, newValue });
-                }
-            }
-
-            customElements.define(tagName, Observed);
-
-            return elm;
-        }
-
-        const scenarios = [
-            {
-                name: 'Basic',
-                tagName: 'x-observed-attr',
-                createVanillaElement: createVanillaElement,
-                LwcComponent: ObserveNothing,
-            },
-            {
-                name: 'attributeChangedCallback on super',
-                tagName: 'x-observed-attr-super',
-                createVanillaElement: createVanillaElementWithSuper,
-                LwcComponent: ObserveNothing,
-            },
-            {
-                name: 'same observed attributes on both LWC and vanilla components',
-                tagName: 'x-observed-attr-same',
-                createVanillaElement: createVanillaElement,
-                LwcComponent: ObserveFoo,
-            },
-            {
-                name: 'Upgrade',
-                tagName: 'x-observed-attr-upgrade',
-                createVanillaElement: createVanillaElementUpgradedWithNoPreexistingAttrs,
-                LwcComponent: ObserveNothing,
-            },
-            {
-                name: 'Upgrade with preexisting attribute',
-                tagName: 'x-observed-attr-upgrade-preexisting',
-                createVanillaElement: createVanillaElementUpgradedWithPreexistingAttr,
-                LwcComponent: ObserveNothing,
-                expectedPreexistingObservations: [
-                    {
-                        name: 'foo',
-                        oldValue: null,
-                        newValue: 'preexisting',
-                    },
-                ],
-            },
-        ];
-
-        scenarios.forEach(
-            ({
-                name,
-                tagName,
-                createVanillaElement,
-                LwcComponent,
-                expectedPreexistingObservations = [],
-            }) => {
-                // Register an LWC component, then a vanilla one that has observed attributes.
-                // It should still work with pivots.
-                it(name, () => {
-                    const elm1 = createElement(tagName, { is: LwcComponent });
-                    document.body.appendChild(elm1);
-                    const elm2 = createVanillaElement(tagName);
-                    document.body.appendChild(elm2);
-                    const initialValue = elm2.getAttribute('foo');
-                    // set an attr
-                    elm2.setAttribute('foo', 'bar');
-                    const firstChange = {
-                        name: 'foo',
-                        oldValue: initialValue,
-                        newValue: 'bar',
-                    };
-                    expect(observations).toEqual([...expectedPreexistingObservations, firstChange]);
-                    // remove an attr
-                    elm2.removeAttribute('foo');
-                    const secondChange = {
-                        name: 'foo',
-                        oldValue: 'bar',
-                        newValue: null,
-                    };
-                    expect(observations).toEqual([
-                        ...expectedPreexistingObservations,
-                        firstChange,
-                        secondChange,
-                    ]);
-                    // set and remove an attr that is not observed
-                    elm2.setAttribute('unobserved', 'true');
-                    elm2.removeAttribute('unobserved');
-                    expect(observations).toEqual([
-                        ...expectedPreexistingObservations,
-                        firstChange,
-                        secondChange,
-                    ]);
-                });
-            }
-        );
-
+    describe('observedAttributes', () => {
         it('custom element with observedAttributes but no attributeChangedCallback', () => {
             customElements.define(
                 'x-no-attr-change-cb',
@@ -555,110 +406,283 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             elm.removeAttribute('foo');
             expect(elm.getAttribute('foo')).toBeNull();
         });
+    });
 
-        it('custom element with attributeChangedCallback but no observedAttributes', () => {
-            // The LWC component observes foo, but the vanilla component doesn't,
-            // so its attributeChangedCallback should never fire
-            const elm1 = createElement('x-no-observed-attrs', { is: ObserveFoo });
-            document.body.appendChild(elm1);
-            const observations = [];
-            class Custom extends HTMLElement {
-                attributeChangedCallback(name, oldValue, newValue) {
-                    observations.push({ name, oldValue, newValue });
-                }
-            }
-            customElements.define('x-no-observed-attrs', Custom);
-            const elm2 = new Custom();
-            document.body.appendChild(elm2);
-
-            elm2.setAttribute('foo', 'bar');
-            elm2.removeAttribute('foo');
-            expect(elm2.getAttribute('foo')).toBeNull();
-            expect(observations).toEqual([]);
-        });
-
-        it('LWC element with attributeChangedCallback but no observedAttributes', () => {
-            // The LWC component observes nothing, but the vanilla component observes foo.
-            // Changing the foo attribute on the LWC component should not fire attributeChangedCallback.
-            class Custom extends HTMLElement {
-                static observedAttributes = ['foo'];
-                attributeChangedCallback() {
-                    throw new Error('should not be invoked');
-                }
-            }
-            customElements.define('x-no-observed-attrs-2', Custom);
-
-            const lwcElm = createElement('x-no-observed-attrs-2', {
-                is: ObserveNothingThrow,
-            });
-            document.body.appendChild(lwcElm);
-
-            lwcElm.setAttribute('foo', 'bar');
-            lwcElm.removeAttribute('foo');
-            expect(lwcElm.getAttribute('foo')).toBeNull();
-        });
-
-        describe('attributeChangedCallback timing', () => {
-            let originalOnError;
-            let errors;
-
-            const onError = (e) => {
-                e.preventDefault(); // avoids logging the error to the console
-                errors.push(e);
-            };
+    // These tests only make sense for scoped custom elements, because we create two elements with the same tag name
+    if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+        describe('Observed attributes on vanilla component with same tag as LWC component', () => {
+            let observations;
 
             beforeEach(() => {
-                errors = [];
-
-                // Nulling out window.onerror disables Jasmine's global error handler, so we can listen for errors
-                // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
-                // https://github.com/jasmine/jasmine/pull/1860
-                originalOnError = window.onerror;
-                window.onerror = null;
-                window.addEventListener('error', onError);
+                observations = [];
             });
 
-            afterEach(() => {
-                window.onerror = originalOnError;
-                window.removeEventListener('error', onError);
+            function createVanillaElement(tagName) {
+                class Observed extends HTMLElement {
+                    static observedAttributes = ['foo'];
+
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        observations.push({ name, oldValue, newValue });
+                    }
+                }
+
+                customElements.define(tagName, Observed);
+
+                const observed = new Observed();
+                document.body.appendChild(observed);
+                return observed;
+            }
+
+            function createVanillaElementWithSuper(tagName) {
+                class Observed extends HTMLElement {
+                    static observedAttributes = ['foo'];
+
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        observations.push({ name, oldValue, newValue });
+                    }
+                }
+
+                customElements.define(tagName, Observed);
+
+                const observed = new Observed();
+                document.body.appendChild(observed);
+                return observed;
+            }
+
+            function createVanillaElementUpgradedWithNoPreexistingAttrs(tagName) {
+                const elm = document.createElement(tagName);
+                document.body.appendChild(elm);
+
+                class Observed extends HTMLElement {
+                    static observedAttributes = ['foo'];
+
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        observations.push({ name, oldValue, newValue });
+                    }
+                }
+
+                customElements.define(tagName, Observed);
+
+                return elm;
+            }
+
+            function createVanillaElementUpgradedWithPreexistingAttr(tagName) {
+                const elm = document.createElement(tagName);
+                elm.setAttribute('foo', 'preexisting');
+                document.body.appendChild(elm);
+
+                class Observed extends HTMLElement {
+                    static observedAttributes = ['foo'];
+
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        observations.push({ name, oldValue, newValue });
+                    }
+                }
+
+                customElements.define(tagName, Observed);
+
+                return elm;
+            }
+
+            const scenarios = [
+                {
+                    name: 'Basic',
+                    tagName: 'x-observed-attr',
+                    createVanillaElement: createVanillaElement,
+                    LwcComponent: ObserveNothing,
+                },
+                {
+                    name: 'attributeChangedCallback on super',
+                    tagName: 'x-observed-attr-super',
+                    createVanillaElement: createVanillaElementWithSuper,
+                    LwcComponent: ObserveNothing,
+                },
+                {
+                    name: 'same observed attributes on both LWC and vanilla components',
+                    tagName: 'x-observed-attr-same',
+                    createVanillaElement: createVanillaElement,
+                    LwcComponent: ObserveFoo,
+                },
+                {
+                    name: 'Upgrade',
+                    tagName: 'x-observed-attr-upgrade',
+                    createVanillaElement: createVanillaElementUpgradedWithNoPreexistingAttrs,
+                    LwcComponent: ObserveNothing,
+                },
+                {
+                    name: 'Upgrade with preexisting attribute',
+                    tagName: 'x-observed-attr-upgrade-preexisting',
+                    createVanillaElement: createVanillaElementUpgradedWithPreexistingAttr,
+                    LwcComponent: ObserveNothing,
+                    expectedPreexistingObservations: [
+                        {
+                            name: 'foo',
+                            oldValue: null,
+                            newValue: 'preexisting',
+                        },
+                    ],
+                },
+            ];
+
+            scenarios.forEach(
+                ({
+                    name,
+                    tagName,
+                    createVanillaElement,
+                    LwcComponent,
+                    expectedPreexistingObservations = [],
+                }) => {
+                    // Register an LWC component, then a vanilla one that has observed attributes.
+                    // It should still work with pivots.
+                    it(name, () => {
+                        const elm1 = createElement(tagName, { is: LwcComponent });
+                        document.body.appendChild(elm1);
+                        const elm2 = createVanillaElement(tagName);
+                        document.body.appendChild(elm2);
+                        const initialValue = elm2.getAttribute('foo');
+                        // set an attr
+                        elm2.setAttribute('foo', 'bar');
+                        const firstChange = {
+                            name: 'foo',
+                            oldValue: initialValue,
+                            newValue: 'bar',
+                        };
+                        expect(observations).toEqual([
+                            ...expectedPreexistingObservations,
+                            firstChange,
+                        ]);
+                        // remove an attr
+                        elm2.removeAttribute('foo');
+                        const secondChange = {
+                            name: 'foo',
+                            oldValue: 'bar',
+                            newValue: null,
+                        };
+                        expect(observations).toEqual([
+                            ...expectedPreexistingObservations,
+                            firstChange,
+                            secondChange,
+                        ]);
+                        // set and remove an attr that is not observed
+                        elm2.setAttribute('unobserved', 'true');
+                        elm2.removeAttribute('unobserved');
+                        expect(observations).toEqual([
+                            ...expectedPreexistingObservations,
+                            firstChange,
+                            secondChange,
+                        ]);
+                    });
+                }
+            );
+
+            it('custom element with attributeChangedCallback but no observedAttributes', () => {
+                // The LWC component observes foo, but the vanilla component doesn't,
+                // so its attributeChangedCallback should never fire
+                const elm1 = createElement('x-no-observed-attrs', { is: ObserveFoo });
+                document.body.appendChild(elm1);
+                const observations = [];
+
+                class Custom extends HTMLElement {
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        observations.push({ name, oldValue, newValue });
+                    }
+                }
+
+                customElements.define('x-no-observed-attrs', Custom);
+                const elm2 = new Custom();
+                document.body.appendChild(elm2);
+
+                elm2.setAttribute('foo', 'bar');
+                elm2.removeAttribute('foo');
+                expect(elm2.getAttribute('foo')).toBeNull();
+                expect(observations).toEqual([]);
             });
 
-            ['native', 'pivot'].forEach((behavior) => {
-                it(`Element that observes attribute and throws in attributeChangedCallback - ${behavior}`, () => {
-                    const tagName = `x-observes-and-throws-${behavior}`;
+            it('LWC element with attributeChangedCallback but no observedAttributes', () => {
+                // The LWC component observes nothing, but the vanilla component observes foo.
+                // Changing the foo attribute on the LWC component should not fire attributeChangedCallback.
+                class Custom extends HTMLElement {
+                    static observedAttributes = ['foo'];
 
-                    if (behavior === 'pivot') {
-                        // Registering an LWC component with the same tag name triggers the pivot behavior
-                        // for the native element
-                        createElement(tagName, { is: ObserveNothing });
+                    attributeChangedCallback() {
+                        throw new Error('should not be invoked');
                     }
+                }
 
-                    class Custom extends HTMLElement {
-                        static observedAttributes = ['foo'];
+                customElements.define('x-no-observed-attrs-2', Custom);
 
-                        attributeChangedCallback() {
-                            throw new Error('Error in attributeChangedCallback!');
+                const lwcElm = createElement('x-no-observed-attrs-2', {
+                    is: ObserveNothingThrow,
+                });
+                document.body.appendChild(lwcElm);
+
+                lwcElm.setAttribute('foo', 'bar');
+                lwcElm.removeAttribute('foo');
+                expect(lwcElm.getAttribute('foo')).toBeNull();
+            });
+
+            describe('attributeChangedCallback timing', () => {
+                let originalOnError;
+                let errors;
+
+                const onError = (e) => {
+                    e.preventDefault(); // avoids logging the error to the console
+                    errors.push(e);
+                };
+
+                beforeEach(() => {
+                    errors = [];
+
+                    // Nulling out window.onerror disables Jasmine's global error handler, so we can listen for errors
+                    // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
+                    // https://github.com/jasmine/jasmine/pull/1860
+                    originalOnError = window.onerror;
+                    window.onerror = null;
+                    window.addEventListener('error', onError);
+                });
+
+                afterEach(() => {
+                    window.onerror = originalOnError;
+                    window.removeEventListener('error', onError);
+                });
+
+                ['native', 'pivot'].forEach((behavior) => {
+                    it(`Element that observes attribute and throws in attributeChangedCallback - ${behavior}`, () => {
+                        const tagName = `x-observes-and-throws-${behavior}`;
+
+                        if (behavior === 'pivot') {
+                            // Registering an LWC component with the same tag name triggers the pivot behavior
+                            // for the native element
+                            createElement(tagName, { is: ObserveNothing });
                         }
-                    }
 
-                    customElements.define(tagName, Custom);
+                        class Custom extends HTMLElement {
+                            static observedAttributes = ['foo'];
 
-                    const elm = document.createElement(tagName);
-                    document.body.appendChild(elm);
-
-                    // None of these should throw synchronously, because this matches native browser behavior.
-                    // Details: https://github.com/salesforce/lwc/pull/2724#discussion_r899066735
-                    elm.setAttribute('foo', 'bar');
-                    elm.removeAttribute('foo');
-
-                    return new Promise((resolve) => setTimeout(resolve)).then(() => {
-                        expect(errors.length).toEqual(2);
-                        for (const { message } of errors) {
-                            expect(message).toContain('Error in attributeChangedCallback!');
+                            attributeChangedCallback() {
+                                throw new Error('Error in attributeChangedCallback!');
+                            }
                         }
+
+                        customElements.define(tagName, Custom);
+
+                        const elm = document.createElement(tagName);
+                        document.body.appendChild(elm);
+
+                        // None of these should throw synchronously, because this matches native browser behavior.
+                        // Details: https://github.com/salesforce/lwc/pull/2724#discussion_r899066735
+                        elm.setAttribute('foo', 'bar');
+                        elm.removeAttribute('foo');
+
+                        return new Promise((resolve) => setTimeout(resolve)).then(() => {
+                            expect(errors.length).toEqual(2);
+                            for (const { message } of errors) {
+                                expect(message).toContain('Error in attributeChangedCallback!');
+                            }
+                        });
                     });
                 });
             });
         });
-    });
+    }
 }

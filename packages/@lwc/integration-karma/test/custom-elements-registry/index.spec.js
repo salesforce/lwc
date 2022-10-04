@@ -1,6 +1,6 @@
 // Error message differs between browsers
 const tagAlreadyUsedErrorMessage =
-    /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element)/;
+    /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element|This name is a registered custom element, preventing LWC to upgrade the element)/;
 
 function getCode(src) {
     return fetch(src)
@@ -10,12 +10,15 @@ function getCode(src) {
 
 function getEngineCode() {
     const engineDomSrc = document.querySelector('script[src*="engine-dom"]').src;
-    const promises = [getCode(engineDomSrc)];
+    const scripts = [
+        `window.lwcRuntimeFlags = ${JSON.stringify(window.lwcRuntimeFlags)};`, // copy runtime flags to iframe
+        getCode(engineDomSrc),
+    ];
     if (!process.env.NATIVE_SHADOW) {
         const syntheticShadowSrc = document.querySelector('script[src*="synthetic-shadow"]').src;
-        promises.unshift(getCode(syntheticShadowSrc));
+        scripts.unshift(getCode(syntheticShadowSrc));
     }
-    return Promise.all(promises);
+    return Promise.all(scripts);
 }
 
 function createLWC({
@@ -126,22 +129,26 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
 
         describe('two copies of LWC engine loaded', () => {
-            it('errors on duplicate tag names', () => {
-                evaluate(engineScripts);
-                evaluate(`(${createLWC})()`);
-                expect(
-                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent
-                ).toEqual('Hello LWC');
-                evaluate(engineScripts);
-                evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
-                const elements = iframe.contentDocument.querySelectorAll('x-foo');
-                expect(elements.length).toEqual(2);
-                expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC');
-                expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual(
-                    'Hello LWC 2'
-                );
-            });
+            if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+                it('no errors on duplicate tag names', () => {
+                    evaluate(engineScripts);
+                    evaluate(`(${createLWC})()`);
+                    expect(
+                        iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                            .textContent
+                    ).toEqual('Hello LWC');
+                    evaluate(engineScripts);
+                    evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
+                    const elements = iframe.contentDocument.querySelectorAll('x-foo');
+                    expect(elements.length).toEqual(2);
+                    expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual(
+                        'Hello LWC'
+                    );
+                    expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual(
+                        'Hello LWC 2'
+                    );
+                });
+            }
 
             [false, true].forEach((customElement) => {
                 const testName = customElement

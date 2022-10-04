@@ -58,7 +58,7 @@ it('should create elements with correct component behavior even when they share 
 // In compat mode, the custom registry is bypassed and an equivalent implementation is used,
 // the native registry restrictions are not applicable
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
-if (SUPPORTS_CUSTOM_ELEMENTS) {
+if (SUPPORTS_CUSTOM_ELEMENTS && window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
     describe('duplicate registration', () => {
         function testDuplicateNativeRegistration(testCase, tag, wcClazz) {
             it(`should not throw when registering a duplicate tag in custom element registry with ${testCase}`, () => {
