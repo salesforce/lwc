@@ -21,11 +21,14 @@ const SAUCE_BROWSERS = [
         version: 'latest',
     },
     // TODO [#3083]: re-enable Firefox tests
-    // {
-    //     label: 'sl_firefox_latest',
-    //     browserName: 'firefox',
-    //     version: '103',
-    // },
+    {
+        label: 'sl_firefox_latest',
+        browserName: 'firefox',
+        version: 'latest',
+        'source:options': {
+            geckodriverVersion: '0.31.0',
+        },
+    },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',

@@ -24,14 +24,17 @@ const SAUCE_BROWSERS = [
         test_hydration: true,
     },
     // TODO [#3083]: re-enable Firefox tests
-    // {
-    //     label: 'sl_firefox_latest',
-    //     browserName: 'firefox',
-    //     version: '103',
-    //     compat: false,
-    //     nativeShadowCompatible: true,
-    //     test_hydration: true,
-    // },
+    {
+        label: 'sl_firefox_latest',
+        browserName: 'firefox',
+        version: '103',
+        compat: false,
+        nativeShadowCompatible: true,
+        test_hydration: true,
+        'source:options': {
+            geckodriverVersion: '0.31.0',
+        },
+    },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
