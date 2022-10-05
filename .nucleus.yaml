@@ -45,3 +45,7 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
+  npm-publish-release:
+    params:
+      access: public
+      tag: winter23
