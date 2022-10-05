@@ -27,7 +27,7 @@ branches:
       <<: *branch-definition
   winter23:
     pull-request:
-    <<: *branch-definition
+      <<: *branch-definition
 steps:
   node-conformance:
     run:
