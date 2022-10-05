@@ -23,14 +23,15 @@ const SAUCE_BROWSERS = [
         nativeShadowCompatible: true,
         test_hydration: true,
     },
-    {
-        label: 'sl_firefox_latest',
-        browserName: 'firefox',
-        version: 'latest',
-        compat: false,
-        nativeShadowCompatible: true,
-        test_hydration: true,
-    },
+    // TODO [#3083]: re-enable Firefox tests
+    // {
+    //     label: 'sl_firefox_latest',
+    //     browserName: 'firefox',
+    //     version: '103',
+    //     compat: false,
+    //     nativeShadowCompatible: true,
+    //     test_hydration: true,
+    // },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
@@ -55,13 +56,14 @@ const SAUCE_BROWSERS = [
         compat: true,
         nativeShadowCompatible: false,
     },
-    {
-        label: 'sl_firefox_compat',
-        browserName: 'firefox',
-        version: '54',
-        compat: true,
-        nativeShadowCompatible: false,
-    },
+    // TODO [#3083]: re-enable Firefox tests
+    // {
+    //     label: 'sl_firefox_compat',
+    //     browserName: 'firefox',
+    //     version: '54',
+    //     compat: true,
+    //     nativeShadowCompatible: false,
+    // },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
