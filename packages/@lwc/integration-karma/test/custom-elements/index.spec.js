@@ -294,19 +294,23 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
 
-        it('calling new Ctor() with a sneaky custom upgradeCallback', () => {
-            const elm1 = createElement('x-nonce19', { is: Nonce19 });
-            document.body.appendChild(elm1);
-            // Sneakily get the constructor in a way that is hard for LWC to block
-            const Ctor = document.createElement('x-nonce19').constructor;
-            // Sneakily pass in our own custom upgradeCallback
-            let upgradeCalled = false;
-            const elm2 = new Ctor(() => {
-                upgradeCalled = true;
+        // This test only really makes sense for the vanilla (upgradable) constructor;
+        // the pivot constructor will throw an error in this case
+        if (!window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            it('calling new Ctor() with a sneaky custom upgradeCallback', () => {
+                const elm1 = createElement('x-nonce19', { is: Nonce19 });
+                document.body.appendChild(elm1);
+                // Sneakily get the constructor in a way that is hard for LWC to block
+                const Ctor = document.createElement('x-nonce19').constructor;
+                // Sneakily pass in our own custom upgradeCallback
+                let upgradeCalled = false;
+                const elm2 = new Ctor(() => {
+                    upgradeCalled = true;
+                });
+                document.body.appendChild(elm2);
+                expect(upgradeCalled).toEqual(false);
             });
-            document.body.appendChild(elm2);
-            expect(upgradeCalled).toEqual(false);
-        });
+        }
 
         if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
             it('pre-existing custom element, LWC defined first', () => {
