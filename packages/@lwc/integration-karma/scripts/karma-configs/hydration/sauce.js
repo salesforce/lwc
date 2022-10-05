@@ -23,7 +23,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
-        version: 'latest',
+        version: '104',
     },
     {
         label: 'sl_safari_latest',
