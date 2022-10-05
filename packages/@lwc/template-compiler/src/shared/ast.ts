@@ -33,6 +33,9 @@ import {
     ForOf,
     LWCDirectiveRenderMode,
     If,
+    IfBlock,
+    ElseBlock,
+    ElseifBlock,
     ElementSourceLocation,
     InnerHTMLDirective,
     BaseElement,
@@ -199,6 +202,46 @@ export function ifNode(
         type: 'If',
         modifier,
         condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function ifBlockNode(
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): IfBlock {
+    return {
+        type: 'IfBlock',
+        condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function elseifBlockNode(
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): ElseifBlock {
+    return {
+        type: 'ElseifBlock',
+        condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function elseBlockNode(
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): ElseBlock {
+    return {
+        type: 'ElseBlock',
         location: elementLocation,
         directiveLocation,
         children: [],
@@ -384,6 +427,32 @@ export function isForBlock(node: BaseNode): node is ForBlock {
 
 export function isIf(node: BaseNode): node is If {
     return node.type === 'If';
+}
+
+export function isIfBlock(node: BaseNode): node is IfBlock {
+    return node.type === 'IfBlock';
+}
+
+export function isElseifBlock(node: BaseNode): node is ElseifBlock {
+    return node.type === 'ElseifBlock';
+}
+
+export function isElseBlock(node: BaseNode): node is ElseBlock {
+    return node.type === 'ElseBlock';
+}
+
+export function isConditionalParentBlock(node: BaseNode): node is IfBlock | ElseifBlock {
+    return isIfBlock(node) || isElseifBlock(node);
+}
+
+export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBlock | ElseBlock {
+    return isIfBlock(node) || isElseifBlock(node) || isElseBlock(node);
+}
+
+export function isElementDirective(
+    node: BaseNode
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node);
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {

@@ -1,0 +1,11 @@
+<template>
+    <template lwc:if={condition}>
+        <slot name="nested-slot"></slot>
+        <div>
+            <slot name="nested-slot"></slot>
+        </div>
+    </template>
+    <template lwc:else>
+        Alternative Text
+    </template>
+</template>

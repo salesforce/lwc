@@ -182,10 +182,38 @@ interface DirectiveParentNode extends BaseParentNode {
     directiveLocation: SourceLocation;
 }
 
+/**
+ * Node representing the if:true and if:false directives
+ */
 export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
     condition: Expression;
+}
+
+/**
+ * Node representing the lwc:if directive
+ */
+export interface IfBlock extends DirectiveParentNode {
+    type: 'IfBlock';
+    condition: Expression;
+    else?: ElseifBlock | ElseBlock;
+}
+
+/**
+ * Node representing the lwc:elseif directive
+ */
+export interface ElseifBlock extends DirectiveParentNode {
+    type: 'ElseifBlock';
+    condition: Expression;
+    else?: ElseifBlock | ElseBlock;
+}
+
+/**
+ * Node representing the lwc:else directive
+ */
+export interface ElseBlock extends DirectiveParentNode {
+    type: 'ElseBlock';
 }
 
 export interface ForEach extends DirectiveParentNode {
@@ -203,11 +231,28 @@ export interface ForOf extends DirectiveParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | BaseElement;
+export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement;
 
-export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
+export type ChildNode =
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
 
-export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
+export type Node =
+    | Root
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',

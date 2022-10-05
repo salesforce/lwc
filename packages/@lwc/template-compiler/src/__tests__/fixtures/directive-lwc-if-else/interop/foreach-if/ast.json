@@ -1,0 +1,214 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 204,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 193,
+                "end": 204
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 8,
+                    "name": "visible",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 48,
+                        "endLine": 2,
+                        "endColumn": 64,
+                        "start": 58,
+                        "end": 74
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 97,
+                    "start": 15,
+                    "end": 107
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 48,
+                    "endLine": 2,
+                    "endColumn": 64,
+                    "start": 58,
+                    "end": 74
+                },
+                "children": [
+                    {
+                        "type": "ForEach",
+                        "expression": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "items",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 15,
+                                "endLine": 2,
+                                "endColumn": 31,
+                                "start": 25,
+                                "end": 41
+                            }
+                        },
+                        "item": {
+                            "type": "Identifier",
+                            "name": "item",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 32,
+                                "endLine": 2,
+                                "endColumn": 47,
+                                "start": 42,
+                                "end": 57
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 5,
+                            "endLine": 2,
+                            "endColumn": 97,
+                            "start": 15,
+                            "end": 107
+                        },
+                        "directiveLocation": {
+                            "startLine": 2,
+                            "startColumn": 15,
+                            "endLine": 2,
+                            "endColumn": 31,
+                            "start": 25,
+                            "end": 41
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Conditional Iteration",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Conditional Iteration"
+                                },
+                                "location": {
+                                    "startLine": 2,
+                                    "startColumn": 65,
+                                    "endLine": 2,
+                                    "endColumn": 86,
+                                    "start": 75,
+                                    "end": 96
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "else": {
+                    "type": "ElseBlock",
+                    "location": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 85,
+                        "start": 112,
+                        "end": 192
+                    },
+                    "directiveLocation": {
+                        "startLine": 3,
+                        "startColumn": 51,
+                        "endLine": 3,
+                        "endColumn": 59,
+                        "start": 158,
+                        "end": 166
+                    },
+                    "children": [
+                        {
+                            "type": "ForEach",
+                            "expression": {
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 9,
+                                "name": "altItems",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 15,
+                                    "endLine": 3,
+                                    "endColumn": 34,
+                                    "start": 122,
+                                    "end": 141
+                                }
+                            },
+                            "item": {
+                                "type": "Identifier",
+                                "name": "item",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 35,
+                                    "endLine": 3,
+                                    "endColumn": 50,
+                                    "start": 142,
+                                    "end": 157
+                                }
+                            },
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 5,
+                                "endLine": 3,
+                                "endColumn": 85,
+                                "start": 112,
+                                "end": 192
+                            },
+                            "directiveLocation": {
+                                "startLine": 3,
+                                "startColumn": 15,
+                                "endLine": 3,
+                                "endColumn": 34,
+                                "start": 122,
+                                "end": 141
+                            },
+                            "children": [
+                                {
+                                    "type": "Text",
+                                    "raw": "Else Iteration",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "Else Iteration"
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 60,
+                                        "endLine": 3,
+                                        "endColumn": 74,
+                                        "start": 167,
+                                        "end": 181
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

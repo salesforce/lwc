@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1162,
+            "message": "LWC1162: Invalid usage of 'lwc:if' and 'lwc:elseif' directives on the same element.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 74
+            }
+        }
+    ]
+}
