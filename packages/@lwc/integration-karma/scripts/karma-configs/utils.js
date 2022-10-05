@@ -73,7 +73,13 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
 
         browsers: browsers.map((browser) => browser.label),
         customLaunchers: browsers.reduce((acc, browser) => {
-            const { label, browserName, platform, version } = browser;
+            const {
+                label,
+                browserName,
+                platform,
+                version,
+                'sauce:options': sauce_options,
+            } = browser;
             return {
                 ...acc,
                 [label]: {
@@ -81,6 +87,7 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
                     browserName,
                     platform,
                     version,
+                    'sauce:options': sauce_options,
                 },
             };
         }, {}),
