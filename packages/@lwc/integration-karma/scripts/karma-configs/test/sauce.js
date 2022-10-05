@@ -18,63 +18,69 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_chrome_latest',
         browserName: 'chrome',
-        version: 'latest',
+        browserVersion: 'latest',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
     },
-    // TODO [#3083]: re-enable Firefox tests
+    // TODO [#3083]: Update to latest firefox and geckodriver.
+    // Pin firefox version to 105 and geckodriver to 0.30.0 for now because of
+    // issues running the latest version of firefox with geckodriver > 0.30.0
+    // in saucelabs.
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
-        version: 'latest',
+        browserVersion: '105',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
-        'sauce:options': {
-            geckodriverVersion: '0.31.0',
+        sauceOptions: {
+            geckodriverVersion: '0.30.0',
         },
     },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        version: 'latest',
+        browserVersion: 'latest',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
+        platformName: 'macOS 12',
     },
 
     // Compat browsers
     {
         label: 'sl_ie11',
         browserName: 'internet explorer',
-        version: '11',
+        browserVersion: '11',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_chrome_compat',
         browserName: 'chrome',
-        version: '59',
+        browserVersion: '59',
         compat: true,
         nativeShadowCompatible: false,
     },
-    // TODO [#3083]: re-enable Firefox tests
+    // TODO [#3083]: Update to latest geckodriver.
+    // Pin geckodriver to 0.30.0 for now because of issues running
+    // the latest version of firefox with geckodriver > 0.30.0 in saucelabs.
     {
         label: 'sl_firefox_compat',
         browserName: 'firefox',
-        version: '54',
+        browserVersion: '54',
         compat: true,
         nativeShadowCompatible: false,
-        'sauce:options': {
-            geckodriverVersion: '0.31.0',
+        sauceOptions: {
+            geckodriverVersion: '0.30.0',
         },
     },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        version: '10',
-        platform: 'OS X 10.11',
+        browserVersion: '10',
+        platformName: 'OS X 10.11',
         compat: true,
         nativeShadowCompatible: false,
     },

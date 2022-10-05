@@ -18,21 +18,25 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_chrome_latest',
         browserName: 'chrome',
-        version: 'latest',
+        browserVersion: 'latest',
     },
-    // TODO [#3083]: re-enable Firefox tests
+    // TODO [#3083]: Update to latest firefox and geckodriver.
+    // Pin firefox version to 105 and geckodriver to 0.30.0 for now because of
+    // issues running the latest version of firefox with geckodriver > 0.30.0
+    // in saucelabs.
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
-        version: 'latest',
-        'sauce:options': {
-            geckodriverVersion: '0.31.0',
+        browserVersion: '105',
+        sauceOptions: {
+            geckodriverVersion: '0.30.0',
         },
     },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        version: 'latest',
+        browserVersion: 'latest',
+        platformName: 'macOS 12',
     },
 ];
 

@@ -73,21 +73,15 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
 
         browsers: browsers.map((browser) => browser.label),
         customLaunchers: browsers.reduce((acc, browser) => {
-            const {
-                label,
-                browserName,
-                platform,
-                version,
-                'sauce:options': sauce_options,
-            } = browser;
+            const { label, browserName, platformName, browserVersion, sauceOptions } = browser;
             return {
                 ...acc,
                 [label]: {
                     base: 'SauceLabs',
                     browserName,
-                    platform,
-                    version,
-                    'sauce:options': sauce_options,
+                    platformName,
+                    browserVersion,
+                    'sauce:options': sauceOptions,
                 },
             };
         }, {}),
