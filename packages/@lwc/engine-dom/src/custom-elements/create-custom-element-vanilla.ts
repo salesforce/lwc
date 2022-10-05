@@ -32,6 +32,14 @@ const createUpgradableConstructor = (
                 // keep track of elements that were not created by lwc.createElement,
                 // so we can ignore their lifecycle hooks
                 elementsUpgradedOutsideLWC.add(this);
+
+                if (!isUndefined(upgradeCallback)) {
+                    // This will only happen if someone is doing something zany like passing their own
+                    // custom upgradeCallback into the Ctor.
+                    throw new Error(
+                        'Failed to create custom element: upgradeCallback should either be undefined or registered'
+                    );
+                }
             }
         }
         connectedCallback() {
