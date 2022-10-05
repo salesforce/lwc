@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1082,
-            "message": "LWC1082: Slot tag can't be associated with directives",
+            "message": "LWC1082: Slot tag can't be associated with for:each, for:of or if:true/false directives",
             "level": 1,
             "location": {
                 "line": 2,
@@ -13,7 +13,7 @@
         },
         {
             "code": 1082,
-            "message": "LWC1082: Slot tag can't be associated with directives",
+            "message": "LWC1082: Slot tag can't be associated with for:each, for:of or if:true/false directives",
             "level": 1,
             "location": {
                 "line": 3,

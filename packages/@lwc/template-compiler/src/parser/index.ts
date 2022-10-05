@@ -277,7 +277,7 @@ function parseElementDirectives(
         parseForEach,
         parseForOf,
         parseIf,
-        parseScopedSlotContent
+        parseScopedSlotContent,
     ];
     for (const parser of parsers) {
         const prev = current || parent;
@@ -1067,7 +1067,7 @@ function parseScopedSlotContent(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation,
-    _parent: ParentNode,
+    parent: ParentNode,
     parse5Elm: parse5.Element
 ): ScopedSlotContent | undefined {
     const slotDataAttr = parsedAttr.pick('lwc:slot-data');
@@ -1108,12 +1108,15 @@ function parseScopedSlotContent(
     }
 
     const identifier = parseIdentifier(ctx, slotDataAttrValue.value, slotDataAttr.location);
-    return ast.scopedSlotContent(
+    const node = ast.scopedSlotContent(
         identifier,
         ast.sourceLocation(parse5ElmLocation),
         slotDataAttr.location,
         slotName
     );
+    ctx.addNodeCurrentElementScope(node);
+    parent.children.push(node);
+    return node;
 }
 
 function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {

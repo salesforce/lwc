@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1163,
-            "message": "LWC1163: Invalid `lwc:slot-bind` usage on element \"<div>\". The directive can be used on a `<slot>` element only.",
+            "code": 1171,
+            "message": "LWC1171: Invalid `lwc:slot-bind` usage on element \"<div>\". The directive can be used on a `<slot>` element only.",
             "level": 1,
             "location": {
                 "line": 2,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1163,
-            "message": "LWC1163: Invalid `lwc:slot-bind` usage on element \"<x-child>\". The directive can be used on a `<slot>` element only.",
+            "code": 1171,
+            "message": "LWC1171: Invalid `lwc:slot-bind` usage on element \"<x-child>\". The directive can be used on a `<slot>` element only.",
             "level": 1,
             "location": {
                 "line": 3,

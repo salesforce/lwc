@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1164,
-            "message": "LWC1164: Invalid duplicate scoped slots (name=\"slotname\")",
+            "code": 1172,
+            "message": "LWC1172: Invalid duplicate scoped slots (name=\"slotname\")",
             "level": 1,
             "location": {
                 "line": 3,

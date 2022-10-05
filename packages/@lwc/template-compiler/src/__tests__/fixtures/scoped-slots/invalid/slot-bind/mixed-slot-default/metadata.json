@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1165,
-            "message": "LWC1165: Mixing slot types disallowed for same (default) slot.",
+            "code": 1173,
+            "message": "LWC1173: Mixing slot types disallowed for same (default) slot.",
             "level": 1,
             "location": {
                 "line": 3,

@@ -395,7 +395,8 @@ export const ParserDiagnostics = {
 
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
-        message: "Slot tag can't be associated with for:each, for:of or if:true/false directives",
+        message:
+            "Slot tag can't be associated with for:each, for:of, if:true, if:flase, lwc:if, lwc:else, lwc:elseif template directives.",
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -723,14 +724,14 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    
+
     INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1163,
         message: "Invalid usage of 'lwc:elseif' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
-    
+
     INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1164,
         message: "Invalid usage of 'lwc:else' and '{0}' directives on the same element.",

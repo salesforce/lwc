@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1169,
-            "message": "LWC1169: `<template>` tag with `lwc:slot-data` directive cannot contain a comment or text node as a direct child.",
+            "code": 1177,
+            "message": "LWC1177: `<template>` tag with `lwc:slot-data` directive cannot contain a comment or text node as a direct child.",
             "level": 1,
             "location": {
                 "line": 4,
