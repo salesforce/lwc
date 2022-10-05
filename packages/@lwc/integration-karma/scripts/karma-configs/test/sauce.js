@@ -27,7 +27,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
-        version: '103',
+        version: 'latest',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
