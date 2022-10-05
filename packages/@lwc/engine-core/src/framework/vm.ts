@@ -50,7 +50,9 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    [key: string]: VNodes;
+    // Slot assignments by name
+    slotAssignments: { [key: string]: VNodes };
+    owner?: VM;
 }
 
 export const enum VMState {
@@ -135,7 +137,8 @@ export interface VM<N = HostNode, E = HostElement> {
     velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** The mapping between the slot names and the slotted VNodes. */
+    /** Contains information about the mapping between the slot names and the slotted VNodes, and
+     *  the owner of the slot content. */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
@@ -301,7 +304,7 @@ export function createVM<HostNode, HostElement>(
         velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: create(null),
+        cmpSlots: { slotAssignments: create(null) },
         oar: create(null),
         cmpTemplate: null,
         hydrated: Boolean(hydrated),

@@ -247,7 +247,7 @@ function hydrateCustomElement(
     vnode.elm = elm;
     vnode.vm = vm;
 
-    allocateChildren(vnode, vm);
+    allocateChildren(vnode, vm, owner);
     patchElementPropsAndAttrs(vnode, renderer);
 
     // Insert hook section:

@@ -26,7 +26,7 @@ import {
 import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
-import { getVMBeingRendered } from './template';
+import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray, setRefVNode } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
@@ -44,12 +44,26 @@ import {
     VStatic,
     Key,
     VFragment,
+    isVScopedSlotContent,
+    VScopedSlotContent,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
+}
+
+// [s]coped [s]lot [f]actory
+function ssf(factory: (value: any) => VNodes): VScopedSlotContent {
+    return {
+        type: VNodeType.ScopedSlotContent,
+        factory,
+        owner: getVMBeingRendered()!,
+        elm: undefined,
+        sel: undefined,
+        key: undefined,
+    };
 }
 
 // [st]atic node
@@ -169,10 +183,25 @@ function s(
     }
     if (
         !isUndefined(slotset) &&
-        !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
+        !isUndefined(slotset.slotAssignments) &&
+        !isUndefined(slotset.slotAssignments[slotName]) &&
+        slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset[slotName];
+        children = slotset.slotAssignments[slotName].flatMap((vnode) => {
+            // If the passed slot content is factory, evaluate it and use the produced vnodes
+            if (vnode && isVScopedSlotContent(vnode)) {
+                const vmBeingRenderedInception = getVMBeingRendered();
+                if (!isUndefined(slotset.owner)) {
+                    // Evaluate in the scope of the slot content's owner
+                    setVMBeingRendered(slotset.owner);
+                }
+                const children = vnode.factory(data.slotData);
+                setVMBeingRendered(vmBeingRenderedInception);
+                return children;
+            } else {
+                return vnode;
+            }
+        });
     }
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
@@ -571,6 +600,7 @@ const api = ObjectFreeze({
     gid,
     fid,
     shc,
+    ssf,
 });
 
 export default api;

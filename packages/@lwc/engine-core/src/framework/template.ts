@@ -77,12 +77,12 @@ function validateSlots(vm: VM, html: Template) {
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
 
-    for (const slotName in cmpSlots) {
+    for (const slotName in cmpSlots.slotAssignments) {
         // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
         assert.isTrue(
-            isArray(cmpSlots[slotName]),
+            isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
+                cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
 

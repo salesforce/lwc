@@ -17,9 +17,17 @@ export const enum VNodeType {
     CustomElement,
     Static,
     Fragment,
+    ScopedSlotContent,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement | VStatic | VFragment;
+export type VNode =
+    | VText
+    | VComment
+    | VElement
+    | VCustomElement
+    | VStatic
+    | VFragment
+    | VScopedSlotContent;
 export type VParentElement = VElement | VCustomElement | VFragment;
 export type VNodes = Readonly<Array<VNode | null>>;
 
@@ -33,6 +41,12 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
+}
+
+export interface VScopedSlotContent extends BaseVNode {
+    // TODO [#9999]: should the factory return a VFragment instead?
+    factory: (value: any) => VNodes;
+    type: VNodeType.ScopedSlotContent;
 }
 
 export interface VStatic extends BaseVNode {
@@ -106,6 +120,7 @@ export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
     readonly ref?: string;
+    readonly slotData?: any;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
@@ -119,4 +134,8 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
 
 export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
+}
+
+export function isVScopedSlotContent(vnode: VNode): vnode is VScopedSlotContent {
+    return vnode.type === VNodeType.ScopedSlotContent;
 }

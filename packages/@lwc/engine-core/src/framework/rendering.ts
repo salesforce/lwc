@@ -309,7 +309,7 @@ function mountCustomElement(
     applyStyleScoping(elm, owner, renderer);
 
     if (vm) {
-        allocateChildren(vnode, vm);
+        allocateChildren(vnode, vm, owner);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -363,7 +363,7 @@ function patchCustomElement(
         if (!isUndefined(vm)) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
-            allocateChildren(n2, vm);
+            allocateChildren(n2, vm, vm.owner!);
         }
 
         // in fallback mode, the children will be always empty, so, nothing
@@ -558,7 +558,7 @@ function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     }
 }
 
-export function allocateChildren(vnode: VCustomElement, vm: VM) {
+export function allocateChildren(vnode: VCustomElement, vm: VM, owner: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -576,7 +576,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     const { renderMode, shadowMode } = vm;
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children);
+        allocateInSlot(vm, children, owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -611,9 +611,12 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+    vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
@@ -625,26 +628,29 @@ function allocateInSlot(vm: VM, children: VNodes) {
             slotName = (vnode.data.attrs?.slot as string) || '';
         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
+        const oldKeys = keys(oldSlotsMapping);
+        if (oldKeys.length !== keys(cmpSlotsMapping).length) {
             markComponentAsDirty(vm);
             return;
         }
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+            if (
+                isUndefined(cmpSlotsMapping[key]) ||
+                oldSlotsMapping[key].length !== cmpSlotsMapping[key].length
+            ) {
                 markComponentAsDirty(vm);
                 return;
             }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+            const oldVNodes = oldSlotsMapping[key];
+            const vnodes = cmpSlotsMapping[key];
+            for (let j = 0, a = cmpSlotsMapping[key].length; j < a; j += 1) {
                 if (oldVNodes[j] !== vnodes[j]) {
                     markComponentAsDirty(vm);
                     return;
