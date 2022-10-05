@@ -32,7 +32,7 @@ const SAUCE_BROWSERS = [
         nativeShadowCompatible: true,
         test_hydration: true,
         'sauce:options': {
-            geckodriverVersion: '0.30.0',
+            geckodriverVersion: '0.31.0',
         },
     },
     {
@@ -67,7 +67,7 @@ const SAUCE_BROWSERS = [
         compat: true,
         nativeShadowCompatible: false,
         'sauce:options': {
-            geckodriverVersion: '0.30.0',
+            geckodriverVersion: '0.31.0',
         },
     },
     {

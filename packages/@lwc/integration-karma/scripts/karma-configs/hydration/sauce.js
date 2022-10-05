@@ -26,7 +26,7 @@ const SAUCE_BROWSERS = [
         browserName: 'firefox',
         version: 'latest',
         'sauce:options': {
-            geckodriverVersion: '0.30.0',
+            geckodriverVersion: '0.31.0',
         },
     },
     {
