@@ -53,6 +53,7 @@ import {
     VNodeType,
     VStatic,
     VFragment,
+    isVScopedSlotContent,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -624,8 +625,10 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         let slotName = '';
-        if (isVBaseElement(vnode)) {
-            slotName = (vnode.data.attrs?.slot as string) || '';
+        if (isVBaseElement(vnode) && !isUndefined(vnode.data.attrs?.slot)) {
+            slotName = vnode.data.attrs?.slot as string;
+        } else if (isVScopedSlotContent(vnode) && !isUndefined(vnode.slotName)) {
+            slotName = vnode.slotName;
         }
 
         const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);

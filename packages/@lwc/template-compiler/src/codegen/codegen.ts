@@ -44,7 +44,8 @@ type RenderPrimitive =
     | 'comment'
     | 'sanitizeHtmlContent'
     | 'fragment'
-    | 'staticFragment';
+    | 'staticFragment'
+    | 'scopedSlotFactory';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -69,6 +70,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
     fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
+    scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
 };
 
 interface Scope {
@@ -354,6 +356,10 @@ export default class CodeGen {
                 t.identifier(`_sanitizedHtml$${instance}`)
             )
         );
+    }
+
+    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.SimpleLiteral) {
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [callback, slotName]);
     }
 
     private _renderApiCall(

@@ -1,9 +1,6 @@
 import { registerTemplate } from "lwc";
 const stc0 = {
-  attrs: {
-    name: "slotname1",
-  },
-  key: 0,
+  name: "slotname1",
 };
 const stc1 = [];
 const stc2 = {
@@ -18,7 +15,16 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot, f: api_flatten } = $api;
   return api_flatten([
-    api_slot("slotname1", stc0, stc1, $slotset),
+    api_slot(
+      "slotname1",
+      {
+        attrs: stc0,
+        key: 0,
+        slotData: $cmp.slot1data,
+      },
+      stc1,
+      $slotset
+    ),
     api_slot("slotname2", stc2, stc1, $slotset),
     api_slot("", stc3, stc1, $slotset),
   ]);

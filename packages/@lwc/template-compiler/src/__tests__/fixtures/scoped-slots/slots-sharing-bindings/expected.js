@@ -1,26 +1,43 @@
 import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
+const stc0 = [];
+const stc1 = {
+  name: "slotname1",
 };
-const stc1 = [];
 const stc2 = {
-  attrs: {
-    name: "slotname1",
-  },
-  key: 1,
-};
-const stc3 = {
-  attrs: {
-    name: "slotname2",
-  },
-  key: 2,
+  name: "slotname2",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot, f: api_flatten } = $api;
   return api_flatten([
-    api_slot("", stc0, stc1, $slotset),
-    api_slot("slotname1", stc2, stc1, $slotset),
-    api_slot("slotname2", stc3, stc1, $slotset),
+    api_slot(
+      "",
+      {
+        key: 0,
+        slotData: $cmp.slotdata,
+      },
+      stc0,
+      $slotset
+    ),
+    api_slot(
+      "slotname1",
+      {
+        attrs: stc1,
+        key: 1,
+        slotData: $cmp.slotdata,
+      },
+      stc0,
+      $slotset
+    ),
+    api_slot(
+      "slotname2",
+      {
+        attrs: stc2,
+        key: 2,
+        slotData: $cmp.slotdata,
+      },
+      stc0,
+      $slotset
+    ),
   ]);
   /*LWC compiler vX.X.X*/
 }

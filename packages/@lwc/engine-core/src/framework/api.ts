@@ -55,7 +55,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]coped [s]lot [f]actory
-function ssf(factory: (value: any) => VNodes): VScopedSlotContent {
+function ssf(factory: (value: any) => VNodes, slotName?: string): VScopedSlotContent {
     return {
         type: VNodeType.ScopedSlotContent,
         factory,
@@ -63,6 +63,7 @@ function ssf(factory: (value: any) => VNodes): VScopedSlotContent {
         elm: undefined,
         sel: undefined,
         key: undefined,
+        slotName,
     };
 }
 

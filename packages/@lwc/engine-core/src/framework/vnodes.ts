@@ -47,6 +47,7 @@ export interface VScopedSlotContent extends BaseVNode {
     // TODO [#9999]: should the factory return a VFragment instead?
     factory: (value: any) => VNodes;
     type: VNodeType.ScopedSlotContent;
+    slotName?: string;
 }
 
 export interface VStatic extends BaseVNode {
