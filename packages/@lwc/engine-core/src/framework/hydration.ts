@@ -415,7 +415,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     let { className, classMap } = data;
     const { getProperty, getClassList } = renderer;
     const scopedToken = getScopeTokenClass(owner);
-    const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : '';
+    const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,
     // or to the VDOM on the server in the case of SSR. As such, these classnames
@@ -425,15 +425,19 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     // are rendered during SSR. This needs to be accounted for when validating.
     if (scopedToken) {
         if (!isUndefined(className)) {
-            className = `${scopedToken} ${className} ${stylesheetTokenHost}`.trim();
+            className = isNull(stylesheetTokenHost)
+                ? `${scopedToken} ${className}`
+                : `${scopedToken} ${className} ${stylesheetTokenHost}`;
         } else if (!isUndefined(classMap)) {
             classMap = {
                 ...classMap,
                 [scopedToken]: true,
-                ...(!isUndefined(stylesheetTokenHost) && { [stylesheetTokenHost]: true }),
+                ...(isNull(stylesheetTokenHost) ? {} : { [stylesheetTokenHost]: true }),
             };
         } else {
-            className = `${scopedToken} ${stylesheetTokenHost}`.trim();
+            className = isNull(stylesheetTokenHost)
+                ? `${scopedToken}`
+                : `${scopedToken} ${stylesheetTokenHost}`;
         }
     }
 

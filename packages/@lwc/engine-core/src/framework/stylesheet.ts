@@ -202,13 +202,13 @@ export function getScopeTokenClass(owner: VM): string | null {
 
 /**
  * This function returns the host style token for a custom element if it
- * exists. Otherwise it returns an empty string.
+ * exists. Otherwise it returns null.
  */
-export function getStylesheetTokenHost(vnode: VCustomElement): string {
+export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
     const {
         template: { stylesheetToken },
     } = getComponentInternalDef(vnode.ctor);
-    return !isUndefined(stylesheetToken) ? makeHostToken(stylesheetToken) : '';
+    return !isUndefined(stylesheetToken) ? makeHostToken(stylesheetToken) : null;
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {
