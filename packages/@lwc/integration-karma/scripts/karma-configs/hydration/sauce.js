@@ -20,11 +20,12 @@ const SAUCE_BROWSERS = [
         browserName: 'chrome',
         version: 'latest',
     },
-    {
-        label: 'sl_firefox_latest',
-        browserName: 'firefox',
-        version: 'latest',
-    },
+    // TODO [#3083]: re-enable Firefox tests
+    // {
+    //     label: 'sl_firefox_latest',
+    //     browserName: 'firefox',
+    //     version: '103',
+    // },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
