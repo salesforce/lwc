@@ -45,6 +45,30 @@ GREP=ShadowRoot yarn start     # Run "ShadowRoot" related tests in watch mode
 COVERAGE=1 yarn test           # Compute coverage after a single test run
 ```
 
+## Running Sauce Labs tests locally
+
+To test Sauce Labs the same way we do in CI, run the following steps:
+
+Start the Sauce Connect (`sc`) executable and wait for it to say that it's ready. (When you sign into SauceLabs, on the "Tunnel Proxies" page, there is a command you can copy-paste.)
+
+In another console tab, start the tests using `yarn start`.
+
+In another console tab, export the following env vars:
+
+-   `SAUCE_USERNAME`
+-   `SAUCE_KEY`
+-   `SAUCE_TUNNEL_ID` – this is actually your tunnel _name_, not the ID. Copy it from the `sc` command you just ran.
+
+Run:
+
+```bash
+npx karma start ./scripts/karma-configs/test/sauce.js --single-run
+```
+
+This will connect to Sauce Labs, start the browser, and run the tests.
+
+You can also pass in `--log-level=debug` to `karma` for debug logging.
+
 ## Contributing
 
 -   The test suite uses jasmine for test runner. You can find more details about jasmine here: https://jasmine.github.io/api/3.3/global
