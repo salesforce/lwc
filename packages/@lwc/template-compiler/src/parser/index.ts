@@ -1436,7 +1436,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
             (child) => ast.isComment(child) || ast.isText(child)
         );
         if (commentOrTextChild) {
-            ctx.warnOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, commentOrTextChild);
+            ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, commentOrTextChild);
         }
     }
 
