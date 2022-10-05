@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isUndefined } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 const cachedConstructors = new Map<string, CustomElementConstructor>();
+const elementsUpgradedOutsideLWC = new WeakSet<HTMLElement>();
+let elementBeingUpgradedByLWC = false;
 
 // Creates a constructor that is intended to be used as a vanilla custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
@@ -22,17 +24,25 @@ const createUpgradableConstructor = (
     return class UpgradableConstructor extends HTMLElement {
         constructor(upgradeCallback: LifecycleCallback) {
             super();
-            // The upgradeCallback will be undefined in cases where LWC is not creating the element,
-            // e.g. `document.createElement('x-foo')`
-            if (isFunction(upgradeCallback)) {
+            // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
+            // then elementBeingUpgraded will be false
+            if (elementBeingUpgradedByLWC) {
                 upgradeCallback(this);
+            } else {
+                // keep track of elements that were not created by lwc.createElement,
+                // so we can ignore their lifecycle hooks
+                elementsUpgradedOutsideLWC.add(this);
             }
         }
         connectedCallback() {
-            connectedCallback(this);
+            if (!elementsUpgradedOutsideLWC.has(this)) {
+                connectedCallback(this);
+            }
         }
         disconnectedCallback() {
-            disconnectedCallback(this);
+            if (!elementsUpgradedOutsideLWC.has(this)) {
+                disconnectedCallback(this);
+            }
         }
     };
 };
@@ -45,6 +55,7 @@ export const createCustomElementVanilla = (
 ) => {
     // use global custom elements registry
     let UpgradableConstructor = cachedConstructors.get(tagName);
+
     if (isUndefined(UpgradableConstructor)) {
         if (!isUndefined(customElements.get(tagName))) {
             throw new Error(
@@ -58,5 +69,11 @@ export const createCustomElementVanilla = (
         customElements.define(tagName, UpgradableConstructor);
         cachedConstructors.set(tagName, UpgradableConstructor);
     }
-    return new UpgradableConstructor(upgradeCallback);
+
+    elementBeingUpgradedByLWC = true;
+    try {
+        return new UpgradableConstructor(upgradeCallback);
+    } finally {
+        elementBeingUpgradedByLWC = false;
+    }
 };

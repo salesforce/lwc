@@ -17,6 +17,7 @@ import Nonce15 from 'x/nonce15';
 import Nonce16 from 'x/nonce16';
 import Nonce17 from 'x/nonce17';
 import Nonce18 from 'x/nonce18';
+import Nonce19 from 'x/nonce19';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrow from 'x/observeNothingThrow';
@@ -291,6 +292,20 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(elm1.expectedTagName).toBeUndefined();
             // expect(elm1.shadowRoot).not.toBeNull()
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
+        });
+
+        it('calling new Ctor() with a sneaky custom upgradeCallback', () => {
+            const elm1 = createElement('x-nonce19', { is: Nonce19 });
+            document.body.appendChild(elm1);
+            // Sneakily get the constructor in a way that is hard for LWC to block
+            const Ctor = document.createElement('x-nonce19').constructor;
+            // Sneakily pass in our own custom upgradeCallback
+            let upgradeCalled = false;
+            const elm2 = new Ctor(() => {
+                upgradeCalled = true;
+            });
+            document.body.appendChild(elm2);
+            expect(upgradeCalled).toEqual(false);
         });
 
         if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
