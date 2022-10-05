@@ -60,13 +60,16 @@ const SAUCE_BROWSERS = [
         nativeShadowCompatible: false,
     },
     // TODO [#3083]: re-enable Firefox tests
-    // {
-    //     label: 'sl_firefox_compat',
-    //     browserName: 'firefox',
-    //     version: '54',
-    //     compat: true,
-    //     nativeShadowCompatible: false,
-    // },
+    {
+        label: 'sl_firefox_compat',
+        browserName: 'firefox',
+        version: '54',
+        compat: true,
+        nativeShadowCompatible: false,
+        'sauce:options': {
+            geckodriverVersion: '0.30.0',
+        },
+    },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
