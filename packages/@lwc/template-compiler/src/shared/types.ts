@@ -247,7 +247,15 @@ export interface ScopedSlotContent extends DirectiveParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement | ScopedSlotContent;
+export type ParentNode =
+    | Root
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | ScopedSlotContent;
 
 export type ChildNode =
     | ForBlock
