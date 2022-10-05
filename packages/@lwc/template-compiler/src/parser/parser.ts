@@ -22,6 +22,9 @@ import {
     ParentNode,
     BaseNode,
     LWCDirectiveRenderMode,
+    IfBlock,
+    ElseifBlock,
+    ElseBlock,
 } from '../shared/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
@@ -45,6 +48,30 @@ interface ParentWrapper {
     current: ParentNode;
 }
 
+interface IfContext {
+    currentNode: IfBlock | ElseifBlock | ElseBlock;
+
+    // Within a specific if-context, each set of seen slot names must be tracked separately
+    // because duplicate names in separate branches of the same if-block are allowed (the branching
+    // logic provides a compile-time guarantee that the slots will not be rendered multiple times).
+    // seenSlots keeps track of each set holding the slots seen in each branch of the if-block.
+    seenSlots: Set<string>[];
+}
+
+// A SiblingScope object keeps track of the context needed to parse a series of if-elseif-else nodes.
+interface SiblingScope {
+    // Context for the if-elseif-else chain currently being parsed at this level. This
+    // IfContext keeps track of the most recently parsed node in the chain and the set of slot names we've seen in all
+    // previous siblings in the chain.
+    ifContext?: IfContext;
+
+    // Reference to the nearest ancestor IfContext. The existence of an ancestor
+    // IfContext means that we are currently parsing nodes nested within an if-elseif-else chain. Context from that ancestor
+    // is needed to track which slot names have already been seen in and only in the current scope. This reference is also needed
+    // so we know where to merge all visited slot names from the current IfContext.
+    ancestorIfContext?: IfContext;
+}
+
 export default class ParserCtx {
     private readonly source: String;
 
@@ -55,17 +82,23 @@ export default class ParserCtx {
     readonly seenSlots: Set<string> = new Set();
 
     /**
-     * Scopes keep track of the hierarchy of ParentNodes as the parser traverses the parse5 AST.
-     * Each scope is represented by an array where each node in the array correspond to either
-     * a ForEach, ForOf, If, Element, Component, or Slot.
+     * 'elementScopes' keeps track of the hierarchy of ParentNodes as the parser
+     * traverses the parse5 AST. Each 'elementScope' is an array where each node in
+     * the array corresponds to either an IfBlock, ElseifBlock, ElseBlock, ForEach, ForOf, If, Element, Component, or Slot.
      *
-     * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
-     * Note: Not all scopes will have all three, but when they do, they will appear in this order.
+     * Currently, each elementScope has a hierarchy of IfBlock > ForBlock > If > Element | Component | Slot.
+     * Note: Not all elementScopes will have all the nodes listed above, but when they do, they will appear in this order.
      * We do not keep track of template nodes.
      *
      * Each scope corresponds to the original parse5.Element node.
      */
-    private readonly scopes: ParentNode[][] = [];
+    private readonly elementScopes: ParentNode[][] = [];
+
+    /**
+     * 'siblingScopes' keeps track of the context from one sibling node to another.
+     * This holds the info needed to properly parse lwc:if, lwc:elseif, and lwc:else directives.
+     */
+    private readonly siblingScopes: SiblingScope[] = [];
 
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
@@ -92,7 +125,7 @@ export default class ParserCtx {
      * This method flattens the scopes into a single array for traversal.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
-        const ancestors = ([] as ParentNode[]).concat(...this.scopes);
+        const ancestors = this.elementScopes.flat();
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -134,33 +167,138 @@ export default class ParserCtx {
      * @param {function} predicate - This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */
-    findSibling<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
-        const currentScope = this.currentScope() || [];
-        const sibling = currentScope.find(predicate);
-        return sibling || null;
+    findInCurrentElementScope<A extends ParentNode>(
+        predicate: (node: ParentNode) => node is A
+    ): A | null {
+        const currentScope = this.currentElementScope() || [];
+        return currentScope.find(predicate) || null;
     }
 
-    beginScope(): void {
-        this.scopes.push([]);
+    beginElementScope(): void {
+        this.elementScopes.push([]);
     }
 
-    endScope(): void {
-        this.scopes.pop();
+    endElementScope(): ParentNode | undefined {
+        const scope = this.elementScopes.pop();
+        return scope ? scope[0] : undefined;
     }
 
-    addNodeCurrentScope(node: ParentNode): void {
-        const currentScope = this.currentScope();
+    addNodeCurrentElementScope(node: ParentNode): void {
+        const currentScope = this.currentElementScope();
 
         /* istanbul ignore if */
         if (!currentScope) {
-            throw new Error("Can't invoke addNodeCurrentScope if there is no current scope");
+            throw new Error("Can't invoke addNodeCurrentElementScope if there is no current scope");
         }
 
         currentScope.push(node);
     }
 
-    private currentScope(): ParentNode[] | undefined {
-        return this.scopes[this.scopes.length - 1];
+    hasSeenSlot(name: string): boolean {
+        return this.seenSlotsFromAncestorIfTree().has(name);
+    }
+
+    addSeenSlot(name: string): void {
+        const currentSeenSlots = this.seenSlotsFromAncestorIfTree();
+        if (currentSeenSlots) {
+            currentSeenSlots.add(name);
+        } else {
+            this.seenSlots.add(name);
+        }
+    }
+
+    private currentElementScope(): ParentNode[] | undefined {
+        return this.elementScopes[this.elementScopes.length - 1];
+    }
+
+    beginSiblingScope() {
+        this.siblingScopes.push({
+            ancestorIfContext: this.currentIfContext() || this.ancestorIfContext(),
+        });
+    }
+
+    endSiblingScope() {
+        this.siblingScopes.pop();
+    }
+
+    beginIfChain(node: IfBlock) {
+        const currentSiblingContext = this.currentSiblingContext();
+        if (!currentSiblingContext) {
+            throw new Error('Cannot invoke beginIfChain if there is currently no sibling context');
+        }
+
+        const currentIfContext = this.currentIfContext();
+        if (currentIfContext) {
+            throw new Error(
+                'Should not invoke beginIfChain if an if context already exists. First end the current chain before starting a new one.'
+            );
+        }
+
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
+        currentSiblingContext.ifContext = {
+            currentNode: node,
+            seenSlots: [new Set<string>(previouslySeenSlots)],
+        };
+    }
+
+    appendToIfChain(node: ElseifBlock | ElseBlock) {
+        const currentIfContext = this.currentIfContext();
+        if (!currentIfContext) {
+            throw new Error('Cannot invoke appendToIfChain without first setting the if context.');
+        }
+
+        currentIfContext.currentNode = node;
+
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
+        currentIfContext.seenSlots.push(new Set<string>(previouslySeenSlots));
+    }
+
+    endIfChain() {
+        const currentIfContext = this.currentIfContext();
+        if (!currentIfContext) {
+            throw new Error('Cannot invoke endIfChain if there is currently no if context');
+        }
+
+        // Merge seen slot names from the current if chain into the parent scope.
+        const seenSlotsInAncestorIfTree = this.seenSlotsFromAncestorIfTree();
+        for (const seenSlots of currentIfContext.seenSlots) {
+            for (const name of seenSlots) {
+                seenSlotsInAncestorIfTree.add(name);
+            }
+        }
+
+        const currentSiblingContext = this.currentSiblingContext();
+        if (currentSiblingContext) {
+            currentSiblingContext.ifContext = undefined;
+        }
+    }
+
+    getSiblingIfNode(): IfBlock | ElseifBlock | ElseBlock | undefined {
+        return this.currentIfContext()?.currentNode;
+    }
+
+    isParsingSiblingIfBlock(): boolean {
+        return !!this.currentIfContext();
+    }
+
+    private currentSiblingContext(): SiblingScope | undefined {
+        return this.siblingScopes[this.siblingScopes.length - 1];
+    }
+
+    private currentIfContext(): IfContext | undefined {
+        return this.currentSiblingContext()?.ifContext;
+    }
+
+    private ancestorIfContext(): IfContext | undefined {
+        return this.currentSiblingContext()?.ancestorIfContext;
+    }
+
+    private seenSlotsFromAncestorIfTree(): Set<string> {
+        const ancestorIfContext = this.ancestorIfContext();
+        if (ancestorIfContext) {
+            return ancestorIfContext.seenSlots[ancestorIfContext.seenSlots.length - 1];
+        }
+        return this.seenSlots;
     }
 
     /**

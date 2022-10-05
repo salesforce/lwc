@@ -24,7 +24,7 @@ import {
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
         .map((attr) =>
-            attr.value.length ? `${attr.name}=${JSON.stringify(htmlEscape(attr.value))}` : attr.name
+            attr.value.length ? `${attr.name}="${htmlEscape(attr.value, true)}"` : attr.name
         )
         .join(' ');
 }
