@@ -25,6 +25,9 @@ branches:
   summer22:
     pull-request:
       <<: *branch-definition
+  winter23:
+    pull-request:
+    <<: *branch-definition
 steps:
   node-conformance:
     run:
