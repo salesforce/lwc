@@ -185,6 +185,7 @@ function transform(codeGen: CodeGen): t.Expression {
         } = scopedSlotContent;
         codeGen.beginScope();
         codeGen.declareIdentifier(dataIdentifier);
+        // TODO [#9999]: Next Step: Return a VFragment
         const fragment = transformChildren(scopedSlotContent);
         codeGen.endScope();
 

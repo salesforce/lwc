@@ -1079,13 +1079,6 @@ function parseScopedSlotContent(
         ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, slotDataAttr);
     }
 
-    // TODO [#99999]: Should this(shadow-dom parent/light-dom child) restriction be removed?
-    // If a shadow dom parent passes a scoped slot content to the child, how will the parent be able to
-    // query for the light dom elements?
-    /*     if (ctx.renderMode !== LWCDirectiveRenderMode.light) {
-        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_DATA_IN_LIGHT_DOM_ONLY, slotDataAttr.location);
-    } */
-
     if (parse5Elm.tagName !== 'template') {
         ctx.throwOnNode(ParserDiagnostics.SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY, slotDataAttr);
     }

@@ -188,21 +188,26 @@ function s(
         !isUndefined(slotset.slotAssignments[slotName]) &&
         slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset.slotAssignments[slotName].flatMap((vnode) => {
+        children = slotset.slotAssignments[slotName].reduce((acc, vnode) => {
             // If the passed slot content is factory, evaluate it and use the produced vnodes
             if (vnode && isVScopedSlotContent(vnode)) {
                 const vmBeingRenderedInception = getVMBeingRendered();
-                if (!isUndefined(slotset.owner)) {
-                    // Evaluate in the scope of the slot content's owner
-                    setVMBeingRendered(slotset.owner);
+                let children: VNodes = [];
+                try {
+                    if (!isUndefined(slotset.owner)) {
+                        // Evaluate in the scope of the slot content's owner
+                        setVMBeingRendered(slotset.owner);
+                    }
+                    children = vnode.factory(data.slotData);
+                } finally {
+                    setVMBeingRendered(vmBeingRenderedInception);
                 }
-                const children = vnode.factory(data.slotData);
-                setVMBeingRendered(vmBeingRenderedInception);
-                return children;
+                return acc.concat(children);
             } else {
-                return vnode;
+                // If the slot content is a static list of child nodes provided by the parent, nothing to do
+                return acc.concat(vnode);
             }
-        });
+        }, [] as VNodes);
     }
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
