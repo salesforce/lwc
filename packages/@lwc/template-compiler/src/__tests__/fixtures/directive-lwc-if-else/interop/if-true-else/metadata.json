@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1165,
+            "message": "LWC1165: 'lwc:else' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 62,
+                "length": 35
+            }
+        }
+    ]
+}

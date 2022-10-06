@@ -80,43 +80,54 @@ export interface EventListener extends BaseNode {
     handler: Expression;
 }
 
-export interface Directive extends BaseNode {
+export interface Directive<
+    T extends keyof typeof ElementDirectiveName | keyof typeof RootDirectiveName
+> extends BaseNode {
     type: 'Directive';
-    name: string;
+    name: T;
     value: Expression | Literal;
 }
 
-export interface KeyDirective extends Directive {
-    name: 'Key';
+export interface KeyDirective extends Directive<'Key'> {
     value: Expression;
 }
 
-export interface DynamicDirective extends Directive {
-    name: 'Dynamic';
+export interface DynamicDirective extends Directive<'Dynamic'> {
     value: Expression;
 }
 
-export interface DomDirective extends Directive {
-    name: 'Dom';
+export interface DomDirective extends Directive<'Dom'> {
     value: Literal<'manual'>;
 }
 
-export interface InnerHTMLDirective extends Directive {
-    name: `InnerHTML`;
+export interface SpreadDirective extends Directive<'Spread'> {
+    value: Expression;
+}
+
+export interface InnerHTMLDirective extends Directive<'InnerHTML'> {
     value: Expression | Literal<string>;
 }
 
-export interface RenderModeDirective extends Directive {
-    name: 'RenderMode';
+export interface RenderModeDirective extends Directive<'RenderMode'> {
     value: Literal<LWCDirectiveRenderMode>;
 }
 
-export interface PreserveCommentsDirective extends Directive {
-    name: 'PreserveComments';
+export interface PreserveCommentsDirective extends Directive<'PreserveComments'> {
     value: Literal<boolean>;
 }
 
-export type ElementDirective = KeyDirective | DynamicDirective | DomDirective | InnerHTMLDirective;
+export interface RefDirective extends Directive<'Ref'> {
+    value: Literal<string>;
+}
+
+export type ElementDirective =
+    | KeyDirective
+    | DynamicDirective
+    | DomDirective
+    | InnerHTMLDirective
+    | RefDirective
+    | SpreadDirective;
+
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
@@ -171,10 +182,38 @@ interface DirectiveParentNode extends BaseParentNode {
     directiveLocation: SourceLocation;
 }
 
+/**
+ * Node representing the if:true and if:false directives
+ */
 export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
     condition: Expression;
+}
+
+/**
+ * Node representing the lwc:if directive
+ */
+export interface IfBlock extends DirectiveParentNode {
+    type: 'IfBlock';
+    condition: Expression;
+    else?: ElseifBlock | ElseBlock;
+}
+
+/**
+ * Node representing the lwc:elseif directive
+ */
+export interface ElseifBlock extends DirectiveParentNode {
+    type: 'ElseifBlock';
+    condition: Expression;
+    else?: ElseifBlock | ElseBlock;
+}
+
+/**
+ * Node representing the lwc:else directive
+ */
+export interface ElseBlock extends DirectiveParentNode {
+    type: 'ElseBlock';
 }
 
 export interface ForEach extends DirectiveParentNode {
@@ -192,8 +231,39 @@ export interface ForOf extends DirectiveParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | BaseElement;
+export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement;
 
-export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
+export type ChildNode =
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
 
-export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
+export type Node =
+    | Root
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
+
+export enum ElementDirectiveName {
+    Dom = 'lwc:dom',
+    Dynamic = 'lwc:dynamic',
+    InnerHTML = 'lwc:inner-html',
+    Ref = 'lwc:ref',
+    Spread = 'lwc:spread',
+    Key = 'key',
+}
+
+export enum RootDirectiveName {
+    PreserveComments = 'lwc:preserve-comments',
+    RenderMode = 'lwc:render-mode',
+}

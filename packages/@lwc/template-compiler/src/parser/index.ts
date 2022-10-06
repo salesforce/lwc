@@ -30,7 +30,12 @@ import {
     LWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     If,
+    IfBlock,
+    ElseBlock,
+    ElseifBlock,
     Property,
+    ElementDirectiveName,
+    RootDirectiveName,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -58,10 +63,8 @@ import {
     IF_RE,
     ITERATOR_RE,
     KNOWN_HTML_AND_SVG_ELEMENTS,
-    LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
     LWC_RE,
-    ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
@@ -253,13 +256,18 @@ function parseElementDirectives(
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
-    const parsers = [parseForEach, parseForOf, parseIf];
+    const parsers = [
+        parseIfBlock,
+        parseElseifBlock,
+        parseElseBlock,
+        parseForEach,
+        parseForOf,
+        parseIf,
+    ];
     for (const parser of parsers) {
         const prev = current || parent;
-        const node = parser(ctx, parsedAttr, parse5ElmLocation);
+        const node = parser(ctx, parsedAttr, parse5ElmLocation, prev);
         if (node) {
-            ctx.addNodeCurrentScope(node);
-            prev.children.push(node);
             current = node;
         }
     }
@@ -291,7 +299,7 @@ function parseBaseElement(
     }
 
     if (element) {
-        ctx.addNodeCurrentScope(element);
+        ctx.addNodeCurrentElementScope(element);
         parent.children.push(element);
     }
 
@@ -306,21 +314,43 @@ function parseChildren(
 ): void {
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
+    ctx.beginSiblingScope();
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                ctx.beginScope();
+                ctx.beginElementScope();
                 parseElement(ctx, child, parent, parse5ParentLocation);
-                ctx.endScope();
+
+                // If we're parsing a chain of if/elseif/else nodes, any node other than
+                // an else-if node ends the chain.
+                const node = ctx.endElementScope();
+                if (
+                    node &&
+                    ctx.isParsingSiblingIfBlock() &&
+                    !ast.isIfBlock(node) &&
+                    !ast.isElseifBlock(node)
+                ) {
+                    ctx.endIfChain();
+                }
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
+                // Non whitespace text nodes end any if chain we may be parsing
+                if (ctx.isParsingSiblingIfBlock() && textNodes.length > 0) {
+                    ctx.endIfChain();
+                }
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
                 parent.children.push(commentNode);
+                // If preserveComments is enabled, comments become syntactically meaningful and
+                // end any if chain we may be parsing
+                if (ctx.isParsingSiblingIfBlock() && ctx.preserveComments) {
+                    ctx.endIfChain();
+                }
             }
         });
     }
+    ctx.endSiblingScope();
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
@@ -442,11 +472,22 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 function parseIf(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
+    parent: ParentNode
 ): If | undefined {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
         return;
+    }
+
+    // if:true cannot be used with lwc:if, lwc:elseif, lwc:else
+    const incompatibleDirective = ctx.findInCurrentElementScope(ast.isConditionalBlock);
+    if (incompatibleDirective) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE,
+            ast.sourceLocation(parse5ElmLocation),
+            [ifAttribute.name]
+        );
     }
 
     if (!ast.isExpression(ifAttribute.value)) {
@@ -458,12 +499,167 @@ function parseIf(
         ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
 
-    return ast.ifNode(
+    const node = ast.ifNode(
         modifier,
         ifAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
         ifAttribute.location
     );
+
+    ctx.addNodeCurrentElementScope(node);
+    parent.children.push(node);
+
+    return node;
+}
+
+function parseIfBlock(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation,
+    parent: ParentNode
+): IfBlock | undefined {
+    const ifBlockAttribute = parsedAttr.pick('lwc:if');
+    if (!ifBlockAttribute) {
+        return;
+    }
+
+    if (!ast.isExpression(ifBlockAttribute.value)) {
+        ctx.throwOnNode(
+            ParserDiagnostics.IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION,
+            ifBlockAttribute
+        );
+    }
+
+    // An if block always starts a new chain.
+    if (ctx.isParsingSiblingIfBlock()) {
+        ctx.endIfChain();
+    }
+
+    const ifNode = ast.ifBlockNode(
+        ifBlockAttribute.value,
+        ast.sourceLocation(parse5ElmLocation),
+        ifBlockAttribute.location
+    );
+
+    ctx.addNodeCurrentElementScope(ifNode);
+    ctx.beginIfChain(ifNode);
+    parent.children.push(ifNode);
+
+    return ifNode;
+}
+
+function parseElseifBlock(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation,
+    _: ParentNode
+): ElseifBlock | undefined {
+    const elseifBlockAttribute = parsedAttr.pick('lwc:elseif');
+    if (!elseifBlockAttribute) {
+        return;
+    }
+
+    const hasIfBlock = ctx.findInCurrentElementScope(ast.isIfBlock);
+    if (hasIfBlock) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseifBlockAttribute.name]
+        );
+    }
+
+    if (!ast.isExpression(elseifBlockAttribute.value)) {
+        ctx.throwOnNode(
+            ParserDiagnostics.ELSEIF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION,
+            elseifBlockAttribute
+        );
+    }
+
+    const conditionalParent = ctx.getSiblingIfNode();
+    if (!conditionalParent || !ast.isConditionalParentBlock(conditionalParent)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseifBlockAttribute.name]
+        );
+    }
+
+    const elseifNode = ast.elseifBlockNode(
+        elseifBlockAttribute.value,
+        ast.sourceLocation(parse5ElmLocation),
+        elseifBlockAttribute.location
+    );
+
+    // Attach the node as a child of the preceding IfBlock
+    ctx.addNodeCurrentElementScope(elseifNode);
+    ctx.appendToIfChain(elseifNode);
+    conditionalParent.else = elseifNode;
+
+    return elseifNode;
+}
+
+function parseElseBlock(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation,
+    _: ParentNode
+): ElseBlock | undefined {
+    const elseBlockAttribute = parsedAttr.pick('lwc:else');
+    if (!elseBlockAttribute) {
+        return;
+    }
+
+    // Cannot be used with lwc:if on the same element
+    const hasIfBlock = ctx.findInCurrentElementScope(ast.isIfBlock);
+    if (hasIfBlock) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseBlockAttribute.name]
+        );
+    }
+
+    // Cannot be used with lwc:elseif on the same element
+    const hasElseifBlock = ctx.findInCurrentElementScope(ast.isElseifBlock);
+    if (hasElseifBlock) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseBlockAttribute.name]
+        );
+    }
+
+    // Must be used immediately after an lwc:if or lwc:elseif
+    const conditionalParent = ctx.getSiblingIfNode();
+    if (!conditionalParent || !ast.isConditionalParentBlock(conditionalParent)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseBlockAttribute.name]
+        );
+    }
+
+    // Must not have a value
+    if (!ast.isBooleanLiteral(elseBlockAttribute.value)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
+    const elseNode = ast.elseBlockNode(
+        ast.sourceLocation(parse5ElmLocation),
+        elseBlockAttribute.location
+    );
+
+    // Attach the node as a child of the preceding IfBlock
+    ctx.addNodeCurrentElementScope(elseNode);
+
+    // Avoid ending the if-chain until we finish parsing all children
+    ctx.appendToIfChain(elseNode);
+    conditionalParent.else = elseNode;
+
+    return elseNode;
 }
 
 function applyRootLwcDirectives(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
@@ -481,7 +677,7 @@ function applyLwcRenderModeDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcRenderModeAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
+    const lwcRenderModeAttribute = parsedAttr.pick(RootDirectiveName.RenderMode);
     if (!lwcRenderModeAttribute) {
         return;
     }
@@ -506,7 +702,7 @@ function applyLwcPreserveCommentsDirective(
     parsedAttr: ParsedAttribute,
     root: Root
 ): void {
-    const lwcPreserveCommentAttribute = parsedAttr.pick(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS);
+    const lwcPreserveCommentAttribute = parsedAttr.pick(RootDirectiveName.PreserveComments);
     if (!lwcPreserveCommentAttribute) {
         return;
     }
@@ -543,16 +739,16 @@ function applyLwcDirectives(
     }
 
     // Should not allow render mode or preserve comments on non root nodes
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE)) {
+    if (parsedAttr.get(RootDirectiveName.RenderMode)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            RootDirectiveName.RenderMode,
             `<${element.name}>`,
         ]);
     }
 
-    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS)) {
+    if (parsedAttr.get(RootDirectiveName.PreserveComments)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
+            RootDirectiveName.PreserveComments,
             `<${element.name}>`,
         ]);
     }
@@ -560,6 +756,32 @@ function applyLwcDirectives(
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
+    applyRefDirective(ctx, parsedAttr, element);
+    applyLwcSpreadDirective(ctx, parsedAttr, element);
+}
+
+function applyLwcSpreadDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+
+    const lwcSpread = parsedAttr.pick(ElementDirectiveName.Spread);
+    if (!lwcSpread) {
+        return;
+    }
+
+    if (!ctx.config.enableLwcSpread) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SPREAD, element);
+    }
+
+    const { value: lwcSpreadAttr } = lwcSpread;
+    if (!ast.isExpression(lwcSpreadAttr)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
+    }
+
+    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpreadAttr.location));
 }
 
 function applyLwcDynamicDirective(
@@ -569,7 +791,7 @@ function applyLwcDynamicDirective(
 ): void {
     const { name: tag } = element;
 
-    const lwcDynamicAttribute = parsedAttr.pick('lwc:dynamic');
+    const lwcDynamicAttribute = parsedAttr.pick(ElementDirectiveName.Dynamic);
     if (!lwcDynamicAttribute) {
         return;
     }
@@ -633,7 +855,7 @@ function applyLwcInnerHtmlDirective(
     parsedAttr: ParsedAttribute,
     element: BaseElement
 ): void {
-    const lwcInnerHtmlDirective = parsedAttr.pick(LWC_DIRECTIVES.INNER_HTML);
+    const lwcInnerHtmlDirective = parsedAttr.pick(ElementDirectiveName.InnerHTML);
 
     if (!lwcInnerHtmlDirective) {
         return;
@@ -662,10 +884,41 @@ function applyLwcInnerHtmlDirective(
     element.directives.push(ast.innerHTMLDirective(innerHTMLVal, lwcInnerHtmlDirective.location));
 }
 
+function applyRefDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const lwcRefDirective = parsedAttr.pick(ElementDirectiveName.Ref);
+
+    if (!lwcRefDirective) {
+        return;
+    }
+
+    if (ast.isSlot(element)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, element, [`<${element.name}>`]);
+    }
+
+    if (isInIteration(ctx)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_LOCATION_INSIDE_ITERATION, element, [
+            `<${element.name}>`,
+        ]);
+    }
+
+    const { value: refName } = lwcRefDirective;
+
+    if (!ast.isStringLiteral(refName) || refName.value.length === 0) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_VALUE, element, [`<${element.name}>`]);
+    }
+
+    element.directives.push(ast.refDirective(refName, lwcRefDirective.location));
+}
+
 function parseForEach(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
+    parent: ParentNode
 ): ForEach | undefined {
     const forEachAttribute = parsedAttr.pick('for:each');
     const forItemAttribute = parsedAttr.pick('for:item');
@@ -699,13 +952,18 @@ function parseForEach(
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
 
-        return ast.forEach(
+        const node = ast.forEach(
             forEachAttribute.value,
             ast.sourceLocation(parse5ElmLocation),
             forEachAttribute.location,
             item,
             index
         );
+
+        ctx.addNodeCurrentElementScope(node);
+        parent.children.push(node);
+
+        return node;
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
@@ -717,14 +975,15 @@ function parseForEach(
 function parseForOf(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
+    parent: ParentNode
 ): ForOf | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
         return;
     }
 
-    const hasForEach = ctx.findSibling(ast.isForEach);
+    const hasForEach = ctx.findInCurrentElementScope(ast.isForEach);
     if (hasForEach) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
@@ -744,17 +1003,22 @@ function parseForOf(
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
-    return ast.forOf(
+    const node = ast.forOf(
         iteratorExpression.value,
         iterator,
         ast.sourceLocation(parse5ElmLocation),
         iteratorExpression.location
     );
+
+    ctx.addNodeCurrentElementScope(node);
+    parent.children.push(node);
+
+    return node;
 }
 
 function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
-    const keyAttribute = parsedAttr.pick('key');
+    const keyAttribute = parsedAttr.pick(ElementDirectiveName.Key);
 
     if (keyAttribute) {
         if (!ast.isExpression(keyAttribute.value)) {
@@ -800,7 +1064,7 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
-    const hasDirectives = ctx.findSibling(ast.isForBlock) || ctx.findSibling(ast.isIf);
+    const hasDirectives = ctx.findInCurrentElementScope(ast.isElementDirective);
     if (hasDirectives) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
     }
@@ -841,8 +1105,8 @@ function parseSlot(
         }
     }
 
-    const alreadySeen = ctx.seenSlots.has(name);
-    ctx.seenSlots.add(name);
+    const alreadySeen = ctx.hasSeenSlot(name);
+    ctx.addSeenSlot(name);
 
     if (alreadySeen) {
         ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
@@ -1016,10 +1280,14 @@ function validateTemplate(
         ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
     }
 
-    if (parsedAttr.get(LWC_DIRECTIVES.INNER_HTML)) {
+    if (parsedAttr.get(ElementDirectiveName.InnerHTML)) {
         ctx.throwAtLocation(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, location, [
             '<template>',
         ]);
+    }
+
+    if (parsedAttr.get(ElementDirectiveName.Ref)) {
+        ctx.throwAtLocation(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, location, ['<template>']);
     }
 
     // At this point in the parsing all supported attributes from a non root template element

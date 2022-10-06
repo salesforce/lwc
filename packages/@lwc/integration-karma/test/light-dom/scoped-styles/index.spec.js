@@ -1,9 +1,11 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
 import Other from 'x/other';
 import Switchable from 'x/switchable';
 import Unscoped from 'x/unscoped';
 import ShadowWithScoped from 'x/shadowWithScoped';
+import PseudoParent from 'x/pseudoParent';
 
 describe('Light DOM scoped CSS', () => {
     beforeAll(() => {
@@ -81,5 +83,14 @@ describe('Light DOM scoped CSS', () => {
         expect(
             getComputedStyle(elm.shadowRoot.querySelector('x-light-child div')).color
         ).not.toEqual('rgb(255, 0, 0)');
+    });
+
+    it('properly scopes pseudo-elements', () => {
+        const elm = createElement('x-pseudo-parent', { is: PseudoParent });
+        document.body.appendChild(elm);
+        const ids = extractDataIds(elm);
+
+        expect(getComputedStyle(ids.parentDiv, '::after').color).toEqual('rgb(255, 0, 0)');
+        expect(getComputedStyle(ids.childDiv, '::after').color).toEqual('rgb(0, 0, 0)');
     });
 });

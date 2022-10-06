@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-core",
-    "version": "2.23.6",
+    "version": "2.24.0",
     "description": "Core LWC engine APIs.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,8 +24,8 @@
         "types/"
     ],
     "dependencies": {
-        "@lwc/features": "2.23.6",
-        "@lwc/shared": "2.23.6"
+        "@lwc/features": "2.24.0",
+        "@lwc/shared": "2.24.0"
     },
     "devDependencies": {
         "observable-membrane": "2.0.0"

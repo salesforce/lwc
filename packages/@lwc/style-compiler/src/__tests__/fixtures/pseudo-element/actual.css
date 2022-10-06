@@ -1,2 +1,17 @@
 ::after {}
 h1::before {}
+
+/* Whitespace before `*::before` */
+*,  *::before {}
+
+/* Whitespace before `::before` */
+*,  ::before {}
+
+/* Whitespace before legacy `:before` */
+*,  :before {}
+
+/* Whitespace before `::before` is a descendant combinator */
+*,  .ancestor ::before {}
+
+/* No whitespace */
+*,::before {}
