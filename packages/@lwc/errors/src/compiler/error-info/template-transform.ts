@@ -838,4 +838,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_FOR_WITH_LWC_SLOT_DATA: {
+        code: 1178,
+        message: "Invalid usage of 'lwc:slot-data' in an iterator(for:each, for:of) block.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

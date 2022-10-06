@@ -1083,6 +1083,14 @@ function parseScopedSlotContent(
         ctx.throwOnNode(ParserDiagnostics.SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY, slotDataAttr);
     }
 
+    // lwc:slot-data cannot be used in combination with for:each or for:of directives
+    if (isInIteration(ctx)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_FOR_WITH_LWC_SLOT_DATA,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
     const slotDataAttrValue = slotDataAttr.value;
     if (!ast.isStringLiteral(slotDataAttrValue)) {
         ctx.throwOnNode(ParserDiagnostics.SLOT_DATA_VALUE_SHOULD_BE_STRING, slotDataAttr);

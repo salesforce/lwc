@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1178,
+            "message": "LWC1178: Invalid usage of 'lwc:slot-data' in an iterator(for:each, for:of) block.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 32,
+                "length": 168
+            }
+        }
+    ]
+}
