@@ -37,7 +37,7 @@ const SAUCE_BROWSERS = [
         label: 'sl_safari_latest',
         browserName: 'safari',
         browserVersion: 'latest',
-        platformName: 'macOS 12',
+        platformName: 'macOS 12', // Note: this must be updated when macOS releases new updates
     },
 ];
 
