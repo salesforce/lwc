@@ -239,7 +239,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const elm = new Ctor();
             document.body.appendChild(elm);
 
-            // TODO [#2984]: element is not upgraded
+            // TODO [#2970]: element is not upgraded
             expect(elm.shadowRoot).toBeNull();
             expect(elm.expectedTagName).toBeUndefined();
             // expect(elm.shadowRoot).not.toBeNull()
@@ -273,7 +273,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm2);
             expect(elm1.expectedTagName).toEqual('x-nonce8');
 
-            // TODO [#2984]: elm2 is not upgraded
+            // TODO [#2970]: elm2 is not upgraded
             expect(elm2.shadowRoot).toBeNull();
             expect(elm2.expectedTagName).toBeUndefined();
             // expect(elm2.shadowRoot).not.toBeNull()
@@ -287,7 +287,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm2);
             expect(elm2.expectedTagName).toEqual('x-nonce9');
 
-            // TODO [#2984]: elm1 is not upgraded
+            // TODO [#2970]: elm1 is not upgraded
             expect(elm1.shadowRoot).toBeNull();
             expect(elm1.expectedTagName).toBeUndefined();
             // expect(elm1.shadowRoot).not.toBeNull()
@@ -304,9 +304,18 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const upgradeCallback = () => {
                 upgradeCalled = true;
             };
-            expect(() => {
-                new Ctor(upgradeCallback);
-            }).toThrowError(/Failed to create custom element/);
+
+            if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+                // In scoped registry mode, we throw an error
+                expect(() => {
+                    new Ctor(upgradeCallback);
+                }).toThrowError(
+                    /Failed to create custom element: the provided constructor is not a constructor\./
+                );
+            } else {
+                // In non-scoped registry mode, we just silently ignore the upgradeCallback
+                document.body.appendChild(new Ctor(upgradeCallback));
+            }
             expect(upgradeCalled).toEqual(false);
         });
 

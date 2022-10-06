@@ -33,13 +33,8 @@ const createUpgradableConstructor = (
                 // so we can ignore their lifecycle hooks
                 elementsUpgradedOutsideLWC.add(this);
 
-                if (!isUndefined(upgradeCallback)) {
-                    // This will only happen if someone is doing something zany like passing their own
-                    // custom upgradeCallback into the Ctor.
-                    throw new Error(
-                        'Failed to create custom element: upgradeCallback should either be undefined or registered'
-                    );
-                }
+                // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
+                // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
             }
         }
         connectedCallback() {
