@@ -18,27 +18,35 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_chrome_latest',
         browserName: 'chrome',
-        version: 'latest',
+        browserVersion: 'latest',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
     },
-    // TODO [#3083]: re-enable Firefox tests
-    // {
-    //     label: 'sl_firefox_latest',
-    //     browserName: 'firefox',
-    //     version: '103',
-    //     compat: false,
-    //     nativeShadowCompatible: true,
-    //     test_hydration: true,
-    // },
+    // TODO [#3083]: Update to latest firefox and geckodriver.
+    // Pin firefox version to 105 and geckodriver to 0.30.0 for now because of
+    // issues running the latest version of firefox with geckodriver > 0.30.0
+    // in saucelabs.
+    // https://saucelabs.com/blog/update-firefox-tests-before-oct-4-2022
     {
-        label: 'sl_safari_latest',
-        browserName: 'safari',
-        version: 'latest',
+        label: 'sl_firefox_latest',
+        browserName: 'firefox',
+        browserVersion: '105',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
+        sauceOptions: {
+            geckodriverVersion: '0.30.0',
+        },
+    },
+    {
+        label: 'sl_safari_latest',
+        browserName: 'safari',
+        browserVersion: 'latest',
+        compat: false,
+        nativeShadowCompatible: true,
+        test_hydration: true,
+        platformName: 'macOS 12', // Note: this must be updated when macOS releases new updates
     },
 
     // Compat browsers
@@ -56,14 +64,6 @@ const SAUCE_BROWSERS = [
         compat: true,
         nativeShadowCompatible: false,
     },
-    // TODO [#3083]: re-enable Firefox tests
-    // {
-    //     label: 'sl_firefox_compat',
-    //     browserName: 'firefox',
-    //     version: '54',
-    //     compat: true,
-    //     nativeShadowCompatible: false,
-    // },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
