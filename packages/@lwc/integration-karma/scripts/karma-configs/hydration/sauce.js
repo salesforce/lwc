@@ -24,6 +24,7 @@ const SAUCE_BROWSERS = [
     // Pin firefox version to 105 and geckodriver to 0.30.0 for now because of
     // issues running the latest version of firefox with geckodriver > 0.30.0
     // in saucelabs.
+    // https://saucelabs.com/blog/update-firefox-tests-before-oct-4-2022
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',

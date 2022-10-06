@@ -27,6 +27,7 @@ const SAUCE_BROWSERS = [
     // Pin firefox version to 105 and geckodriver to 0.30.0 for now because of
     // issues running the latest version of firefox with geckodriver > 0.30.0
     // in saucelabs.
+    // https://saucelabs.com/blog/update-firefox-tests-before-oct-4-2022
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
@@ -52,35 +53,22 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_ie11',
         browserName: 'internet explorer',
-        browserVersion: '11',
+        version: '11',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_chrome_compat',
         browserName: 'chrome',
-        browserVersion: '59',
+        version: '59',
         compat: true,
         nativeShadowCompatible: false,
-    },
-    // TODO [#3083]: Update to latest geckodriver.
-    // Pin geckodriver to 0.30.0 for now because of issues running
-    // the latest version of firefox with geckodriver > 0.30.0 in saucelabs.
-    {
-        label: 'sl_firefox_compat',
-        browserName: 'firefox',
-        browserVersion: '54',
-        compat: true,
-        nativeShadowCompatible: false,
-        sauceOptions: {
-            geckodriverVersion: '0.30.0',
-        },
     },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        browserVersion: '10',
-        platformName: 'OS X 10.11',
+        version: '10',
+        platform: 'OS X 10.11',
         compat: true,
         nativeShadowCompatible: false,
     },

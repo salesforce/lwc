@@ -73,14 +73,34 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
 
         browsers: browsers.map((browser) => browser.label),
         customLaunchers: browsers.reduce((acc, browser) => {
-            const { label, browserName, platformName, browserVersion, sauceOptions } = browser;
+            // Karma-sauce-launcher uses the browserVersion key to determine if the format is W3C or JWP (deprecated).
+            // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/utils.ts#L15-L18
+            // Standard karma tests need to be in W3C in order to pass the sauce:options.
+            // Compat tests need to be in JWP format to utilize older browser versions.
+            // Details about W3C and JWP formats: https://saucelabs.com/platform/platform-configurator
+            const {
+                label,
+                browserName,
+                // platformName is only applicable for W3C
+                platformName,
+                // platform is only applicable for JWP
+                platform,
+                // browserVersion is only applicable for W3C
+                browserVersion,
+                // version is only applicable for JWP
+                version,
+                // sauce:options is only applicable for W3C
+                sauceOptions,
+            } = browser;
             return {
                 ...acc,
                 [label]: {
                     base: 'SauceLabs',
                     browserName,
                     platformName,
+                    platform,
                     browserVersion,
+                    version,
                     'sauce:options': sauceOptions,
                 },
             };
