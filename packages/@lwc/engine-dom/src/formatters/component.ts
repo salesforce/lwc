@@ -6,7 +6,7 @@
  */
 
 import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
-import { isUndefined, ownKeys } from '@lwc/shared';
+import { isUndefined, keys } from '@lwc/shared';
 
 /**
  * Displays the header for a custom element.
@@ -34,7 +34,7 @@ function getHeaderForComponentInstance(
     componentInstance: LightningElement,
     debugInfo: Record<symbol, any>
 ) {
-    if (ownKeys(debugInfo).length === 0) {
+    if (keys(debugInfo).length === 0) {
         // there is no debug information, no need to customize this component instance
         return null;
     }

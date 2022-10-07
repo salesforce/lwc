@@ -21,7 +21,7 @@ import { updateComponentValue } from './update-component-value';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
-const WIRE_DEBUG_ENTRY = Symbol.for('@wire');
+const WIRE_DEBUG_ENTRY = '@wire';
 
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
 
@@ -34,7 +34,7 @@ interface WireDebugInfo {
     data?: any;
     config?: ConfigValue;
     context?: ContextValue;
-    isDataProvisionedForConfig: boolean;
+    wasDataProvisionedForConfig: boolean;
 }
 
 export class WireContextRegistrationEvent extends CustomEvent<undefined> {
@@ -169,12 +169,12 @@ function createConnector(
     let debugInfo: WireDebugInfo;
 
     if (process.env.NODE_ENV !== 'production') {
-        const wireSymbol = Symbol(`@wire ${isUndefined(method) ? name : method.name}`);
+        const wiredPropOrMethod = isUndefined(method) ? name : method.name;
 
         debugInfo = create(null) as WireDebugInfo;
 
-        debugInfo.isDataProvisionedForConfig = false;
-        vm.debugInfo![WIRE_DEBUG_ENTRY][wireSymbol] = debugInfo;
+        debugInfo.wasDataProvisionedForConfig = false;
+        vm.debugInfo![WIRE_DEBUG_ENTRY][wiredPropOrMethod] = debugInfo;
     }
 
     const fieldOrMethodCallback = isUndefined(method)
@@ -188,7 +188,7 @@ function createConnector(
             // Note: most of the time, the data provided is for the current config, but there may be
             // some conditions in which it does not, ex:
             // race conditions in a poor network while the adapter does not cancel a previous request.
-            debugInfo.isDataProvisionedForConfig = true;
+            debugInfo.wasDataProvisionedForConfig = true;
         }
 
         fieldOrMethodCallback(value);
@@ -228,7 +228,7 @@ function createConnector(
                 if (process.env.NODE_ENV !== 'production') {
                     debugInfo.config = config;
                     debugInfo.context = context;
-                    debugInfo.isDataProvisionedForConfig = false;
+                    debugInfo.wasDataProvisionedForConfig = false;
                 }
 
                 connector.update(config, context);

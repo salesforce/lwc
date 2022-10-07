@@ -142,12 +142,12 @@ describe('Lightning Element formatter', () => {
         // expect(debugInfo[1].object).not.toBeNull();
         expect(debugInfo[1].object).toMatchInlineSnapshot(`
             {
-              Symbol(@wire): {
-                Symbol(@wire foo): {
+              "@wire": {
+                "foo": {
                   "config": {},
                   "context": undefined,
                   "data": {},
-                  "isDataProvisionedForConfig": true,
+                  "wasDataProvisionedForConfig": true,
                 },
               },
             }

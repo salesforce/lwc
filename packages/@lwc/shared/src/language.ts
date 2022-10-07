@@ -20,8 +20,6 @@ const {
     setPrototypeOf,
 } = Object;
 
-const { ownKeys } = Reflect;
-
 const { isArray } = Array;
 
 const {
@@ -83,7 +81,6 @@ export {
     isArray,
     isFrozen,
     keys,
-    ownKeys,
     seal,
     setPrototypeOf,
     StringCharCodeAt,

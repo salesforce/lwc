@@ -174,7 +174,7 @@ export interface VM<N = HostNode, E = HostElement> {
 
     /**
      * Debug info bag. Stores useful debug information about the component. */
-    debugInfo?: Record<symbol, any>;
+    debugInfo?: Record<string, any>;
 }
 
 type VMAssociable = HostNode | LightningElement;
