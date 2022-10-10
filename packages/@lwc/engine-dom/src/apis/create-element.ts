@@ -111,7 +111,7 @@ export function createElement(
     // passing `sel` as a camel-case, which makes them invalid custom elements name
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
-    let wasComponentUpgraded: boolean = false;
+
     // the custom element from the registry is expecting an upgrade callback
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -129,7 +129,6 @@ export function createElement(
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
-        wasComponentUpgraded = true;
     };
 
     const connectedCallback = (elm: HTMLElement) => {
@@ -150,11 +149,5 @@ export function createElement(
         connectedCallback,
         disconnectedCallback
     );
-    if (!wasComponentUpgraded) {
-        /* eslint-disable-next-line no-console */
-        console.error(
-            `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
-        );
-    }
     return element;
 }

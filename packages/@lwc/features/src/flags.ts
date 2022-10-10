@@ -21,6 +21,7 @@ const features: FeatureFlagMap = {
     ENABLE_REACTIVE_SETTER: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: null,
+    ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {

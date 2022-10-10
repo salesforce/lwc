@@ -4,11 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setPrototypeOf } from '@lwc/shared';
-import { createPivotConstructor } from './create-pivot-constructor';
+import features from '@lwc/features';
 import { hasCustomElements } from './has-custom-elements';
+import { createCustomElementCompat } from './create-custom-element-compat';
+import { createCustomElementVanilla } from './create-custom-element-vanilla';
+import { createCustomElementScoped } from './create-custom-element-scoped';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
+/**
+ * We have three modes for creating custom elements:
+ *
+ * 1. Compat (legacy) browser support (e.g. IE11). Totally custom, doesn't rely on native browser APIs.
+ * 2. "Vanilla" custom elements registry. This system actually still allows us to have two LWC components with the
+ *    same tag name, via a simple trick: every custom element constructor we define in the registry is basically
+ *    the same. It's essentially a dummy `class extends HTMLElement` that accepts an `upgradeCallback` in its
+ *    constructor, which allows us to have completely customized functionality for different components.
+ * 3. "Scoped" (or "pivot") custom elements. This relies on a sophisticated system that emulates the "scoped custom
+ *    elements registry" proposal, with support for avoiding conflicts in tag names both between LWC components and
+ *    between LWC components and third-party elements. This uses a similar trick to #2, but is much more complex
+ *    because it must patch the global `customElements` and `HTMLElement` objects.
+ */
 export let createCustomElement: (
     tagName: string,
     upgradeCallback: LifecycleCallback,
@@ -17,71 +32,13 @@ export let createCustomElement: (
 ) => HTMLElement;
 
 if (hasCustomElements) {
-    // It's important to cache window.HTMLElement here. Otherwise, someone else could overwrite window.HTMLElement (e.g.
-    // another copy of the engine, or another pivot implementation) and we would get "Illegal constructor" errors
-    // because the HTMLElement prototypes are mixed up.
-    //
-    // The reason this happens is that the pivot implementation overwrites window.HTMLElement and expects to work
-    // with that version of HTMLElement. So if you load two copies of the pivot implementation in the same environment,
-    // the second one may accidentally grab window.HTMLElement from the first (when doing `class extends HTMLElement`).
-    // Caching avoids this problem.
-    const { HTMLElement } = window;
-
-    const createUserConstructor = (
-        upgradeCallback: LifecycleCallback,
-        connectedCallback: LifecycleCallback,
-        disconnectedCallback: LifecycleCallback
-    ) => {
-        // TODO [#2972]: this class should expose observedAttributes as necessary
-        return class UserElement extends HTMLElement {
-            constructor() {
-                super();
-                upgradeCallback(this);
-            }
-            connectedCallback() {
-                connectedCallback(this);
-            }
-            disconnectedCallback() {
-                disconnectedCallback(this);
-            }
-        };
-    };
-    createCustomElement = (
-        tagName: string,
-        upgradeCallback: LifecycleCallback,
-        connectedCallback: LifecycleCallback,
-        disconnectedCallback: LifecycleCallback
-    ) => {
-        const UserConstructor = createUserConstructor(
-            upgradeCallback,
-            connectedCallback,
-            disconnectedCallback
-        );
-        const UpgradableConstructor = createPivotConstructor(tagName, UserConstructor);
-        return new UpgradableConstructor(UserConstructor);
-    };
+    if (features.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+        createCustomElement = createCustomElementScoped;
+    } else {
+        // use global custom elements registry (vanilla)
+        createCustomElement = createCustomElementVanilla;
+    }
 } else {
     // no registry available here
-    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    const HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (!(this instanceof HTMLElement)) {
-            throw new TypeError(`Invalid Invocation`);
-        }
-        const { constructor } = this;
-        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!tagName) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        const elm = document.createElement(tagName);
-        setPrototypeOf(elm, constructor.prototype);
-        return elm;
-    };
-    HTMLElementConstructor.prototype = HTMLElement.prototype;
-
-    createCustomElement = (tagName: string, upgradeCallback: LifecycleCallback) => {
-        const elm = document.createElement(tagName);
-        upgradeCallback(elm); // nothing to do with the result for now
-        return elm;
-    };
+    createCustomElement = createCustomElementCompat;
 }
