@@ -24,7 +24,7 @@ function getHeaderForCustomElement(ce: HTMLElement, componentInstance: Lightning
         [
             'div',
             {},
-            ['span', { style: 'margin: 0 5px; color: red' }, 'LWC component instance:'],
+            ['span', { style: 'margin: 0 5px; color: red' }, 'LWC:'],
             ['object', { object: componentInstance }],
         ],
     ];
@@ -48,7 +48,7 @@ function getHeaderForComponentInstance(
         [
             'div',
             {},
-            ['span', { style: 'margin: 0 5px; color: red' }, 'Debug information:'],
+            ['span', { style: 'margin: 0 5px; color: red' }, 'Debug:'],
             ['object', { object: debugInfo }],
         ],
     ];
