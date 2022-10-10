@@ -100,6 +100,20 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             });
         }
 
+        if (!window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            // This test doesn't make sense for the scoped registry, because it uses a PivotCtor
+            // which is different from the UserCtor
+            it('elements have the same constructor as defined in the registry', () => {
+                const tagName = 'x-same-ctor-as-in-registry';
+                class Component extends HTMLElement {}
+                customElements.define(tagName, Component);
+
+                const elm = document.createElement(tagName);
+                expect(elm instanceof Component).toEqual(true);
+                expect(elm.constructor).toBe(Component);
+            });
+        }
+
         it('throws error for duplicate tag definition', () => {
             class Foo extends HTMLElement {}
 
