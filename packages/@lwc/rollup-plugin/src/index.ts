@@ -6,11 +6,18 @@
  */
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { URLSearchParams } from 'url';
-
+import { pool, WorkerPool } from 'workerpool';
 import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/compiler';
+import {
+    transformSync,
+    StylesheetConfig,
+    DynamicComponentConfig,
+    TransformResult,
+    TransformOptions,
+} from '@lwc/compiler';
 import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
@@ -33,6 +40,8 @@ export interface RollupLwcOptions {
     experimentalDynamicComponent?: DynamicComponentConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcSpread?: boolean;
+    /** If true, run compilation in parallel rather than on one thread */
+    parallel?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -45,6 +54,8 @@ const DEFAULT_MODULES = [
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
+
+let workerPool: WorkerPool | undefined;
 
 function isImplicitHTMLImport(importee: string, importer: string): boolean {
     return (
@@ -107,6 +118,25 @@ function transformWarningToRollupWarning(
     return result;
 }
 
+async function transform(
+    src: string,
+    filename: string,
+    options: TransformOptions,
+    parallel: boolean
+): Promise<TransformResult> {
+    if (parallel) {
+        if (!workerPool) {
+            // initialize worker pool on-demand
+            workerPool = pool(require.resolve('./worker.js'), {
+                // Default to CPUS-1 so there is one CPU left for Rollup itself
+                maxWorkers: os.cpus().length - 1,
+            });
+        }
+        return workerPool.exec('transform', [src, filename, options]);
+    }
+    return transformSync(src, filename, options);
+}
+
 export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
@@ -117,6 +147,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         preserveHtmlComments,
         experimentalDynamicComponent,
         enableLwcSpread,
+        parallel,
     } = pluginOptions;
 
     return {
@@ -197,7 +228,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             }
         },
 
-        transform(src, id) {
+        async transform(src, id) {
             // Filter user-land config and lwc import
             if (!filter(id)) {
                 return;
@@ -211,16 +242,21 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Extract module name and namespace from file path
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
-            const { code, map, warnings } = transformSync(src, id, {
-                name,
-                namespace,
-                outputConfig: { sourcemap },
-                stylesheetConfig,
-                experimentalDynamicComponent,
-                preserveHtmlComments,
-                scopedStyles: scoped,
-                enableLwcSpread,
-            });
+            const { code, map, warnings } = await transform(
+                src,
+                id,
+                {
+                    name,
+                    namespace,
+                    outputConfig: { sourcemap },
+                    stylesheetConfig,
+                    experimentalDynamicComponent,
+                    preserveHtmlComments,
+                    scopedStyles: scoped,
+                    enableLwcSpread,
+                },
+                Boolean(parallel)
+            );
 
             if (warnings) {
                 for (const warning of warnings) {

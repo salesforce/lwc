@@ -48,6 +48,7 @@ function createPreprocessor(config, emitter, logger) {
                     strict: true,
                 },
                 enableLwcSpread: true,
+                parallel: true,
             }),
         ];
 
