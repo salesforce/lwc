@@ -1,12 +1,12 @@
 {
     "name": "@lwc/perf-benchmarks-components",
-    "version": "2.25.0",
+    "version": "2.25.1",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "2.25.0"
+        "@lwc/rollup-plugin": "2.25.1"
     },
     "nx": {
         "targets": {
