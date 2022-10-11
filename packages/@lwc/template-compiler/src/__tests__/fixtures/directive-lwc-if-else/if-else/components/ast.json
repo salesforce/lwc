@@ -1,0 +1,156 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 108,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 97,
+                "end": 108
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 8,
+                    "name": "visible",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 15,
+                        "endLine": 2,
+                        "endColumn": 31,
+                        "start": 25,
+                        "end": 41
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 43,
+                    "start": 15,
+                    "end": 53
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 15,
+                    "endLine": 2,
+                    "endColumn": 31,
+                    "start": 25,
+                    "end": 41
+                },
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "c-custom",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 5,
+                            "endLine": 2,
+                            "endColumn": 43,
+                            "start": 15,
+                            "end": 53,
+                            "startTag": {
+                                "startLine": 2,
+                                "startColumn": 5,
+                                "endLine": 2,
+                                "endColumn": 32,
+                                "start": 15,
+                                "end": 42
+                            },
+                            "endTag": {
+                                "startLine": 2,
+                                "startColumn": 32,
+                                "endLine": 2,
+                                "endColumn": 43,
+                                "start": 42,
+                                "end": 53
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ],
+                "else": {
+                    "type": "ElseBlock",
+                    "location": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 43,
+                        "start": 58,
+                        "end": 96
+                    },
+                    "directiveLocation": {
+                        "startLine": 3,
+                        "startColumn": 19,
+                        "endLine": 3,
+                        "endColumn": 27,
+                        "start": 72,
+                        "end": 80
+                    },
+                    "children": [
+                        {
+                            "type": "Component",
+                            "name": "c-custom-alt",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 5,
+                                "endLine": 3,
+                                "endColumn": 43,
+                                "start": 58,
+                                "end": 96,
+                                "startTag": {
+                                    "startLine": 3,
+                                    "startColumn": 5,
+                                    "endLine": 3,
+                                    "endColumn": 28,
+                                    "start": 58,
+                                    "end": 81
+                                },
+                                "endTag": {
+                                    "startLine": 3,
+                                    "startColumn": 28,
+                                    "endLine": 3,
+                                    "endColumn": 43,
+                                    "start": 81,
+                                    "end": 96
+                                }
+                            },
+                            "attributes": [],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

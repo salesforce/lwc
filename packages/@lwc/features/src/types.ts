@@ -107,6 +107,11 @@ export interface FeatureFlagMap {
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
 
     /**
+     * Disables unscoped CSS in Light DOM
+     */
+    DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
+
+    /**
      * Flag to enable the "frozen template" feature. With this flag enabled, the template object
      * imported from HTML files is frozen and cannot be modified. E.g. this will throw:
      * ```js

@@ -1,0 +1,31 @@
+<template>
+    <slot name="outer-slot"></slot>
+    <template lwc:if={condition}>
+        <template lwc:if={nested}>
+            Conditional Nested Text
+            <slot name="nested-slot"></slot>
+        </template>
+        <template lwc:else>
+            <template lwc:if={doubleNested}>
+                Double Nested
+            </template>
+            <template lwc:elseif={doubleNestedAlt}>
+                <div lwc:if={tripleNested}>
+                    <div>
+                        Triple Nested Text
+                        <slot name="nested-slot"></slot>
+                    </div>
+                </div>
+            </template>
+            <template lwc:else>
+                Else
+                <slot name="nested-slot"></slot>
+            </template>
+        </template>
+        <slot name="conditional-slot"></slot>
+    </template>
+    <template lwc:else>
+        <slot name="conditional-slot"></slot>
+        <slot name="nested-slot"></slot>
+    </template>
+</template>

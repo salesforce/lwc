@@ -1,0 +1,8 @@
+<template>
+    <template lwc:if={visible.if}>
+        <h1>if condition</h1>
+    </template>
+    <template lwc:elseif={visible.elseif}>
+        <x-foo lwc:dynamic={trackedProp.foo}></x-foo>
+    </template>
+</template>
