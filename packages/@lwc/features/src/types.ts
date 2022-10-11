@@ -105,6 +105,11 @@ export interface FeatureFlagMap {
      *  - `Node.prototype.getRootNode`
      */
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
+
+    /**
+     * Disables unscoped CSS in Light DOM
+     */
+    DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
