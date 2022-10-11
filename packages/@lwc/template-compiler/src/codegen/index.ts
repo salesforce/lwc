@@ -64,7 +64,6 @@ import {
     objectToAST,
     shouldFlatten,
     memorizeHandler,
-    containsDynamicChildren,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -164,7 +163,7 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         if (shouldFlatten(codeGen, children)) {
-            if (children.length === 1 && !containsDynamicChildren(parent)) {
+            if (children.length === 1) {
                 return res[0];
             } else {
                 return codeGen.genFlatten([t.arrayExpression(res)]);

@@ -107,6 +107,11 @@ export interface FeatureFlagMap {
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
 
     /**
+     * Disables unscoped CSS in Light DOM
+     */
+    DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
+
+    /**
      * Flag to enable scoped custom element registry (aka pivots). This patches the global custom elements registry
      * to support having LWC components with the same tag name as third-party custom elements.
      *

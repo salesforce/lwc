@@ -6,14 +6,7 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import {
-    BaseElement,
-    ChildNode,
-    LWCDirectiveRenderMode,
-    Node,
-    ParentNode,
-    Root,
-} from '../shared/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -23,7 +16,6 @@ import {
     isElement,
     isText,
     isComment,
-    isIfBlock,
     isConditionalParentBlock,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
@@ -60,27 +52,6 @@ export function objectToAST(
     return t.objectExpression(
         Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key)))
     );
-}
-
-export function containsDynamicChildren(parent: ParentNode): boolean {
-    const hasDynamicChildren = parent.children.some((child) => {
-        // The child in the children array will only ever contain an IfBlock.
-        // ElseIfBlock and ElseBlock are chained together starting from the IfBlock.
-        if (isForBlock(child) || isIf(child) || isIfBlock(child)) {
-            return containsDynamicChildren(child);
-        }
-
-        return false;
-    });
-
-    // In order to check the if-elseif-else chain fully, if the parent is an IfBlock or ElseIfBlock
-    // the else branch must be checked as well.
-    const elseConditionHasDynamicChildren =
-        isConditionalParentBlock(parent) && parent.else
-            ? containsDynamicChildren(parent.else)
-            : false;
-
-    return hasDynamicChildren || elseConditionHasDynamicChildren;
 }
 
 /**
