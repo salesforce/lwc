@@ -308,7 +308,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-function computeHasScopedStyles(template: Template): boolean {
+export function computeHasScopedStyles(template: Template): boolean {
     const { stylesheets } = template;
     if (!isUndefined(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {

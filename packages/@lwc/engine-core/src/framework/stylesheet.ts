@@ -8,7 +8,7 @@ import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } fr
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
-import { Template } from './template';
+import { computeHasScopedStyles, Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
@@ -203,12 +203,15 @@ export function getScopeTokenClass(owner: VM): string | null {
 /**
  * This function returns the host style token for a custom element if it
  * exists. Otherwise it returns null.
+ *
+ * A host style token is applied to the component if scoped styles are used.
  */
 export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
-    const {
-        template: { stylesheetToken },
-    } = getComponentInternalDef(vnode.ctor);
-    return !isUndefined(stylesheetToken) ? makeHostToken(stylesheetToken) : null;
+    const { template } = getComponentInternalDef(vnode.ctor);
+    const { stylesheetToken } = template;
+    return computeHasScopedStyles(template) && !isUndefined(stylesheetToken)
+        ? makeHostToken(stylesheetToken)
+        : null;
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {
