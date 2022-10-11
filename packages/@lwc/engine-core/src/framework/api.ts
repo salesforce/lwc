@@ -21,6 +21,7 @@ import {
     isUndefined,
     StringReplace,
     toString,
+    ArrayConcat,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -193,19 +194,19 @@ function s(
             if (vnode && isVScopedSlotContent(vnode)) {
                 const vmBeingRenderedInception = getVMBeingRendered();
                 let children: VNodes = [];
+                if (!isUndefined(slotset.owner)) {
+                    // Evaluate in the scope of the slot content's owner
+                    setVMBeingRendered(slotset.owner);
+                }
                 try {
-                    if (!isUndefined(slotset.owner)) {
-                        // Evaluate in the scope of the slot content's owner
-                        setVMBeingRendered(slotset.owner);
-                    }
                     children = vnode.factory(data.slotData);
                 } finally {
                     setVMBeingRendered(vmBeingRenderedInception);
                 }
-                return acc.concat(children);
+                return ArrayConcat.call(acc, children);
             } else {
                 // If the slot content is a static list of child nodes provided by the parent, nothing to do
-                return acc.concat(vnode);
+                return ArrayConcat.call(acc, vnode);
             }
         }, [] as VNodes);
     }

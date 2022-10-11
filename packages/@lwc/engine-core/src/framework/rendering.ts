@@ -310,7 +310,7 @@ function mountCustomElement(
     applyStyleScoping(elm, owner, renderer);
 
     if (vm) {
-        allocateChildren(vnode, vm, owner);
+        allocateChildren(vnode, vm);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -364,7 +364,7 @@ function patchCustomElement(
         if (!isUndefined(vm)) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
-            allocateChildren(n2, vm, vm.owner!);
+            allocateChildren(n2, vm);
         }
 
         // in fallback mode, the children will be always empty, so, nothing
@@ -559,7 +559,7 @@ function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     }
 }
 
-export function allocateChildren(vnode: VCustomElement, vm: VM, owner: VM) {
+export function allocateChildren(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -577,7 +577,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM, owner: VM) {
     const { renderMode, shadowMode } = vm;
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children, owner);
+        allocateInSlot(vm, children, vnode.owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -625,10 +625,10 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         let slotName = '';
-        if (isVBaseElement(vnode) && !isUndefined(vnode.data.attrs?.slot)) {
-            slotName = vnode.data.attrs?.slot as string;
-        } else if (isVScopedSlotContent(vnode) && !isUndefined(vnode.slotName)) {
-            slotName = vnode.slotName;
+        if (isVBaseElement(vnode)) {
+            slotName = (vnode.data.attrs?.slot as string) ?? '';
+        } else if (isVScopedSlotContent(vnode)) {
+            slotName = vnode.slotName ?? '';
         }
 
         const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);

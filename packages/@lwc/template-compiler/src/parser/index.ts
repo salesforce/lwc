@@ -1070,7 +1070,7 @@ function parseScopedSlotContent(
     parent: ParentNode,
     parse5Elm: parse5.Element
 ): ScopedSlotContent | undefined {
-    const slotDataAttr = parsedAttr.pick('lwc:slot-data');
+    const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
     if (!slotDataAttr) {
         return;
     }
@@ -1437,7 +1437,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
     // Note: An assumption here that ScopedSlotContent is the last processed directive in parseElementDirectives()
     if (directive && ast.isScopedSlotContent(directive)) {
         const commentOrTextChild = directive.children.find(
-            (child) => ast.isComment(child) || ast.isText(child)
+            (child) => (ctx.preserveComments && ast.isComment(child)) || ast.isText(child)
         );
         if (commentOrTextChild) {
             ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, commentOrTextChild);

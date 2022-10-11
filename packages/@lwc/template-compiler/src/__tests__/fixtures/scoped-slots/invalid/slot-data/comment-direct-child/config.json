@@ -1,3 +1,4 @@
 {
-   "enableScopedSlots": true
+   "enableScopedSlots": true,
+   "preserveHtmlComments": true
 }
