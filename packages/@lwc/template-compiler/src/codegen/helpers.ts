@@ -16,6 +16,7 @@ import {
     isElement,
     isText,
     isComment,
+    isConditionalParentBlock,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -53,32 +54,24 @@ export function objectToAST(
     );
 }
 
-export function containsDynamicChildren(children: ChildNode[]): boolean {
-    return children.some((child) => {
-        if (isForBlock(child) || isIf(child)) {
-            return containsDynamicChildren(child.children);
-        }
-
-        return false;
-    });
-}
-
 /**
  * Returns true if the children should be flattened.
  *
- * Children should be flattened if they contain an iterator,
- * a dynamic directive or a slot inside a light dom element.
+ * This function searches through the children to determine if flattening needs to occur in the runtime.
+ * Children should be flattened if they contain an iterator, a dynamic directive or a slot inside a light dom element.
  */
 export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
-    return children.some(
-        (child) =>
+    return children.some((child) => {
+        return (
+            // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
-            (isParentNode(child) &&
-                // If node is only a control flow node and does not map to a stand alone element.
-                // Search children to determine if it should be flattened.
-                ((isIf(child) && shouldFlatten(codeGen, child.children)) ||
-                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
-    );
+            // light DOM slots
+            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
+            // If node is only a control flow node and does not map to a stand alone element.
+            // Search children to determine if it should be flattened.
+            (isIf(child) && shouldFlatten(codeGen, child.children))
+        );
+    });
 }
 
 /**
@@ -264,12 +257,17 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
     } else if (isComment(node)) {
         nodeIsStatic = true;
     } else {
-        // it is ForBlock | If | BaseElement
+        // it is ElseBlock | ForBlock | If | BaseElement
         node.children.forEach((childNode) => {
             collectStaticNodes(childNode, staticNodes, state);
 
             childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
         });
+
+        // for IfBlock and ElseifBlock, traverse down the else branch
+        if (isConditionalParentBlock(node) && node.else) {
+            collectStaticNodes(node.else, staticNodes, state);
+        }
 
         nodeIsStatic =
             isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);

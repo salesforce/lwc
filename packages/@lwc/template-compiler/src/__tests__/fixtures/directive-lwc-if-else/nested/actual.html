@@ -1,0 +1,13 @@
+<template>
+    <c-custom lwc:if={visible}></c-custom>
+    <c-custom-elseif lwc:elseif={elseif}>
+        If Text
+        <c-nested lwc:if={showNestedIf}>
+            <c-double-nested lwc:if={doubleNestedIf}></c-double-nested>
+            <c-double-nested-else lwc:else></c-double-nested-else>
+        </c-nested>
+        <c-nested-elseif lwc:elseif={elseifNested}></c-nested-elseif>
+        <c-nested-else lwc:else></c-nested-else>
+    </c-custom-elseif>
+    <c-custom-else lwc:else></c-custom-else>
+</template>

@@ -13,8 +13,9 @@ import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
-import { VNode } from './vnodes';
+import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { getComponentInternalDef } from './def';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -209,6 +210,17 @@ function getNearestShadowComponent(vm: VM): VM | null {
 export function getScopeTokenClass(owner: VM): string | null {
     const { cmpTemplate, context } = owner;
     return (context.hasScopedStyles && cmpTemplate?.stylesheetToken) || null;
+}
+
+/**
+ * This function returns the host style token for a custom element if it
+ * exists. Otherwise it returns null.
+ */
+export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
+    const {
+        template: { stylesheetToken },
+    } = getComponentInternalDef(vnode.ctor);
+    return !isUndefined(stylesheetToken) ? makeHostToken(stylesheetToken) : null;
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {

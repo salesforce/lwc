@@ -1,0 +1,133 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 142,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 131,
+                "end": 142
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 8,
+                    "name": "visible",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 15,
+                        "endLine": 2,
+                        "endColumn": 31,
+                        "start": 25,
+                        "end": 41
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 59,
+                    "start": 15,
+                    "end": 69
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 15,
+                    "endLine": 2,
+                    "endColumn": 31,
+                    "start": 25,
+                    "end": 41
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Conditional Text",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Conditional Text"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 32,
+                            "endLine": 2,
+                            "endColumn": 48,
+                            "start": 42,
+                            "end": 58
+                        }
+                    }
+                ],
+                "else": {
+                    "type": "ElseBlock",
+                    "location": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 40,
+                        "start": 95,
+                        "end": 130
+                    },
+                    "directiveLocation": {
+                        "startLine": 4,
+                        "startColumn": 15,
+                        "endLine": 4,
+                        "endColumn": 23,
+                        "start": 105,
+                        "end": 113
+                    },
+                    "children": [
+                        {
+                            "type": "Text",
+                            "raw": "Else!",
+                            "value": {
+                                "type": "Literal",
+                                "value": "Else!"
+                            },
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 24,
+                                "endLine": 4,
+                                "endColumn": 29,
+                                "start": 114,
+                                "end": 119
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "Comment",
+                "raw": " Comment ",
+                "value": " Comment ",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 21,
+                    "start": 74,
+                    "end": 90
+                }
+            }
+        ]
+    }
+}

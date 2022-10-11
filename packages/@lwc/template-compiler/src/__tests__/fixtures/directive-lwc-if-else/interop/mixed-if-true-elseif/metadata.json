@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1166,
+            "message": "LWC1166: 'if:true' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 74,
+                "length": 70
+            }
+        }
+    ]
+}

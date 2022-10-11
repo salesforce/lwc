@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1082,
+            "message": "LWC1082: Slot tag can't be associated with directives",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 56
+            }
+        },
+        {
+            "code": 1082,
+            "message": "LWC1082: Slot tag can't be associated with directives",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 76,
+                "length": 46
+            }
+        }
+    ]
+}
