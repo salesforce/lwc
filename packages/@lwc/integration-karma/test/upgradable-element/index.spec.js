@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import InteropParent from 'x/interopParent';
 import Interop from 'x/interop';
+import Interop2 from 'x/interop2';
 import Child from 'x/child';
 import DuplicateChild from 'x/dupChild';
 
@@ -57,18 +58,18 @@ it('should create elements with correct component behavior even when they share 
 // In compat mode, the custom registry is bypassed and an equivalent implementation is used,
 // the native registry restrictions are not applicable
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
-if (SUPPORTS_CUSTOM_ELEMENTS) {
+if (SUPPORTS_CUSTOM_ELEMENTS && window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
     describe('duplicate registration', () => {
         function testDuplicateNativeRegistration(testCase, tag, wcClazz) {
-            it(`should throw when registering a duplicate tag in custom element registry with ${testCase}`, () => {
+            it(`should not throw when registering a duplicate tag in custom element registry with ${testCase}`, () => {
                 // First time the x-interop tag will be registered
                 const interop = createElement(tag, { is: Interop });
                 document.body.appendChild(interop);
-                expect(() => {
-                    customElements.define(tag, wcClazz);
-                }).toThrowError(
-                    /'x-([a-z]|-)*' has already been defined as a custom element|the name "x-([a-z]|-)*" has already been used with this registry|Cannot define multiple custom elements with the same tag name/
-                );
+                customElements.define(tag, wcClazz);
+                const native = document.createElement(tag);
+                document.body.appendChild(native);
+                expect(interop.tagName.toLowerCase()).toEqual(tag);
+                expect(native.tagName.toLowerCase()).toEqual(tag);
             });
         }
         testDuplicateNativeRegistration(
@@ -82,16 +83,16 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             Interop.CustomElementConstructor
         );
 
-        function testDuplicateLwcRegistration(testCase, tag, wcClazz) {
-            it(`should log error when registering duplicate tag via lwc.createElement to override element registered with ${testCase}`, () => {
-                customElements.define(tag, wcClazz);
-                expect(() => {
-                    const element = createElement(tag, { is: Interop });
-                    // The element will still be created
-                    expect(element.tagName.toLowerCase()).toBe(tag);
-                }).toLogErrorDev(
-                    `Unexpected tag name "${tag}". This name is a registered custom element, preventing LWC to upgrade the element.`
-                );
+        function testDuplicateLwcRegistration(testCase, tag, WebComponentConstructor) {
+            it(`should register duplicate tag via lwc.createElement to override element registered with ${testCase}`, () => {
+                customElements.define(tag, WebComponentConstructor);
+                const customElement = document.createElement(tag);
+                document.body.appendChild(customElement);
+                const lwcElement = createElement(tag, { is: Interop });
+                document.body.appendChild(lwcElement);
+                // Both elements will be created with the same tag
+                expect(customElement.tagName.toLowerCase()).toEqual(tag);
+                expect(lwcElement.tagName.toLowerCase()).toEqual(tag);
             });
         }
         testDuplicateLwcRegistration(
@@ -102,7 +103,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         testDuplicateLwcRegistration(
             'CustomElementConstructor getter',
             'x-interop-lwc-wcclass',
-            Interop.CustomElementConstructor
+            // must use a different constructor or else this will fail because of the other test
+            Interop2.CustomElementConstructor
         );
     });
 }

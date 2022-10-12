@@ -10,10 +10,9 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
-    create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
     noop,
+    isFunction,
     HTML_NAMESPACE,
 } from '@lwc/shared';
 
@@ -33,6 +32,7 @@ import {
     HostValueKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import type { LifecycleCallback } from '@lwc/engine-core';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -51,28 +51,6 @@ function createElement(tagName: string, namespace?: string): HostElement {
         [HostAttributesKey]: [],
         [HostEventListenersKey]: {},
     };
-}
-
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElementImpl {
-    constructor() {
-        const { constructor } = this;
-        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!tagName) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        return createElement(tagName);
-    }
 }
 
 const isNativeShadowDefined: boolean = false;
@@ -388,27 +366,42 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
 
-function defineCustomElement(
-    name: string,
-    constructor: CustomElementConstructor,
-    _options?: ElementDefinitionOptions
-) {
-    registerCustomElement(name, constructor);
-}
-
-function getCustomElement(name: string): CustomElementConstructor | undefined {
-    return registry[name];
-}
-
-const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-
 /* noop */
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+
+type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
+
+const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
+
+function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
+    return function Ctor(upgradeCallback: LifecycleCallback) {
+        const elm = createElement(tagName);
+        if (isFunction(upgradeCallback)) {
+            upgradeCallback(elm); // nothing to do with the result for now
+        }
+        return elm;
+    };
+}
+
+function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
+    let ctor = localRegistryRecord.get(tagName);
+    if (!isUndefined(ctor)) {
+        return ctor;
+    }
+
+    ctor = createUpgradableElementConstructor(tagName);
+    localRegistryRecord.set(tagName, ctor);
+    return ctor;
+}
+
+function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
+    const UpgradableConstructor = getUpgradableElement(tagName);
+    return new (UpgradableConstructor as any)(upgradeCallback);
+}
 
 export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
-    HTMLElementExported,
     insert,
     remove,
     cloneNode,
@@ -416,6 +409,7 @@ export const renderer = {
     createElement,
     createText,
     createComment,
+    createCustomElement,
     nextSibling,
     attachShadow,
     getProperty,
@@ -443,6 +437,4 @@ export const renderer = {
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
-    defineCustomElement,
-    getCustomElement,
 };

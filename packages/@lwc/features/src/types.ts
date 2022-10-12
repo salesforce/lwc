@@ -110,6 +110,14 @@ export interface FeatureFlagMap {
      * Disables unscoped CSS in Light DOM
      */
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
+
+    /**
+     * Flag to enable scoped custom element registry (aka pivots). This patches the global custom elements registry
+     * to support having LWC components with the same tag name as third-party custom elements.
+     *
+     * If this flag is disabled, then LWC components with the same tag name as third-party custom elements may conflict.
+     */
+    ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -24,7 +24,6 @@ import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
-import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
     createVM,
@@ -38,6 +37,8 @@ import {
     ShadowMode,
     RenderMode,
     LwcDomMode,
+    connectRootElement,
+    disconnectRootElement,
 } from './vm';
 import {
     VNode,
@@ -289,7 +290,7 @@ function mountCustomElement(
     renderer: RendererAPI
 ) {
     const { sel, owner } = vnode;
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+    const { createCustomElement } = renderer;
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -297,10 +298,25 @@ function mountCustomElement(
      * an upgradable custom element.
      */
     let vm: VM | undefined;
-    const elm = new UpgradableConstructor((elm: HTMLElement) => {
+
+    const upgradeCallback = (elm: HTMLElement) => {
         // the custom element from the registry is expecting an upgrade callback
         vm = createViewModelHook(elm, vnode, renderer);
-    });
+    };
+
+    const connectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm);
+        }
+    };
+
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm);
+        }
+    };
+
+    const elm = createCustomElement(sel, upgradeCallback, connectedCallback, disconnectedCallback);
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -310,8 +326,6 @@ function mountCustomElement(
 
     if (vm) {
         allocateChildren(vnode, vm);
-    } else if (vnode.ctor !== UpgradableConstructor) {
-        throw new TypeError(`Incorrect Component Constructor`);
     }
 
     patchElementPropsAndAttrs(null, vnode, renderer);

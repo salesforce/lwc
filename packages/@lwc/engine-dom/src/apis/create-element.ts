@@ -4,14 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import {
+    assert,
+    assign,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    toString,
+    StringToLowerCase,
+} from '@lwc/shared';
 import features from '@lwc/features';
-import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getUpgradableConstructor,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -97,8 +105,13 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
-    let wasComponentUpgraded: boolean = false;
+    const { createCustomElement } = renderer;
+
+    // tagName must be all lowercase, unfortunately, we have legacy code that is
+    // passing `sel` as a camel-case, which makes them invalid custom elements name
+    // the following line guarantees that this does not leaks beyond this point.
+    const tagName = StringToLowerCase.call(sel);
+
     // the custom element from the registry is expecting an upgrade callback
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -106,9 +119,9 @@ export function createElement(
      * mechanism that only passes that argument if the constructor is known to be
      * an upgradable custom element.
      */
-    const element = new UpgradableConstructor((elm: HTMLElement) => {
+    const upgradeCallback = (elm: HTMLElement) => {
         createVM(elm, Ctor, renderer, {
-            tagName: sel,
+            tagName,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
@@ -116,13 +129,25 @@ export function createElement(
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
-        wasComponentUpgraded = true;
-    });
-    if (!wasComponentUpgraded) {
-        /* eslint-disable-next-line no-console */
-        console.error(
-            `Unexpected tag name "${sel}". This name is a registered custom element, preventing LWC to upgrade the element.`
-        );
-    }
+    };
+
+    const connectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm);
+        }
+    };
+
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm);
+        }
+    };
+
+    const element = createCustomElement(
+        tagName,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
     return element;
 }

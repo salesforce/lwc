@@ -51,6 +51,9 @@ commands:
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
+      enable_scoped_custom_element_registry:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -73,6 +76,7 @@ commands:
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
+            <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -160,6 +164,9 @@ commands:
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
+      enable_scoped_custom_element_registry:
+        type: boolean
+        default: false
       compat:
         type: boolean
         default: false
@@ -173,6 +180,7 @@ commands:
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
           enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
+          enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -232,8 +240,20 @@ jobs:
       - run_karma:
           enable_native_custom_element_lifecycle: true
       - run_karma:
+          enable_scoped_custom_element_registry: true
+      - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
+      - run_karma:
+          disable_synthetic: true
+          enable_scoped_custom_element_registry: true
+      - run_karma:
+          enable_native_custom_element_lifecycle: true
+          enable_scoped_custom_element_registry: true
+      - run_karma:
+          disable_synthetic: true
+          enable_native_custom_element_lifecycle: true
+          enable_scoped_custom_element_registry: true
       - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce
