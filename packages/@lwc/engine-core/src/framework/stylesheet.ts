@@ -209,7 +209,7 @@ export function getScopeTokenClass(owner: VM): string | null {
 export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
     const { template } = getComponentInternalDef(vnode.ctor);
     const { stylesheetToken } = template;
-    return computeHasScopedStyles(template) && !isUndefined(stylesheetToken)
+    return !isUndefined(stylesheetToken) && computeHasScopedStyles(template)
         ? makeHostToken(stylesheetToken)
         : null;
 }
