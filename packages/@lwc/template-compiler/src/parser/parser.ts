@@ -80,6 +80,9 @@ export default class ParserCtx {
 
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
+    /**
+     * This set is not aware of if-elseif-else blocks.
+     */
     readonly seenScopedSlots: Set<string> = new Set();
 
     /**

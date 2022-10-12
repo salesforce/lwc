@@ -1219,21 +1219,24 @@ function parseSlot(
     ctx.addSeenSlot(name);
 
     if (alreadySeen) {
-        // If slot name has been shared with a prior scoped slot, throw an error.
         // Scoped slots do not allow duplicate or mixed slots
         // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#restricting-ambigious-bindings
         // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#invalid-usages
+        // Note: ctx.seenScopedSlots is not "if" context aware and it does not need to be.
+        //   It is only responsible to determine if a scoped slot with the same name has been seen prior.
         if (ctx.seenScopedSlots.has(name)) {
             // Differentiate between mixed type or duplicate scoped slot
             const errorInfo = isScopedSlot
-                ? ParserDiagnostics.NO_DUPLICATE_SCOPED_SLOT
-                : ParserDiagnostics.NO_MIXED_SLOT_TYPES;
+                ? ParserDiagnostics.NO_DUPLICATE_SCOPED_SLOT // error
+                : ParserDiagnostics.NO_MIXED_SLOT_TYPES; // error
             ctx.throwAtLocation(errorInfo, location, [name === '' ? 'default' : `name="${name}"`]);
         } else {
+            // Differentiate between mixed type or duplicate standard slot
+            const errorInfo = isScopedSlot
+                ? ParserDiagnostics.NO_MIXED_SLOT_TYPES // error
+                : ParserDiagnostics.NO_DUPLICATE_SLOTS; // warning
             // for standard slots, preserve old behavior of warnings
-            ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
-                name === '' ? 'default' : `name="${name}"`,
-            ]);
+            ctx.warnAtLocation(errorInfo, location, [name === '' ? 'default' : `name="${name}"`]);
         }
     } else if (!isScopedSlot && isInIteration(ctx)) {
         // Scoped slots are allowed to be placed in iteration blocks

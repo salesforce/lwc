@@ -258,6 +258,9 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
+    /**
+     * Generates childs vnodes when slot content is static.
+     */
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         this.slotNames.add(slotName);
 
@@ -267,6 +270,13 @@ export default class CodeGen {
             children,
             t.identifier('$slotset'),
         ]);
+    }
+
+    /**
+     * Generates a factory function that inturn generates child vnodes for scoped slot content.
+     */
+    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.SimpleLiteral) {
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [callback, slotName]);
     }
 
     genTabIndex(children: [t.Expression]) {
@@ -356,10 +366,6 @@ export default class CodeGen {
                 t.identifier(`_sanitizedHtml$${instance}`)
             )
         );
-    }
-
-    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.SimpleLiteral) {
-        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [callback, slotName]);
     }
 
     private _renderApiCall(

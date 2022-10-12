@@ -45,7 +45,6 @@ import {
     ElementDirective,
     RootDirective,
     SlotBindDirective,
-    /* SlotDataDirective, */
     ScopedSlotContent,
     SlotDataDirective,
 } from './types';

@@ -393,6 +393,7 @@ export const ParserDiagnostics = {
         url: '',
     },
 
+    // TODO [#3100]: Update message to point to external documentation once available.
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
         message:

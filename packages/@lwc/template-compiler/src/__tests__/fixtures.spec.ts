@@ -15,7 +15,7 @@ import compiler, { Config } from '../index';
 describe('fixtures', () => {
     testFixtureDir(
         {
-            root: path.resolve(__dirname, 'fixtures'),
+            root: path.resolve(__dirname, 'fixtures', 'scoped-slots'),
             pattern: '**/actual.html',
         },
         ({ src, dirname }) => {
