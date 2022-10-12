@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
+import ParentWNoSlotContent from 'x/parentWNoSlotContent';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {
@@ -27,5 +28,13 @@ describe('scoped slots', () => {
         const spansFromLightDOM = child.querySelectorAll('span');
         expect(spansFromLightDOM[0]).toBe(spans[0]);
         expect(spansFromLightDOM[1]).toBe(spans[1]);
+    });
+
+    it('fallback to default content when no slot content provided by parent', () => {
+        const elm = createElement('x-component', { is: ParentWNoSlotContent });
+        document.body.appendChild(elm);
+
+        const child = elm.shadowRoot.querySelector('x-child-w-default-content');
+        expect(child.querySelector('span').innerHTML).toBe('default - Fallback Content');
     });
 });

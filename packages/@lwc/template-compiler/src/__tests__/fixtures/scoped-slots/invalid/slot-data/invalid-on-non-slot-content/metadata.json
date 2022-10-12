@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1176,
-            "message": "LWC1176: `lwc:slot-data` directive can be used on `<template>` elements only.",
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
             "level": 1,
             "location": {
                 "line": 2,
@@ -13,7 +13,7 @@
         },
         {
             "code": 1176,
-            "message": "LWC1176: `lwc:slot-data` directive can be used on `<template>` elements only.",
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
             "level": 1,
             "location": {
                 "line": 6,

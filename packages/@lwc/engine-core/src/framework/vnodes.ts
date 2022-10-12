@@ -17,7 +17,7 @@ export const enum VNodeType {
     CustomElement,
     Static,
     Fragment,
-    ScopedSlotContent,
+    ScopedSlotFragment,
 }
 
 export type VNode =
@@ -27,7 +27,7 @@ export type VNode =
     | VCustomElement
     | VStatic
     | VFragment
-    | VScopedSlotContent;
+    | VScopedSlotFragment;
 export type VParentElement = VElement | VCustomElement | VFragment;
 export type VNodes = Readonly<Array<VNode | null>>;
 
@@ -43,11 +43,10 @@ export interface BaseVNode {
     owner: VM;
 }
 
-export interface VScopedSlotContent extends BaseVNode {
-    // TODO [#9999]: should the factory return a VFragment instead?
+export interface VScopedSlotFragment extends BaseVNode {
     factory: (value: any) => VNodes;
-    type: VNodeType.ScopedSlotContent;
-    slotName?: string;
+    type: VNodeType.ScopedSlotFragment;
+    slotName: string;
 }
 
 export interface VStatic extends BaseVNode {
@@ -137,6 +136,6 @@ export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
 
-export function isVScopedSlotContent(vnode: VNode): vnode is VScopedSlotContent {
-    return vnode.type === VNodeType.ScopedSlotContent;
+export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
+    return vnode.type === VNodeType.ScopedSlotFragment;
 }

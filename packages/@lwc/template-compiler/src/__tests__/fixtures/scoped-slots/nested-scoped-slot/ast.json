@@ -89,7 +89,7 @@
                 "listeners": [],
                 "children": [
                     {
-                        "type": "ScopedSlotContent",
+                        "type": "ScopedSlotFragment",
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
@@ -182,7 +182,7 @@
                                         }
                                     },
                                     {
-                                        "type": "ScopedSlotContent",
+                                        "type": "ScopedSlotFragment",
                                         "location": {
                                             "startLine": 5,
                                             "startColumn": 17,
@@ -411,6 +411,10 @@
                                                 "start": 185,
                                                 "end": 207
                                             }
+                                        },
+                                        "slotName": {
+                                            "type": "Literal",
+                                            "value": ""
                                         }
                                     }
                                 ]
@@ -439,6 +443,10 @@
                                 "start": 55,
                                 "end": 74
                             }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": ""
                         }
                     }
                 ]

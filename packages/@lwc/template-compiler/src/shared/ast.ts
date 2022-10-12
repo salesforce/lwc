@@ -45,7 +45,7 @@ import {
     ElementDirective,
     RootDirective,
     SlotBindDirective,
-    ScopedSlotContent,
+    ScopedSlotFragment,
     SlotDataDirective,
 } from './types';
 
@@ -195,14 +195,14 @@ export function forOf(
     };
 }
 
-export function scopedSlotContent(
+export function scopedSlotFragment(
     identifier: Identifier,
     elementLocation: SourceLocation,
     directiveLocation: SourceLocation,
-    slotName?: Literal
-): ScopedSlotContent {
+    slotName: Literal
+): ScopedSlotFragment {
     return {
-        type: 'ScopedSlotContent',
+        type: 'ScopedSlotFragment',
         location: elementLocation,
         directiveLocation,
         children: [],
@@ -542,6 +542,6 @@ export function isProperty(node: BaseNode): node is Property {
     return node.type === 'Property';
 }
 
-export function isScopedSlotContent(node: BaseNode): node is ScopedSlotContent {
-    return node.type === 'ScopedSlotContent';
+export function isScopedSlotFragment(node: BaseNode): node is ScopedSlotFragment {
+    return node.type === 'ScopedSlotFragment';
 }

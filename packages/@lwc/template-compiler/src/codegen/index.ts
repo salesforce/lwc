@@ -30,7 +30,7 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
-    isScopedSlotContent,
+    isScopedSlotFragment,
     isSlotBindDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
@@ -49,7 +49,7 @@ import {
     ForOf,
     BaseElement,
     ElseifBlock,
-    ScopedSlotContent,
+    ScopedSlotFragment,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -162,8 +162,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
                 res.push(transformConditionalParentBlock(child));
-            } else if (isScopedSlotContent(child)) {
-                res.push(transformScopedSlotContent(child));
+            } else if (isScopedSlotFragment(child)) {
+                res.push(transformScopedSlotFragment(child));
             }
         }
 
@@ -178,23 +178,23 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function transformScopedSlotContent(scopedSlotContent: ScopedSlotContent): t.Expression {
+    function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
         const {
             slotName,
             directive: { value: dataIdentifier },
-        } = scopedSlotContent;
+        } = scopedSlotFragment;
         codeGen.beginScope();
         codeGen.declareIdentifier(dataIdentifier);
         // TODO [#9999]: Next Step: Return a VFragment
-        const fragment = transformChildren(scopedSlotContent);
+        const fragment = transformChildren(scopedSlotFragment);
         codeGen.endScope();
 
-        const slotContentFactory = t.functionExpression(
+        const slotFragmentFactory = t.functionExpression(
             null,
             [dataIdentifier],
             t.blockStatement([t.returnStatement(fragment)])
         );
-        return codeGen.getScopedSlotFactory(slotContentFactory, t.literal(slotName?.value ?? ''));
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {

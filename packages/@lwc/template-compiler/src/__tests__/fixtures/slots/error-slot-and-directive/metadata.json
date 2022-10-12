@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1082,
-            "message": "LWC1082: Slot tag can't be associated with for:each, for:of, if:true, if:flase, lwc:if, lwc:else, lwc:elseif template directives.",
+            "message": "LWC1082: Slot tag can't be associated with if:true, lwc:if, lwc:elseif, lwc:else, for:each, for:of template directives.",
             "level": 1,
             "location": {
                 "line": 3,

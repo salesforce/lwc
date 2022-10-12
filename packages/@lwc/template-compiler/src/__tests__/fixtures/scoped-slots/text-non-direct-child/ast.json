@@ -61,7 +61,7 @@
                 "listeners": [],
                 "children": [
                     {
-                        "type": "ScopedSlotContent",
+                        "type": "ScopedSlotFragment",
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
@@ -296,6 +296,10 @@
                                 "start": 42,
                                 "end": 62
                             }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": ""
                         }
                     }
                 ]

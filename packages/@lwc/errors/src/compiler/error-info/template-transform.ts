@@ -396,8 +396,7 @@ export const ParserDiagnostics = {
     // TODO [#3100]: Update message to point to external documentation once available.
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
-        message:
-            "Slot tag can't be associated with for:each, for:of, if:true, if:flase, lwc:if, lwc:else, lwc:elseif template directives.",
+        message: "Slot tag can't be associated with {0} template directives.",
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -759,7 +758,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_SLOT_BIND: {
         code: 1167,
         message:
-            'Invalid `lwc:slot-bind` usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
+            'Invalid lwc:slot-bind usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -767,7 +766,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_SLOT_DATA: {
         code: 1168,
         message:
-            'Invalid `lwc:slot-data` usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
+            'Invalid lwc:slot-data usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -775,7 +774,7 @@ export const ParserDiagnostics = {
     SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY: {
         code: 1169,
         message:
-            'Invalid `lwc:slot-bind` usage on <slot> element. Scoped slots usage is allowed in Light DOM templates only.',
+            'Invalid lwc:slot-bind usage on <slot> element. Scoped slots usage is allowed in Light DOM templates only.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -783,7 +782,7 @@ export const ParserDiagnostics = {
     INVALID_LWC_SLOT_BIND_LITERAL_PROP: {
         code: 1170,
         message:
-            'Invalid `lwc:slot-bind` usage on element "{0}". The directive binding must be an expression.',
+            'Invalid lwc:slot-bind usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -791,7 +790,7 @@ export const ParserDiagnostics = {
     INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT: {
         code: 1171,
         message:
-            'Invalid `lwc:slot-bind` usage on element "{0}". The directive can be used on a `<slot>` element only.',
+            'Invalid lwc:slot-bind usage on element "{0}". The directive can be used on a <slot> element only.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -812,22 +811,14 @@ export const ParserDiagnostics = {
 
     SLOT_DATA_VALUE_SHOULD_BE_STRING: {
         code: 1174,
-        message: '`lwc:slot-data` attribute value is expected to be a string.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    SCOPED_SLOT_DATA_IN_LIGHT_DOM_ONLY: {
-        code: 1175,
-        message:
-            'Invalid `lwc:slot-data` usage on <template> element. Scoped slots usage is allowed in Light DOM templates only.',
+        message: 'lwc:slot-data attribute value is expected to be a string.',
         level: DiagnosticLevel.Error,
         url: '',
     },
 
     SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY: {
         code: 1176,
-        message: '`lwc:slot-data` directive can be used on `<template>` elements only.',
+        message: 'lwc:slot-data directive can be used on <template> elements only.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -835,14 +826,23 @@ export const ParserDiagnostics = {
     NON_ELEMENT_SCOPED_SLOT_CONTENT: {
         code: 1177,
         message:
-            '`<template>` tag with `lwc:slot-data` directive cannot contain a comment or text node as a direct child.',
+            '<template> tag with lwc:slot-data directive cannot contain a comment or text node as a direct child.',
         level: DiagnosticLevel.Error,
         url: '',
     },
 
-    INVALID_FOR_WITH_LWC_SLOT_DATA: {
+    INVALID_PARENT_OF_LWC_SLOT_DATA: {
         code: 1178,
-        message: "Invalid usage of 'lwc:slot-data' in an iterator(for:each, for:of) block.",
+        message:
+            '<template> tag with lwc:slot-data directive must be the direct child of a custom element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    SCOPED_SLOTDATA_CANNOT_BE_COMBINED_WITH_OTHER_DIRECTIVE: {
+        code: 1179,
+        message:
+            'lwc:slot-data directive cannot be combined with other directives on the same <template> tag.',
         level: DiagnosticLevel.Error,
         url: '',
     },

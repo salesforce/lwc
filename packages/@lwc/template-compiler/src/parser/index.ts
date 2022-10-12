@@ -42,7 +42,8 @@ import {
     Property,
     ElementDirectiveName,
     RootDirectiveName,
-    ScopedSlotContent,
+    ScopedSlotFragment,
+    TemplateDirectiveName,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -277,7 +278,7 @@ function parseElementDirectives(
         parseForEach,
         parseForOf,
         parseIf,
-        parseScopedSlotContent,
+        parseScopedSlotFragment,
     ];
     for (const parser of parsers) {
         const prev = current || parent;
@@ -1063,30 +1064,44 @@ function parseForOf(
     return node;
 }
 
-function parseScopedSlotContent(
+function parseScopedSlotFragment(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
     parse5Elm: parse5.Element
-): ScopedSlotContent | undefined {
+): ScopedSlotFragment | undefined {
     const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
     if (!slotDataAttr) {
         return;
     }
 
     if (!ctx.config.enableScopedSlots) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, slotDataAttr);
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_DATA, slotDataAttr);
     }
 
     if (parse5Elm.tagName !== 'template') {
         ctx.throwOnNode(ParserDiagnostics.SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY, slotDataAttr);
     }
 
-    // lwc:slot-data cannot be used in combination with for:each or for:of directives
-    if (isInIteration(ctx)) {
+    // 'lwc:slot-data' cannot be combined with other directives on the same <template> tag
+    if (ctx.findInCurrentElementScope(ast.isElementDirective)) {
         ctx.throwAtLocation(
-            ParserDiagnostics.INVALID_FOR_WITH_LWC_SLOT_DATA,
+            ParserDiagnostics.SCOPED_SLOTDATA_CANNOT_BE_COMBINED_WITH_OTHER_DIRECTIVE,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
+    // <template lwc:slot-data> element should always be the direct child of a custom element
+    // The only exception is, a conditional block as parent
+    const parentCmp = ctx.findAncestor(
+        ast.isComponent,
+        ({ current }) => current && ast.isConditionalBlock(current)
+    );
+
+    if (!parentCmp) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_PARENT_OF_LWC_SLOT_DATA,
             ast.sourceLocation(parse5ElmLocation)
         );
     }
@@ -1109,11 +1124,11 @@ function parseScopedSlotContent(
     }
 
     const identifier = parseIdentifier(ctx, slotDataAttrValue.value, slotDataAttr.location);
-    const node = ast.scopedSlotContent(
+    const node = ast.scopedSlotFragment(
         identifier,
         ast.sourceLocation(parse5ElmLocation),
         slotDataAttr.location,
-        slotName
+        slotName ?? ast.literal('')
     );
     ctx.addNodeCurrentElementScope(node);
     parent.children.push(node);
@@ -1161,6 +1176,9 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
     }
 }
 
+const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName)
+    .filter((name) => name !== TemplateDirectiveName.ScopedSlotFragment)
+    .join(', ');
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1176,7 +1194,9 @@ function parseSlot(
     // Restrict specific template directives on <slot> element
     const hasDirectives = ctx.findInCurrentElementScope(ast.isElementDirective);
     if (hasDirectives) {
-        ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
+        ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location, [
+            RESTRICTED_DIRECTIVES_ON_SLOT,
+        ]);
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
@@ -1437,8 +1457,8 @@ function validateTemplate(
 }
 
 function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: ParentNode): void {
-    // Note: An assumption here that ScopedSlotContent is the last processed directive in parseElementDirectives()
-    if (directive && ast.isScopedSlotContent(directive)) {
+    // Note: An assumption here that ScopedSlotFragment is the last processed directive in parseElementDirectives()
+    if (directive && ast.isScopedSlotFragment(directive)) {
         const commentOrTextChild = directive.children.find(
             (child) => (ctx.preserveComments && ast.isComment(child)) || ast.isText(child)
         );

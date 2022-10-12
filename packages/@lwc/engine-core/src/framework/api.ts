@@ -45,8 +45,8 @@ import {
     VStatic,
     Key,
     VFragment,
-    isVScopedSlotContent,
-    VScopedSlotContent,
+    isVScopedSlotFragment,
+    VScopedSlotFragment,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -56,9 +56,9 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]coped [s]lot [f]actory
-function ssf(factory: (value: any) => VNodes, slotName?: string): VScopedSlotContent {
+function ssf(factory: (value: any) => VNodes, slotName: string): VScopedSlotFragment {
     return {
-        type: VNodeType.ScopedSlotContent,
+        type: VNodeType.ScopedSlotFragment,
         factory,
         owner: getVMBeingRendered()!,
         elm: undefined,
@@ -191,7 +191,7 @@ function s(
     ) {
         children = slotset.slotAssignments[slotName].reduce((acc, vnode) => {
             // If the passed slot content is factory, evaluate it and use the produced vnodes
-            if (vnode && isVScopedSlotContent(vnode)) {
+            if (vnode && isVScopedSlotFragment(vnode)) {
                 const vmBeingRenderedInception = getVMBeingRendered();
                 let children: VNodes = [];
                 if (!isUndefined(slotset.owner)) {
