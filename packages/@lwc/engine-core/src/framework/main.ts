@@ -39,7 +39,6 @@ export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
-export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 export { freezeTemplate } from './freeze-template';
@@ -48,7 +47,7 @@ export { freezeTemplate } from './freeze-template';
 export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
-export type { RendererAPI } from './renderer';
+export type { RendererAPI, LifecycleCallback } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
     ContextValue as WireContextValue,

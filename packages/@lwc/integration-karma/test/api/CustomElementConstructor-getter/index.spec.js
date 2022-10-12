@@ -10,13 +10,6 @@ import UndefinedComponent from 'x/undefinedComponent';
 // constructor.
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
-it('should return a custom element', () => {
-    class Test extends LightningElement {}
-    const TestCustomElement = Test.CustomElementConstructor;
-
-    expect(typeof TestCustomElement).toBe('function');
-});
-
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(
         TypeError,
@@ -25,6 +18,13 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
+    it('CustomElementConstructor should be a function', () => {
+        class Test extends LightningElement {}
+        const TestCustomElement = Test.CustomElementConstructor;
+
+        expect(typeof TestCustomElement).toBe('function');
+    });
+
     it('CustomElementConstructor cannot be `new`ed before being defined', () => {
         const func = () => {
             new UndefinedComponent.CustomElementConstructor();

@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Container from 'x/container';
 import Two from 'x/two';
@@ -36,5 +36,24 @@ describe('Light DOM styling at the global level', () => {
                 'rgb(0, 0, 0)'
             );
         }
+    });
+
+    describe('with flag set', () => {
+        beforeAll(() => {
+            setFeatureFlagForTest('DISABLE_LIGHT_DOM_UNSCOPED_CSS', true);
+        });
+
+        afterAll(() => {
+            setFeatureFlagForTest('DISABLE_LIGHT_DOM_UNSCOPED_CSS', false);
+        });
+        it('do not get applied', () => {
+            const elm = createElement('x-container', { is: Container });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogErrorDev(/Unscoped CSS is not supported in Light DOM/);
+            expect(getComputedStyle(elm.querySelector('x-one .globally-styled')).color).toEqual(
+                'rgb(0, 0, 0)'
+            );
+        });
     });
 });

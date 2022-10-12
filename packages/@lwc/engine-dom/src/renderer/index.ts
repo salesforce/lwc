@@ -7,69 +7,6 @@
 
 import { assert, isNull, isUndefined } from '@lwc/shared';
 
-let getCustomElement: any;
-let defineCustomElement: any;
-let HTMLElementConstructor;
-
-function isCustomElementRegistryAvailable() {
-    if (typeof customElements === 'undefined') {
-        return false;
-    }
-    try {
-        // dereference HTMLElement global because babel wraps globals in compat mode with a
-        // _wrapNativeSuper()
-        // This is a problem because LWCUpgradableElement extends renderer.HTMLElementExported which does not
-        // get wrapped by babel.
-        const HTMLElementAlias = HTMLElement;
-        // In case we use compat mode with a modern browser, the compat mode transformation
-        // invokes the DOM api with an .apply() or .call() to initialize any DOM api sub-classing,
-        // which are not equipped to be initialized that way.
-        class clazz extends HTMLElementAlias {}
-
-        customElements.define('lwc-test-' + Math.floor(Math.random() * 1000000), clazz);
-        new clazz();
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-if (isCustomElementRegistryAvailable()) {
-    getCustomElement = customElements.get.bind(customElements);
-    defineCustomElement = customElements.define.bind(customElements);
-    HTMLElementConstructor = HTMLElement;
-} else {
-    const registry: Record<string, CustomElementConstructor> = Object.create(null);
-    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    defineCustomElement = function define(name: string, ctor: CustomElementConstructor) {
-        if (name !== String.prototype.toLowerCase.call(name) || registry[name]) {
-            throw new TypeError(`Invalid Registration`);
-        }
-        registry[name] = ctor;
-        reverseRegistry.set(ctor, name);
-    };
-
-    getCustomElement = function get(name: string): CustomElementConstructor | undefined {
-        return registry[name];
-    };
-
-    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (!(this instanceof HTMLElement)) {
-            throw new TypeError(`Invalid Invocation`);
-        }
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        const elm = document.createElement(name);
-        Object.setPrototypeOf(elm, constructor.prototype);
-        return elm;
-    };
-    HTMLElementConstructor.prototype = HTMLElement.prototype;
-}
-
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
 }
@@ -304,10 +241,7 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
 
-const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
-
 export {
-    HTMLElementExported,
     insert,
     remove,
     cloneNode,
@@ -341,6 +275,4 @@ export {
     getLastElementChild,
     isConnected,
     assertInstanceOfHTMLElement,
-    defineCustomElement,
-    getCustomElement,
 };

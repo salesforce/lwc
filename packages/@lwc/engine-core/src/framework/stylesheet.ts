@@ -5,6 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+import features from '@lwc/features';
+
+import { logError } from '../shared/logger';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -128,6 +131,15 @@ function evaluateStylesheetsContent(
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
             const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
+
+            if (features.DISABLE_LIGHT_DOM_UNSCOPED_CSS) {
+                if (!isScopedCss && vm.renderMode === RenderMode.Light) {
+                    logError(
+                        'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
+                    );
+                    continue;
+                }
+            }
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =
                 isScopedCss ||
