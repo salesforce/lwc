@@ -94,12 +94,6 @@ export interface FeatureFlagMap {
     ENABLE_HTML_COLLECTIONS_PATCH: FeatureFlagValue;
 
     /**
-     * Flag to invoke the wire adapter update method right after the component is connected, instead
-     * of next tick. It only affects wire configurations that depend on component values.
-     */
-    ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
-
-    /**
      * Flag to fix `getRootNode` on elements slotted from root into Synthetic Shadow.
      * The following API is affected by this flag:
      *  - `Node.prototype.getRootNode`
