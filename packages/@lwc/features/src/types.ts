@@ -28,11 +28,6 @@ export interface FeatureFlagMap {
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
-     * LWC engine flag to make setter reactive.
-     */
-    ENABLE_REACTIVE_SETTER: FeatureFlagValue;
-
-    /**
      * LWC engine flag to enable hot module replacement. It allows to exchange, component
      * definition, template and stylesheets at runtime without having to reload the entire
      * application.
