@@ -16,7 +16,6 @@ import {
     isUndefined,
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 
 import {
     attachShadow as originalAttachShadow,
@@ -122,19 +121,11 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return innerHTMLGetterPatched.call(this);
-                }
-
-                return innerHTMLGetter.call(this);
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return innerHTMLGetterPatched.call(this);
             }
 
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return innerHTMLGetter.call(this);
-            }
-            return innerHTMLGetterPatched.call(this);
+            return innerHTMLGetter.call(this);
         },
         set(v: string) {
             innerHTMLSetter.call(this, v);
@@ -144,18 +135,10 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return outerHTMLGetterPatched.call(this);
-                }
-                return outerHTMLGetter.call(this);
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return outerHTMLGetterPatched.call(this);
             }
-
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return outerHTMLGetter.call(this);
-            }
-            return outerHTMLGetterPatched.call(this);
+            return outerHTMLGetter.call(this);
         },
         set(v: string) {
             outerHTMLSetter.call(this, v);
@@ -271,32 +254,18 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                // `this` is a manually inserted element inside a shadowRoot, return the first element.
-                return nodeList.length === 0 ? null : nodeList[0];
-            }
-
-            // Element is inside a shadow but we dont know which one. Use the
-            // "nearest" owner key to filter by ownership.
-            const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
-            const elm = ArrayFind.call(
-                nodeList,
-                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
-            );
-            return isUndefined(elm) ? null : elm;
+            // `this` is a manually inserted element inside a shadowRoot, return the first element.
+            return nodeList.length === 0 ? null : nodeList[0];
         }
     } else {
-        if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-            if (!(this instanceof HTMLBodyElement)) {
-                const elm = nodeList[0];
-                return isUndefined(elm) ? null : elm;
-            }
+        if (!(this instanceof HTMLBodyElement)) {
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
         }
 
         // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
-            // TODO [#1222]: remove global bypass
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
@@ -346,7 +315,6 @@ function getFilteredArrayOfNodes<T extends Node>(
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                // TODO [#1222]: remove global bypass
                 (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
@@ -379,18 +347,12 @@ defineProperties(Element.prototype, {
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    nodeList,
-                    ShadowDomSemantic.Disabled
-                );
-                return createStaticNodeList(filteredResults);
-            }
-
-            return createStaticNodeList(
-                getFilteredArrayOfNodes(this, nodeList, ShadowDomSemantic.Enabled)
+            const filteredResults = getFilteredArrayOfNodes(
+                this,
+                nodeList,
+                ShadowDomSemantic.Disabled
             );
+            return createStaticNodeList(filteredResults);
         },
         writable: true,
         enumerable: true,
@@ -410,18 +372,9 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,
@@ -433,18 +386,9 @@ if (process.env.NODE_ENV !== 'test') {
                     elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,
@@ -459,18 +403,9 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,

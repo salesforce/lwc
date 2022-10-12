@@ -49,7 +49,6 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
         // `context` is document.body which is already patched.
         filtered = ArrayFilter.call(
             unfilteredNodes,
-            // TODO [#1222]: remove global bypass
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
         );
     } else {
