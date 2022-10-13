@@ -638,7 +638,7 @@ function allocateInSlot(vm: VM, children: VNodes) {
         // Dive one level further if the content is wrapped in a VFragment
         if (isVFragment(vnode)) {
             // Since the VFragment children are delimited by empty text nodes, we can ignore those
-            allocateInSlot(vm, vnode.children.slice(1, -1));
+            allocateInSlot(vm, vnode.children);
             return;
         }
 
