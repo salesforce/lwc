@@ -10,10 +10,11 @@ export type HostElement = any;
 type N = HostNode;
 type E = HostElement;
 
+export type LifecycleCallback = (elm: E) => void;
+
 export interface RendererAPI {
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
-    HTMLElementExported: typeof HTMLElement;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;
     cloneNode: (node: N, deep: boolean) => N;
@@ -58,10 +59,10 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    defineCustomElement: (
-        name: string,
-        constructor: CustomElementConstructor,
-        options?: ElementDefinitionOptions
-    ) => void;
-    getCustomElement: (name: string) => CustomElementConstructor | undefined;
+    createCustomElement: (
+        tagName: string,
+        upgradeCallback: LifecycleCallback,
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback
+    ) => E;
 }

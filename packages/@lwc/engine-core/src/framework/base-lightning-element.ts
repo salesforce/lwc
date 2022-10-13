@@ -204,7 +204,9 @@ export const LightningElement: LightningElementConstructor = function (
 ): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
-        throw new ReferenceError('Illegal constructor');
+        // Thrown when doing something like `new LightningElement()` or
+        // `class Foo extends LightningElement {}; new Foo()`
+        throw new TypeError('Illegal constructor');
     }
 
     const vm = vmBeingConstructed;
