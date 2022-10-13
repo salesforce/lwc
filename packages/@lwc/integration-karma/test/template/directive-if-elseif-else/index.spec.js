@@ -148,8 +148,8 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     describe('slots', () => {
-        // Issue [#3107]
-        it.skip('should render content from named slot', () => {
+        // TODO [#3107]: named slot content wrapped in conditional directives don't work as expected.
+        xit('should render content from named slot', () => {
             const element = createElement('x-parent', { is: XparentWithNamedSlot });
             document.body.appendChild(element);
 
