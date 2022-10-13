@@ -276,7 +276,7 @@ export default class CodeGen {
      * Generates a factory function that inturn generates child vnodes for scoped slot content.
      */
     getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.SimpleLiteral) {
-        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [callback, slotName]);
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [slotName, callback]);
     }
 
     genTabIndex(children: [t.Expression]) {

@@ -22,23 +22,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_custom_element("x-child", _xChild, stc0, [
-      api_scoped_slot_factory(function (slot1data) {
+      api_scoped_slot_factory("slotname1", function (slot1data) {
         return [
           api_element("p", stc1, [api_text(api_dynamic_text(slot1data.name))]),
         ];
-      }, "slotname1"),
-      api_scoped_slot_factory(function (slot2data) {
+      }),
+      api_scoped_slot_factory("slotname2", function (slot2data) {
         return [
           api_element("p", stc2, [api_text(api_dynamic_text(slot2data.title))]),
         ];
-      }, "slotname2"),
-      api_scoped_slot_factory(function (defaultdata) {
+      }),
+      api_scoped_slot_factory("", function (defaultdata) {
         return [
           api_element("p", stc3, [
             api_text(api_dynamic_text(defaultdata.title)),
           ]),
         ];
-      }, ""),
+      }),
     ]),
   ];
   /*LWC compiler vX.X.X*/

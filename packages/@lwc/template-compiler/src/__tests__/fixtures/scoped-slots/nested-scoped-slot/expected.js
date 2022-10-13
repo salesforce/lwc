@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       [
-        api_scoped_slot_factory(function (row) {
+        api_scoped_slot_factory("", function (row) {
           return [
             api_custom_element(
               "x-row",
@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 1,
               },
               [
-                api_scoped_slot_factory(function (column) {
+                api_scoped_slot_factory("", function (column) {
                   return [
                     api_element("span", stc0, [
                       api_text(
@@ -47,11 +47,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       ),
                     ]),
                   ];
-                }, ""),
+                }),
               ]
             ),
           ];
-        }, ""),
+        }),
       ]
     ),
   ];

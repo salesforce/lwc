@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: api_key(0, parentItem),
       },
       [
-        api_scoped_slot_factory(function (item) {
+        api_scoped_slot_factory("", function (item) {
           return [
             api_element("div", stc0, [api_text(api_dynamic_text(parentItem))]),
             api_element("span", stc1, [
@@ -33,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ),
             ]),
           ];
-        }, ""),
+        }),
       ]
     );
   });

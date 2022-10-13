@@ -188,10 +188,10 @@ function parseElement(
     // Create an AST node for each LWC template directive and chain them into a parent child hierarchy
     const directive = parseElementDirectives(
         ctx,
-        parsedAttr,
-        parentNode,
+        parse5Elm,
         parse5ElmLocation,
-        parse5Elm
+        parentNode,
+        parsedAttr
     );
     // Create an AST node for the HTML element (excluding template tag elements) and add as child to parent
     const element = parseBaseElement(
@@ -274,16 +274,16 @@ const DIRECTIVE_PARSERS = [
 ];
 function parseElementDirectives(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
-    parent: ParentNode,
+    parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parse5Elm: parse5.Element
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
     for (const parser of DIRECTIVE_PARSERS) {
         const prev = current || parent;
-        const node = parser(ctx, parsedAttr, parse5ElmLocation, prev, parse5Elm);
+        const node = parser(ctx, parse5Elm, parse5ElmLocation, prev, parsedAttr);
         if (node) {
             current = node;
         }
@@ -487,9 +487,10 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 
 function parseIf(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): If | undefined {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
@@ -530,9 +531,10 @@ function parseIf(
 
 function parseIfBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): IfBlock | undefined {
     const ifBlockAttribute = parsedAttr.pick('lwc:if');
     if (!ifBlockAttribute) {
@@ -566,9 +568,10 @@ function parseIfBlock(
 
 function parseElseifBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    _: ParentNode
+    _parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ElseifBlock | undefined {
     const elseifBlockAttribute = parsedAttr.pick('lwc:elseif');
     if (!elseifBlockAttribute) {
@@ -616,9 +619,10 @@ function parseElseifBlock(
 
 function parseElseBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    _: ParentNode
+    _parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ElseBlock | undefined {
     const elseBlockAttribute = parsedAttr.pick('lwc:else');
     if (!elseBlockAttribute) {
@@ -964,9 +968,10 @@ function applyRefDirective(
 
 function parseForEach(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ForEach | undefined {
     const forEachAttribute = parsedAttr.pick('for:each');
     const forItemAttribute = parsedAttr.pick('for:item');
@@ -1022,9 +1027,10 @@ function parseForEach(
 
 function parseForOf(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ForOf | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
@@ -1066,10 +1072,10 @@ function parseForOf(
 
 function parseScopedSlotFragment(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parse5Elm: parse5.Element
+    parsedAttr: ParsedAttribute
 ): ScopedSlotFragment | undefined {
     const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
     if (!slotDataAttr) {
@@ -1177,6 +1183,7 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
 }
 
 const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
+const ALLOWED_SLOT_ATTRIBUTES = new Set<string>(['name', ElementDirectiveName.SlotBind]);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1201,7 +1208,7 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => !['name', ElementDirectiveName.SlotBind].includes(name))
+            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES.has(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {
@@ -1358,12 +1365,10 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
 }
 
 function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
-    if (parsedAttr.getAttributes().length) {
+    const rootAttrs = parsedAttr.getAttributes();
+    if (rootAttrs.length) {
         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root, [
-            parsedAttr
-                .getAttributes()
-                .map(({ name }) => name)
-                .join(','),
+            rootAttrs.map(({ name }) => name).join(','),
         ]);
     }
 

@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_custom_element("x-list", _xList, stc0, [
-      api_scoped_slot_factory(function (item) {
+      api_scoped_slot_factory("", function (item) {
         return [
           api_element("span", stc1, [
             api_text(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ]),
           api_static_fragment($fragment1(), 3),
         ];
-      }, ""),
+      }),
     ]),
   ];
   /*LWC compiler vX.X.X*/
