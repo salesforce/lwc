@@ -6,7 +6,7 @@
  */
 import { isUndefined } from '@lwc/shared';
 import features from '@lwc/features';
-import { createScopedRegistry, CreateScopedConstructor } from './create-scoped-registry';
+import { createScopedRegistry, CreateScopedConstructor } from '@lwc/scoped-registry';
 import { hasCustomElements } from './has-custom-elements';
 import type { LifecycleCallback } from '@lwc/engine-core';
 

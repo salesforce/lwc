@@ -12,7 +12,6 @@ import {
     isFunction,
     StringToLowerCase,
 } from '@lwc/shared';
-import { hasCustomElements } from './has-custom-elements';
 
 export type CreateScopedConstructor = (
     tagName: string,
@@ -24,12 +23,6 @@ export type CreateScopedConstructor = (
  * do not conflict with vanilla custom elements having the same tag name.
  */
 export function createScopedRegistry(): CreateScopedConstructor {
-    if (!hasCustomElements) {
-        // This code should never be reached, because we don't use the pivot registry if
-        // custom elements are unavailable.
-        throw new Error('Custom elements are not supported in this environment.');
-    }
-
     const { HTMLElement: NativeHTMLElement } = window;
     const {
         hasAttribute: nativeHasAttribute,
@@ -490,17 +483,17 @@ export function createScopedRegistry(): CreateScopedConstructor {
     HTMLElement.prototype = NativeHTMLElement.prototype;
 
     /**
-     * Create a new PivotConstructor for the given tagName, which is capable of being constructed
+     * Create a new scoped (pivot) constructor for the given tagName, which is capable of being constructed
      * with a UserConstructor defining the behavior. Passing in the UserConstructor here
      * is a hint that can be used when registering a custom element with the global custom elements
      * registry for the first time, which provides certain optimizations. It also marks the UserConstructor
-     * as "safe" to be used when passed in to a PivotConstructor.
+     * as "safe" to be used when passed in to a scoped constructor.
      *
      * @param tagName - element tag name
      * @param UserCtor - userland custom element constructor
      * @returns a new custom element constructor
      */
-    return function createPivotConstructor(
+    return function createScopedConstructor(
         tagName: string,
         UserCtor: CustomElementConstructor
     ): CustomElementConstructor {

@@ -1,21 +1,22 @@
 {
-    "name": "@lwc/engine-dom",
+    "name": "@lwc/scoped-registry",
     "version": "2.25.1",
-    "description": "Renders LWC components in a DOM environment.",
+    "description": "Define different custom elements sharing the same tag name",
     "homepage": "https://lwc.dev/",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
-        "directory": "packages/@lwc/engine-dom"
+        "directory": "packages/@lwc/scoped-registry"
     },
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/engine-dom.cjs.js",
-    "module": "dist/engine-dom.js",
-    "typings": "types/index.d.ts",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.js",
     "license": "MIT",
+    "typings": "types/index.d.ts",
     "scripts": {
+        "clean": "rm -rf dist/ types/",
         "build": "rollup --config scripts/rollup.config.js",
         "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -23,21 +24,16 @@
         "dist/",
         "types/"
     ],
-    "devDependencies": {
-        "@lwc/engine-core": "2.25.1",
-        "@lwc/shared": "2.25.1",
-        "@lwc/scoped-registry": "2.25.1"
-    },
-    "lwc": {
-        "modules": [
-            {
-                "name": "lwc",
-                "path": "dist/engine-dom.js"
-            }
-        ],
-        "expose": [
-            "lwc"
-        ]
+    "keywords": [
+        "lwc",
+        "polyfill",
+        "custom",
+        "elements",
+        "scoped",
+        "registry"
+    ],
+    "dependencies": {
+        "@lwc/shared": "2.25.1"
     },
     "publishConfig": {
         "access": "public"
