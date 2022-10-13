@@ -2,6 +2,8 @@ import { createElement } from 'lwc';
 import XComplex from 'x/complex';
 import XTest from 'x/test';
 import XForEach from 'x/forEach';
+import XparentWithSlot from 'x/parentWithSlot';
+import XparentWithNamedSlot from 'x/parentWithNamedSlot';
 
 describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     it('should render if branch if the value for lwc:if is truthy', () => {
@@ -144,5 +146,96 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             .then(() => {
                 expect(element.shadowRoot.querySelector('.if').textContent).toBe('024');
             });
+    });
+
+    describe('slots', () => {
+        /**
+         * Utility function to verify that slot content is assigned.
+         *
+         * @param {Element} child Child element to verify.
+         * @param {Boolean} condition Whether slot content is expected or not expected.
+         */
+        function verifyExpectedSlotContent(child, condition) {
+            const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
+            if (condition) {
+                expect(assignedNodes.length).toBe(1);
+                expect(assignedNodes[0].innerHTML).toBe('Slot content from parent');
+            } else {
+                expect(assignedNodes.length).toBe(0);
+            }
+        }
+
+        it('should properly assign content for slots', () => {
+            const element = createElement('x-parent', { is: XparentWithSlot });
+            document.body.appendChild(element);
+
+            const child = element.shadowRoot.querySelector('x-child-with-slot');
+
+            // When if condition is false, no slot content is provided by parent
+            verifyExpectedSlotContent(child, false);
+            element.condition = true;
+            return Promise.resolve().then(() => {
+                // Slot content should be provided when condition is true
+                verifyExpectedSlotContent(child, true);
+            });
+        });
+
+        it('should properly rerender content for slots', () => {
+            const element = createElement('x-parent', { is: XparentWithSlot });
+            element.condition = true;
+            document.body.appendChild(element);
+
+            const child = element.shadowRoot.querySelector('x-child-with-slot');
+
+            verifyExpectedSlotContent(child, true);
+
+            element.condition = false;
+            return Promise.resolve()
+                .then(() => {
+                    verifyExpectedSlotContent(child, false);
+
+                    element.condition = true;
+                })
+                .then(() => {
+                    verifyExpectedSlotContent(child, true);
+                });
+        });
+
+        describe('named slots', () => {
+            it('should properly assign content for named slots', () => {
+                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                document.body.appendChild(element);
+
+                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+
+                // When if condition is false, no slot content is provided by parent
+                verifyExpectedSlotContent(child, false);
+                element.condition = true;
+                return Promise.resolve().then(() => {
+                    verifyExpectedSlotContent(child, true);
+                });
+            });
+
+            it('should properly rerender content for named slots', () => {
+                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                element.condition = true;
+                document.body.appendChild(element);
+
+                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+
+                verifyExpectedSlotContent(child, true);
+
+                element.condition = false;
+                return Promise.resolve()
+                    .then(() => {
+                        verifyExpectedSlotContent(child, false);
+
+                        element.condition = true;
+                    })
+                    .then(() => {
+                        verifyExpectedSlotContent(child, true);
+                    });
+            });
+        });
     });
 });

@@ -120,3 +120,7 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
 export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
+
+export function isVFragment(vnode: VNode): vnode is VFragment {
+    return vnode.type === VNodeType.Fragment;
+}
