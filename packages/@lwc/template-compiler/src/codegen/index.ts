@@ -181,7 +181,7 @@ function transform(codeGen: CodeGen): t.Expression {
     function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
         const {
             slotName,
-            directive: { value: dataIdentifier },
+            slotData: { value: dataIdentifier },
         } = scopedSlotFragment;
         codeGen.beginScope();
         codeGen.declareIdentifier(dataIdentifier);

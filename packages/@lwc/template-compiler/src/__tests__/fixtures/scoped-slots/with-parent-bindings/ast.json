@@ -296,7 +296,7 @@
                                 ]
                             }
                         ],
-                        "directive": {
+                        "slotData": {
                             "type": "Directive",
                             "name": "SlotData",
                             "value": {

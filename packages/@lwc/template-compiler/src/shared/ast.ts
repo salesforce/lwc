@@ -206,7 +206,7 @@ export function scopedSlotFragment(
         location: elementLocation,
         directiveLocation,
         children: [],
-        directive: slotDataDirective(identifier, directiveLocation),
+        slotData: slotDataDirective(identifier, directiveLocation),
         slotName: slotName,
     };
 }
@@ -488,8 +488,8 @@ export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBloc
 
 export function isElementDirective(
     node: BaseNode
-): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If {
-    return isConditionalBlock(node) || isForBlock(node) || isIf(node);
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If | ScopedSlotFragment {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node) || isScopedSlotFragment(node);
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {

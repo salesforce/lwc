@@ -396,7 +396,7 @@ export const ParserDiagnostics = {
     // TODO [#3100]: Update message to point to external documentation once available.
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
-        message: "Slot tag can't be associated with {0} template directives.",
+        message: "<slot> tag can't be associated with {0} template directives.",
         level: DiagnosticLevel.Error,
         url: '',
     },

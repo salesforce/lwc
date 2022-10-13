@@ -247,7 +247,7 @@ export interface ForOf extends DirectiveParentNode<'ForOf'> {
  * Node representing lwc:slot-data directive
  */
 export interface ScopedSlotFragment extends DirectiveParentNode<'ScopedSlotFragment'> {
-    directive: SlotDataDirective;
+    slotData: SlotDataDirective;
     slotName: Literal;
 }
 

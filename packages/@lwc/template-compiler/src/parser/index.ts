@@ -12,6 +12,7 @@ import {
     MATHML_NAMESPACE,
     isVoidElement,
     isUndefined,
+    isNull,
 } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
@@ -262,6 +263,15 @@ function parseElementLocation(
     return location ?? parse5ParentLocation;
 }
 
+const DIRECTIVE_PARSERS = [
+    parseIfBlock,
+    parseElseifBlock,
+    parseElseBlock,
+    parseForEach,
+    parseForOf,
+    parseIf,
+    parseScopedSlotFragment,
+];
 function parseElementDirectives(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -271,23 +281,13 @@ function parseElementDirectives(
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
-    const parsers = [
-        parseIfBlock,
-        parseElseifBlock,
-        parseElseBlock,
-        parseForEach,
-        parseForOf,
-        parseIf,
-        parseScopedSlotFragment,
-    ];
-    for (const parser of parsers) {
+    for (const parser of DIRECTIVE_PARSERS) {
         const prev = current || parent;
         const node = parser(ctx, parsedAttr, parse5ElmLocation, prev, parse5Elm);
         if (node) {
             current = node;
         }
     }
-
     return current;
 }
 
@@ -1176,9 +1176,7 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
     }
 }
 
-const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName)
-    .filter((name) => name !== TemplateDirectiveName.ScopedSlotFragment)
-    .join(', ');
+const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1235,10 +1233,10 @@ function parseSlot(
         }
     }
 
-    const alreadySeen = ctx.hasSeenSlot(name);
+    const seenInContext = ctx.hasSeenSlot(name);
     ctx.addSeenSlot(name);
 
-    if (alreadySeen) {
+    if (seenInContext) {
         // Scoped slots do not allow duplicate or mixed slots
         // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#restricting-ambigious-bindings
         // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#invalid-usages
@@ -1457,13 +1455,28 @@ function validateTemplate(
 }
 
 function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: ParentNode): void {
-    // Note: An assumption here that ScopedSlotFragment is the last processed directive in parseElementDirectives()
-    if (directive && ast.isScopedSlotFragment(directive)) {
-        const commentOrTextChild = directive.children.find(
-            (child) => (ctx.preserveComments && ast.isComment(child)) || ast.isText(child)
+    if (directive) {
+        // Find a scoped slot fragment node if it exists
+        const slotFragment = ctx.findAncestor(
+            ast.isScopedSlotFragment,
+            ({ current }) => current && ast.isComponent,
+            directive
         );
-        if (commentOrTextChild) {
-            ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, commentOrTextChild);
+
+        if (!isNull(slotFragment)) {
+            slotFragment.children.forEach((child) => {
+                // Error in compiler logic
+                if (ast.isElementDirective(child)) {
+                    throw new Error(
+                        `Incorrect order of processing directives. ScopedSlotFragment` +
+                            ` must be last directive processed, instead found ${child.type} as its child.`
+                    );
+                }
+                // User error
+                if ((ctx.preserveComments && ast.isComment(child)) || ast.isText(child)) {
+                    ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, child);
+                }
+            });
         }
     }
 

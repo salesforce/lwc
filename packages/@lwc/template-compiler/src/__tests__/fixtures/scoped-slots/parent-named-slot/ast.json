@@ -154,7 +154,7 @@
                                 ]
                             }
                         ],
-                        "directive": {
+                        "slotData": {
                             "type": "Directive",
                             "name": "SlotData",
                             "value": {
@@ -277,7 +277,7 @@
                                 ]
                             }
                         ],
-                        "directive": {
+                        "slotData": {
                             "type": "Directive",
                             "name": "SlotData",
                             "value": {
@@ -400,7 +400,7 @@
                                 ]
                             }
                         ],
-                        "directive": {
+                        "slotData": {
                             "type": "Directive",
                             "name": "SlotData",
                             "value": {
