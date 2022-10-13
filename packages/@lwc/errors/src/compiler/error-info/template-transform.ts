@@ -782,7 +782,7 @@ export const ParserDiagnostics = {
     INVALID_LWC_SLOT_BIND_LITERAL_PROP: {
         code: 1170,
         message:
-            'Invalid lwc:slot-bind usage on element "{0}". The directive binding must be an expression.',
+            'Invalid lwc:slot-bind usage on element {0}. The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -790,7 +790,7 @@ export const ParserDiagnostics = {
     INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT: {
         code: 1171,
         message:
-            'Invalid lwc:slot-bind usage on element "{0}". The directive can be used on a <slot> element only.',
+            'Invalid lwc:slot-bind usage on element {0}. The directive can be used on a <slot> element only.',
         level: DiagnosticLevel.Error,
         url: '',
     },
