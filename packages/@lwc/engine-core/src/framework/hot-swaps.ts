@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isFalse, isUndefined, isNull } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -91,12 +90,10 @@ export function getTemplateOrSwappedTemplate(tpl: Template): Template {
         throw new ReferenceError();
     }
 
-    if (featureFlags.ENABLE_HMR) {
-        const visited: Set<Template> = new Set();
-        while (swappedTemplateMap.has(tpl) && !visited.has(tpl)) {
-            visited.add(tpl);
-            tpl = swappedTemplateMap.get(tpl)!;
-        }
+    const visited: Set<Template> = new Set();
+    while (swappedTemplateMap.has(tpl) && !visited.has(tpl)) {
+        visited.add(tpl);
+        tpl = swappedTemplateMap.get(tpl)!;
     }
 
     return tpl;
@@ -110,12 +107,10 @@ export function getComponentOrSwappedComponent(
         throw new ReferenceError();
     }
 
-    if (featureFlags.ENABLE_HMR) {
-        const visited: Set<LightningElementConstructor> = new Set();
-        while (swappedComponentMap.has(Ctor) && !visited.has(Ctor)) {
-            visited.add(Ctor);
-            Ctor = swappedComponentMap.get(Ctor)!;
-        }
+    const visited: Set<LightningElementConstructor> = new Set();
+    while (swappedComponentMap.has(Ctor) && !visited.has(Ctor)) {
+        visited.add(Ctor);
+        Ctor = swappedComponentMap.get(Ctor)!;
     }
 
     return Ctor;
@@ -127,12 +122,10 @@ export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFact
         throw new ReferenceError();
     }
 
-    if (featureFlags.ENABLE_HMR) {
-        const visited: Set<StylesheetFactory> = new Set();
-        while (swappedStyleMap.has(style) && !visited.has(style)) {
-            visited.add(style);
-            style = swappedStyleMap.get(style)!;
-        }
+    const visited: Set<StylesheetFactory> = new Set();
+    while (swappedStyleMap.has(style) && !visited.has(style)) {
+        visited.add(style);
+        style = swappedStyleMap.get(style)!;
     }
 
     return style;
@@ -144,48 +137,46 @@ export function setActiveVM(vm: VM) {
         throw new ReferenceError();
     }
 
-    if (featureFlags.ENABLE_HMR) {
-        // tracking active component
-        const Ctor = vm.def.ctor;
-        let componentVMs = activeComponents.get(Ctor);
-        if (isUndefined(componentVMs)) {
-            componentVMs = new Set();
-            activeComponents.set(Ctor, componentVMs);
+    // tracking active component
+    const Ctor = vm.def.ctor;
+    let componentVMs = activeComponents.get(Ctor);
+    if (isUndefined(componentVMs)) {
+        componentVMs = new Set();
+        activeComponents.set(Ctor, componentVMs);
+    }
+    // this will allow us to keep track of the hot components
+    componentVMs.add(vm);
+
+    // tracking active template
+    const tpl = vm.cmpTemplate;
+    if (tpl) {
+        let templateVMs = activeTemplates.get(tpl);
+        if (isUndefined(templateVMs)) {
+            templateVMs = new Set();
+            activeTemplates.set(tpl, templateVMs);
         }
-        // this will allow us to keep track of the hot components
-        componentVMs.add(vm);
+        // this will allow us to keep track of the templates that are
+        // being used by a hot component
+        templateVMs.add(vm);
 
-        // tracking active template
-        const tpl = vm.cmpTemplate;
-        if (tpl) {
-            let templateVMs = activeTemplates.get(tpl);
-            if (isUndefined(templateVMs)) {
-                templateVMs = new Set();
-                activeTemplates.set(tpl, templateVMs);
-            }
-            // this will allow us to keep track of the templates that are
-            // being used by a hot component
-            templateVMs.add(vm);
-
-            // tracking active styles associated to template
-            const stylesheets = tpl.stylesheets;
-            if (!isUndefined(stylesheets)) {
-                flattenStylesheets(stylesheets).forEach((stylesheet) => {
-                    // this is necessary because we don't hold the list of styles
-                    // in the vm, we only hold the selected (already swapped template)
-                    // but the styles attached to the template might not be the actual
-                    // active ones, but the swapped versions of those.
-                    stylesheet = getStyleOrSwappedStyle(stylesheet);
-                    let stylesheetVMs = activeStyles.get(stylesheet);
-                    if (isUndefined(stylesheetVMs)) {
-                        stylesheetVMs = new Set();
-                        activeStyles.set(stylesheet, stylesheetVMs);
-                    }
-                    // this will allow us to keep track of the stylesheet that are
-                    // being used by a hot component
-                    stylesheetVMs.add(vm);
-                });
-            }
+        // tracking active styles associated to template
+        const stylesheets = tpl.stylesheets;
+        if (!isUndefined(stylesheets)) {
+            flattenStylesheets(stylesheets).forEach((stylesheet) => {
+                // this is necessary because we don't hold the list of styles
+                // in the vm, we only hold the selected (already swapped template)
+                // but the styles attached to the template might not be the actual
+                // active ones, but the swapped versions of those.
+                stylesheet = getStyleOrSwappedStyle(stylesheet);
+                let stylesheetVMs = activeStyles.get(stylesheet);
+                if (isUndefined(stylesheetVMs)) {
+                    stylesheetVMs = new Set();
+                    activeStyles.set(stylesheet, stylesheetVMs);
+                }
+                // this will allow us to keep track of the stylesheet that are
+                // being used by a hot component
+                stylesheetVMs.add(vm);
+            });
         }
     }
 }
@@ -196,33 +187,31 @@ export function removeActiveVM(vm: VM) {
         throw new ReferenceError();
     }
 
-    if (featureFlags.ENABLE_HMR) {
-        // tracking inactive component
-        const Ctor = vm.def.ctor;
-        let list = activeComponents.get(Ctor);
+    // tracking inactive component
+    const Ctor = vm.def.ctor;
+    let list = activeComponents.get(Ctor);
+    if (!isUndefined(list)) {
+        // deleting the vm from the set to avoid leaking memory
+        list.delete(vm);
+    }
+    // removing inactive template
+    const tpl = vm.cmpTemplate;
+    if (tpl) {
+        list = activeTemplates.get(tpl);
         if (!isUndefined(list)) {
             // deleting the vm from the set to avoid leaking memory
             list.delete(vm);
         }
-        // removing inactive template
-        const tpl = vm.cmpTemplate;
-        if (tpl) {
-            list = activeTemplates.get(tpl);
-            if (!isUndefined(list)) {
-                // deleting the vm from the set to avoid leaking memory
-                list.delete(vm);
-            }
-            // removing active styles associated to template
-            const styles = tpl.stylesheets;
-            if (!isUndefined(styles)) {
-                flattenStylesheets(styles).forEach((style) => {
-                    list = activeStyles.get(style);
-                    if (!isUndefined(list)) {
-                        // deleting the vm from the set to avoid leaking memory
-                        list.delete(vm);
-                    }
-                });
-            }
+        // removing active styles associated to template
+        const styles = tpl.stylesheets;
+        if (!isUndefined(styles)) {
+            flattenStylesheets(styles).forEach((style) => {
+                list = activeStyles.get(style);
+                if (!isUndefined(list)) {
+                    // deleting the vm from the set to avoid leaking memory
+                    list.delete(vm);
+                }
+            });
         }
     }
 }
@@ -235,10 +224,6 @@ export function swapTemplate(oldTpl: Template, newTpl: Template): boolean {
         } else {
             throw new TypeError(`Invalid Template`);
         }
-    }
-
-    if (!featureFlags.ENABLE_HMR) {
-        throw new Error('HMR is not enabled');
     }
 
     return false;
@@ -257,10 +242,6 @@ export function swapComponent(
         }
     }
 
-    if (!featureFlags.ENABLE_HMR) {
-        throw new Error('HMR is not enabled');
-    }
-
     return false;
 }
 
@@ -270,10 +251,6 @@ export function swapStyle(oldStyle: StylesheetFactory, newStyle: StylesheetFacto
         // we can add the validation of both styles around this block.
         swappedStyleMap.set(oldStyle, newStyle);
         return rehydrateHotStyle(oldStyle);
-    }
-
-    if (!featureFlags.ENABLE_HMR) {
-        throw new Error('HMR is not enabled');
     }
 
     return false;
