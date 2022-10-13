@@ -2,6 +2,8 @@
 
 Allows [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to share the same tag name in the same DOM without conflicts. In a sense, it is a (partial) polyfill for [Scoped Custom Element Registries](https://github.com/WICG/webcomponents/blob/gh-pages/proposals/Scoped-Custom-Element-Registries.md).
 
+Note that this library only supports [browsers that support custom elements](https://caniuse.com/custom-elementsv1).
+
 ## Installation
 
 ```sh
