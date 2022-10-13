@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import XComplex from 'x/complex';
 import XTest from 'x/test';
 import XForEach from 'x/forEach';
-import XparentWithNamedSlot from 'x/parentWithNamedSlot';
+import XParentWithNamedSlot from 'x/parentWithNamedSlot';
 
 describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     it('should render if branch if the value for lwc:if is truthy', () => {
@@ -150,7 +150,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     describe('slots', () => {
         // TODO [#3107]: named slot content wrapped in conditional directives don't work as expected.
         xit('should render content from named slot', () => {
-            const element = createElement('x-parent', { is: XparentWithNamedSlot });
+            const element = createElement('x-parent', { is: XParentWithNamedSlot });
             document.body.appendChild(element);
 
             const child = element.shadowRoot.querySelector('x-child-with-named-slots');
