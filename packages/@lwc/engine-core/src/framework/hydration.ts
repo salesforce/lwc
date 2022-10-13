@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
+import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -423,21 +423,25 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     //
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
-    if (scopedToken) {
+    if (!isNull(scopedToken) || !isNull(stylesheetTokenHost)) {
         if (!isUndefined(className)) {
-            className = isNull(stylesheetTokenHost)
-                ? `${scopedToken} ${className}`
-                : `${scopedToken} ${className} ${stylesheetTokenHost}`;
+            // The order of the className should be scopedToken className stylesheetTokenHost
+            const classTokens = [scopedToken, className, stylesheetTokenHost];
+            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
+            className = ArrayJoin.call(classNames, ' ');
         } else if (!isUndefined(classMap)) {
             classMap = {
                 ...classMap,
-                [scopedToken]: true,
-                ...(isNull(stylesheetTokenHost) ? {} : { [stylesheetTokenHost]: true }),
+                ...(!isNull(scopedToken) ? { [scopedToken]: true } : {}),
+                ...(!isNull(stylesheetTokenHost) ? { [stylesheetTokenHost]: true } : {}),
             };
         } else {
-            className = isNull(stylesheetTokenHost)
-                ? `${scopedToken}`
-                : `${scopedToken} ${stylesheetTokenHost}`;
+            // The order of the className should be scopedToken stylesheetTokenHost
+            const classTokens = [scopedToken, stylesheetTokenHost];
+            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
+            if (classNames.length) {
+                className = ArrayJoin.call(classNames, ' ');
+            }
         }
     }
 

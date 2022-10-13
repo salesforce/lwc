@@ -28,13 +28,6 @@ export interface FeatureFlagMap {
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
-     * LWC engine flag to enable hot module replacement. It allows to exchange, component
-     * definition, template and stylesheets at runtime without having to reload the entire
-     * application.
-     */
-    ENABLE_HMR: FeatureFlagValue;
-
-    /**
      * Synthetic shadow DOM flag to enable strict `HTMLElement.prototype.innerText` and
      * `HTMLElement.prototype.outerText` shadow dom semantic.
      */

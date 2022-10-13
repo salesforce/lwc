@@ -11,7 +11,6 @@ const features: FeatureFlagMap = {
     DUMMY_TEST_FLAG: null,
     ENABLE_ELEMENT_PATCH: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
-    ENABLE_HMR: null,
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_INNER_OUTER_TEXT_PATCH: null,
     ENABLE_MIXED_SHADOW_MODE: null,
