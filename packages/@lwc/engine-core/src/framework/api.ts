@@ -190,24 +190,43 @@ function s(
         slotset.slotAssignments[slotName].length !== 0
     ) {
         children = slotset.slotAssignments[slotName].reduce((acc, vnode) => {
-            // If the passed slot content is factory, evaluate it and use the produced vnodes
-            if (vnode && isVScopedSlotFragment(vnode)) {
-                const vmBeingRenderedInception = getVMBeingRendered();
-                let children: VNodes = [];
-                // Evaluate in the scope of the slot content's owner
-                // if a slotset is provided, there will always be an owner. The only case where owner is
-                // undefined is for root components, but root components cannot accept slotted content
-                setVMBeingRendered(slotset.owner!);
-                try {
-                    children = vnode.factory(data.slotData);
-                } finally {
-                    setVMBeingRendered(vmBeingRenderedInception);
+            if (vnode) {
+                const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
+                // The only sniff test for a scoped <slot> element is the presence of `slotData`
+                const isScopedSlotElement = !isUndefined(data.slotData);
+                // Check if slot types of parent and child are matching
+                if (assignedNodeIsScopedSlot !== isScopedSlotElement) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        logError(
+                            `Mismatched slot types for ${
+                                slotName === '' ? '(default)' : slotName
+                            } slot.`,
+                            slotset.owner
+                        );
+                    }
+                    // Ignore slot content from parent
+                    return acc;
                 }
-                return ArrayConcat.call(acc, children);
-            } else {
-                // If the slot content is a static list of child nodes provided by the parent, nothing to do
-                return ArrayConcat.call(acc, vnode);
+                // If the passed slot content is factory, evaluate it and use the produced vnodes
+                if (assignedNodeIsScopedSlot) {
+                    const vmBeingRenderedInception = getVMBeingRendered();
+                    let scopedSlotChildren: VNodes = [];
+                    // Evaluate in the scope of the slot content's owner
+                    // if a slotset is provided, there will always be an owner. The only case where owner is
+                    // undefined is for root components, but root components cannot accept slotted content
+                    setVMBeingRendered(slotset.owner!);
+                    try {
+                        scopedSlotChildren = vnode.factory(data.slotData);
+                    } finally {
+                        setVMBeingRendered(vmBeingRenderedInception);
+                    }
+                    return ArrayConcat.call(acc, scopedSlotChildren);
+                } else {
+                    // If the slot content is standard type, the content is static, nothing to do
+                    return ArrayConcat.call(acc, vnode);
+                }
             }
+            return acc;
         }, [] as VNodes);
     }
     const vmBeingRendered = getVMBeingRendered()!;
