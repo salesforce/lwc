@@ -208,6 +208,34 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 });
         });
 
+        it('vanilla element should be an instance of the right class', () => {
+            const tagName = 'x-check-ctor-instanceof';
+            class MyElement extends HTMLElement {}
+
+            const whenDefinedPromiseBeforeDefine = customElements.whenDefined(tagName);
+
+            customElements.define(tagName, MyElement);
+            const elm = document.createElement(tagName);
+
+            // check element prototype
+            expect(elm instanceof MyElement).toEqual(true);
+            expect(elm.constructor).toBe(MyElement);
+
+            // check cE.get()
+            const Ctor = customElements.get(tagName);
+            expect(Ctor).toBe(MyElement);
+
+            // check cE.whenDefined()
+            return whenDefinedPromiseBeforeDefine
+                .then((Ctor) => {
+                    expect(Ctor).toBe(MyElement);
+                    return customElements.whenDefined(tagName);
+                })
+                .then((Ctor) => {
+                    expect(Ctor).toBe(MyElement);
+                });
+        });
+
         describe('defining an invalid tag name', () => {
             const scenarios = [
                 {
