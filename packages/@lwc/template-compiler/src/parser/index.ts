@@ -1471,6 +1471,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
         if (!isNull(slotFragment)) {
             slotFragment.children.forEach((child) => {
                 // Error in compiler logic
+                /* istanbul ignore if */
                 if (ast.isElementDirective(child)) {
                     throw new Error(
                         `Incorrect order of processing directives. ScopedSlotFragment` +
