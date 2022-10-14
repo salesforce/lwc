@@ -194,10 +194,10 @@ function s(
             if (vnode && isVScopedSlotFragment(vnode)) {
                 const vmBeingRenderedInception = getVMBeingRendered();
                 let children: VNodes = [];
-                if (!isUndefined(slotset.owner)) {
-                    // Evaluate in the scope of the slot content's owner
-                    setVMBeingRendered(slotset.owner);
-                }
+                // Evaluate in the scope of the slot content's owner
+                // if a slotset is provided, there will always be an owner. The only case where owner is
+                // undefined is for root components, but root components cannot accept slotted content
+                setVMBeingRendered(slotset.owner!);
                 try {
                     children = vnode.factory(data.slotData);
                 } finally {
