@@ -42,6 +42,11 @@ export interface Config {
      * When true, enables `lwc:spread` directive.
      */
     enableLwcSpread?: boolean;
+
+    /**
+     * When true, enables usage of `lwc:slot-bind` and `lwc:slot-data` directives for declaring scoped slots
+     */
+    enableScopedSlots?: boolean;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
@@ -49,11 +54,12 @@ export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'customRendererConfig',
+    'enableLwcSpread',
+    'enableScopedSlots',
+    'enableStaticContentOptimization',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
-    'enableStaticContentOptimization',
-    'enableLwcSpread',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -113,6 +119,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalDynamicDirective: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: false,
+        enableScopedSlots: false,
         ...config,
         ...{ customRendererConfig },
     };

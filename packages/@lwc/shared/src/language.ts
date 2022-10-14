@@ -23,6 +23,7 @@ const {
 const { isArray } = Array;
 
 const {
+    concat: ArrayConcat,
     copyWithin: ArrayCopyWithin,
     fill: ArrayFill,
     filter: ArrayFilter,
@@ -52,6 +53,7 @@ const {
 } = String.prototype;
 
 export {
+    ArrayConcat,
     ArrayFilter,
     ArrayFind,
     ArrayFill,

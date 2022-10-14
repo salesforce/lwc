@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1173,
+            "message": "LWC1173: Mixing slot types disallowed for same (default) slot.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 93,
+                "length": 25
+            }
+        }
+    ]
+}
