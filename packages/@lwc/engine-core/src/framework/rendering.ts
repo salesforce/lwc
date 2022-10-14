@@ -39,6 +39,7 @@ import {
     LwcDomMode,
     connectRootElement,
     disconnectRootElement,
+    SlotSet,
 } from './vm';
 import {
     VNode,
@@ -626,20 +627,24 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
+/**
+ * Collects all slots into a SlotSet, traversing through VFragment Nodes
+ *
+ * @param vm
+ * @param children
+ * @param cmpSlots
+ */
+function collectSlots(vm: VM, children: VNodes, cmpSlots: SlotSet) {
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
             continue;
         }
 
-        // Dive one level further if the content is wrapped in a VFragment
+        // Dive further iff the content is wrapped in a VFragment
         if (isVFragment(vnode)) {
-            // Since the VFragment children are delimited by empty text nodes, we can ignore those
-            allocateInSlot(vm, vnode.children);
-            return;
+            collectSlots(vm, vnode.children, cmpSlots);
+            continue;
         }
 
         let slotName = '';
@@ -650,6 +655,13 @@ function allocateInSlot(vm: VM, children: VNodes) {
         const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
+}
+
+function allocateInSlot(vm: VM, children: VNodes) {
+    const { cmpSlots: oldSlots } = vm;
+    const cmpSlots = (vm.cmpSlots = create(null));
+    collectSlots(vm, children, cmpSlots);
+
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty

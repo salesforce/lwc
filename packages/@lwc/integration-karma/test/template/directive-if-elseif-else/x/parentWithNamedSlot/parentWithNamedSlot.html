@@ -1,7 +1,8 @@
 <template>
     <x-child-with-named-slot>
+        <div slot="slotname1">static slot content</div>
         <template lwc:if={condition}>
-            <div slot="slotname1">Slot content from parent</div>
+            <div slot="slotname1">conditional slot content</div>
         </template>
     </x-child-with-named-slot>
 </template>

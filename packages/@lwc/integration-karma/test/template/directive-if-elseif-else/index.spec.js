@@ -158,10 +158,13 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         function verifyExpectedSlotContent(child, condition) {
             const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
             if (condition) {
-                expect(assignedNodes.length).toBe(3);
-                expect(assignedNodes[1].innerHTML).toBe('Slot content from parent');
+                expect(assignedNodes.length).toBe(4);
+                expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                // Text nodes are used as fragment delimiters
+                expect(assignedNodes[2].innerHTML).toBe('conditional slot content');
             } else {
-                expect(assignedNodes.length).toBe(0);
+                expect(assignedNodes.length).toBe(1);
+                expect(assignedNodes[0].innerHTML).toBe('static slot content');
             }
         }
 
@@ -211,10 +214,12 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             function verifyExpectedNamedSlotContent(child, condition) {
                 const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
                 if (condition) {
-                    expect(assignedNodes.length).toBe(1);
-                    expect(assignedNodes[0].innerHTML).toBe('Slot content from parent');
+                    expect(assignedNodes.length).toBe(2);
+                    expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                    expect(assignedNodes[1].innerHTML).toBe('conditional slot content');
                 } else {
-                    expect(assignedNodes.length).toBe(0);
+                    expect(assignedNodes.length).toBe(1);
+                    expect(assignedNodes[0].innerHTML).toBe('static slot content');
                 }
             }
             it('should properly assign content for named slots', () => {
