@@ -247,6 +247,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             });
 
             it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
+                // Check `cE.whenDefined()` called _before_ `cE.define()`
                 const promise = customElements.whenDefined('x-nonce12');
                 defineFirstElement('x-nonce12', Nonce12);
                 let firstCtor;
@@ -254,6 +255,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     .then((Ctor) => {
                         expect(Ctor).not.toBeUndefined();
                         firstCtor = Ctor;
+                        // Check `cE.whenDefined()` called _after_ `cE.define()`
                         const promise = customElements.whenDefined('x-nonce12');
                         createElement('x-nonce12', { is: Nonce13 });
                         return promise;
