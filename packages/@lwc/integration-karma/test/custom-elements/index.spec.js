@@ -225,10 +225,11 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const Ctor = customElements.get(tagName);
             expect(Ctor).toBe(MyElement);
 
-            // check cE.whenDefined()
+            // check cE.whenDefined() when the promise is created _before_ cE.define()
             return whenDefinedPromiseBeforeDefine
                 .then((Ctor) => {
                     expect(Ctor).toBe(MyElement);
+                    // check cE.whenDefined() when the promise is created _after_ cE.define()
                     return customElements.whenDefined(tagName);
                 })
                 .then((Ctor) => {
