@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 import ListParentApiData from 'x/listParentApiData';
-import WithParentBindings from 'x/withparentBindings';
+import WithParentBindings from 'x/withParentBindings';
 import ParentBindingsOutsideSlotContent from 'x/parentBindingsOutsideSlotContent';
 import ListParentTrackedData from 'x/listParentTrackedData';
 
