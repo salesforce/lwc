@@ -68,7 +68,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 const promise = customElements.whenDefined(tagName).then((ctor) => {
                     resolvedCtor = ctor;
                 });
-                expect(customElements.get(tagName)).toBeUndefined();
                 const elm = createElement(tagName, { is: Nonce2 });
                 const Ctor = customElements.get(tagName);
                 //lwc.createElement is "invisible" to customElements.get
@@ -76,9 +75,13 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 document.body.appendChild(elm);
                 expect(elm.expectedTagName).toEqual(tagName);
                 class MyCustomComponent extends HTMLElement {}
+                // Do an explicit microtask here
                 return Promise.resolve()
                     .then(() => {
-                        expect(resolvedCtor).toEqual(undefined); // whenDefined does not leak pivot constructor
+                        // If the `resolvedCtor` is undefined at this point, which happens after a microtask
+                        // (Promise.resolve()`), then `whenDefined` probably does not leak the pivot constructor.
+                        // (We could wait for some timeout to be safe, but `Promise.resolve()` should be enough.)
+                        expect(resolvedCtor).toEqual(undefined);
                         customElements.define(tagName, MyCustomComponent);
                         return promise;
                     })
