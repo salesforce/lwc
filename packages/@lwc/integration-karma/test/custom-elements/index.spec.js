@@ -236,6 +236,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     .then((Ctor) => {
                         expect(Ctor).not.toBeUndefined();
                         firstCtor = Ctor;
+                        // Create an lwc with same tag but different constructor, this will register a pivot for the same tag
                         createElement('x-nonce6', { is: Nonce7 });
                         return customElements.whenDefined('x-nonce6');
                     })
