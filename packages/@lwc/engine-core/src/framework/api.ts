@@ -200,7 +200,7 @@ function s(
                         logError(
                             `Mismatched slot types for ${
                                 slotName === '' ? '(default)' : slotName
-                            } slot.`,
+                            } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
                             slotset.owner
                         );
                     }
