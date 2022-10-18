@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
 import ParentWNoSlotContent from 'x/parentWNoSlotContent';
+import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {
@@ -36,5 +37,20 @@ describe('scoped slots', () => {
 
         const child = elm.shadowRoot.querySelector('x-child-w-default-content');
         expect(child.querySelector('span').innerHTML).toBe('default - Fallback Content');
+    });
+
+    it('scoped slots work with named slots', () => {
+        const elm = createElement('x-component', { is: ParentOfChildWithNamedSlots });
+        document.body.appendChild(elm);
+
+        const child = elm.shadowRoot.querySelector('x-child-with-named-slots');
+        // Verify scoped slots
+        expect(child.querySelector('.slotname1').innerHTML).toBe('<p>2021 World Series</p>');
+        expect(child.querySelector('.slotname2').innerHTML).toBe('<p>Houston Astros</p>');
+        expect(child.querySelector('.defaultslot').innerHTML).toBe('<p>Atlanta Braves</p>');
+        // verify standard slot type
+        // For standard slot content, "slot" attribute goes directly on the element unlike scoped
+        //  slots where the attribute goes on the template tag
+        expect(child.querySelector('.slotname3').innerHTML).toBe('<p slot="slotname3">MLB</p>');
     });
 });
