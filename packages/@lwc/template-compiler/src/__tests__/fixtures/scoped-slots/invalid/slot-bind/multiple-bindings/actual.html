@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <ul>
+        <template for:each={items} for:item="item">
+            <li key={item.id}>
+                <slot lwc:slot-bind={item} lwc:slot-bind={label}></slot> <!-- delegating rendering of children to the parent -->
+            </li>
+        </template>
+    </ul>
+</template>
