@@ -6,7 +6,7 @@
  */
 import { invariant, TemplateErrors } from '@lwc/errors';
 import State from '../state';
-import { BaseElement, ElementDirective } from './types';
+import { BaseElement, ElementDirectiveName } from './types';
 
 /**
  * Config representing criteria for an element match.
@@ -46,25 +46,13 @@ export interface CustomRendererConfig {
     directives: string[];
 }
 
-/**
- * Mapping of Directive.name to string literals used in template
- */
-export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
-    Dom: 'lwc:dom',
-    Dynamic: 'lwc:dynamic',
-    InnerHTML: 'lwc:inner-html',
-    Key: 'key',
-    Ref: 'lwc:ref',
-    Spread: 'lwc:spread',
-};
-
 function checkElement(element: BaseElement, state: State): boolean {
     const { attributes, directives } = element;
     if (directives.length) {
         let directiveMatched = false;
         // If any directives require custom renderer
         directiveMatched = directives.some((dir) => {
-            return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
+            return state.crDirectives.has(ElementDirectiveName[dir.name]);
         });
         if (directiveMatched) {
             // Directives that require custom renderer are not allowed on custom elements

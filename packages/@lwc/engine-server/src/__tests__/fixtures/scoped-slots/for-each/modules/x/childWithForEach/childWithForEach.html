@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <ul>
+        <template for:each={items} for:item="item">
+            <li key={item.id}>
+                <slot lwc:slot-bind={item}></slot>
+            </li>
+        </template>
+    </ul>
+</template>

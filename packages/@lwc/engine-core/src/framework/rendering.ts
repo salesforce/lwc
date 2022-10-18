@@ -39,7 +39,6 @@ import {
     LwcDomMode,
     connectRootElement,
     disconnectRootElement,
-    SlotSet,
 } from './vm';
 import {
     VNode,
@@ -56,6 +55,7 @@ import {
     VStatic,
     VFragment,
     isVFragment,
+    isVScopedSlotFragment,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -592,7 +592,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     const { renderMode, shadowMode } = vm;
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children);
+        allocateInSlot(vm, children, vnode.owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -634,7 +634,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
  * @param children
  * @param cmpSlots
  */
-function collectSlots(vm: VM, children: VNodes, cmpSlots: SlotSet) {
+function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
@@ -643,42 +643,49 @@ function collectSlots(vm: VM, children: VNodes, cmpSlots: SlotSet) {
 
         // Dive further iff the content is wrapped in a VFragment
         if (isVFragment(vnode)) {
-            collectSlots(vm, vnode.children, cmpSlots);
+            collectSlots(vm, vnode.children, cmpSlotsMapping);
             continue;
         }
 
         let slotName = '';
         if (isVBaseElement(vnode)) {
-            slotName = (vnode.data.attrs?.slot as string) || '';
+            slotName = (vnode.data.attrs?.slot as string) ?? '';
+        } else if (isVScopedSlotFragment(vnode)) {
+            slotName = vnode.slotName;
         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
-    collectSlots(vm, children, cmpSlots);
-
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+    collectSlots(vm, children, cmpSlotsMapping);
+    vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
+        const oldKeys = keys(oldSlotsMapping);
+        if (oldKeys.length !== keys(cmpSlotsMapping).length) {
             markComponentAsDirty(vm);
             return;
         }
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+            if (
+                isUndefined(cmpSlotsMapping[key]) ||
+                oldSlotsMapping[key].length !== cmpSlotsMapping[key].length
+            ) {
                 markComponentAsDirty(vm);
                 return;
             }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+            const oldVNodes = oldSlotsMapping[key];
+            const vnodes = cmpSlotsMapping[key];
+            for (let j = 0, a = cmpSlotsMapping[key].length; j < a; j += 1) {
                 if (oldVNodes[j] !== vnodes[j]) {
                     markComponentAsDirty(vm);
                     return;

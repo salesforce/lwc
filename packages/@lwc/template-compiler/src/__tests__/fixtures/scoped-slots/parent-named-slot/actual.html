@@ -1,0 +1,15 @@
+<template>
+    <x-child>
+        <template slot="slotname1" lwc:slot-data="slot1data">
+            <p>{slot1data.name}</p>
+        </template>
+
+        <template slot="slotname2" lwc:slot-data="slot2data">
+            <p>{slot2data.title}</p>
+        </template>
+
+        <template lwc:slot-data="defaultdata">
+            <p>{defaultdata.title}</p>
+        </template>
+    </x-child>
+</template>

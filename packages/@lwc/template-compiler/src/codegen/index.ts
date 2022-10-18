@@ -6,7 +6,7 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -30,6 +30,8 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
+    isScopedSlotFragment,
+    isSlotBindDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -47,6 +49,7 @@ import {
     ForOf,
     BaseElement,
     ElseifBlock,
+    ScopedSlotFragment,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -159,6 +162,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
                 res.push(transformConditionalParentBlock(child));
+            } else if (isScopedSlotFragment(child)) {
+                res.push(transformScopedSlotFragment(child));
             }
         }
 
@@ -171,6 +176,25 @@ function transform(codeGen: CodeGen): t.Expression {
         } else {
             return t.arrayExpression(res);
         }
+    }
+
+    function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
+        const {
+            slotName,
+            slotData: { value: dataIdentifier },
+        } = scopedSlotFragment;
+        codeGen.beginScope();
+        codeGen.declareIdentifier(dataIdentifier);
+        // TODO [#3111]: Next Step: Return a VFragment
+        const fragment = transformChildren(scopedSlotFragment);
+        codeGen.endScope();
+
+        const slotFragmentFactory = t.functionExpression(
+            null,
+            [dataIdentifier],
+            t.blockStatement([t.returnStatement(fragment)])
+        );
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
@@ -457,6 +481,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const ref = element.directives.find(isRefDirective);
         const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
+        const slotBindDirective = element.directives.find(isSlotBindDirective);
 
         // Attributes
         if (attributes.length) {
@@ -605,6 +630,14 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
         }
 
+        if (!isUndefined(slotBindDirective)) {
+            data.push(
+                t.property(
+                    t.identifier('slotData'),
+                    codeGen.bindExpression(slotBindDirective.value)
+                )
+            );
+        }
         return t.objectExpression(data);
     }
 

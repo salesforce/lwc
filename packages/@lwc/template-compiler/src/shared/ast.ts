@@ -44,6 +44,9 @@ import {
     SpreadDirective,
     ElementDirective,
     RootDirective,
+    SlotBindDirective,
+    ScopedSlotFragment,
+    SlotDataDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -192,6 +195,22 @@ export function forOf(
     };
 }
 
+export function scopedSlotFragment(
+    identifier: Identifier,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation,
+    slotName: Literal
+): ScopedSlotFragment {
+    return {
+        type: 'ScopedSlotFragment',
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+        slotData: slotDataDirective(identifier, directiveLocation),
+        slotName: slotName,
+    };
+}
+
 export function ifNode(
     modifier: string,
     condition: Expression,
@@ -283,6 +302,24 @@ export function spreadDirective(value: Expression, location: SourceLocation): Sp
     return {
         type: 'Directive',
         name: 'Spread',
+        value,
+        location,
+    };
+}
+
+export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
+export function slotDataDirective(value: Identifier, location: SourceLocation): SlotDataDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotData',
         value,
         location,
     };
@@ -451,8 +488,8 @@ export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBloc
 
 export function isElementDirective(
     node: BaseNode
-): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If {
-    return isConditionalBlock(node) || isForBlock(node) || isIf(node);
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If | ScopedSlotFragment {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node) || isScopedSlotFragment(node);
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {
@@ -483,6 +520,14 @@ export function isKeyDirective(directive: ElementDirective): directive is KeyDir
     return directive.name === 'Key';
 }
 
+export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+    return directive.name === 'SlotData';
+}
+
+export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
+    return directive.name === 'SlotBind';
+}
+
 export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
     return directive.name === 'RenderMode';
 }
@@ -495,4 +540,8 @@ export function isPreserveCommentsDirective(
 
 export function isProperty(node: BaseNode): node is Property {
     return node.type === 'Property';
+}
+
+export function isScopedSlotFragment(node: BaseNode): node is ScopedSlotFragment {
+    return node.type === 'ScopedSlotFragment';
 }

@@ -6,7 +6,14 @@
  */
 import * as parse5 from 'parse5';
 
-import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import {
+    HTML_NAMESPACE,
+    SVG_NAMESPACE,
+    MATHML_NAMESPACE,
+    isVoidElement,
+    isUndefined,
+    isNull,
+} from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
 import * as t from '../shared/estree';
@@ -36,6 +43,8 @@ import {
     Property,
     ElementDirectiveName,
     RootDirectiveName,
+    ScopedSlotFragment,
+    TemplateDirectiveName,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -177,7 +186,13 @@ function parseElement(
     const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
     // Create an AST node for each LWC template directive and chain them into a parent child hierarchy
-    const directive = parseElementDirectives(ctx, parsedAttr, parentNode, parse5ElmLocation);
+    const directive = parseElementDirectives(
+        ctx,
+        parse5Elm,
+        parse5ElmLocation,
+        parentNode,
+        parsedAttr
+    );
     // Create an AST node for the HTML element (excluding template tag elements) and add as child to parent
     const element = parseBaseElement(
         ctx,
@@ -204,7 +219,7 @@ function parseElement(
     const currentNode = element ?? directive;
     if (currentNode) {
         parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-        validateChildren(ctx, element);
+        validateChildren(ctx, element, directive);
     } else {
         // The only scenario where currentNode can be undefined is when there are only invalid attributes on a template element.
         // For example, <template class='slds-hello-world'>, these template elements and their children will not be rendered.
@@ -248,30 +263,31 @@ function parseElementLocation(
     return location ?? parse5ParentLocation;
 }
 
+const DIRECTIVE_PARSERS = [
+    parseIfBlock,
+    parseElseifBlock,
+    parseElseBlock,
+    parseForEach,
+    parseForOf,
+    parseIf,
+    parseScopedSlotFragment,
+];
 function parseElementDirectives(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parse5ElmLocation: parse5.ElementLocation
+    parsedAttr: ParsedAttribute
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
-    const parsers = [
-        parseIfBlock,
-        parseElseifBlock,
-        parseElseBlock,
-        parseForEach,
-        parseForOf,
-        parseIf,
-    ];
-    for (const parser of parsers) {
+    for (const parser of DIRECTIVE_PARSERS) {
         const prev = current || parent;
-        const node = parser(ctx, parsedAttr, parse5ElmLocation, prev);
+        const node = parser(ctx, parse5Elm, parse5ElmLocation, prev, parsedAttr);
         if (node) {
             current = node;
         }
     }
-
     return current;
 }
 
@@ -471,9 +487,10 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 
 function parseIf(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): If | undefined {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
@@ -514,9 +531,10 @@ function parseIf(
 
 function parseIfBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): IfBlock | undefined {
     const ifBlockAttribute = parsedAttr.pick('lwc:if');
     if (!ifBlockAttribute) {
@@ -550,9 +568,10 @@ function parseIfBlock(
 
 function parseElseifBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    _: ParentNode
+    _parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ElseifBlock | undefined {
     const elseifBlockAttribute = parsedAttr.pick('lwc:elseif');
     if (!elseifBlockAttribute) {
@@ -600,9 +619,10 @@ function parseElseifBlock(
 
 function parseElseBlock(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    _: ParentNode
+    _parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ElseBlock | undefined {
     const elseBlockAttribute = parsedAttr.pick('lwc:else');
     if (!elseBlockAttribute) {
@@ -758,6 +778,38 @@ function applyLwcDirectives(
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
     applyRefDirective(ctx, parsedAttr, element);
     applyLwcSpreadDirective(ctx, parsedAttr, element);
+    applyLwcSlotBindDirective(ctx, parsedAttr, element);
+}
+
+function applyLwcSlotBindDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+    const slotBindAttribute = parsedAttr.pick(ElementDirectiveName.SlotBind);
+    if (!slotBindAttribute) {
+        return;
+    }
+
+    if (!ctx.config.enableScopedSlots) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, element);
+    }
+
+    if (!ast.isSlot(element)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    const { value: slotBindValue } = slotBindAttribute;
+    if (!ast.isExpression(slotBindValue)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SLOT_BIND_LITERAL_PROP, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    element.directives.push(ast.slotBindDirective(slotBindValue, slotBindAttribute.location));
 }
 
 function applyLwcSpreadDirective(
@@ -781,7 +833,7 @@ function applyLwcSpreadDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpreadAttr.location));
+    element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpread.location));
 }
 
 function applyLwcDynamicDirective(
@@ -811,7 +863,7 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location));
+    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttribute.location));
 }
 
 function applyLwcDomDirective(
@@ -916,9 +968,10 @@ function applyRefDirective(
 
 function parseForEach(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ForEach | undefined {
     const forEachAttribute = parsedAttr.pick('for:each');
     const forItemAttribute = parsedAttr.pick('for:item');
@@ -974,9 +1027,10 @@ function parseForEach(
 
 function parseForOf(
     ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
+    _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
-    parent: ParentNode
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
 ): ForOf | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
@@ -1013,6 +1067,77 @@ function parseForOf(
     ctx.addNodeCurrentElementScope(node);
     parent.children.push(node);
 
+    return node;
+}
+
+function parseScopedSlotFragment(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation,
+    parent: ParentNode,
+    parsedAttr: ParsedAttribute
+): ScopedSlotFragment | undefined {
+    const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
+    if (!slotDataAttr) {
+        return;
+    }
+
+    if (!ctx.config.enableScopedSlots) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_DATA, slotDataAttr);
+    }
+
+    if (parse5Elm.tagName !== 'template') {
+        ctx.throwOnNode(ParserDiagnostics.SCOPED_SLOT_DATA_ON_TEMPLATE_ONLY, slotDataAttr);
+    }
+
+    // 'lwc:slot-data' cannot be combined with other directives on the same <template> tag
+    if (ctx.findInCurrentElementScope(ast.isElementDirective)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.SCOPED_SLOTDATA_CANNOT_BE_COMBINED_WITH_OTHER_DIRECTIVE,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
+    // <template lwc:slot-data> element should always be the direct child of a custom element
+    // The only exception is, a conditional block as parent
+    const parentCmp = ctx.findAncestor(
+        ast.isComponent,
+        ({ current }) => current && ast.isConditionalBlock(current)
+    );
+
+    if (!parentCmp) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_PARENT_OF_LWC_SLOT_DATA,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
+    const slotDataAttrValue = slotDataAttr.value;
+    if (!ast.isStringLiteral(slotDataAttrValue)) {
+        ctx.throwOnNode(ParserDiagnostics.SLOT_DATA_VALUE_SHOULD_BE_STRING, slotDataAttr);
+    }
+
+    // Extract name of slot if incase its a named slot
+    const slotAttr = parsedAttr.pick('slot');
+    let slotName: Literal | undefined;
+    // Prevent usage of the slot attribute with expression.
+    if (slotAttr) {
+        if (ast.isExpression(slotAttr.value)) {
+            ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, slotAttr);
+        } else {
+            slotName = slotAttr.value;
+        }
+    }
+
+    const identifier = parseIdentifier(ctx, slotDataAttrValue.value, slotDataAttr.location);
+    const node = ast.scopedSlotFragment(
+        identifier,
+        ast.sourceLocation(parse5ElmLocation),
+        slotDataAttr.location,
+        slotName ?? ast.literal('')
+    );
+    ctx.addNodeCurrentElementScope(node);
+    parent.children.push(node);
     return node;
 }
 
@@ -1057,6 +1182,8 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
     }
 }
 
+const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
+const ALLOWED_SLOT_ATTRIBUTES = new Set<string>(['name', ElementDirectiveName.SlotBind]);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1064,16 +1191,24 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
+    const isScopedSlot = !isUndefined(parsedAttr.get(ElementDirectiveName.SlotBind));
+    if (isScopedSlot && ctx.renderMode !== LWCDirectiveRenderMode.light) {
+        ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY, location);
+    }
+
+    // Restrict specific template directives on <slot> element
     const hasDirectives = ctx.findInCurrentElementScope(ast.isElementDirective);
     if (hasDirectives) {
-        ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
+        ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location, [
+            RESTRICTED_DIRECTIVES_ON_SLOT,
+        ]);
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => name !== 'name')
+            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES.has(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {
@@ -1105,17 +1240,38 @@ function parseSlot(
         }
     }
 
-    const alreadySeen = ctx.hasSeenSlot(name);
+    const seenInContext = ctx.hasSeenSlot(name);
     ctx.addSeenSlot(name);
 
-    if (alreadySeen) {
-        ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
-            name === '' ? 'default' : `name="${name}"`,
-        ]);
-    } else if (isInIteration(ctx)) {
+    if (seenInContext) {
+        // Scoped slots do not allow duplicate or mixed slots
+        // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#restricting-ambigious-bindings
+        // https://rfcs.lwc.dev/rfcs/lwc/0118-scoped-slots-light-dom#invalid-usages
+        // Note: ctx.seenScopedSlots is not "if" context aware and it does not need to be.
+        //   It is only responsible to determine if a scoped slot with the same name has been seen prior.
+        if (ctx.seenScopedSlots.has(name)) {
+            // Differentiate between mixed type or duplicate scoped slot
+            const errorInfo = isScopedSlot
+                ? ParserDiagnostics.NO_DUPLICATE_SCOPED_SLOT // error
+                : ParserDiagnostics.NO_MIXED_SLOT_TYPES; // error
+            ctx.throwAtLocation(errorInfo, location, [name === '' ? 'default' : `name="${name}"`]);
+        } else {
+            // Differentiate between mixed type or duplicate standard slot
+            const errorInfo = isScopedSlot
+                ? ParserDiagnostics.NO_MIXED_SLOT_TYPES // error
+                : ParserDiagnostics.NO_DUPLICATE_SLOTS; // warning
+            // for standard slots, preserve old behavior of warnings
+            ctx.warnAtLocation(errorInfo, location, [name === '' ? 'default' : `name="${name}"`]);
+        }
+    } else if (!isScopedSlot && isInIteration(ctx)) {
+        // Scoped slots are allowed to be placed in iteration blocks
         ctx.warnAtLocation(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, location, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
+    }
+
+    if (isScopedSlot) {
+        ctx.seenScopedSlots.add(name);
     }
 
     return ast.slot(name, parse5ElmLocation);
@@ -1209,8 +1365,11 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
 }
 
 function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
-    if (parsedAttr.getAttributes().length) {
-        ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
+    const rootAttrs = parsedAttr.getAttributes();
+    if (rootAttrs.length) {
+        ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root, [
+            rootAttrs.map(({ name }) => name).join(','),
+        ]);
     }
 
     if (!root.location.endTag) {
@@ -1300,7 +1459,33 @@ function validateTemplate(
     }
 }
 
-function validateChildren(ctx: ParserCtx, element?: BaseElement): void {
+function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: ParentNode): void {
+    if (directive) {
+        // Find a scoped slot fragment node if it exists
+        const slotFragment = ctx.findAncestor(
+            ast.isScopedSlotFragment,
+            ({ current }) => current && ast.isComponent,
+            directive
+        );
+
+        if (!isNull(slotFragment)) {
+            slotFragment.children.forEach((child) => {
+                // Error in compiler logic
+                /* istanbul ignore if */
+                if (ast.isElementDirective(child)) {
+                    throw new Error(
+                        `Incorrect order of processing directives. ScopedSlotFragment` +
+                            ` must be last directive processed, instead found ${child.type} as its child.`
+                    );
+                }
+                // User error
+                if ((ctx.preserveComments && ast.isComment(child)) || ast.isText(child)) {
+                    ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, child);
+                }
+            });
+        }
+    }
+
     if (!element) {
         return;
     }
