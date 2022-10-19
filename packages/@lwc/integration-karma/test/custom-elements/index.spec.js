@@ -493,7 +493,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
                 Ctor.prototype.formStateRestoreCallback = function (state, mode) {
                     calls.push({
-                        name: 'formResetCallback',
+                        name: 'formStateRestoreCallback',
                         elm: this,
                         state,
                         mode,
@@ -535,7 +535,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 elm.formStateRestoreCallback('foo', 'bar');
                 expect(calls.length).toEqual(shouldBeFormAssociated ? 4 : 1);
                 expect(calls.at(-1)).toEqual({
-                    name: 'formResetCallback',
+                    name: 'formStateRestoreCallback',
                     elm,
                     state: 'foo',
                     mode: 'bar',
