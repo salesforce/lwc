@@ -18,7 +18,6 @@ branches:
         - communities/shared-experience-components
         - communities/talon-template-byo
         - communities/ui-b2b-components
-        - communities/ui-cms-components
         - communities/ui-commerce-components
         - communities/ui-dxp-components
         - communities/ui-feeds-components
@@ -36,7 +35,6 @@ branches:
         - salesforce-experience-platform/lwr-recipes
         - salesforce/o11y-sample-app
         - salesforcedevs/doc-framework-monorepo
-        - uiplatform/aura-hotswap-bundle
   release:
     pull-request:
       <<: *branch-definition
