@@ -4,6 +4,7 @@ import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
 import ParentWNoSlotContent from 'x/parentWNoSlotContent';
 import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
+import NestedSlots from 'x/nestedSlots';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {
@@ -52,5 +53,16 @@ describe('scoped slots', () => {
         // For standard slot content, "slot" attribute goes directly on the element unlike scoped
         //  slots where the attribute goes on the template tag
         expect(child.querySelector('.slotname3').innerHTML).toBe('<p slot="slotname3">MLB</p>');
+    });
+
+    it('scoped slot content can be nested inside another', () => {
+        const elm = createElement('x-nested', { is: NestedSlots });
+        document.body.appendChild(elm);
+
+        const rows = elm.shadowRoot.querySelectorAll('x-row');
+        expect(rows.length).toBe(4);
+        expect(elm.shadowRoot.querySelectorAll('span.cell').length).toBe(7);
+        // spot check one row
+        expect(rows[2].textContent).toBe('Cell: 3 - 1Cell: 3 - 2Cell: 3 - 3');
     });
 });
