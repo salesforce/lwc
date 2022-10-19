@@ -189,7 +189,7 @@ function s(
         !isUndefined(slotset.slotAssignments[slotName]) &&
         slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset.slotAssignments[slotName].reduce((acc, vnode) => {
+        children = slotset.slotAssignments[slotName].reduce((accumulator, vnode) => {
             if (vnode) {
                 const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
                 // The only sniff test for a scoped <slot> element is the presence of `slotData`
@@ -205,9 +205,9 @@ function s(
                         );
                     }
                     // Ignore slot content from parent
-                    return acc;
+                    return accumulator;
                 }
-                // If the passed slot content is factory, evaluate it and use the produced vnodes
+                // If the passed slot content is factory, evaluate it and add the produced vnodes
                 if (assignedNodeIsScopedSlot) {
                     const vmBeingRenderedInception = getVMBeingRendered();
                     let scopedSlotChildren: VNodes = [];
@@ -220,13 +220,14 @@ function s(
                     } finally {
                         setVMBeingRendered(vmBeingRenderedInception);
                     }
-                    return ArrayConcat.call(acc, scopedSlotChildren);
+                    return ArrayConcat.call(accumulator, scopedSlotChildren);
                 } else {
-                    // If the slot content is standard type, the content is static, nothing to do
-                    return ArrayConcat.call(acc, vnode);
+                    // If the slot content is standard type, the content is static, no additional
+                    // processing needed on the vnode
+                    return ArrayConcat.call(accumulator, vnode);
                 }
             }
-            return acc;
+            return accumulator;
         }, [] as VNodes);
     }
     const vmBeingRendered = getVMBeingRendered()!;

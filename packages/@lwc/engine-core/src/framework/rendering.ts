@@ -6,6 +6,7 @@
  */
 import {
     ArrayPush,
+    ArraySome,
     assert,
     create,
     isArray,
@@ -597,7 +598,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         // in native shadow mode.
         if (
             renderMode !== RenderMode.Light &&
-            children.filter((child) => child && isVScopedSlotFragment(child)).length
+            ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
         ) {
             logError(
                 `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
