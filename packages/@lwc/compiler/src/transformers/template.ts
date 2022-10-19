@@ -97,9 +97,7 @@ function serialize(
     buffer += 'if (_implicitScopedStylesheets) {\n';
     buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
     buffer += `}\n`;
-    buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
-    buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
-    buffer += '}\n';
+    buffer += `tmpl.stylesheetToken = "${scopeToken}"\n`;
     // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
     // as `code` above. At this point, no more expando props should be added to `tmpl`.
     buffer += 'freezeTemplate(tmpl);\n';

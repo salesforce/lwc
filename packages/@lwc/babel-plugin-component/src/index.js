@@ -12,6 +12,7 @@ const {
 } = require('./decorators');
 const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
+const scopeCssImports = require('./scope-css-imports');
 const compilerVersionNumber = require('./compiler-version-number');
 const { getEngineImportSpecifiers } = require('./utils');
 
@@ -43,6 +44,9 @@ module.exports = function LwcClassTransform(api) {
 
                     // Validate the usage of LWC decorators.
                     validateImportedLwcDecoratorUsage(engineImportSpecifiers);
+
+                    // Add ?scoped=true to *.scoped.css imports
+                    scopeCssImports(api, path);
                 },
                 exit(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);

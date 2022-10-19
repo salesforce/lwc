@@ -251,7 +251,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.tplCache = create(null);
 
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
-                    context.hasScopedStyles = computeHasScopedStyles(html);
+                    context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html);
@@ -308,9 +308,10 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-export function computeHasScopedStyles(template: Template): boolean {
-    const { stylesheets } = template;
-    if (!isUndefined(stylesheets)) {
+function computeHasScopedStylesInStylesheets(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+) {
+    if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
                 return true;
@@ -318,4 +319,20 @@ export function computeHasScopedStyles(template: Template): boolean {
         }
     }
     return false;
+}
+
+export function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
+    const { stylesheets } = template;
+    const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
+
+    return (
+        computeHasScopedStylesInStylesheets(stylesheets) ||
+        computeHasScopedStylesInStylesheets(vmStylesheets)
+    );
+}
+
+export function hasStyles(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): stylesheets is TemplateStylesheetFactories {
+    return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

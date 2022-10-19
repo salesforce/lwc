@@ -46,8 +46,13 @@ describe('legacy undocumented stylesheetTokens API', () => {
         ]);
         expect(typeof withStylesheet.stylesheetTokens.hostAttribute).toEqual('string');
         expect(typeof withStylesheet.stylesheetTokens.shadowAttribute).toEqual('string');
-        expect(typeof withoutStylesheet.stylesheetToken).toEqual('undefined');
-        expect(typeof withoutStylesheet.stylesheetTokens).toEqual('undefined');
+        // In some versions of LWC, this would be undefined due to having no stylesheets
+        expect(typeof withoutStylesheet.stylesheetToken).toEqual('string');
+        expect(typeof withoutStylesheet.stylesheetTokens).toEqual('object');
+        expect(Object.keys(withoutStylesheet.stylesheetTokens).sort()).toEqual([
+            'hostAttribute',
+            'shadowAttribute',
+        ]);
 
         expect(() => {
             // patch the one with a stylesheet onto the one without
