@@ -1,0 +1,241 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 213,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 35,
+                "start": 0,
+                "end": 34
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 202,
+                "end": 213
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "RenderMode",
+                "value": {
+                    "type": "Literal",
+                    "value": "light"
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 34,
+                    "start": 10,
+                    "end": 33
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Scoped slot ",
+                "value": " Scoped slot ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 25,
+                    "start": 39,
+                    "end": 59
+                }
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "slotname1",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 61,
+                    "start": 64,
+                    "end": 120,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 54,
+                        "start": 64,
+                        "end": 113
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 54,
+                        "endLine": 3,
+                        "endColumn": 61,
+                        "start": 113,
+                        "end": 120
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "slotname1"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 11,
+                            "endLine": 3,
+                            "endColumn": 27,
+                            "start": 70,
+                            "end": 86
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "SlotBind",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 10,
+                            "name": "slot1data",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 28,
+                                "endLine": 3,
+                                "endColumn": 53,
+                                "start": 87,
+                                "end": 112
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 28,
+                            "endLine": 3,
+                            "endColumn": 53,
+                            "start": 87,
+                            "end": 112
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " Standard slot ",
+                "value": " Standard slot ",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 27,
+                    "start": 125,
+                    "end": 147
+                }
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "slotname2",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 36,
+                    "start": 152,
+                    "end": 183,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 29,
+                        "start": 152,
+                        "end": 176
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 29,
+                        "endLine": 5,
+                        "endColumn": 36,
+                        "start": 176,
+                        "end": 183
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "slotname2"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 11,
+                            "endLine": 5,
+                            "endColumn": 27,
+                            "start": 158,
+                            "end": 174
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 18,
+                    "start": 188,
+                    "end": 201,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 11,
+                        "start": 188,
+                        "end": 194
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 11,
+                        "endLine": 6,
+                        "endColumn": 18,
+                        "start": 194,
+                        "end": 201
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

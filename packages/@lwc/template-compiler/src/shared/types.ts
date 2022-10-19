@@ -120,12 +120,22 @@ export interface RefDirective extends Directive<'Ref'> {
     value: Literal<string>;
 }
 
+export interface SlotBindDirective extends Directive<'SlotBind'> {
+    value: Expression;
+}
+
+export interface SlotDataDirective extends Directive<'SlotData'> {
+    value: Identifier;
+}
+
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
     | DomDirective
     | InnerHTMLDirective
     | RefDirective
+    | SlotBindDirective
+    | SlotDataDirective
     | SpreadDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
@@ -178,15 +188,25 @@ export interface Root extends BaseParentNode {
     directives: RootDirective[];
 }
 
-interface DirectiveParentNode extends BaseParentNode {
+export enum TemplateDirectiveName {
+    If = 'if:true',
+    IfBlock = 'lwc:if',
+    ElseifBlock = 'lwc:elseif',
+    ElseBlock = 'lwc:else',
+    ForEach = 'for:each',
+    ForOf = 'for:of',
+    ScopedSlotFragment = 'lwc:slot-data',
+}
+
+interface DirectiveParentNode<T extends keyof typeof TemplateDirectiveName> extends BaseParentNode {
     directiveLocation: SourceLocation;
+    type: T;
 }
 
 /**
  * Node representing the if:true and if:false directives
  */
-export interface If extends DirectiveParentNode {
-    type: 'If';
+export interface If extends DirectiveParentNode<'If'> {
     modifier: string;
     condition: Expression;
 }
@@ -194,8 +214,7 @@ export interface If extends DirectiveParentNode {
 /**
  * Node representing the lwc:if directive
  */
-export interface IfBlock extends DirectiveParentNode {
-    type: 'IfBlock';
+export interface IfBlock extends DirectiveParentNode<'IfBlock'> {
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
@@ -203,8 +222,7 @@ export interface IfBlock extends DirectiveParentNode {
 /**
  * Node representing the lwc:elseif directive
  */
-export interface ElseifBlock extends DirectiveParentNode {
-    type: 'ElseifBlock';
+export interface ElseifBlock extends DirectiveParentNode<'ElseifBlock'> {
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
@@ -212,26 +230,38 @@ export interface ElseifBlock extends DirectiveParentNode {
 /**
  * Node representing the lwc:else directive
  */
-export interface ElseBlock extends DirectiveParentNode {
-    type: 'ElseBlock';
-}
+export interface ElseBlock extends DirectiveParentNode<'ElseBlock'> {}
 
-export interface ForEach extends DirectiveParentNode {
-    type: 'ForEach';
+export interface ForEach extends DirectiveParentNode<'ForEach'> {
     expression: Expression;
     item: Identifier;
     index?: Identifier;
 }
 
-export interface ForOf extends DirectiveParentNode {
-    type: 'ForOf';
+export interface ForOf extends DirectiveParentNode<'ForOf'> {
     expression: Expression;
     iterator: Identifier;
 }
 
+/**
+ * Node representing lwc:slot-data directive
+ */
+export interface ScopedSlotFragment extends DirectiveParentNode<'ScopedSlotFragment'> {
+    slotData: SlotDataDirective;
+    slotName: Literal;
+}
+
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement;
+export type ParentNode =
+    | Root
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | ScopedSlotFragment;
 
 export type ChildNode =
     | ForBlock
@@ -241,7 +271,8 @@ export type ChildNode =
     | ElseBlock
     | BaseElement
     | Comment
-    | Text;
+    | Text
+    | ScopedSlotFragment;
 
 export type Node =
     | Root
@@ -252,13 +283,16 @@ export type Node =
     | ElseBlock
     | BaseElement
     | Comment
-    | Text;
+    | Text
+    | ScopedSlotFragment;
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
     Dynamic = 'lwc:dynamic',
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',
+    SlotBind = 'lwc:slot-bind',
+    SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
     Key = 'key',
 }

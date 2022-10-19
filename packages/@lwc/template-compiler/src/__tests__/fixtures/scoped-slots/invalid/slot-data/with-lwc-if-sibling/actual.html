@@ -1,0 +1,7 @@
+<template>
+    <x-list>
+        <template lwc:if={condition} lwc:slot-data="item">
+            <span>{item.id} - {item.name}</span>
+        </template>
+    </x-list>
+</template>

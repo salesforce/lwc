@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "2.25.1",
+    "version": "2.27.0",
     "description": "Template compiler package",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -25,8 +25,8 @@
     },
     "//": "Currently can't upgrade: estree-walker to v3.0.0 because it dropped CommonJS support: https://git.io/JXguS, parse5 dropped cjs support in v7.0.0 https://github.com/inikulin/parse5/releases/tag/v7.0.0",
     "dependencies": {
-        "@lwc/errors": "2.25.1",
-        "@lwc/shared": "2.25.1",
+        "@lwc/errors": "2.27.0",
+        "@lwc/shared": "2.27.0",
         "acorn": "~8.8.0",
         "astring": "~1.8.3",
         "estree-walker": "~2.0.2",

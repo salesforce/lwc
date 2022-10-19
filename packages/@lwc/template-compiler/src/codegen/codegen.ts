@@ -44,7 +44,8 @@ type RenderPrimitive =
     | 'comment'
     | 'sanitizeHtmlContent'
     | 'fragment'
-    | 'staticFragment';
+    | 'staticFragment'
+    | 'scopedSlotFactory';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -69,6 +70,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
     fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
+    scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
 };
 
 interface Scope {
@@ -256,6 +258,9 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
+    /**
+     * Generates childs vnodes when slot content is static.
+     */
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         this.slotNames.add(slotName);
 
@@ -265,6 +270,13 @@ export default class CodeGen {
             children,
             t.identifier('$slotset'),
         ]);
+    }
+
+    /**
+     * Generates a factory function that inturn generates child vnodes for scoped slot content.
+     */
+    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.SimpleLiteral) {
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [slotName, callback]);
     }
 
     genTabIndex(children: [t.Expression]) {

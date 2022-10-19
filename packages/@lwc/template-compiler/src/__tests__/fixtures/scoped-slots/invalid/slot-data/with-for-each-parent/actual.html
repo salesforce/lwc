@@ -1,0 +1,18 @@
+<template>
+    <x-list>
+        <template for:each={parentItems} for:item="parentItem" >
+            <div key={parentItem}>{parentItem}</div>
+            <template lwc:slot-data="item">
+                <span key={parentItem}>{item.id} - {item.name}</span>
+            </template>
+        </template>
+    </x-list>
+    <x-list>
+        <template for:each={parentItems} for:item="parentItem" >
+            <template lwc:slot-data="item">
+                <div key={parentItem}>{parentItem}</div>
+                <span key={parentItem}>{item.id} - {item.name}</span>
+            </template>
+        </template>
+    </x-list>
+</template>

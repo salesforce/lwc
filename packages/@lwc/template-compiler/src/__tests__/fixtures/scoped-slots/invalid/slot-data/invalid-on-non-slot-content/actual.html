@@ -1,0 +1,13 @@
+<template>
+    <x-child lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </x-child>
+
+    <span lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </span>
+
+    <slot lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </slot>
+</template>
