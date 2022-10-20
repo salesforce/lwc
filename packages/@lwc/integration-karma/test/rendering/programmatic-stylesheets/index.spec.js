@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import Basic from 'x/basic';
 import Direct from 'x/direct';
 import Scoped from 'x/scoped';
@@ -13,6 +13,14 @@ import MultiStyles from 'x/multiStyles';
 import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
 
 describe('programmatic stylesheets', () => {
+    beforeAll(() => {
+        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', true);
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', false);
+    });
+
     it('works for a basic usage of static stylesheets', () => {
         const elm = createElement('x-basic', { is: Basic });
         document.body.appendChild(elm);
