@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <p>
+        <template for:each={row} for:item="field">
+            <span key={field.id}>
+                <slot lwc:slot-bind={field}></slot>
+            </span>
+        </template>
+    </p>
+</template>
