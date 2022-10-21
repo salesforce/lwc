@@ -159,12 +159,12 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
             if (condition) {
                 expect(assignedNodes.length).toBe(4);
-                expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                expect(assignedNodes[0].innerHTML).toBe('static slot header');
                 // Text nodes are used as fragment delimiters
                 expect(assignedNodes[2].innerHTML).toBe('conditional slot content');
             } else {
                 expect(assignedNodes.length).toBe(1);
-                expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                expect(assignedNodes[0].innerHTML).toBe('static slot header');
             }
         }
 
@@ -214,14 +214,17 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             function verifyExpectedNamedSlotContent(child, condition) {
                 const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
                 if (condition) {
-                    expect(assignedNodes.length).toBe(2);
-                    expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                    expect(assignedNodes.length).toBe(3);
+                    expect(assignedNodes[0].innerHTML).toBe('static slot header');
                     expect(assignedNodes[1].innerHTML).toBe('conditional slot content');
+                    expect(assignedNodes[2].innerHTML).toBe('static slot footer');
                 } else {
-                    expect(assignedNodes.length).toBe(1);
-                    expect(assignedNodes[0].innerHTML).toBe('static slot content');
+                    expect(assignedNodes.length).toBe(2);
+                    expect(assignedNodes[0].innerHTML).toBe('static slot header');
+                    expect(assignedNodes[1].innerHTML).toBe('static slot footer');
                 }
             }
+
             it('should properly assign content for named slots', () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 document.body.appendChild(element);
@@ -234,6 +237,17 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 return Promise.resolve().then(() => {
                     verifyExpectedNamedSlotContent(child, true);
                 });
+            });
+
+            xit('should not override default slot content when no elements are explicitly passed to the default slot', () => {
+                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                document.body.appendChild(element);
+
+                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
+
+                expect(assignedNodes.length).toBe(1);
+                expect(assignedNodes[0].innerHTML).toBe('default slot content');
             });
 
             it('should properly rerender content for named slots', () => {

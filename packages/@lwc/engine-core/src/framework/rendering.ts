@@ -647,10 +647,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
 
 /**
  * Collects all slots into a SlotSet, traversing through VFragment Nodes
- *
- * @param vm
- * @param children
- * @param cmpSlots
  */
 function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
     for (let i = 0, len = children.length; i < len; i += 1) {
