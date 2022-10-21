@@ -6,6 +6,7 @@
  */
 import {
     ArrayPush,
+    ArraySome,
     assert,
     create,
     isArray,
@@ -20,6 +21,8 @@ import {
 } from '@lwc/shared';
 import features from '@lwc/features';
 
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
@@ -590,6 +593,21 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     vm.aChildren = children;
 
     const { renderMode, shadowMode } = vm;
+    if (process.env.NODE_ENV !== 'production') {
+        // If any of the children being allocated is a scoped slot fragment, make sure the receiving
+        // component is a light DOM component. This is mainly to validate light dom parent running
+        // in native shadow mode.
+        if (
+            renderMode !== RenderMode.Light &&
+            ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
+        ) {
+            logError(
+                `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
+                    vm
+                )} tag. Scoped slot content can only be passed to a light dom child.`
+            );
+        }
+    }
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
         allocateInSlot(vm, children, vnode.owner);
