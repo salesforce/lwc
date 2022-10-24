@@ -47,6 +47,7 @@ import {
     SlotBindDirective,
     ScopedSlotFragment,
     SlotDataDirective,
+    ExternalDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -298,6 +299,15 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
+export function externalDirective(location: SourceLocation): ExternalDirective {
+    return {
+        type: 'Directive',
+        name: 'External',
+        value: literal(true),
+        location,
+    };
+}
+
 export function spreadDirective(value: Expression, location: SourceLocation): SpreadDirective {
     return {
         type: 'Directive',
@@ -502,6 +512,10 @@ export function isDynamicDirective(directive: ElementDirective): directive is Dy
 
 export function isDomDirective(directive: ElementDirective): directive is DomDirective {
     return directive.name === 'Dom';
+}
+
+export function isExternalDirective(directive: ElementDirective): directive is ExternalDirective {
+    return directive.name === 'External';
 }
 
 export function isSpreadDirective(directive: ElementDirective): directive is SpreadDirective {

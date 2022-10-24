@@ -773,6 +773,7 @@ function applyLwcDirectives(
         ]);
     }
 
+    applyLwcExternalDirective(ctx, parsedAttr, element);
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
@@ -834,6 +835,31 @@ function applyLwcSpreadDirective(
     }
 
     element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpread.location));
+}
+
+function applyLwcExternalDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+) {
+    const { name: tag } = element;
+
+    const lwcExternalAttribute = parsedAttr.pick('lwc:external');
+    if (!lwcExternalAttribute) {
+        return;
+    }
+
+    if (!ast.isComponent(element)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    if (!ast.isBooleanLiteral(lwcExternalAttribute.value)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_VALUE, element, [`<${tag}>`]);
+    }
+
+    element.directives.push(ast.externalDirective(lwcExternalAttribute.location));
 }
 
 function applyLwcDynamicDirective(
@@ -1437,6 +1463,14 @@ function validateTemplate(
     // Empty templates not allowed outside of root
     if (!template.attrs.length) {
         ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
+    }
+
+    if (parsedAttr.get(ElementDirectiveName.External)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT,
+            location,
+            ['<template>']
+        );
     }
 
     if (parsedAttr.get(ElementDirectiveName.InnerHTML)) {

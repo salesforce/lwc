@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1180,
+            "message": "LWC1180: Invalid lwc:external directive usage: <template>. This directive can only be used on custom elements.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 79
+            }
+        }
+    ]
+}
