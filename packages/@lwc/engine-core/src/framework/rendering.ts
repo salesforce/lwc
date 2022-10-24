@@ -316,7 +316,17 @@ function mountCustomElement(
         }
     };
 
-    const elm = createCustomElement(sel, upgradeCallback, connectedCallback, disconnectedCallback);
+    // Should never get a tag with upper case letter at this point; the compiler
+    // should produce only tags with lowercase letters. However, the Java
+    // compiler may generate tagnames with uppercase letters so - for backwards
+    // compatibility, we lower case the tagname here.
+    const normalizedTagname = sel.toLowerCase();
+    const elm = createCustomElement(
+        normalizedTagname,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
 
     vnode.elm = elm;
     vnode.vm = vm;
