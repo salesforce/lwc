@@ -2,7 +2,6 @@ import { createElement } from 'lwc';
 
 import MixedSlotParent from 'x/mixedSlotParent';
 
-// TODO [#3107]: If block has an issue with resolving slot content from vfragment node
 describe('if-block', () => {
     it('should work when parent and child have matching slot types', () => {
         const elm = createElement('x-parent', { is: MixedSlotParent });
