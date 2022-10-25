@@ -136,6 +136,10 @@ export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
 
+export function isVFragment(vnode: VNode): vnode is VFragment {
+    return vnode.type === VNodeType.Fragment;
+}
+
 export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
     return vnode.type === VNodeType.ScopedSlotFragment;
 }
