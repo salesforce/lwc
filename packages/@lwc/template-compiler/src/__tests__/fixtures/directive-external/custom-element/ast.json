@@ -62,7 +62,7 @@
                 "children": []
             },
             {
-                "type": "Component",
+                "type": "External",
                 "name": "x-test",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {
@@ -91,29 +91,12 @@
                 },
                 "attributes": [],
                 "properties": [],
-                "directives": [
-                    {
-                        "type": "Directive",
-                        "name": "External",
-                        "value": {
-                            "type": "Literal",
-                            "value": true
-                        },
-                        "location": {
-                            "startLine": 3,
-                            "startColumn": 13,
-                            "endLine": 3,
-                            "endColumn": 25,
-                            "start": 45,
-                            "end": 57
-                        }
-                    }
-                ],
+                "directives": [],
                 "listeners": [],
                 "children": []
             },
             {
-                "type": "Component",
+                "type": "External",
                 "name": "foo-bar",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {
@@ -142,24 +125,7 @@
                 },
                 "attributes": [],
                 "properties": [],
-                "directives": [
-                    {
-                        "type": "Directive",
-                        "name": "External",
-                        "value": {
-                            "type": "Literal",
-                            "value": true
-                        },
-                        "location": {
-                            "startLine": 4,
-                            "startColumn": 14,
-                            "endLine": 4,
-                            "endColumn": 26,
-                            "start": 81,
-                            "end": 93
-                        }
-                    }
-                ],
+                "directives": [],
                 "listeners": [],
                 "children": []
             }

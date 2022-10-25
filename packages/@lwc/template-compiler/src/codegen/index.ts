@@ -24,7 +24,6 @@ import {
     isComponent,
     isInnerHTMLDirective,
     isDynamicDirective,
-    isExternalDirective,
     isKeyDirective,
     isDomDirective,
     isRefDirective,
@@ -95,16 +94,12 @@ function transform(codeGen: CodeGen): t.Expression {
             const expression = codeGen.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
         } else if (isComponent(element)) {
-            if (element.directives.find(isExternalDirective)) {
-                res = codeGen.genElement(name, databag, children);
-            } else {
-                res = codeGen.genCustomElement(
-                    name,
-                    identifierFromComponentName(name),
-                    databag,
-                    children
-                );
-            }
+            res = codeGen.genCustomElement(
+                name,
+                identifierFromComponentName(name),
+                databag,
+                children
+            );
         } else if (isSlot(element)) {
             const defaultSlot = children;
 

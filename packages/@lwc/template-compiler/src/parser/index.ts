@@ -307,10 +307,14 @@ function parseBaseElement(
     } else if (tag !== 'template') {
         // Check if the element tag is a valid custom element name and is not part of known standard
         // element name containing a dash.
-        if (!isCustomElementTag(tag)) {
-            element = ast.element(parse5Elm, parse5ElmLocation);
+        if (isCustomElementTag(tag)) {
+            if (parsedAttr.get(ElementDirectiveName.External)) {
+                element = ast.external(parse5Elm, parse5ElmLocation);
+            } else {
+                element = ast.component(parse5Elm, parse5ElmLocation);
+            }
         } else {
-            element = ast.component(parse5Elm, parse5ElmLocation);
+            element = ast.element(parse5Elm, parse5ElmLocation);
         }
     }
 
@@ -842,24 +846,22 @@ function applyLwcExternalDirective(
     parsedAttr: ParsedAttribute,
     element: BaseElement
 ) {
-    const { name: tag } = element;
-
-    const lwcExternalAttribute = parsedAttr.pick('lwc:external');
+    const lwcExternalAttribute = parsedAttr.pick(ElementDirectiveName.External);
     if (!lwcExternalAttribute) {
         return;
     }
 
-    if (!ast.isComponent(element)) {
+    if (!ast.isExternal(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT, element, [
-            `<${tag}>`,
+            `<${element.name}>`,
         ]);
     }
 
     if (!ast.isBooleanLiteral(lwcExternalAttribute.value)) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_VALUE, element, [`<${tag}>`]);
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_VALUE, element, [
+            `<${element.name}>`,
+        ]);
     }
-
-    element.directives.push(ast.externalDirective(lwcExternalAttribute.location));
 }
 
 function applyLwcDynamicDirective(
@@ -1442,6 +1444,7 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
 
         const isKnownTag =
             ast.isComponent(element) ||
+            ast.isExternal(element) ||
             KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);

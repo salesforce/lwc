@@ -11,6 +11,7 @@ import {
     Literal,
     SourceLocation,
     Element,
+    External,
     Component,
     Expression,
     Comment,
@@ -67,6 +68,23 @@ export function element(
         type: 'Element',
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function external(
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation
+): External {
+    return {
+        type: 'External',
+        name: parse5Elm.nodeName,
+        namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -428,6 +446,10 @@ export function isRoot(node: BaseNode): node is Root {
     return node.type === 'Root';
 }
 
+export function isExternal(node: BaseNode): node is External {
+    return node.type === 'External';
+}
+
 export function isComponent(node: BaseNode): node is Component {
     return node.type === 'Component';
 }
@@ -437,7 +459,7 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node);
+    return isElement(node) || isComponent(node) || isSlot(node) || isExternal(node);
 }
 
 export function isText(node: BaseNode): node is Text {
@@ -512,10 +534,6 @@ export function isDynamicDirective(directive: ElementDirective): directive is Dy
 
 export function isDomDirective(directive: ElementDirective): directive is DomDirective {
     return directive.name === 'Dom';
-}
-
-export function isExternalDirective(directive: ElementDirective): directive is ExternalDirective {
-    return directive.name === 'External';
 }
 
 export function isSpreadDirective(directive: ElementDirective): directive is SpreadDirective {

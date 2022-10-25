@@ -175,6 +175,10 @@ export interface Element extends AbstractBaseElement {
     type: 'Element';
 }
 
+export interface External extends AbstractBaseElement {
+    type: 'External';
+}
+
 export interface Component extends AbstractBaseElement {
     type: 'Component';
 }
@@ -185,7 +189,7 @@ export interface Slot extends AbstractBaseElement {
     slotName: string;
 }
 
-export type BaseElement = Element | Component | Slot;
+export type BaseElement = Element | External | Component | Slot;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
