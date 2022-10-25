@@ -657,6 +657,7 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
 
         // Dive further iff the content is wrapped in a VFragment
         if (isVFragment(vnode)) {
+            // Remove the text delimiter nodes to avoid overriding default slot content
             collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
