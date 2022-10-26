@@ -11,7 +11,7 @@ import {
     Literal,
     SourceLocation,
     Element,
-    External,
+    ExternalComponent,
     Component,
     Expression,
     Comment,
@@ -76,12 +76,12 @@ export function element(
     };
 }
 
-export function external(
+export function externalComponent(
     parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation
-): External {
+): ExternalComponent {
     return {
-        type: 'External',
+        type: 'ExternalComponent',
         name: parse5Elm.nodeName,
         namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
@@ -436,8 +436,8 @@ export function isRoot(node: BaseNode): node is Root {
     return node.type === 'Root';
 }
 
-export function isExternal(node: BaseNode): node is External {
-    return node.type === 'External';
+export function isExternalComponent(node: BaseNode): node is ExternalComponent {
+    return node.type === 'ExternalComponent';
 }
 
 export function isComponent(node: BaseNode): node is Component {
@@ -449,7 +449,7 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node) || isExternal(node);
+    return isElement(node) || isComponent(node) || isSlot(node) || isExternalComponent(node);
 }
 
 export function isText(node: BaseNode): node is Text {

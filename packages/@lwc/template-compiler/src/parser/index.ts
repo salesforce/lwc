@@ -309,7 +309,7 @@ function parseBaseElement(
         // element name containing a dash.
         if (isCustomElementTag(tag)) {
             if (parsedAttr.get(ElementDirectiveName.External)) {
-                element = ast.external(parse5Elm, parse5ElmLocation);
+                element = ast.externalComponent(parse5Elm, parse5ElmLocation);
             } else {
                 element = ast.component(parse5Elm, parse5ElmLocation);
             }
@@ -851,7 +851,7 @@ function applyLwcExternalDirective(
         return;
     }
 
-    if (!ast.isExternal(element)) {
+    if (!ast.isExternalComponent(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT, element, [
             `<${element.name}>`,
         ]);
@@ -1444,7 +1444,7 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
 
         const isKnownTag =
             ast.isComponent(element) ||
-            ast.isExternal(element) ||
+            ast.isExternalComponent(element) ||
             KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);

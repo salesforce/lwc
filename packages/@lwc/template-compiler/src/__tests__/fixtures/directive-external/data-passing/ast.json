@@ -90,7 +90,7 @@
                 "children": []
             },
             {
-                "type": "External",
+                "type": "ExternalComponent",
                 "name": "x-test",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {
@@ -151,7 +151,7 @@
                 "children": []
             },
             {
-                "type": "External",
+                "type": "ExternalComponent",
                 "name": "foo-bar",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {

@@ -14,7 +14,7 @@ import {
     SVG_NAMESPACE,
 } from '@lwc/shared';
 
-import { isComponent, isExternal } from '../shared/ast';
+import { isComponent, isExternalComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
@@ -206,7 +206,7 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 
     // External custom elements default to setting data as attributes. These might be set as
     // properties during runtime, depending on runtime heuristics.
-    if (isExternal(element)) {
+    if (isExternalComponent(element)) {
         return true;
     }
 
