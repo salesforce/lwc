@@ -1,0 +1,6 @@
+{
+    "props": {
+        "foo": "configured foo",
+        "bar": "configured bar"
+    }
+}
