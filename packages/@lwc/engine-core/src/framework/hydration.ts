@@ -446,12 +446,13 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     }
 
     let nodesAreCompatible = true;
-    let vnodeClassName;
+    let readableVnodeClassname;
 
-    if (!isUndefined(className) && String(className) !== getProperty(elm, 'className')) {
+    const elmClassName = getProperty(elm, 'className');
+    if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
-        vnodeClassName = className;
+        readableVnodeClassname = className;
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
         const classList = getClassList(elm);
@@ -465,11 +466,15 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
-        vnodeClassName = computedClassName.trim();
+        readableVnodeClassname = computedClassName.trim();
 
         if (classList.length > keys(classMap).length) {
             nodesAreCompatible = false;
         }
+    } else if (isUndefined(className) && elmClassName !== '') {
+        // SSR contains a className but client-side VDOM does not
+        nodesAreCompatible = false;
+        readableVnodeClassname = '';
     }
 
     if (!nodesAreCompatible) {
@@ -478,10 +483,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${getProperty(
-                    elm,
-                    'className'
-                )}"`,
+                ).toLowerCase()}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
                 vnode.owner
             );
         }
