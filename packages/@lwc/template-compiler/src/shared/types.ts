@@ -170,6 +170,10 @@ export interface Element extends AbstractBaseElement {
     type: 'Element';
 }
 
+export interface ExternalComponent extends AbstractBaseElement {
+    type: 'ExternalComponent';
+}
+
 export interface Component extends AbstractBaseElement {
     type: 'Component';
 }
@@ -180,7 +184,7 @@ export interface Slot extends AbstractBaseElement {
     slotName: string;
 }
 
-export type BaseElement = Element | Component | Slot;
+export type BaseElement = Element | ExternalComponent | Component | Slot;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
@@ -289,6 +293,7 @@ export type Node =
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
     Dynamic = 'lwc:dynamic',
+    External = 'lwc:external',
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',
     SlotBind = 'lwc:slot-bind',
