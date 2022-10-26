@@ -100,10 +100,6 @@ export interface DomDirective extends Directive<'Dom'> {
     value: Literal<'manual'>;
 }
 
-export interface ExternalDirective extends Directive<'External'> {
-    value: Literal<boolean>;
-}
-
 export interface SpreadDirective extends Directive<'Spread'> {
     value: Expression;
 }
@@ -136,7 +132,6 @@ export type ElementDirective =
     | KeyDirective
     | DynamicDirective
     | DomDirective
-    | ExternalDirective
     | InnerHTMLDirective
     | RefDirective
     | SlotBindDirective
