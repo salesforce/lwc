@@ -22,6 +22,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import api, { RenderAPI } from './api';
 import {
+    clearSubscriptions,
     RenderMode,
     resetComponentRoot,
     runWithBoundaryProtection,
@@ -283,6 +284,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
+                // clear subscriptions.
+                clearSubscriptions(vm);
+                context.tplCache.__storeCache__ = new Map<Object, unknown>();
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {

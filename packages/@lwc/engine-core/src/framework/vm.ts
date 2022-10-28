@@ -98,6 +98,8 @@ export interface Context {
     wiredConnecting: Array<() => void>;
     /** List of wire hooks that are invoked when the component gets disconnected. */
     wiredDisconnecting: Array<() => void>;
+
+    storeSubscriptions: Array<() => void>;
 }
 
 export type RefVNodes = { [name: string]: VBaseElement };
@@ -242,6 +244,8 @@ function resetComponentStateWhenRemoved(vm: VM) {
         for (const key in oar) {
             oar[key].reset();
         }
+        clearSubscriptions(vm);
+
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
@@ -319,6 +323,7 @@ export function createVM<HostNode, HostElement>(
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
+            storeSubscriptions: EmptyArray,
         },
 
         // Properties set right after VM creation.
@@ -567,6 +572,16 @@ export function runConnectedCallback(vm: VM) {
 
 function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
+}
+
+export function clearSubscriptions(vm: VM) {
+    const {
+        context: { storeSubscriptions },
+    } = vm;
+
+    for (let i = 0, n = storeSubscriptions.length; i < n; i++) {
+        storeSubscriptions[i]();
+    }
 }
 
 function runDisconnectedCallback(vm: VM) {

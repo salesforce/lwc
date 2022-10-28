@@ -30,7 +30,7 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray, setRefVNode } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { ShadowMode, SlotSet, VM, RenderMode, scheduleRehydration } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
@@ -48,6 +48,7 @@ import {
     isVScopedSlotFragment,
     VScopedSlotFragment,
 } from './vnodes';
+import { markComponentAsDirty } from './component';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -438,6 +439,35 @@ function t(text: string): VText {
     };
 }
 
+// [s]tore [v]alue
+function sv(store: any): any {
+    const vm = getVMBeingRendered()!;
+    const cache = vm.context.tplCache.__storeCache__; // @todo: this is a hack, fix me please!
+    let value;
+    let subsequentCall = false;
+
+    if (cache.has(store)) {
+        return cache.get(store);
+    }
+
+    const unsubscribe = store.subscribe((v: any) => {
+        value = v;
+        cache.set(store, v);
+
+        if (subsequentCall && isFalse(vm.isDirty)) {
+            // forcing the vm to rehydrate in the next tick
+            markComponentAsDirty(vm);
+            scheduleRehydration(vm);
+        } else {
+            subsequentCall = true;
+        }
+    });
+
+    ArrayPush.apply(vm.context.storeSubscriptions, unsubscribe);
+
+    return value;
+}
+
 // [co]mment node
 function co(text: string): VComment {
     let sel, elm;
@@ -628,6 +658,7 @@ const api = ObjectFreeze({
     fid,
     shc,
     ssf,
+    sv,
 });
 
 export default api;

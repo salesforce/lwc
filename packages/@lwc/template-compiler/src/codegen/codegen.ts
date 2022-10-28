@@ -45,7 +45,8 @@ type RenderPrimitive =
     | 'sanitizeHtmlContent'
     | 'fragment'
     | 'staticFragment'
-    | 'scopedSlotFactory';
+    | 'scopedSlotFactory'
+    | 'storeValue';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -71,6 +72,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
     scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
+    storeValue: { name: 'sv', alias: 'api_store_value' },
 };
 
 interface Scope {
@@ -423,6 +425,23 @@ export default class CodeGen {
         return false;
     }
 
+    genBindExprOrService(node: t.Identifier): t.Expression {
+        if (node.name.startsWith('$')) {
+            // this is a service expression
+            const prop = node.name.substring(1);
+
+            node.name = prop;
+
+            const store = t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.INSTANCE),
+                t.identifier(prop)
+            );
+            return this._renderApiCall(RENDER_APIS.storeValue, [store]);
+        } else {
+            return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node);
+        }
+    }
+
     /**
      * Bind the passed expression to the component instance. It applies the following transformation to the expression:
      * - {value} --> {$cmp.value}
@@ -431,7 +450,7 @@ export default class CodeGen {
     bindExpression(expression: Expression | Literal): t.Expression {
         if (t.isIdentifier(expression)) {
             if (!this.isLocalIdentifier(expression)) {
-                return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
+                return this.genBindExprOrService(expression);
             } else {
                 return expression;
             }
@@ -447,7 +466,7 @@ export default class CodeGen {
                     parent.object === node &&
                     !scope.isLocalIdentifier(node)
                 ) {
-                    this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
+                    this.replace(scope.genBindExprOrService(node));
                 }
             },
         });
