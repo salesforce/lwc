@@ -14,6 +14,7 @@ export const enum VNodeType {
     Text,
     Comment,
     Element,
+    ExternalCustomElement,
     CustomElement,
     Static,
     Fragment,
@@ -24,11 +25,12 @@ export type VNode =
     | VText
     | VComment
     | VElement
+    | VExternalCustomElement
     | VCustomElement
     | VStatic
     | VFragment
     | VScopedSlotFragment;
-export type VParentElement = VElement | VCustomElement | VFragment;
+
 export type VNodes = Readonly<Array<VNode | null>>;
 
 export interface BaseVParent {
@@ -90,6 +92,10 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
 
 export interface VElement extends VBaseElement {
     type: VNodeType.Element;
+}
+
+export interface VExternalCustomElement extends VBaseElement {
+    type: VNodeType.ExternalCustomElement;
 }
 
 export interface VCustomElement extends VBaseElement {
