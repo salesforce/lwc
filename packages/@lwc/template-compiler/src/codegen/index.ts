@@ -112,6 +112,10 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
+        // see if there's a better place.
+        if (consecutiveText.length === 1 && codeGen.isStoreExpr(consecutiveText[0].value)) {
+            return codeGen.genTextBoundToStore(consecutiveText[0].value as t.Identifier);
+        }
         return codeGen.genText(
             consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);

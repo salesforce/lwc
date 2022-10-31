@@ -161,30 +161,46 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
 }
 
 function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
-    n2.elm = n1.elm;
+    const { text, owner, store } = n2;
+    const elm = (n2.elm = n1.elm!);
 
-    if (n2.text !== n1.text) {
-        updateTextContent(n2, renderer);
+    if (!isUndefined(store)) {
+        const unsubscribe = store.subscribe((v: any) => updateTextContent(elm, v, renderer));
+        ArrayPush.call(owner.context.storeSubscriptions, unsubscribe);
+
+        return;
+    }
+
+    if (text !== n1.text) {
+        updateTextContent(elm, text, renderer);
     }
 }
 
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
-    const { owner } = vnode;
-    const { createText } = renderer;
+    const { owner, store } = vnode;
+    const { createText, setText } = renderer;
 
-    const textNode = (vnode.elm = createText(vnode.text));
+    const textNode = (vnode.elm = createText(''));
+
+    if (!isUndefined(store)) {
+        const unsubscribe = store.subscribe((v: any) => setText(textNode, v));
+        ArrayPush.call(owner.context.storeSubscriptions, unsubscribe);
+    } else {
+        setText(textNode, vnode.text);
+    }
+
     linkNodeToShadow(textNode, owner, renderer);
 
     insertNode(textNode, parent, anchor, renderer);
 }
 
 function patchComment(n1: VComment, n2: VComment, renderer: RendererAPI) {
-    n2.elm = n1.elm;
+    n2.elm = n1.elm!;
 
     // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
     // it is the case today.
     if (n2.text !== n1.text) {
-        updateTextContent(n2, renderer);
+        updateTextContent(n2.elm, n2.text, renderer);
     }
 }
 
@@ -496,14 +512,11 @@ function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
     }
 }
 
-function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
-    const { elm, text } = vnode;
-    const { setText } = renderer;
-
+function updateTextContent(elm: Node, text: string, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    setText(elm, text!);
+    renderer.setText(elm, text!);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }

@@ -47,6 +47,7 @@ import {
     VFragment,
     isVScopedSlotFragment,
     VScopedSlotFragment,
+    Store,
 } from './vnodes';
 import { markComponentAsDirty } from './component';
 
@@ -440,7 +441,7 @@ function t(text: string): VText {
 }
 
 // [s]tore [v]alue
-function sv(store: any): any {
+function sv(store: Store): any {
     const vm = getVMBeingRendered()!;
     const cache = vm.context.tplCache.__storeCache__; // @todo: this is a hack, fix me please!
     let value;
@@ -463,9 +464,17 @@ function sv(store: any): any {
         }
     });
 
-    ArrayPush.apply(vm.context.storeSubscriptions, unsubscribe);
+    ArrayPush.call(vm.context.storeSubscriptions, unsubscribe);
 
     return value;
+}
+
+// [b]ound [t]ext
+function bt(store: Store) {
+    const textVnode = t('');
+    textVnode.store = store;
+
+    return textVnode;
 }
 
 // [co]mment node
@@ -659,6 +668,7 @@ const api = ObjectFreeze({
     shc,
     ssf,
     sv,
+    bt,
 });
 
 export default api;

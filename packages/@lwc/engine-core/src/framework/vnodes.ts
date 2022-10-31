@@ -67,11 +67,16 @@ export interface VFragment extends BaseVNode, BaseVParent {
     stable: 0 | 1;
 }
 
+export interface Store {
+    subscribe: (cb: (value: any) => void) => () => void;
+}
+
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
     text: string;
     key: undefined;
+    store?: Store;
 }
 
 export interface VComment extends BaseVNode {

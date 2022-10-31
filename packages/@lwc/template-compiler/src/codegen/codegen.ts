@@ -46,7 +46,8 @@ type RenderPrimitive =
     | 'fragment'
     | 'staticFragment'
     | 'scopedSlotFactory'
-    | 'storeValue';
+    | 'storeValue'
+    | 'boundText';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -73,6 +74,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
     scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
     storeValue: { name: 'sv', alias: 'api_store_value' },
+    boundText: { name: 'bt', alias: 'api_bound_text' },
 };
 
 interface Scope {
@@ -195,6 +197,22 @@ export default class CodeGen {
         }
 
         return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+    }
+
+    isStoreExpr(expr: Literal | Expression): boolean {
+        // for now, let's say it is?
+        // only identifiers that have a store.
+
+        return t.isIdentifier(expr) && expr.name.startsWith('$');
+    }
+
+    genTextBoundToStore(expr: t.Identifier): t.Expression {
+        return this._renderApiCall(RENDER_APIS.boundText, [
+            t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.INSTANCE),
+                t.identifier(expr.name.substring(1))
+            ),
+        ]);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {
@@ -432,10 +450,17 @@ export default class CodeGen {
 
             node.name = prop;
 
-            const store = t.memberExpression(
-                t.identifier(TEMPLATE_PARAMS.INSTANCE),
-                t.identifier(prop)
-            );
+            let store;
+            // handles the case of a foreach.
+            if (this.isLocalIdentifier(node)) {
+                store = node;
+            } else {
+                store = t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.INSTANCE),
+                    t.identifier(prop)
+                );
+            }
+
             return this._renderApiCall(RENDER_APIS.storeValue, [store]);
         } else {
             return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node);

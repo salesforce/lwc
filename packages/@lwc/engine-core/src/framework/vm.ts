@@ -323,7 +323,7 @@ export function createVM<HostNode, HostElement>(
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
-            storeSubscriptions: EmptyArray,
+            storeSubscriptions: [],
         },
 
         // Properties set right after VM creation.
