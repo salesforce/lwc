@@ -22,9 +22,11 @@
         "dist/"
     ],
     "dependencies": {
-        "@babel/core": "~7.19.1",
+        "@babel/core": "~7.19.6",
         "@babel/plugin-proposal-class-properties": "~7.18.6",
         "@babel/plugin-proposal-object-rest-spread": "~7.18.9",
+        "@babel/plugin-proposal-decorators": "~7.20.0",
+        "@babel/plugin-proposal-class-static-block": "~7.18.6",
         "@lwc/babel-plugin-component": "2.29.0",
         "@lwc/errors": "2.29.0",
         "@lwc/shared": "2.29.0",

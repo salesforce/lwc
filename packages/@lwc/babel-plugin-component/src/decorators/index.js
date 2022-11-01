@@ -17,9 +17,9 @@ const {
 
 const api = require('./api');
 const wire = require('./wire');
-const track = require('./track');
+// const track = require('./track');
 
-const DECORATOR_TRANSFORMS = [api, wire, track];
+const DECORATOR_TRANSFORMS = [api, wire];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
 function isLwcDecoratorName(name) {
@@ -178,7 +178,7 @@ function getDecoratorMetadata(decoratorPath) {
 function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
     const list = [
         ...api.transform(t, decoratorMetas, classBodyItems),
-        ...track.transform(t, decoratorMetas),
+        //...track.transform(t, decoratorMetas),
         ...wire.transform(t, decoratorMetas),
     ];
 
