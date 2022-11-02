@@ -178,6 +178,50 @@ declare module 'lwc' {
         readonly shadowRoot: null;
     }
 
+    interface ModalOpenParams {
+        /**
+         * Sets the modal's title and assistive device label. If the modal has a header, set label in the lightning-modal-header component. If the modal doesn't have a header, set the label property when opening the modal.
+         */
+        label: string;
+        /**
+         * Determines how much of the viewport width the modal uses. Supported values are small, medium, and large, which you can set when you open the modal. Default value is medium. The length of the modal is determined by the amount of content.
+         */
+        size?: 'small' | 'medium' | 'large';
+        /**
+         * Sets the modal's accessible description. It uses the aria-description attribute where supported, or falls back to aria-describedby. If you set a custom description value, include the label name at the beginning of your description, because some screen readers only read the description, and not the label.
+         */
+        description?: string;
+        /**
+         * Prevents closing the modal by normal means like the ESC key, the close button, or .close(). For example, you could briefly set disableClose to true while a completed form is saving, so the user doesn't dismiss the modal early. See [Use the disableClose Attribute](https://developer.salesforce.com/docs/component-library/bundle/lightning-modal/documentation#use-the-disableclose-attribute).
+         */
+        disableClose?: boolean;
+        /**
+         * To pass data from your invoking component into the modal with custom properties decorated with @api. These properties can be any type, such as a string or an object that’s an array of key/value pairs to be assigned to the new modal instance.
+         */
+        [key: string]: any;
+    }
+
+    /**
+     * Base class for the Lightning Modal JavaScript class
+     */
+    export class LightningModal extends HTMLElementTheGoodPart {
+        /**
+         * LightningModal provides an .open() method which opens a modal and returns a promise that asynchronously resolves with the result of the user’s interaction with the modal.
+         * Each invocation of a modal component’s .open() method creates a unique instance of the modal. You can think of a modal as a self-contained application that starts from scratch when it opens. It displays the content you pass in through the .open() method or that you set within the modal's HTML template.
+         * When you close a modal, the modal instance is destroyed, not hidden. On close, the modal must save the user’s input data or pass it to the invoking component as the promise result. Otherwise, the data is lost when the modal instance is closed.
+         * The .open() method lets you assign values to the modal's properties.
+         *
+         * @param param an object containing values to map to the modal's properties
+         */
+        static open(param: ModalOpenParams): Promise<any>;
+        /**
+         * close the modal, where result is anything you want to return from the modal. The .close() operation is asynchronous to display a brief fade out animation before the modal is destroyed. The result data can’t be modified after the close operation begins.
+         *
+         * @param param the value to resolve to the invoker on the `open` method
+         */
+        close(param: any): Promise<any>;
+    }
+
     /**
      * Decorator to mark public reactive properties
      */
