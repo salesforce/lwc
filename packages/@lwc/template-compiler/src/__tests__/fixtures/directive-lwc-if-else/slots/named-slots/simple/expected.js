@@ -9,6 +9,7 @@ const stc1 = {
   },
   key: 2,
 };
+const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -32,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ],
               0
             )
-          : null,
+          : api_fragment(1, stc2, 0),
       ]
     ),
   ];

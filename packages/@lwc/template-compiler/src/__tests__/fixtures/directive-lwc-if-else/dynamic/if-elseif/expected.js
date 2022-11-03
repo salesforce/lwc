@@ -3,6 +3,7 @@ const $fragment1 = parseFragment`<h1${3}>if condition</h1>`;
 const stc0 = {
   key: 3,
 };
+const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
@@ -18,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
           0
         )
-      : null,
+      : api_fragment(0, stc1, 0),
   ];
   /*LWC compiler vX.X.X*/
 }

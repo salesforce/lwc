@@ -92,7 +92,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                                   ],
                                   0
                                 )
-                              : null,
+                              : api_fragment(5, stc1, 0),
                           ],
                           0
                         )

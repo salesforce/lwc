@@ -6,6 +6,7 @@ const stc0 = {
 const stc1 = {
   key: 2,
 };
+const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, c: api_custom_element, fr: api_fragment } = $api;
   return [
@@ -29,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ],
           0
         )
-      : null,
+      : api_fragment(0, stc2, 0),
   ];
   /*LWC compiler vX.X.X*/
 }

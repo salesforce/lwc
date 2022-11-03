@@ -82,12 +82,13 @@ function st(fragment: Element, key: Key): VStatic {
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
+    const fChildren = children.length > 0 ? [t(''), ...children, t('')] : [];
     return {
         type: VNodeType.Fragment,
         sel: undefined,
         key,
         elm: undefined,
-        children: [t(''), ...children, t('')],
+        children: fChildren,
         stable,
         owner: getVMBeingRendered()!,
     };

@@ -4,6 +4,7 @@
     "version": "2.29.0",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/test/local.js",
+        "start:native": "DISABLE_SYNTHETIC=1 yarn start",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
         "test:compat": "COMPAT=1 yarn test",
         "test:native": "DISABLE_SYNTHETIC=1 yarn test",

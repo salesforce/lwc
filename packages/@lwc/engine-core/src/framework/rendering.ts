@@ -14,6 +14,7 @@ import {
     isFalse,
     isNull,
     isUndefined,
+    forEach,
     keys,
     SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
@@ -213,7 +214,7 @@ function mountFragment(
     mountVNodes(children, parent, renderer, anchor);
 
     // children of a fragment will always have at least the two delimiters.
-    vnode.elm = children[children.length - 1]!.elm;
+    vnode.elm = children[children.length - 1]?.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -482,7 +483,7 @@ function unmountVNodes(
 }
 
 function isVNode(vnode: any): vnode is VNode {
-    return vnode != null;
+    return vnode != null && (!isVFragment(vnode) || vnode.children.length > 0);
 }
 
 function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
@@ -600,8 +601,6 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     // In case #2, we will always get a fresh VCustomElement.
     const children = vnode.aChildren || vnode.children;
 
-    vm.aChildren = children;
-
     const { renderMode, shadowMode } = vm;
     if (process.env.NODE_ENV !== 'production') {
         // If any of the children being allocated is a scoped slot fragment, make sure the receiving
@@ -618,6 +617,22 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
             );
         }
     }
+
+    if (shadowMode === ShadowMode.Native && renderMode === RenderMode.Shadow) {
+        // flatten vfragment nodes and mark dynamic
+        const { flattened, flattenedChildren } = flattenFragmentChildren(children);
+
+        if (flattened) {
+            markAsDynamicChildren(flattenedChildren);
+            vm.aChildren = flattenedChildren;
+            vnode.children = flattenedChildren;
+        } else {
+            vm.aChildren = children;
+        }
+    } else {
+        vm.aChildren = children;
+    }
+
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
         allocateInSlot(vm, children, vnode.owner);
@@ -626,6 +641,26 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
+}
+
+function flattenFragmentChildren(children: readonly (VNode | null)[]): {
+    flattened: boolean;
+    flattenedChildren: (VNode | null)[];
+} {
+    const flattenedChildren: (VNode | null)[] = [];
+    let flattened = false;
+    forEach.call(children, (childNode) => {
+        if (childNode && isVFragment(childNode)) {
+            const { flattenedChildren: flattenedDescendants } = flattenFragmentChildren(
+                childNode.children.slice(1, -1)
+            );
+            flattenedChildren.push(...flattenedDescendants);
+            flattened = true;
+        } else {
+            flattenedChildren.push(childNode);
+        }
+    });
+    return { flattened, flattenedChildren };
 }
 
 function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
