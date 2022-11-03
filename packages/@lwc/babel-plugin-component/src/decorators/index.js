@@ -230,7 +230,10 @@ function decorators({ types: t }) {
                 return;
             }
 
-            decoratorPaths.forEach((path) => path.remove());
+            decoratorPaths.forEach(
+                (path, index) =>
+                    ['api', 'wire'].includes(decoratorMetas[index].name) && path.remove()
+            );
 
             const isAnonymousClassDeclaration =
                 path.isClassDeclaration() && !path.get('id').isIdentifier();

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, toString } from '@lwc/shared';
+import { assert, defineProperty, getOwnPropertyDescriptor, toString } from '@lwc/shared';
 import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
@@ -13,17 +13,34 @@ import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 import { updateComponentValue } from '../update-component-value';
 
+import { ClassFieldDecorator } from './types';
+import { validateFieldDecoratedWithTrack } from './register';
+
 /**
  * @track decorator function to mark field value as reactive in
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
  */
-export default function track(
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-): any;
-export default function track(target: any): any {
+const track: ClassFieldDecorator = (value, context) => {
+    if (context.kind == 'field') {
+        const { name } = context;
+        return function (this: LightningElement, initialValue) {
+            if (process.env.NODE_ENV !== 'production') {
+                const vm = getAssociatedVM(this);
+                const descriptor = getOwnPropertyDescriptor(vm.def.ctor, name);
+                if (descriptor) {
+                    validateFieldDecoratedWithTrack(vm.def.ctor, name as string, descriptor);
+                }
+            }
+            defineProperty(this, name, internalTrackDecorator(name as string));
+            return initialValue;
+        };
+    } else throw Error('@track decorator can only be applied to class properties.');
+};
+
+export default track;
+
+/* export default function track(target: any): any {
     if (arguments.length === 1) {
         return getReactiveProxy(target);
     }
@@ -33,7 +50,7 @@ export default function track(target: any): any {
         );
     }
     throw new Error();
-}
+} */
 
 export function internalTrackDecorator(key: string): PropertyDescriptor {
     return {

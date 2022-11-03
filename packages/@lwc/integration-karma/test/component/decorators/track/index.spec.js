@@ -82,7 +82,6 @@ describe('object mutations', () => {
     it('rerenders the component when a property is updated', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
-
         expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('0');
 
         elm.mutateCmp((cmp) => (cmp.nestedObj.value.nestedValue = 1));
@@ -165,6 +164,18 @@ describe('array mutations', () => {
         elm.mutateCmp((cmp) => cmp.array.unshift(4));
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.array').textContent).toBe('4123');
+        });
+    });
+
+    it('rerenders the component on changes to a tracked property who is initialized', () => {
+        const elm = createElement('x-properties', { is: Properties });
+        document.body.appendChild(elm);
+        expect(elm.shadowRoot.querySelector('.late-initialization').textContent).toBe('bar');
+        elm.mutateCmp((cmp) => {
+            cmp.lateInit.value = 'baz';
+        });
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.late-initialization').textContent).toBe('baz');
         });
     });
 });

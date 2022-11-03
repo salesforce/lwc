@@ -95,7 +95,7 @@ function validateObservedField(
     }
 }
 
-function validateFieldDecoratedWithTrack(
+export function validateFieldDecoratedWithTrack(
     Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined

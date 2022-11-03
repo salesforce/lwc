@@ -2,6 +2,13 @@ import { LightningElement, api, track } from 'lwc';
 
 export default class Properties extends LightningElement {
     @track
+    lateInit;
+
+    connectedCallback() {
+        this.lateInit = { value: 'bar' };
+    }
+
+    @track
     prop = 0;
 
     @track
