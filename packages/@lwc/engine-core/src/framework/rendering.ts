@@ -618,31 +618,34 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         }
     }
 
-    if (shadowMode === ShadowMode.Native && renderMode === RenderMode.Shadow) {
-        // flatten vfragment nodes and mark dynamic
-        const { flattened, flattenedChildren } = flattenFragmentChildren(children);
+    // flatten vfragment nodes and mark dynamic
+    const { flattened, flattenedChildren } = flattenFragmentChildren(children);
+    const allocatedChildren = flattened ? flattenedChildren : children;
 
-        if (flattened) {
-            markAsDynamicChildren(flattenedChildren);
-            vm.aChildren = flattenedChildren;
-            vnode.children = flattenedChildren;
-        } else {
-            vm.aChildren = children;
-        }
-    } else {
-        vm.aChildren = children;
+    if (flattened) {
+        markAsDynamicChildren(flattenedChildren);
+        vnode.children = flattenedChildren;
     }
+    vm.aChildren = allocatedChildren;
 
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children, vnode.owner);
+        allocateInSlot(vm, allocatedChildren, vnode.owner);
         // save the allocated children in case this vnode is reused.
-        vnode.aChildren = children;
+        vnode.aChildren = allocatedChildren;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
 }
 
+/**
+ * Flattens the contents of all VFragments in an array of VNodes and removes the text delimiters on those VFragments.
+ * Returns an array of the flattened nodes along with a boolean indicating whether flattening occurred.
+ * Note that with the VFragment delimiters removed and their children flattened, the contents must be treated as dynamic
+ * for them to rerender correctly.
+ *
+ * This function should be used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
+ */
 function flattenFragmentChildren(children: readonly (VNode | null)[]): {
     flattened: boolean;
     flattenedChildren: (VNode | null)[];
@@ -690,20 +693,10 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-/**
- * Collects all slots into a SlotSet, traversing through VFragment Nodes
- */
 function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
-            continue;
-        }
-
-        // Dive further iff the content is wrapped in a VFragment
-        if (isVFragment(vnode)) {
-            // Remove the text delimiter nodes to avoid overriding default slot content
-            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
 

@@ -267,6 +267,13 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 }
             }
 
+            function verifyDefaultSlotContent(child) {
+                const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
+
+                expect(assignedNodes.length).toBe(0);
+                expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
+            }
+
             it('should properly assign content for named slots', () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 document.body.appendChild(element);
@@ -281,21 +288,40 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 });
             });
 
+            it('should properly rerender content for named slots', () => {
+                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                element.condition = true;
+
+                document.body.appendChild(element);
+                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+
+                verifyExpectedNamedSlotContent(child, true);
+                verifyDefaultSlotContent(child);
+
+                element.condition = false;
+                return Promise.resolve()
+                    .then(() => {
+                        verifyExpectedNamedSlotContent(child, false);
+                        verifyDefaultSlotContent(child);
+                        element.condition = true;
+                    })
+                    .then(() => {
+                        verifyExpectedNamedSlotContent(child, true);
+                        verifyDefaultSlotContent(child);
+                    });
+            });
+
             it('should not override default slot content when no elements are explicitly passed to the default slot', () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 document.body.appendChild(element);
 
                 const child = element.shadowRoot.querySelector('x-child-with-named-slot');
-                const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
-
-                expect(assignedNodes.length).toBe(0);
-                expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
+                verifyDefaultSlotContent(child);
 
                 element.nestedNamedSlot = true;
                 return Promise.resolve().then(() => {
-                    expect(assignedNodes.length).toBe(0);
-                    expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
+                    verifyDefaultSlotContent(child);
                 });
             });
 
@@ -308,31 +334,29 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 const child = element.shadowRoot.querySelector('x-child-with-named-slot');
                 const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
 
-                expect(assignedNodes.length).toBe(1);
+                expect(assignedNodes.length).toBe(2);
                 expect(assignedNodes[0].innerHTML).toBe('nested default slot content');
+                expect(assignedNodes[1].innerHTML).toBe('additional default slot content');
             });
 
-            it('should properly rerender content for named slots', () => {
+            it('should properly rerender nested conditional slot content', () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
-
+                element.nestedDefaultSlot = true;
                 document.body.appendChild(element);
+
                 const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
 
-                verifyExpectedNamedSlotContent(child, true);
-                expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
+                expect(assignedNodes.length).toBe(3);
 
-                element.condition = false;
-                return Promise.resolve()
-                    .then(() => {
-                        verifyExpectedNamedSlotContent(child, false);
-                        expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
-                        element.condition = true;
-                    })
-                    .then(() => {
-                        verifyExpectedNamedSlotContent(child, true);
-                        expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
-                    });
+                element.nestedNamedSlot = true;
+                element.nestedDefaultSlot = false;
+                return Promise.resolve().then(() => {
+                    const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
+                    expect(assignedNodes.length).toBe(4);
+                    expect(assignedNodes[2].innerHTML).toBe('nested slot content');
+                });
             });
         });
     });
