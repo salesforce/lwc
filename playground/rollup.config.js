@@ -2,6 +2,7 @@ import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const __ENV__ = process.env.NODE_ENV ?? 'development';
 
@@ -19,7 +20,11 @@ export default (args) => {
                 'process.env.NODE_ENV': JSON.stringify(__ENV__),
                 preventAssignment: true,
             }),
-            lwc(),
+            nodeResolve(),
+            lwc({
+                exclude: ['/Users/jrodriguezvelasco/projects/github/lwc/node_modules/@preact/signals-core/dist/signals-core.mjs']
+            }),
+
             args.watch &&
                 serve({
                     open: false,

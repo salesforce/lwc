@@ -16,7 +16,7 @@ describe('fixtures', () => {
     testFixtureDir(
         {
             root: path.resolve(__dirname, 'fixtures'),
-            pattern: '**/actual.html',
+            pattern: '**/boolean-attribute/required/actual.html',
         },
         ({ src, dirname }) => {
             const configPath = path.resolve(dirname, 'config.json');

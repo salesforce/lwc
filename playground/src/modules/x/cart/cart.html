@@ -1,0 +1,21 @@
+<template>
+    <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-primary">Your cart</span>
+        <span class="badge bg-primary rounded-pill">{$items}</span>
+      </h4>
+      <ul class="list-group mb-3">
+        <template for:each={$contents} for:item="content">
+            <li key={content.id} class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                  <h6 class="my-0">{content.item.title}</h6>
+                  <small style="display: block; max-width: 200px;" class="text-muted text-truncate">{content.item.description}</small>
+                </div>
+                <span class="text-muted text-truncate">{content.qty}x${content.item.price} = ${content.lineTotal}</span>
+              </li>
+          </template>
+        <li class="list-group-item d-flex justify-content-between">
+          <span>Total (USD)</span>
+          <strong>${total}</strong>
+        </li>
+      </ul>
+</template>

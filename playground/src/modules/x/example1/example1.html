@@ -1,0 +1,10 @@
+<template>
+    <input oninput={handleFilterChange} value={$filter} />
+    <ul>
+        <template for:each={cities} for:item="city">
+            <li key={city.value.id}>
+                <x-city-details city={city}></x-city-details>
+            </li>
+        </template>
+    </ul>
+</template>

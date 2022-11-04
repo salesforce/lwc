@@ -1,4 +1,103 @@
 <template>
-    <h1>Hello world!</h1>
-    <x-counter></x-counter>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
+            <div class="container-xl">
+              <a class="navbar-brand" href="#">LWC stores</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+        
+              <div class="collapse navbar-collapse" id="navbarsExample07XL">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#/home">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#/mouse">Mouse Position</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#/products">Products</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+      </header>
+      
+      <div class="container">
+        <br>
+      <main>
+      
+        <!-- <section class="py-5 text-center container">
+          <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+              <h1 class="fw-light">Album example</h1>
+              <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
+              <p>
+                <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+              </p>
+            </div>
+          </div>
+        </section>
+       -->
+       <div class="row g-5">
+        <div class="col-md-5 col-lg-4 order-md-last">
+          <x-cart></x-cart>
+        </div>
+        <div class="col-md-7 col-lg-8">
+            <x-page lwc:dynamic={$page}></x-page>
+        </div>
+      </div>
+
+        <!-- <div class="container py-4 py-5 bg-light">
+            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                <div class="col d-flex align-items-start">
+                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                    <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>
+                  </div>
+                  <div>
+                    <h3 class="fs-2">Featured title</h3>
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
+                    <a href="#" class="btn btn-primary">
+                      Primary button
+                    </a>
+                  </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                    <svg class="bi" width="1em" height="1em"><use xlink:href="#cpu-fill"></use></svg>
+                  </div>
+                  <div>
+                    <h3 class="fs-2">Featured title</h3>
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
+                    <a href="#" class="btn btn-primary">
+                      Primary button
+                    </a>
+                  </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                    <svg class="bi" width="1em" height="1em"><use xlink:href="#tools"></use></svg>
+                  </div>
+                  <div>
+                    <h3 class="fs-2">Featured title</h3>
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
+                    <a href="#" class="btn btn-primary">
+                      Primary button
+                    </a>
+                  </div>
+                </div>
+              </div>
+        </div> -->
+      
+      </main>
+    </div>
+      <footer class="text-muted py-5">
+        <div class="container">
+                <p>&copy; Salesforce 2022</p>
+        </div>
+      </footer>
+    
+    
 </template>

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import {ArrayPush, assign, hasOwnProperty, htmlPropertyToAttribute, isNull, isUndefined} from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
@@ -55,6 +55,26 @@ export function patchProps(
 
     for (const key in props) {
         const cur = props[key];
+
+        // if (cur != null && 'subscribe' in cur) { // it may be a signal from the compiler
+        //     // this is a store,
+        //     const subscription = (cur as any).subscribe((v: any) => {
+        //         // @todo: we may want to avoid updates if the prop hasn't changed.
+        //         if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
+        //             if (!(key in elm!)) {
+        //                 logWarn(
+        //                     `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
+        //                         key
+        //                     )}", or the attribute does not exist in this browser or DOM implementation.`
+        //                 );
+        //             }
+        //         }
+        //         setProperty(elm!, key, v);
+        //     });
+        //
+        //     ArrayPush.call(vnode.owner.context.storeSubscriptions, subscription);
+        //     continue;
+        // }
 
         // Set the property if it's the first time is is patched or if the previous property is
         // different than the one previously set.

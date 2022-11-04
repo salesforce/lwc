@@ -1,0 +1,14 @@
+<template>
+    <h2 class="pb-2 border-bottom">Products</h2>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <template for:each={products} for:item="product" for:index="idx">
+            <div key={product.id} class="col d-flex align-items-start">
+                <div>
+                    <h3 class="fs-2">{product.title}</h3>
+                    <p>{product.description}.</p>
+                    <a href="#" data-id={idx} onclick={addToCart} class="btn btn-primary">add to cart</a>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

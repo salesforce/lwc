@@ -8,6 +8,7 @@
         "build": "NODE_ENV=production rollup -c"
     },
     "devDependencies": {
+        "@preact/signals-core": "^1.1.2",
         "@lwc/rollup-plugin": "2.29.0",
         "@rollup/plugin-replace": "^4.0.0",
         "lwc": "2.29.0",
