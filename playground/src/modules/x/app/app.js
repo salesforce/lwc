@@ -13,9 +13,7 @@ const pages = {
 }
 
 export default class App extends LightningElement {
-    page = computed(() => {
-        return pages[location.value];
-    })
+    page = computed(() => pages[location.value]);
 
     renderedCallback() {
         console.log('rendered: [App]');
