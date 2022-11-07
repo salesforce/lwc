@@ -34,6 +34,7 @@ export default function templateTransform(
         customRendererConfig,
         enableLwcSpread,
         enableScopedSlots,
+        isSFC,
     } = options;
     const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
@@ -46,6 +47,7 @@ export default function templateTransform(
             customRendererConfig,
             enableLwcSpread,
             enableScopedSlots,
+            isSFC,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
@@ -78,7 +80,7 @@ function escapeScopeToken(input: string) {
 function serialize(
     code: string,
     filename: string,
-    { namespace, name }: NormalizedTransformOptions
+    { namespace, name, isSFC }: NormalizedTransformOptions
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
@@ -87,22 +89,40 @@ function serialize(
     );
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
-    buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
-    buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
-    buffer += code;
-    buffer += '\n\n';
-    buffer += 'if (_implicitStylesheets) {\n';
-    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
-    buffer += `}\n`;
-    buffer += 'if (_implicitScopedStylesheets) {\n';
-    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
-    buffer += `}\n`;
-    buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
-    buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
-    buffer += '}\n';
-    // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
-    // as `code` above. At this point, no more expando props should be added to `tmpl`.
-    buffer += 'freezeTemplate(tmpl);\n';
+    if (!isSFC) {
+        buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
+        buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
+        buffer += code;
+        buffer += '\n\n';
+        buffer += 'if (_implicitStylesheets) {\n';
+        buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
+        buffer += `}\n`;
+        buffer += 'if (_implicitScopedStylesheets) {\n';
+        buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
+        buffer += `}\n`;
+        buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
+        buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
+        buffer += '}\n';
+        // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
+        // as `code` above. At this point, no more expando props should be added to `tmpl`.
+        buffer += 'freezeTemplate(tmpl);\n';
+    } else {
+        // buffer += `const _implicitScopedStylesheets = undefined;\n\n`;
+        buffer += code;
+        buffer += '\n\n';
+        buffer += 'if (_implicitStylesheets) {\n';
+        buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
+        buffer += `}\n`;
+        buffer += 'if (_implicitScopedStylesheets) {\n';
+        buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
+        buffer += `}\n`;
+        buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
+        buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
+        buffer += '}\n';
+        // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
+        // as `code` above. At this point, no more expando props should be added to `tmpl`.
+        buffer += 'freezeTemplate(tmpl);\n';
+    }
 
     return buffer;
 }

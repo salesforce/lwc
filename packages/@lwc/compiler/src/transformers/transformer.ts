@@ -18,6 +18,7 @@ import { NormalizedTransformOptions, TransformOptions, validateTransformOptions 
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
+import sfcTransformer from './sfc';
 
 export interface TransformResult {
     code: string;
@@ -85,6 +86,10 @@ function transformFile(
         case '.ts':
         case '.js':
             transformer = scriptTransformer;
+            break;
+
+        case '.lwc':
+            transformer = sfcTransformer;
             break;
 
         default:

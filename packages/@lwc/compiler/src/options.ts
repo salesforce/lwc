@@ -91,6 +91,7 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
+    isSFC?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {

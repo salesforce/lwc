@@ -47,6 +47,8 @@ export interface Config {
      * When true, enables usage of `lwc:slot-bind` and `lwc:slot-data` directives for declaring scoped slots
      */
     enableScopedSlots?: boolean;
+
+    isSFC?: boolean;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
@@ -60,6 +62,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
+    'isSFC',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -122,5 +125,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableScopedSlots: false,
         ...config,
         ...{ customRendererConfig },
+        isSFC: config.isSFC ? true : false,
     };
 }

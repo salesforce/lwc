@@ -49,6 +49,8 @@ export function getModuleEntry(
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
     const entryCSS = getEntry(moduleDir, moduleName, 'css');
 
+    const entrySFC = moduleDir + '.lwc';
+
     // Order is important
     if (fs.existsSync(entryJS)) {
         return entryJS;
@@ -58,6 +60,9 @@ export function getModuleEntry(
         return entryHTML;
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
+    } else if (fs.existsSync(entrySFC)) {
+        return entrySFC;
+        // return moduleDir + '-lwc.js';
     }
 
     throw new LwcConfigError(

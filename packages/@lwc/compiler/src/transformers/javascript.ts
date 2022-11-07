@@ -24,6 +24,7 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
+        isSFC,
     } = options;
 
     let result;
@@ -41,7 +42,7 @@ export default function scriptTransform(
             compact: false,
 
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, isSFC }],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is

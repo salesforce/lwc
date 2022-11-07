@@ -69,9 +69,11 @@ export default function serialize(result: Result, config: Config): string {
     const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
     const serializedStyle = serializeCss(result, collectVarFunctions).trim();
 
+    const stylesheetFuncName = config.scoped ? 'stylesheetscoped' : STYLESHEET_IDENTIFIER;
+
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(token, ${USE_ACTUAL_HOST_SELECTOR}, ${USE_NATIVE_DIR_PSEUDOCLASS}) {\n`;
+        buffer += `function ${stylesheetFuncName}(token, ${USE_ACTUAL_HOST_SELECTOR}, ${USE_NATIVE_DIR_PSEUDOCLASS}) {\n`;
         // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
         if (config.scoped) {
             buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("." + token) : "";\n`;
@@ -85,18 +87,35 @@ export default function serialize(result: Result, config: Config): string {
         buffer += `}\n`;
         if (config.scoped) {
             // Mark the stylesheet as scoped so that we can distinguish it later at runtime
-            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
+            buffer += `${stylesheetFuncName}.${KEY__SCOPED_CSS} = true;\n`;
         }
 
         // add import at the end
-        stylesheetList.push(STYLESHEET_IDENTIFIER);
+        // stylesheetList.push(STYLESHEET_IDENTIFIER);
+        stylesheetList.push(stylesheetFuncName);
     }
 
     // exports
-    if (stylesheetList.length) {
-        buffer += `export default [${stylesheetList.join(', ')}];`;
+    if (!config.isSFC) {
+        if (stylesheetList.length) {
+            buffer += `export default [${stylesheetList.join(', ')}];`;
+        } else {
+            buffer += `export default undefined;`;
+        }
     } else {
-        buffer += `export default undefined;`;
+        if (config.scoped) {
+            if (stylesheetList.length) {
+                buffer += `const _implicitScopedStylesheets = [${stylesheetList.join(', ')}];`;
+            } else {
+                buffer += `const _implicitScopedStylesheets = undefined;`;
+            }
+        } else {
+            if (stylesheetList.length) {
+                buffer += `const _implicitStylesheets = [${stylesheetList.join(', ')}];`;
+            } else {
+                buffer += `const _implicitStylesheets = undefined;`;
+            }
+        }
     }
 
     return buffer;

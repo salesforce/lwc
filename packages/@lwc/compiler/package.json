@@ -29,7 +29,8 @@
         "@lwc/errors": "2.28.0",
         "@lwc/shared": "2.28.0",
         "@lwc/style-compiler": "2.28.0",
-        "@lwc/template-compiler": "2.28.0"
+        "@lwc/template-compiler": "2.28.0",
+        "@vue/compiler-sfc": "^3.2.41"
     },
     "publishConfig": {
         "access": "public"

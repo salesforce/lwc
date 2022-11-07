@@ -72,14 +72,25 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
 
     const optimizedTemplateDeclarations = optimizeStaticExpressions(templateFn);
 
-    const templateBody = [
-        ...optimizedTemplateDeclarations,
-        t.exportDefaultDeclaration(
+    const exportDefaultDeclaration = t.exportDefaultDeclaration(
+        t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+        ])
+    );
+    const myConstDeclaration = t.variableDeclaration('var', [
+        t.variableDeclarator(
+            t.identifier('_tmpl'),
             t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
                 t.identifier(TEMPLATE_FUNCTION_NAME),
             ])
         ),
-    ];
+    ]);
+
+    const exportOrConstDeclaration = codeGen.state.config.isSFC
+        ? myConstDeclaration
+        : exportDefaultDeclaration;
+
+    const templateBody = [...optimizedTemplateDeclarations, exportOrConstDeclaration];
 
     return t.program([...imports, ...hoistedNodes, ...templateBody, ...metadata]);
 }

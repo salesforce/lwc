@@ -89,12 +89,17 @@ function resolveModuleFromDir(
     const moduleDir = path.join(absModuleDir, ns, name);
 
     // Exit if the expected module directory doesn't exists.
-    if (!fs.existsSync(moduleDir)) {
+    if (!isSFC(absModuleDir, ns, name) && !fs.existsSync(moduleDir)) {
         return;
     }
 
     const entry = getModuleEntry(moduleDir, name, opts);
     return createRegistryEntry(entry, specifier, opts);
+}
+
+function isSFC(absModuleDir: string, ns: string, name: string): boolean {
+    const fileDir = path.join(absModuleDir, ns, name + '.lwc');
+    return fs.existsSync(fileDir);
 }
 
 function resolveModuleFromNpm(

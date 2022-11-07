@@ -17,6 +17,7 @@ export interface Config {
     };
     /** Token that is used for scoping in light DOM scoped styles */
     scoped?: boolean;
+    isSFC?: boolean;
 }
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {
