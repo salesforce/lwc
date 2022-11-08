@@ -1,0 +1,12 @@
+<!-- These test cases are important because a hyphen(-) in attribute name indicates that the
+    next character should be uppercased(https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_names)-->
+<template>
+    <!-- invalid: trailing hyphen-->
+    <x-button hyphen-="bar"></x-button>
+
+    <!-- invalid: hyphen followed by unicode character-->
+    <x-button hyphen-3pecial="bar"></x-button>
+
+    <!-- invalid: hyphen followed by unicode character-->
+    <x-button hyphen-ßpecial="bar"></x-button>
+</template>
