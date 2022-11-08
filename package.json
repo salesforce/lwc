@@ -11,7 +11,7 @@
         "prepare": "husky install && yarn build",
         "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
         "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
-        "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
+        "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
         "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
@@ -40,7 +40,7 @@
         "@typescript-eslint/eslint-plugin": "^5.37.0",
         "@typescript-eslint/parser": "^5.37.0",
         "babel-plugin-tester": "^10.1.0",
-        "bundlesize": "^0.18.1",
+        "bytes": "^3.1.2",
         "es5-proxy-compat": "^0.22.4",
         "eslint": "^8.23.1",
         "eslint-plugin-import": "^2.26.0",
@@ -82,10 +82,8 @@
     },
     "resolutions": {
         "//": [
-            "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
-            "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
+            "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11."
         ],
-        "jasmine-core": "3.10.1",
-        "iltorb": "npm:@stdlib/utils-noop@0.0.10"
+        "jasmine-core": "3.10.1"
     }
 }
