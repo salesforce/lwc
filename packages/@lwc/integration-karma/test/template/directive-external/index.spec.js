@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import XWithoutChildren from 'x/WithoutChildren';
+import XWithoutChildren from 'x/withoutChildren';
 import XWithChildren from 'x/withChildren';
 import XWithDifferentViews from 'x/withDifferentViews';
 import XWithImperativeEvent from 'x/withImperativeEvent';
