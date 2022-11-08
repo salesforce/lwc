@@ -42,6 +42,18 @@ const stc6 = {
   },
   key: 6,
 };
+const stc7 = {
+  props: {
+    "hyphen🎉pecial": "bar",
+  },
+  key: 7,
+};
+const stc8 = {
+  props: {
+    "hyphen🇺🇸pecial": "bar",
+  },
+  key: 8,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
@@ -52,6 +64,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_custom_element("x-button", _xButton, stc4),
     api_custom_element("x-button", _xButton, stc5),
     api_custom_element("x-button", _xButton, stc6),
+    api_custom_element("x-button", _xButton, stc7),
+    api_custom_element("x-button", _xButton, stc8),
   ];
   /*LWC compiler vX.X.X*/
 }

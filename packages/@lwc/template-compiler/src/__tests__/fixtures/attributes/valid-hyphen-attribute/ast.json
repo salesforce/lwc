@@ -4,10 +4,10 @@
         "location": {
             "startLine": 3,
             "startColumn": 1,
-            "endLine": 26,
+            "endLine": 30,
             "endColumn": 12,
             "start": 233,
-            "end": 1137,
+            "end": 1290,
             "startTag": {
                 "startLine": 3,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 243
             },
             "endTag": {
-                "startLine": 26,
+                "startLine": 30,
                 "startColumn": 1,
-                "endLine": 26,
+                "endLine": 30,
                 "endColumn": 12,
-                "start": 1126,
-                "end": 1137
+                "start": 1279,
+                "end": 1290
             }
         },
         "directives": [],
@@ -488,6 +488,123 @@
                             "endColumn": 35,
                             "start": 1093,
                             "end": 1113
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " valid: hyphen followed by emoji character",
+                "value": " valid: hyphen followed by emoji character",
+                "location": {
+                    "startLine": 27,
+                    "startColumn": 5,
+                    "endLine": 27,
+                    "endColumn": 54,
+                    "start": 1131,
+                    "end": 1180
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 28,
+                    "startColumn": 5,
+                    "endLine": 28,
+                    "endColumn": 48,
+                    "start": 1185,
+                    "end": 1228,
+                    "startTag": {
+                        "startLine": 28,
+                        "startColumn": 5,
+                        "endLine": 28,
+                        "endColumn": 37,
+                        "start": 1185,
+                        "end": 1217
+                    },
+                    "endTag": {
+                        "startLine": 28,
+                        "startColumn": 37,
+                        "endLine": 28,
+                        "endColumn": 48,
+                        "start": 1217,
+                        "end": 1228
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphen🎉pecial",
+                        "attributeName": "hyphen-🎉pecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 28,
+                            "startColumn": 15,
+                            "endLine": 28,
+                            "endColumn": 36,
+                            "start": 1195,
+                            "end": 1216
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 29,
+                    "startColumn": 5,
+                    "endLine": 29,
+                    "endColumn": 50,
+                    "start": 1233,
+                    "end": 1278,
+                    "startTag": {
+                        "startLine": 29,
+                        "startColumn": 5,
+                        "endLine": 29,
+                        "endColumn": 39,
+                        "start": 1233,
+                        "end": 1267
+                    },
+                    "endTag": {
+                        "startLine": 29,
+                        "startColumn": 39,
+                        "endLine": 29,
+                        "endColumn": 50,
+                        "start": 1267,
+                        "end": 1278
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphen🇺🇸pecial",
+                        "attributeName": "hyphen-🇺🇸pecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 29,
+                            "startColumn": 15,
+                            "endLine": 29,
+                            "endColumn": 38,
+                            "start": 1243,
+                            "end": 1266
                         }
                     }
                 ],
