@@ -4,10 +4,10 @@
         "location": {
             "startLine": 3,
             "startColumn": 1,
-            "endLine": 14,
+            "endLine": 26,
             "endColumn": 12,
             "start": 233,
-            "end": 690,
+            "end": 1137,
             "startTag": {
                 "startLine": 3,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 243
             },
             "endTag": {
-                "startLine": 14,
+                "startLine": 26,
                 "startColumn": 1,
-                "endLine": 14,
+                "endLine": 26,
                 "endColumn": 12,
-                "start": 679,
-                "end": 690
+                "start": 1126,
+                "end": 1137
             }
         },
         "directives": [],
@@ -228,6 +228,266 @@
                             "endColumn": 28,
                             "start": 653,
                             "end": 666
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " valid: hyphen followed by numeric character",
+                "value": " valid: hyphen followed by numeric character",
+                "location": {
+                    "startLine": 15,
+                    "startColumn": 5,
+                    "endLine": 15,
+                    "endColumn": 56,
+                    "start": 684,
+                    "end": 735
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 16,
+                    "startColumn": 5,
+                    "endLine": 16,
+                    "endColumn": 47,
+                    "start": 740,
+                    "end": 782,
+                    "startTag": {
+                        "startLine": 16,
+                        "startColumn": 5,
+                        "endLine": 16,
+                        "endColumn": 36,
+                        "start": 740,
+                        "end": 771
+                    },
+                    "endTag": {
+                        "startLine": 16,
+                        "startColumn": 36,
+                        "endLine": 16,
+                        "endColumn": 47,
+                        "start": 771,
+                        "end": 782
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphen3pecial",
+                        "attributeName": "hyphen-3pecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 15,
+                            "endLine": 16,
+                            "endColumn": 35,
+                            "start": 750,
+                            "end": 770
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " valid: hyphen followed by latin lower case character",
+                "value": " valid: hyphen followed by latin lower case character",
+                "location": {
+                    "startLine": 18,
+                    "startColumn": 5,
+                    "endLine": 18,
+                    "endColumn": 65,
+                    "start": 788,
+                    "end": 848
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 19,
+                    "startColumn": 5,
+                    "endLine": 19,
+                    "endColumn": 47,
+                    "start": 853,
+                    "end": 895,
+                    "startTag": {
+                        "startLine": 19,
+                        "startColumn": 5,
+                        "endLine": 19,
+                        "endColumn": 36,
+                        "start": 853,
+                        "end": 884
+                    },
+                    "endTag": {
+                        "startLine": 19,
+                        "startColumn": 36,
+                        "endLine": 19,
+                        "endColumn": 47,
+                        "start": 884,
+                        "end": 895
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphenSSpecial",
+                        "attributeName": "hyphen-ßpecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 19,
+                            "startColumn": 15,
+                            "endLine": 19,
+                            "endColumn": 35,
+                            "start": 863,
+                            "end": 883
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " valid: hyphen followed by latin lower case character",
+                "value": " valid: hyphen followed by latin lower case character",
+                "location": {
+                    "startLine": 21,
+                    "startColumn": 5,
+                    "endLine": 21,
+                    "endColumn": 65,
+                    "start": 901,
+                    "end": 961
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 22,
+                    "startColumn": 5,
+                    "endLine": 22,
+                    "endColumn": 47,
+                    "start": 966,
+                    "end": 1008,
+                    "startTag": {
+                        "startLine": 22,
+                        "startColumn": 5,
+                        "endLine": 22,
+                        "endColumn": 36,
+                        "start": 966,
+                        "end": 997
+                    },
+                    "endTag": {
+                        "startLine": 22,
+                        "startColumn": 36,
+                        "endLine": 22,
+                        "endColumn": 47,
+                        "start": 997,
+                        "end": 1008
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphenÀpecial",
+                        "attributeName": "hyphen-àpecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 22,
+                            "startColumn": 15,
+                            "endLine": 22,
+                            "endColumn": 35,
+                            "start": 976,
+                            "end": 996
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " valid: hyphen followed by latin lower case character",
+                "value": " valid: hyphen followed by latin lower case character",
+                "location": {
+                    "startLine": 24,
+                    "startColumn": 5,
+                    "endLine": 24,
+                    "endColumn": 65,
+                    "start": 1018,
+                    "end": 1078
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 25,
+                    "startColumn": 5,
+                    "endLine": 25,
+                    "endColumn": 47,
+                    "start": 1083,
+                    "end": 1125,
+                    "startTag": {
+                        "startLine": 25,
+                        "startColumn": 5,
+                        "endLine": 25,
+                        "endColumn": 36,
+                        "start": 1083,
+                        "end": 1114
+                    },
+                    "endTag": {
+                        "startLine": 25,
+                        "startColumn": 36,
+                        "endLine": 25,
+                        "endColumn": 47,
+                        "start": 1114,
+                        "end": 1125
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hyphenªpecial",
+                        "attributeName": "hyphen-ªpecial",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 25,
+                            "startColumn": 15,
+                            "endLine": 25,
+                            "endColumn": 35,
+                            "start": 1093,
+                            "end": 1113
                         }
                     }
                 ],
