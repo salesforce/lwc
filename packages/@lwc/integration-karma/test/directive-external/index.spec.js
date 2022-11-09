@@ -30,45 +30,47 @@ describe('lwc:external', () => {
         });
     });
 
-    describe('after upgrading', () => {
-        // This test was not broken up into smaller ones with individual assertions because we
-        // cannot manage the order in which different tests run. Order is important because once you
-        // define a custom element, there is no way to undefine it.
-        it('should set property instead of attribute', async () => {
-            const elm = test.shadowRoot.querySelector('foo-upgrade-after');
+    if (!process.env.COMPAT) {
+        describe('after upgrading', () => {
+            // This test was not broken up into smaller ones with individual assertions because we
+            // cannot manage the order in which different tests run. Order is important because once you
+            // define a custom element, there is no way to undefine it.
+            it('should set property instead of attribute', async () => {
+                const elm = test.shadowRoot.querySelector('foo-upgrade-after');
 
-            test.value = 'sake';
-            await Promise.resolve();
+                test.value = 'sake';
+                await Promise.resolve();
 
-            expect(elm.shadowRoot).toBeNull();
-            expect(elm.getAttribute('foo')).toBe('sake');
-            expect(elm.foo).toBeUndefined();
+                expect(elm.shadowRoot).toBeNull();
+                expect(elm.getAttribute('foo')).toBe('sake');
+                expect(elm.foo).toBeUndefined();
 
-            test.upgrade('foo-upgrade-after');
+                test.upgrade('foo-upgrade-after');
 
-            test.value = 'miso';
-            await Promise.resolve();
+                test.value = 'miso';
+                await Promise.resolve();
 
-            expect(elm.getAttribute('foo')).toBe('sake');
-            expect(elm.foo).toBe('miso-prop');
+                expect(elm.getAttribute('foo')).toBe('sake');
+                expect(elm.foo).toBe('miso-prop');
 
-            test.value = 'mirin';
-            await Promise.resolve();
+                test.value = 'mirin';
+                await Promise.resolve();
 
-            expect(elm.getAttribute('foo')).toBe('sake');
-            expect(elm.foo).toBe('mirin-prop');
+                expect(elm.getAttribute('foo')).toBe('sake');
+                expect(elm.foo).toBe('mirin-prop');
+            });
         });
-    });
 
-    describe('standard web component apis', () => {
-        it('should distribute slotted content', () => {
-            const elm = test.shadowRoot.querySelector('foo-upgrade-before');
-            const div = test.shadowRoot.querySelector('div.before');
-            const slot = elm.shadowRoot.querySelector('slot');
+        describe('standard web component apis', () => {
+            it('should distribute slotted content', () => {
+                const elm = test.shadowRoot.querySelector('foo-upgrade-before');
+                const div = test.shadowRoot.querySelector('div.before');
+                const slot = elm.shadowRoot.querySelector('slot');
 
-            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTruthy();
-            expect(div.assignedSlot).toBe(slot);
-            expect(slot.assignedElements().includes(div)).toBeTruthy();
+                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTruthy();
+                expect(div.assignedSlot).toBe(slot);
+                expect(slot.assignedElements().includes(div)).toBeTruthy();
+            });
         });
-    });
+    }
 });
