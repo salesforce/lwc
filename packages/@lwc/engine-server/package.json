@@ -27,7 +27,7 @@
         "@lwc/engine-core": "2.29.0",
         "@lwc/rollup-plugin": "2.29.0",
         "@lwc/shared": "2.29.0",
-        "@rollup/plugin-virtual": "^2.1.0",
+        "@rollup/plugin-virtual": "^3.0.1",
         "parse5": "^6.0.1"
     },
     "publishConfig": {

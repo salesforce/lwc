@@ -83,7 +83,6 @@ describe('resolver', () => {
         expect(warnings).toHaveLength(1);
         expect(warnings[0]).toMatchObject({
             code: 'UNRESOLVED_IMPORT',
-            source: 'some/module',
         });
     });
 
