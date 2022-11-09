@@ -27,7 +27,7 @@
     "dependencies": {
         "@lwc/errors": "2.29.0",
         "@lwc/shared": "2.29.0",
-        "acorn": "~8.8.0",
+        "acorn": "~8.8.1",
         "astring": "~1.8.3",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0",
