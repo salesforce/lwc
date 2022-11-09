@@ -846,4 +846,20 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT: {
+        code: 1180,
+        message:
+            'Invalid lwc:external directive usage: {0}. This directive can only be used on custom elements.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_EXTERNAL_VALUE: {
+        code: 1181,
+        message:
+            'Invalid lwc:external directive usage: {0}. This directive is a boolean attribute and should not have a value.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

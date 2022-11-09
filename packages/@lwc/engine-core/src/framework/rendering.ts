@@ -6,6 +6,7 @@
  */
 import {
     ArrayPush,
+    ArraySome,
     assert,
     create,
     isArray,
@@ -20,6 +21,8 @@ import {
 } from '@lwc/shared';
 import features from '@lwc/features';
 
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
@@ -54,6 +57,7 @@ import {
     VNodeType,
     VStatic,
     VFragment,
+    isVFragment,
     isVScopedSlotFragment,
 } from './vnodes';
 
@@ -317,7 +321,17 @@ function mountCustomElement(
         }
     };
 
-    const elm = createCustomElement(sel, upgradeCallback, connectedCallback, disconnectedCallback);
+    // Should never get a tag with upper case letter at this point; the compiler
+    // should produce only tags with lowercase letters. However, the Java
+    // compiler may generate tagnames with uppercase letters so - for backwards
+    // compatibility, we lower case the tagname here.
+    const normalizedTagname = sel.toLowerCase();
+    const elm = createCustomElement(
+        normalizedTagname,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -589,6 +603,21 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     vm.aChildren = children;
 
     const { renderMode, shadowMode } = vm;
+    if (process.env.NODE_ENV !== 'production') {
+        // If any of the children being allocated is a scoped slot fragment, make sure the receiving
+        // component is a light DOM component. This is mainly to validate light dom parent running
+        // in native shadow mode.
+        if (
+            renderMode !== RenderMode.Light &&
+            ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
+        ) {
+            logError(
+                `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
+                    vm
+                )} tag. Scoped slot content can only be passed to a light dom child.`
+            );
+        }
+    }
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
         allocateInSlot(vm, children, vnode.owner);
@@ -626,15 +655,20 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
-    const {
-        cmpSlots: { slotAssignments: oldSlotsMapping },
-    } = vm;
-    const cmpSlotsMapping = create(null);
-    vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
+/**
+ * Collects all slots into a SlotSet, traversing through VFragment Nodes
+ */
+function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
+            continue;
+        }
+
+        // Dive further iff the content is wrapped in a VFragment
+        if (isVFragment(vnode)) {
+            // Remove the text delimiter nodes to avoid overriding default slot content
+            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
 
@@ -648,6 +682,15 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
+}
+
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+    collectSlots(vm, children, cmpSlotsMapping);
+    vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
