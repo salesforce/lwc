@@ -12,5 +12,5 @@ if (!process.env.COMPAT) {
             `;
         }
     }
-    'customElements' in window && customElements.define('ce-with-children', CEWithChildren);
+    customElements.define('ce-with-children', CEWithChildren);
 }

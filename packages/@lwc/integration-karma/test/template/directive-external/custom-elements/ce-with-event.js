@@ -10,5 +10,5 @@ if (!process.env.COMPAT) {
         }
     }
 
-    'customElements' in window && customElements.define('ce-with-event', CEWithEvent);
+    customElements.define('ce-with-event', CEWithEvent);
 }

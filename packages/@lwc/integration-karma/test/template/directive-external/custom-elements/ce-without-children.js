@@ -4,5 +4,5 @@ if (!process.env.COMPAT) {
             super();
         }
     }
-    'customElements' in window && customElements.define('ce-without-children', CEWithoutChildren);
+    customElements.define('ce-without-children', CEWithoutChildren);
 }

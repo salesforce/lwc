@@ -10,9 +10,7 @@ import './custom-elements/ce-without-children';
 import './custom-elements/ce-with-children';
 import './custom-elements/ce-with-event';
 
-const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
-
-if (SUPPORTS_CUSTOM_ELEMENTS) {
+if (!process.env.COMPAT) {
     describe('lwc:external directive basic tests', () => {
         it('should render a Custom Element without children', () => {
             const elm = createElement('x-without-children', { is: XWithoutChildren });
