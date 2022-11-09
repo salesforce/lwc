@@ -30,6 +30,7 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
+    isExternalComponent,
     isScopedSlotFragment,
     isSlotBindDirective,
 } from '../shared/ast';
@@ -638,6 +639,11 @@ function transform(codeGen: CodeGen): t.Expression {
                 )
             );
         }
+
+        if (isExternalComponent(element)) {
+            data.push(t.property(t.identifier('external'), t.literal(true)));
+        }
+
         return t.objectExpression(data);
     }
 

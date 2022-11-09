@@ -14,7 +14,6 @@ export const enum VNodeType {
     Text,
     Comment,
     Element,
-    ExternalCustomElement,
     CustomElement,
     Static,
     Fragment,
@@ -25,7 +24,6 @@ export type VNode =
     | VText
     | VComment
     | VElement
-    | VExternalCustomElement
     | VCustomElement
     | VStatic
     | VFragment
@@ -94,10 +92,6 @@ export interface VElement extends VBaseElement {
     type: VNodeType.Element;
 }
 
-export interface VExternalCustomElement extends VBaseElement {
-    type: VNodeType.ExternalCustomElement;
-}
-
 export interface VCustomElement extends VBaseElement {
     type: VNodeType.CustomElement;
     mode: 'closed' | 'open';
@@ -125,6 +119,7 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly external?: boolean;
     readonly ref?: string;
     readonly slotData?: any;
 }

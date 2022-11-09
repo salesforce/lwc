@@ -59,7 +59,6 @@ import {
     VFragment,
     isVFragment,
     isVScopedSlotFragment,
-    VExternalCustomElement,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -121,14 +120,6 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
 
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
-            break;
-
-        case VNodeType.ExternalCustomElement:
-            patchExternalCustomElement(
-                n1 as VExternalCustomElement,
-                n2,
-                n2.data.renderer ?? renderer
-            );
             break;
 
         case VNodeType.CustomElement:
@@ -270,17 +261,6 @@ function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
     patchElementPropsAndAttrs(n1, n2, renderer);
-    patchChildren(n1.children, n2.children, elm, renderer);
-}
-
-function patchExternalCustomElement(
-    n1: VExternalCustomElement,
-    n2: VExternalCustomElement,
-    renderer: RendererAPI
-) {
-    const elm = (n2.elm = n1.elm!);
-
-    patchExternalCustomElementPropsAndAttrs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
 }
 
@@ -540,23 +520,6 @@ function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: Ren
     }
 }
 
-function patchSpecialAttributes(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
-    renderer: RendererAPI
-) {
-    if (isNull(oldVnode)) {
-        applyEventListeners(vnode, renderer);
-        applyStaticClassAttribute(vnode, renderer);
-        applyStaticStyleAttribute(vnode, renderer);
-    }
-
-    // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
-    // value is set before type=radio.
-    patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
-}
-
 export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -572,18 +535,23 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    patchSpecialAttributes(oldVnode, vnode, renderer);
-    patchAttributes(oldVnode, vnode, renderer);
-    patchProps(oldVnode, vnode, renderer);
-}
+    if (isNull(oldVnode)) {
+        applyEventListeners(vnode, renderer);
+        applyStaticClassAttribute(vnode, renderer);
+        applyStaticStyleAttribute(vnode, renderer);
+    }
 
-function patchExternalCustomElementPropsAndAttrs(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
-    renderer: RendererAPI
-) {
-    patchSpecialAttributes(oldVnode, vnode, renderer);
-    patchAttrUnlessProp(oldVnode, vnode, renderer);
+    // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
+    // value is set before type=radio.
+    patchClassAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer);
+
+    if (vnode.data.external) {
+        patchAttrUnlessProp(oldVnode, vnode, renderer);
+    } else {
+        patchAttributes(oldVnode, vnode, renderer);
+        patchProps(oldVnode, vnode, renderer);
+    }
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

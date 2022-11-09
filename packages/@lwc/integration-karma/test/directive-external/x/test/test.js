@@ -1,23 +1,40 @@
-import { LightningElement } from 'lwc';
+import { api, LightningElement } from 'lwc';
 
-class FooBar extends HTMLElement {
-    static observedAttributes = ['baz'];
+customElements.define(
+    'foo-upgrade-before',
+    class FooUpgradeBefore extends HTMLElement {
+        constructor() {
+            super();
+            this._shadowRoot = this.attachShadow({ mode: 'open' });
+            this._shadowRoot.innerHTML = `
+            <slot></slot>
+        `;
+        }
+    }
+);
+
+class FooUpgradeAfter extends HTMLElement {
+    static observedAttributes = ['foo'];
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'baz') {
-            this._baz = `${newValue}-attr`;
+        if (name === 'foo') {
+            this._foo = `${newValue}-attr`;
         }
     }
 
-    set baz(value) {
-        this._baz = `${value}-prop`;
+    set foo(value) {
+        this._foo = `${value}-prop`;
     }
-    get baz() {
-        return this._baz;
+    get foo() {
+        return this._foo;
     }
 }
 
 export default class Test extends LightningElement {
-    connectedCallback() {
-        customElements.define('foo-bar', FooBar);
+    @api
+    value = 'default';
+
+    @api
+    upgrade() {
+        customElements.define('foo-upgrade-after', FooUpgradeAfter);
     }
 }
