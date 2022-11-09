@@ -1335,7 +1335,8 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
 
         // disallow attr name which combines underscore character with special character.
         // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
-        if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
+        // Note 1: underscore followed by a hyphen is valid to accomodate property names like thirsty_Camel -> thirsty_-camel
+        if (name.match(/_[^a-z0-9-]|[^a-z0-9]_/)) {
             ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
                 attr,

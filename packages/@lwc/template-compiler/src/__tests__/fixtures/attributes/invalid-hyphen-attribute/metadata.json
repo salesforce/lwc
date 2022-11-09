@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1125,
+            "message": "LWC1125: hyphen- is not valid attribute for x-button. Attribute name must end with alpha-numeric character.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 15,
+                "start": 295,
+                "length": 13
+            }
+        }
+    ]
+}
