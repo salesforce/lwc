@@ -1,0 +1,30 @@
+<!-- These test cases are important because a hyphen(-) in attribute name indicates that the
+    next character should be uppercased(https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_names)-->
+<template>
+    <!-- attribute name with underscore followed by hyphen "_-" combination -->
+
+    <!-- under_-hyphen: translates to under_Hyphen class property-->
+    <x-button under_-hyphen="bar"></x-button>
+
+    <!-- pacal case represented by hyphens: translates to PascalCase class property -->
+    <x-button -pascal-case="bar"></x-button>
+
+    <!-- leading hyphen: translated to Hyphen class property-->
+    <x-button -hyphen="bar"></x-button>
+
+    <!-- valid: hyphen followed by numeric character-->
+    <x-button hyphen-3pecial="bar"></x-button>
+
+    <!-- valid: hyphen followed by latin lower case character-->
+    <x-button hyphen-ßpecial="bar"></x-button>
+
+    <!-- valid: hyphen followed by latin lower case character-->
+    <x-button hyphen-àpecial="bar"></x-button>
+    
+    <!-- valid: hyphen followed by latin lower case character-->
+    <x-button hyphen-ªpecial="bar"></x-button>
+
+    <!-- valid: hyphen followed by emoji character-->
+    <x-button hyphen-🎉pecial="bar"></x-button>
+    <x-button hyphen-🇺🇸pecial="bar"></x-button>
+</template>
