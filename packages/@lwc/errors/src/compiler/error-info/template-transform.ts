@@ -476,14 +476,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS: {
-        code: 1126,
-        message:
-            '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and special characters.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     UNKNOWN_LWC_DIRECTIVE: {
         code: 1127,
         message: 'Invalid directive "{0}" on element {1}.',

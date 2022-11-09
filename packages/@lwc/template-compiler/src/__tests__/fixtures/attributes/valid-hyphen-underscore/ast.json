@@ -1,0 +1,97 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 3,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 233,
+            "end": 371,
+            "startTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 11,
+                "start": 233,
+                "end": 243
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 360,
+                "end": 371
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " attribute name with hyphen + underscore \"-_\" combination ",
+                "value": " attribute name with hyphen + underscore \"-_\" combination ",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 70,
+                    "start": 248,
+                    "end": 313
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 46,
+                    "start": 318,
+                    "end": 359,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 35,
+                        "start": 318,
+                        "end": 348
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 35,
+                        "endLine": 5,
+                        "endColumn": 46,
+                        "start": 348,
+                        "end": 359
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "under_hyphen",
+                        "attributeName": "under-_hyphen",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 15,
+                            "endLine": 5,
+                            "endColumn": 34,
+                            "start": 328,
+                            "end": 347
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
