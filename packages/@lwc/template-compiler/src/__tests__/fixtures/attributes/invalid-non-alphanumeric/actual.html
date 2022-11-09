@@ -1,0 +1,10 @@
+<template>
+    <!-- These are valid javascript propery names but their usage is restricted by template-compiler
+        This test case is to just document the existing precedent-->
+
+    <!-- leading latin characters-->
+    <x-button ñana="nana"></x-button>
+
+    <!-- trailing latin characters-->
+    <x-button nanå="nana"></x-button>
+</template>

@@ -1,0 +1,97 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 89,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 78,
+                "end": 89
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " latin characters",
+                "value": " latin characters",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 29,
+                    "start": 15,
+                    "end": 39
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 38,
+                    "start": 44,
+                    "end": 77,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 27,
+                        "start": 44,
+                        "end": 66
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 27,
+                        "endLine": 3,
+                        "endColumn": 38,
+                        "start": 66,
+                        "end": 77
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "nåna",
+                        "attributeName": "nåna",
+                        "value": {
+                            "type": "Literal",
+                            "value": "nana"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 15,
+                            "endLine": 3,
+                            "endColumn": 26,
+                            "start": 54,
+                            "end": 65
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
