@@ -22,7 +22,6 @@ branches:
         - communities/ui-dxp-components
         - communities/ui-feeds-components
         - communities/ui-lightning-community
-        - communities/webruntime
         - lwc/lwc-platform
         - nrkruk/lwc-dev-core
         - omnistudio/ui-omniscript-components
@@ -32,7 +31,6 @@ branches:
         - salesforce-experience-platform/luvio
         - salesforce-experience-platform/lwr
         - salesforce/lwr-lightning-platform
-        - salesforce-experience-platform/lwr-recipes
         - salesforce/o11y-sample-app
         - salesforcedevs/doc-framework-monorepo
   release:
