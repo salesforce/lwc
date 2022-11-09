@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "lwc-playground",
+    "name": "@lwc/playground",
     "version": "2.29.0",
     "description": "Playground project to experiment with LWC.",
     "scripts": {
