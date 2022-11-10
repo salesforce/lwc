@@ -28,10 +28,10 @@ interface Definition {
     PivotCtor?: CustomElementConstructor;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
-    formAssociatedCallback: (form: HTMLFormElement) => void;
-    formDisabledCallback: () => void;
-    formResetCallback: () => void;
-    formStateRestoreCallback: (state: string | File | FormData | undefined, mode: string) => void;
+    formAssociatedCallback?: (form: HTMLFormElement) => void;
+    formDisabledCallback?: (disabled: boolean) => void;
+    formResetCallback?: () => void;
+    formStateRestoreCallback?: (state: string | File | FormData | undefined, mode: string) => void;
     adoptedCallback?: () => void;
     attributeChangedCallback?: (name: string, oldValue: any, newValue: any) => void;
     observedAttributes: Set<string>;
@@ -185,9 +185,9 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 definition?.formAssociatedCallback?.call(this, form);
             }
 
-            formDisabledCallback(this: HTMLElement) {
+            formDisabledCallback(this: HTMLElement, disabled: boolean) {
                 const definition = definitionForElement.get(this);
-                definition?.formDisabledCallback?.call(this);
+                definition?.formDisabledCallback?.call(this, disabled);
             }
 
             formResetCallback(this: HTMLElement) {

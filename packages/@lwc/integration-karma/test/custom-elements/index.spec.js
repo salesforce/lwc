@@ -536,10 +536,11 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     });
                 };
 
-                Ctor.prototype.formDisabledCallback = function () {
+                Ctor.prototype.formDisabledCallback = function (disabled) {
                     calls.push({
                         name: 'formDisabledCallback',
                         elm: this,
+                        disabled,
                     });
                 };
 
@@ -580,7 +581,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 fieldset.disabled = true;
                 expect(calls.length).toEqual(shouldBeFormAssociated ? 2 : 0);
                 expect(calls[1]).toEqual(
-                    shouldBeFormAssociated ? { name: 'formDisabledCallback', elm } : undefined
+                    shouldBeFormAssociated
+                        ? { name: 'formDisabledCallback', elm, disabled: true }
+                        : undefined
                 );
 
                 // check formResetCallback
