@@ -1,6 +1,6 @@
 {
     "private": true,
-    "name": "lwc-playground",
+    "name": "@lwc/playground",
     "version": "2.30.0",
     "type": "module",
     "description": "Playground project to experiment with LWC.",
