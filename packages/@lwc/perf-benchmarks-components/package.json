@@ -3,7 +3,7 @@
     "version": "2.30.1",
     "private": true,
     "scripts": {
-        "build": "rm -fr dist && rollup -c"
+        "build": "rm -fr dist && rollup -c ./rollup.config.mjs"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.30.1"

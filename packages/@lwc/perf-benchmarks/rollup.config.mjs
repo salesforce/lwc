@@ -5,10 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import glob from 'glob';
 import replace from '@rollup/plugin-replace';
-import syntheticShadow from './rollup-plugins/synthetic-shadow';
+import syntheticShadow from './rollup-plugins/synthetic-shadow.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Figure out all the packages we might be importing from @lwc/perf-benchmarks-components
 // so that we can tell Rollup that those are `external`.
