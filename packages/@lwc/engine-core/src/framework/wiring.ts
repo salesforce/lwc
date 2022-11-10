@@ -358,7 +358,9 @@ export function installWireAdapters(vm: VM) {
         def: { wire },
     } = vm;
 
-    vm.debugInfo![WIRE_DEBUG_ENTRY] = create(null);
+    if (process.env.NODE_ENV !== 'production') {
+        vm.debugInfo![WIRE_DEBUG_ENTRY] = create(null);
+    }
 
     const wiredConnecting = (context.wiredConnecting = []);
     const wiredDisconnecting = (context.wiredDisconnecting = []);
