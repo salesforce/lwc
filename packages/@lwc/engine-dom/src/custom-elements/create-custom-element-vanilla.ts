@@ -43,6 +43,7 @@ const createUpgradableConstructor = (
     }
 
     // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
+    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
     if (hasConnectedCallback) {
         (UpgradableConstructor.prototype as any).connectedCallback = function () {
             if (!elementsUpgradedOutsideLWC.has(this)) {

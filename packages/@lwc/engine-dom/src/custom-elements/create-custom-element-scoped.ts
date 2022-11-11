@@ -61,6 +61,7 @@ const createUserConstructor = (
     }
 
     // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
+    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
     if (!isUndefined(connectedCallback)) {
         (UserConstructor.prototype as any).connectedCallback = function () {
             connectedCallback(this);
