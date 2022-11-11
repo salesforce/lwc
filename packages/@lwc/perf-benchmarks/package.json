@@ -3,7 +3,7 @@
     "version": "2.30.1",
     "private": true,
     "scripts": {
-        "build": "rm -fr dist && rollup -c && node scripts/build.js && ./scripts/fix-deps.sh",
+        "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
         "test": "yarn test:run && yarn test:format",
         "test:run": "for file in $(find dist -name '*.tachometer.json'); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
         "test:format": "node ./scripts/format-results.mjs $(find dist -name '*.results.json')"

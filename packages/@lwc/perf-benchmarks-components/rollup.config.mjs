@@ -5,11 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import glob from 'glob';
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
-import { generateStyledComponents } from './scripts/generate-styled-components';
+import { generateStyledComponents } from './scripts/generate-styled-components.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const { tmpDir, styledComponents } = generateStyledComponents();
 
