@@ -23,7 +23,7 @@ import features from '@lwc/features';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { RendererAPI } from './renderer';
+import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
@@ -309,17 +309,17 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const connectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            connectRootElement(elm);
-        }
-    };
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
 
-    const disconnectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
+            connectRootElement(elm);
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
-        }
-    };
+        };
+    }
 
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java

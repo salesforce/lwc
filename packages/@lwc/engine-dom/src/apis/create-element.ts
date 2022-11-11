@@ -20,6 +20,7 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
+    LifecycleCallback,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -131,17 +132,17 @@ export function createElement(
         }
     };
 
-    const connectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            connectRootElement(elm);
-        }
-    };
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
 
-    const disconnectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
+            connectRootElement(elm);
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
-        }
-    };
+        };
+    }
 
     const element = createCustomElement(
         tagName,
