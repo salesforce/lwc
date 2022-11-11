@@ -31,9 +31,10 @@ const createUpgradableConstructor = (
             // then elementBeingUpgraded will be false
             if (elementBeingUpgradedByLWC) {
                 upgradeCallback(this);
-            } else if (hasConnectedCallback && hasDisconnectedCallback) {
-                // keep track of elements that were not created by lwc.createElement,
-                // so we can ignore their lifecycle hooks (assuming it has lifecycle hooks)
+            } else if (hasConnectedCallback || hasDisconnectedCallback) {
+                // If this element has connected or disconnected callbacks, then we need to keep track of
+                // instances that were created outside LWC (i.e. not created by `lwc.createElement()`).
+                // If the element has no connected or disconnected callbacks, then we don't need to track this.
                 elementsUpgradedOutsideLWC.add(this);
 
                 // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
