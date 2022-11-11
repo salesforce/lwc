@@ -47,33 +47,41 @@ if (features.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
 // In this case, the upgradeCallback only needs to be defined once because we create these on-demand,
 // multiple times per tag name.
 const createUserConstructor = (
+    HTMLElementToExtend: typeof HTMLElement,
     upgradeCallback: LifecycleCallback,
-    connectedCallback: LifecycleCallback,
-    disconnectedCallback: LifecycleCallback,
-    HTMLElementToExtend: typeof HTMLElement
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => {
     // TODO [#2972]: this class should expose observedAttributes as necessary
-    return class UserConstructor extends HTMLElementToExtend {
+    class UserConstructor extends HTMLElementToExtend {
         constructor() {
             super();
             upgradeCallback(this);
         }
+    }
 
-        connectedCallback() {
+    // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
+    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
+    if (!isUndefined(connectedCallback)) {
+        (UserConstructor.prototype as any).connectedCallback = function () {
             connectedCallback(this);
-        }
+        };
+    }
 
-        disconnectedCallback() {
+    if (!isUndefined(disconnectedCallback)) {
+        (UserConstructor.prototype as any).disconnectedCallback = function () {
             disconnectedCallback(this);
-        }
-    };
+        };
+    }
+
+    return UserConstructor;
 };
 
 export function createCustomElementScoped(
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    connectedCallback: LifecycleCallback,
-    disconnectedCallback: LifecycleCallback
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) {
     if (isUndefined(createScopedConstructor) || isUndefined(CachedHTMLElement)) {
         // This error should be impossible to hit
@@ -83,10 +91,10 @@ export function createCustomElementScoped(
     }
 
     const UserConstructor = createUserConstructor(
+        CachedHTMLElement,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback,
-        CachedHTMLElement
+        disconnectedCallback
     );
     const ScopedConstructor = createScopedConstructor(tagName, UserConstructor);
     return new ScopedConstructor(UserConstructor);
