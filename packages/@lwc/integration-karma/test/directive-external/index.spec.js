@@ -16,7 +16,7 @@ describe('lwc:external', () => {
             return Promise.resolve().then(() => {
                 const elm = test.shadowRoot.querySelector('foo-upgrade-never');
                 expect(elm.getAttribute('foo')).toBe('default');
-                expect(elm.foo).toBeUndefined();
+                expect(elm.data).toBeUndefined();
             });
         });
 
@@ -25,7 +25,7 @@ describe('lwc:external', () => {
             return Promise.resolve().then(() => {
                 const elm = test.shadowRoot.querySelector('foo-upgrade-never');
                 expect(elm.getAttribute('foo')).toBe('apple');
-                expect(elm.foo).toBeUndefined();
+                expect(elm.data).toBeUndefined();
             });
         });
     });
@@ -43,21 +43,21 @@ describe('lwc:external', () => {
 
                 expect(elm.shadowRoot).toBeNull();
                 expect(elm.getAttribute('foo')).toBe('sake');
-                expect(elm.foo).toBeUndefined();
+                expect(elm.data).toBeUndefined();
 
-                test.upgrade('foo-upgrade-after');
+                test.upgrade();
 
                 test.value = 'miso';
                 await Promise.resolve();
 
                 expect(elm.getAttribute('foo')).toBe('sake');
-                expect(elm.foo).toBe('miso-prop');
+                expect(elm.data).toBe('miso-prop');
 
                 test.value = 'mirin';
                 await Promise.resolve();
 
                 expect(elm.getAttribute('foo')).toBe('sake');
-                expect(elm.foo).toBe('mirin-prop');
+                expect(elm.data).toBe('mirin-prop');
             });
         });
 
@@ -70,6 +70,29 @@ describe('lwc:external', () => {
                 expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTruthy();
                 expect(div.assignedSlot).toBe(slot);
                 expect(slot.assignedElements().includes(div)).toBeTruthy();
+            });
+        });
+
+        describe('passing objects as data', () => {
+            it('should be stringified when set as an attribute', async () => {
+                const elm = test.shadowRoot.querySelector('foo-set-object');
+
+                test.value = {};
+
+                return Promise.resolve().then(() => {
+                    expect(elm.getAttribute('attr')).toBe('[object Object]');
+                });
+            });
+
+            it('should pass object without stringifying', () => {
+                const elm = test.shadowRoot.querySelector('foo-set-object');
+
+                const obj = {};
+                test.value = obj;
+
+                return Promise.resolve().then(() => {
+                    expect(elm.prop).toEqual(obj);
+                });
             });
         });
     }

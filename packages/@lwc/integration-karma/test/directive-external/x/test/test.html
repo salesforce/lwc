@@ -1,9 +1,11 @@
 <template>
     <foo-upgrade-never lwc:external foo={value}></foo-upgrade-never>
-    <foo-upgrade-after lwc:external foo={value}>
-        <div>This component is external and is upgraded after the initial mount</div>
-    </foo-upgrade-after>
+
+    <foo-upgrade-after lwc:external foo={value}></foo-upgrade-after>
+
     <foo-upgrade-before lwc:external>
-        <div class="before">This component is external and is upgraded before the initial mount</div>
+        <div class="before"></div>
     </foo-upgrade-before>
+
+    <foo-set-object lwc:external attr={value} prop={value}></foo-set-object>
 </template>

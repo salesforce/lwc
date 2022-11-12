@@ -550,8 +550,9 @@ function patchElementPropsAndAttrs(
         patchAttrUnlessProp(oldVnode, vnode, renderer);
     } else {
         patchAttributes(oldVnode, vnode, renderer);
-        patchProps(oldVnode, vnode, renderer);
     }
+
+    patchProps(oldVnode, vnode, renderer);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

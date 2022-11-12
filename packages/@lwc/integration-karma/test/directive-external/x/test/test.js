@@ -13,6 +13,18 @@ if (!process.env.COMPAT) {
             }
         }
     );
+
+    customElements.define(
+        'foo-set-object',
+        class FooSetObject extends HTMLElement {
+            set prop(value) {
+                this._prop = value;
+            }
+            get prop() {
+                return this._prop;
+            }
+        }
+    );
 }
 
 export default class Test extends LightningElement {
@@ -28,15 +40,15 @@ export default class Test extends LightningElement {
                     static observedAttributes = ['foo'];
                     attributeChangedCallback(name, oldValue, newValue) {
                         if (name === 'foo') {
-                            this._foo = `${newValue}-attr`;
+                            this._data = `${newValue}-attr`;
                         }
                     }
 
                     set foo(value) {
-                        this._foo = `${value}-prop`;
+                        this._data = `${value}-prop`;
                     }
-                    get foo() {
-                        return this._foo;
+                    get data() {
+                        return this._data;
                     }
                 }
             );

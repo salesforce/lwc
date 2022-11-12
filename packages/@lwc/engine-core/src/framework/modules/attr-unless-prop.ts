@@ -13,7 +13,6 @@ import {
     XLINK_NAMESPACE,
 } from '@lwc/shared';
 
-import { unlockAttribute, lockAttribute } from '../attributes';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -29,7 +28,8 @@ export function patchAttrUnlessProp(
         data: { attrs },
         elm,
     } = vnode;
-    if (isUndefined(elm) || isUndefined(attrs)) {
+
+    if (isUndefined(attrs)) {
         return;
     }
 
@@ -41,10 +41,9 @@ export function patchAttrUnlessProp(
         const old = oldAttrs[name];
 
         const propName = htmlAttributeToProperty(name);
-        if (propName in elm) {
+        if (propName in elm!) {
             (elm as any)[propName] = cur;
         } else if (old !== cur) {
-            unlockAttribute(elm, name);
             if (StringCharCodeAt.call(name, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, name, cur as string, XML_NAMESPACE);
@@ -56,7 +55,6 @@ export function patchAttrUnlessProp(
             } else {
                 setAttribute(elm, name, cur as string);
             }
-            lockAttribute(elm, name);
         }
     }
 }
