@@ -131,6 +131,18 @@ if (!process.env.COMPAT) {
             });
         });
 
+        it('should work with lwc:spread', () => {
+            const elm = createElement('x-with-property', { is: XWithProperty });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const ce = elm.shadowRoot.querySelector('ce-with-property');
+                expect(ce.kyoto).toBe('kamogawa river');
+                expect(ce.osaka).toBe('yodogawa river');
+                expect(ce.tokyo).toBe('tamagawa');
+            });
+        });
+
         describe('when custom element not upgraded', () => {
             let elm;
 
