@@ -15,22 +15,6 @@ if (!process.env.COMPAT) {
     );
 }
 
-class FooUpgradeAfter extends HTMLElement {
-    static observedAttributes = ['foo'];
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'foo') {
-            this._foo = `${newValue}-attr`;
-        }
-    }
-
-    set foo(value) {
-        this._foo = `${value}-prop`;
-    }
-    get foo() {
-        return this._foo;
-    }
-}
-
 export default class Test extends LightningElement {
     @api
     value = 'default';
@@ -38,7 +22,24 @@ export default class Test extends LightningElement {
     @api
     upgrade() {
         if (!process.env.COMPAT) {
-            customElements.define('foo-upgrade-after', FooUpgradeAfter);
+            customElements.define(
+                'foo-upgrade-after',
+                class FooUpgradeAfter extends HTMLElement {
+                    static observedAttributes = ['foo'];
+                    attributeChangedCallback(name, oldValue, newValue) {
+                        if (name === 'foo') {
+                            this._foo = `${newValue}-attr`;
+                        }
+                    }
+
+                    set foo(value) {
+                        this._foo = `${value}-prop`;
+                    }
+                    get foo() {
+                        return this._foo;
+                    }
+                }
+            );
         }
     }
 }
