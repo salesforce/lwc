@@ -1,14 +1,17 @@
 import { createElement } from 'lwc';
 import XWithoutChildren from 'x/withoutChildren';
 import XWithChildren from 'x/withChildren';
+import XWithDeclarativeEvent from 'x/withDeclarativeEvent';
+import XWithDelayedUpgrade from 'x/withDelayedUpgrade';
 import XWithDifferentViews from 'x/withDifferentViews';
 import XWithImperativeEvent from 'x/withImperativeEvent';
-import XWithDeclarativeEvent from 'x/withDeclarativeEvent';
+import XWithProperty from 'x/withProperty';
 import XWithUnregisteredWC from 'x/withUnregisteredWC';
 
 import './custom-elements/ce-without-children';
 import './custom-elements/ce-with-children';
 import './custom-elements/ce-with-event';
+import './custom-elements/ce-with-property';
 
 if (!process.env.COMPAT) {
     describe('lwc:external directive basic tests', () => {
@@ -86,6 +89,105 @@ if (!process.env.COMPAT) {
             expect(ce).not.toBeNull();
             expect(ce instanceof HTMLElement).toBe(true);
             expect(customElements.get('ce-not-registered')).toBe(undefined);
+        });
+
+        it('should distribute slotted content', () => {
+            const elm = createElement('x-with-children', { is: XWithChildren });
+            document.body.appendChild(elm);
+
+            const ce = elm.shadowRoot.querySelector('ce-with-children');
+            const div = elm.shadowRoot.querySelector('.slotted');
+            const slot = ce.shadowRoot.querySelector('slot');
+
+            expect(div.assignedSlot).toBe(slot);
+            expect(slot.assignedElements().includes(div)).toBeTruthy();
+        });
+
+        describe('passing objects as data', () => {
+            let elm;
+
+            beforeEach(() => {
+                elm = createElement('x-with-property', { is: XWithProperty });
+                document.body.appendChild(elm);
+            });
+
+            it('should be stringified when set as an attribute', () => {
+                elm.data = {};
+
+                return Promise.resolve().then(() => {
+                    const ce = elm.shadowRoot.querySelector('ce-with-property');
+                    expect(ce.getAttribute('attr')).toBe('[object Object]');
+                });
+            });
+
+            it('should pass object without stringifying', () => {
+                const obj = {};
+                elm.data = obj;
+
+                return Promise.resolve().then(() => {
+                    const ce = elm.shadowRoot.querySelector('ce-with-property');
+                    expect(ce.prop).toEqual(obj);
+                });
+            });
+        });
+
+        describe('when custom element not upgraded', () => {
+            let elm;
+
+            beforeEach(() => {
+                elm = createElement('x-with-unregsitered-wc', { is: XWithUnregisteredWC });
+                document.body.appendChild(elm);
+            });
+
+            it('should set only attributes on mount', () => {
+                return Promise.resolve().then(() => {
+                    const ce = elm.shadowRoot.querySelector('ce-not-registered');
+                    expect(ce.getAttribute('attr')).toBe('default');
+                    expect(elm.attr).toBeUndefined();
+                });
+            });
+
+            it('should set only attributes on update', () => {
+                elm.data = 'apple';
+                return Promise.resolve().then(() => {
+                    const ce = elm.shadowRoot.querySelector('ce-not-registered');
+                    expect(ce.getAttribute('attr')).toBe('apple');
+                    expect(ce.attr).toBeUndefined();
+                });
+            });
+        });
+
+        describe('delayed upgrade', () => {
+            // This test is not broken up into smaller ones with individual assertions because we
+            // cannot manage the order in which different tests run. Order is important because once
+            // you define a custom element, there is no way to undefine it and the assertions meant
+            // for before the upgrade must run first.
+            it('should set property instead of attribute', async () => {
+                const elm = createElement('x-with-delayed-upgrade', { is: XWithDelayedUpgrade });
+                document.body.appendChild(elm);
+                const ce = elm.shadowRoot.querySelector('ce-with-delayed-upgrade');
+
+                elm.data = 'sake';
+                await Promise.resolve();
+
+                expect(ce.shadowRoot).toBeNull();
+                expect(ce.getAttribute('foo')).toBe('sake');
+                expect(ce.foo).toBeUndefined();
+
+                elm.upgrade();
+
+                elm.data = 'miso';
+                await Promise.resolve();
+
+                expect(ce.getAttribute('foo')).toBe('sake');
+                expect(ce.foo).toBe('miso-prop');
+
+                elm.data = 'mirin';
+                await Promise.resolve();
+
+                expect(ce.getAttribute('foo')).toBe('sake');
+                expect(ce.foo).toBe('mirin-prop');
+            });
         });
     });
 }
