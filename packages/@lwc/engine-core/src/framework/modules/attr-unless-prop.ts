@@ -40,11 +40,11 @@ export function patchAttrUnlessProp(
         const cur = attrs[name];
         const old = oldAttrs[name];
 
-        const propName = htmlAttributeToProperty(name);
-        if (propName in elm!) {
-            (elm as any)[propName] = cur;
-        } else if (old !== cur) {
-            if (StringCharCodeAt.call(name, 3) === ColonCharCode) {
+        if (old !== cur) {
+            const propName = htmlAttributeToProperty(name);
+            if (propName in elm!) {
+                (elm as any)[propName] = cur;
+            } else if (StringCharCodeAt.call(name, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, name, cur as string, XML_NAMESPACE);
             } else if (StringCharCodeAt.call(name, 5) === ColonCharCode) {
