@@ -14,12 +14,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         ghi: $cmp.jkl,
       },
       key: 1,
+      external: true,
     }),
     api_element("foo-bar", {
       attrs: {
         mno: $cmp.pqr,
       },
       key: 2,
+      external: true,
     }),
   ];
   /*LWC compiler vX.X.X*/
