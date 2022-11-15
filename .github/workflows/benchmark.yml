@@ -1,0 +1,33 @@
+name: Run Best benchmark
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
+  BEST_FRONTEND_HOSTNAME: ${{secrets.BEST_FRONTEND_HOSTNAME}}
+  BEST_HUB_CLIENT_TOKEN: ${{secrets.BEST_HUB_CLIENT_TOKEN}}
+  BEST_HUB_HOSTNAME: ${{secrets.BEST_HUB_HOSTNAME}}
+
+jobs:
+  run-best-performance-tests:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: salesforce-Ubuntu
+    steps:
+      # TODO: remove this debugging step
+      - name: IP
+        run: curl https://checkip.amazonaws.com/
+      - uses: actions/checkout@v3
+      - name: Setup workspace
+        uses: ./.github/actions/setup-workspace
+      - name: Run performance tests
+        run: |
+          yarn build:performance
+          yarn test:performance:best \
+            --runner remote \
+            --dbToken="${BEST_FRONTEND_CLIENT_TOKEN}" \
+            --dbAdapter=rest/frontend \
+            --dbURI="${BEST_FRONTEND_HOSTNAME}"

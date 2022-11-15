@@ -5,12 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { createElement } from 'lwc';
+import { createElement } from '@lwc/engine-dom';
 import { destroyComponent } from './utils.js';
-import { benchmark, run, after } from './benchmark-framework.js';
 
 // Generic benchmark for styled components
-export function styledComponentBenchmark(name, numComponents, componentOrComponents) {
+// Unfortunately the after/benchmark/run APIs have to be passed in here; otherwise Best won't build the code correctly
+export function styledComponentBenchmark(
+    name,
+    numComponents,
+    componentOrComponents,
+    { after, benchmark, run }
+) {
     benchmark(name, () => {
         const elms = [];
 

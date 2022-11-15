@@ -12,7 +12,6 @@ import Table from '@lwc/perf-benchmarks-components/dist/server/benchmark/tableCo
 import TableClient from '@lwc/perf-benchmarks-components/dist/dom/benchmark/tableComponent/tableComponent.js';
 
 import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/store.js';
-import { benchmark, run, before } from '../../utils/benchmark-framework.js';
 import { insertComponent } from '../../utils/utils';
 
 benchmark(`benchmark-table-component/hydrate/1k`, () => {
