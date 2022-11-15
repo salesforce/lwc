@@ -1931,6 +1931,11 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@locker/near-membrane-shared@0.11.13":
+  version "0.11.13"
+  resolved "https://registry.yarnpkg.com/@locker/near-membrane-shared/-/near-membrane-shared-0.11.13.tgz#0906bdaa6422aa0ef87523d3b5b5b2fd567f77a4"
+  integrity sha512-wISUNXdvMmfLPg42i8DVd08DSo5jN5GxNuoFkAQ/qCv2uZhTcaAF+0Mx8QZunk+rusAmDCYCRxNu2trbORIuFw==
+
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
   uid ""

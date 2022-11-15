@@ -5,7 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { getOwnPropertyDescriptor, defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { partialStructuredClone } from '@locker/near-membrane-shared';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
+
+const { DATA_CLONE_ERR: DATA_CLONE_ERROR_CODE } = DOMException;
 
 export default function apply() {
     // the iframe property descriptor for `contentWindow` should always be available, otherwise this method should never be called
@@ -54,9 +57,18 @@ function wrapIframeWindow(win: WindowProxy): WindowProxy {
             return win.focus.apply(win, arguments);
         },
         postMessage() {
-            // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-ignore type-mismatch
-            return win.postMessage.apply(win, arguments);
+            try {
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
+                return win.postMessage.apply(win, arguments);
+            } catch (e) {
+                if (e instanceof DOMException && e.code === DATA_CLONE_ERROR_CODE) {
+                    // Structured clone all arguments so that `transfer` is
+                    // referenced correctly within `message`.
+                    return win.postMessage.apply(win, partialStructuredClone(arguments));
+                }
+                throw e;
+            }
         },
         removeEventListener() {
             // Typescript does not like it when you treat the `arguments` object as an array
