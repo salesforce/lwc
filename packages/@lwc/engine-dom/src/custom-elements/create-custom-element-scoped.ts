@@ -53,28 +53,27 @@ const createUserConstructor = (
     disconnectedCallback?: LifecycleCallback
 ) => {
     // TODO [#2972]: this class should expose observedAttributes as necessary
-    class UserConstructor extends HTMLElementToExtend {
+    return class UserConstructor extends HTMLElementToExtend {
         constructor() {
             super();
             upgradeCallback(this);
         }
-    }
 
-    // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
-    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
-    if (!isUndefined(connectedCallback)) {
-        (UserConstructor.prototype as any).connectedCallback = function () {
-            connectedCallback(this);
-        };
-    }
+        // Note that there is no need to do the "avoid defining connectedCallback/disconnectedCallback" optimization
+        // here, because in create-scoped-registry.ts, the registered class will always have these callbacks anyway.
+        // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
+        connectedCallback() {
+            if (!isUndefined(connectedCallback)) {
+                connectedCallback(this);
+            }
+        }
 
-    if (!isUndefined(disconnectedCallback)) {
-        (UserConstructor.prototype as any).disconnectedCallback = function () {
-            disconnectedCallback(this);
-        };
-    }
-
-    return UserConstructor;
+        disconnectedCallback() {
+            if (!isUndefined(disconnectedCallback)) {
+                disconnectedCallback(this);
+            }
+        }
+    };
 };
 
 export function createCustomElementScoped(
