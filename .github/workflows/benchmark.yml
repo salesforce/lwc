@@ -1,6 +1,8 @@
 name: Run Best benchmark
 
-on: push
+on:
+  push:
+    branches: [ master ]
 
 env:
   BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
@@ -20,13 +22,6 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-
-      # TODO: remove this debugging step
-      - name: IP
-        run: curl https://checkip.amazonaws.com/
-
-      - name: curl best hub
-        run: curl "${BEST_HUB_HOSTNAME}"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
