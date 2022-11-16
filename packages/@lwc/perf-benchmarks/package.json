@@ -7,7 +7,7 @@
         "test": "yarn test:run && yarn test:format",
         "test:run": "for file in $(find dist -name '*.tachometer.json'); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
         "test:format": "node ./scripts/format-results.mjs $(find dist -name '*.results.json')",
-        "test:best": "best"
+        "test:best": "best src/__benchmarks__"
     },
     "//": [
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
