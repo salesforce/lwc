@@ -12,15 +12,26 @@ jobs:
   run-best-performance-tests:
     runs-on: salesforce-Ubuntu
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup workspace
-        uses: ./.github/actions/setup-workspace
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build benchmarks
+        run: yarn build:performance
+
       # TODO: remove this debugging step
       - name: IP
         run: curl https://checkip.amazonaws.com/
       - name: Run performance tests
         run: |
-          yarn build:performance
           yarn test:performance:best \
             --runner remote \
             --dbToken="${BEST_FRONTEND_CLIENT_TOKEN}" \
