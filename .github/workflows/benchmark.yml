@@ -21,6 +21,10 @@ jobs:
           node-version: 16
           cache: 'yarn'
 
+      # TODO: remove this debugging step
+      - name: IP
+        run: curl https://checkip.amazonaws.com/
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
