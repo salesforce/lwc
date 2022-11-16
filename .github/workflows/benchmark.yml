@@ -1,5 +1,7 @@
 name: Run Best benchmark
 
+# We could run on every PR, but there is not much need right now.
+# By running on every push to master, we get historical Best data for the master branch.
 on:
   push:
     branches: [ master ]
@@ -12,6 +14,7 @@ env:
 
 jobs:
   run-best-performance-tests:
+    # It is important to use this image so that we have a consistent IP address that can be allowlisted by Best infra
     runs-on: salesforce-Ubuntu
     steps:
       - name: Checkout repository
