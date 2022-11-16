@@ -33,7 +33,7 @@ export function patchAttrUnlessProp(
         return;
     }
 
-    const { removeAttribute, setAttribute } = renderer;
+    const { removeAttribute, setAttribute, setProperty } = renderer;
     const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
 
     for (const name in attrs) {
@@ -43,7 +43,7 @@ export function patchAttrUnlessProp(
         if (old !== cur) {
             const propName = htmlAttributeToProperty(name);
             if (propName in elm!) {
-                (elm as any)[propName] = cur;
+                setProperty(elm, name, cur);
             } else if (StringCharCodeAt.call(name, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, name, cur as string, XML_NAMESPACE);
