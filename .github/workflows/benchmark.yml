@@ -12,12 +12,12 @@ jobs:
   run-best-performance-tests:
     runs-on: salesforce-Ubuntu
     steps:
-      # TODO: remove this debugging step
-      - name: IP
-        run: curl https://checkip.amazonaws.com/
       - uses: actions/checkout@v3
       - name: Setup workspace
         uses: ./.github/actions/setup-workspace
+      # TODO: remove this debugging step
+      - name: IP
+        run: curl https://checkip.amazonaws.com/
       - name: Run performance tests
         run: |
           yarn build:performance
