@@ -6,8 +6,20 @@ module.exports = {
     // (since they already use for-loops, so we're only measuring peak performance, i.e. JITed performance),
     // but our tests assume that the DOM is fresh on each iteration
     benchmarkOnClient: false,
-    // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
-    plugins: ['@lwc/rollup-plugin-node-resolve-v13'],
+    plugins: [
+        // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
+        '@lwc/rollup-plugin-node-resolve-v13',
+        [
+            '@rollup/plugin-replace',
+            {
+                values: {
+                    // Run perf tests in prod mode, same as in Tachometer
+                    'process.env.NODE_ENV': '"production"',
+                },
+                preventAssignment: true,
+            },
+        ],
+    ],
     // This version should be updated when the Best infra updates, once per release
     specs: { name: 'chrome.headless', version: 108 },
     apiDatabase: {
