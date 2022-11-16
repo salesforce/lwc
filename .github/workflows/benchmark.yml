@@ -10,7 +10,6 @@ env:
 
 jobs:
   run-best-performance-tests:
-    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: salesforce-Ubuntu
     steps:
       # TODO: remove this debugging step
