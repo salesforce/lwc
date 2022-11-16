@@ -411,15 +411,18 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(expression);
             }
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    codeGen.genScopedFragId(expression),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        codeGen.genScopedFragId(expression),
+                    ]);
+                }
+                return codeGen.genScopedFragId(expression);
             }
 
             return expression;
@@ -450,17 +453,20 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(attrValue.value);
             }
 
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    isFragmentOnlyUrl(attrValue.value)
-                        ? codeGen.genScopedFragId(attrValue.value)
-                        : t.literal(attrValue.value),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        isFragmentOnlyUrl(attrValue.value)
+                            ? codeGen.genScopedFragId(attrValue.value)
+                            : t.literal(attrValue.value),
+                    ]);
+                }
+                return codeGen.genScopedFragId(attrValue.value);
             }
 
             return t.literal(attrValue.value);
