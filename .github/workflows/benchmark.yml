@@ -25,8 +25,8 @@ jobs:
       - name: IP
         run: curl https://checkip.amazonaws.com/
 
-      - name: curl best hub
-        run: curl "${BEST_HUB_HOSTNAME}"
+      - name: echo best hub
+        run: echo "${BEST_HUB_HOSTNAME}"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
