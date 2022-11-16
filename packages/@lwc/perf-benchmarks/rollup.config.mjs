@@ -25,10 +25,11 @@ function createConfig(benchmarkFile) {
         input: benchmarkFile,
         plugins: [
             inject(
+                // Replace global references to `after`/`before`/`benchmark`/`run` with explicit imports
                 Object.fromEntries(
                     ['after', 'before', 'benchmark', 'run'].map((name) => [
-                        benchmarkFramework,
                         name,
+                        [benchmarkFramework, name],
                     ])
                 )
             ),
