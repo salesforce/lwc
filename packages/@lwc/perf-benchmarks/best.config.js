@@ -1,10 +1,14 @@
 module.exports = {
     projectName: 'lwc',
-    benchmarkOnClient: false,
-    benchmarkIterations: 30,
-    useMacroTaskAfterBenchmark: false,
     mainBranch: 'master',
+    benchmarkIterations: 30,
+    // Refresh the browser between each iteration. This doesn't affect our benchmarks much
+    // (since they already use for-loops, so we're only measuring peak performance, i.e. JITed performance),
+    // but our tests assume that the DOM is fresh on each iteration
+    benchmarkOnClient: false,
+    // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
     plugins: ['@lwc/rollup-plugin-node-resolve-v13'],
+    // This version should be updated when the Best infra updates, once per release
     specs: { name: 'chrome.headless', version: 108 },
     apiDatabase: {
         adapter: 'rest/frontend',
