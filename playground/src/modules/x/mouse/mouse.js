@@ -1,9 +1,9 @@
 import { LightningElement } from 'lwc';
 import { computed } from "@preact/signals-core";
-import { pos, sumOfXAndY } from "x/mousePosition";
+import { pos } from "x/mousePosition";
 
 export default class Mouse extends LightningElement {
-    sumOfXAndY = sumOfXAndY;
+    sumOfXAndY = computed(() => pos.value.x + pos.value.y);;
     prettyPrint = computed(() => {
         return JSON.stringify(pos.value);
     });

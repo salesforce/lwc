@@ -2,7 +2,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
             <div class="container-xl">
-              <a class="navbar-brand" href="#">LWC stores</a>
+              <a class="navbar-brand" href="#">LWC Hackathon</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -20,84 +20,38 @@
                   </li>
                 </ul>
               </div>
-            </div>
-          </nav>
-      </header>
-      
-      <div class="container">
-        <br>
-      <main>
-      
-        <!-- <section class="py-5 text-center container">
-          <div class="row py-lg-5">
-            <div class="col-lg-6 col-md-8 mx-auto">
-              <h1 class="fw-light">Album example</h1>
-              <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
-              <p>
-                <a href="#" class="btn btn-primary my-2">Main call to action</a>
-                <a href="#" class="btn btn-secondary my-2">Secondary action</a>
-              </p>
-            </div>
-          </div>
-        </section>
-       -->
-       <div class="row g-5">
-        <div class="col-md-5 col-lg-4 order-md-last">
-          <x-cart></x-cart>
-        </div>
-        <div class="col-md-7 col-lg-8">
-            <x-page lwc:dynamic={$page}></x-page>
-        </div>
-      </div>
-
-        <!-- <div class="container py-4 py-5 bg-light">
-            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-                <div class="col d-flex align-items-start">
-                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>
-                  </div>
-                  <div>
-                    <h3 class="fs-2">Featured title</h3>
-                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                    <a href="#" class="btn btn-primary">
-                      Primary button
-                    </a>
-                  </div>
-                </div>
-                <div class="col d-flex align-items-start">
-                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#cpu-fill"></use></svg>
-                  </div>
-                  <div>
-                    <h3 class="fs-2">Featured title</h3>
-                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                    <a href="#" class="btn btn-primary">
-                      Primary button
-                    </a>
-                  </div>
-                </div>
-                <div class="col d-flex align-items-start">
-                  <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                    <svg class="bi" width="1em" height="1em"><use xlink:href="#tools"></use></svg>
-                  </div>
-                  <div>
-                    <h3 class="fs-2">Featured title</h3>
-                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p>
-                    <a href="#" class="btn btn-primary">
-                      Primary button
-                    </a>
-                  </div>
-                </div>
+              <div class="dropdown text-end">
+                <button type="button" onclick={toggleShowCart} class="btn btn-primary position-relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                      </svg>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      {$itemsInCart}
+                      <span class="visually-hidden">toggle cart</span>
+                    </span>
+                  </button>
               </div>
-        </div> -->
+            </div>
+        </nav>
+    </header>
       
-      </main>
+    <div class="container">
+        <br>
+        <main>
+            <div class="row g-5">
+                <div class="col-md-5 col-lg-4 order-md-last">
+                    <x-cart if:true={showCart}></x-cart>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <x-page lwc:dynamic={$page}></x-page>
+                </div>
+            </div>      
+        </main>
     </div>
-      <footer class="text-muted py-5">
+
+    <footer class="text-muted py-5">
         <div class="container">
-                <p>&copy; Salesforce 2022</p>
+            <p>&copy; Salesforce 2022</p>
         </div>
-      </footer>
-    
-    
+    </footer>
 </template>

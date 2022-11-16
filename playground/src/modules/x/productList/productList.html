@@ -1,6 +1,7 @@
 <template>
     <h2 class="pb-2 border-bottom">Products</h2>
     <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+
         <template for:each={products} for:item="product" for:index="idx">
             <div key={product.id} class="col d-flex align-items-start">
                 <div>
@@ -10,5 +11,6 @@
                 </div>
             </div>
         </template>
+        
     </div>
 </template>
