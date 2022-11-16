@@ -1,6 +1,6 @@
 name: Run Best benchmark
 
-on: [push, pull_request]
+on: push
 
 env:
   BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
