@@ -21,7 +21,9 @@ module.exports = {
             alias: 'remote',
             config: {
                 uri: process.env.BEST_HUB_HOSTNAME,
-                options: { authToken: process.env.BEST_HUB_CLIENT_TOKEN },
+                options: {
+                    authToken: process.env.BEST_HUB_CLIENT_TOKEN,
+                },
             },
         },
     ],
