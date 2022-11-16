@@ -27,10 +27,7 @@ jobs:
       - name: Build benchmarks
         run: yarn build:performance
 
-      # TODO: remove this debugging step
-      - name: IP
-        run: curl https://checkip.amazonaws.com/
-      - name: Run performance tests
+      - name: Run benchmarks
         run: |
           yarn test:performance:best \
             --runner remote \
