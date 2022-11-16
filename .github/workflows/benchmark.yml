@@ -1,10 +1,10 @@
 name: Run Best benchmark
 
-#on:
-#  push:
-#    branches: [ master ]
-#  pull_request:
-#    branches: [ master ]
+on:
+  push:
+    branches: [ master, "nolan/best" ]
+  pull_request:
+    branches: [ master, "nolan/best" ]
 
 env:
   BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
