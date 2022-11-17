@@ -871,6 +871,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
                 const invocations = [];
 
+                // At this point, because we've already defined an LWC component with the same tag
+                // name, the native element should be forced to use the manual attributeChangedCallback
+                // logic. It should be called during the upgrade, since the attribute was already set.
                 customElements.define(
                     tagName,
                     class extends HTMLElement {
