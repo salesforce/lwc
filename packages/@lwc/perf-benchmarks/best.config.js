@@ -17,7 +17,7 @@ module.exports = {
     // We only care about JS execution time, not style/layout/paint, or aggregate. We don't care about
     // the style/layout costs of the components that we're putting in the DOM; just how long LWC takes
     // to insert them into the DOM. Setting this to just 'script' also skips running an extra macro task:
-    // https://github.com/salesforce/best/commit/5afdc09fae7ad2e2c54c8952fd11a74ec547283e
+    // https://github.com/salesforce/best/commit/6190687cce0559f1ed7678d70763c911a0f96610
     metrics: ['script'],
     plugins: [
         // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
