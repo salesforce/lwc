@@ -22,7 +22,6 @@ branches:
         - communities/ui-feeds-components
         - communities/ui-lightning-community
         - lwc/lwc-platform
-        - nrkruk/lwc-dev-core
         - omnistudio/ui-omniscript-components
         - ris-gpta/core_via_components
         - salesforce/builder-framework
