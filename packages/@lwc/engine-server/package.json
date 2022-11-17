@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-server",
-    "version": "2.30.3",
+    "version": "2.31.0",
     "description": "Renders LWC components in a server environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,9 +24,9 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.30.3",
-        "@lwc/rollup-plugin": "2.30.3",
-        "@lwc/shared": "2.30.3",
+        "@lwc/engine-core": "2.31.0",
+        "@lwc/rollup-plugin": "2.31.0",
+        "@lwc/shared": "2.31.0",
         "@rollup/plugin-virtual": "^3.0.1",
         "parse5": "^6.0.1"
     },
