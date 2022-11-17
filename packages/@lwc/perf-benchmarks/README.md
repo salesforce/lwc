@@ -68,7 +68,10 @@ be passed to `test:performance`. Otherwise, `test:performance` will use whatever
 
 ## Best benchmarks
 
-This package also supports [Best](https://bestjs.dev) as a benchmark runner. To run the Best tests, you must run
-`yarn build:performance` as usual. To run the tests locally, run:
+This package also supports [Best](https://bestjs.dev) as a benchmark runner. To run the Best tests locally:
 
     yarn test:performance:best
+
+Or for CI:
+
+    yarn test:performance:best:ci
