@@ -22,7 +22,8 @@
         "test:ci": "yarn test --no-cache --coverage --runInBand",
         "test:integration": "nx sauce @lwc/integration-tests",
         "test:performance": "nx test @lwc/perf-benchmarks",
-        "test:performance:best": "cd packages/@lwc/perf-benchmarks && yarn test:best",
+        "test:performance:best": "nx test:best @lwc/perf-benchmarks",
+        "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "release:version": "./scripts/release/version.js"
     },
     "devDependencies": {

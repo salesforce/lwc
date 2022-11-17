@@ -7,7 +7,8 @@
         "test": "yarn test:run && yarn test:format",
         "test:run": "for file in $(find dist -name '*.tachometer.json'); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
         "test:format": "node ./scripts/format-results.mjs $(find dist -name '*.results.json')",
-        "test:best": "best src/__benchmarks__"
+        "test:best": "best src",
+        "test:best:ci": "best src --runner remote"
     },
     "//": [
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
@@ -53,6 +54,19 @@
                         "env": "BENCHMARK_TIMEOUT"
                     }
                 ]
+            },
+            "test": {
+                "dependsOn": [
+                    "build"
+                ]
+            },
+            "test:best": {
+                "//": "Building dist/ files is only needed for Tachometer, not Best",
+                "dependsOn": []
+            },
+            "test:best:ci": {
+                "//": "Building dist/ files is only needed for Tachometer, not Best",
+                "dependsOn": []
             }
         }
     }
