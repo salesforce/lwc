@@ -12,11 +12,13 @@ const stc0 = {
   svg: true,
 };
 const stc1 = {
+  "xlink:href": "/assets/icons/standard-sprite/svg/symbols.svg#case",
+};
+const stc2 = {
   key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    fid: api_scoped_frag_id,
     h: api_element,
     t: api_text,
     gid: api_scoped_id,
@@ -25,17 +27,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("svg", stc0, [
       api_element("use", {
-        attrs: {
-          "xlink:href": api_scoped_frag_id(
-            "/assets/icons/standard-sprite/svg/symbols.svg#case"
-          ),
-        },
+        attrs: stc1,
         key: 1,
         svg: true,
         renderer: renderer,
       }),
     ]),
-    api_element("span", stc1, [
+    api_element("span", stc2, [
       api_text("Should not get custom renderer!"),
       api_element("circle", {
         attrs: {

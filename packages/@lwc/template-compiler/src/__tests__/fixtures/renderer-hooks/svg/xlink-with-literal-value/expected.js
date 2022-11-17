@@ -10,16 +10,15 @@ const stc0 = {
   key: 0,
   svg: true,
 };
+const stc1 = {
+  "xlink:href": "/assets/icons/standard-sprite/svg/symbols.svg#case",
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { fid: api_scoped_frag_id, h: api_element } = $api;
+  const { h: api_element } = $api;
   return [
     api_element("svg", stc0, [
       api_element("use", {
-        attrs: {
-          "xlink:href": api_scoped_frag_id(
-            "/assets/icons/standard-sprite/svg/symbols.svg#case"
-          ),
-        },
+        attrs: stc1,
         key: 1,
         svg: true,
         renderer: renderer,

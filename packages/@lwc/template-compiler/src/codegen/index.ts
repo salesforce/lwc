@@ -454,6 +454,10 @@ function transform(codeGen: CodeGen): t.Expression {
             }
 
             if (isSvgUseHref(elmName, attrName, namespace)) {
+                // apply the fragment id tranformation if necessary
+                const value = isFragmentOnlyUrl(attrValue.value)
+                    ? codeGen.genScopedFragId(attrValue.value)
+                    : t.literal(attrValue.value);
                 if (addLegacySanitizationHook) {
                     codeGen.usedLwcApis.add('sanitizeAttribute');
 
@@ -461,12 +465,10 @@ function transform(codeGen: CodeGen): t.Expression {
                         t.literal(elmName),
                         t.literal(namespace),
                         t.literal(attrName),
-                        isFragmentOnlyUrl(attrValue.value)
-                            ? codeGen.genScopedFragId(attrValue.value)
-                            : t.literal(attrValue.value),
+                        value,
                     ]);
                 }
-                return codeGen.genScopedFragId(attrValue.value);
+                return value;
             }
 
             return t.literal(attrValue.value);
