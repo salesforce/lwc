@@ -8,11 +8,17 @@
 module.exports = {
     projectName: 'lwc',
     mainBranch: 'master',
-    benchmarkIterations: 30,
+    // This number is a tradeoff: higher = less variance, lower = less time spent running in CI
+    benchmarkIterations: 15,
     // Refresh the browser between each iteration. This doesn't affect our benchmarks much
     // (since they already use for-loops, so we're only measuring peak performance, i.e. JITed performance),
     // but our tests assume that the DOM is fresh on each iteration
     benchmarkOnClient: false,
+    // We only care about JS execution time, not style/layout/paint, or aggregate. We don't care about
+    // the style/layout costs of the components that we're putting in the DOM; just how long LWC takes
+    // to insert them into the DOM. Setting this to just 'script' also skips running an extra macro task:
+    // https://github.com/salesforce/best/commit/5afdc09fae7ad2e2c54c8952fd11a74ec547283e
+    metrics: ['script'],
     plugins: [
         // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
         '@lwc/rollup-plugin-node-resolve-v13',
