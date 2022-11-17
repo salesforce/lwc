@@ -13,6 +13,9 @@ import './custom-elements/ce-with-children';
 import './custom-elements/ce-with-event';
 import './custom-elements/ce-with-property';
 
+const unknownPropTokyo =
+    /Error: \[LWC warn]: Unknown public property "tokyo" of element <ce-with-property>\. This is either a typo on the corresponding attribute "tokyo", or the attribute does not exist in this browser or DOM implementation\./;
+
 if (!process.env.COMPAT) {
     describe('lwc:external directive basic tests', () => {
         it('should render a Custom Element without children', () => {
@@ -108,7 +111,9 @@ if (!process.env.COMPAT) {
 
             beforeEach(() => {
                 elm = createElement('x-with-property', { is: XWithProperty });
-                document.body.appendChild(elm);
+                expect(() => {
+                    document.body.appendChild(elm);
+                }).toLogWarningDev(unknownPropTokyo);
             });
 
             it('should be stringified when set as an attribute', () => {
@@ -133,7 +138,9 @@ if (!process.env.COMPAT) {
 
         it('should work with lwc:spread', () => {
             const elm = createElement('x-with-property', { is: XWithProperty });
-            document.body.appendChild(elm);
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarningDev(unknownPropTokyo);
 
             return Promise.resolve().then(() => {
                 const ce = elm.shadowRoot.querySelector('ce-with-property');
