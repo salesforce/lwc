@@ -862,7 +862,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 // The LWC component observes nothing, but the vanilla component observes foo
                 const tagName = 'x-attr-change-on-upgrade';
                 const lwcElm = createElement(tagName, {
-                    is: ObserveNothing,
+                    is: ObserveNothingThrow, // throws if invoked, which should not happen
                 });
                 document.body.appendChild(lwcElm);
                 const nativeElm = document.createElement(tagName);
