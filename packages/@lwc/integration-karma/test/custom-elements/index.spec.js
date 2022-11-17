@@ -858,6 +858,43 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(lwcElm.getAttribute('foo')).toBeNull();
             });
 
+            it('attributeChangedCallback fires on upgrade', () => {
+                // The LWC component observes nothing, but the vanilla component observes foo
+                const tagName = 'x-attr-change-on-upgrade';
+                const lwcElm = createElement(tagName, {
+                    is: ObserveNothingThrow, // throws if invoked, which should not happen
+                });
+                document.body.appendChild(lwcElm);
+                const nativeElm = document.createElement(tagName);
+                nativeElm.setAttribute('foo', '1');
+                document.body.appendChild(nativeElm);
+
+                const invocations = [];
+
+                // At this point, because we've already defined an LWC component with the same tag
+                // name, the native element should be forced to use the manual attributeChangedCallback
+                // logic. It should be called during the upgrade, since the attribute was already set.
+                customElements.define(
+                    tagName,
+                    class extends HTMLElement {
+                        static observedAttributes = ['foo'];
+
+                        attributeChangedCallback(name, oldVal, newVal) {
+                            invocations.push([name, oldVal, newVal]);
+                        }
+                    }
+                );
+
+                nativeElm.setAttribute('foo', '2');
+
+                return new Promise((resolve) => setTimeout(resolve)).then(() => {
+                    expect(invocations).toEqual([
+                        ['foo', null, '1'],
+                        ['foo', '1', '2'],
+                    ]);
+                });
+            });
+
             describe('attributeChangedCallback timing', () => {
                 let originalOnError;
                 let errors;
