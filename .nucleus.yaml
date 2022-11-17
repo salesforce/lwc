@@ -45,6 +45,9 @@ branches:
   winter23:
     pull-request:
       <<: *branch-definition
+  spring23:
+    pull-request:
+      <<: *branch-definition
 steps:
   node-conformance:
     run:
