@@ -39,13 +39,13 @@ import {
 } from './constants';
 
 function isQuotedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return value && value.startsWith('"') && value.endsWith('"');
+    const attrVal = rawAttribute.slice(rawAttribute.indexOf('=') + 1);
+    return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
 }
 
 function isEscapedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return !value || !(value.includes('{') && value.includes('}'));
+    const attrVal = rawAttribute.slice(rawAttribute.indexOf('=') + 1);
+    return !attrVal || !(attrVal.includes('{') && attrVal.includes('}'));
 }
 
 export function isIdReferencingAttribute(attrName: string): boolean {
