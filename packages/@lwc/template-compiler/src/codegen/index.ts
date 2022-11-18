@@ -188,7 +188,6 @@ function transform(codeGen: CodeGen): t.Expression {
         const key = t.identifier('key');
         codeGen.declareIdentifier(dataIdentifier);
         codeGen.declareIdentifier(key);
-        // TODO [#3111]: Next Step: Return a VFragment
 
         const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
         codeGen.endScope();
