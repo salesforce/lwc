@@ -76,3 +76,7 @@ steps:
         # add NX cache
         - '.nx-cache'
     after: node-build
+  npm-publish-release:
+    params:
+      access: public
+      tag: spring23
