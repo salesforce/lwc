@@ -185,14 +185,17 @@ function transform(codeGen: CodeGen): t.Expression {
             slotData: { value: dataIdentifier },
         } = scopedSlotFragment;
         codeGen.beginScope();
+        const key = t.identifier('key');
         codeGen.declareIdentifier(dataIdentifier);
+        codeGen.declareIdentifier(key);
         // TODO [#3111]: Next Step: Return a VFragment
-        const fragment = transformChildren(scopedSlotFragment);
+
+        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
         codeGen.endScope();
 
         const slotFragmentFactory = t.functionExpression(
             null,
-            [dataIdentifier],
+            [dataIdentifier, t.assignmentPattern(key, t.literal(codeGen.generateKey()))],
             t.blockStatement([t.returnStatement(fragment)])
         );
         return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));

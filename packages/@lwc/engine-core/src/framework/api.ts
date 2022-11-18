@@ -55,7 +55,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]coped [s]lot [f]actory
-function ssf(slotName: string, factory: (value: any) => VNodes): VScopedSlotFragment {
+function ssf(slotName: string, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
     return {
         type: VNodeType.ScopedSlotFragment,
         factory,
@@ -217,7 +217,7 @@ function s(
                     // undefined is for root components, but root components cannot accept slotted content
                     setVMBeingRendered(slotset.owner!);
                     try {
-                        ArrayPush.apply(newChildren, vnode.factory(data.slotData) as VNode[]);
+                        ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
                     } finally {
                         setVMBeingRendered(vmBeingRenderedInception);
                     }

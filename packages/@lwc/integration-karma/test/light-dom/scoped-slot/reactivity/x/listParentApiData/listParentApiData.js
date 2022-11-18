@@ -1,6 +1,12 @@
 import { LightningElement, track, api } from 'lwc';
 
 export default class extends LightningElement {
+    @api
+    reactivityTestCaseEnabled = false;
+
+    @api
+    callbacksTestCaseEnabled = false;
+
     @track
     items = [
         { id: 39, name: 'Audio' },
@@ -8,8 +14,13 @@ export default class extends LightningElement {
     ];
 
     @api
-    changeItemsNestedValue() {
+    changeItemsNestedKey() {
         this.items[0].id = '38';
+    }
+
+    @api
+    changeItemsNestedValue() {
+        this.items[0].name = 'Light';
     }
 
     @api
