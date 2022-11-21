@@ -22,6 +22,8 @@
         "test:ci": "yarn test --no-cache --coverage --runInBand",
         "test:integration": "nx sauce @lwc/integration-tests",
         "test:performance": "nx test @lwc/perf-benchmarks",
+        "test:performance:best": "nx test:best @lwc/perf-benchmarks",
+        "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "release:version": "./scripts/release/version.js"
     },
     "devDependencies": {
@@ -30,6 +32,7 @@
         "@commitlint/cli": "^17.2.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
+        "@rollup/plugin-inject": "^5.0.2",
         "@rollup/plugin-node-resolve": "^15.0.1",
         "@rollup/plugin-replace": "^5.0.1",
         "@rollup/plugin-typescript": "^9.0.2",

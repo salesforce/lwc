@@ -8,8 +8,7 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import glob from 'glob';
-import replace from '@rollup/plugin-replace';
-import syntheticShadow from './rollup-plugins/synthetic-shadow.mjs';
+import inject from '@rollup/plugin-inject';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -20,22 +19,20 @@ const componentModules = glob
     .map((filename) => path.relative(path.join(__dirname, '../..'), filename).replace(/^\.\//, ''));
 
 function createConfig(benchmarkFile) {
-    const isServer = benchmarkFile.includes('/engine-server/');
-    const lwcImportModule = isServer ? '@lwc/engine-server' : '@lwc/engine-dom';
-
+    // Pseudo-Best benchmark framework implementing globals `before`, `after`, `benchmark`, `run`
+    const benchmarkFramework = path.resolve(__dirname, './src/utils/benchmark-framework.js');
     return {
         input: benchmarkFile,
         plugins: [
-            !isServer && syntheticShadow(),
-            // Replace `import { foo } from 'lwc'` with '@lwc/engine-server' or '@lwc/engine-dom'
-            replace({
-                preventAssignment: true,
-                delimiters: ['', ''],
-                values: {
-                    'from "lwc"': `from "${lwcImportModule}"`,
-                    "from 'lwc'": `from "${lwcImportModule}"`,
-                },
-            }),
+            inject(
+                // Replace global references to `after`/`before`/`benchmark`/`run` with explicit imports
+                Object.fromEntries(
+                    ['after', 'before', 'benchmark', 'run'].map((name) => [
+                        name,
+                        [benchmarkFramework, name],
+                    ])
+                )
+            ),
         ],
         output: {
             file: benchmarkFile.replace('/src/', '/dist/'),
