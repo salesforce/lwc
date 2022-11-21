@@ -59,11 +59,6 @@ import {
     getFirstSlottedMatch,
 } from './traverse';
 
-const enum ShadowDomSemantic {
-    Disabled,
-    Enabled,
-}
-
 function innerHTMLGetterPatched(this: Element): string {
     const childNodes = getInternalChildNodes(this);
     let innerHTML = '';
@@ -272,11 +267,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     }
 }
 
-function getFilteredArrayOfNodes<T extends Node>(
-    context: Element,
-    unfilteredNodes: T[],
-    shadowDomSemantic: ShadowDomSemantic
-): T[] {
+function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNodes: T[]): T[] {
     let filtered: T[];
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
@@ -299,19 +290,12 @@ function getFilteredArrayOfNodes<T extends Node>(
                 unfilteredNodes,
                 (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
-        } else if (shadowDomSemantic === ShadowDomSemantic.Enabled) {
-            // context is inside a shadow, we dont know which one.
-            const contextNearestOwnerKey = getNodeNearestOwnerKey(context);
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
-            );
         } else {
-            // context is manually inserted without lwc:dom-manual and ShadowDomSemantics is off, return everything
+            // context is manually inserted without lwc:dom-manual, return everything
             filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {
-        if (context instanceof HTMLBodyElement || shadowDomSemantic === ShadowDomSemantic.Enabled) {
+        if (context instanceof HTMLBodyElement) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
@@ -347,11 +331,7 @@ defineProperties(Element.prototype, {
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            const filteredResults = getFilteredArrayOfNodes(
-                this,
-                nodeList,
-                ShadowDomSemantic.Disabled
-            );
+            const filteredResults = getFilteredArrayOfNodes(this, nodeList);
             return createStaticNodeList(filteredResults);
         },
         writable: true,
