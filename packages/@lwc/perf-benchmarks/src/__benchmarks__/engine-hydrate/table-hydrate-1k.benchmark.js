@@ -14,7 +14,7 @@ import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/s
 import TableClient from '@lwc/perf-benchmarks-components/dist/dom/benchmark/cardComponent/cardComponent.js';
 import { insertComponent } from '../../utils/utils';
 
-benchmark(`benchmark-table/hydrate/1k`, () => {
+benchmark(`hydrate/table/hydrate/1k`, () => {
     let tableElement;
     let props;
 
