@@ -13,7 +13,7 @@ import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 const NUMBER_OF_ROWS = 5000;
 
-benchmark(`benchmark-slot-ss/synthetic-shadow-slot-update-slotted-content/5k`, () => {
+benchmark(`dom/slot/synthetic-shadow/update-slotted-content/5k`, () => {
     let slottingComponent;
     let nextData;
 
