@@ -85,11 +85,11 @@ describe('reactivity in scoped slots', () => {
 
     it('<slot> tag with key attribute: rerenders slotted content only when iteration key changes', () => {
         function verifyContentAndCallbacks(expectedContent, expectedCallbacks) {
-            const slottedChildren = elm.shadowRoot.querySelectorAll('x-slotted-with-callbacks');
-            expect(slottedChildren).toHaveSize(expectedContent.length);
-            for (let i = 0; i < expectedContent.length; i++) {
-                expect(slottedChildren[i].shadowRoot.innerHTML).toBe(expectedContent[i]);
-            }
+            expect(
+                [...elm.shadowRoot.querySelectorAll('x-slotted-with-callbacks')].map(
+                    (_) => _.shadowRoot.innerHTML
+                )
+            ).toEqual(expectedContent);
             expect(window.timingBuffer).toEqual(expectedCallbacks);
         }
         const elm = createElement('x-list-parent', { is: ListParentApiData });

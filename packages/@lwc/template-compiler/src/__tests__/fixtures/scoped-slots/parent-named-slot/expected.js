@@ -7,10 +7,10 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 3,
+  key: 2,
 };
 const stc3 = {
-  key: 5,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_custom_element("x-child", _xChild, stc0, [
-      api_scoped_slot_factory("slotname1", function (slot1data, key = 2) {
+      api_scoped_slot_factory("slotname1", function (slot1data, key) {
         return api_fragment(
           key,
           [
@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0
         );
       }),
-      api_scoped_slot_factory("slotname2", function (slot2data, key = 4) {
+      api_scoped_slot_factory("slotname2", function (slot2data, key) {
         return api_fragment(
           key,
           [
@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0
         );
       }),
-      api_scoped_slot_factory("", function (defaultdata, key = 6) {
+      api_scoped_slot_factory("", function (defaultdata, key) {
         return api_fragment(
           key,
           [

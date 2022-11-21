@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: api_key(0, parentItem),
       },
       [
-        api_scoped_slot_factory("", function (item, key = 3) {
+        api_scoped_slot_factory("", function (item, key) {
           return api_fragment(
             key,
             [

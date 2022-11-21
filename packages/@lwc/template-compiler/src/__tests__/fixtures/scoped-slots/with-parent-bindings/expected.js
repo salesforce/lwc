@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_text(api_dynamic_text($cmp.title)),
     api_custom_element("x-list", _xList, stc0, [
-      api_scoped_slot_factory("", function (item, key = 3) {
+      api_scoped_slot_factory("", function (item, key) {
         return api_fragment(
           key,
           [

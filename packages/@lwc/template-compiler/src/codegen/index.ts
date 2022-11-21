@@ -185,16 +185,22 @@ function transform(codeGen: CodeGen): t.Expression {
             slotData: { value: dataIdentifier },
         } = scopedSlotFragment;
         codeGen.beginScope();
-        const key = t.identifier('key');
         codeGen.declareIdentifier(dataIdentifier);
+
+        // At runtime, the 'key' of the <slot> element will be propagated to the fragment vnode
+        // produced by the ScopedSlotFactory
+        const key = t.identifier('key');
         codeGen.declareIdentifier(key);
 
         const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
         codeGen.endScope();
 
+        // The factory is invoked with two parameters:
+        // 1. The value of the binding specified in lwc:slot-bind directive
+        // 2. The key to be applied to the fragment vnode, this will be used for diffing
         const slotFragmentFactory = t.functionExpression(
             null,
-            [dataIdentifier, t.assignmentPattern(key, t.literal(codeGen.generateKey()))],
+            [dataIdentifier, key],
             t.blockStatement([t.returnStatement(fragment)])
         );
         return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));

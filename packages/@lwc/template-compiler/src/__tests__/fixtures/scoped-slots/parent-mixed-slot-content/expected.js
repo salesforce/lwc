@@ -11,7 +11,7 @@ const stc2 = {
   attrs: {
     slot: "slotname2",
   },
-  key: 3,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_custom_element("x-child", _xChild, stc0, [
-      api_scoped_slot_factory("slotname1", function (slot1data, key = 2) {
+      api_scoped_slot_factory("slotname1", function (slot1data, key) {
         return api_fragment(
           key,
           [
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         );
       }),
       api_element("span", stc2, [api_text("Willy Wonka")]),
-      api_static_fragment($fragment1(), 5),
+      api_static_fragment($fragment1(), 4),
     ]),
   ];
   /*LWC compiler vX.X.X*/
