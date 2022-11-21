@@ -9,7 +9,6 @@ import { renderComponent } from '@lwc/engine-server';
 
 import Table from '@lwc/perf-benchmarks-components/dist/server/benchmark/cardComponent/cardComponent.js';
 import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/store.js';
-import { benchmark, run } from '../../utils/benchmark-framework.js';
 
 benchmark(`benchmark-table/render/10k`, () => {
     run(() => {

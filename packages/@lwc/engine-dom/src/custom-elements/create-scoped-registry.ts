@@ -19,6 +19,25 @@ export type CreateScopedConstructor = (
     UserCtor: CustomElementConstructor
 ) => CustomElementConstructor;
 
+type WhenDefinedCallback = (
+    ctor: CustomElementConstructor | PromiseLike<CustomElementConstructor>
+) => void;
+
+interface Definition {
+    UserCtor: CustomElementConstructor;
+    PivotCtor?: CustomElementConstructor;
+    connectedCallback?: () => void;
+    disconnectedCallback?: () => void;
+    formAssociatedCallback?: (form: HTMLFormElement) => void;
+    formDisabledCallback?: (disabled: boolean) => void;
+    formResetCallback?: () => void;
+    formStateRestoreCallback?: (state: string | File | FormData | undefined, mode: string) => void;
+    adoptedCallback?: () => void;
+    attributeChangedCallback?: (name: string, oldValue: any, newValue: any) => void;
+    observedAttributes: Set<string>;
+    formAssociated: boolean;
+}
+
 /**
  * Create a scoped registry, i.e. a function that can create custom elements whose tag names
  * do not conflict with vanilla custom elements having the same tag name.
@@ -42,40 +61,42 @@ export function createScopedRegistry(): CreateScopedConstructor {
     const pendingRegistryForElement = new WeakMap<HTMLElement, Definition>();
     const definitionForConstructor = new WeakMap<CustomElementConstructor, Definition>();
     const registeredUserCtors = new WeakSet<CustomElementConstructor>();
+    const registeredPivotCtors = new WeakSet<CustomElementConstructor>();
 
     const pivotCtorByTag = new Map<string, CustomElementConstructor>();
     const globalDefinitionsByTag = new Map<string, Definition>();
     const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
     const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
+    const pendingWhenDefinedCallbacks = new Map<string, WhenDefinedCallback[]>();
 
     const EMPTY_SET: Set<string> = new Set();
-
-    interface Definition {
-        UserCtor: CustomElementConstructor;
-        PivotCtor?: CustomElementConstructor;
-        connectedCallback?: () => void;
-        disconnectedCallback?: () => void;
-        adoptedCallback?: () => void;
-        attributeChangedCallback?: (name: string, oldValue: any, newValue: any) => void;
-        observedAttributes: Set<string>;
-    }
 
     function createDefinitionRecord(constructor: CustomElementConstructor): Definition {
         const {
             connectedCallback,
             disconnectedCallback,
+            formAssociatedCallback,
+            formDisabledCallback,
+            formResetCallback,
+            formStateRestoreCallback,
             adoptedCallback,
             attributeChangedCallback,
         } = constructor.prototype;
+        const formAssociated = Boolean(constructor.formAssociated);
         const observedAttributes = new Set(constructor.observedAttributes ?? []);
         return {
             UserCtor: constructor,
             PivotCtor: undefined,
             connectedCallback,
             disconnectedCallback,
+            formAssociatedCallback,
+            formDisabledCallback,
+            formResetCallback,
+            formStateRestoreCallback,
             adoptedCallback,
             attributeChangedCallback,
             observedAttributes,
+            formAssociated,
         };
     }
 
@@ -159,6 +180,30 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 }
             }
 
+            formAssociatedCallback(this: HTMLElement, form: HTMLFormElement) {
+                const definition = definitionForElement.get(this);
+                definition?.formAssociatedCallback?.call(this, form);
+            }
+
+            formDisabledCallback(this: HTMLElement, disabled: boolean) {
+                const definition = definitionForElement.get(this);
+                definition?.formDisabledCallback?.call(this, disabled);
+            }
+
+            formResetCallback(this: HTMLElement) {
+                const definition = definitionForElement.get(this);
+                definition?.formResetCallback?.call(this);
+            }
+
+            formStateRestoreCallback(
+                this: HTMLElement,
+                state: string | File | FormData | undefined,
+                mode: string
+            ) {
+                const definition = definitionForElement.get(this);
+                definition?.formStateRestoreCallback?.call(this, state, mode);
+            }
+
             adoptedCallback(this: HTMLElement) {
                 const definition = definitionForElement.get(this);
                 definition?.adoptedCallback?.call(this);
@@ -183,7 +228,11 @@ export function createScopedRegistry(): CreateScopedConstructor {
             }
 
             static observedAttributes = [...registeredDefinition.observedAttributes];
+
+            // TODO [#3000]: support case where registeredDefinition is not form-associated, but later definition is.
+            static formAssociated = registeredDefinition.formAssociated;
         }
+        registeredPivotCtors.add(PivotCtor);
 
         return PivotCtor;
     }
@@ -353,6 +402,32 @@ export function createScopedRegistry(): CreateScopedConstructor {
         return createDefinitionRecord(constructor);
     }
 
+    // Defer a `whenDefined()` callback until an externally-visible custom element is defined
+    function createPendingWhenDefinedCallback(tagName: string): Promise<CustomElementConstructor> {
+        return new Promise((resolve) => {
+            let resolvers = pendingWhenDefinedCallbacks.get(tagName);
+            if (isUndefined(resolvers)) {
+                resolvers = [];
+                pendingWhenDefinedCallbacks.set(tagName, resolvers);
+            }
+            resolvers.push(resolve);
+        });
+    }
+
+    // Call any pending `whenDefined()` callbacks
+    function flushPendingWhenDefinedCallbacks(
+        tagName: string,
+        ctor: CustomElementConstructor
+    ): void {
+        const resolvers = pendingWhenDefinedCallbacks.get(tagName);
+        if (!isUndefined(resolvers)) {
+            for (const resolver of resolvers) {
+                resolver(ctor);
+            }
+        }
+        pendingWhenDefinedCallbacks.delete(tagName);
+    }
+
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
 
@@ -419,6 +494,8 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 }
             }
         }
+        // If anyone called customElements.whenDefined() and is still waiting for a promise resolution, resolve now
+        flushPendingWhenDefinedCallbacks(tagName, constructor);
     };
 
     CustomElementRegistry.prototype.get = function get(
@@ -431,8 +508,10 @@ export function createScopedRegistry(): CreateScopedConstructor {
             if (!isUndefined(definition)) {
                 return definition.UserCtor; // defined by the patched custom elements registry
             }
-            // TODO [#3073]: return undefined rather than the pivot constructor (NativeCtor)
-            return NativeCtor; // return the pivot constructor or constructor that existed before patching
+            if (registeredPivotCtors.has(NativeCtor)) {
+                return undefined; // pivot constructors should not be observable, return undefined
+            }
+            return NativeCtor; // constructor that existed before patching
         }
     };
 
@@ -445,14 +524,17 @@ export function createScopedRegistry(): CreateScopedConstructor {
             if (!isUndefined(definition)) {
                 return definition.UserCtor;
             }
-            // TODO [#3073]: return undefined rather than the pivot constructor (NativeCtor)
-
             // In this case, the custom element must have been defined before the registry patches
             // were applied. So return the non-pivot constructor
             if (isUndefined(NativeCtor)) {
                 // Chromium bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1335247
                 // We can patch the correct behavior using customElements.get()
-                return nativeGet.call(nativeRegistry, tagName)!;
+                NativeCtor = nativeGet.call(nativeRegistry, tagName)!;
+            }
+            if (registeredPivotCtors.has(NativeCtor)) {
+                // Pivot constructors should not be observable. Wait to resolve the promise
+                // if a constructor is ever defined in userland
+                return createPendingWhenDefinedCallback(tagName);
             }
             return NativeCtor;
         });

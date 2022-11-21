@@ -14,6 +14,9 @@ import './testFeatureFlag.ts';
 // Tests -------------------------------------------------------------------------------------------
 import './testFeatureFlag.ts';
 
+// DevTools Formatters
+import './formatters';
+
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1179,
+            "message": "LWC1179: lwc:slot-data directive cannot be combined with other directives on the same <template> tag.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 32,
+                "length": 168
+            }
+        }
+    ]
+}

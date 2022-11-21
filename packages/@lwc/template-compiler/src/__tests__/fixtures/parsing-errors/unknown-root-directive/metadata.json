@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1080,
-            "message": "LWC1080: Root template has unknown attributes",
+            "message": "LWC1080: Root template has unknown or disallowed attributes: foo",
             "level": 1,
             "location": {
                 "line": 1,

@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest, swapComponent } from 'lwc';
+import { createElement, swapComponent } from 'lwc';
 
 import Container from 'base/container';
 import A from 'base/a';
@@ -8,7 +8,6 @@ import D from 'base/d';
 import E from 'base/e';
 
 describe('component swapping', () => {
-    setFeatureFlagForTest('ENABLE_HMR', true);
     it('should work before and after instantiation', () => {
         expect(swapComponent(A, B)).toBe(true);
         const elm = createElement('x-container', { is: Container });

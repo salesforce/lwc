@@ -77,12 +77,12 @@ function validateSlots(vm: VM, html: Template) {
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
 
-    for (const slotName in cmpSlots) {
+    for (const slotName in cmpSlots.slotAssignments) {
         // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
         assert.isTrue(
-            isArray(cmpSlots[slotName]),
+            isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
+                cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
 
@@ -308,7 +308,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-function computeHasScopedStyles(template: Template): boolean {
+export function computeHasScopedStyles(template: Template): boolean {
     const { stylesheets } = template;
     if (!isUndefined(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {

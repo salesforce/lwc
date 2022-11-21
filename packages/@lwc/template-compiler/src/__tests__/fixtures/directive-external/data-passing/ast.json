@@ -1,0 +1,216 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 146,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 135,
+                "end": 146
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-test",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 32,
+                    "start": 15,
+                    "end": 42,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 23,
+                        "start": 15,
+                        "end": 33
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 23,
+                        "endLine": 2,
+                        "endColumn": 32,
+                        "start": 33,
+                        "end": 42
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "abc",
+                        "attributeName": "abc",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "def",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 13,
+                                "endLine": 2,
+                                "endColumn": 22,
+                                "start": 23,
+                                "end": 32
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 13,
+                            "endLine": 2,
+                            "endColumn": 22,
+                            "start": 23,
+                            "end": 32
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "ExternalComponent",
+                "name": "x-test",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 45,
+                    "start": 47,
+                    "end": 87,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 36,
+                        "start": 47,
+                        "end": 78
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 36,
+                        "endLine": 3,
+                        "endColumn": 45,
+                        "start": 78,
+                        "end": 87
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "ghi",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "jkl",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 26,
+                                "endLine": 3,
+                                "endColumn": 35,
+                                "start": 68,
+                                "end": 77
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 26,
+                            "endLine": 3,
+                            "endColumn": 35,
+                            "start": 68,
+                            "end": 77
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "ExternalComponent",
+                "name": "foo-bar",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 47,
+                    "start": 92,
+                    "end": 134,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 37,
+                        "start": 92,
+                        "end": 124
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 37,
+                        "endLine": 4,
+                        "endColumn": 47,
+                        "start": 124,
+                        "end": 134
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "mno",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "pqr",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 27,
+                                "endLine": 4,
+                                "endColumn": 36,
+                                "start": 114,
+                                "end": 123
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 27,
+                            "endLine": 4,
+                            "endColumn": 36,
+                            "start": 114,
+                            "end": 123
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

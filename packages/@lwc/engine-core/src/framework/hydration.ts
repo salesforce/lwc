@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
+import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -423,31 +423,36 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     //
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
-    if (scopedToken) {
+    if (!isNull(scopedToken) || !isNull(stylesheetTokenHost)) {
         if (!isUndefined(className)) {
-            className = isNull(stylesheetTokenHost)
-                ? `${scopedToken} ${className}`
-                : `${scopedToken} ${className} ${stylesheetTokenHost}`;
+            // The order of the className should be scopedToken className stylesheetTokenHost
+            const classTokens = [scopedToken, className, stylesheetTokenHost];
+            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
+            className = ArrayJoin.call(classNames, ' ');
         } else if (!isUndefined(classMap)) {
             classMap = {
                 ...classMap,
-                [scopedToken]: true,
-                ...(isNull(stylesheetTokenHost) ? {} : { [stylesheetTokenHost]: true }),
+                ...(!isNull(scopedToken) ? { [scopedToken]: true } : {}),
+                ...(!isNull(stylesheetTokenHost) ? { [stylesheetTokenHost]: true } : {}),
             };
         } else {
-            className = isNull(stylesheetTokenHost)
-                ? `${scopedToken}`
-                : `${scopedToken} ${stylesheetTokenHost}`;
+            // The order of the className should be scopedToken stylesheetTokenHost
+            const classTokens = [scopedToken, stylesheetTokenHost];
+            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
+            if (classNames.length) {
+                className = ArrayJoin.call(classNames, ' ');
+            }
         }
     }
 
     let nodesAreCompatible = true;
-    let vnodeClassName;
+    let readableVnodeClassname;
 
-    if (!isUndefined(className) && String(className) !== getProperty(elm, 'className')) {
+    const elmClassName = getProperty(elm, 'className');
+    if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
-        vnodeClassName = className;
+        readableVnodeClassname = className;
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
         const classList = getClassList(elm);
@@ -461,11 +466,15 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
-        vnodeClassName = computedClassName.trim();
+        readableVnodeClassname = computedClassName.trim();
 
         if (classList.length > keys(classMap).length) {
             nodesAreCompatible = false;
         }
+    } else if (isUndefined(className) && elmClassName !== '') {
+        // SSR contains a className but client-side VDOM does not
+        nodesAreCompatible = false;
+        readableVnodeClassname = '';
     }
 
     if (!nodesAreCompatible) {
@@ -474,10 +483,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${getProperty(
-                    elm,
-                    'className'
-                )}"`,
+                ).toLowerCase()}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
                 vnode.owner
             );
         }

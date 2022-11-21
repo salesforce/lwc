@@ -1,6 +1,5 @@
 import _tmpl from "./test.html";
 import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement } from "lwc";
-
 const Test = _registerDecorators(class {
   state;
   foo;
@@ -9,9 +8,7 @@ const Test = _registerDecorators(class {
   record = {
     value: "test"
   };
-
   someMethod() {}
-
   wiredProp;
 }, {
   publicProps: {
@@ -34,7 +31,6 @@ const Test = _registerDecorators(class {
   },
   fields: ["state", "record"]
 });
-
 const foo = Test;
 export default _registerComponent(foo, {
   tmpl: _tmpl

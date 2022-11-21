@@ -26,7 +26,7 @@ import {
 import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
-import { getVMBeingRendered } from './template';
+import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray, setRefVNode } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
@@ -44,12 +44,27 @@ import {
     VStatic,
     Key,
     VFragment,
+    isVScopedSlotFragment,
+    VScopedSlotFragment,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
+}
+
+// [s]coped [s]lot [f]actory
+function ssf(slotName: string, factory: (value: any) => VNodes): VScopedSlotFragment {
+    return {
+        type: VNodeType.ScopedSlotFragment,
+        factory,
+        owner: getVMBeingRendered()!,
+        elm: undefined,
+        sel: undefined,
+        key: undefined,
+        slotName,
+    };
 }
 
 // [st]atic node
@@ -169,10 +184,51 @@ function s(
     }
     if (
         !isUndefined(slotset) &&
-        !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
+        !isUndefined(slotset.slotAssignments) &&
+        !isUndefined(slotset.slotAssignments[slotName]) &&
+        slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset[slotName];
+        const newChildren: VNode[] = [];
+        const slotAssignments = slotset.slotAssignments[slotName];
+        for (let i = 0; i < slotAssignments.length; i++) {
+            const vnode = slotAssignments[i];
+            if (!isNull(vnode)) {
+                const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
+                // The only sniff test for a scoped <slot> element is the presence of `slotData`
+                const isScopedSlotElement = !isUndefined(data.slotData);
+                // Check if slot types of parent and child are matching
+                if (assignedNodeIsScopedSlot !== isScopedSlotElement) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        logError(
+                            `Mismatched slot types for ${
+                                slotName === '' ? '(default)' : slotName
+                            } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
+                            slotset.owner
+                        );
+                    }
+                    // Ignore slot content from parent
+                    continue;
+                }
+                // If the passed slot content is factory, evaluate it and add the produced vnodes
+                if (assignedNodeIsScopedSlot) {
+                    const vmBeingRenderedInception = getVMBeingRendered();
+                    // Evaluate in the scope of the slot content's owner
+                    // if a slotset is provided, there will always be an owner. The only case where owner is
+                    // undefined is for root components, but root components cannot accept slotted content
+                    setVMBeingRendered(slotset.owner!);
+                    try {
+                        ArrayPush.apply(newChildren, vnode.factory(data.slotData) as VNode[]);
+                    } finally {
+                        setVMBeingRendered(vmBeingRenderedInception);
+                    }
+                } else {
+                    // If the slot content is standard type, the content is static, no additional
+                    // processing needed on the vnode
+                    ArrayPush.call(newChildren, vnode);
+                }
+            }
+        }
+        children = newChildren;
     }
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
@@ -571,6 +627,7 @@ const api = ObjectFreeze({
     gid,
     fid,
     shc,
+    ssf,
 });
 
 export default api;

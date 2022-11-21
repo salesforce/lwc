@@ -31,3 +31,4 @@ export default {
 -   `preserveHtmlComments` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
 -   `experimentalDynamicComponent` (type: `DynamicComponentConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
 -   `enableLwcSpread` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
+-   `enableScopedSlots` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.
