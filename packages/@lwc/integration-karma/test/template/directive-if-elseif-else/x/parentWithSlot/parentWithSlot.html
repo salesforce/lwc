@@ -1,0 +1,8 @@
+<template>
+    <x-child-with-slot>
+        <div>static slot header</div>
+        <template lwc:if={condition}>
+            <div>conditional slot content</div>
+        </template>
+    </x-child-with-slot>
+</template>

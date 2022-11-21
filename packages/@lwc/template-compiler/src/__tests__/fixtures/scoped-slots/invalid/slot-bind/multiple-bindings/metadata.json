@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1058,
+            "message": "LWC1058: Invalid HTML syntax: duplicate-attribute. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-duplicate-attribute",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 57,
+                "start": 183,
+                "length": 0
+            }
+        }
+    ]
+}

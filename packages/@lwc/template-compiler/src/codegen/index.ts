@@ -6,7 +6,7 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -30,6 +30,9 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
+    isExternalComponent,
+    isScopedSlotFragment,
+    isSlotBindDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -47,6 +50,7 @@ import {
     ForOf,
     BaseElement,
     ElseifBlock,
+    ScopedSlotFragment,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -159,6 +163,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
                 res.push(transformConditionalParentBlock(child));
+            } else if (isScopedSlotFragment(child)) {
+                res.push(transformScopedSlotFragment(child));
             }
         }
 
@@ -171,6 +177,25 @@ function transform(codeGen: CodeGen): t.Expression {
         } else {
             return t.arrayExpression(res);
         }
+    }
+
+    function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
+        const {
+            slotName,
+            slotData: { value: dataIdentifier },
+        } = scopedSlotFragment;
+        codeGen.beginScope();
+        codeGen.declareIdentifier(dataIdentifier);
+        // TODO [#3111]: Next Step: Return a VFragment
+        const fragment = transformChildren(scopedSlotFragment);
+        codeGen.endScope();
+
+        const slotFragmentFactory = t.functionExpression(
+            null,
+            [dataIdentifier],
+            t.blockStatement([t.returnStatement(fragment)])
+        );
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
@@ -386,15 +411,18 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(expression);
             }
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    codeGen.genScopedFragId(expression),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        codeGen.genScopedFragId(expression),
+                    ]);
+                }
+                return codeGen.genScopedFragId(expression);
             }
 
             return expression;
@@ -425,17 +453,22 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(attrValue.value);
             }
 
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                // apply the fragment id tranformation if necessary
+                const value = isFragmentOnlyUrl(attrValue.value)
+                    ? codeGen.genScopedFragId(attrValue.value)
+                    : t.literal(attrValue.value);
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    isFragmentOnlyUrl(attrValue.value)
-                        ? codeGen.genScopedFragId(attrValue.value)
-                        : t.literal(attrValue.value),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        value,
+                    ]);
+                }
+                return value;
             }
 
             return t.literal(attrValue.value);
@@ -457,6 +490,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const ref = element.directives.find(isRefDirective);
         const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
+        const slotBindDirective = element.directives.find(isSlotBindDirective);
 
         // Attributes
         if (attributes.length) {
@@ -603,6 +637,19 @@ function transform(codeGen: CodeGen): t.Expression {
         if (addSanitizationHook) {
             codeGen.usedLwcApis.add(RENDERER);
             data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
+        }
+
+        if (!isUndefined(slotBindDirective)) {
+            data.push(
+                t.property(
+                    t.identifier('slotData'),
+                    codeGen.bindExpression(slotBindDirective.value)
+                )
+            );
+        }
+
+        if (isExternalComponent(element)) {
+            data.push(t.property(t.identifier('external'), t.literal(true)));
         }
 
         return t.objectExpression(data);

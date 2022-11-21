@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1168,
+            "message": "LWC1168: Invalid lwc:slot-data usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 19,
+                "start": 43,
+                "length": 20
+            }
+        }
+    ]
+}

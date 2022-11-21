@@ -81,8 +81,17 @@ function remove(node: N, parent: E) {
     parent[HostChildrenKey].splice(nodeIndex, 1);
 }
 
-function cloneNode(node: N): N {
-    return node;
+function cloneNode(node: HostChildNode): HostChildNode {
+    // Note: no need to deep clone as cloneNode is only used for nodes of type HostNodeType.Raw.
+    if (process.env.NODE_ENV !== 'production') {
+        if (node[HostTypeKey] !== HostNodeType.Raw) {
+            throw new TypeError(
+                `SSR: cloneNode was called with invalid NodeType <${node[HostTypeKey]}>, only HostNodeType.Raw is supported.`
+            );
+        }
+    }
+
+    return { ...node };
 }
 
 function createFragment(html: string): HostChildNode {

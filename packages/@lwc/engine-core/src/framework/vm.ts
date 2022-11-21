@@ -49,7 +49,9 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    [key: string]: VNodes;
+    // Slot assignments by name
+    slotAssignments: { [key: string]: VNodes };
+    owner?: VM;
 }
 
 export const enum VMState {
@@ -134,7 +136,8 @@ export interface VM<N = HostNode, E = HostElement> {
     velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** The mapping between the slot names and the slotted VNodes. */
+    /** Contains information about the mapping between the slot names and the slotted VNodes, and
+     *  the owner of the slot content. */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
@@ -167,6 +170,10 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Renderer API */
     renderer: RendererAPI;
+
+    /**
+     * Debug info bag. Stores useful debug information about the component. */
+    debugInfo?: Record<string, any>;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -293,7 +300,7 @@ export function createVM<HostNode, HostElement>(
         velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: create(null),
+        cmpSlots: { slotAssignments: create(null) },
         cmpTemplate: null,
         hydrated: Boolean(hydrated),
 
@@ -324,6 +331,10 @@ export function createVM<HostNode, HostElement>(
 
         renderer,
     };
+
+    if (process.env.NODE_ENV !== 'production') {
+        vm.debugInfo = create(null);
+    }
 
     vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);

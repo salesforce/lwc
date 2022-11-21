@@ -11,6 +11,7 @@ import {
     Literal,
     SourceLocation,
     Element,
+    ExternalComponent,
     Component,
     Expression,
     Comment,
@@ -44,6 +45,9 @@ import {
     SpreadDirective,
     ElementDirective,
     RootDirective,
+    SlotBindDirective,
+    ScopedSlotFragment,
+    SlotDataDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -63,6 +67,23 @@ export function element(
         type: 'Element',
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function externalComponent(
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation
+): ExternalComponent {
+    return {
+        type: 'ExternalComponent',
+        name: parse5Elm.nodeName,
+        namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -192,6 +213,22 @@ export function forOf(
     };
 }
 
+export function scopedSlotFragment(
+    identifier: Identifier,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation,
+    slotName: Literal
+): ScopedSlotFragment {
+    return {
+        type: 'ScopedSlotFragment',
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+        slotData: slotDataDirective(identifier, directiveLocation),
+        slotName: slotName,
+    };
+}
+
 export function ifNode(
     modifier: string,
     condition: Expression,
@@ -283,6 +320,24 @@ export function spreadDirective(value: Expression, location: SourceLocation): Sp
     return {
         type: 'Directive',
         name: 'Spread',
+        value,
+        location,
+    };
+}
+
+export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
+export function slotDataDirective(value: Identifier, location: SourceLocation): SlotDataDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotData',
         value,
         location,
     };
@@ -381,6 +436,10 @@ export function isRoot(node: BaseNode): node is Root {
     return node.type === 'Root';
 }
 
+export function isExternalComponent(node: BaseNode): node is ExternalComponent {
+    return node.type === 'ExternalComponent';
+}
+
 export function isComponent(node: BaseNode): node is Component {
     return node.type === 'Component';
 }
@@ -390,7 +449,7 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node);
+    return isElement(node) || isComponent(node) || isSlot(node) || isExternalComponent(node);
 }
 
 export function isText(node: BaseNode): node is Text {
@@ -451,8 +510,8 @@ export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBloc
 
 export function isElementDirective(
     node: BaseNode
-): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If {
-    return isConditionalBlock(node) || isForBlock(node) || isIf(node);
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If | ScopedSlotFragment {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node) || isScopedSlotFragment(node);
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {
@@ -483,6 +542,14 @@ export function isKeyDirective(directive: ElementDirective): directive is KeyDir
     return directive.name === 'Key';
 }
 
+export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+    return directive.name === 'SlotData';
+}
+
+export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
+    return directive.name === 'SlotBind';
+}
+
 export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
     return directive.name === 'RenderMode';
 }
@@ -495,4 +562,8 @@ export function isPreserveCommentsDirective(
 
 export function isProperty(node: BaseNode): node is Property {
     return node.type === 'Property';
+}
+
+export function isScopedSlotFragment(node: BaseNode): node is ScopedSlotFragment {
+    return node.type === 'ScopedSlotFragment';
 }

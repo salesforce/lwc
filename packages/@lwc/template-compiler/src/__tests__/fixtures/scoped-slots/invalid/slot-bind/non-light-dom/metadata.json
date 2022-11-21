@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1169,
+            "message": "LWC1169: Invalid lwc:slot-bind usage on <slot> element. Scoped slots usage is allowed in Light DOM templates only.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 34
+            }
+        }
+    ]
+}

@@ -18,6 +18,7 @@ import Nonce16 from 'x/nonce16';
 import Nonce17 from 'x/nonce17';
 import Nonce18 from 'x/nonce18';
 import Nonce19 from 'x/nonce19';
+import Nonce20 from 'x/nonce20';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrow from 'x/observeNothingThrow';
@@ -37,54 +38,96 @@ const undefinedElementError = /(Illegal constructor|does not define a custom ele
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     describe('customElements.get and customElements.whenDefined', () => {
-        // Nonce elements should be defined only once in the entire Karma test suite
-        const nonceElements = [
-            { tag: 'x-nonce1', Component: Nonce1 },
-            { tag: 'x-nonce2', Component: Nonce2 },
-        ];
+        it('using CustomElementConstructor', () => {
+            // Nonce elements should be defined only once in the entire Karma test suite
+            const tagName = 'x-nonce1';
+            expect(customElements.get(tagName)).toBeUndefined();
+            const promise = customElements.whenDefined(tagName);
+            expect(customElements.get(tagName)).toBeUndefined();
+            customElements.define(tagName, Nonce1.CustomElementConstructor);
+            const elm = document.createElement(tagName);
+            const Ctor = customElements.get(tagName);
+            expect(Ctor).toBe(Nonce1.CustomElementConstructor);
+            document.body.appendChild(elm);
+            expect(elm.expectedTagName).toEqual(tagName);
+            return promise
+                .then((Ctor) => {
+                    expect(Ctor).toBe(Nonce1.CustomElementConstructor);
+                    return customElements.whenDefined(tagName);
+                })
+                .then((Ctor) => {
+                    expect(Ctor).toBe(Nonce1.CustomElementConstructor);
+                });
+        });
 
-        // There are two ways that customElements.define can eventually get called:
-        // 1) createElement
-        // 2) explicit customElements.define
-        const creators = [
-            {
-                method: 'using createElement',
-                create: (tag, Component) => {
-                    return createElement(tag, { is: Component });
-                },
-            },
-            {
-                method: 'using CustomElementConstructor',
-                create: (tag, Component) => {
-                    customElements.define(tag, Component.CustomElementConstructor);
-                    return document.createElement(tag);
-                },
-            },
-        ];
-
-        creators.forEach(({ method, create }, i) => {
-            const { tag, Component } = nonceElements[i];
-
-            // For LWC components, the PivotCtor is exposed externally but not the UserCtor
-            it(method, () => {
-                expect(customElements.get(tag)).toBeUndefined();
-                const promise = customElements.whenDefined(tag);
-                expect(customElements.get(tag)).toBeUndefined();
-                const elm = create(tag, Component);
-                const Ctor = customElements.get(tag);
-                expect(typeof Ctor).toEqual('function');
+        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+            it('using lwc.createElement', () => {
+                const tagName = 'x-nonce2';
+                expect(customElements.get(tagName)).toBeUndefined();
+                let resolvedCtor;
+                const promise = customElements.whenDefined(tagName).then((ctor) => {
+                    resolvedCtor = ctor;
+                });
+                const elm = createElement(tagName, { is: Nonce2 });
+                const Ctor = customElements.get(tagName);
+                //lwc.createElement is "invisible" to customElements.get
+                expect(Ctor).toBeUndefined();
                 document.body.appendChild(elm);
-                expect(elm.expectedTagName).toEqual(tag);
-                return promise
-                    .then((Ctor) => {
-                        expect(typeof Ctor).toEqual('function');
-                        return customElements.whenDefined(tag);
+                expect(elm.expectedTagName).toEqual(tagName);
+                class MyCustomComponent extends HTMLElement {}
+                // Do an explicit microtask here
+                return Promise.resolve()
+                    .then(() => {
+                        // If the `resolvedCtor` is undefined at this point, which happens after a microtask
+                        // (Promise.resolve()`), then `whenDefined` probably does not leak the pivot constructor.
+                        // (We could wait for some timeout to be safe, but `Promise.resolve()` should be enough.)
+                        expect(resolvedCtor).toEqual(undefined);
+                        customElements.define(tagName, MyCustomComponent);
+                        return promise;
                     })
-                    .then((Ctor) => {
-                        expect(typeof Ctor).toEqual('function');
+                    .then(() => {
+                        expect(resolvedCtor).toBe(MyCustomComponent);
+                        return customElements.whenDefined(tagName);
+                    })
+                    .then((thisResolvedCtor) => {
+                        expect(thisResolvedCtor).toBe(MyCustomComponent);
                     });
             });
-        });
+
+            it('using vanilla custom elements, multiple whenDefined promises', () => {
+                const tagName = 'x-nonce20';
+                expect(customElements.get(tagName)).toBeUndefined();
+                let resolvedCtor1;
+                let resolvedCtor2;
+                const promise1 = customElements.whenDefined(tagName).then((ctor) => {
+                    resolvedCtor1 = ctor;
+                });
+                const promise2 = customElements.whenDefined(tagName).then((ctor) => {
+                    resolvedCtor2 = ctor;
+                });
+                expect(customElements.get(tagName)).toBeUndefined();
+                createElement('x-nonce20', { is: Nonce20 });
+
+                class Vanilla extends HTMLElement {}
+
+                // The promise is only resolved when customElements.define is called,
+                // not when lwc.createElement is called. lwc.createElement is
+                // "invisible" to customElements.whenDefined
+                return Promise.resolve()
+                    .then(() => {
+                        expect(resolvedCtor1).toBeUndefined();
+                        expect(resolvedCtor2).toBeUndefined();
+                        customElements.define(tagName, Vanilla);
+                        const Ctor = customElements.get(tagName);
+                        expect(Ctor).toBe(Vanilla);
+                        return Promise.all([promise1, promise2]);
+                    })
+                    .then(() => {
+                        expect(resolvedCtor1).toBe(Vanilla);
+                        expect(resolvedCtor2).toBe(Vanilla);
+                    });
+            });
+        }
     });
 
     describe('patched registry', () => {
@@ -163,48 +206,93 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(elm2.expectedTagName).toEqual('x-nonce5');
         });
 
-        it('get() should always return the same constructor', () => {
-            createElement('x-nonce10', { is: Nonce10 });
-            const firstCtor = customElements.get('x-nonce10');
-            expect(firstCtor).not.toBeUndefined();
-            createElement('x-nonce10', { is: Nonce11 });
-            const secondCtor = customElements.get('x-nonce10');
-            expect(secondCtor).not.toBeUndefined();
-            expect(secondCtor).toBe(firstCtor);
+        describe('same constructor returned from get/whenDefined', () => {
+            function defineFirstElement(tagName, Component) {
+                // For the scoped registry, we want to test the global customElements API and
+                // make sure it consistently returns the same constructor. For vanilla custom elements,
+                // we can test lwc.createElement instead since it's also registered globally.
+                if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+                    customElements.define(tagName, Component.CustomElementConstructor);
+                } else {
+                    createElement(tagName, { is: Component });
+                }
+            }
+
+            it('get() should always return the same constructor', () => {
+                defineFirstElement('x-nonce10', Nonce10);
+                const firstCtor = customElements.get('x-nonce10');
+                expect(firstCtor).not.toBeUndefined();
+                createElement('x-nonce10', { is: Nonce11 });
+                const secondCtor = customElements.get('x-nonce10');
+                expect(secondCtor).not.toBeUndefined();
+                expect(secondCtor).toBe(firstCtor);
+            });
+
+            it('whenDefined() should always return the same constructor - defined before whenDefined', () => {
+                defineFirstElement('x-nonce6', Nonce6);
+                let firstCtor;
+                return customElements
+                    .whenDefined('x-nonce6')
+                    .then((Ctor) => {
+                        expect(Ctor).not.toBeUndefined();
+                        firstCtor = Ctor;
+                        // Create an lwc with same tag but different constructor, this will register a pivot for the same tag
+                        createElement('x-nonce6', { is: Nonce7 });
+                        return customElements.whenDefined('x-nonce6');
+                    })
+                    .then((Ctor) => {
+                        expect(Ctor).not.toBeUndefined();
+                        expect(Ctor).toBe(firstCtor);
+                    });
+            });
+
+            it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
+                // Check `cE.whenDefined()` called _before_ `cE.define()`
+                const promise = customElements.whenDefined('x-nonce12');
+                defineFirstElement('x-nonce12', Nonce12);
+                let firstCtor;
+                return promise
+                    .then((Ctor) => {
+                        expect(Ctor).not.toBeUndefined();
+                        firstCtor = Ctor;
+                        // Check `cE.whenDefined()` called _after_ `cE.define()`
+                        const promise = customElements.whenDefined('x-nonce12');
+                        createElement('x-nonce12', { is: Nonce13 });
+                        return promise;
+                    })
+                    .then((Ctor) => {
+                        expect(Ctor).not.toBeUndefined();
+                        expect(Ctor).toBe(firstCtor);
+                    });
+            });
         });
 
-        it('whenDefined() should always return the same constructor - defined before whenDefined', () => {
-            createElement('x-nonce6', { is: Nonce6 });
-            let firstCtor;
-            return customElements
-                .whenDefined('x-nonce6')
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    firstCtor = Ctor;
-                    createElement('x-nonce6', { is: Nonce7 });
-                    return customElements.whenDefined('x-nonce6');
-                })
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    expect(Ctor).toBe(firstCtor);
-                });
-        });
+        it('vanilla element should be an instance of the right class', () => {
+            const tagName = 'x-check-ctor-instanceof';
+            class MyElement extends HTMLElement {}
 
-        it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
-            const promise = customElements.whenDefined('x-nonce12');
-            createElement('x-nonce12', { is: Nonce12 });
-            let firstCtor;
-            return promise
+            const whenDefinedPromiseBeforeDefine = customElements.whenDefined(tagName);
+
+            customElements.define(tagName, MyElement);
+            const elm = document.createElement(tagName);
+
+            // check element prototype
+            expect(elm instanceof MyElement).toEqual(true);
+            expect(elm.constructor).toBe(MyElement);
+
+            // check cE.get()
+            const Ctor = customElements.get(tagName);
+            expect(Ctor).toBe(MyElement);
+
+            // check cE.whenDefined() when the promise is created _before_ cE.define()
+            return whenDefinedPromiseBeforeDefine
                 .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    firstCtor = Ctor;
-                    const promise = customElements.whenDefined('x-nonce12');
-                    createElement('x-nonce12', { is: Nonce13 });
-                    return promise;
+                    expect(Ctor).toBe(MyElement);
+                    // check cE.whenDefined() when the promise is created _after_ cE.define()
+                    return customElements.whenDefined(tagName);
                 })
                 .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    expect(Ctor).toBe(firstCtor);
+                    expect(Ctor).toBe(MyElement);
                 });
         });
 
@@ -247,9 +335,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
     });
 
     describe('constructor', () => {
-        it('new-ing an LWC component constructor from customElements.get()', () => {
+        it('new-ing an LWC component constructor directly', () => {
             createElement('x-nonce14', { is: Nonce14 });
-            const Ctor = customElements.get('x-nonce14');
+            const Ctor = document.createElement('x-nonce14').constructor; // hack to get the pivot constructor
             const elm = new Ctor();
             document.body.appendChild(elm);
 
@@ -428,6 +516,115 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             });
         });
     });
+
+    // See https://web.dev/more-capable-form-controls/#feature-detection
+    const supportsFACE =
+        'FormDataEvent' in window &&
+        'ElementInternals' in window &&
+        'setFormValue' in window.ElementInternals.prototype;
+
+    if (supportsFACE) {
+        describe('form-associated custom element (FACE) lifecycle callbacks', () => {
+            function testFormAssociated(shouldBeFormAssociated, tagName, Ctor) {
+                const calls = [];
+
+                Ctor.prototype.formAssociatedCallback = function (form) {
+                    calls.push({
+                        name: 'formAssociatedCallback',
+                        elm: this,
+                        form: form,
+                    });
+                };
+
+                Ctor.prototype.formDisabledCallback = function (disabled) {
+                    calls.push({
+                        name: 'formDisabledCallback',
+                        elm: this,
+                        disabled,
+                    });
+                };
+
+                Ctor.prototype.formResetCallback = function () {
+                    calls.push({
+                        name: 'formResetCallback',
+                        elm: this,
+                    });
+                };
+
+                Ctor.prototype.formStateRestoreCallback = function (state, mode) {
+                    calls.push({
+                        name: 'formStateRestoreCallback',
+                        elm: this,
+                        state,
+                        mode,
+                    });
+                };
+
+                customElements.define(tagName, Ctor);
+
+                const form = document.createElement('form');
+                const fieldset = document.createElement('fieldset');
+                const elm = document.createElement(tagName);
+                form.appendChild(fieldset);
+                fieldset.appendChild(elm);
+                document.body.appendChild(form);
+
+                // formAssociatedCallback should be called with the form
+                expect(calls.length).toEqual(shouldBeFormAssociated ? 1 : 0);
+                expect(calls[0]).toEqual(
+                    shouldBeFormAssociated
+                        ? { name: 'formAssociatedCallback', elm, form }
+                        : undefined
+                );
+
+                // check formDisabledCallback
+                fieldset.disabled = true;
+                expect(calls.length).toEqual(shouldBeFormAssociated ? 2 : 0);
+                expect(calls[1]).toEqual(
+                    shouldBeFormAssociated
+                        ? { name: 'formDisabledCallback', elm, disabled: true }
+                        : undefined
+                );
+
+                // check formResetCallback
+                form.reset();
+                expect(calls.length).toEqual(shouldBeFormAssociated ? 3 : 0);
+                expect(calls[2]).toEqual(
+                    shouldBeFormAssociated ? { name: 'formResetCallback', elm } : undefined
+                );
+
+                // formStateRestoreCallback cannot be manually invoked, just call it ourselves
+                elm.formStateRestoreCallback('foo', 'bar');
+                expect(calls.length).toEqual(shouldBeFormAssociated ? 4 : 1);
+                expect(calls.at(-1)).toEqual({
+                    name: 'formStateRestoreCallback',
+                    elm,
+                    state: 'foo',
+                    mode: 'bar',
+                });
+            }
+
+            it('supports FACE callbacks', () => {
+                testFormAssociated(
+                    true,
+                    'x-face-callbacks',
+                    class extends HTMLElement {
+                        static formAssociated = true;
+                    }
+                );
+            });
+
+            it('does not call FACE callbacks if not form-associated', () => {
+                testFormAssociated(
+                    false,
+                    'x-face-callbacks-not-form-associated',
+                    class extends HTMLElement {
+                        static formAssociated = false;
+                    }
+                );
+            });
+        });
+    }
 
     describe('observedAttributes', () => {
         it('custom element with observedAttributes but no attributeChangedCallback', () => {
@@ -659,6 +856,43 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 lwcElm.setAttribute('foo', 'bar');
                 lwcElm.removeAttribute('foo');
                 expect(lwcElm.getAttribute('foo')).toBeNull();
+            });
+
+            it('attributeChangedCallback fires on upgrade', () => {
+                // The LWC component observes nothing, but the vanilla component observes foo
+                const tagName = 'x-attr-change-on-upgrade';
+                const lwcElm = createElement(tagName, {
+                    is: ObserveNothingThrow, // throws if invoked, which should not happen
+                });
+                document.body.appendChild(lwcElm);
+                const nativeElm = document.createElement(tagName);
+                nativeElm.setAttribute('foo', '1');
+                document.body.appendChild(nativeElm);
+
+                const invocations = [];
+
+                // At this point, because we've already defined an LWC component with the same tag
+                // name, the native element should be forced to use the manual attributeChangedCallback
+                // logic. It should be called during the upgrade, since the attribute was already set.
+                customElements.define(
+                    tagName,
+                    class extends HTMLElement {
+                        static observedAttributes = ['foo'];
+
+                        attributeChangedCallback(name, oldVal, newVal) {
+                            invocations.push([name, oldVal, newVal]);
+                        }
+                    }
+                );
+
+                nativeElm.setAttribute('foo', '2');
+
+                return new Promise((resolve) => setTimeout(resolve)).then(() => {
+                    expect(invocations).toEqual([
+                        ['foo', null, '1'],
+                        ['foo', '1', '2'],
+                    ]);
+                });
             });
 
             describe('attributeChangedCallback timing', () => {

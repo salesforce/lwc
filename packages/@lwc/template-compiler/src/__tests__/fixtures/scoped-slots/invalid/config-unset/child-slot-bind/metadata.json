@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1167,
+            "message": "LWC1167: Invalid lwc:slot-bind usage. The \"Scoped Slots\" feature must be enabled in order to use this directive.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 39,
+                "length": 34
+            }
+        }
+    ]
+}

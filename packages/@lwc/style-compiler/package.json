@@ -1,6 +1,6 @@
 {
     "name": "@lwc/style-compiler",
-    "version": "2.25.1",
+    "version": "2.31.0",
     "description": "Transform style sheet to be consumed by the LWC engine",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -22,11 +22,11 @@
         "dist/"
     ],
     "dependencies": {
-        "@lwc/shared": "2.25.1",
-        "postcss": "~8.4.16",
+        "@lwc/shared": "2.31.0",
+        "postcss": "~8.4.18",
         "postcss-selector-parser": "~6.0.9",
         "postcss-value-parser": "~4.2.0",
-        "string.prototype.matchall": "^4.0.7"
+        "string.prototype.matchall": "^4.0.8"
     },
     "devDependencies": {
         "@types/string.prototype.matchall": "^4.0.0"

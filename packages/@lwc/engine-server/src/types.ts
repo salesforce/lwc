@@ -69,4 +69,4 @@ export interface HostElement {
 }
 
 export type HostNode = HostText | HostElement | HostComment;
-export type HostChildNode = HostElement | HostText | HostComment | HostRaw;
+export type HostChildNode = HostNode | HostRaw;
