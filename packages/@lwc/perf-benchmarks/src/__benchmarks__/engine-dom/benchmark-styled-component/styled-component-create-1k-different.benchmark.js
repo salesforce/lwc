@@ -14,5 +14,6 @@ const NUM_COMPONENTS = 1000;
 styledComponentBenchmark(
     `benchmark-styled-component/create/1k/different`,
     NUM_COMPONENTS,
-    components
+    components,
+    { after, before, benchmark, run }
 );

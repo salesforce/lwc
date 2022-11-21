@@ -1,6 +1,5 @@
 import { registerDecorators as _registerDecorators2, registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
-
 class Outer {
   outer;
   a = _registerDecorators2(class {
@@ -13,7 +12,6 @@ class Outer {
     }
   });
 }
-
 _registerDecorators(Outer, {
   publicProps: {
     outer: {
@@ -22,7 +20,6 @@ _registerDecorators(Outer, {
   },
   fields: ["a"]
 });
-
 export default _registerComponent(Outer, {
   tmpl: _tmpl
 });

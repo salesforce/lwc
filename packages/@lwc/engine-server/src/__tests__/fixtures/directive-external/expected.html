@@ -1,0 +1,21 @@
+<x-test>
+  <template shadowroot="open">
+    <x-hello>
+      <template shadowroot="open">
+        <p>
+          Hello World
+        </p>
+        <p>
+          foo: configured foo
+        </p>
+        <p>
+          bar: configured bar
+        </p>
+      </template>
+    </x-hello>
+    <x-hello foo="configured foo" bar="configured bar">
+    </x-hello>
+    <foo-bar foo="configured foo" bar="configured bar">
+    </foo-bar>
+  </template>
+</x-test>

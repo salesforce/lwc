@@ -1,0 +1,9 @@
+{
+    "customRendererConfig": {
+        "directives": [],
+        "elements": [{
+            "tagName": "use",
+            "attributes": ["href", "xlink:href"]
+        }]
+    }
+}

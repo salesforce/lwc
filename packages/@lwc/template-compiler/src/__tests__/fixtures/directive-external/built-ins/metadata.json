@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1180,
+            "message": "LWC1180: Invalid lwc:external directive usage: <div>. This directive can only be used on custom elements.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 27
+            }
+        },
+        {
+            "code": 1180,
+            "message": "LWC1180: Invalid lwc:external directive usage: <span>. This directive can only be used on custom elements.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 47,
+                "length": 30
+            }
+        },
+        {
+            "code": 1180,
+            "message": "LWC1180: Invalid lwc:external directive usage: <input>. This directive can only be used on custom elements.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 82,
+                "length": 20
+            }
+        }
+    ]
+}

@@ -156,6 +156,18 @@
             "rules": {
                 "no-console": "off"
             }
+        },
+        {
+            "files": [
+                "**/perf-benchmarks/**"
+            ],
+
+            "globals": {
+                "after": true,
+                "before": true,
+                "benchmark": true,
+                "run": true
+            }
         }
     ]
 }

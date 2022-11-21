@@ -6,6 +6,7 @@
  */
 import {
     assert,
+    create,
     isUndefined,
     ArrayPush,
     defineProperty,
@@ -20,12 +21,20 @@ import { updateComponentValue } from './update-component-value';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
+const WIRE_DEBUG_ENTRY = '@wire';
 
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
 
 interface WireContextInternalEventPayload {
     setNewContext(newContext: ContextValue): void;
     setDisconnectedCallback(disconnectCallback: () => void): void;
+}
+
+interface WireDebugInfo {
+    data?: any;
+    config?: ConfigValue;
+    context?: ContextValue;
+    wasDataProvisionedForConfig: boolean;
 }
 
 export class WireContextRegistrationEvent extends CustomEvent<undefined> {
@@ -157,9 +166,34 @@ function createConnector(
     resetConfigWatcher: () => void;
 } {
     const { method, adapter, configCallback, dynamic } = wireDef;
-    const dataCallback = isUndefined(method)
+    let debugInfo: WireDebugInfo;
+
+    if (process.env.NODE_ENV !== 'production') {
+        const wiredPropOrMethod = isUndefined(method) ? name : method.name;
+
+        debugInfo = create(null) as WireDebugInfo;
+
+        debugInfo.wasDataProvisionedForConfig = false;
+        vm.debugInfo![WIRE_DEBUG_ENTRY][wiredPropOrMethod] = debugInfo;
+    }
+
+    const fieldOrMethodCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
         : createMethodDataCallback(vm, method);
+
+    const dataCallback = (value: any) => {
+        if (process.env.NODE_ENV !== 'production') {
+            debugInfo.data = value;
+
+            // Note: most of the time, the data provided is for the current config, but there may be
+            // some conditions in which it does not, ex:
+            // race conditions in a poor network while the adapter does not cancel a previous request.
+            debugInfo.wasDataProvisionedForConfig = true;
+        }
+
+        fieldOrMethodCallback(value);
+    };
+
     let context: ContextValue | undefined;
     let connector: WireAdapter;
 
@@ -190,6 +224,13 @@ function createConnector(
             noop,
             () => {
                 // job
+
+                if (process.env.NODE_ENV !== 'production') {
+                    debugInfo.config = config;
+                    debugInfo.context = context;
+                    debugInfo.wasDataProvisionedForConfig = false;
+                }
+
                 connector.update(config, context);
             },
             noop
@@ -316,6 +357,10 @@ export function installWireAdapters(vm: VM) {
         context,
         def: { wire },
     } = vm;
+
+    if (process.env.NODE_ENV !== 'production') {
+        vm.debugInfo![WIRE_DEBUG_ENTRY] = create(null);
+    }
 
     const wiredConnecting = (context.wiredConnecting = []);
     const wiredDisconnecting = (context.wiredDisconnecting = []);

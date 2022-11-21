@@ -27,8 +27,8 @@ import type { LifecycleCallback } from '@lwc/engine-core';
 export let createCustomElement: (
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    connectedCallback: LifecycleCallback,
-    disconnectedCallback: LifecycleCallback
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => HTMLElement;
 
 if (hasCustomElements) {

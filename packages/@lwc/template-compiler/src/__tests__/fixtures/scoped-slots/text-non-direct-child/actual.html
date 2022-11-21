@@ -1,0 +1,11 @@
+<template>
+    <x-list>
+        <template lwc:slot-data="item">
+            <span> 
+                <!-- Comment: Access bindings from child component  -->
+                {item.id} - {item.name}
+            </span>
+            <div>Content from parent's template</div>
+        </template>
+    </x-list>
+</template>

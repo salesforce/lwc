@@ -6,6 +6,7 @@
  */
 import {
     ArrayPush,
+    ArraySome,
     assert,
     create,
     isArray,
@@ -20,7 +21,9 @@ import {
 } from '@lwc/shared';
 import features from '@lwc/features';
 
-import { RendererAPI } from './renderer';
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
+import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
@@ -54,9 +57,12 @@ import {
     VNodeType,
     VStatic,
     VFragment,
+    isVFragment,
+    isVScopedSlotFragment,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
+import { patchAttrUnlessProp } from './modules/attr-unless-prop';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -304,19 +310,29 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const connectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
+
+    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
             connectRootElement(elm);
-        }
-    };
-
-    const disconnectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
-        }
-    };
+        };
+    }
 
-    const elm = createCustomElement(sel, upgradeCallback, connectedCallback, disconnectedCallback);
+    // Should never get a tag with upper case letter at this point; the compiler
+    // should produce only tags with lowercase letters. However, the Java
+    // compiler may generate tagnames with uppercase letters so - for backwards
+    // compatibility, we lower case the tagname here.
+    const normalizedTagname = sel.toLowerCase();
+    const elm = createCustomElement(
+        normalizedTagname,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback
+    );
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -529,7 +545,13 @@ function patchElementPropsAndAttrs(
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
     patchStyleAttribute(oldVnode, vnode, renderer);
-    patchAttributes(oldVnode, vnode, renderer);
+
+    if (vnode.data.external) {
+        patchAttrUnlessProp(oldVnode, vnode, renderer);
+    } else {
+        patchAttributes(oldVnode, vnode, renderer);
+    }
+
     patchProps(oldVnode, vnode, renderer);
 }
 
@@ -588,9 +610,24 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     vm.aChildren = children;
 
     const { renderMode, shadowMode } = vm;
+    if (process.env.NODE_ENV !== 'production') {
+        // If any of the children being allocated is a scoped slot fragment, make sure the receiving
+        // component is a light DOM component. This is mainly to validate light dom parent running
+        // in native shadow mode.
+        if (
+            renderMode !== RenderMode.Light &&
+            ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
+        ) {
+            logError(
+                `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
+                    vm
+                )} tag. Scoped slot content can only be passed to a light dom child.`
+            );
+        }
+    }
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children);
+        allocateInSlot(vm, children, vnode.owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -625,40 +662,62 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
+/**
+ * Collects all slots into a SlotSet, traversing through VFragment Nodes
+ */
+function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
             continue;
         }
 
-        let slotName = '';
-        if (isVBaseElement(vnode)) {
-            slotName = (vnode.data.attrs?.slot as string) || '';
+        // Dive further iff the content is wrapped in a VFragment
+        if (isVFragment(vnode)) {
+            // Remove the text delimiter nodes to avoid overriding default slot content
+            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
+            continue;
         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        let slotName = '';
+        if (isVBaseElement(vnode)) {
+            slotName = (vnode.data.attrs?.slot as string) ?? '';
+        } else if (isVScopedSlotFragment(vnode)) {
+            slotName = vnode.slotName;
+        }
+
+        const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
+}
+
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+    collectSlots(vm, children, cmpSlotsMapping);
+    vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
+        const oldKeys = keys(oldSlotsMapping);
+        if (oldKeys.length !== keys(cmpSlotsMapping).length) {
             markComponentAsDirty(vm);
             return;
         }
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+            if (
+                isUndefined(cmpSlotsMapping[key]) ||
+                oldSlotsMapping[key].length !== cmpSlotsMapping[key].length
+            ) {
                 markComponentAsDirty(vm);
                 return;
             }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+            const oldVNodes = oldSlotsMapping[key];
+            const vnodes = cmpSlotsMapping[key];
+            for (let j = 0, a = cmpSlotsMapping[key].length; j < a; j += 1) {
                 if (oldVNodes[j] !== vnodes[j]) {
                     markComponentAsDirty(vm);
                     return;

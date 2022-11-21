@@ -23,6 +23,7 @@ const {
 const { isArray } = Array;
 
 const {
+    concat: ArrayConcat,
     copyWithin: ArrayCopyWithin,
     fill: ArrayFill,
     filter: ArrayFilter,
@@ -36,6 +37,7 @@ const {
     reverse: ArrayReverse,
     shift: ArrayShift,
     slice: ArraySlice,
+    some: ArraySome,
     sort: ArraySort,
     splice: ArraySplice,
     unshift: ArrayUnshift,
@@ -52,6 +54,7 @@ const {
 } = String.prototype;
 
 export {
+    ArrayConcat,
     ArrayFilter,
     ArrayFind,
     ArrayFill,
@@ -65,6 +68,7 @@ export {
     ArrayReverse,
     ArrayShift,
     ArraySlice,
+    ArraySome,
     ArraySort,
     ArraySplice,
     ArrayUnshift,

@@ -2,23 +2,12 @@
     "warnings": [
         {
             "code": 1126,
-            "message": "LWC1126: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.",
-            "level": 1,
-            "location": {
-                "line": 3,
-                "column": 15,
-                "start": 95,
-                "length": 19
-            }
-        },
-        {
-            "code": 1126,
             "message": "LWC1126: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.",
             "level": 1,
             "location": {
-                "line": 6,
+                "line": 5,
                 "column": 15,
-                "start": 212,
+                "start": 328,
                 "length": 19
             }
         }

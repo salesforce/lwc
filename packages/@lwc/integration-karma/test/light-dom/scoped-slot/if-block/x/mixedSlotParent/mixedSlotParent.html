@@ -1,0 +1,12 @@
+<template>
+    <x-mixed-slot-child show-standard={showStandard} show-variant={showVariant}>
+        <template lwc:if={showStandard}>
+            <span>Slotted content from parent</span>
+        </template>
+        <template lwc:elseif={showVariant}>
+            <template lwc:slot-data="data">
+                <span>{data.id} - {data.name}</span>
+            </template>    
+        </template>
+    </x-mixed-slot-child>
+</template>
