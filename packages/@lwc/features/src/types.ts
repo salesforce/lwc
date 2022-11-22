@@ -28,11 +28,6 @@ export interface FeatureFlagMap {
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
-     * LWC engine flag to make setter reactive.
-     */
-    ENABLE_REACTIVE_SETTER: FeatureFlagValue;
-
-    /**
      * LWC engine flag to force native shadow mode for mixed shadow mode testing.
      */
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;

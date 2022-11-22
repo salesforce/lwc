@@ -13,7 +13,7 @@ import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 const NUMBER_OF_ROWS = 5000;
 
-benchmark(`benchmark-slot-ss/synthetic-shadow-create/5k`, () => {
+benchmark(`dom/slot/synthetic-shadow/create/5k`, () => {
     let slottingComponent;
     let rowsOfComponentWithSlot;
     let rowsOfSlottedContent;

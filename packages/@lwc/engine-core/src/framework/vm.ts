@@ -39,7 +39,6 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { AccessorReactiveObserver } from './accessor-reactive-observer';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
 
@@ -159,9 +158,6 @@ export interface VM<N = HostNode, E = HostElement> {
     renderRoot: ShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
-    /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
-     *  is enabled. */
-    oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
     setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
@@ -239,13 +235,9 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { oar, tro } = vm;
+        const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        // Making sure that any observing accessor record will not trigger the setter to be reinvoked
-        for (const key in oar) {
-            oar[key].reset();
-        }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
@@ -309,7 +301,6 @@ export function createVM<HostNode, HostElement>(
         cmpProps: create(null),
         cmpFields: create(null),
         cmpSlots: { slotAssignments: create(null) },
-        oar: create(null),
         cmpTemplate: null,
         hydrated: Boolean(hydrated),
 

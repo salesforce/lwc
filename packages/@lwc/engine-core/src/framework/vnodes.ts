@@ -44,7 +44,7 @@ export interface BaseVNode {
 }
 
 export interface VScopedSlotFragment extends BaseVNode {
-    factory: (value: any) => VNodes;
+    factory: (value: any, key: any) => VFragment;
     type: VNodeType.ScopedSlotFragment;
     slotName: string;
 }

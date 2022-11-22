@@ -9,7 +9,7 @@ module.exports = {
     projectName: 'lwc',
     mainBranch: 'master',
     // This number is a tradeoff: higher = less variance, lower = less time spent running in CI
-    benchmarkIterations: 30,
+    benchmarkIterations: 60,
     // Refresh the browser between each iteration. This doesn't affect our benchmarks much
     // (since they already use for-loops, so we're only measuring peak performance, i.e. JITed performance),
     // but our tests assume that the DOM is fresh on each iteration

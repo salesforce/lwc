@@ -1211,7 +1211,8 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
 }
 
 const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
-const ALLOWED_SLOT_ATTRIBUTES = new Set<string>(['name', ElementDirectiveName.SlotBind]);
+const ALLOWED_SLOT_ATTRIBUTES = ['name', ElementDirectiveName.SlotBind, ElementDirectiveName.Key];
+const ALLOWED_SLOT_ATTRIBUTES_SET = new Set<string>(ALLOWED_SLOT_ATTRIBUTES);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1236,7 +1237,7 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES.has(name))
+            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES_SET.has(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {
@@ -1252,6 +1253,7 @@ function parseSlot(
 
             ctx.throwAtLocation(ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES, location, [
                 invalidAttrs.join(','),
+                ALLOWED_SLOT_ATTRIBUTES.join(', '),
             ]);
         }
     }

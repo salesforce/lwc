@@ -9,7 +9,7 @@ export default class extends LightningElement {
     ];
 
     @api
-    changeItemsNestedValue() {
+    changeItemsNestedKey() {
         this.items[0].id = '38';
     }
 

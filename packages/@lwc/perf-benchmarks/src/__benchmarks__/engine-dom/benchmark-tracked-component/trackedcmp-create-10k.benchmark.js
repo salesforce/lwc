@@ -10,7 +10,7 @@ import TrackedComponent from '@lwc/perf-benchmarks-components/dist/dom/benchmark
 import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/store.js';
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
-benchmark(`benchmark-tracked-component/create/10k`, () => {
+benchmark(`dom/tracked-component/create/10k`, () => {
     let trackedComponent;
 
     before(() => {

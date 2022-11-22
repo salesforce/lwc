@@ -11,7 +11,7 @@ import Table from '@lwc/perf-benchmarks-components/dist/dom/benchmark/table/tabl
 import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/store.js';
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
-benchmark(`benchmark-table/create/10k`, () => {
+benchmark(`dom/table/create/10k`, () => {
     let tableElement;
 
     before(() => {
