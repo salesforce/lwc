@@ -6,7 +6,7 @@ import Container from 'x/container';
 // synthetic shadow behavior, which is not necessarily consistent with native shadow behavior.
 // If you're wondering why so many of the tests are doing toMatch() on a regex, it's because of
 // differences in how browsers serialize text using innerText/outerText.
-if (!process.env.NATIVE_SHADOW) {
+if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
     describe('innerText', () => {
         let elm;
         beforeEach(() => {
