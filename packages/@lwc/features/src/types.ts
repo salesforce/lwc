@@ -106,6 +106,16 @@ export interface FeatureFlagMap {
      * If this flag is disabled, then LWC components with the same tag name as third-party custom elements may conflict.
      */
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: FeatureFlagValue;
+
+    /**
+     * Flag to enable the "frozen template" feature. With this flag enabled, the template object
+     * imported from HTML files is frozen and cannot be modified. E.g. this will throw:
+     * ```js
+     * import template from './template.html';
+     * template.stylesheets = [];
+     * ```
+     */
+    ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
