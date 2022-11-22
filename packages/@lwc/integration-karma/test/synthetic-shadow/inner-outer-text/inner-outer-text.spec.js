@@ -5,7 +5,7 @@ import Container from 'x/container';
 // After https://github.com/salesforce/lwc/pull/3103 though, this became tests for existing
 // synthetic shadow behavior, which is not necessarily consistent with native shadow behavior.
 // If you're wondering why so many of the tests are doing toMatch() on a regex, it's because of
-// differences in how browsers serialize text using innerText.
+// differences in how browsers serialize text using innerText/outerText.
 if (!process.env.NATIVE_SHADOW) {
     describe('innerText', () => {
         let elm;
@@ -154,24 +154,24 @@ if (!process.env.NATIVE_SHADOW) {
             it('should go inside custom element shadow', () => {
                 const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
 
-                expect(testElement.outerText).toBe(
-                    'first text\n\n\nshadow start text\n\ndefault slot content\n\nshadow end text\n\nsecond text'
+                expect(testElement.outerText).toMatch(
+                    /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
                 );
             });
 
             it('should process custom elements light dom', () => {
                 const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
 
-                expect(testElement.outerText).toBe(
-                    'first text\n\nshadow start text\n\nslotted element\n\nshadow end text\n\nsecond text'
+                expect(testElement.outerText).toMatch(
+                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
                 );
             });
 
             it('should process custom elements light dom across multiple shadows', () => {
                 const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
 
-                expect(testElement.outerText).toBe(
-                    'first text\n\nshadow start text\n\nslotted element\n\nshadow end text\n\nsecond text'
+                expect(testElement.outerText).toMatch(
+                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
                 );
             });
         });
