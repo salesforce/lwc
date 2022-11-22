@@ -4,6 +4,8 @@ import Container from 'x/container';
 // Note: originally these tests tested the runtime flag `ENABLE_INNER_OUTER_TEXT_PATCH`.
 // After https://github.com/salesforce/lwc/pull/3103 though, this became tests for existing
 // synthetic shadow behavior, which is not necessarily consistent with native shadow behavior.
+// If you're wondering why so many of the tests are doing toMatch() on a regex, it's because of
+// differences in how browsers serialize text using innerText.
 if (!process.env.NATIVE_SHADOW) {
     describe('innerText', () => {
         let elm;
@@ -21,13 +23,9 @@ if (!process.env.NATIVE_SHADOW) {
         it('should remove consecutive LF in between from partial results', () => {
             const testCase = elm.shadowRoot.querySelector('.consecutive-LF');
 
-            expect(testCase.innerText).toBe(`initial
-
-first case text
-
-second case text
-
-end`);
+            expect(testCase.innerText).toMatch(
+                /initial\s+first case text\s+second case text\s+end/
+            );
         });
 
         it('should remove hidden text + removes empty text between LF counts', () => {
@@ -57,12 +55,9 @@ end`);
         it('should collect text from multiple levels', () => {
             const testCase = elm.shadowRoot.querySelector('.collect-text-multiple-levels');
 
-            expect(testCase.innerText)
-                .toBe(`This is, a text that should be displayed, in one line. It includes links.
-
-Also paragraphs
-
-and then another text`);
+            expect(testCase.innerText).toMatch(
+                /This is, a text that should be displayed, in one line\. It includes links\.\s+Also paragraphs\s+and then another text/
+            );
         });
 
         it('should collect text from tables (table-cell and table-row)', () => {
@@ -71,21 +66,20 @@ and then another text`);
             // Notice that:
             // 1. the last \t on each row is incorrect, it's a relaxation from the spec.
             // 2. the last \n is incorrect, it's also a relaxation from the spec.
-            expect(testCase.innerText).toBe('1,1\t1,2\n2,1\t2,2');
+            expect(testCase.innerText).toMatch(/1,1\s+1,2\s+2,1\s+2,2/);
         });
 
         it('should collect text from select', () => {
             const testCase = elm.shadowRoot.querySelector('.select-testcase');
 
-            expect(testCase.innerText).toBe(`Chose a pet:
-Dog
-Cat`);
+            // Safari does not serialize innerText from <select>
+            expect(testCase.innerText).toMatch(/Chose a pet:\n*(Dog\n+Cat)?/);
         });
 
         it('should not collect text from hidden select', () => {
             const testCase = elm.shadowRoot.querySelector('.select-hidden-testcase');
 
-            expect(testCase.innerText).toBe(`Chose a pet:`);
+            expect(testCase.innerText).toMatch(/Chose a pet:\n?/);
         });
 
         it('should not collect text from textarea', () => {
@@ -99,31 +93,31 @@ Cat`);
             it('should not collect text from datalist', () => {
                 const testCase = elm.shadowRoot.querySelector('.datalist-case');
 
-                expect(testCase.innerText).toBe(`Choose a flavor:`);
+                expect(testCase.innerText).toMatch(/Choose a flavor:\n*/);
             });
         }
 
         it('should go inside custom element shadow', () => {
             const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
 
-            expect(testElement.innerText).toBe(
-                'first text\n\n\nshadow start text\n\ndefault slot content\n\nshadow end text\n\nsecond text'
+            expect(testElement.innerText).toMatch(
+                /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
             );
         });
 
         it('should process custom elements light dom', () => {
             const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
 
-            expect(testElement.innerText).toBe(
-                'first text\n\nshadow start text\n\nslotted element\n\nshadow end text\n\nsecond text'
+            expect(testElement.innerText).toMatch(
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
             );
         });
 
         it('should process custom elements light dom across multiple shadows', () => {
             const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
 
-            expect(testElement.innerText).toBe(
-                'first text\n\nshadow start text\n\nslotted element\n\nshadow end text\n\nsecond text'
+            expect(testElement.innerText).toMatch(
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
             );
         });
 
