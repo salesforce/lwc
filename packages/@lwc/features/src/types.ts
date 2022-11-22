@@ -28,11 +28,6 @@ export interface FeatureFlagMap {
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
-     * LWC engine flag to make setter reactive.
-     */
-    ENABLE_REACTIVE_SETTER: FeatureFlagValue;
-
-    /**
      * Synthetic shadow DOM flag to enable strict `HTMLElement.prototype.innerText` and
      * `HTMLElement.prototype.outerText` shadow dom semantic.
      */
