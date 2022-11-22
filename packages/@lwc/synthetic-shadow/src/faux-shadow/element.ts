@@ -116,6 +116,8 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                 return innerHTMLGetterPatched.call(this);
             }
@@ -130,6 +132,8 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                 return outerHTMLGetterPatched.call(this);
             }
@@ -249,6 +253,8 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             // `this` is a manually inserted element inside a shadowRoot, return the first element.
             return nodeList.length === 0 ? null : nodeList[0];
         }
@@ -291,6 +297,8 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
                 (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
         } else {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             // context is manually inserted without lwc:dom-manual, return everything
             filtered = ArraySlice.call(unfilteredNodes);
         }
@@ -331,6 +339,8 @@ defineProperties(Element.prototype, {
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
 
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             const filteredResults = getFilteredArrayOfNodes(this, nodeList);
             return createStaticNodeList(filteredResults);
         },
@@ -352,6 +362,8 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
                     getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
@@ -366,6 +378,8 @@ if (process.env.NODE_ENV !== 'test') {
                     elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
                 );
 
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
                     getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
@@ -383,6 +397,8 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
                     getNonPatchedFilteredArrayOfNodes(this, elements)
                 );

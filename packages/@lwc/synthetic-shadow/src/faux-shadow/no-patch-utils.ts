@@ -49,6 +49,8 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
         // `context` is document.body which is already patched.
         filtered = ArrayFilter.call(
             unfilteredNodes,
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
         );
     } else {

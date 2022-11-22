@@ -29,6 +29,8 @@ export function getOwnerWindow(node: Node): Window {
 
 let skipGlobalPatching: boolean;
 
+// Note: we deviate from native shadow here, but are not fixing
+// due to backwards compat: https://github.com/salesforce/lwc/pull/3103
 export function isGlobalPatchingSkipped(node: Node): boolean {
     // we lazily compute this value instead of doing it during evaluation, this helps
     // for apps that are setting this after the engine code is evaluated.

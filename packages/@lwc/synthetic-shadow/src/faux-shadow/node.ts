@@ -287,6 +287,8 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                 return textContentGetterPatched.call(this);
             }
@@ -359,6 +361,8 @@ defineProperties(Node.prototype, {
     },
     compareDocumentPosition: {
         value(this: Node, otherNode: Node): number {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isGlobalPatchingSkipped(this)) {
                 return compareDocumentPosition.call(this, otherNode);
             }
@@ -378,6 +382,8 @@ defineProperties(Node.prototype, {
                 return true;
             }
 
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (otherNode == null) {
                 return false;
             }
@@ -394,6 +400,8 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                 return cloneNodePatched.call(this, deep);
             }

@@ -195,6 +195,8 @@ defineProperties(HTMLElement.prototype, {
 if (innerTextGetter !== null && innerTextSetter !== null) {
     defineProperty(HTMLElement.prototype, 'innerText', {
         get(this: HTMLElement): string {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             return innerTextGetter!.call(this);
         },
         set(this: HTMLElement, v: string) {
@@ -212,6 +214,8 @@ if (outerTextGetter !== null && outerTextSetter !== null) {
     // As a setter, it removes the current node and replaces it with the given text.
     defineProperty(HTMLElement.prototype, 'outerText', {
         get(this: HTMLElement): string {
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             return outerTextGetter!.call(this);
         },
         set(this: HTMLElement, v: string) {
