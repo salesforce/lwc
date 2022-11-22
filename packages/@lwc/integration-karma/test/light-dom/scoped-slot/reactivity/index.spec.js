@@ -215,7 +215,14 @@ describe('reactivity in scoped slots', () => {
                 })
                 .then(() => {
                     verifySlotContent(['Variation 1', 'Variation 2']);
+                    // Switch of all slot content. Should still work because the vfragement still has empty text nodes that will be allocated
+                    elm.disableAllVariations();
+                })
+                .then(() => {
+                    verifySlotContent([]);
+
                     // toggle off visibility flag in child and verify that content is reset
+                    elm.enableVariation2();
                     child.visible = false;
                 })
                 .then(() => {

@@ -8,4 +8,10 @@ export default class ParentWithConditionalSlotContent extends LightningElement {
     enableVariation2() {
         this.data.variation2 = true;
     }
+
+    @api
+    disableAllVariations() {
+        this.data.variation1 = false;
+        this.data.variation2 = false;
+    }
 }
