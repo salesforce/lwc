@@ -1508,17 +1508,17 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
             directive
         );
 
+        // If the current directive is a slotFragment or the descendent of a slotFragment, additional
+        // validations are required
         if (!isNull(slotFragment)) {
-            slotFragment.children.forEach((child) => {
-                // Error in compiler logic
-                /* istanbul ignore if */
-                if (ast.isElementDirective(child)) {
-                    throw new Error(
-                        `Incorrect order of processing directives. ScopedSlotFragment` +
-                            ` must be last directive processed, instead found ${child.type} as its child.`
-                    );
-                }
-                // User error
+            /*
+             * A slot fragment cannot contain comment or text node as children.
+             * Comment and Text nodes are always slotted to the default slot, in other words these
+             * nodes cannot be assigned to a named slot. This restriction is in place to ensure that
+             * in the future if slotting is done via slot assignment API, we won't have named scoped
+             * slot usecase that cannot be supported.
+             */
+            directive.children.forEach((child) => {
                 if ((ctx.preserveComments && ast.isComment(child)) || ast.isText(child)) {
                     ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, child);
                 }

@@ -18,6 +18,7 @@ describe('if-block', () => {
         });
     });
 
+    // TODO [#999]:
     xit('should throw error when parent and child have mismatched slot types', () => {
         const elm = createElement('x-parent', { is: MixedSlotParent });
         elm.showStandard = true;
