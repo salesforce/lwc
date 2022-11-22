@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1134,
-            "message": "LWC1134: Invalid attribute(s) 'class' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have 'name' attribute",
+            "message": "LWC1134: Invalid attribute(s) 'class' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have [name, lwc:slot-bind, key] attributes",
             "level": 1,
             "location": {
                 "line": 2,

@@ -13,7 +13,7 @@ const NUM_COMPONENTS = 1000;
 // Create 1k components with different CSS in each component
 // These are light DOM components running in native mode
 styledComponentBenchmark(
-    `benchmark-styled-component/create/1k/different`,
+    `dom/styled-component/light/create-different/1k`,
     NUM_COMPONENTS,
     components,
     { after, before, benchmark, run }

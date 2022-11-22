@@ -252,6 +252,14 @@ export function templateLiteral(
     };
 }
 
+export function assignmentPattern(left: t.Pattern, right: t.Expression): t.AssignmentPattern {
+    return {
+        type: 'AssignmentPattern',
+        left,
+        right,
+    };
+}
+
 export function functionExpression(
     id: null | t.Identifier,
     params: t.FunctionExpression['params'],

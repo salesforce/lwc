@@ -12,7 +12,7 @@ const NUM_COMPONENTS = 10000;
 
 // Create 10k components with the same CSS in each component
 styledComponentBenchmark(
-    `ss-benchmark-styled-component/create/10k/same`,
+    `dom/styled-component/synthetic-shadow/create-same/10k`,
     NUM_COMPONENTS,
     StyledComponent,
     { after, before, benchmark, run }
