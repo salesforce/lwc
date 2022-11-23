@@ -515,7 +515,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         spyConsole: spyConsole,
         customElementConnectedErrorListener: customElementConnectedErrorListener,
         ariaPropertiesMapping: ariaPropertiesMapping,
-        ariaProperties,
-        ariaAttributes,
+        ariaProperties: ariaProperties,
+        ariaAttributes: ariaAttributes,
     };
 })(LWC, jasmine, beforeAll);
