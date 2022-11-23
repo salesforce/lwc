@@ -16,7 +16,6 @@ import {
     isUndefined,
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 
 import {
     attachShadow as originalAttachShadow,
@@ -59,11 +58,6 @@ import {
     getAllSlottedMatches,
     getFirstSlottedMatch,
 } from './traverse';
-
-const enum ShadowDomSemantic {
-    Disabled,
-    Enabled,
-}
 
 function innerHTMLGetterPatched(this: Element): string {
     const childNodes = getInternalChildNodes(this);
@@ -122,19 +116,13 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return innerHTMLGetterPatched.call(this);
-                }
-
-                return innerHTMLGetter.call(this);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return innerHTMLGetterPatched.call(this);
             }
 
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return innerHTMLGetter.call(this);
-            }
-            return innerHTMLGetterPatched.call(this);
+            return innerHTMLGetter.call(this);
         },
         set(v: string) {
             innerHTMLSetter.call(this, v);
@@ -144,18 +132,12 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return outerHTMLGetterPatched.call(this);
-                }
-                return outerHTMLGetter.call(this);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return outerHTMLGetterPatched.call(this);
             }
-
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return outerHTMLGetter.call(this);
-            }
-            return outerHTMLGetterPatched.call(this);
+            return outerHTMLGetter.call(this);
         },
         set(v: string) {
             outerHTMLSetter.call(this, v);
@@ -271,43 +253,27 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                // `this` is a manually inserted element inside a shadowRoot, return the first element.
-                return nodeList.length === 0 ? null : nodeList[0];
-            }
-
-            // Element is inside a shadow but we dont know which one. Use the
-            // "nearest" owner key to filter by ownership.
-            const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
-            const elm = ArrayFind.call(
-                nodeList,
-                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
-            );
-            return isUndefined(elm) ? null : elm;
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            // `this` is a manually inserted element inside a shadowRoot, return the first element.
+            return nodeList.length === 0 ? null : nodeList[0];
         }
     } else {
-        if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-            if (!(this instanceof HTMLBodyElement)) {
-                const elm = nodeList[0];
-                return isUndefined(elm) ? null : elm;
-            }
+        if (!(this instanceof HTMLBodyElement)) {
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
         }
 
         // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
-            // TODO [#1222]: remove global bypass
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
     }
 }
 
-function getFilteredArrayOfNodes<T extends Node>(
-    context: Element,
-    unfilteredNodes: T[],
-    shadowDomSemantic: ShadowDomSemantic
-): T[] {
+function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNodes: T[]): T[] {
     let filtered: T[];
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
@@ -330,23 +296,17 @@ function getFilteredArrayOfNodes<T extends Node>(
                 unfilteredNodes,
                 (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
-        } else if (shadowDomSemantic === ShadowDomSemantic.Enabled) {
-            // context is inside a shadow, we dont know which one.
-            const contextNearestOwnerKey = getNodeNearestOwnerKey(context);
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
-            );
         } else {
-            // context is manually inserted without lwc:dom-manual and ShadowDomSemantics is off, return everything
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            // context is manually inserted without lwc:dom-manual, return everything
             filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {
-        if (context instanceof HTMLBodyElement || shadowDomSemantic === ShadowDomSemantic.Enabled) {
+        if (context instanceof HTMLBodyElement) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                // TODO [#1222]: remove global bypass
                 (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
@@ -379,18 +339,10 @@ defineProperties(Element.prototype, {
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    nodeList,
-                    ShadowDomSemantic.Disabled
-                );
-                return createStaticNodeList(filteredResults);
-            }
-
-            return createStaticNodeList(
-                getFilteredArrayOfNodes(this, nodeList, ShadowDomSemantic.Enabled)
-            );
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            const filteredResults = getFilteredArrayOfNodes(this, nodeList);
+            return createStaticNodeList(filteredResults);
         },
         writable: true,
         enumerable: true,
@@ -410,18 +362,11 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,
@@ -433,18 +378,11 @@ if (process.env.NODE_ENV !== 'test') {
                     elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,
@@ -459,18 +397,11 @@ if (process.env.NODE_ENV !== 'test') {
                     )
                 );
 
-                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                    return createStaticHTMLCollection(
-                        getNonPatchedFilteredArrayOfNodes(this, elements)
-                    );
-                }
-
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-                return createStaticHTMLCollection(filteredResults);
             },
             writable: true,
             enumerable: true,
