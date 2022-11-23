@@ -18,8 +18,8 @@ it('should handle multiple idrefs when set dynamically', () => {
         expect(hokkaido.id).toMatch(/^hokkaido-\w+/);
     }
 
-    expect(input.ariaLabelledBy).toContain(aomori.id);
-    expect(input.ariaLabelledBy).toContain(hokkaido.id);
+    expect(input.getAttribute('aria-labelledby')).toContain(aomori.id);
+    expect(input.getAttribute('aria-labelledby')).toContain(hokkaido.id);
 });
 
 it('should handle multiple idrefs when set statically', () => {
@@ -38,6 +38,6 @@ it('should handle multiple idrefs when set statically', () => {
         expect(iwate.id).toMatch(/^iwate-\w+/);
     }
 
-    expect(input.ariaLabelledBy).toContain(aomori.id);
-    expect(input.ariaLabelledBy).toContain(iwate.id);
+    expect(input.getAttribute('aria-labelledby')).toContain(aomori.id);
+    expect(input.getAttribute('aria-labelledby')).toContain(iwate.id);
 });

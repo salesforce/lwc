@@ -21,10 +21,20 @@ npm install @lwc/aria-reflection-polyfill
 ```
 
 ```js
-import '@lwc/aria-reflection-polyfill';
+import { applyAriaReflection } from '@lwc/aria-reflection-polyfill';
+
+applyAriaReflection();
 ```
 
-The polyfill is applied as soon as it's imported.
+The polyfill is applied as soon as the function is executed.
+
+Optionally, you can pass in a custom prototype:
+
+```js
+applyAriaReflection(MyCustomElement.prototype);
+```
+
+By default, the polyfill is applied to the global `Element.prototype`.
 
 ## Implementation
 

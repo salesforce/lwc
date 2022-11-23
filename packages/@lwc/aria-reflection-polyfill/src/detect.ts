@@ -6,6 +6,6 @@
  */
 import { getOwnPropertyDescriptor } from '@lwc/shared';
 
-export function detect(propName: string): boolean {
-    return getOwnPropertyDescriptor(Element.prototype, propName) === undefined;
+export function detect(propName: string, prototype: any = Element.prototype): boolean {
+    return getOwnPropertyDescriptor(prototype, propName) === undefined;
 }

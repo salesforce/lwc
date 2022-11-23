@@ -22,6 +22,7 @@ const features: FeatureFlagMap = {
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: null,
     ENABLE_FROZEN_TEMPLATE: null,
+    DISABLE_ARIA_REFLECTION_POLYFILL: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {
@@ -85,3 +86,5 @@ export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagV
 export const runtimeFlags = lwcRuntimeFlags; // backwards compatibility for before this was renamed
 
 export default features;
+
+export type { FeatureFlagMap };
