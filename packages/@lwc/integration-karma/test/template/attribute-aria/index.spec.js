@@ -37,7 +37,7 @@ describe('setting aria attributes', () => {
         });
 
         it('component can use this.aria* property accessors', () => {
-            const privateAriaProperties = childComponent.getPrivateAriaProperties();
+            const privateAriaProperties = childComponent.getAllAriaProps();
             expect(Object.keys(privateAriaProperties)).toEqual(ariaProperties);
             for (const prop of ariaProperties) {
                 expect(privateAriaProperties[prop]).toMatch(/^foo/);

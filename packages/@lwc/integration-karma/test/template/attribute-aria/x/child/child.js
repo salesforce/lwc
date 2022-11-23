@@ -3,7 +3,7 @@ import { ariaProperties } from 'test-utils';
 
 export default class extends LightningElement {
     @api
-    getPrivateAriaProperties() {
+    getAllAriaProps() {
         const result = {};
         for (const prop of ariaProperties) {
             result[prop] = this[prop];
