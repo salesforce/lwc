@@ -1,4 +1,4 @@
-# @lwc/aria-reflection-polyfill
+# @lwc/aria-reflection
 
 Polyfill for [ARIA string reflection](https://wicg.github.io/aom/spec/aria-reflection.html) on Elements.
 This is part of the [Accessibility Object Model](https://wicg.github.io/aom/explainer.html) (AOM).
@@ -17,11 +17,11 @@ Note that the attribute `aria-pressed` is reflected to the property `ariaPressed
 ## Usage
 
 ```shell
-npm install @lwc/aria-reflection-polyfill
+npm install @lwc/aria-reflection
 ```
 
 ```js
-import { applyAriaReflection } from '@lwc/aria-reflection-polyfill';
+import { applyAriaReflection } from '@lwc/aria-reflection';
 
 applyAriaReflection();
 ```

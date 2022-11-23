@@ -28,7 +28,7 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import features from '@lwc/features';
-import { applyAriaReflection } from '@lwc/aria-reflection-polyfill';
+import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
