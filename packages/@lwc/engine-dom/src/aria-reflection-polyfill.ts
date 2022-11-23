@@ -8,5 +8,7 @@ import features from '@lwc/features';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
 if (!features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    // If DISABLE_ARIA_REFLECTION_POLYFILL is false, then we need to apply the ARIA reflection polyfill globally,
+    // i.e. to the global Element.prototype
     applyAriaReflection();
 }
