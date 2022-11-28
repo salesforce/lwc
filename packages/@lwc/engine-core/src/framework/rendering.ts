@@ -10,14 +10,14 @@ import {
     assert,
     create,
     isArray,
-    isTrue,
     isFalse,
     isNull,
+    isTrue,
     isUndefined,
-    keys,
-    SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
+    keys,
+    SVG_NAMESPACE,
 } from '@lwc/shared';
 import features from '@lwc/features';
 
@@ -27,38 +27,38 @@ import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
+import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
-    createVM,
     appendVM,
-    removeVM,
-    rerenderVM,
+    connectRootElement,
+    createVM,
+    disconnectRootElement,
     getAssociatedVMIfPresent,
+    LwcDomMode,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
+    ShadowMode,
     VM,
     VMState,
-    ShadowMode,
-    RenderMode,
-    LwcDomMode,
-    connectRootElement,
-    disconnectRootElement,
 } from './vm';
 import {
-    VNode,
-    VNodes,
-    VCustomElement,
-    VElement,
-    VText,
-    VComment,
-    Key,
-    VBaseElement,
-    isVBaseElement,
     isSameVnode,
-    VNodeType,
-    VStatic,
-    VFragment,
+    isVBaseElement,
     isVFragment,
     isVScopedSlotFragment,
+    Key,
+    VBaseElement,
+    VComment,
+    VCustomElement,
+    VElement,
+    VFragment,
+    VNode,
+    VNodes,
+    VNodeType,
+    VStatic,
+    VText,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -584,12 +584,14 @@ function applyDomManual(elm: Element, vnode: VBaseElement) {
 
 function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     if (process.env.NODE_ENV !== 'production') {
+        const isSynthetic = vnode.owner.shadowMode === ShadowMode.Synthetic;
         const isPortal =
             vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === LwcDomMode.Manual;
         const isLight = vnode.owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, {
             isPortal,
             isLight,
+            isSynthetic,
         });
     }
 }
