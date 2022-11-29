@@ -4,6 +4,7 @@ import ListParentApiData from 'x/listParentApiData';
 import WithParentBindings from 'x/withParentBindings';
 import ParentBindingsOutsideSlotContent from 'x/parentBindingsOutsideSlotContent';
 import ListParentTrackedData from 'x/listParentTrackedData';
+import ParentWithConditionalSlotContent from 'x/parentWithConditionalSlotContent';
 
 describe('reactivity in scoped slots', () => {
     beforeEach(() => {
@@ -184,6 +185,49 @@ describe('reactivity in scoped slots', () => {
                     'parent:renderedCallback',
                 ]);
             });
+        });
+    });
+
+    describe('nested directives', () => {
+        it('slot content can contain if:true directive and is reactive', () => {
+            function verifySlotContent(expectedContent) {
+                expect([...elm.shadowRoot.querySelectorAll('div')].map((_) => _.innerHTML)).toEqual(
+                    expectedContent
+                );
+            }
+            const elm = createElement('x-parent', { is: ParentWithConditionalSlotContent });
+            document.body.appendChild(elm);
+            const child = elm.shadowRoot.querySelector('x-child-for-conditional-slot-content');
+
+            verifySlotContent([]);
+            return Promise.resolve()
+                .then(() => {
+                    verifySlotContent([]);
+                    // toggle visibility flag in child
+                    child.visible = true;
+                })
+                .then(() => {
+                    // Verify that parent's scoped slot content is rendered
+                    verifySlotContent(['Variation 1']);
+
+                    // Verify that slot content is reactive to changes in parent's tracked data
+                    elm.enableVariation2();
+                })
+                .then(() => {
+                    verifySlotContent(['Variation 1', 'Variation 2']);
+                    // Switch of all slot content. Should still work because the vfragement still has empty text nodes that will be allocated
+                    elm.disableAllVariations();
+                })
+                .then(() => {
+                    verifySlotContent([]);
+
+                    // toggle off visibility flag in child and verify that content is reset
+                    elm.enableVariation2();
+                    child.visible = false;
+                })
+                .then(() => {
+                    verifySlotContent([]);
+                });
         });
     });
 });
