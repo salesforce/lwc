@@ -37,15 +37,20 @@ describe('Node.textContent - setter', () => {
         }).toThrowError();
     });
 
-    it('should log an error when invoking setter for an element in the shadow', () => {
+    it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');
 
-        expect(() => {
+        // eslint-disable-next-line jest/valid-expect
+        let expected = expect(() => {
             div.textContent = '<span>Hello World!</span>';
-        }).toLogErrorDev(
+        });
+        if (process.env.NATIVE_SHADOW) {
+            expected = expected.not; // no error
+        }
+        expected.toLogErrorDev(
             /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
