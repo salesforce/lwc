@@ -107,9 +107,9 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The host element tag name */
     readonly tagName: string;
     /** The component definition */
-    readonly def: ComponentDef;
+    def: ComponentDef;
     /** The component context object. */
-    readonly context: Context;
+    context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
     /** References to elements rendered using lwc:ref (template refs) */
@@ -269,6 +269,19 @@ function getNearestShadowAncestor(vm: VM): VM | null {
     return ancestor;
 }
 
+export function createVMContext() {
+    return {
+        stylesheetToken: undefined,
+        hasTokenInClass: undefined,
+        hasTokenInAttribute: undefined,
+        hasScopedStyles: undefined,
+        styleVNodes: null,
+        tplCache: EmptyObject,
+        wiredConnecting: EmptyArray,
+        wiredDisconnecting: EmptyArray,
+    };
+}
+
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     ctor: LightningElementConstructor,
@@ -305,16 +318,7 @@ export function createVM<HostNode, HostElement>(
         hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
-        context: {
-            stylesheetToken: undefined,
-            hasTokenInClass: undefined,
-            hasTokenInAttribute: undefined,
-            hasScopedStyles: undefined,
-            styleVNodes: null,
-            tplCache: EmptyObject,
-            wiredConnecting: EmptyArray,
-            wiredDisconnecting: EmptyArray,
-        },
+        context: createVMContext(),
 
         // Properties set right after VM creation.
         tro: null!,
@@ -336,7 +340,7 @@ export function createVM<HostNode, HostElement>(
         vm.debugInfo = create(null);
     }
 
-    vm.shadowMode = computeShadowMode(vm, renderer);
+    vm.shadowMode = computeShadowMode(vm);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -359,8 +363,8 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function computeShadowMode(vm: VM, renderer: RendererAPI) {
-    const { def } = vm;
+export function computeShadowMode(vm: VM) {
+    const { def, renderer } = vm;
     const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
 
     let shadowMode;
@@ -564,11 +568,11 @@ export function runConnectedCallback(vm: VM) {
     }
 }
 
-function hasWireAdapters(vm: VM): boolean {
+export function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
-function runDisconnectedCallback(vm: VM) {
+export function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
