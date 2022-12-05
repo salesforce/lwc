@@ -91,7 +91,7 @@
 
 "@babel/core@^7.20.5", "@babel/core@~7.20.5":
   version "7.20.5"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/core/-/core-7.20.5.tgz#45e2114dc6cd4ab167f81daf7820e8fa1250d113"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.20.5.tgz#45e2114dc6cd4ab167f81daf7820e8fa1250d113"
   integrity sha512-UdOWmk4pNWTm/4DlPUl/Pt4Gz4rcEMb7CY0Y3eJl5Yz1vI8ZJGmHWaVE55LoxRjdpx0z259GE9U5STA9atUinQ==
   dependencies:
     "@ampproject/remapping" "^2.1.0"
@@ -168,7 +168,7 @@
 
 "@babel/generator@^7.20.5":
   version "7.20.5"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/generator/-/generator-7.20.5.tgz#cb25abee3178adf58d6814b68517c62bdbfdda95"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.20.5.tgz#cb25abee3178adf58d6814b68517c62bdbfdda95"
   integrity sha512-jl7JY2Ykn9S0yj4DQP82sYvPU+T3g0HFcWTqDLqiuA9tGRNIj9VfbtXGAYTTkyNEnQk1jkMGOdYka8aG/lulCA==
   dependencies:
     "@babel/types" "^7.20.5"
@@ -527,7 +527,7 @@
 
 "@babel/helpers@^7.20.5":
   version "7.20.6"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/helpers/-/helpers-7.20.6.tgz#e64778046b70e04779dfbdf924e7ebb45992c763"
+  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.20.6.tgz#e64778046b70e04779dfbdf924e7ebb45992c763"
   integrity sha512-Pf/OjgfgFRW5bApskEz5pvidpim7tEDPlFtKcNRXWmfHGn9IEI2W2flqRQXTFb7gIPTyK++N6rVHuwKut4XK6w==
   dependencies:
     "@babel/template" "^7.18.10"
@@ -560,7 +560,7 @@
 
 "@babel/parser@^7.20.5":
   version "7.20.5"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/parser/-/parser-7.20.5.tgz#7f3c7335fe417665d929f34ae5dceae4c04015e8"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.20.5.tgz#7f3c7335fe417665d929f34ae5dceae4c04015e8"
   integrity sha512-r27t/cy/m9uKLXQNWWebeCUHgnAZq0CpG1OwKRxzJMP1vpSU4bSIK2hq+/cp0bQxetkXx38n09rNu8jVkcK/zA==
 
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.18.6":
@@ -1728,7 +1728,7 @@
 
 "@babel/traverse@^7.20.5":
   version "7.20.5"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/traverse/-/traverse-7.20.5.tgz#78eb244bea8270fdda1ef9af22a5d5e5b7e57133"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.20.5.tgz#78eb244bea8270fdda1ef9af22a5d5e5b7e57133"
   integrity sha512-WM5ZNN3JITQIq9tFZaw1ojLU3WgWdtkxnhM1AegMS+PvHjkM5IXjmYEGY7yukz5XS4sJyEf2VzWjI8uAavhxBQ==
   dependencies:
     "@babel/code-frame" "^7.18.6"
@@ -1788,7 +1788,7 @@
 
 "@babel/types@^7.20.5":
   version "7.20.5"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@babel/types/-/types-7.20.5.tgz#e206ae370b5393d94dfd1d04cd687cace53efa84"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.20.5.tgz#e206ae370b5393d94dfd1d04cd687cace53efa84"
   integrity sha512-c9fst/h2/dcF7H+MJKZ2T0KjEQ8hY/BNnDk/H3XY8C4Aw/eWQXWn/lWntHF9ooUBnGmEvbfGrTgLWc+um0YDUg==
   dependencies:
     "@babel/helper-string-parser" "^7.19.4"
@@ -1802,12 +1802,12 @@
 
 "@best/analyzer@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/analyzer/-/analyzer-8.1.1.tgz#f38d051e5b0c5502aee95feebeedad31c68bf694"
+  resolved "https://registry.yarnpkg.com/@best/analyzer/-/analyzer-8.1.1.tgz#f38d051e5b0c5502aee95feebeedad31c68bf694"
   integrity sha512-1T9kmK/o1tDGzd29F4BH6RiVpk4VUC2Tj3YU2f6EaZ4z1XvEQcmIOCxVG9eg407B+TpGhmy/Fm5gYXeU84jUVg==
 
 "@best/api-db@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/api-db/-/api-db-8.1.1.tgz#7220e9c5a49f56b34e1ddb57abb1c3373a15c961"
+  resolved "https://registry.yarnpkg.com/@best/api-db/-/api-db-8.1.1.tgz#7220e9c5a49f56b34e1ddb57abb1c3373a15c961"
   integrity sha512-pr/jqlCJryJ5Y2myLWrvpUhuW/8AHpW6yx4Kq5hKNj1+1hfOOnLu7YVFMTbqdQTed9jVWStpBBilHiROoTKyyA==
   dependencies:
     https-proxy-agent "5.0.1"
@@ -1817,7 +1817,7 @@
 
 "@best/builder@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/builder/-/builder-8.1.1.tgz#b424860bd4d49bd6ac5e6b72f4a7683ac2e67204"
+  resolved "https://registry.yarnpkg.com/@best/builder/-/builder-8.1.1.tgz#b424860bd4d49bd6ac5e6b72f4a7683ac2e67204"
   integrity sha512-ThScdfgD836B6DzvtZFhFyhfiMVcEA2SqCCamLQ2pHmG58tLmjDZIQyfEzBkTfAJgi1fCFyg3oiX/5uxDuIuMg==
   dependencies:
     "@best/runtime" "8.1.1"
@@ -1831,7 +1831,7 @@
 
 "@best/cli@^8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/cli/-/cli-8.1.1.tgz#4d7081010001cac766f850da529c4182148bc446"
+  resolved "https://registry.yarnpkg.com/@best/cli/-/cli-8.1.1.tgz#4d7081010001cac766f850da529c4182148bc446"
   integrity sha512-M51tNu7gkXIsqPzeCv3frSSZ5ROFNzrVd1u/LfmkME9gpUlj8ls2uNC74LX8QeTUZOv2+hfG4VxcbRr0pk8iBQ==
   dependencies:
     "@best/analyzer" "8.1.1"
@@ -1857,7 +1857,7 @@
 
 "@best/compare@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/compare/-/compare-8.1.1.tgz#27399e4b5e7644f1162e9596ee4d66c8dc9c6393"
+  resolved "https://registry.yarnpkg.com/@best/compare/-/compare-8.1.1.tgz#27399e4b5e7644f1162e9596ee4d66c8dc9c6393"
   integrity sha512-ZBhYtD1Q7q38/5VOgNN9M9Y97omudpy7mqjiVnDV0TwJTYZDNHK7LMGOOHwMDjZAq+T4GPItebnKrKoEvtKqvQ==
   dependencies:
     "@best/analyzer" "8.1.1"
@@ -1865,7 +1865,7 @@
 
 "@best/config@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/config/-/config-8.1.1.tgz#25e1e81fba88d456eae73920061a01ba61b36e7e"
+  resolved "https://registry.yarnpkg.com/@best/config/-/config-8.1.1.tgz#25e1e81fba88d456eae73920061a01ba61b36e7e"
   integrity sha512-4Flj9nxLStms+e9sLdArTcADzOp45iHV4s3dpPFHPXOKslCYQheIeOmX7gFU+eKn3F0X5zk+7+JiYW01yxbH6g==
   dependencies:
     "@best/regex-util" "8.1.1"
@@ -1875,7 +1875,7 @@
 
 "@best/console-stream@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/console-stream/-/console-stream-8.1.1.tgz#d190c80f94fdc668adfa32843418a4c0ac7c2b8b"
+  resolved "https://registry.yarnpkg.com/@best/console-stream/-/console-stream-8.1.1.tgz#d190c80f94fdc668adfa32843418a4c0ac7c2b8b"
   integrity sha512-qAQtRMLY6yYfGcP8JLEI4KWoqPdoLHf2vx4uAXvVzC1Rx195C85bGiWh7XM4ZzGnnGigSOa5O+/L0TBs6IsVaA==
   dependencies:
     "@best/utils" "8.1.1"
@@ -1883,7 +1883,7 @@
 
 "@best/github-integration@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/github-integration/-/github-integration-8.1.1.tgz#59d14dc91c1064ba3089d9cb63f93e6859ab050d"
+  resolved "https://registry.yarnpkg.com/@best/github-integration/-/github-integration-8.1.1.tgz#59d14dc91c1064ba3089d9cb63f93e6859ab050d"
   integrity sha512-LU09ETeCFeQ5gUelqnHGSNCkI9V0KNOnNA7QZ2n9ZY94u8I8qU6yscj0iThDcRoakduRUD7K1BcTZPR0wBkVRQ==
   dependencies:
     "@best/api-db" "8.1.1"
@@ -1897,12 +1897,12 @@
 
 "@best/regex-util@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/regex-util/-/regex-util-8.1.1.tgz#e5478fb65944074ade5eba9fbae9343cc7c0fe2f"
+  resolved "https://registry.yarnpkg.com/@best/regex-util/-/regex-util-8.1.1.tgz#e5478fb65944074ade5eba9fbae9343cc7c0fe2f"
   integrity sha512-Z7OgFNXoB8VudV+gZV+DXZkzluj+Ah1IVcTcmwmx4Q41IALuH+t0v+EXXX5kCKWDOrUMigMORmJ1ML78zFjv/w==
 
 "@best/runner-abstract@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/runner-abstract/-/runner-abstract-8.1.1.tgz#146a0e300d35e099ed78076edfb64ffcdffc1cb3"
+  resolved "https://registry.yarnpkg.com/@best/runner-abstract/-/runner-abstract-8.1.1.tgz#146a0e300d35e099ed78076edfb64ffcdffc1cb3"
   integrity sha512-pQ/vS+/Omh3NehYKyvSoeLF/Dq/yJzhT00JtyvOBbrBHG2OizStEcoK88JUT84GrGZrnvLsis+kfNZC3SZkmSA==
   dependencies:
     "@best/utils" "8.1.1"
@@ -1910,7 +1910,7 @@
 
 "@best/runner-headless@^8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/runner-headless/-/runner-headless-8.1.1.tgz#ee30411c22d041852b4797add2ed49bfa9a5fd40"
+  resolved "https://registry.yarnpkg.com/@best/runner-headless/-/runner-headless-8.1.1.tgz#ee30411c22d041852b4797add2ed49bfa9a5fd40"
   integrity sha512-dyH3BmREq3RaJI3cOubpEVg4gh5K8zc3ziQplzMWoasi6idrXhJh39kJcrh+Q4CXNGKfn9GecXzbwAXZgfhRVA==
   dependencies:
     "@best/runner-abstract" "8.1.1"
@@ -1919,7 +1919,7 @@
 
 "@best/runner-remote@^8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/runner-remote/-/runner-remote-8.1.1.tgz#c46cb66dca07883b2d1e3d3c1bf19267f6c6c139"
+  resolved "https://registry.yarnpkg.com/@best/runner-remote/-/runner-remote-8.1.1.tgz#c46cb66dca07883b2d1e3d3c1bf19267f6c6c139"
   integrity sha512-J7ONiHa0641WQMdrzVwfBSGyFtRt/VnxCcXo9OK08bXF3L8rhxZxkSgPe+Uah9we2W/aySpIoq0ngnRn3ZX5Nw==
   dependencies:
     "@best/console-stream" "8.1.1"
@@ -1931,7 +1931,7 @@
 
 "@best/runner@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/runner/-/runner-8.1.1.tgz#3ebd419f2025f9d5fc3393a2b1f1465eb709960e"
+  resolved "https://registry.yarnpkg.com/@best/runner/-/runner-8.1.1.tgz#3ebd419f2025f9d5fc3393a2b1f1465eb709960e"
   integrity sha512-Lz5BGIagzWQPkBc4UVnEd1cbR9JhOnyl68cBezab0vtEr8+h9rNTK2sYQSB77yuuDwd8+mM9g2i9zj/amCX6zw==
   dependencies:
     "@best/console-stream" "8.1.1"
@@ -1941,19 +1941,19 @@
 
 "@best/runtime@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/runtime/-/runtime-8.1.1.tgz#b70f2e2731363f88b1be28693a486e69b276fa3b"
+  resolved "https://registry.yarnpkg.com/@best/runtime/-/runtime-8.1.1.tgz#b70f2e2731363f88b1be28693a486e69b276fa3b"
   integrity sha512-3pCNq4uUN4Nh4TkWwHmmFzR/KHT9bLwaCzDF+GBR13TS88IDFdXM38s97E1duPMuPJWFRd0NkQBBuQ2aWaWzHA==
   dependencies:
     chalk "~2.4.2"
 
 "@best/shared@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/shared/-/shared-8.1.1.tgz#295f10517e11f00bc7d144f31e0954f7d6e1decc"
+  resolved "https://registry.yarnpkg.com/@best/shared/-/shared-8.1.1.tgz#295f10517e11f00bc7d144f31e0954f7d6e1decc"
   integrity sha512-vFj3SZA0tv9yInmkMZrgWSY0NtebjKk2Aiu+F6yxkmoEsIPjYBdSy5Z5M8iXRr7J9SXpmQpsBlQtIOv2yauHxA==
 
 "@best/store-fs@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/store-fs/-/store-fs-8.1.1.tgz#c5a787760699cb54bc8192065af6bef4f8aa0017"
+  resolved "https://registry.yarnpkg.com/@best/store-fs/-/store-fs-8.1.1.tgz#c5a787760699cb54bc8192065af6bef4f8aa0017"
   integrity sha512-iXPeBED1EEvWdTWIlNQ/hs9z67RXz7wUVrAK1yy26dffjJBXcI/2+xfq3/kEEWlDQqV05YyNu2+wcq6BxLjaGg==
   dependencies:
     "@best/types" "8.1.1"
@@ -1962,7 +1962,7 @@
 
 "@best/store@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/store/-/store-8.1.1.tgz#3d587ab5e977c2fe3a61aece1fa21683f3fb56bd"
+  resolved "https://registry.yarnpkg.com/@best/store/-/store-8.1.1.tgz#3d587ab5e977c2fe3a61aece1fa21683f3fb56bd"
   integrity sha512-XzsUVpfJODSuh2Kfp9E/dBBhGWBhPs6myQUhMgWEngO7KhYEc59I+FgwAaoS4N9HYd4lVqihyP6PJxxmv+8uuQ==
   dependencies:
     json2md "~1.5.11"
@@ -1972,12 +1972,12 @@
 
 "@best/types@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/types/-/types-8.1.1.tgz#92bb7efb86ffe6ef444e92d5ff686f9a67c9e8b1"
+  resolved "https://registry.yarnpkg.com/@best/types/-/types-8.1.1.tgz#92bb7efb86ffe6ef444e92d5ff686f9a67c9e8b1"
   integrity sha512-dLmus4nf5ZrTpEZi2FwWJU97ghwZTuCMfAt0/8BiQucrGgoPCP9b1WfuC7S+2TKiM3m4JgEwTKjt2KuvgKiq1g==
 
 "@best/utils@8.1.1":
   version "8.1.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@best/utils/-/utils-8.1.1.tgz#19459f3a7bd672cba3120f5a31845344664ed504"
+  resolved "https://registry.yarnpkg.com/@best/utils/-/utils-8.1.1.tgz#19459f3a7bd672cba3120f5a31845344664ed504"
   integrity sha512-xTVJRUrYD2mTFCipnebscjdwyZWmuF1jvQZYzI1qJ66DjjGPGePFabe4YJiBQZQN9VfhpgElh4lCfempBLltwg==
   dependencies:
     chalk "~2.4.2"
@@ -2609,14 +2609,14 @@
 
 "@nrwl/cli@15.2.4":
   version "15.2.4"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@nrwl/cli/-/cli-15.2.4.tgz#7cf18d474c428d6b4aaf7b511c298369c47de39a"
+  resolved "https://registry.yarnpkg.com/@nrwl/cli/-/cli-15.2.4.tgz#7cf18d474c428d6b4aaf7b511c298369c47de39a"
   integrity sha512-Urhkzj/hzhTlJqOHFZyibYGjvzHvSQhkjN3keHiYCNEOaAGp9DPF+oC5cYrPcqWbu3ZkldDWTk7aVBbeqwDWZQ==
   dependencies:
     nx "15.2.4"
 
 "@nrwl/tao@15.2.4":
   version "15.2.4"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@nrwl/tao/-/tao-15.2.4.tgz#c335e0774e5b7ee26bb3b257a436fe154693d619"
+  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-15.2.4.tgz#c335e0774e5b7ee26bb3b257a436fe154693d619"
   integrity sha512-ebGJCkg84yfptuNhGMnIrgHvnknJkeyxWLqRQ7AlMXTzxXOfMS+whjVImM9XjfVYVpBVFWc5QBU5gaKQtzLHmA==
   dependencies:
     nx "15.2.4"
@@ -2767,7 +2767,7 @@
 
 "@rollup/plugin-typescript@^10.0.1":
   version "10.0.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@rollup/plugin-typescript/-/plugin-typescript-10.0.1.tgz#270b515b116ea28320e6bb62451c4767d49072d6"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-typescript/-/plugin-typescript-10.0.1.tgz#270b515b116ea28320e6bb62451c4767d49072d6"
   integrity sha512-wBykxRLlX7EzL8BmUqMqk5zpx2onnmRMSw/l9M1sVfkJvdwfxogZQVNUM9gVMJbjRLDR5H6U0OMOrlDGmIV45A==
   dependencies:
     "@rollup/pluginutils" "^5.0.1"
@@ -3098,7 +3098,7 @@
 
 "@types/jest@^29.2.4":
   version "29.2.4"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@types/jest/-/jest-29.2.4.tgz#9c155c4b81c9570dbd183eb8604aa0ae80ba5a5b"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.2.4.tgz#9c155c4b81c9570dbd183eb8604aa0ae80ba5a5b"
   integrity sha512-PipFB04k2qTRPePduVLTRiPzQfvMeLwUN3Z21hsAKaB/W9IIzgB2pizCL466ftJlcyZqnHoC9ZHpxLGl3fS86A==
   dependencies:
     expect "^29.0.0"
@@ -3205,7 +3205,7 @@
 
 "@types/node@^18.11.10":
   version "18.11.10"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@types/node/-/node-18.11.10.tgz#4c64759f3c2343b7e6c4b9caf761c7a3a05cee34"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.10.tgz#4c64759f3c2343b7e6c4b9caf761c7a3a05cee34"
   integrity sha512-juG3RWMBOqcOuXC643OAdSA525V44cVgGV6dUDuiFtss+8Fk5x1hI93Rsld43VeJVIeqlP9I7Fn9/qaVqoEAuQ==
 
 "@types/normalize-package-data@^2.4.0":
@@ -3317,7 +3317,7 @@
 
 "@types/source-map@0.5.2":
   version "0.5.2"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@types/source-map/-/source-map-0.5.2.tgz#973459e744cc7445c85b97f770275b479b138e08"
+  resolved "https://registry.yarnpkg.com/@types/source-map/-/source-map-0.5.2.tgz#973459e744cc7445c85b97f770275b479b138e08"
   integrity sha512-++w4WmMbk3dS3UeHGzAG+xJOSz5Xqtjys/TBkqG3qp3SeWE7Wwezqe5eB7B51cxUyh4PW7bwVotpsLdBK0D8cw==
 
 "@types/stack-utils@^2.0.0":
@@ -3404,7 +3404,7 @@
 
 "@typescript-eslint/eslint-plugin@^5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.45.1.tgz#ee5b51405f6c9ee7e60e4006d68c69450d3b4536"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.45.1.tgz#ee5b51405f6c9ee7e60e4006d68c69450d3b4536"
   integrity sha512-cOizjPlKEh0bXdFrBLTrI/J6B/QMlhwE9auOov53tgB+qMukH6/h8YAK/qw+QJGct/PTbdh2lytGyipxCcEtAw==
   dependencies:
     "@typescript-eslint/scope-manager" "5.45.1"
@@ -3419,7 +3419,7 @@
 
 "@typescript-eslint/parser@^5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/parser/-/parser-5.45.1.tgz#6440ec283fa1373a12652d4e2fef4cb6e7b7e8c6"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.45.1.tgz#6440ec283fa1373a12652d4e2fef4cb6e7b7e8c6"
   integrity sha512-JQ3Ep8bEOXu16q0ztsatp/iQfDCtvap7sp/DKo7DWltUquj5AfCOpX2zSzJ8YkAVnrQNqQ5R62PBz2UtrfmCkA==
   dependencies:
     "@typescript-eslint/scope-manager" "5.45.1"
@@ -3437,7 +3437,7 @@
 
 "@typescript-eslint/scope-manager@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/scope-manager/-/scope-manager-5.45.1.tgz#5b87d025eec7035d879b99c260f03be5c247883c"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.45.1.tgz#5b87d025eec7035d879b99c260f03be5c247883c"
   integrity sha512-D6fCileR6Iai7E35Eb4Kp+k0iW7F1wxXYrOhX/3dywsOJpJAQ20Fwgcf+P/TDtvQ7zcsWsrJaglaQWDhOMsspQ==
   dependencies:
     "@typescript-eslint/types" "5.45.1"
@@ -3445,7 +3445,7 @@
 
 "@typescript-eslint/type-utils@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/type-utils/-/type-utils-5.45.1.tgz#cb7d300c3c95802cea9f87c7f8be363cf8f8538c"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-5.45.1.tgz#cb7d300c3c95802cea9f87c7f8be363cf8f8538c"
   integrity sha512-aosxFa+0CoYgYEl3aptLe1svP910DJq68nwEJzyQcrtRhC4BN0tJAvZGAe+D0tzjJmFXe+h4leSsiZhwBa2vrA==
   dependencies:
     "@typescript-eslint/typescript-estree" "5.45.1"
@@ -3460,7 +3460,7 @@
 
 "@typescript-eslint/types@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/types/-/types-5.45.1.tgz#8e1883041cee23f1bb7e1343b0139f97f6a17c14"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.45.1.tgz#8e1883041cee23f1bb7e1343b0139f97f6a17c14"
   integrity sha512-HEW3U0E5dLjUT+nk7b4lLbOherS1U4ap+b9pfu2oGsW3oPu7genRaY9dDv3nMczC1rbnRY2W/D7SN05wYoGImg==
 
 "@typescript-eslint/typescript-estree@5.35.1":
@@ -3478,7 +3478,7 @@
 
 "@typescript-eslint/typescript-estree@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/typescript-estree/-/typescript-estree-5.45.1.tgz#b3dc37f0c4f0fe73e09917fc735e6f96eabf9ba4"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.45.1.tgz#b3dc37f0c4f0fe73e09917fc735e6f96eabf9ba4"
   integrity sha512-76NZpmpCzWVrrb0XmYEpbwOz/FENBi+5W7ipVXAsG3OoFrQKJMiaqsBMbvGRyLtPotGqUfcY7Ur8j0dksDJDng==
   dependencies:
     "@typescript-eslint/types" "5.45.1"
@@ -3491,7 +3491,7 @@
 
 "@typescript-eslint/utils@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/utils/-/utils-5.45.1.tgz#39610c98bde82c4792f2a858b29b7d0053448be2"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.45.1.tgz#39610c98bde82c4792f2a858b29b7d0053448be2"
   integrity sha512-rlbC5VZz68+yjAzQBc4I7KDYVzWG2X/OrqoZrMahYq3u8FFtmQYc+9rovo/7wlJH5kugJ+jQXV5pJMnofGmPRw==
   dependencies:
     "@types/json-schema" "^7.0.9"
@@ -3525,7 +3525,7 @@
 
 "@typescript-eslint/visitor-keys@5.45.1":
   version "5.45.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@typescript-eslint/visitor-keys/-/visitor-keys-5.45.1.tgz#204428430ad6a830d24c5ac87c71366a1cfe1948"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.45.1.tgz#204428430ad6a830d24c5ac87c71366a1cfe1948"
   integrity sha512-cy9ln+6rmthYWjH9fmx+5FU/JDpjQb586++x2FZlveq7GdGuLLW9a2Jcst2TGekH82bXpfmRNSwP9tyEs6RjvQ==
   dependencies:
     "@typescript-eslint/types" "5.45.1"
@@ -3768,12 +3768,12 @@
 
 "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
+  resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
 "@yarnpkg/parsers@^3.0.0-rc.18":
   version "3.0.0-rc.32"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@yarnpkg/parsers/-/parsers-3.0.0-rc.32.tgz#0aef0bd1b9e9954173c01a7cbd35f98765e39e7d"
+  resolved "https://registry.yarnpkg.com/@yarnpkg/parsers/-/parsers-3.0.0-rc.32.tgz#0aef0bd1b9e9954173c01a7cbd35f98765e39e7d"
   integrity sha512-Sz2g88b3iAu2jpMnhtps2bRX2GAAOvanOxGcVi+o7ybGjLetxK23o2cHskXKypvXxtZTsJegel5pUWSPpYphww==
   dependencies:
     js-yaml "^3.10.0"
@@ -3781,7 +3781,7 @@
 
 "@zkochan/js-yaml@0.0.6":
   version "0.0.6"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@zkochan/js-yaml/-/js-yaml-0.0.6.tgz#975f0b306e705e28b8068a07737fa46d3fc04826"
+  resolved "https://registry.yarnpkg.com/@zkochan/js-yaml/-/js-yaml-0.0.6.tgz#975f0b306e705e28b8068a07737fa46d3fc04826"
   integrity sha512-nzvgl3VfhcELQ8LyVrYOru+UtAy1nrygk2+AGbTm8a5YcO6o8lSjAT+pfg3vJWxIoZKOUhrK6UU7xW/+00kQrg==
   dependencies:
     argparse "^2.0.1"
@@ -4218,7 +4218,7 @@ atob@^2.1.2:
 
 axios@^1.0.0:
   version "1.2.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/axios/-/axios-1.2.0.tgz#1cb65bd75162c70e9f8d118a905126c4a201d383"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.2.0.tgz#1cb65bd75162c70e9f8d118a905126c4a201d383"
   integrity sha512-zT7wZyNYu3N5Bu0wuZ6QccIf93Qk1eV8LOewxgjOZFd2DenOs98cJ7+Y6703d0wkaXGY6/nZd4EweJaHz9uzQw==
   dependencies:
     follow-redirects "^1.15.0"
@@ -5127,7 +5127,7 @@ cliui@^7.0.2:
 
 cliui@^8.0.1:
   version "8.0.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/cliui/-/cliui-8.0.1.tgz#0c04b075db02cbfe60dc8e6cf2f5486b1a3608aa"
+  resolved "https://registry.yarnpkg.com/cliui/-/cliui-8.0.1.tgz#0c04b075db02cbfe60dc8e6cf2f5486b1a3608aa"
   integrity sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==
   dependencies:
     string-width "^4.2.0"
@@ -5228,7 +5228,7 @@ color@^3.1.3:
 
 colorette@^2.0.19:
   version "2.0.19"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
   integrity sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==
 
 colorspace@1.1.x:
@@ -5278,7 +5278,7 @@ commander@^9.0.0:
 
 commander@^9.4.1:
   version "9.4.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/commander/-/commander-9.4.1.tgz#d1dd8f2ce6faf93147295c0df13c7c21141cfbdd"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-9.4.1.tgz#d1dd8f2ce6faf93147295c0df13c7c21141cfbdd"
   integrity sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==
 
 compare-func@^2.0.0:
@@ -6047,7 +6047,7 @@ duplexer3@^0.1.4:
 
 duplexer@^0.1.1:
   version "0.1.2"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
+  resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
   integrity sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==
 
 eastasianwidth@^0.2.0:
@@ -6388,7 +6388,7 @@ eslint-plugin-import@^2.26.0:
 
 eslint-plugin-jest@^27.1.6:
   version "27.1.6"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-jest/-/eslint-plugin-jest-27.1.6.tgz#361d943f07d1978838e6b852c44a579f3879e332"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-27.1.6.tgz#361d943f07d1978838e6b852c44a579f3879e332"
   integrity sha512-XA7RFLSrlQF9IGtAmhddkUkBuICCTuryfOTfCSWcZHiHb69OilIH05oozH2XA6CEOtztnOd0vgXyvxZodkxGjg==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
@@ -6428,7 +6428,7 @@ eslint-visitor-keys@^3.3.0:
 
 eslint@^8.29.0:
   version "8.29.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/eslint/-/eslint-8.29.0.tgz#d74a88a20fb44d59c51851625bc4ee8d0ec43f87"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.29.0.tgz#d74a88a20fb44d59c51851625bc4ee8d0ec43f87"
   integrity sha512-isQ4EEiyUjZFbEKvEGJKKGBwXtvXX+zJbkVKCgTuB9t/+jUBcy8avhkEwWJecI15BkRkOYmvIM5ynbhRjEkoeg==
   dependencies:
     "@eslint/eslintrc" "^1.3.3"
@@ -7131,7 +7131,7 @@ follow-redirects@^1.0.0:
 
 follow-redirects@^1.15.0:
   version "1.15.2"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 for-in@^1.0.1, for-in@^1.0.2:
@@ -7205,7 +7205,7 @@ fs-extra@^10.0.0, fs-extra@^10.1.0:
 
 fs-extra@^11.1.0:
   version "11.1.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/fs-extra/-/fs-extra-11.1.0.tgz#5784b102104433bb0e090f48bfc4a30742c357ed"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.1.0.tgz#5784b102104433bb0e090f48bfc4a30742c357ed"
   integrity sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==
   dependencies:
     graceful-fs "^4.2.0"
@@ -8567,7 +8567,7 @@ jake@^10.8.5:
 
 jasmine-core@3.10.1, jasmine-core@^3.6.0:
   version "3.10.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/jasmine-core/-/jasmine-core-3.10.1.tgz#7aa6fa2b834a522315c651a128d940eca553989a"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.10.1.tgz#7aa6fa2b834a522315c651a128d940eca553989a"
   integrity sha512-ooZWSDVAdh79Rrj4/nnfklL3NQVra0BcuhcuWoAwwi+znLDoUeH87AFfeX8s+YeYi6xlv5nveRyaA1v7CintfA==
 
 jest-changed-files@^29.2.0:
@@ -9190,7 +9190,7 @@ json5@^2.1.2, json5@^2.2.1:
 
 jsonc-parser@3.2.0:
   version "3.2.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
   integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
 
 jsonfile@^4.0.0:
@@ -9527,7 +9527,7 @@ lighthouse-logger@^1.0.0:
 
 lilconfig@2.0.6:
   version "2.0.6"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/lilconfig/-/lilconfig-2.0.6.tgz#32a384558bd58af3d4c6e077dd1ad1d397bc69d4"
+  resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.6.tgz#32a384558bd58af3d4c6e077dd1ad1d397bc69d4"
   integrity sha512-9JROoBW7pobfsx+Sq2JsASvCo6Pfo6WWoUW79HuB1BCoBXD4PLWJPqDF6fNj67pqBYTbAHkE57M1kS/+L1neOg==
 
 line-column@~1.0.2:
@@ -9545,7 +9545,7 @@ lines-and-columns@^1.1.6:
 
 lint-staged@^13.1.0:
   version "13.1.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/lint-staged/-/lint-staged-13.1.0.tgz#d4c61aec939e789e489fa51987ec5207b50fd37e"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-13.1.0.tgz#d4c61aec939e789e489fa51987ec5207b50fd37e"
   integrity sha512-pn/sR8IrcF/T0vpWLilih8jmVouMlxqXxKuAojmbiGX5n/gDnz+abdPptlj0vYnbfE0SQNl3CY/HwtM0+yfOVQ==
   dependencies:
     cli-truncate "^3.1.0"
@@ -9564,7 +9564,7 @@ lint-staged@^13.1.0:
 
 listr2@^5.0.5:
   version "5.0.6"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/listr2/-/listr2-5.0.6.tgz#3c61153383869ffaad08a8908d63edfde481dff8"
+  resolved "https://registry.yarnpkg.com/listr2/-/listr2-5.0.6.tgz#3c61153383869ffaad08a8908d63edfde481dff8"
   integrity sha512-u60KxKBy1BR2uLJNTWNptzWQ1ob/gjMzIJPZffAENzpZqbMZ/5PrXXOomDcevIS/+IB7s1mmCEtSlT2qHWMqag==
   dependencies:
     cli-truncate "^2.1.0"
@@ -9970,7 +9970,7 @@ map-visit@^1.0.0:
 
 markdown-table@^3.0.3:
   version "3.0.3"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
+  resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
   integrity sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==
 
 marky@^1.2.2:
@@ -10551,7 +10551,7 @@ nwsapi@^2.2.0:
 
 nx@15.2.4:
   version "15.2.4"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/nx/-/nx-15.2.4.tgz#de55a1342deb3ff2f7b123fe2bbef46c8495f792"
+  resolved "https://registry.yarnpkg.com/nx/-/nx-15.2.4.tgz#de55a1342deb3ff2f7b123fe2bbef46c8495f792"
   integrity sha512-8rTLo5WGmM6hEo5R/u03Jllkyj4vIUbBk2MRAppCvVRXWLS4xJUEOityXJ5BAvaKoLYm6sWUP1gqU7xlldnT5A==
   dependencies:
     "@nrwl/cli" "15.2.4"
@@ -11961,7 +11961,7 @@ rollup-plugin-livereload@^2.0.5:
 
 rollup-plugin-serve@^2.0.2:
   version "2.0.2"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-serve/-/rollup-plugin-serve-2.0.2.tgz#f49958b0725c9bd2fef976d23025a361e20bdee2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-2.0.2.tgz#f49958b0725c9bd2fef976d23025a361e20bdee2"
   integrity sha512-ALqyTbPhlf7FZ5RzlbDvMYvbKuCHWginJkTo6dMsbgji/a78IbsXox+pC83HENdkTRz8OXrTj+aShp3+3ratpg==
   dependencies:
     mime ">=2.4.6"
@@ -11977,7 +11977,7 @@ rollup-pluginutils@~2.0.1:
 
 rollup@^3.6.0:
   version "3.6.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-3.6.0.tgz#2bff14b8680747fbb0228d102607d6a6e21859d7"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.6.0.tgz#2bff14b8680747fbb0228d102607d6a6e21859d7"
   integrity sha512-qCgiBeSu2/AIOKWGFMiRkjPlGlcVwxAjwpGKQZOQYng+83Hip4PjrWHm7EQX1wnrvRqfTytEihRRfLHdX+hR4g==
   optionalDependencies:
     fsevents "~2.3.2"
@@ -12012,7 +12012,7 @@ rxjs@^7.5.5:
 
 rxjs@^7.5.7:
   version "7.6.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/rxjs/-/rxjs-7.6.0.tgz#361da5362b6ddaa691a2de0b4f2d32028f1eb5a2"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.6.0.tgz#361da5362b6ddaa691a2de0b4f2d32028f1eb5a2"
   integrity sha512-DDa7d8TFNUalGC9VqXvQ1euWNN7sc63TrUCuM9J998+ViviahMIjKSOU7rfcgFOF+FCD71BhDRv4hrFz+ImDLQ==
   dependencies:
     tslib "^2.1.0"
@@ -12831,7 +12831,7 @@ strip-outer@^1.0.0:
 
 strong-log-transformer@^2.1.0:
   version "2.1.0"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/strong-log-transformer/-/strong-log-transformer-2.1.0.tgz#0f5ed78d325e0421ac6f90f7f10e691d6ae3ae10"
+  resolved "https://registry.yarnpkg.com/strong-log-transformer/-/strong-log-transformer-2.1.0.tgz#0f5ed78d325e0421ac6f90f7f10e691d6ae3ae10"
   integrity sha512-B3Hgul+z0L9a236FAUC9iZsL+nVHgoCJnqCbN588DjYxvGXaXaaFbfmQ/JhvKjZwsOukuR72XbHv71Qkug0HxA==
   dependencies:
     duplexer "^0.1.1"
@@ -12994,7 +12994,7 @@ tar@6.1.12, tar@^6.0.2, tar@^6.1.11, tar@^6.1.2:
 
 terser@^5.16.1:
   version "5.16.1"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/terser/-/terser-5.16.1.tgz#5af3bc3d0f24241c7fb2024199d5c461a1075880"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.16.1.tgz#5af3bc3d0f24241c7fb2024199d5c461a1075880"
   integrity sha512-xvQfyfA1ayT0qdK47zskQgRZeWLoOQ8JQ6mIgRGVNwZKdQMU+5FkCBjmv4QjcrTzyZquRw2FVtlJSRUmMKQslw==
   dependencies:
     "@jridgewell/source-map" "^0.3.2"
@@ -13911,7 +13911,7 @@ yaml@^1.10.0:
 
 yaml@^2.1.3:
   version "2.1.3"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/yaml/-/yaml-2.1.3.tgz#9b3a4c8aff9821b696275c79a8bee8399d945207"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.1.3.tgz#9b3a4c8aff9821b696275c79a8bee8399d945207"
   integrity sha512-AacA8nRULjKMX2DvWvOAdBZMOfQlypSFkjcOcu9FalllIDJ1kvlREzcdIZmidQUqqeMv7jorHjq2HlLv/+c2lg==
 
 yargs-parser@20.2.4:
@@ -13967,7 +13967,7 @@ yargs@^17.0.0, yargs@^17.2.1, yargs@^17.3.1:
 
 yargs@^17.6.2:
   version "17.6.2"
-  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/yargs/-/yargs-17.6.2.tgz#2e23f2944e976339a1ee00f18c77fedee8332541"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.6.2.tgz#2e23f2944e976339a1ee00f18c77fedee8332541"
   integrity sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==
   dependencies:
     cliui "^8.0.1"
