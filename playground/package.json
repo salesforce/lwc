@@ -12,9 +12,9 @@
         "@lwc/rollup-plugin": "2.32.1",
         "@rollup/plugin-replace": "^5.0.1",
         "lwc": "2.32.1",
-        "rollup": "^3.4.0",
+        "rollup": "^3.6.0",
         "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-serve": "^2.0.1"
+        "rollup-plugin-serve": "^2.0.2"
     },
     "nx": {
         "targets": {
