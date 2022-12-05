@@ -28,22 +28,6 @@ export interface FeatureFlagMap {
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
-     * Synthetic shadow DOM flag to enable strict `HTMLElement.prototype.innerText` and
-     * `HTMLElement.prototype.outerText` shadow dom semantic.
-     */
-    ENABLE_INNER_OUTER_TEXT_PATCH: FeatureFlagValue;
-
-    /**
-     * Synthetic shadow DOM flag to enable `Element.prototype` global patching. The following APIs
-     * are affected by this flag:
-     *  - `Element.prototype.innerHTML`
-     *  - `Element.prototype.outerHTML`
-     *  - `Element.prototype.innerText`
-     *  - `Element.prototype.outerText`
-     */
-    ENABLE_ELEMENT_PATCH: FeatureFlagValue;
-
-    /**
      * LWC engine flag to force native shadow mode for mixed shadow mode testing.
      */
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
@@ -54,32 +38,6 @@ export interface FeatureFlagMap {
      * on global DOM patching.
      */
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
-
-    /**
-     * Synthetic shadow DOM flag to enable `Node.prototype` global patching. The following APIs are
-     * affected by this flag:
-     *  - `Node.prototype.textContent`
-     *  - `Node.prototype.contains`
-     *  - `Node.prototype.cloneNode`
-     */
-    ENABLE_NODE_PATCH: FeatureFlagValue;
-
-    /**
-     * Synthetic shadow DOM flag to enable global patching to APIs returning a `NodeList`. The
-     * following APIs are affected by this flag:
-     *  - `Element.prototype.querySelector`
-     *  - `Element.prototype.querySelectorAll`
-     */
-    ENABLE_NODE_LIST_PATCH: FeatureFlagValue;
-
-    /**
-     * Synthetic shadow DOM flag to enable global patching to APIs returning an `HTMLCollection`.
-     * The following APIs are affected by this flag:
-     *  - `Element.prototype.getElementsByClassName`
-     *  - `Element.prototype.getElementsByTagName`
-     *  - `Element.prototype.getElementsByTagNameNS`
-     */
-    ENABLE_HTML_COLLECTIONS_PATCH: FeatureFlagValue;
 
     /**
      * Flag to invoke the wire adapter update method right after the component is connected, instead

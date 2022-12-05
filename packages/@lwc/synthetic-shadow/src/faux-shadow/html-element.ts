@@ -4,12 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import featureFlags from '@lwc/features';
 import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
 
-import { getInnerText } from '../3rdparty/inner-text';
-import { isNodeShadowed } from '../shared/node-ownership';
-import { isGlobalPatchingSkipped } from '../shared/utils';
 import {
     hasAttribute,
     innerTextGetter,
@@ -199,23 +195,9 @@ defineProperties(HTMLElement.prototype, {
 if (innerTextGetter !== null && innerTextSetter !== null) {
     defineProperty(HTMLElement.prototype, 'innerText', {
         get(this: HTMLElement): string {
-            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
-                return innerTextGetter!.call(this);
-            }
-
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return getInnerText(this);
-                }
-
-                return innerTextGetter!.call(this);
-            }
-
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return innerTextGetter!.call(this);
-            }
-            return getInnerText(this);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            return innerTextGetter!.call(this);
         },
         set(this: HTMLElement, v: string) {
             innerTextSetter!.call(this, v);
@@ -232,23 +214,9 @@ if (outerTextGetter !== null && outerTextSetter !== null) {
     // As a setter, it removes the current node and replaces it with the given text.
     defineProperty(HTMLElement.prototype, 'outerText', {
         get(this: HTMLElement): string {
-            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
-                return outerTextGetter!.call(this);
-            }
-
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return getInnerText(this);
-                }
-
-                return outerTextGetter!.call(this);
-            }
-
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return outerTextGetter!.call(this);
-            }
-            return getInnerText(this);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            return outerTextGetter!.call(this);
         },
         set(this: HTMLElement, v: string) {
             // Invoking the `outerText` setter on a host element should trigger its disconnection, but until we merge node reactions, it will not work.

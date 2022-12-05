@@ -1,0 +1,692 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 20,
+            "endColumn": 12,
+            "start": 0,
+            "end": 788,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 20,
+                "startColumn": 1,
+                "endLine": 20,
+                "endColumn": 12,
+                "start": 777,
+                "end": 788
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-child",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 19,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 776,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 19,
+                        "startColumn": 5,
+                        "endLine": 19,
+                        "endColumn": 15,
+                        "start": 766,
+                        "end": 776
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "ScopedSlotFragment",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 20,
+                            "start": 33,
+                            "end": 323
+                        },
+                        "directiveLocation": {
+                            "startLine": 3,
+                            "startColumn": 19,
+                            "endLine": 3,
+                            "endColumn": 45,
+                            "start": 43,
+                            "end": 69
+                        },
+                        "children": [
+                            {
+                                "type": "IfBlock",
+                                "condition": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 22,
+                                    "object": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 11,
+                                        "name": "variations"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 12,
+                                        "end": 22,
+                                        "name": "variation1"
+                                    },
+                                    "computed": false,
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 24,
+                                        "endLine": 4,
+                                        "endColumn": 54,
+                                        "start": 94,
+                                        "end": 124
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 75,
+                                    "start": 83,
+                                    "end": 145
+                                },
+                                "directiveLocation": {
+                                    "startLine": 4,
+                                    "startColumn": 24,
+                                    "endLine": 4,
+                                    "endColumn": 54,
+                                    "start": 94,
+                                    "end": 124
+                                },
+                                "children": [
+                                    {
+                                        "type": "Component",
+                                        "name": "x-counter",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 13,
+                                            "endLine": 4,
+                                            "endColumn": 75,
+                                            "start": 83,
+                                            "end": 145,
+                                            "startTag": {
+                                                "startLine": 4,
+                                                "startColumn": 13,
+                                                "endLine": 4,
+                                                "endColumn": 55,
+                                                "start": 83,
+                                                "end": 125
+                                            },
+                                            "endTag": {
+                                                "startLine": 4,
+                                                "startColumn": 63,
+                                                "endLine": 4,
+                                                "endColumn": 75,
+                                                "start": 133,
+                                                "end": 145
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": [
+                                            {
+                                                "type": "Text",
+                                                "raw": "Counter1",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "Counter1"
+                                                },
+                                                "location": {
+                                                    "startLine": 4,
+                                                    "startColumn": 55,
+                                                    "endLine": 4,
+                                                    "endColumn": 63,
+                                                    "start": 125,
+                                                    "end": 133
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "else": {
+                                    "type": "ElseifBlock",
+                                    "condition": {
+                                        "type": "MemberExpression",
+                                        "start": 1,
+                                        "end": 22,
+                                        "object": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 11,
+                                            "name": "variations"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 12,
+                                            "end": 22,
+                                            "name": "variation2"
+                                        },
+                                        "computed": false,
+                                        "optional": false,
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 24,
+                                            "endLine": 5,
+                                            "endColumn": 58,
+                                            "start": 169,
+                                            "end": 203
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 13,
+                                        "endLine": 5,
+                                        "endColumn": 87,
+                                        "start": 158,
+                                        "end": 232
+                                    },
+                                    "directiveLocation": {
+                                        "startLine": 5,
+                                        "startColumn": 24,
+                                        "endLine": 5,
+                                        "endColumn": 58,
+                                        "start": 169,
+                                        "end": 203
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "Component",
+                                            "name": "x-counter",
+                                            "namespace": "http://www.w3.org/1999/xhtml",
+                                            "location": {
+                                                "startLine": 5,
+                                                "startColumn": 13,
+                                                "endLine": 5,
+                                                "endColumn": 87,
+                                                "start": 158,
+                                                "end": 232,
+                                                "startTag": {
+                                                    "startLine": 5,
+                                                    "startColumn": 13,
+                                                    "endLine": 5,
+                                                    "endColumn": 59,
+                                                    "start": 158,
+                                                    "end": 204
+                                                },
+                                                "endTag": {
+                                                    "startLine": 5,
+                                                    "startColumn": 75,
+                                                    "endLine": 5,
+                                                    "endColumn": 87,
+                                                    "start": 220,
+                                                    "end": 232
+                                                }
+                                            },
+                                            "attributes": [],
+                                            "properties": [],
+                                            "directives": [],
+                                            "listeners": [],
+                                            "children": [
+                                                {
+                                                    "type": "Comment",
+                                                    "raw": "Counter 2",
+                                                    "value": "Counter 2",
+                                                    "location": {
+                                                        "startLine": 5,
+                                                        "startColumn": 59,
+                                                        "endLine": 5,
+                                                        "endColumn": 75,
+                                                        "start": 204,
+                                                        "end": 220
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "else": {
+                                        "type": "ElseifBlock",
+                                        "condition": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 22,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 11,
+                                                "name": "variations"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 12,
+                                                "end": 22,
+                                                "name": "variation2"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 6,
+                                                "startColumn": 24,
+                                                "endLine": 6,
+                                                "endColumn": 58,
+                                                "start": 256,
+                                                "end": 290
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 6,
+                                            "startColumn": 13,
+                                            "endLine": 6,
+                                            "endColumn": 71,
+                                            "start": 245,
+                                            "end": 303
+                                        },
+                                        "directiveLocation": {
+                                            "startLine": 6,
+                                            "startColumn": 24,
+                                            "endLine": 6,
+                                            "endColumn": 58,
+                                            "start": 256,
+                                            "end": 290
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "Component",
+                                                "name": "x-counter",
+                                                "namespace": "http://www.w3.org/1999/xhtml",
+                                                "location": {
+                                                    "startLine": 6,
+                                                    "startColumn": 13,
+                                                    "endLine": 6,
+                                                    "endColumn": 71,
+                                                    "start": 245,
+                                                    "end": 303,
+                                                    "startTag": {
+                                                        "startLine": 6,
+                                                        "startColumn": 13,
+                                                        "endLine": 6,
+                                                        "endColumn": 59,
+                                                        "start": 245,
+                                                        "end": 291
+                                                    },
+                                                    "endTag": {
+                                                        "startLine": 6,
+                                                        "startColumn": 59,
+                                                        "endLine": 6,
+                                                        "endColumn": 71,
+                                                        "start": 291,
+                                                        "end": 303
+                                                    }
+                                                },
+                                                "attributes": [],
+                                                "properties": [],
+                                                "directives": [],
+                                                "listeners": [],
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        "slotData": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "variations",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 19,
+                                    "endLine": 3,
+                                    "endColumn": 45,
+                                    "start": 43,
+                                    "end": 69
+                                }
+                            },
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 19,
+                                "endLine": 3,
+                                "endColumn": 45,
+                                "start": 43,
+                                "end": 69
+                            }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": ""
+                        }
+                    },
+                    {
+                        "type": "ScopedSlotFragment",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 18,
+                            "endColumn": 20,
+                            "start": 332,
+                            "end": 761
+                        },
+                        "directiveLocation": {
+                            "startLine": 8,
+                            "startColumn": 19,
+                            "endLine": 8,
+                            "endColumn": 45,
+                            "start": 342,
+                            "end": 368
+                        },
+                        "children": [
+                            {
+                                "type": "IfBlock",
+                                "condition": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 22,
+                                    "object": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 11,
+                                        "name": "variations"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 12,
+                                        "end": 22,
+                                        "name": "variation1"
+                                    },
+                                    "computed": false,
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 9,
+                                        "startColumn": 23,
+                                        "endLine": 9,
+                                        "endColumn": 53,
+                                        "start": 403,
+                                        "end": 433
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 13,
+                                    "endLine": 11,
+                                    "endColumn": 24,
+                                    "start": 393,
+                                    "end": 506
+                                },
+                                "directiveLocation": {
+                                    "startLine": 9,
+                                    "startColumn": 23,
+                                    "endLine": 9,
+                                    "endColumn": 53,
+                                    "start": 403,
+                                    "end": 433
+                                },
+                                "children": [
+                                    {
+                                        "type": "Component",
+                                        "name": "x-button1",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 17,
+                                            "endLine": 10,
+                                            "endColumn": 48,
+                                            "start": 451,
+                                            "end": 482,
+                                            "startTag": {
+                                                "startLine": 10,
+                                                "startColumn": 17,
+                                                "endLine": 10,
+                                                "endColumn": 28,
+                                                "start": 451,
+                                                "end": 462
+                                            },
+                                            "endTag": {
+                                                "startLine": 10,
+                                                "startColumn": 36,
+                                                "endLine": 10,
+                                                "endColumn": 48,
+                                                "start": 470,
+                                                "end": 482
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": [
+                                            {
+                                                "type": "Text",
+                                                "raw": "Button 1",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "Button 1"
+                                                },
+                                                "location": {
+                                                    "startLine": 10,
+                                                    "startColumn": 28,
+                                                    "endLine": 10,
+                                                    "endColumn": 36,
+                                                    "start": 462,
+                                                    "end": 470
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "else": {
+                                    "type": "ElseifBlock",
+                                    "condition": {
+                                        "type": "MemberExpression",
+                                        "start": 1,
+                                        "end": 22,
+                                        "object": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 11,
+                                            "name": "variations"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 12,
+                                            "end": 22,
+                                            "name": "variation2"
+                                        },
+                                        "computed": false,
+                                        "optional": false,
+                                        "location": {
+                                            "startLine": 12,
+                                            "startColumn": 23,
+                                            "endLine": 12,
+                                            "endColumn": 57,
+                                            "start": 529,
+                                            "end": 563
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 12,
+                                        "startColumn": 13,
+                                        "endLine": 14,
+                                        "endColumn": 24,
+                                        "start": 519,
+                                        "end": 645
+                                    },
+                                    "directiveLocation": {
+                                        "startLine": 12,
+                                        "startColumn": 23,
+                                        "endLine": 12,
+                                        "endColumn": 57,
+                                        "start": 529,
+                                        "end": 563
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "Component",
+                                            "name": "x-button2",
+                                            "namespace": "http://www.w3.org/1999/xhtml",
+                                            "location": {
+                                                "startLine": 13,
+                                                "startColumn": 17,
+                                                "endLine": 13,
+                                                "endColumn": 57,
+                                                "start": 581,
+                                                "end": 621,
+                                                "startTag": {
+                                                    "startLine": 13,
+                                                    "startColumn": 17,
+                                                    "endLine": 13,
+                                                    "endColumn": 28,
+                                                    "start": 581,
+                                                    "end": 592
+                                                },
+                                                "endTag": {
+                                                    "startLine": 13,
+                                                    "startColumn": 45,
+                                                    "endLine": 13,
+                                                    "endColumn": 57,
+                                                    "start": 609,
+                                                    "end": 621
+                                                }
+                                            },
+                                            "attributes": [],
+                                            "properties": [],
+                                            "directives": [],
+                                            "listeners": [],
+                                            "children": [
+                                                {
+                                                    "type": "Comment",
+                                                    "raw": " Button 2 ",
+                                                    "value": " Button 2 ",
+                                                    "location": {
+                                                        "startLine": 13,
+                                                        "startColumn": 28,
+                                                        "endLine": 13,
+                                                        "endColumn": 45,
+                                                        "start": 592,
+                                                        "end": 609
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "else": {
+                                        "type": "ElseBlock",
+                                        "location": {
+                                            "startLine": 15,
+                                            "startColumn": 13,
+                                            "endLine": 17,
+                                            "endColumn": 24,
+                                            "start": 658,
+                                            "end": 741
+                                        },
+                                        "directiveLocation": {
+                                            "startLine": 15,
+                                            "startColumn": 23,
+                                            "endLine": 15,
+                                            "endColumn": 31,
+                                            "start": 668,
+                                            "end": 676
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "Component",
+                                                "name": "x-button3",
+                                                "namespace": "http://www.w3.org/1999/xhtml",
+                                                "location": {
+                                                    "startLine": 16,
+                                                    "startColumn": 17,
+                                                    "endLine": 16,
+                                                    "endColumn": 40,
+                                                    "start": 694,
+                                                    "end": 717,
+                                                    "startTag": {
+                                                        "startLine": 16,
+                                                        "startColumn": 17,
+                                                        "endLine": 16,
+                                                        "endColumn": 28,
+                                                        "start": 694,
+                                                        "end": 705
+                                                    },
+                                                    "endTag": {
+                                                        "startLine": 16,
+                                                        "startColumn": 28,
+                                                        "endLine": 16,
+                                                        "endColumn": 40,
+                                                        "start": 705,
+                                                        "end": 717
+                                                    }
+                                                },
+                                                "attributes": [],
+                                                "properties": [],
+                                                "directives": [],
+                                                "listeners": [],
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        "slotData": {
+                            "type": "Directive",
+                            "name": "SlotData",
+                            "value": {
+                                "type": "Identifier",
+                                "name": "variations",
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 19,
+                                    "endLine": 8,
+                                    "endColumn": 45,
+                                    "start": 342,
+                                    "end": 368
+                                }
+                            },
+                            "location": {
+                                "startLine": 8,
+                                "startColumn": 19,
+                                "endLine": 8,
+                                "endColumn": 45,
+                                "start": 342,
+                                "end": 368
+                            }
+                        },
+                        "slotName": {
+                            "type": "Literal",
+                            "value": "foo"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
