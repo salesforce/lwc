@@ -13,9 +13,9 @@
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
     },
-    "//": [
-        "karma-jasmine must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11"
-    ],
+    "//": {
+        "karma-jasmine": "must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11"
+    },
     "devDependencies": {
         "@lwc/compiler": "2.32.1",
         "@lwc/engine-dom": "2.32.1",

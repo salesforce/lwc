@@ -19,7 +19,8 @@
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "//": {
-        "estree-walker": "Currently can't upgrade: estree-walker to v3.0.0 because it dropped CommonJS support: https://git.io/JXguS, parse5 dropped cjs support in v7.0.0 https://github.com/inikulin/parse5/releases/tag/v7.0.0",
+        "estree-walker": "Currently can't upgrade: estree-walker to v3.0.0 because it dropped CommonJS support: https://git.io/JXguS",
+        "parse5, @types/parse5": "Currently can't upgrade parse5: dropped cjs support in v7.0.0 https://github.com/inikulin/parse5/releases/tag/v7.0.0",
         "@types/source-map": "Currently required by @best/cli which uses an old version of source-map before it added built-in TypeScript support"
     },
     "devDependencies": {
