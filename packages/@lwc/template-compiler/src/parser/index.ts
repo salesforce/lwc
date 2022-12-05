@@ -1366,11 +1366,6 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             }
         }
 
-        // Prevent usage of the slot attribute with expression.
-        if (name === 'slot' && ast.isExpression(attr.value)) {
-            ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
-        }
-
         // the if branch handles
         // 1. All attributes for standard elements except 1 case are handled as attributes
         // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
