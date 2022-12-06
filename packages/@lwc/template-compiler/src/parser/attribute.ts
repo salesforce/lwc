@@ -38,14 +38,12 @@ import {
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
-function isQuotedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return value && value.startsWith('"') && value.endsWith('"');
+function isQuotedAttribute(attrVal: string) {
+    return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
 }
 
-function isEscapedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return !value || !(value.includes('{') && value.includes('}'));
+function isEscapedAttribute(attrVal: string) {
+    return !attrVal || !(attrVal.includes('{') && attrVal.includes('}'));
 }
 
 export function isIdReferencingAttribute(attrName: string): boolean {
@@ -107,8 +105,9 @@ export function normalizeAttributeValue(
         }
     }
 
-    const isQuoted = isQuotedAttribute(raw);
-    const isEscaped = isEscapedAttribute(raw);
+    const rawAttrVal = raw.slice(raw.indexOf('=') + 1);
+    const isQuoted = isQuotedAttribute(rawAttrVal);
+    const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
         if (isQuoted) {
             // <input value="{myValue}" />

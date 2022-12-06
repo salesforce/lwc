@@ -1,0 +1,135 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 176,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 165,
+                "end": 176
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 79,
+                    "start": 15,
+                    "end": 89,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 71,
+                        "start": 15,
+                        "end": 81
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 71,
+                        "endLine": 2,
+                        "endColumn": 79,
+                        "start": 81,
+                        "end": 89
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "props",
+                        "attributeName": "props",
+                        "value": {
+                            "type": "Literal",
+                            "value": "{url: https://example.com/over/there?name=ferret}"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 70,
+                            "start": 22,
+                            "end": 80
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 75,
+                    "start": 94,
+                    "end": 164,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 69,
+                        "start": 94,
+                        "end": 158
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 69,
+                        "endLine": 3,
+                        "endColumn": 75,
+                        "start": 158,
+                        "end": 164
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "props",
+                        "value": {
+                            "type": "Literal",
+                            "value": "{url: https://example.com/over/there?name=ferret}"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 10,
+                            "endLine": 3,
+                            "endColumn": 68,
+                            "start": 99,
+                            "end": 157
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
