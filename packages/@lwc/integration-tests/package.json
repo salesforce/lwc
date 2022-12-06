@@ -19,6 +19,9 @@
         "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
         "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
     },
+    "//": {
+        "webdriverio, @wdio/cli": "Currently can't upgrade @wdio namespaced dependencies to v8.0.0 because it dropped CommonJS support https://github.com/webdriverio/webdriverio/releases/tag/v8.0.0"
+    },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.32.1",
         "@wdio/cli": "^7.26.0",

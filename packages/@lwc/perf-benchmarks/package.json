@@ -22,12 +22,12 @@
         "@lwc/synthetic-shadow": "2.32.1"
     },
     "devDependencies": {
-        "@best/cli": "^8.0.1",
-        "@best/runner-headless": "^8.0.1",
-        "@best/runner-remote": "^8.0.1",
+        "@best/cli": "^8.1.1",
+        "@best/runner-headless": "^8.1.1",
+        "@best/runner-remote": "^8.1.1",
         "@lwc/rollup-plugin-node-resolve-v13": "npm:@rollup/plugin-node-resolve@13.0.5",
         "glob-hash": "^1.0.5",
-        "markdown-table": "^3.0.2",
+        "markdown-table": "^3.0.3",
         "tachometer": "0.5.10"
     },
     "nx": {
