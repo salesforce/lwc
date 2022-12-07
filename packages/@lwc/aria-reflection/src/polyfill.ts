@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap } from '@lwc/shared';
+import { AriaPropNameToAttrNameMap, isNull } from '@lwc/shared';
 
 function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescriptor {
     return {
@@ -14,7 +14,7 @@ function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescrip
         },
         set(this: HTMLElement, newValue: any) {
             // reflect into the corresponding attribute
-            if (newValue === null) {
+            if (isNull(newValue)) {
                 this.removeAttribute(attrName);
             } else {
                 this.setAttribute(attrName, newValue);
