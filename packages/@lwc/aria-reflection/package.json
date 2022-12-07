@@ -1,6 +1,6 @@
 {
     "name": "@lwc/aria-reflection",
-    "version": "2.32.1",
+    "version": "2.33.0",
     "description": "ARIA element reflection polyfill for strings",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -34,7 +34,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@lwc/shared": "2.32.1"
+        "@lwc/shared": "2.33.0"
     },
     "nx": {
         "targets": {
