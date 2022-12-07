@@ -1145,16 +1145,11 @@ function parseScopedSlotFragment(
         ctx.throwOnNode(ParserDiagnostics.SLOT_DATA_VALUE_SHOULD_BE_STRING, slotDataAttr);
     }
 
-    // Extract name of slot if incase its a named slot
+    // Extract name (literal or bound) of slot if in case it's a named slot
     const slotAttr = parsedAttr.pick('slot');
-    let slotName: Literal | undefined;
-    // Prevent usage of the slot attribute with expression.
+    let slotName: Literal | Expression | undefined;
     if (slotAttr) {
-        if (ast.isExpression(slotAttr.value)) {
-            ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, slotAttr);
-        } else {
-            slotName = slotAttr.value;
-        }
+        slotName = slotAttr.value;
     }
 
     const identifier = parseIdentifier(ctx, slotDataAttrValue.value, slotDataAttr.location);

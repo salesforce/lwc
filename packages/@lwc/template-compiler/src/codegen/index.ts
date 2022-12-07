@@ -203,7 +203,13 @@ function transform(codeGen: CodeGen): t.Expression {
             [dataIdentifier, key],
             t.blockStatement([t.returnStatement(fragment)])
         );
-        return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));
+        let slotNameTransformed: t.Expression | t.SimpleLiteral;
+        if (t.isLiteral(slotName)) {
+            slotNameTransformed = t.literal(slotName.value);
+        } else {
+            slotNameTransformed = codeGen.bindExpression(slotName);
+        }
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, slotNameTransformed);
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {

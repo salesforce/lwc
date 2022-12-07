@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Parent from 'x/parent';
+import LightParent from 'x/lightParent';
 
 describe('dynamic slotting', () => {
     it('should render all slots', async function () {
@@ -35,5 +36,11 @@ describe('dynamic slotting', () => {
         elm.increment();
         await Promise.resolve();
         expect(elm.shadowRoot.textContent).toEqual('Default slotNamed 2Overridden default content'); // notice the 2 in the text
+    });
+
+    it('should render in light DOM', () => {
+        const elm = createElement('x-light-parent', { is: LightParent });
+        document.body.appendChild(elm);
+        // expect(elm.shadowRoot.textContent).toEqual('Default slotNamed 1Overridden default content');
     });
 });
