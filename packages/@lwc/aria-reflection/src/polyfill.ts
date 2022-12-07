@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap, isNull } from '@lwc/shared';
+import { AriaPropNameToAttrNameMap, isNull, defineProperty } from '@lwc/shared';
 
 function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescriptor {
     return {
@@ -31,5 +31,5 @@ export function patch(propName: string, prototype: any) {
     // @ts-ignore type-mismatch
     const attrName = AriaPropNameToAttrNameMap[propName];
     const descriptor = createAriaPropertyPropertyDescriptor(attrName);
-    Object.defineProperty(prototype, propName, descriptor);
+    defineProperty(prototype, propName, descriptor);
 }
