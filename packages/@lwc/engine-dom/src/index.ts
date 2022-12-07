@@ -43,6 +43,7 @@ export {
     swapTemplate,
     getComponentConstructor,
     __unstable__ProfilerControl,
+    __unstable__ReportingControl,
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------

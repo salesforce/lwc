@@ -93,4 +93,18 @@ export function isAriaAttribute(attrName: string): boolean {
     return attrName in AriaAttrNameToPropNameMap;
 }
 
+// These attributes take either an ID or a list of IDs as values.
+// This includes aria-* attributes as well as the special non-ARIA "for" attribute
+export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
+    'aria-activedescendant',
+    'aria-controls',
+    'aria-describedby',
+    'aria-details',
+    'aria-errormessage',
+    'aria-flowto',
+    'aria-labelledby',
+    'aria-owns',
+    'for',
+]);
+
 export { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
