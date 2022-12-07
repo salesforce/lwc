@@ -15,6 +15,9 @@ import { create, forEach, StringReplace, StringToLowerCase } from './language';
  * The above list of 46 aria attributes is consistent with the following resources:
  * https://github.com/w3c/aria/pull/708/files#diff-eacf331f0ffc35d4b482f1d15a887d3bR11060
  * https://wicg.github.io/aom/spec/aria-reflection.html
+ *
+ * NOTE: If you update this list, please update test files that implicitly reference this list!
+ * Searching the codebase for `aria-flowto` and `ariaFlowTo` should be good enough to find all usages.
  */
 const AriaPropertyNames = [
     'ariaActiveDescendant',
