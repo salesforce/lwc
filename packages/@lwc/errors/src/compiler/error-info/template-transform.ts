@@ -526,7 +526,7 @@ export const ParserDiagnostics = {
     LWC_LIGHT_SLOT_INVALID_ATTRIBUTES: {
         code: 1134,
         message:
-            "Invalid attribute(s) '{0}' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have 'name' attribute",
+            "Invalid attribute(s) '{0}' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have [{1}] attributes",
         level: DiagnosticLevel.Error,
         url: '',
     },

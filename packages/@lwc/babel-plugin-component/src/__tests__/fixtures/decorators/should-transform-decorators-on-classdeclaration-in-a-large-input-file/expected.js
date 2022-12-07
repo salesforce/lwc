@@ -1,12 +1,9 @@
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
-
 class Foo extends LightningElement {
   prop;
   /*LWC compiler vX.X.X*/
-
 }
-
 _registerDecorators(Foo, {
   publicProps: {
     prop: {
@@ -14,7 +11,6 @@ _registerDecorators(Foo, {
     }
   }
 });
-
 export default _registerComponent(Foo, {
   tmpl: _tmpl
 });

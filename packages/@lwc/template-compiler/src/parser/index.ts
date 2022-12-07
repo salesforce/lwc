@@ -1211,7 +1211,8 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
 }
 
 const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
-const ALLOWED_SLOT_ATTRIBUTES = new Set<string>(['name', ElementDirectiveName.SlotBind]);
+const ALLOWED_SLOT_ATTRIBUTES = ['name', ElementDirectiveName.SlotBind, ElementDirectiveName.Key];
+const ALLOWED_SLOT_ATTRIBUTES_SET = new Set<string>(ALLOWED_SLOT_ATTRIBUTES);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -1236,7 +1237,7 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES.has(name))
+            .filter(({ name }) => !ALLOWED_SLOT_ATTRIBUTES_SET.has(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {
@@ -1252,6 +1253,7 @@ function parseSlot(
 
             ctx.throwAtLocation(ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES, location, [
                 invalidAttrs.join(','),
+                ALLOWED_SLOT_ATTRIBUTES.join(', '),
             ]);
         }
     }
@@ -1335,7 +1337,8 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
 
         // disallow attr name which combines underscore character with special character.
         // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
-        if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
+        // Note 1: underscore followed by a hyphen is valid to accomodate property names like thirsty_Camel -> thirsty_-camel
+        if (name.match(/_[^a-z0-9-]|[^a-z0-9]_/)) {
             ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
                 attr,
@@ -1505,17 +1508,17 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
             directive
         );
 
+        // If the current directive is a slotFragment or the descendent of a slotFragment, additional
+        // validations are required
         if (!isNull(slotFragment)) {
-            slotFragment.children.forEach((child) => {
-                // Error in compiler logic
-                /* istanbul ignore if */
-                if (ast.isElementDirective(child)) {
-                    throw new Error(
-                        `Incorrect order of processing directives. ScopedSlotFragment` +
-                            ` must be last directive processed, instead found ${child.type} as its child.`
-                    );
-                }
-                // User error
+            /*
+             * A slot fragment cannot contain comment or text node as children.
+             * Comment and Text nodes are always slotted to the default slot, in other words these
+             * nodes cannot be assigned to a named slot. This restriction is in place to ensure that
+             * in the future if slotting is done via slot assignment API, we won't have named scoped
+             * slot usecase that cannot be supported.
+             */
+            directive.children.forEach((child) => {
                 if ((ctx.preserveComments && ast.isComment(child)) || ast.isText(child)) {
                     ctx.throwOnNode(ParserDiagnostics.NON_ELEMENT_SCOPED_SLOT_CONTENT, child);
                 }

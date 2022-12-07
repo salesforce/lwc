@@ -17,44 +17,58 @@ let elementBeingUpgradedByLWC = false;
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
 const createUpgradableConstructor = (
-    connectedCallback: LifecycleCallback,
-    disconnectedCallback: LifecycleCallback
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => {
+    const hasConnectedCallback = !isUndefined(connectedCallback);
+    const hasDisconnectedCallback = !isUndefined(disconnectedCallback);
+
     // TODO [#2972]: this class should expose observedAttributes as necessary
-    return class UpgradableConstructor extends HTMLElement {
+    class UpgradableConstructor extends HTMLElement {
         constructor(upgradeCallback: LifecycleCallback) {
             super();
             // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
             // then elementBeingUpgraded will be false
             if (elementBeingUpgradedByLWC) {
                 upgradeCallback(this);
-            } else {
-                // keep track of elements that were not created by lwc.createElement,
-                // so we can ignore their lifecycle hooks
+            } else if (hasConnectedCallback || hasDisconnectedCallback) {
+                // If this element has connected or disconnected callbacks, then we need to keep track of
+                // instances that were created outside LWC (i.e. not created by `lwc.createElement()`).
+                // If the element has no connected or disconnected callbacks, then we don't need to track this.
                 elementsUpgradedOutsideLWC.add(this);
 
                 // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
                 // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
             }
         }
-        connectedCallback() {
+    }
+
+    // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
+    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
+    if (hasConnectedCallback) {
+        (UpgradableConstructor.prototype as any).connectedCallback = function () {
             if (!elementsUpgradedOutsideLWC.has(this)) {
                 connectedCallback(this);
             }
-        }
-        disconnectedCallback() {
+        };
+    }
+
+    if (hasDisconnectedCallback) {
+        (UpgradableConstructor.prototype as any).disconnectedCallback = function () {
             if (!elementsUpgradedOutsideLWC.has(this)) {
                 disconnectedCallback(this);
             }
-        }
-    };
+        };
+    }
+
+    return UpgradableConstructor;
 };
 
 export const createCustomElementVanilla = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    connectedCallback: LifecycleCallback,
-    disconnectedCallback: LifecycleCallback
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => {
     // use global custom elements registry
     let UpgradableConstructor = cachedConstructors.get(tagName);

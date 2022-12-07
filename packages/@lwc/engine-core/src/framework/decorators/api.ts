@@ -4,15 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
-import { assert, isFunction, isUndefined, toString } from '@lwc/shared';
+import { assert, isFunction, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
-import { createAccessorReactiveObserver } from '../accessor-reactive-observer';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -111,22 +109,7 @@ export function createPublicAccessorDescriptor(
                 );
             }
             if (set) {
-                if (features.ENABLE_REACTIVE_SETTER) {
-                    let ro = vm.oar[key as any];
-                    if (isUndefined(ro)) {
-                        ro = vm.oar[key as any] = createAccessorReactiveObserver(vm, set);
-                    }
-                    // every time we invoke this setter from outside (through this wrapper setter)
-                    // we should reset the value and then debounce just in case there is a pending
-                    // invocation the next tick that is not longer relevant since the value is changing
-                    // from outside.
-                    ro.reset(newValue);
-                    ro.observe(() => {
-                        set.call(this, newValue);
-                    });
-                } else {
-                    set.call(this, newValue);
-                }
+                set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(

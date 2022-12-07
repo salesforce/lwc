@@ -1,0 +1,14 @@
+<template>
+    <x-child>
+        <template lwc:slot-data="variations">
+            <template if:true={variations.variation1}>
+                Button 1
+                <x-button1></x-button1>
+            </template>
+            <template if:false={variations.variation1}>
+                <!-- Button 2 -->
+                <x-button1></x-button1>
+            </template>
+        </template>
+    </x-child>
+</template>

@@ -28,9 +28,14 @@ interface Definition {
     PivotCtor?: CustomElementConstructor;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
+    formAssociatedCallback?: (form: HTMLFormElement) => void;
+    formDisabledCallback?: (disabled: boolean) => void;
+    formResetCallback?: () => void;
+    formStateRestoreCallback?: (state: string | File | FormData | undefined, mode: string) => void;
     adoptedCallback?: () => void;
     attributeChangedCallback?: (name: string, oldValue: any, newValue: any) => void;
     observedAttributes: Set<string>;
+    formAssociated: boolean;
 }
 
 /**
@@ -70,18 +75,28 @@ export function createScopedRegistry(): CreateScopedConstructor {
         const {
             connectedCallback,
             disconnectedCallback,
+            formAssociatedCallback,
+            formDisabledCallback,
+            formResetCallback,
+            formStateRestoreCallback,
             adoptedCallback,
             attributeChangedCallback,
         } = constructor.prototype;
+        const formAssociated = Boolean(constructor.formAssociated);
         const observedAttributes = new Set(constructor.observedAttributes ?? []);
         return {
             UserCtor: constructor,
             PivotCtor: undefined,
             connectedCallback,
             disconnectedCallback,
+            formAssociatedCallback,
+            formDisabledCallback,
+            formResetCallback,
+            formStateRestoreCallback,
             adoptedCallback,
             attributeChangedCallback,
             observedAttributes,
+            formAssociated,
         };
     }
 
@@ -165,6 +180,30 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 }
             }
 
+            formAssociatedCallback(this: HTMLElement, form: HTMLFormElement) {
+                const definition = definitionForElement.get(this);
+                definition?.formAssociatedCallback?.call(this, form);
+            }
+
+            formDisabledCallback(this: HTMLElement, disabled: boolean) {
+                const definition = definitionForElement.get(this);
+                definition?.formDisabledCallback?.call(this, disabled);
+            }
+
+            formResetCallback(this: HTMLElement) {
+                const definition = definitionForElement.get(this);
+                definition?.formResetCallback?.call(this);
+            }
+
+            formStateRestoreCallback(
+                this: HTMLElement,
+                state: string | File | FormData | undefined,
+                mode: string
+            ) {
+                const definition = definitionForElement.get(this);
+                definition?.formStateRestoreCallback?.call(this, state, mode);
+            }
+
             adoptedCallback(this: HTMLElement) {
                 const definition = definitionForElement.get(this);
                 definition?.adoptedCallback?.call(this);
@@ -189,6 +228,9 @@ export function createScopedRegistry(): CreateScopedConstructor {
             }
 
             static observedAttributes = [...registeredDefinition.observedAttributes];
+
+            // TODO [#3000]: support case where registeredDefinition is not form-associated, but later definition is.
+            static formAssociated = registeredDefinition.formAssociated;
         }
         registeredPivotCtors.add(PivotCtor);
 

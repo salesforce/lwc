@@ -15,12 +15,17 @@ function waitForStyleToBeApplied() {
 
 describe('dom mutation without the lwc:dom="manual" directive', () => {
     function testErrorOnDomMutation(method, fn) {
-        it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive`, () => {
+        it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive only in synthetic mode`, () => {
             const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
             document.body.appendChild(root);
             const elm = root.shadowRoot.querySelector('div');
 
-            expect(() => fn(elm)).toLogErrorDev(
+            // eslint-disable-next-line jest/valid-expect
+            let expected = expect(() => fn(elm));
+            if (process.env.NATIVE_SHADOW) {
+                expected = expected.not; // no error
+            }
+            expected.toLogErrorDev(
                 new RegExp(
                     `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
                 )

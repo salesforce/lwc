@@ -10,60 +10,61 @@ import {
     assert,
     create,
     isArray,
-    isTrue,
     isFalse,
     isNull,
+    isTrue,
     isUndefined,
     forEach,
-    keys,
-    SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
+    keys,
+    SVG_NAMESPACE,
 } from '@lwc/shared';
 import features from '@lwc/features';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { RendererAPI } from './renderer';
+import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
+import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
-    createVM,
     appendVM,
-    removeVM,
-    rerenderVM,
+    connectRootElement,
+    createVM,
+    disconnectRootElement,
     getAssociatedVMIfPresent,
+    LwcDomMode,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
+    ShadowMode,
     VM,
     VMState,
-    ShadowMode,
-    RenderMode,
-    LwcDomMode,
-    connectRootElement,
-    disconnectRootElement,
 } from './vm';
 import {
-    VNode,
-    VNodes,
-    VCustomElement,
-    VElement,
-    VText,
-    VComment,
+    isSameVnode,
+    isVBaseElement,
+    isVFragment,
+    isPlaceholderVFragment,
+    isVScopedSlotFragment,
     Key,
     VBaseElement,
-    isVBaseElement,
-    isSameVnode,
+    VComment,
+    VCustomElement,
+    VElement,
+    VFragment,
+    VNode,
+    VNodes,
     VNodeType,
     VStatic,
-    VFragment,
-    isVFragment,
-    isVScopedSlotFragment,
-    isPlaceholderVFragment,
+    VText,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
+import { patchAttrUnlessProp } from './modules/attr-unless-prop';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -310,17 +311,17 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const connectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            connectRootElement(elm);
-        }
-    };
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
 
-    const disconnectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
+            connectRootElement(elm);
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
-        }
-    };
+        };
+    }
 
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java
@@ -545,7 +546,13 @@ function patchElementPropsAndAttrs(
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
     patchStyleAttribute(oldVnode, vnode, renderer);
-    patchAttributes(oldVnode, vnode, renderer);
+
+    if (vnode.data.external) {
+        patchAttrUnlessProp(oldVnode, vnode, renderer);
+    } else {
+        patchAttributes(oldVnode, vnode, renderer);
+    }
+
     patchProps(oldVnode, vnode, renderer);
 }
 
@@ -578,12 +585,14 @@ function applyDomManual(elm: Element, vnode: VBaseElement) {
 
 function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     if (process.env.NODE_ENV !== 'production') {
+        const isSynthetic = vnode.owner.shadowMode === ShadowMode.Synthetic;
         const isPortal =
             vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === LwcDomMode.Manual;
         const isLight = vnode.owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, {
             isPortal,
             isLight,
+            isSynthetic,
         });
     }
 }

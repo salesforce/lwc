@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-tests",
     "private": true,
-    "version": "2.29.0",
+    "version": "2.32.1",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
@@ -19,19 +19,22 @@
         "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
         "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
     },
+    "//": {
+        "webdriverio, @wdio/cli": "Currently can't upgrade @wdio namespaced dependencies to v8.0.0 because it dropped CommonJS support https://github.com/webdriverio/webdriverio/releases/tag/v8.0.0"
+    },
     "devDependencies": {
-        "@lwc/rollup-plugin": "2.29.0",
-        "@wdio/cli": "^7.24.0",
-        "@wdio/local-runner": "^7.24.0",
-        "@wdio/mocha-framework": "^7.24.0",
-        "@wdio/sauce-service": "^7.24.0",
-        "@wdio/selenium-standalone-service": "^7.24.0",
-        "@wdio/spec-reporter": "^7.24.0",
-        "@wdio/static-server-service": "^7.24.0",
+        "@lwc/rollup-plugin": "2.32.1",
+        "@wdio/cli": "^7.26.0",
+        "@wdio/local-runner": "^7.26.0",
+        "@wdio/mocha-framework": "^7.26.0",
+        "@wdio/sauce-service": "^7.26.0",
+        "@wdio/selenium-standalone-service": "^7.26.0",
+        "@wdio/spec-reporter": "^7.26.0",
+        "@wdio/static-server-service": "^7.26.0",
         "deepmerge": "^4.2.2",
-        "dotenv": "^16.0.2",
-        "lwc": "2.29.0",
-        "minimist": "^1.2.5",
-        "webdriverio": "^7.24.0"
+        "dotenv": "^16.0.3",
+        "lwc": "2.32.1",
+        "minimist": "^1.2.7",
+        "webdriverio": "^7.26.0"
     }
 }

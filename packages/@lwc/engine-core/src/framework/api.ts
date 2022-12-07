@@ -21,7 +21,6 @@ import {
     isUndefined,
     StringReplace,
     toString,
-    ArrayConcat,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -56,7 +55,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]coped [s]lot [f]actory
-function ssf(slotName: string, factory: (value: any) => VNodes): VScopedSlotFragment {
+function ssf(slotName: string, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
     return {
         type: VNodeType.ScopedSlotFragment,
         factory,
@@ -190,8 +189,11 @@ function s(
         !isUndefined(slotset.slotAssignments[slotName]) &&
         slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset.slotAssignments[slotName].reduce((accumulator, vnode) => {
-            if (vnode) {
+        const newChildren: VNode[] = [];
+        const slotAssignments = slotset.slotAssignments[slotName];
+        for (let i = 0; i < slotAssignments.length; i++) {
+            const vnode = slotAssignments[i];
+            if (!isNull(vnode)) {
                 const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
                 // The only sniff test for a scoped <slot> element is the presence of `slotData`
                 const isScopedSlotElement = !isUndefined(data.slotData);
@@ -206,30 +208,28 @@ function s(
                         );
                     }
                     // Ignore slot content from parent
-                    return accumulator;
+                    continue;
                 }
                 // If the passed slot content is factory, evaluate it and add the produced vnodes
                 if (assignedNodeIsScopedSlot) {
                     const vmBeingRenderedInception = getVMBeingRendered();
-                    let scopedSlotChildren: VNodes = [];
                     // Evaluate in the scope of the slot content's owner
                     // if a slotset is provided, there will always be an owner. The only case where owner is
                     // undefined is for root components, but root components cannot accept slotted content
                     setVMBeingRendered(slotset.owner!);
                     try {
-                        scopedSlotChildren = vnode.factory(data.slotData);
+                        ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
                     } finally {
                         setVMBeingRendered(vmBeingRenderedInception);
                     }
-                    return ArrayConcat.call(accumulator, scopedSlotChildren);
                 } else {
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    return ArrayConcat.call(accumulator, vnode);
+                    ArrayPush.call(newChildren, vnode);
                 }
             }
-            return accumulator;
-        }, [] as VNodes);
+        }
+        children = newChildren;
     }
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;

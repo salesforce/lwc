@@ -9,19 +9,14 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 const features: FeatureFlagMap = {
     DUMMY_TEST_FLAG: null,
-    ENABLE_ELEMENT_PATCH: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
-    ENABLE_HTML_COLLECTIONS_PATCH: null,
-    ENABLE_INNER_OUTER_TEXT_PATCH: null,
     ENABLE_MIXED_SHADOW_MODE: null,
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
-    ENABLE_NODE_LIST_PATCH: null,
-    ENABLE_NODE_PATCH: null,
-    ENABLE_REACTIVE_SETTER: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     ENABLE_LIGHT_GET_ROOT_NODE_PATCH: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: null,
+    ENABLE_FROZEN_TEMPLATE: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {

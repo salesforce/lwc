@@ -9,4 +9,8 @@
 declare interface CustomElementConstructor {
     new (...params: any[]): HTMLElement;
     observedAttributes?: string[];
+
+    // TS is also missing Form Associated Custom Elements
+    // https://web.dev/more-capable-form-controls/#defining-a-form-associated-custom-element
+    formAssociated?: boolean;
 }
