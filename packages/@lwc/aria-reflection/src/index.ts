@@ -8,7 +8,7 @@ import { AriaPropNameToAttrNameMap, keys } from '@lwc/shared';
 import { detect } from './detect';
 import { patch } from './polyfill';
 
-export function applyAriaReflection(prototype?: any) {
+export function applyAriaReflection(prototype: any = Element.prototype) {
     const ElementPrototypeAriaPropertyNames = keys(AriaPropNameToAttrNameMap);
 
     for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1) {

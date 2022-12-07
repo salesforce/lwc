@@ -25,7 +25,7 @@ function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescrip
     };
 }
 
-export function patch(propName: string, prototype: any = Element.prototype) {
+export function patch(propName: string, prototype: any) {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
