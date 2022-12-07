@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-tests",
     "private": true,
-    "version": "2.32.1",
+    "version": "2.33.0",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
@@ -23,7 +23,7 @@
         "webdriverio, @wdio/cli": "Currently can't upgrade @wdio namespaced dependencies to v8.0.0 because it dropped CommonJS support https://github.com/webdriverio/webdriverio/releases/tag/v8.0.0"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "2.32.1",
+        "@lwc/rollup-plugin": "2.33.0",
         "@wdio/cli": "^7.26.0",
         "@wdio/local-runner": "^7.26.0",
         "@wdio/mocha-framework": "^7.26.0",
@@ -33,7 +33,7 @@
         "@wdio/static-server-service": "^7.26.0",
         "deepmerge": "^4.2.2",
         "dotenv": "^16.0.3",
-        "lwc": "2.32.1",
+        "lwc": "2.33.0",
         "minimist": "^1.2.7",
         "webdriverio": "^7.26.0"
     }
