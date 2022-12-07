@@ -24,6 +24,7 @@
         "types/"
     ],
     "devDependencies": {
+        "@lwc/aria-reflection": "2.32.1",
         "@lwc/engine-core": "2.32.1",
         "@lwc/shared": "2.32.1"
     },

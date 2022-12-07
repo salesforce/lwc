@@ -14,6 +14,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { FeatureFlagMap } from '@lwc/features';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -183,15 +184,23 @@ describe('fixtures', () => {
         testFixtures();
     });
 
-    describe('native custom element lifecycle', () => {
+    function testWithFeatureFlagEnabled(flagName: keyof FeatureFlagMap) {
         beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', true);
+            setFeatureFlagForTest(flagName, true);
         });
 
         afterEach(() => {
-            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', false);
+            setFeatureFlagForTest(flagName, false);
         });
 
         testFixtures();
+    }
+
+    describe('native custom element lifecycle', () => {
+        testWithFeatureFlagEnabled('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE');
+    });
+
+    describe('disable aria reflection polyfill', () => {
+        testWithFeatureFlagEnabled('DISABLE_ARIA_REFLECTION_POLYFILL');
     });
 });

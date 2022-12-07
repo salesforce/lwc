@@ -22,6 +22,8 @@ import {
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
+import features from '@lwc/features';
+import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
@@ -177,6 +179,18 @@ export function HTMLBridgeElementFactory(
             configurable: true,
         };
     }
+    if (process.env.IS_BROWSER) {
+        // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
+        // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
+        // ARIA props outside the LightningElement
+        if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+            // If ARIA reflection is not applied globally to Element.prototype, apply it to HTMLBridgeElement.prototype.
+            // This allows `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*` attrs.
+            // This is especially important because the template compiler compiles aria-* attrs on components to aria* props
+            applyAriaReflection(HTMLBridgeElement.prototype);
+        }
+    }
+
     // creating a new attributeChangedCallback per bridge because they are bound to the corresponding
     // map of attributes to props. We do this after all other props and methods to avoid the possibility
     // of getting overrule by a class declaration in user-land, and we make it non-writable, non-configurable

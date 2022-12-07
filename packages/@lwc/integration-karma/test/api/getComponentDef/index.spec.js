@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { LightningElement, api, getComponentDef } from 'lwc';
+import { ariaProperties } from 'test-utils';
 
 import PublicProperties from 'x/publicProperties';
 import PublicAccessors from 'x/publicAccessors';
@@ -54,61 +55,17 @@ testInvalidComponentConstructor('Class not extending LightningElement', class Co
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey',
-    'ariaActiveDescendant',
-    'ariaAtomic',
-    'ariaAutoComplete',
-    'ariaBusy',
-    'ariaChecked',
-    'ariaColCount',
-    'ariaColIndex',
-    'ariaColSpan',
-    'ariaControls',
-    'ariaCurrent',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaDisabled',
-    'ariaErrorMessage',
-    'ariaExpanded',
-    'ariaFlowTo',
-    'ariaHasPopup',
-    'ariaHidden',
-    'ariaInvalid',
-    'ariaKeyShortcuts',
-    'ariaLabel',
-    'ariaLabelledBy',
-    'ariaLevel',
-    'ariaLive',
-    'ariaModal',
-    'ariaMultiLine',
-    'ariaMultiSelectable',
-    'ariaOrientation',
-    'ariaOwns',
-    'ariaPlaceholder',
-    'ariaPosInSet',
-    'ariaPressed',
-    'ariaReadOnly',
-    'ariaRelevant',
-    'ariaRequired',
-    'ariaRoleDescription',
-    'ariaRowCount',
-    'ariaRowIndex',
-    'ariaRowSpan',
-    'ariaSelected',
-    'ariaSetSize',
-    'ariaSort',
-    'ariaValueMax',
-    'ariaValueMin',
-    'ariaValueNow',
-    'ariaValueText',
     'dir',
     'draggable',
     'hidden',
     'id',
     'lang',
-    'role',
     'spellcheck',
     'tabIndex',
     'title',
+    // Copy over all aria props supported on Element.prototype. Note that this will vary from browser to browser.
+    // See: https://wicg.github.io/aom/spec/aria-reflection.html
+    ...Object.keys(Element.prototype).filter((prop) => ariaProperties.includes(prop)),
 ].sort();
 
 it('it should return the global HTML attributes in props', () => {

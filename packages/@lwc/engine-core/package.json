@@ -24,6 +24,7 @@
         "types/"
     ],
     "dependencies": {
+        "@lwc/aria-reflection": "2.32.1",
         "@lwc/features": "2.32.1",
         "@lwc/shared": "2.32.1"
     },
