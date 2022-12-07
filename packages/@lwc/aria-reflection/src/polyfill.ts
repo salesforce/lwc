@@ -6,10 +6,7 @@
  */
 import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 
-function createAriaPropertyPropertyDescriptor(
-    propName: string,
-    attrName: string
-): PropertyDescriptor {
+function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescriptor {
     return {
         get(this: HTMLElement): any {
             // reflect what's in the attribute
@@ -33,6 +30,6 @@ export function patch(propName: string, prototype: any = Element.prototype) {
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
     const attrName = AriaPropNameToAttrNameMap[propName];
-    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
+    const descriptor = createAriaPropertyPropertyDescriptor(attrName);
     Object.defineProperty(prototype, propName, descriptor);
 }
