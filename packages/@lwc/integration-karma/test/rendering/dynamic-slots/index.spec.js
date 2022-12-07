@@ -41,6 +41,6 @@ describe('dynamic slotting', () => {
     it('should render in light DOM', () => {
         const elm = createElement('x-light-parent', { is: LightParent });
         document.body.appendChild(elm);
-        // expect(elm.shadowRoot.textContent).toEqual('Default slotNamed 1Overridden default content');
+        expect(elm.textContent).toEqual('Default slotNamed 1Hi lwc');
     });
 });
