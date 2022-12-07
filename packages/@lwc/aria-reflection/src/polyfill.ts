@@ -7,6 +7,8 @@
 import { AriaPropNameToAttrNameMap, isNull, defineProperty } from '@lwc/shared';
 
 function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescriptor {
+    // Note that we need to call this.{get,set,has,remove}Attribute rather than dereferencing
+    // from Element.prototype, because these methods are overridden in LightningElement.
     return {
         get(this: HTMLElement): any {
             // reflect what's in the attribute
@@ -26,9 +28,6 @@ function createAriaPropertyPropertyDescriptor(attrName: string): PropertyDescrip
 }
 
 export function patch(propName: string, prototype: any) {
-    // Typescript is inferring the wrong function type for this particular
-    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-ignore type-mismatch
     const attrName = AriaPropNameToAttrNameMap[propName];
     const descriptor = createAriaPropertyPropertyDescriptor(attrName);
     defineProperty(prototype, propName, descriptor);
