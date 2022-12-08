@@ -2,8 +2,8 @@ import { createElement, __unstable__ReportingControl as reportingControl } from 
 import AriaContainer from 'x/ariaContainer';
 import Valid from 'x/valid';
 
-// Should be kept in sync with the enum ReportId in reporting.ts
-const ReportId = {
+// Should be kept in sync with the enum ReportingEventId in reporting.ts
+const ReportingEventId = {
     CrossRootAriaInSyntheticShadow: 0,
 };
 
@@ -53,7 +53,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessage);
                         expect(dispatcher).toHaveBeenCalledWith(
-                            ReportId.CrossRootAriaInSyntheticShadow,
+                            ReportingEventId.CrossRootAriaInSyntheticShadow,
                             'x-aria-source',
                             jasmine.any(Number)
                         );
@@ -64,7 +64,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessage);
                         expect(dispatcher).toHaveBeenCalledWith(
-                            ReportId.CrossRootAriaInSyntheticShadow,
+                            ReportingEventId.CrossRootAriaInSyntheticShadow,
                             'x-aria-source',
                             jasmine.any(Number)
                         );
@@ -78,7 +78,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessage);
                         expect(dispatcher).toHaveBeenCalledWith(
-                            ReportId.CrossRootAriaInSyntheticShadow,
+                            ReportingEventId.CrossRootAriaInSyntheticShadow,
                             'x-aria-source',
                             jasmine.any(Number)
                         );
@@ -93,7 +93,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             targetElm.setId('foo');
                         }).toLogWarningDev(expectedMessageWithTargetAsVM);
                         expect(dispatcher).toHaveBeenCalledWith(
-                            ReportId.CrossRootAriaInSyntheticShadow,
+                            ReportingEventId.CrossRootAriaInSyntheticShadow,
                             'x-aria-target',
                             jasmine.any(Number)
                         );
@@ -130,7 +130,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessage);
                                 expect(dispatcher).toHaveBeenCalledWith(
-                                    ReportId.CrossRootAriaInSyntheticShadow,
+                                    ReportingEventId.CrossRootAriaInSyntheticShadow,
                                     'x-aria-source',
                                     jasmine.any(Number)
                                 );
@@ -146,12 +146,12 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                 expect(dispatcher).toHaveBeenCalledTimes(2);
                                 expect(dispatcher.calls.allArgs()).toEqual([
                                     [
-                                        ReportId.CrossRootAriaInSyntheticShadow,
+                                        ReportingEventId.CrossRootAriaInSyntheticShadow,
                                         'x-aria-source',
                                         jasmine.any(Number),
                                     ],
                                     [
-                                        ReportId.CrossRootAriaInSyntheticShadow,
+                                        ReportingEventId.CrossRootAriaInSyntheticShadow,
                                         'x-aria-source',
                                         jasmine.any(Number),
                                     ],

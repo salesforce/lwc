@@ -7,11 +7,15 @@
 import { noop } from '@lwc/shared';
 import { VM } from './vm';
 
-export const enum ReportId {
-    CrossRootAriaInSyntheticShadow,
+export const enum ReportingEventId {
+    CrossRootAriaInSyntheticShadow = 0,
 }
 
-type ReportingDispatcher = (reportId: ReportId, tagName: string, vmIndex: number) => void;
+type ReportingDispatcher = (
+    reportingEventId: ReportingEventId,
+    tagName: string,
+    vmIndex: number
+) => void;
 
 type OnReportingEnabledCallback = () => void;
 
@@ -76,11 +80,11 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
 
 /**
  * Report to the current dispatcher, if there is one.
- * @param reportId
+ * @param reportingEventId
  * @param vm
  */
-export function report(reportId: ReportId, vm: VM) {
+export function report(reportingEventId: ReportingEventId, vm: VM) {
     if (enabled) {
-        currentDispatcher(reportId, vm.tagName, vm.idx);
+        currentDispatcher(reportingEventId, vm.tagName, vm.idx);
     }
 }

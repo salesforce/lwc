@@ -22,7 +22,7 @@ import {
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
-import { onReportingEnabled, report, ReportId } from '../framework/reporting';
+import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
 import { logWarn } from '../shared/logger';
 
@@ -55,7 +55,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
         // vm should never be undefined here, but just to be safe, bail out and don't report
         return;
     }
-    report(ReportId.CrossRootAriaInSyntheticShadow, vm);
+    report(ReportingEventId.CrossRootAriaInSyntheticShadow, vm);
     if (process.env.NODE_ENV !== 'production') {
         logWarn(
             `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
