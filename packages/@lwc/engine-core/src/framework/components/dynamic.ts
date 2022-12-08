@@ -71,7 +71,7 @@ export class DynamicLightingElement extends LightningElement {
     constructor() {
         super();
         let ctor: LightningElementConstructor | null = null;
-        const { replacedCallback } = this;
+        const replacedCallback: () => void | undefined = (this as any).replacedCallback;
         // installing the elm.ctor public property, it is not reflective to an attribute,
         // and it is not configurable to avoid something messing with its public API. The
         // fact that it is installed on instance guarantees that changing the proto-chain
@@ -89,14 +89,10 @@ export class DynamicLightingElement extends LightningElement {
                 const vm = getVMFromComponent(this); // additionally validation
                 ctor = newCtor;
                 // kick in the replacement
-                replaceDefinitionForVM(vm.elm, def, () => replacedCallback.apply(this));
+                replaceDefinitionForVM(vm.elm, def, () => replacedCallback?.apply(this));
             },
             configurable: false,
         });
-    }
-    replacedCallback(): void {
-        // this is useful for subclasses to get a notification every time the
-        // component is swapped after setting `ctor` property.
     }
 }
 
