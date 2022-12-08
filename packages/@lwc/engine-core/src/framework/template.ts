@@ -310,7 +310,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
 function computeHasScopedStylesInStylesheets(
     stylesheets: TemplateStylesheetFactories | undefined | null
-) {
+): boolean {
     if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {

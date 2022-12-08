@@ -31,7 +31,7 @@ describe('programmatic stylesheets', () => {
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
                 'rgb(255, 0, 0)'
             );
-            // styles do not leak (e.g. synthetic shadow
+            // styles do not leak (e.g. synthetic shadow)
             expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
         });
     });
@@ -44,7 +44,7 @@ describe('programmatic stylesheets', () => {
 
         return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
             expect(getComputedStyle(elm.querySelector('h1')).color).toEqual('rgb(0, 128, 0)');
-            // styles do not leak (e.g. synthetic shadow
+            // styles do not leak (e.g. synthetic shadow)
             expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
         });
     });
