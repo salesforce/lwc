@@ -26,6 +26,9 @@ function offsetPropertyErrorMessage(name: string): string {
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+//
+// If you update this list, check for test files that recapitulate the same list. Searching the codebase
+// for e.g. "dropzone" should suffice.
 export const globalHTMLProperties: {
     [prop: string]: {
         attribute?: string;
