@@ -5,6 +5,7 @@ import Scoped from 'x/scoped';
 import InheritFromLightningElement from 'x/inheritFromLightningElement';
 import Invalid from 'x/invalid';
 import Invalid2 from 'x/invalid2';
+import Invalid3 from 'x/invalid3';
 import Inherit from 'x/inherit';
 import Implicit from 'x/implicit';
 import Multi from 'x/multi';
@@ -13,12 +14,24 @@ import MultiStyles from 'x/multiStyles';
 import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
 
 describe('programmatic stylesheets', () => {
-    beforeAll(() => {
+    beforeEach(() => {
         setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', true);
     });
 
     afterAll(() => {
         setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', false);
+    });
+
+    it('does not override styles if flag is not set', () => {
+        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', false);
+        const elm = createElement('x-basic', { is: Basic });
+        document.body.appendChild(elm);
+
+        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
+            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
+                'rgb(0, 0, 0)'
+            );
+        });
     });
 
     it('works for a basic usage of static stylesheets', () => {
@@ -216,6 +229,18 @@ describe('programmatic stylesheets', () => {
             }).toLogErrorDev(
                 /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid2>/
             );
+
+            document.body.appendChild(elm);
+            expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
+        });
+
+        it('no error thrown if stylesheets is an array of arbitrary functions', () => {
+            let elm;
+            expect(() => {
+                elm = createElement('x-invalid3', {
+                    is: Invalid3,
+                });
+            }).not.toLogErrorDev();
 
             document.body.appendChild(elm);
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
