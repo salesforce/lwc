@@ -81,7 +81,7 @@ export interface FeatureFlagMap {
      * and HTMLBridgeElement base classes, not on every Element.
      */
     DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
-    
+
     /**
      * Flag to enable programmatic stylesheets, aka dynamic stylesheet injection, aka CSS extensibility. Allows
      * for a `static stylesheets` property at the component level that injects stylesheets alongside the template
