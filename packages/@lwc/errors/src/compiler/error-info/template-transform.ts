@@ -386,13 +386,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION: {
-        code: 1081,
-        message: "Slot attribute value can't be an expression.",
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     // TODO [#3100]: Update message to point to external documentation once available.
     SLOT_TAG_CANNOT_HAVE_DIRECTIVES: {
         code: 1082,
