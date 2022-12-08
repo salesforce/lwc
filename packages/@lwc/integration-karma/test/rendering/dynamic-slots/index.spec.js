@@ -8,7 +8,7 @@ describe('dynamic slotting', () => {
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual('Default slotNamed 1Overridden default content');
     });
-    it('should handle slot name being set to undefined', async function () {
+    it('should handle slot name being set to undefined or an empty string', async function () {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         const childElm = elm.shadowRoot.querySelector('x-child');
@@ -18,12 +18,12 @@ describe('dynamic slotting', () => {
         expect(defaultSlot.assignedNodes().length).toBe(1);
         expect(altSlot.assignedNodes().length).toBe(0);
 
-        elm.toggleUndefinedName();
+        elm.setFullSlotname();
         await Promise.resolve();
         expect(defaultSlot.assignedNodes().length).toBe(0);
         expect(altSlot.assignedNodes().length).toBe(1);
 
-        elm.toggleUndefinedName();
+        elm.setEmptyName();
         await Promise.resolve();
         expect(defaultSlot.assignedNodes().length).toBe(1);
         expect(altSlot.assignedNodes().length).toBe(0);

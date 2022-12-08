@@ -7,8 +7,18 @@ export default class Parent extends LightningElement {
     counter = 1;
 
     @api
-    toggleUndefinedName() {
-        this.undefinedName = this.undefinedName ? undefined : 'altdefault';
+    setUndefinedName() {
+        this.undefinedName = undefined;
+    }
+
+    @api
+    setEmptyName() {
+        this.undefinedName = '';
+    }
+
+    @api
+    setFullSlotname() {
+        this.undefinedName = 'altdefault';
     }
 
     @api
