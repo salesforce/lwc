@@ -253,7 +253,7 @@ function transform(codeGen: CodeGen): t.Expression {
             transformChildren(conditionalParentBlock)
         );
 
-        let elseExpression: t.Expression;
+        let elseExpression: t.Expression = t.literal(null);
         if (conditionalParentBlock.else) {
             elseExpression = isElseifBlock(conditionalParentBlock.else)
                 ? transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey)
@@ -261,8 +261,6 @@ function transform(codeGen: CodeGen): t.Expression {
                       t.literal(ifBlockKey),
                       transformChildren(conditionalParentBlock.else)
                   );
-        } else {
-            elseExpression = codeGen.genFragment(t.literal(ifBlockKey), t.arrayExpression([]));
         }
 
         return t.conditionalExpression(

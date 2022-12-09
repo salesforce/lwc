@@ -48,7 +48,6 @@ import {
     isSameVnode,
     isVBaseElement,
     isVFragment,
-    isPlaceholderVFragment,
     isVScopedSlotFragment,
     Key,
     VBaseElement,
@@ -215,7 +214,8 @@ function mountFragment(
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
 
-    vnode.elm = children[children.length - 1]?.elm;
+    // children of a fragment will always have at least the two delimiters.
+    vnode.elm = children[children.length - 1]!.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -228,7 +228,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
     }
 
     // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
-    n2.elm = children[children.length - 1]?.elm;
+    n2.elm = children[children.length - 1]!.elm;
 }
 
 function mountElement(
@@ -395,6 +395,25 @@ function patchCustomElement(
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
             allocateChildren(n2, vm);
+
+            // Solves an edge case with slotted VFragments in native shadow mode.
+            //
+            // During allocation, in native shadow, slotted VFragment nodes are flattened and their text delimiters are removed
+            // to avoid interfering with native slot behavior. When this happens, if any of the fragments
+            // were not stable, the children must go through the dynamic diffing algo.
+            //
+            // If the new children (n2.children) contain no VFragments, but the previous children (n1.children) were dynamic,
+            // the new nodes must be marked dynamic so that all nodes are properly updated. The only indicator that the new
+            // nodes need to be dynamic comes from the previous children.
+            const { shadowMode, renderMode } = vm;
+            if (
+                shadowMode == ShadowMode.Native &&
+                renderMode !== RenderMode.Light &&
+                hasDynamicChildren(n1.children)
+            ) {
+                // No-op if children has already been marked dynamic by 'allocateChildren()'.
+                markAsDynamicChildren(n2.children);
+            }
         }
 
         // in fallback mode, the children will be always empty, so, nothing
@@ -484,7 +503,7 @@ function unmountVNodes(
 }
 
 function isVNode(vnode: any): vnode is VNode {
-    return vnode != null && !isPlaceholderVFragment(vnode);
+    return vnode != null;
 }
 
 function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
@@ -627,52 +646,71 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         }
     }
 
-    // flatten vfragment nodes and mark dynamic
-    const { flattened, flattenedChildren } = flattenFragmentChildren(children);
-    const allocatedChildren = flattened ? flattenedChildren : children;
-
-    if (flattened) {
-        markAsDynamicChildren(flattenedChildren);
-        vnode.children = flattenedChildren;
-    }
-    vm.aChildren = allocatedChildren;
-
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+        vm.aChildren = children;
         // slow path
-        allocateInSlot(vm, allocatedChildren, vnode.owner);
+        allocateInSlot(vm, children, vnode.owner);
         // save the allocated children in case this vnode is reused.
-        vnode.aChildren = allocatedChildren;
+        vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
+    } else {
+        // If any of the children being allocated are VFragments, and we are in native shadow mode, the text delimiters
+        // from VFragment nodes will be automatically assigned to the default slot, overriding the default slot content.
+        //
+        // To avoid that situation, we flatten all immediate children VFragments and remove the text nodes.
+        // If any of the VFragments were not stable, the children are marked dynamic.
+        let allocatedChildren = children;
+        if (children.some((vnode) => vnode && isVFragment(vnode))) {
+            const { stable, flattenedChildren } = flattenFragmentChildren(children);
+            allocatedChildren = flattenedChildren;
+            vnode.children = flattenedChildren;
+
+            if (!stable) {
+                markAsDynamicChildren(flattenedChildren);
+            }
+        }
+
+        vm.aChildren = allocatedChildren;
     }
 }
 
 /**
  * Flattens the contents of all VFragments in an array of VNodes and removes the text delimiters on those VFragments.
- * Returns an array of the flattened nodes along with a boolean indicating whether flattening occurred.
- * Note that with the VFragment delimiters removed and their children flattened, the contents must be treated as dynamic
- * for them to rerender correctly.
+ * Returns an array of the flattened nodes without text nodes, along with a boolean indicating whether the set of children
+ * can be considered stable.
  *
- * This function should be used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
+ * Note that with the VFragment delimiters removed, the contents must be treated as dynamic for them to rerender correctly.
+ *
+ * This function is used for slotted VFragments in native shadow mode to avoid the text delimiters interfering with
+ * slotting functionality.
  */
 function flattenFragmentChildren(children: readonly (VNode | null)[]): {
-    flattened: boolean;
+    stable: 0 | 1 | undefined;
     flattenedChildren: (VNode | null)[];
 } {
+    let stable: 0 | 1 | undefined;
     const flattenedChildren: (VNode | null)[] = [];
-    let flattened = false;
     forEach.call(children, (childNode) => {
         if (childNode && isVFragment(childNode)) {
-            const { flattenedChildren: flattenedDescendants } = flattenFragmentChildren(
-                childNode.children.slice(1, -1)
-            );
+            // Initialize 'stable' to that of the first VFragment found.
+            if (isUndefined(stable)) {
+                stable = childNode.stable;
+            }
+
+            // Continue traversing through any descendant children while removing the text delimiters
+            const { stable: stableDescendants, flattenedChildren: flattenedDescendants } =
+                flattenFragmentChildren(childNode.children.slice(1, -1));
+
             flattenedChildren.push(...flattenedDescendants);
-            flattened = true;
+
+            // The flattened children can only be stable if all flattened fragments were also stable.
+            stable = stable && stableDescendants;
         } else {
             flattenedChildren.push(childNode);
         }
     });
-    return { flattened, flattenedChildren };
+    return { stable, flattenedChildren };
 }
 
 function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
@@ -706,6 +744,13 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
+            continue;
+        }
+
+        // Dive further iff the content is wrapped in a VFragment
+        if (isVFragment(vnode)) {
+            // Remove the text delimiter nodes to avoid overriding default slot content
+            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
 
@@ -760,8 +805,8 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const DynamicChildren: WeakMap<VNodes, 1> = new WeakMap();
 
-// dynamic children means it was generated by an iteration
-// in a template, and will require a more complex diffing algo.
+// dynamic children means it was either generated by an iteration in a template
+// or part of an unstable fragment, and will require a more complex diffing algo.
 export function markAsDynamicChildren(children: VNodes) {
     DynamicChildren.set(children, 1);
 }

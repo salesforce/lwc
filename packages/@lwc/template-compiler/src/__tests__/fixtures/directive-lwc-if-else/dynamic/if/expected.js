@@ -2,7 +2,6 @@ import { registerTemplate } from "lwc";
 const stc0 = {
   key: 1,
 };
-const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { dc: api_dynamic_component, fr: api_fragment } = $api;
   return [
@@ -12,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
           0
         )
-      : api_fragment(0, stc1, 0),
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }

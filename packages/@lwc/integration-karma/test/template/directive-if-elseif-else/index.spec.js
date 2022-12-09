@@ -155,7 +155,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
 
     describe('slots', () => {
         /**
-         * Utility function to verify that slot content is assigned.
+         * Utility function to verify that slot content is properly assigned in XparentWithSlot
          *
          * @param {Element} child Child element to verify.
          * @param {Boolean} condition Whether slot content is expected or not expected.
@@ -248,7 +248,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
 
         describe('named slots', () => {
             /**
-             * Utility function to verify that slot content is assigned.
+             * Utility function to verify that named slot content is properly assigned in XparentWithNamedSlot.
              *
              * @param {Element} child Child element to verify.
              * @param {Boolean} condition Whether slot content is expected or not expected.
@@ -267,6 +267,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 }
             }
 
+            /**
+             * Utility function to verify that default slot content is properly assigned in XparentWithNamedSlot.
+             *
+             * @param {Element} child Child element to verify.
+             */
             function verifyDefaultSlotContent(child) {
                 const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
 

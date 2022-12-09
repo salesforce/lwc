@@ -36,7 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ),
           0
         )
-      : api_fragment(0, stc1, 0),
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }

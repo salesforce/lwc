@@ -141,10 +141,6 @@ export function isVFragment(vnode: VNode): vnode is VFragment {
     return vnode.type === VNodeType.Fragment;
 }
 
-export function isPlaceholderVFragment(vnode: VNode): vnode is VFragment {
-    return isVFragment(vnode) && vnode.children.length === 0;
-}
-
 export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
     return vnode.type === VNodeType.ScopedSlotFragment;
 }
