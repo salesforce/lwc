@@ -60,6 +60,7 @@ const stylesheetCache: Map<String, CacheData> = new Map();
 // Test utilities
 //
 
+// Only used in LWC's Karma tests
 // @ts-ignore
 if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
     // @ts-ignore
