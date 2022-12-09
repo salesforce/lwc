@@ -190,14 +190,15 @@ describe('global html properties', () => {
         const getDefaultPropertyValue = () => {
             switch (propName) {
                 case 'spellcheck':
-                    return document.createElement('div').spellcheck; // Firefox returns false, Chrome/Safari returns true
+                case 'tabIndex':
+                    // For spellcheck, Firefox returns false, Chrome/Safari returns true
+                    // For tabIndex, IE11 returns 0 and the others return -1
+                    return document.createElement('div')[propName];
                 case 'draggable':
                 case 'hidden':
                     return false;
                 case 'accessKey':
                     return '';
-                case 'tabIndex':
-                    return -1;
                 case 'dir':
                 case 'id':
                 case 'lang':
