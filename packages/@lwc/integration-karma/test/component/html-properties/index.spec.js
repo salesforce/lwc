@@ -230,6 +230,7 @@ describe('global html properties', () => {
 
             if (attribute) {
                 it('attribute reflection', () => {
+                    const initialNumAttributes = elm.attributes.length;
                     expect(elm.getAttribute(attribute)).toBeNull(); // initial attribute value
 
                     const valueToSet = getValueToSet();
@@ -244,6 +245,18 @@ describe('global html properties', () => {
                         expectedAttributeValue = '';
                     }
                     expect(elm.getAttribute(attribute)).toEqual(expectedAttributeValue);
+
+                    // In the case of non-original descriptors, the attribute is not set
+                    const expectedNumAddedAttributes = isOriginalDescriptor ? 1 : 0;
+                    expect(elm.attributes.length).toEqual(
+                        initialNumAttributes + expectedNumAddedAttributes
+                    );
+                });
+            } else {
+                it('no attribute reflection', () => {
+                    const initialNumAttributes = elm.attributes.length;
+                    setPropertyValue(getValueToSet());
+                    expect(elm.attributes.length).toEqual(initialNumAttributes); // no attributes added
                 });
             }
         });
