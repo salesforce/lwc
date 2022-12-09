@@ -60,7 +60,8 @@ const stylesheetCache: Map<String, CacheData> = new Map();
 // Test utilities
 //
 
-if (process.env.NODE_ENV === 'development') {
+// @ts-ignore
+if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
     // @ts-ignore
     window.__lwcResetGlobalStylesheets = () => {
         stylesheetCache.clear();

@@ -350,65 +350,53 @@ defineProperties(Element.prototype, {
     },
 });
 
-// The following APIs are used directly by Jest internally so we avoid patching them during testing.
-if (process.env.NODE_ENV !== 'test') {
-    defineProperties(Element.prototype, {
-        getElementsByClassName: {
-            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-                const elements = arrayFromCollection(
-                    elementGetElementsByClassName.apply(
-                        this,
-                        ArraySlice.call(arguments) as [string]
-                    )
-                );
+defineProperties(Element.prototype, {
+    getElementsByClassName: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+            );
 
-                // Note: we deviate from native shadow here, but are not fixing
-                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            },
-            writable: true,
-            enumerable: true,
-            configurable: true,
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            return createStaticHTMLCollection(getNonPatchedFilteredArrayOfNodes(this, elements));
         },
-        getElementsByTagName: {
-            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-                const elements = arrayFromCollection(
-                    elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-                );
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    },
+    getElementsByTagName: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+            );
 
-                // Note: we deviate from native shadow here, but are not fixing
-                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            },
-            writable: true,
-            enumerable: true,
-            configurable: true,
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            return createStaticHTMLCollection(getNonPatchedFilteredArrayOfNodes(this, elements));
         },
-        getElementsByTagNameNS: {
-            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-                const elements = arrayFromCollection(
-                    elementGetElementsByTagNameNS.apply(
-                        this,
-                        ArraySlice.call(arguments) as [string, string]
-                    )
-                );
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    },
+    getElementsByTagNameNS: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByTagNameNS.apply(
+                    this,
+                    ArraySlice.call(arguments) as [string, string]
+                )
+            );
 
-                // Note: we deviate from native shadow here, but are not fixing
-                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            },
-            writable: true,
-            enumerable: true,
-            configurable: true,
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            return createStaticHTMLCollection(getNonPatchedFilteredArrayOfNodes(this, elements));
         },
-    });
-}
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    },
+});
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {

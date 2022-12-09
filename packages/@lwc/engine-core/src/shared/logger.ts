@@ -16,12 +16,6 @@ function log(method: 'warn' | 'error', message: string, vm?: VM) {
         msg = `${msg}\n${getComponentStack(vm)}`;
     }
 
-    if (process.env.NODE_ENV === 'test') {
-        /* eslint-disable-next-line no-console */
-        console[method](msg);
-        return;
-    }
-
     try {
         throw new Error(msg);
     } catch (e) {
