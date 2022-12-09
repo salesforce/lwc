@@ -646,32 +646,30 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         }
     }
 
+    // If any of the children being allocated are VFragments, we remove the text delimiters and flatten all immediate
+    // children VFragments to avoid them interfering with default slot behavior.
+
+    // If any of the VFragments were not stable, the children are marked dynamic.
+    let allocatedChildren = children;
+    if (children.some((vnode) => vnode && isVFragment(vnode))) {
+        const { stable, flattenedChildren } = flattenFragmentChildren(children);
+        allocatedChildren = flattenedChildren;
+        vnode.children = flattenedChildren;
+
+        if (!stable) {
+            markAsDynamicChildren(flattenedChildren);
+        }
+    }
+
+    vm.aChildren = allocatedChildren;
+
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-        vm.aChildren = children;
         // slow path
-        allocateInSlot(vm, children, vnode.owner);
+        allocateInSlot(vm, allocatedChildren, vnode.owner);
         // save the allocated children in case this vnode is reused.
-        vnode.aChildren = children;
+        vnode.aChildren = allocatedChildren;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
-    } else {
-        // If any of the children being allocated are VFragments, and we are in native shadow mode, the text delimiters
-        // from VFragment nodes will be automatically assigned to the default slot, overriding the default slot content.
-        //
-        // To avoid that situation, we flatten all immediate children VFragments and remove the text nodes.
-        // If any of the VFragments were not stable, the children are marked dynamic.
-        let allocatedChildren = children;
-        if (children.some((vnode) => vnode && isVFragment(vnode))) {
-            const { stable, flattenedChildren } = flattenFragmentChildren(children);
-            allocatedChildren = flattenedChildren;
-            vnode.children = flattenedChildren;
-
-            if (!stable) {
-                markAsDynamicChildren(flattenedChildren);
-            }
-        }
-
-        vm.aChildren = allocatedChildren;
     }
 }
 
@@ -744,13 +742,6 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
-            continue;
-        }
-
-        // Dive further iff the content is wrapped in a VFragment
-        if (isVFragment(vnode)) {
-            // Remove the text delimiter nodes to avoid overriding default slot content
-            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
 
