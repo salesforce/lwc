@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Parent from 'x/parent';
+import NonString from 'x/nonString';
 import LightParent from 'x/lightParent';
 
 describe('dynamic slotting', () => {
@@ -42,5 +43,17 @@ describe('dynamic slotting', () => {
         const elm = createElement('x-light-parent', { is: LightParent });
         document.body.appendChild(elm);
         expect(elm.textContent).toEqual('Default slotNamed 1Hi lwc');
+    });
+
+    it('should convert non-string attributes to default and log warnings', () => {
+        const elm = createElement('x-non-string', { is: NonString });
+        expect(() => {
+            document.body.appendChild(elm);
+        }).toLogWarningDev([/Non-string attribute true passed/, /Non-string attribute 1 passed/]);
+
+        const defaultSlot = elm.shadowRoot
+            .querySelector('x-child')
+            .shadowRoot.querySelector('slot:not([name])');
+        expect(defaultSlot.assignedNodes().length).toBe(2);
     });
 });
