@@ -14,7 +14,6 @@ import {
     isNull,
     isTrue,
     isUndefined,
-    forEach,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
     keys,
@@ -648,19 +647,8 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
 
     // If any of the children being allocated are VFragments, we remove the text delimiters and flatten all immediate
     // children VFragments to avoid them interfering with default slot behavior.
-
-    // If any of the VFragments were not stable, the children are marked dynamic.
-    let allocatedChildren = children;
-    if (children.some((vnode) => vnode && isVFragment(vnode))) {
-        const { stable, flattenedChildren } = flattenFragmentChildren(children);
-        allocatedChildren = flattenedChildren;
-        vnode.children = flattenedChildren;
-
-        if (!stable) {
-            markAsDynamicChildren(flattenedChildren);
-        }
-    }
-
+    const allocatedChildren = flattenFragmentsInChildren(children);
+    vnode.children = allocatedChildren;
     vm.aChildren = allocatedChildren;
 
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
@@ -674,41 +662,37 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
 }
 
 /**
- * Flattens the contents of all VFragments in an array of VNodes and removes the text delimiters on those VFragments.
- * Returns an array of the flattened nodes without text nodes, along with a boolean indicating whether the set of children
- * can be considered stable.
+ * Flattens the contents of all VFragments in an array of VNodes, removes the text delimiters on those VFragments, and
+ * marks the resulting children array as dynamic.
  *
- * Note that with the VFragment delimiters removed, the contents must be treated as dynamic for them to rerender correctly.
+ * With the delimiters removed, the contents must be treated as dynamic for them to rerender correctly.
  *
- * This function is used for slotted VFragments in native shadow mode to avoid the text delimiters interfering with
- * slotting functionality.
+ * This function is used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
  */
-function flattenFragmentChildren(children: readonly (VNode | null)[]): {
-    stable: 0 | 1 | undefined;
-    flattenedChildren: (VNode | null)[];
-} {
-    let stable: 0 | 1 | undefined;
+function flattenFragmentsInChildren(children: readonly (VNode | null)[]): (VNode | null)[] {
     const flattenedChildren: (VNode | null)[] = [];
-    forEach.call(children, (childNode) => {
-        if (childNode && isVFragment(childNode)) {
-            // Initialize 'stable' to that of the first VFragment found.
-            if (isUndefined(stable)) {
-                stable = childNode.stable;
+    const nodeStack: (VNode | null)[] = [];
+
+    // First iteration is slightly different than the rest of the traversal
+    for (let i = children.length - 1; i > -1; i -= 1) {
+        nodeStack.push(children[i]);
+    }
+
+    while (nodeStack.length > 0) {
+        const currentNode = nodeStack.pop();
+        if (currentNode && isVFragment(currentNode)) {
+            const fChildren = currentNode.children;
+            // Ignore the start and end text node delimiters
+            for (let i = fChildren.length - 2; i > 0; i -= 1) {
+                nodeStack.push(fChildren[i]);
             }
-
-            // Continue traversing through any descendant children while removing the text delimiters
-            const { stable: stableDescendants, flattenedChildren: flattenedDescendants } =
-                flattenFragmentChildren(childNode.children.slice(1, -1));
-
-            flattenedChildren.push(...flattenedDescendants);
-
-            // The flattened children can only be stable if all flattened fragments were also stable.
-            stable = stable && stableDescendants;
         } else {
-            flattenedChildren.push(childNode);
+            flattenedChildren.push(currentNode!);
         }
-    });
-    return { stable, flattenedChildren };
+    }
+
+    markAsDynamicChildren(flattenedChildren);
+    return flattenedChildren;
 }
 
 function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
