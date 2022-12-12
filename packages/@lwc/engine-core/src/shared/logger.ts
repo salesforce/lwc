@@ -16,6 +16,7 @@ function log(method: 'warn' | 'error', message: string, vm?: VM) {
         msg = `${msg}\n${getComponentStack(vm)}`;
     }
 
+    // In Jest tests, reduce the warning and error verbosity by not printing the callstack
     if (process.env.NODE_ENV === 'test') {
         /* eslint-disable-next-line no-console */
         console[method](msg);
