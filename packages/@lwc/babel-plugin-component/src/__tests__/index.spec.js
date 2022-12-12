@@ -63,11 +63,15 @@ describe('fixtures', () => {
                 config = require(configPath);
             }
 
+            // Simulates what transformSync would pass to babel
+            /* eslint-disable @typescript-eslint/no-unused-vars */
+            const [_, name] = dirname.split(path.sep).slice(-2);
+
             let result;
             let error;
 
             try {
-                result = transform(src, config);
+                result = transform(src, { ...config, componentName: name });
             } catch (err) {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }

@@ -48,6 +48,7 @@ import {
     SlotBindDirective,
     ScopedSlotFragment,
     SlotDataDirective,
+    DynamicComponent,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -100,6 +101,20 @@ export function component(
     return {
         type: 'Component',
         name: parse5Elm.nodeName,
+        namespace: HTML_NAMESPACE,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function dynamicComponent(parse5ElmLocation: parse5.ElementLocation): DynamicComponent {
+    return {
+        type: 'DynamicComponent',
+        name: 'dynamic', // Just using a placeholder for now
         namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
@@ -440,6 +455,10 @@ export function isExternalComponent(node: BaseNode): node is ExternalComponent {
     return node.type === 'ExternalComponent';
 }
 
+export function isDynamicComponent(node: BaseNode): node is ExternalComponent {
+    return node.type === 'DynamicComponent';
+}
+
 export function isComponent(node: BaseNode): node is Component {
     return node.type === 'Component';
 }
@@ -449,7 +468,13 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node) || isExternalComponent(node);
+    return (
+        isElement(node) ||
+        isComponent(node) ||
+        isSlot(node) ||
+        isExternalComponent(node) ||
+        isDynamicComponent(node)
+    );
 }
 
 export function isText(node: BaseNode): node is Text {

@@ -316,6 +316,10 @@ function parseBaseElement(
         } else {
             element = ast.element(parse5Elm, parse5ElmLocation);
         }
+    } else if (tag === 'template') {
+        if (parsedAttr.get(ElementDirectiveName.Dynamic)) {
+            element = ast.dynamicComponent(parse5ElmLocation);
+        }
     }
 
     if (element) {
@@ -880,7 +884,7 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element);
     }
 
-    if (!ast.isComponent(element)) {
+    if (ast.isComponent(element) || ast.isElement(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
             `<${tag}>`,
         ]);

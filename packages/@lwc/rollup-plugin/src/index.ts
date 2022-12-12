@@ -212,6 +212,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             }
 
             // Extract module name and namespace from file path
+            // As part of the module transformation we could use the component name as the
+            // custom element name, stored either in a weakmap or on the Ctor itself.
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
             const { code, map, warnings } = transformSync(src, id, {

@@ -53,10 +53,14 @@ module.exports = function ({ types: t }) {
                 t.toExpression(node);
             }
         }
+        const { componentName } = state.opts;
 
         return t.callExpression(registerComponentId, [
             node,
-            t.objectExpression([t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier)]),
+            t.objectExpression([
+                t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
+                t.objectProperty(t.identifier('sel'), t.stringLiteral(componentName)),
+            ]),
         ]);
     }
 

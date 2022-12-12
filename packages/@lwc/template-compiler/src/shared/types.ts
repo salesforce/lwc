@@ -178,13 +178,17 @@ export interface Component extends AbstractBaseElement {
     type: 'Component';
 }
 
+export interface DynamicComponent extends AbstractBaseElement {
+    type: 'DynamicComponent';
+}
+
 export interface Slot extends AbstractBaseElement {
     type: 'Slot';
     /** Specifies slot element name. An empty string value maps to the default slot.  */
     slotName: string;
 }
 
-export type BaseElement = Element | ExternalComponent | Component | Slot;
+export type BaseElement = Element | ExternalComponent | DynamicComponent | Component | Slot;
 
 export interface Root extends BaseParentNode {
     type: 'Root';

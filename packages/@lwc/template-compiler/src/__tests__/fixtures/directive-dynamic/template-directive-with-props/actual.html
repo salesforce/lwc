@@ -1,0 +1,5 @@
+<template>
+    <!-- lwc:attributes will transform the databag into the appropriate attributes, properties, or listeners -->
+    <!-- Maybe we could just use lwc:spread here instead? -->
+    <template lwc:dynamic={ctor} lwc:attributes={databag}></template>
+</template>

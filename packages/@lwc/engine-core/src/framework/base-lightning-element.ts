@@ -140,6 +140,8 @@ export interface LightningElementConstructor {
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
     shadowSupportMode?: ShadowSupportMode;
+    // sel represents the custom element name
+    sel: string;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &

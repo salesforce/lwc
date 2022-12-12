@@ -14,6 +14,7 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { isComponentConstructor } from './def';
 
 const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 
@@ -24,13 +25,16 @@ const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl }: { tmpl: Template }
+    { tmpl, sel }: { tmpl: Template; sel: string }
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
             checkVersionMismatch(Ctor, 'component');
         }
         signedTemplateMap.set(Ctor, tmpl);
+        if (isComponentConstructor(Ctor)) {
+            Ctor.sel = sel;
+        }
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation

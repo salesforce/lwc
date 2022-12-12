@@ -536,28 +536,30 @@ function fid(url: string | undefined | null): string | null | undefined {
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 function dc(
-    sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
     children: VNodes = EmptyArray
 ): VCustomElement | null {
+    // null or undefined values should produce a null value in the VNodes
+    if (Ctor == null) {
+        return null;
+    }
+
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
             `dc() 4nd argument data must be an array.`
         );
     }
-    // null or undefined values should produce a null value in the VNodes
-    if (Ctor == null) {
-        return null;
-    }
+
     if (!isComponentConstructor(Ctor)) {
-        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
+        throw new Error(`Invalid LWC Constructor ${toString(Ctor)}.`);
     }
 
-    return c(sel, Ctor, data, children);
+    // We don't ahve to get the custom element name from the Ctor, we could store it in a weakmap or somewhere to retrieve it.
+    // Alternatively, we could generate a name or ask the component author to provide a name.
+    return c(Ctor.sel, Ctor, data, children);
 }
 
 /**

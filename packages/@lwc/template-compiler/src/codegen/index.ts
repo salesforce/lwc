@@ -93,7 +93,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
+            res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(
                 name,

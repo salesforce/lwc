@@ -181,13 +181,8 @@ export default class CodeGen {
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
     }
-    genDynamicElement(
-        tagName: string,
-        ctor: t.Expression,
-        data: t.ObjectExpression,
-        children: t.Expression
-    ) {
-        const args: t.Expression[] = [t.literal(tagName), ctor, data];
+    genDynamicElement(ctor: t.Expression, data: t.ObjectExpression, children: t.Expression) {
+        const args: t.Expression[] = [ctor, data];
         if (!isArrayExpression(children) || children.elements.length > 0) {
             args.push(children); // only generate children if non-empty
         }
