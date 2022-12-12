@@ -40,6 +40,36 @@ const querySelectorAll = globalThis[
     KEY__NATIVE_QUERY_SELECTOR_ALL
 ] as typeof document.querySelectorAll;
 
+const alreadyLoggedComponentsAndElements: Set<string> = new Set();
+
+// @ts-ignore
+if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
+    // @ts-ignore
+    window.__lwcResetAlreadyLoggedSyntheticCrossRootAriaWarnings = () => {
+        alreadyLoggedComponentsAndElements.clear();
+    };
+}
+
+// Avoid excessively logging to the console in the case of duplicates.
+function logDedupedWarning(vm: VM, source: Element, target: Element, attrName: string) {
+    const componentTagName = vm.tagName.toLowerCase();
+    const sourceTagName = source.tagName.toLowerCase();
+    const targetTagName = target.tagName.toLowerCase();
+    const key = [componentTagName, sourceTagName, targetTagName].join('_');
+
+    if (alreadyLoggedComponentsAndElements.has(key)) {
+        return;
+    }
+    alreadyLoggedComponentsAndElements.add(key);
+
+    logWarn(
+        `Element <${sourceTagName}> uses attribute "${attrName}" to reference element ` +
+            `<${targetTagName}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
+            `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
+        vm
+    );
+}
+
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
     return rootNode !== document && isTrue((rootNode as any).synthetic);
 }
@@ -57,12 +87,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
     }
     report(ReportingEventId.CrossRootAriaInSyntheticShadow, vm);
     if (process.env.NODE_ENV !== 'production') {
-        logWarn(
-            `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
-                `<${target.tagName.toLowerCase()}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
-                `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
-            vm
-        );
+        logDedupedWarning(vm, source, target, attrName);
     }
 }
 

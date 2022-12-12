@@ -21,11 +21,12 @@ export default class extends LightningElement {
         specialChars = false,
         addWhitespace = false,
         multipleTargets = false,
+        idPrefix = '',
     } = {}) {
         // For some examples of characters that may need escaping, see:
         // https://developer.mozilla.org/en-US/docs/Web/API/CSS/escape#basic_results
         // https://stackoverflow.com/a/9189067
-        const id = specialChars ? 'a.b#c()[]{}--><&"\'\\' : 'my-id';
+        const id = idPrefix + (specialChars ? 'a.b#c()[]{}--><&"\'\\' : 'my-id');
         const id2 = `${id}-2`;
         let labelledBy = multipleTargets ? `${id} ${id2}` : id;
         if (addWhitespace) {

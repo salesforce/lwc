@@ -23,6 +23,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
             reportingControl.attachDispatcher(dispatcher);
+            window.__lwcResetAlreadyLoggedSyntheticCrossRootAriaWarnings();
         });
 
         afterEach(() => {
@@ -161,6 +162,34 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     });
                 });
             });
+        });
+
+        it('does not log duplicates warnings', () => {
+            const elm1 = createElement('x-aria-container', { is: AriaContainer });
+            const elm2 = createElement('x-aria-container', { is: AriaContainer });
+            document.body.appendChild(elm1);
+            document.body.appendChild(elm2);
+
+            // warning is logged only once
+            expect(() => {
+                elm1.linkUsingBoth({ idPrefix: 'prefix-1' });
+                elm2.linkUsingBoth({ idPrefix: 'prefix-2' }); // ids must be globally unique
+            }).toLogWarningDev(expectedMessage);
+
+            // dispatcher is still called twice
+            expect(dispatcher).toHaveBeenCalledTimes(2);
+            expect(dispatcher.calls.allArgs()).toEqual([
+                [
+                    ReportingEventId.CrossRootAriaInSyntheticShadow,
+                    'x-aria-source',
+                    jasmine.any(Number),
+                ],
+                [
+                    ReportingEventId.CrossRootAriaInSyntheticShadow,
+                    'x-aria-source',
+                    jasmine.any(Number),
+                ],
+            ]);
         });
 
         [false, true].forEach((reverseOrder) => {
