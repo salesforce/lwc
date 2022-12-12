@@ -5,5 +5,5 @@ class Test extends LightningElement {
 }
 export default _registerComponent(Test, {
   tmpl: _tmpl,
-  sel: "inject-render-method"
+  sel: "inject-register-component-sel"
 });
