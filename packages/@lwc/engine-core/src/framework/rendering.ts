@@ -12,7 +12,6 @@ import {
     isArray,
     isFalse,
     isNull,
-    isString,
     isTrue,
     isUndefined,
     KEY__SHADOW_RESOLVER,
@@ -22,7 +21,7 @@ import {
 } from '@lwc/shared';
 import features from '@lwc/features';
 
-import { logError, logWarn } from '../shared/logger';
+import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -689,16 +688,10 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
             slotName = vnode.slotName;
         }
 
-        if (!isString(slotName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                logWarn(
-                    `Non-string attribute ${slotName} passed to slot attribute was replaced with an empty string (default slot value). The attribute \`slot\` accepts only string values.`
-                );
-            }
-            slotName = '';
-        }
+        const normalizedSlotName = slotName.toString();
 
-        const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
+        const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =
+            cmpSlotsMapping[normalizedSlotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
 }
