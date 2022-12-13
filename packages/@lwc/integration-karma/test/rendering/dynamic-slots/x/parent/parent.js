@@ -5,6 +5,8 @@ export default class Parent extends LightningElement {
     named1Name = 'named1';
     slotWithDefaultContentName = 'named-with-default-content';
     counter = 1;
+    number = 1;
+    boolean = true;
 
     @api
     setUndefinedName() {
