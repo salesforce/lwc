@@ -12,7 +12,9 @@ import {
     assert,
     create,
     getOwnPropertyNames,
+    isArray,
     isFalse,
+    isFunction,
     isNull,
     isObject,
     isTrue,
@@ -20,10 +22,11 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
+import { logError } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -41,6 +44,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
+import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -170,10 +174,12 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Renderer API */
     renderer: RendererAPI;
-
     /**
      * Debug info bag. Stores useful debug information about the component. */
     debugInfo?: Record<string, any>;
+    /**
+     * Any stylesheets associated with the component */
+    stylesheets: TemplateStylesheetFactories | null;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -319,6 +325,7 @@ export function createVM<HostNode, HostElement>(
         // Properties set right after VM creation.
         tro: null!,
         shadowMode: null!,
+        stylesheets: null!,
 
         // Properties set by the LightningElement constructor.
         component: null!,
@@ -336,6 +343,7 @@ export function createVM<HostNode, HostElement>(
         vm.debugInfo = create(null);
     }
 
+    vm.stylesheets = computeStylesheets(vm, def.ctor);
     vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
@@ -357,6 +365,49 @@ export function createVM<HostNode, HostElement>(
     }
 
     return vm;
+}
+
+function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFactories): boolean {
+    let valid = true;
+
+    const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
+        if (isArray(arrayOrStylesheet)) {
+            for (let i = 0; i < arrayOrStylesheet.length; i++) {
+                validate((arrayOrStylesheet as TemplateStylesheetFactories)[i]);
+            }
+        } else if (!isFunction(arrayOrStylesheet)) {
+            // function assumed to be a stylesheet factory
+            valid = false;
+        }
+    };
+
+    if (!isArray(stylesheets)) {
+        valid = false;
+    } else {
+        validate(stylesheets);
+    }
+
+    return valid;
+}
+
+// Validate and flatten any stylesheets defined as `static stylesheets`
+function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
+    if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
+        const { stylesheets } = ctor;
+        if (!isUndefined(stylesheets)) {
+            const valid = validateComponentStylesheets(vm, stylesheets);
+
+            if (valid) {
+                return flattenStylesheets(stylesheets);
+            } else if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                    vm
+                );
+            }
+        }
+    }
+    return null;
 }
 
 function computeShadowMode(vm: VM, renderer: RendererAPI) {
