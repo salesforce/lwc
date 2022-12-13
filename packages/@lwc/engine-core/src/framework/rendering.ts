@@ -669,18 +669,19 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
 
 /**
  * Flattens the contents of all VFragments in an array of VNodes, removes the text delimiters on those VFragments, and
- * marks the resulting children array as dynamic.
+ * marks the resulting children array as dynamic. Uses a stack (array) to iteratively traverse the nested VFragments
+ * and avoid the perf overhead of creating/destroying throwaway arrays/objects in a recursive approach.
  *
- * With the delimiters removed, the contents must be treated as dynamic for them to rerender correctly.
+ * With the delimiters removed, the contents are marked dynamic so they are diffed correctly.
  *
  * This function is used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
  */
 function flattenFragmentsInChildren(children: VNodes): VNodes {
     const flattenedChildren: VNodes = [];
-    const nodeStack: VNodes = [];
 
     // Initialize our stack with the direct children of the custom component and check whether we have a VFragment.
     // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
+    const nodeStack: VNodes = [];
     let fragmentFound = false;
     for (let i = children.length - 1; i > -1; i -= 1) {
         const child = children[i];
@@ -739,7 +740,13 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+
+    // Collect all slots into cmpSlotsMapping
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
@@ -756,15 +763,8 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
         const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
-}
-
-function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
-    const {
-        cmpSlots: { slotAssignments: oldSlotsMapping },
-    } = vm;
-    const cmpSlotsMapping = create(null);
-    collectSlots(vm, children, cmpSlotsMapping);
     vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
+
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
