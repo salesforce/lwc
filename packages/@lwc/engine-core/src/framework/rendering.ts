@@ -679,9 +679,17 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
     const flattenedChildren: VNodes = [];
     const nodeStack: VNodes = [];
 
-    // Initialize our stack with the direct children of the custom component
+    // Initialize our stack with the direct children of the custom component and check whether we have a VFragment.
+    // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
+    let fragmentFound = false;
     for (let i = children.length - 1; i > -1; i -= 1) {
-        ArrayPush.call(nodeStack, children[i]);
+        const child = children[i];
+        ArrayPush.call(nodeStack, child);
+        fragmentFound = fragmentFound || !!(child && isVFragment(child));
+    }
+
+    if (!fragmentFound) {
+        return children;
     }
 
     let currentNode: VNode | null | undefined;
