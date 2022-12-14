@@ -1,11 +1,5 @@
 <template>
-    <div><h1>Header</h1></div>
-    <div lwc:if={showList} class="if">
-        <template for:each={items} for:item="item">
-            <div key={item}>{item}</div>
-        </template>
-    </div>
-    <div lwc:else class="else">
+    <div lwc:if={showContent}>
         <template lwc:if={showNestedContent}>
             <div class="nestedContent">Nested Content</div>
         </template>

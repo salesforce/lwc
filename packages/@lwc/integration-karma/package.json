@@ -6,7 +6,6 @@
         "start": "karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
         "test:compat": "COMPAT=1 yarn test",
-        "test:native": "DISABLE_SYNTHETIC=1 yarn test",
         "hydration:start": "karma start ./scripts/karma-configs/hydration/local.js",
         "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
