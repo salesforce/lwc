@@ -213,7 +213,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
 
-            // If we are in fakeShadow we dont want to have :host selectors
+            // If we are in synthetic shadow we don't want to have :host selectors
             if ((node as any)._isNativeHost) {
                 // create an expression for all the tokens (concatenation of strings)
                 // Save it so in the next rule we can apply a ternary
