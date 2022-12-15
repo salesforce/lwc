@@ -47,6 +47,7 @@ import {
     isVScopedSlotFragment,
     VScopedSlotFragment,
 } from './vnodes';
+import { getCtorSelectorName } from './component';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -556,8 +557,9 @@ function dc(
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
+    const selector = getCtorSelectorName(Ctor) || sel;
 
-    return c(sel, Ctor, data, children);
+    return c(selector, Ctor, data, children);
 }
 
 /**

@@ -16,6 +16,7 @@ import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
 const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
+const ctorSelectorNameMap: Map<LightningElementConstructor, string> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -24,17 +25,26 @@ const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl }: { tmpl: Template }
+    { tmpl, sel }: { tmpl: Template; sel: string }
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
             checkVersionMismatch(Ctor, 'component');
         }
         signedTemplateMap.set(Ctor, tmpl);
+        ctorSelectorNameMap.set(Ctor, camelToKebab(sel));
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
     return Ctor;
+}
+
+function camelToKebab(tag: string): string {
+    return tag.replace(/[A-Z]/g, (match) => '-' + match.toLowerCase());
+}
+
+export function getCtorSelectorName(Ctor: LightningElementConstructor): string | undefined {
+    return ctorSelectorNameMap.get(Ctor);
 }
 
 export function getComponentRegisteredTemplate(
