@@ -21,6 +21,7 @@ export default function scriptTransform(
     options: NormalizedTransformOptions
 ): TransformResult {
     const {
+        namespace,
         name: componentName,
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
@@ -42,7 +43,10 @@ export default function scriptTransform(
             compact: false,
 
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, componentName }],
+                [
+                    lwcClassTransformPlugin,
+                    { isExplicitImport, dynamicImports, componentName, namespace },
+                ],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is
