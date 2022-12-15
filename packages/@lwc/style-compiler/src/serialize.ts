@@ -153,7 +153,7 @@ function generateExpressionFromTokens(tokens: Token[]): string {
     }
 }
 
-function areTokensEqual(left: Token, right: Token) {
+function areTokensEqual(left: Token, right: Token): boolean {
     return left.type === right.type && left.value === right.value;
 }
 
@@ -168,6 +168,34 @@ function calculateNumDuplicatedTokens(left: Token[], right: Token[]): number {
         }
     }
     return i;
+}
+
+// For `:host` selectors, the token lists for native vs synthetic will be identical at the end of
+// each list. So as an optimization, we can de-dup these tokens.
+// See: https://github.com/salesforce/lwc/issues/3224#issuecomment-1353520052
+function deduplicateHostTokens(nativeHostTokens: Token[], syntheticHostTokens: Token[]): Token[] {
+    const numDuplicatedTokens = calculateNumDuplicatedTokens(nativeHostTokens, syntheticHostTokens);
+
+    const numUniqueNativeTokens = nativeHostTokens.length - numDuplicatedTokens;
+    const numUniqueSyntheticTokens = syntheticHostTokens.length - numDuplicatedTokens;
+
+    const uniqueNativeTokens = nativeHostTokens.slice(0, numUniqueNativeTokens);
+    const uniqueSyntheticTokens = syntheticHostTokens.slice(0, numUniqueSyntheticTokens);
+
+    const nativeExpression = generateExpressionFromTokens(uniqueNativeTokens);
+    const syntheticExpression = generateExpressionFromTokens(uniqueSyntheticTokens);
+
+    // Generate a conditional ternary to switch between native vs synthetic for the unique tokens
+    const conditionalToken = {
+        type: TokenType.expression,
+        value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${nativeExpression} : ${syntheticExpression})`,
+    };
+
+    return [
+        conditionalToken,
+        // The remaining tokens are the same between native and synthetic
+        ...syntheticHostTokens.slice(numUniqueSyntheticTokens),
+    ];
 }
 
 function serializeCss(result: Result, collectVarFunctions: boolean): string {
@@ -195,31 +223,8 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
                     throw new Error('Unexpected host rules ordering');
                 }
 
-                // For `:host()` selectors, the token lists for native vs synthetic will be identical at the end of
-                // each list. So as an optimization, we can de-dup these tokens.
-                // See: https://github.com/salesforce/lwc/issues/3224#issuecomment-1353520052
-
-                const numDuplicatedTokens = calculateNumDuplicatedTokens(
-                    nativeHostTokens,
-                    currentRuleTokens
-                );
-                const numUniqueNativeTokens = nativeHostTokens.length - numDuplicatedTokens;
-                const numUniqueSyntheticTokens = currentRuleTokens.length - numDuplicatedTokens;
-
-                const uniqueNativeTokens = nativeHostTokens.slice(0, numUniqueNativeTokens);
-                const uniqueSyntheticTokens = currentRuleTokens.slice(0, numUniqueSyntheticTokens);
-
-                const nativeExpression = generateExpressionFromTokens(uniqueNativeTokens);
-                const syntheticExpression = generateExpressionFromTokens(uniqueSyntheticTokens);
-
-                // Generate a ternary to switch between native vs synthetic for the unique tokens
-                tokens.push({
-                    type: TokenType.expression,
-                    value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${nativeExpression} : ${syntheticExpression})`,
-                });
-
-                // The remaining tokens are duplicated between native and synthetic
-                tokens.push(...currentRuleTokens.slice(numUniqueSyntheticTokens));
+                const hostTokens = deduplicateHostTokens(nativeHostTokens, currentRuleTokens);
+                tokens.push(...hostTokens);
 
                 nativeHostTokens = undefined;
             } else {
