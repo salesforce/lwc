@@ -107,7 +107,11 @@ function reduceTokens(tokens: Token[]): Token[] {
         .reduce((acc: Token[], token: Token) => {
             const prev = acc[acc.length - 1];
             if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
-                prev.value += token.value;
+                // clone the previous token to avoid mutating it in-place
+                acc[acc.length - 1] = {
+                    type: prev.type,
+                    value: prev.value + token.value,
+                };
                 return acc;
             } else {
                 return [...acc, token];
@@ -149,10 +153,27 @@ function generateExpressionFromTokens(tokens: Token[]): string {
     }
 }
 
+function areTokensEqual(left: Token, right: Token) {
+    return left.type === right.type && left.value === right.value;
+}
+
+function calculateNumDuplicatedTokens(left: Token[], right: Token[]): number {
+    // Walk backwards until we find a token that is different between left and right
+    let i = 0;
+    for (; i < left.length && i < right.length; i++) {
+        const currentLeft = left[left.length - 1 - i];
+        const currentRight = right[right.length - 1 - i];
+        if (!areTokensEqual(currentLeft, currentRight)) {
+            break;
+        }
+    }
+    return i;
+}
+
 function serializeCss(result: Result, collectVarFunctions: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
-    let tmpHostExpression: string | null;
+    let nativeHostTokens: Token[] | undefined;
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
@@ -165,21 +186,44 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
             currentRuleTokens.push({ type: TokenType.text, value: part });
 
             // If we are in fakeShadow we dont want to have :host selectors
-            if ((node as any)._isHostNative) {
+            if ((node as any)._isNativeHost) {
                 // create an expression for all the tokens (concatenation of strings)
                 // Save it so in the next rule we can apply a ternary
-                tmpHostExpression = generateExpressionFromTokens(currentRuleTokens);
-            } else if ((node as any)._isFakeNative) {
-                const exprToken = generateExpressionFromTokens(currentRuleTokens);
+                nativeHostTokens = [...currentRuleTokens];
+            } else if ((node as any)._isSyntheticHost) {
+                if (!nativeHostTokens) {
+                    throw new Error('Unexpected host rules ordering');
+                }
 
+                // For `:host()` selectors, the token lists for native vs synthetic will be identical at the end of
+                // each list. So as an optimization, we can de-dup these tokens.
+                // See: https://github.com/salesforce/lwc/issues/3224#issuecomment-1353520052
+
+                const numDuplicatedTokens = calculateNumDuplicatedTokens(
+                    nativeHostTokens,
+                    currentRuleTokens
+                );
+                const numUniqueNativeTokens = nativeHostTokens.length - numDuplicatedTokens;
+                const numUniqueSyntheticTokens = currentRuleTokens.length - numDuplicatedTokens;
+
+                const uniqueNativeTokens = nativeHostTokens.slice(0, numUniqueNativeTokens);
+                const uniqueSyntheticTokens = currentRuleTokens.slice(0, numUniqueSyntheticTokens);
+
+                const nativeExpression = generateExpressionFromTokens(uniqueNativeTokens);
+                const syntheticExpression = generateExpressionFromTokens(uniqueSyntheticTokens);
+
+                // Generate a ternary to switch between native vs synthetic for the unique tokens
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${tmpHostExpression} : ${exprToken})`,
+                    value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${nativeExpression} : ${syntheticExpression})`,
                 });
 
-                tmpHostExpression = null;
+                // The remaining tokens are duplicated between native and synthetic
+                tokens.push(...currentRuleTokens.slice(numUniqueSyntheticTokens));
+
+                nativeHostTokens = undefined;
             } else {
-                if (tmpHostExpression) {
+                if (nativeHostTokens) {
                     throw new Error('Unexpected host rules ordering');
                 }
                 tokens.push(...currentRuleTokens);
