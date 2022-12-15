@@ -1,0 +1,11 @@
+/* this syntax is technically invalid https://github.com/salesforce/lwc/issues/3225 */
+:host(.foo, .bar) .baz .quux {
+    color: green;
+}
+
+/* this syntax is fine */
+:host(.foo) .baz .quux, :host(.bar) .baz .quux {
+    margin-left: 17px;
+}
+
+
