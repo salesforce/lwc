@@ -215,8 +215,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
             // If we are in synthetic shadow we don't want to have :host selectors
             if ((node as any)._isNativeHost) {
-                // create an expression for all the tokens (concatenation of strings)
-                // Save it so in the next rule we can apply a ternary
+                // Save native tokens so in the next rule we can apply a conditional ternary
                 nativeHostTokens = [...currentRuleTokens];
             } else if ((node as any)._isSyntheticHost) {
                 if (!nativeHostTokens) {
