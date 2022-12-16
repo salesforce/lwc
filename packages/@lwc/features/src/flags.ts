@@ -18,6 +18,7 @@ const features: FeatureFlagMap = {
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: null,
     ENABLE_FROZEN_TEMPLATE: null,
     DISABLE_ARIA_REFLECTION_POLYFILL: null,
+    ENABLE_PROGRAMMATIC_STYLESHEETS: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {
