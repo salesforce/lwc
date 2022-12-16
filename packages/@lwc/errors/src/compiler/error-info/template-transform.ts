@@ -53,14 +53,6 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-
-    DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
-        code: 1152,
-        message:
-            'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
 };
 
 export const ParserDiagnostics = {
