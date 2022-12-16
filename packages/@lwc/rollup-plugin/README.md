@@ -32,3 +32,4 @@ export default {
 -   `experimentalDynamicComponent` (type: `DynamicComponentConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
 -   `enableLwcSpread` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
 -   `enableScopedSlots` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.
+-   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.

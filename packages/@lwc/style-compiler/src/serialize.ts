@@ -40,6 +40,7 @@ const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
 const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
 const USE_NATIVE_DIR_PSEUDOCLASS = 'useNativeDirPseudoclass';
+const TOKEN = 'token';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -50,6 +51,8 @@ export default function serialize(result: Result, config: Config): string {
     );
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map((message) => message.id);
+    const disableSyntheticShadow = Boolean(config.disableSyntheticShadowSupport);
+    const scoped = Boolean(config.scoped);
 
     let buffer = '';
 
@@ -71,21 +74,33 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(token, ${USE_ACTUAL_HOST_SELECTOR}, ${USE_NATIVE_DIR_PSEUDOCLASS}) {\n`;
-        // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
-        if (config.scoped) {
-            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("." + token) : "";\n`;
-            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("." + token + "-host") : "";\n`;
+        if (disableSyntheticShadow && !scoped) {
+            // If synthetic shadow DOM support is disabled and this is not a scoped stylesheet, then the
+            // function signature will always be:
+            //   stylesheet(token = undefined, useActualHostSelector = true, useNativeDirPseudoclass = true)
+            // This means that we can just have a function that takes no arguments and returns a string,
+            // reducing the bundle size when minified.
+            buffer += `function ${STYLESHEET_IDENTIFIER}() {\n`;
+            buffer += `  var ${TOKEN};\n`; // undefined
+            buffer += `  var ${USE_ACTUAL_HOST_SELECTOR} = true;\n`;
+            buffer += `  var ${USE_NATIVE_DIR_PSEUDOCLASS} = true;\n`;
         } else {
-            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("[" + token + "]") : "";\n`;
-            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("[" + token + "-host]") : "";\n`;
+            buffer += `function ${STYLESHEET_IDENTIFIER}(${TOKEN}, ${USE_ACTUAL_HOST_SELECTOR}, ${USE_NATIVE_DIR_PSEUDOCLASS}) {\n`;
+        }
+        // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
+        if (scoped) {
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("." + ${TOKEN}) : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("." + ${TOKEN} + "-host") : "";\n`;
+        } else {
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("[" + ${TOKEN} + "]") : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("[" + ${TOKEN} + "-host]") : "";\n`;
         }
         buffer += `  return ${serializedStyle};\n`;
         buffer += `  /*${LWC_VERSION_COMMENT}*/\n`;
         buffer += `}\n`;
-        if (config.scoped) {
+        if (scoped) {
             // Mark the stylesheet as scoped so that we can distinguish it later at runtime
-            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
+            buffer += `${STYLESHEET_IDENTIFIER}.${KEY__SCOPED_CSS} = true;\n`;
         }
 
         // add import at the end
