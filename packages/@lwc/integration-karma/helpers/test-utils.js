@@ -442,6 +442,65 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         }
     }
 
+    // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
+    var ariaPropertiesMapping = {
+        ariaAutoComplete: 'aria-autocomplete',
+        ariaChecked: 'aria-checked',
+        ariaCurrent: 'aria-current',
+        ariaDisabled: 'aria-disabled',
+        ariaExpanded: 'aria-expanded',
+        ariaHasPopup: 'aria-haspopup',
+        ariaHidden: 'aria-hidden',
+        ariaInvalid: 'aria-invalid',
+        ariaLabel: 'aria-label',
+        ariaLevel: 'aria-level',
+        ariaMultiLine: 'aria-multiline',
+        ariaMultiSelectable: 'aria-multiselectable',
+        ariaOrientation: 'aria-orientation',
+        ariaPressed: 'aria-pressed',
+        ariaReadOnly: 'aria-readonly',
+        ariaRequired: 'aria-required',
+        ariaSelected: 'aria-selected',
+        ariaSort: 'aria-sort',
+        ariaValueMax: 'aria-valuemax',
+        ariaValueMin: 'aria-valuemin',
+        ariaValueNow: 'aria-valuenow',
+        ariaValueText: 'aria-valuetext',
+        ariaLive: 'aria-live',
+        ariaRelevant: 'aria-relevant',
+        ariaAtomic: 'aria-atomic',
+        ariaBusy: 'aria-busy',
+        ariaActiveDescendant: 'aria-activedescendant',
+        ariaControls: 'aria-controls',
+        ariaDescribedBy: 'aria-describedby',
+        ariaFlowTo: 'aria-flowto',
+        ariaLabelledBy: 'aria-labelledby',
+        ariaOwns: 'aria-owns',
+        ariaPosInSet: 'aria-posinset',
+        ariaSetSize: 'aria-setsize',
+        ariaColCount: 'aria-colcount',
+        ariaColSpan: 'aria-colspan',
+        ariaColIndex: 'aria-colindex',
+        ariaDetails: 'aria-details',
+        ariaErrorMessage: 'aria-errormessage',
+        ariaKeyShortcuts: 'aria-keyshortcuts',
+        ariaModal: 'aria-modal',
+        ariaPlaceholder: 'aria-placeholder',
+        ariaRoleDescription: 'aria-roledescription',
+        ariaRowCount: 'aria-rowcount',
+        ariaRowIndex: 'aria-rowindex',
+        ariaRowSpan: 'aria-rowspan',
+        role: 'role',
+    };
+
+    var ariaProperties = Object.keys(ariaPropertiesMapping);
+
+    // Can't use Object.values because we need to support IE11
+    var ariaAttributes = [];
+    for (let i = 0; i < ariaProperties.length; i++) {
+        ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
+    }
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -455,5 +514,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         setHooks: setHooks,
         spyConsole: spyConsole,
         customElementConnectedErrorListener: customElementConnectedErrorListener,
+        ariaPropertiesMapping: ariaPropertiesMapping,
+        ariaProperties: ariaProperties,
+        ariaAttributes: ariaAttributes,
     };
 })(LWC, jasmine, beforeAll);

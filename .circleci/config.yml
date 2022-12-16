@@ -54,6 +54,9 @@ commands:
       enable_scoped_custom_element_registry:
         type: boolean
         default: false
+      disable_aria_reflection_polyfill:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -77,6 +80,7 @@ commands:
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
             <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
+            <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -167,6 +171,9 @@ commands:
       enable_scoped_custom_element_registry:
         type: boolean
         default: false
+      disable_aria_reflection_polyfill:
+        type: boolean
+        default: false
       compat:
         type: boolean
         default: false
@@ -181,6 +188,7 @@ commands:
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
           enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
           enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
+          disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -254,6 +262,9 @@ jobs:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
           enable_scoped_custom_element_registry: true
+      - run_karma:
+          disable_synthetic: true
+          disable_aria_reflection_polyfill: true
       - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce

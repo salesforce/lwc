@@ -34,6 +34,7 @@ This set of environment variables applies to the `start` and `test` commands:
 -   **`DISABLE_SYNTHETIC=1`:** Run without any synthetic shadow polyfill patches.
 -   **`FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1`:** Force tests to run in native shadow mode with synthetic shadow polyfill patches.
 -   **`ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1`:** Use native custom element lifecycle callbacks.
+-   **`DISABLE_ARIA_REFLECTION_POLYFILL=1`:** Disable usage of `@lwc/aria-reflection` as a global polyfill.
 -   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
 

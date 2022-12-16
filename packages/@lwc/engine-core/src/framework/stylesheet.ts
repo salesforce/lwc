@@ -11,7 +11,7 @@ import { logError } from '../shared/logger';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
-import { computeHasScopedStyles, Template } from './template';
+import { computeHasScopedStyles, hasStyles, Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
@@ -60,6 +60,7 @@ export function updateStylesheetToken(vm: VM, template: Template) {
         renderer: { getClassList, removeAttribute, setAttribute },
     } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
+    const { stylesheets: newVmStylesheets } = vm;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
     const { hasScopedStyles } = context;
@@ -85,7 +86,9 @@ export function updateStylesheetToken(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets. In the case of light DOM, also ensure there is at least one scoped stylesheet.
-    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0) {
+    const hasNewStylesheets = hasStyles(newStylesheets);
+    const hasNewVmStylesheets = hasStyles(newVmStylesheets);
+    if (hasNewStylesheets || hasNewVmStylesheets) {
         newToken = newStylesheetToken;
     }
 
@@ -178,11 +181,17 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetToken } = template;
+    const { stylesheets: vmStylesheets } = vm;
 
     let content: string[] = [];
 
-    if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
+    if (hasStyles(stylesheets)) {
         content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
+    }
+
+    // VM (component) stylesheets apply after template stylesheets
+    if (hasStyles(vmStylesheets)) {
+        ArrayPush.apply(content, evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm));
     }
 
     return content;
@@ -220,8 +229,9 @@ export function getScopeTokenClass(owner: VM): string | null {
  */
 export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
     const { template } = getComponentInternalDef(vnode.ctor);
+    const { vm } = vnode;
     const { stylesheetToken } = template;
-    return !isUndefined(stylesheetToken) && computeHasScopedStyles(template)
+    return !isUndefined(stylesheetToken) && computeHasScopedStyles(template, vm)
         ? makeHostToken(stylesheetToken)
         : null;
 }

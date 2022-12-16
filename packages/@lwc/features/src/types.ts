@@ -74,6 +74,20 @@ export interface FeatureFlagMap {
      * ```
      */
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
+
+    /**
+     * Flag to remove the ARIA reflection polyfill. When set to true, this flag will avoid the global DOM patching
+     * to polyfill ARIA reflection. Instead, the necessary ARIA properties will only exist on the LightningElement
+     * and HTMLBridgeElement base classes, not on every Element.
+     */
+    DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
+
+    /**
+     * Flag to enable programmatic stylesheets, aka dynamic stylesheet injection, aka CSS extensibility. Allows
+     * for a `static stylesheets` property at the component level that injects stylesheets alongside the template
+     * stylsheets.
+     */
+    ENABLE_PROGRAMMATIC_STYLESHEETS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

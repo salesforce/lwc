@@ -27,6 +27,8 @@ import {
     keys,
     setPrototypeOf,
 } from '@lwc/shared';
+import features from '@lwc/features';
+import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
@@ -55,6 +57,7 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
+import { TemplateStylesheetFactories } from './stylesheet';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -138,6 +141,7 @@ export interface LightningElementConstructor {
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
     shadowSupportMode?: ShadowSupportMode;
+    stylesheets: TemplateStylesheetFactories;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -693,6 +697,21 @@ for (const propName in HTMLElementOriginalDescriptors) {
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+
+function applyAriaReflectionToLightningElement() {
+    // If ARIA reflection is not applied globally to Element.prototype, or if we are running server-side,
+    // apply it to LightningElement.prototype.
+    // This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
+    applyAriaReflection(LightningElement.prototype);
+}
+
+// The reason for this odd if/else branching is limitations in @lwc/features:
+// https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#only-works-with-if-statements
+if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    applyAriaReflectionToLightningElement();
+} else if (!process.env.IS_BROWSER) {
+    applyAriaReflectionToLightningElement();
+}
 
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {
