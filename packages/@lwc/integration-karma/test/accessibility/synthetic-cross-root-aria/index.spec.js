@@ -23,7 +23,6 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
             reportingControl.attachDispatcher(dispatcher);
-            window.__lwcResetAlreadyLoggedSyntheticCrossRootAriaWarnings();
         });
 
         afterEach(() => {

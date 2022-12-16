@@ -24,7 +24,7 @@ import {
 } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
-import { logWarn } from '../shared/logger';
+import { logWarnOnce } from '../shared/logger';
 
 //
 // The goal of this code is to detect invalid cross-root ARIA references in synthetic shadow DOM.
@@ -39,36 +39,6 @@ const getElementById = globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID] as typeof docum
 const querySelectorAll = globalThis[
     KEY__NATIVE_QUERY_SELECTOR_ALL
 ] as typeof document.querySelectorAll;
-
-const alreadyLoggedComponentsAndElements: Set<string> = new Set();
-
-// @ts-ignore
-if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
-    // @ts-ignore
-    window.__lwcResetAlreadyLoggedSyntheticCrossRootAriaWarnings = () => {
-        alreadyLoggedComponentsAndElements.clear();
-    };
-}
-
-// Avoid excessively logging to the console in the case of duplicates.
-function logDedupedWarning(vm: VM, source: Element, target: Element, attrName: string) {
-    const componentTagName = vm.tagName.toLowerCase();
-    const sourceTagName = source.tagName.toLowerCase();
-    const targetTagName = target.tagName.toLowerCase();
-    const key = [componentTagName, sourceTagName, targetTagName].join('_');
-
-    if (alreadyLoggedComponentsAndElements.has(key)) {
-        return;
-    }
-    alreadyLoggedComponentsAndElements.add(key);
-
-    logWarn(
-        `Element <${sourceTagName}> uses attribute "${attrName}" to reference element ` +
-            `<${targetTagName}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
-            `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
-        vm
-    );
-}
 
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
     return rootNode !== document && isTrue((rootNode as any).synthetic);
@@ -87,7 +57,13 @@ function reportViolation(source: Element, target: Element, attrName: string) {
     }
     report(ReportingEventId.CrossRootAriaInSyntheticShadow, vm);
     if (process.env.NODE_ENV !== 'production') {
-        logDedupedWarning(vm, source, target, attrName);
+        // Avoid excessively logging to the console in the case of duplicates.
+        logWarnOnce(
+            `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
+                `<${target.tagName.toLowerCase()}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
+                `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
+            vm
+        );
     }
 }
 
