@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { invariant, TemplateErrors } from '@lwc/errors';
 import State from '../state';
 import { BaseElement, ElementDirectiveName } from './types';
 
@@ -47,6 +46,13 @@ export interface CustomRendererConfig {
 }
 
 function checkElement(element: BaseElement, state: State): boolean {
+    // Custom elements are not allowed to have a custom renderer hook.
+    // The renderer is cascaded down from the owner(custom element) to all its child nodes who
+    // do not have a renderer specified.
+    if (element.type === 'Component') {
+        return false;
+    }
+
     const { attributes, directives } = element;
     if (directives.length) {
         let directiveMatched = false;
@@ -55,15 +61,6 @@ function checkElement(element: BaseElement, state: State): boolean {
             return state.crDirectives.has(ElementDirectiveName[dir.name]);
         });
         if (directiveMatched) {
-            // Directives that require custom renderer are not allowed on custom elements
-            // Custom element cannot be allowed to have a custom renderer hook
-            // The renderer is cascaded down from the owner(custom element) to all its child nodes who
-            // do not have a renderer specified.
-            invariant(
-                element.type !== 'Component',
-                TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
-                [element.name, state.config.customRendererConfig!.directives.join(', ')]
-            );
             return true;
         }
     }
