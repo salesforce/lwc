@@ -10,6 +10,8 @@ import {
     assign,
     create,
     defineProperties,
+    forEach,
+    getOwnPropertyNames,
     getPropertyDescriptor,
     getPrototypeOf,
     isUndefined,
@@ -22,7 +24,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { LightningElement } from './base-lightning-element';
-import { globalHtmlElementPropertyNames, globalHTMLProperties } from './attributes';
+import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
@@ -335,41 +337,33 @@ function getLightningElementPrototypeRestrictionsDescriptors(
         }),
     };
 
-    // Disable certain global HTML properties (the getters/setters become a no-op)
-    // and warn when getting/setting them in non-prod mode.
-    for (const propName of globalHtmlElementPropertyNames) {
+    forEach.call(getOwnPropertyNames(globalHTMLProperties), (propName: string) => {
         if (propName in proto) {
-            continue; // no need to redefine something that we are already exposing
+            return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = generateAccessorDescriptor({
             get(this: LightningElement) {
-                // No need to log in production mode. Just use an empty getter
-                if (process.env.NODE_ENV !== 'production') {
-                    const { error, attribute } = globalHTMLProperties[propName];
-                    const msg: string[] = [];
-                    msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
-                    if (error) {
-                        msg.push(error);
-                    } else if (attribute) {
-                        msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
-                    }
-                    logError(msg.join('\n'), getAssociatedVM(this));
+                const { error, attribute } = globalHTMLProperties[propName];
+                const msg: string[] = [];
+                msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
+                if (error) {
+                    msg.push(error);
+                } else if (attribute) {
+                    msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
+                logError(msg.join('\n'), getAssociatedVM(this));
             },
             set(this: LightningElement) {
-                // No need to log in production mode. Just use an empty setter
-                if (process.env.NODE_ENV !== 'production') {
-                    const { readOnly } = globalHTMLProperties[propName];
-                    if (readOnly) {
-                        logError(
-                            `The global HTML property \`${propName}\` is read-only.`,
-                            getAssociatedVM(this)
-                        );
-                    }
+                const { readOnly } = globalHTMLProperties[propName];
+                if (readOnly) {
+                    logError(
+                        `The global HTML property \`${propName}\` is read-only.`,
+                        getAssociatedVM(this)
+                    );
                 }
             },
         });
-    }
+    });
 
     return descriptors;
 }
