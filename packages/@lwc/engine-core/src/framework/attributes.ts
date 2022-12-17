@@ -98,12 +98,11 @@ export const globalHTMLProperties: {
     id: {
         attribute: 'id',
     },
-    // additional "global attributes" that are not present in the link above.
-    isContentEditable: {
-        readOnly: true,
-    },
     inputMode: {
         attribute: 'inputmode',
+    },
+    isContentEditable: {
+        readOnly: true,
     },
     lang: {
         attribute: 'lang',
