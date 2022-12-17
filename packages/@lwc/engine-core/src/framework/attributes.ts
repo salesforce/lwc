@@ -28,9 +28,6 @@ function offsetPropertyErrorMessage(name: string): string {
 //
 // If you update this list, check for test files that recapitulate the same list. Searching the codebase
 // for e.g. "dropzone" should suffice.
-
-// This mapping is deliberately kept separate from the array of property names above because the mapping object is
-// needed only for dev mode, whereas the above array is needed in prod mode too. This makes the bundle size lower.
 export const globalHTMLProperties: {
     [prop: string]: {
         attribute?: string;
