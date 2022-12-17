@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create } from '@lwc/shared';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
@@ -29,13 +28,43 @@ function offsetPropertyErrorMessage(name: string): string {
 //
 // If you update this list, check for test files that recapitulate the same list. Searching the codebase
 // for e.g. "dropzone" should suffice.
+export const globalHtmlElementPropertyNames = [
+    'accessKey',
+    'accessKeyLabel',
+    'className',
+    'contentEditable',
+    'dataset',
+    'dir',
+    'draggable',
+    'dropzone',
+    'hidden',
+    'id',
+    'inputMode',
+    'isContentEditable',
+    'lang',
+    'offsetHeight',
+    'offsetLeft',
+    'offsetParent',
+    'offsetTop',
+    'offsetWidth',
+    'role',
+    'slot',
+    'spellcheck',
+    'style',
+    'tabIndex',
+    'title',
+    'translate',
+] as const;
+
+// This mapping is deliberately kept separate from the array of property names above because the mapping object is
+// needed only for dev mode, whereas the above array is needed in prod mode too. This makes the bundle size lower.
 export const globalHTMLProperties: {
-    [prop: string]: {
+    [Key in typeof globalHtmlElementPropertyNames[number]]: {
         attribute?: string;
         error?: string;
         readOnly?: boolean;
     };
-} = assign(create(null), {
+} = {
     accessKey: {
         attribute: 'accesskey',
     },
@@ -69,35 +98,15 @@ export const globalHTMLProperties: {
     id: {
         attribute: 'id',
     },
+    // additional "global attributes" that are not present in the link above.
+    isContentEditable: {
+        readOnly: true,
+    },
     inputMode: {
         attribute: 'inputmode',
     },
     lang: {
         attribute: 'lang',
-    },
-    slot: {
-        attribute: 'slot',
-        error: 'Using the `slot` property is an anti-pattern.',
-    },
-    spellcheck: {
-        attribute: 'spellcheck',
-    },
-    style: {
-        attribute: 'style',
-    },
-    tabIndex: {
-        attribute: 'tabindex',
-    },
-    title: {
-        attribute: 'title',
-    },
-    translate: {
-        attribute: 'translate',
-    },
-
-    // additional "global attributes" that are not present in the link above.
-    isContentEditable: {
-        readOnly: true,
     },
     offsetHeight: {
         readOnly: true,
@@ -121,7 +130,26 @@ export const globalHTMLProperties: {
     role: {
         attribute: 'role',
     },
-});
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` property is an anti-pattern.',
+    },
+    spellcheck: {
+        attribute: 'spellcheck',
+    },
+    style: {
+        attribute: 'style',
+    },
+    tabIndex: {
+        attribute: 'tabindex',
+    },
+    title: {
+        attribute: 'title',
+    },
+    translate: {
+        attribute: 'translate',
+    },
+};
 
 let controlledElement: Element | null = null;
 let controlledAttributeName: string | void;
