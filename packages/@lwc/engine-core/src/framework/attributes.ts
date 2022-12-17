@@ -101,11 +101,32 @@ export const globalHTMLProperties: {
     inputMode: {
         attribute: 'inputmode',
     },
-    isContentEditable: {
-        readOnly: true,
-    },
     lang: {
         attribute: 'lang',
+    },
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` property is an anti-pattern.',
+    },
+    spellcheck: {
+        attribute: 'spellcheck',
+    },
+    style: {
+        attribute: 'style',
+    },
+    tabIndex: {
+        attribute: 'tabindex',
+    },
+    title: {
+        attribute: 'title',
+    },
+    translate: {
+        attribute: 'translate',
+    },
+
+    // additional "global attributes" that are not present in the link above.
+    isContentEditable: {
+        readOnly: true,
     },
     offsetHeight: {
         readOnly: true,
@@ -128,25 +149,6 @@ export const globalHTMLProperties: {
     },
     role: {
         attribute: 'role',
-    },
-    slot: {
-        attribute: 'slot',
-        error: 'Using the `slot` property is an anti-pattern.',
-    },
-    spellcheck: {
-        attribute: 'spellcheck',
-    },
-    style: {
-        attribute: 'style',
-    },
-    tabIndex: {
-        attribute: 'tabindex',
-    },
-    title: {
-        attribute: 'title',
-    },
-    translate: {
-        attribute: 'translate',
     },
 };
 
