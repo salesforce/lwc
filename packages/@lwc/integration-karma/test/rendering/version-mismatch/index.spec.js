@@ -40,10 +40,6 @@ if (!process.env.COMPAT) {
         });
 
         describe('version mismatch warning', () => {
-            beforeEach(() => {
-                window.__lwcResetWarnedOnVersionMismatch();
-            });
-
             it('template', () => {
                 function tmpl() {
                     return [];
