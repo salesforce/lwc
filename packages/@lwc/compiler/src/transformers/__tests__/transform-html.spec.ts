@@ -27,7 +27,21 @@ describe('transformSync', () => {
         `;
         const { code } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
-        expect(code).toContain(`tmpl.stylesheets = []`);
+        expect(code).toContain(`tmpl.stylesheets = [];`);
+    });
+
+    it('should serialize the template with the correct scopeToken', () => {
+        const template = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+        const { code } = transformSync(template, 'foo.html', {
+            namespace: 'ns',
+            name: 'foo',
+        });
+
+        expect(code).toContain(`tmpl.stylesheetToken = "ns-foo_foo";`);
     });
 
     it('should hoist static vnodes when enableStaticContentOptimization is set to true', () => {
