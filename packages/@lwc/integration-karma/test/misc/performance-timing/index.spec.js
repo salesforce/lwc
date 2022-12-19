@@ -77,7 +77,7 @@ function testNestedComponentCreation(expected) {
     });
 }
 
-if (isUserTimingSupported) {
+if (isUserTimingSupported && process.env.NODE_ENV !== 'production') {
     beforeEach(() => {
         patchUserTiming();
         resetMeasures();

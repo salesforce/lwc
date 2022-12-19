@@ -11,8 +11,8 @@ import { getComponentStack } from './format';
 
 const alreadyLoggedMessages = new Set();
 
-// @ts-ignore
-if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
     // @ts-ignore
     window.__lwcResetAlreadyLoggedMessages = () => {
         alreadyLoggedMessages.clear();

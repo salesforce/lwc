@@ -12,12 +12,12 @@ describe('restrictions', () => {
         it('innerHTML', () => {
             expect(() => {
                 elm.setInnerHtmlOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set innerHTML on ShadowRoot.');
+            }).toThrowErrorDev(TypeError, 'Invalid attempt to set innerHTML on ShadowRoot.');
         });
         it('textContent', () => {
             expect(() => {
                 elm.setTextContentOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set textContent on ShadowRoot.');
+            }).toThrowErrorDev(TypeError, 'Invalid attempt to set textContent on ShadowRoot.');
         });
     });
 
@@ -25,17 +25,17 @@ describe('restrictions', () => {
         it('innerHTML', () => {
             expect(() => {
                 elm.innerHTML = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set innerHTML on HTMLElement.');
+            }).toThrowErrorDev(TypeError, 'Invalid attempt to set innerHTML on HTMLElement.');
         });
         it('outerHTML', () => {
             expect(() => {
                 elm.outerHTML = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on HTMLElement.');
+            }).toThrowErrorDev(TypeError, 'Invalid attempt to set outerHTML on HTMLElement.');
         });
         it('textContent', () => {
             expect(() => {
                 elm.textContent = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set textContent on HTMLElement.');
+            }).toThrowErrorDev(TypeError, 'Invalid attempt to set textContent on HTMLElement.');
         });
         it('addEventListener', () => {
             expect(() => {
@@ -75,9 +75,17 @@ describe('restrictions', () => {
 
     describe('Element', () => {
         it('should throw on setting outerHTML', () => {
-            expect(() => {
+            // eslint-disable-next-line jest/valid-expect
+            let expected = expect(() => {
                 elm.shadowRoot.querySelector('div').outerHTML = '';
-            }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on Element.');
+            });
+
+            if (process.env.NODE_ENV === 'production' && !/Firefox/.test(navigator.userAgent)) {
+                // in prod mode and only in firefox, this doesn't throw
+                expected = expected.not;
+            }
+
+            expected.toThrowError(/Invalid attempt to set outerHTML on Element\./);
         });
     });
 });

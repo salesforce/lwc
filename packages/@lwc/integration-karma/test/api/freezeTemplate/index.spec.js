@@ -170,6 +170,8 @@ describe('freezeTemplate', () => {
         const stylesheet = () => 'div { color: red }';
         template.stylesheets = [stylesheet];
         template.stylesheetToken = 'myToken';
+        template.renderMode = undefined;
+        template.slots = undefined;
         freezeTemplate(template);
 
         for (const prop of [

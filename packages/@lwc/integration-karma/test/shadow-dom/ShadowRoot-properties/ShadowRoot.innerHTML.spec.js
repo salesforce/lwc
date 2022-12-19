@@ -19,6 +19,6 @@ describe('ShadowRoot.innerHTML', () => {
 
         expect(() => {
             elm.shadowRoot.innerHTML = '<span>Hello World!</span>';
-        }).toThrowError();
+        }).toThrowErrorDev(TypeError, /Invalid attempt to set innerHTML on ShadowRoot/);
     });
 });

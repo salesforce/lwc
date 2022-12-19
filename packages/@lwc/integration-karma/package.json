@@ -30,6 +30,7 @@
         "karma-coverage": "^2.2.0",
         "karma-jasmine": "^4.0.2",
         "karma-sauce-launcher": "^4.3.6",
+        "magic-string": "^0.27.0",
         "whatwg-fetch": "^3.6.2"
     }
 }

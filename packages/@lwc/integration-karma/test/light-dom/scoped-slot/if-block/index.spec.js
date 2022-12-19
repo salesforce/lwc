@@ -36,8 +36,12 @@ describe('if-block', () => {
                 child.switchFromVariantToStandard();
             })
             .then(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-                expect(errorMsg).toMatch(/Mismatched slot types for \(default\) slot/);
+                if (process.env.NODE_ENV === 'production') {
+                    expect(consoleErrorSpy).not.toHaveBeenCalled();
+                } else {
+                    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+                    expect(errorMsg).toMatch(/Mismatched slot types for \(default\) slot/);
+                }
                 expect(child.innerHTML).toBe('');
             });
     });

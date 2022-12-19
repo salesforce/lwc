@@ -144,7 +144,7 @@ describe('observed-fields', () => {
                     // eslint-disable-next-line no-dupe-class-members
                     showFeatures() {}
                 }
-            }).toThrowError(
+            }).toThrowErrorDev(
                 'Invalid observed showFeatures field. Found a duplicate method with the same name.'
             );
         });

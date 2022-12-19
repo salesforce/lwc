@@ -63,7 +63,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-    function consoleDevMatcherFactory(methodName, internalMethodName) {
+    function consoleDevMatcherFactory(methodName, expectInProd) {
         return function consoleDevMatcher() {
             return {
                 negativeCompare: function negativeCompare(actual) {
@@ -74,7 +74,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (arg) {
                             return '"' + formatConsoleCall(arg) + '"';
@@ -126,16 +126,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (callArgs) {
                             return '"' + formatConsoleCall(callArgs) + '"';
                         })
                         .join(', ');
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (callsArgs.length !== 0) {
-                            fail(
+                            return fail(
                                 'Expected console.' +
                                     methodName +
                                     ' to never called in production mode, but it was called ' +
@@ -192,7 +192,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
-    function errorMatcherFactory(errorListener) {
+    function errorMatcherFactory(errorListener, expectInProd) {
         return function toThrowError() {
             return {
                 compare: function (actual, expectedErrorCtor, expectedMessage) {
@@ -245,7 +245,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
                     var thrown = errorListener(actual);
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
                             return fail(
                                 'Expected function not to throw an error in production mode, but it threw ' +
@@ -328,9 +328,11 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     var customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
+        toLogError: consoleDevMatcherFactory('error', true),
         toLogWarningDev: consoleDevMatcherFactory('warn'),
         toThrowErrorDev: errorMatcherFactory(directErrorListener),
-        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener),
+        toThrowConnectedErrorDev: errorMatcherFactory(customElementConnectedErrorListener),
+        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener, true),
     };
 
     beforeAll(function () {
