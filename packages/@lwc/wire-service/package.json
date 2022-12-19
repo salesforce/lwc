@@ -1,6 +1,6 @@
 {
     "name": "@lwc/wire-service",
-    "version": "2.34.0",
+    "version": "2.35.0",
     "description": "@wire service",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,8 +24,8 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.34.0",
-        "@lwc/shared": "2.34.0"
+        "@lwc/engine-core": "2.35.0",
+        "@lwc/shared": "2.35.0"
     },
     "lwc": {
         "modules": [
