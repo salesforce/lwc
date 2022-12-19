@@ -88,6 +88,13 @@ export interface FeatureFlagMap {
      * stylsheets.
      */
     ENABLE_PROGRAMMATIC_STYLESHEETS: FeatureFlagValue;
+
+    /**
+     * Flag to disable the reporting API (`__unstable__ReportingControl`). If set to true, any code related to
+     * reporting will be disabled, including detection logic. Calling the `__unstable__ReportingControl` API
+     * will be a no-op.
+     */
+    DISABLE_REPORTING: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -23,6 +23,7 @@ import {
     getPrototypeOf,
     isObject,
 } from '@lwc/shared';
+import features from '@lwc/features';
 
 import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
@@ -107,15 +108,19 @@ defineProperty(globalThis, KEY__IS_NATIVE_SHADOW_ROOT_DEFINED, {
     value: isNativeShadowRootDefined,
 });
 
-// The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
-// would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
-if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
-    defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, { value: getElementById });
-}
+if (!features.DISABLE_REPORTING) {
+    // This code is only needed for the CrossRootAriaInSyntheticShadow reporting API.
 
-// See note above.
-if (isUndefined(globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
-    defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, { value: querySelectorAll });
+    // The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
+    // would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
+    if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
+        defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, { value: getElementById });
+    }
+
+    // See note above.
+    if (isUndefined(globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
+        defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, { value: querySelectorAll });
+    }
 }
 
 // Function created per shadowRoot instance, it returns the shadowRoot, and is attached

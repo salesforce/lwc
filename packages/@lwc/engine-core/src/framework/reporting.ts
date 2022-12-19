@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { noop } from '@lwc/shared';
+import features from '@lwc/features';
 import { VM } from './vm';
 
 export const enum ReportingEventId {
@@ -85,6 +86,15 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
  */
 export function report(reportingEventId: ReportingEventId, vm: VM) {
     if (enabled) {
-        currentDispatcher(reportingEventId, vm.tagName, vm.idx);
+        if (!features.DISABLE_REPORTING) {
+            // reporting becomes a no-op if this flag is true
+            currentDispatcher(reportingEventId, vm.tagName, vm.idx);
+        }
     }
+}
+
+// @ts-ignore
+if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
+    // @ts-ignore
+    window.__lwcReport = report; // expose report() API only to karma tests
 }
