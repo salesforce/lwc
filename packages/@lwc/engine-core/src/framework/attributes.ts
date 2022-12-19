@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create } from '@lwc/shared';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
@@ -35,7 +34,7 @@ export const globalHTMLProperties: {
         error?: string;
         readOnly?: boolean;
     };
-} = assign(create(null), {
+} = {
     accessKey: {
         attribute: 'accesskey',
     },
@@ -121,7 +120,7 @@ export const globalHTMLProperties: {
     role: {
         attribute: 'role',
     },
-});
+};
 
 let controlledElement: Element | null = null;
 let controlledAttributeName: string | void;
