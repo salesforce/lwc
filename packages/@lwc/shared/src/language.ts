@@ -49,6 +49,7 @@ const { fromCharCode: StringFromCharCode } = String;
 const {
     charCodeAt: StringCharCodeAt,
     replace: StringReplace,
+    split: StringSplit,
     slice: StringSlice,
     toLowerCase: StringToLowerCase,
 } = String.prototype;
@@ -90,6 +91,7 @@ export {
     StringCharCodeAt,
     StringReplace,
     StringSlice,
+    StringSplit,
     StringToLowerCase,
     StringFromCharCode,
 };

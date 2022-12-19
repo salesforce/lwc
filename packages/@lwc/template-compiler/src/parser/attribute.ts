@@ -12,6 +12,7 @@ import {
     isGlobalHtmlAttribute,
     HTML_NAMESPACE,
     SVG_NAMESPACE,
+    ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
 
 import { isComponent, isExternalComponent } from '../shared/ast';
@@ -33,7 +34,6 @@ import {
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
-    ID_REFERENCING_ATTRIBUTES_SET,
     KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';

@@ -48,6 +48,8 @@ afterEach(function () {
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
     window.__lwcResetGlobalStylesheets();
+    // Certain logs only appear once; we want to reset these between tests
+    window.__lwcResetAlreadyLoggedMessages();
 });
 
 // Run some logic before all tests have run and after all tests have run to ensure that
