@@ -106,5 +106,34 @@ if (!process.env.COMPAT) {
                 );
             });
         });
+
+        describe('only warns once', () => {
+            it('template', () => {
+                function tmpl() {
+                    return [];
+                    /*LWC compiler v987.654.321*/
+                }
+
+                expect(() => {
+                    registerTemplate(tmpl);
+                }).toLogErrorDev(
+                    new RegExp(
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v987.654.321`
+                    )
+                );
+
+                // use Promise.resolve to get a new scope for the function name
+                return Promise.resolve().then(() => {
+                    function tmpl() {
+                        return [];
+                        /*LWC compiler v987.654.321*/
+                    }
+
+                    expect(() => {
+                        registerTemplate(tmpl);
+                    }).not.toLogErrorDev();
+                });
+            });
+        });
     });
 }
