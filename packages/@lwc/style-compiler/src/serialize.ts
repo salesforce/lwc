@@ -213,7 +213,8 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
 
-            // If we are in synthetic shadow we don't want to have :host selectors
+            // If we are in synthetic shadow or scoped light DOM, we don't want to have native :host selectors
+            // Note that postcss-lwc-plugin should ensure that _isNativeHost appears before _isSyntheticHost
             if ((node as any)._isNativeHost) {
                 // Save native tokens so in the next rule we can apply a conditional ternary
                 nativeHostTokens = [...currentRuleTokens];
