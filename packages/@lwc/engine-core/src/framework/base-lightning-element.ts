@@ -184,8 +184,6 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
 
 type RefNodes = { [name: string]: Element };
 
-const EMPTY_REFS: RefNodes = freeze(create(null));
-
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
@@ -553,11 +551,6 @@ LightningElement.prototype = {
         // because a template may have `lwc:ref` defined within a falsy `if:true` block.
         if (!hasRefVNodes) {
             return;
-        }
-        // For templates that are using `lwc:ref`, if there are no refs currently available
-        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
-        if (isNull(refVNodes)) {
-            return EMPTY_REFS;
         }
 
         // The refNodes can be cached based on the refVNodes, since the refVNodes
