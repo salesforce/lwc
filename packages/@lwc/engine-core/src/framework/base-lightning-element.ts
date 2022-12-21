@@ -184,8 +184,6 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
 
 type RefNodes = { [name: string]: Element };
 
-const EMPTY_REFS: RefNodes = freeze(create(null));
-
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
@@ -525,7 +523,7 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'refs');
         }
 
-        const { refVNodes, hasRefVNodes, cmpTemplate } = vm;
+        const { refVNodes, cmpTemplate } = vm;
 
         // If the `cmpTemplate` is null, that means that the template has not been rendered yet. Most likely this occurs
         // if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been rendered yet,
@@ -549,15 +547,9 @@ LightningElement.prototype = {
         // were introduced, we return undefined if the template has no refs defined
         // anywhere. This fixes components that may want to add an expando called `refs`
         // and are checking if it exists with `if (this.refs)`  before adding it.
-        // Note it is not sufficient to just check if `refVNodes` is null or empty,
-        // because a template may have `lwc:ref` defined within a falsy `if:true` block.
-        if (!hasRefVNodes) {
-            return;
-        }
-        // For templates that are using `lwc:ref`, if there are no refs currently available
-        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
+        // Note we use a null refVNodes to indicate that the template has no refs defined.
         if (isNull(refVNodes)) {
-            return EMPTY_REFS;
+            return;
         }
 
         // The refNodes can be cached based on the refVNodes, since the refVNodes
