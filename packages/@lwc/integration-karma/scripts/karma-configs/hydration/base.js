@@ -12,6 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
+const karmaPluginNodeEnv = require('../../karma-plugins/node-env');
 const { GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 
@@ -52,6 +53,8 @@ module.exports = (config) => {
         // Transform all the spec files with the hydration-tests karma plugin.
         preprocessors: {
             '**/*.spec.js': ['hydration-tests'],
+            // Transform all framework files with the node-env plugin
+            [LWC_ENGINE]: ['node-env'],
         },
 
         // Use the env plugin to inject the right environment variables into the app
@@ -59,7 +62,7 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginHydrationTests, karmaPluginEnv],
+        plugins: ['karma-jasmine', karmaPluginHydrationTests, karmaPluginEnv, karmaPluginNodeEnv],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.
