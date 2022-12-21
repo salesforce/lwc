@@ -76,6 +76,8 @@ describe('restrictions', () => {
     describe('Element', () => {
         function throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot() {
             // As of this writing (late 2022), Firefox does not throw here, but Chrome and Safari do.
+            // https://bugs.chromium.org/p/chromium/issues/detail?id=1403060
+            // https://bugs.webkit.org/show_bug.cgi?id=249737
             try {
                 const container = document.createElement('div');
                 container.attachShadow({ mode: 'open' }).innerHTML = '<div></div>';
