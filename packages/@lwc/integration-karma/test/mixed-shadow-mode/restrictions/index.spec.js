@@ -74,18 +74,37 @@ describe('restrictions', () => {
     });
 
     describe('Element', () => {
+        function throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot() {
+            // As of this writing (late 2022), Firefox does not throw here, but Chrome and Safari do.
+            try {
+                const container = document.createElement('div');
+                container.attachShadow({ mode: 'open' }).innerHTML = '<div></div>';
+                container.shadowRoot.querySelector('div').outerHTML = '';
+                return false;
+            } catch (e) {
+                return true;
+            }
+        }
+
         it('should throw on setting outerHTML', () => {
             // eslint-disable-next-line jest/valid-expect
             let expected = expect(() => {
                 elm.shadowRoot.querySelector('div').outerHTML = '';
             });
 
-            if (process.env.NODE_ENV === 'production' && !/Firefox/.test(navigator.userAgent)) {
-                // in prod mode and only in firefox, this doesn't throw
+            if (
+                process.env.NODE_ENV === 'production' &&
+                !(
+                    process.env.NATIVE_SHADOW &&
+                    throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot()
+                )
+            ) {
                 expected = expected.not;
             }
 
-            expected.toThrowError(/Invalid attempt to set outerHTML on Element\./);
+            expected.toThrowError(
+                /Invalid attempt to set outerHTML on Element|This element's parent is of type '#document-fragment', which is not an element node|Cannot set outerHTML on element because its parent is not an Element/
+            );
         });
     });
 });
