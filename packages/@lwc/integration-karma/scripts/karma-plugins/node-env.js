@@ -33,12 +33,17 @@ function createPreprocessor(config, emitter, logger) {
             includeContent: true,
         });
 
-        const output = magicString.toString() + `\n//# sourceMappingURL=${map.toUrl()}\n`;
+        let output = magicString.toString();
 
-        // We need to assign the source to the original file so Karma can source map the error in the console. Add
-        // also adding the source map inline for browser debugging.
-        // eslint-disable-next-line require-atomic-updates
-        file.sourceMap = map;
+        // Source maps cause an error in coverage mode ("don't know how to turn this value into a node"), so skip it
+        if (!process.env.COVERAGE) {
+            output += `\n//# sourceMappingURL=${map.toUrl()}\n`;
+
+            // We need to assign the source to the original file so Karma can source map the error in the console. Add
+            // also adding the source map inline for browser debugging.
+            // eslint-disable-next-line require-atomic-updates
+            file.sourceMap = map;
+        }
 
         done(null, output);
     };
