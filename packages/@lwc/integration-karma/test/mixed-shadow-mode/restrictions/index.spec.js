@@ -99,6 +99,7 @@ describe('restrictions', () => {
                     throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot()
                 )
             ) {
+                // Expect this to throw in dev mode, or in native shadow when the browser throws an error for this case
                 expected = expected.not;
             }
 
