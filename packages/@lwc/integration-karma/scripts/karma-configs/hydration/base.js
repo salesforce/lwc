@@ -78,7 +78,7 @@ module.exports = (config) => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
-        config.preprocessors[LWC_ENGINE] = ['coverage'];
+        config.preprocessors[LWC_ENGINE].push('coverage');
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');
