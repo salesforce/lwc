@@ -7,8 +7,6 @@
 import features from '@lwc/features';
 import {
     ArrayPush,
-    ArraySlice,
-    ArrayUnshift,
     assert,
     create,
     getOwnPropertyNames,
@@ -569,23 +567,7 @@ function flushRehydrationQueue() {
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];
-        try {
-            rehydrate(vm);
-        } catch (error) {
-            if (i + 1 < len) {
-                // pieces of the queue are still pending to be rehydrated, those should have priority
-                if (rehydrateQueue.length === 0) {
-                    addCallbackToNextTick(flushRehydrationQueue);
-                }
-                ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
-            }
-            // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRehydrate);
-
-            // re-throwing the original error will break the current tick, but since the next tick is
-            // already scheduled, it should continue patching the rest.
-            throw error; // eslint-disable-line no-unsafe-finally
-        }
+        rehydrate(vm);
     }
 
     logGlobalOperationEnd(OperationId.GlobalRehydrate);
@@ -593,8 +575,11 @@ function flushRehydrationQueue() {
 
 export function runConnectedCallback(vm: VM) {
     const { state } = vm;
-    if (state === VMState.connected) {
-        return; // nothing to do since it was already connected
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(
+            state !== VMState.connected,
+            `runConnectedCallback should not be called when the VM is already connected`
+        );
     }
     vm.state = VMState.connected;
     // reporting connection
