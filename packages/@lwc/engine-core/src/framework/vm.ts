@@ -24,7 +24,7 @@ import { logError } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import { EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -43,6 +43,7 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { queueMicrotask } from './queue-microtask';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -116,8 +117,6 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** References to elements rendered using lwc:ref (template refs) */
     refVNodes: RefVNodes | null;
-    /** Whether this template has any references to elements (template refs) */
-    hasRefVNodes: boolean;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -298,7 +297,6 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         refVNodes: null,
-        hasRefVNodes: false,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
@@ -725,7 +723,7 @@ export function scheduleRehydration(vm: VM) {
 
     vm.isScheduled = true;
     if (rehydrateQueue.length === 0) {
-        addCallbackToNextTick(flushRehydrationQueue);
+        queueMicrotask(flushRehydrationQueue);
     }
 
     ArrayPush.call(rehydrateQueue, vm);
