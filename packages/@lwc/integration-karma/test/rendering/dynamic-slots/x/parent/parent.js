@@ -7,10 +7,23 @@ export default class Parent extends LightningElement {
     counter = 1;
     number = 1;
     boolean = true;
+    object = { a: 1 };
+    functionProp = function () {};
+    bigint = BigInt(39);
 
     @api
     setUndefinedName() {
         this.undefinedName = undefined;
+    }
+
+    @api
+    setNullName() {
+        this.undefinedName = null;
+    }
+
+    @api
+    setSymbolName() {
+        this.undefinedName = Symbol('lwc');
     }
 
     @api

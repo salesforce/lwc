@@ -760,7 +760,10 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
             slotName = vnode.slotName;
         }
 
-        const normalizedSlotName = slotName.toString();
+        // Can't use toString here because Symbol(1).toString() is 'Symbol(1)'
+        // but elm.setAttribute('slot', Symbol(1)) is an error.
+        // the following line also throws same error for symbols
+        const normalizedSlotName = '' + slotName;
 
         const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =
             cmpSlotsMapping[normalizedSlotName] || []);
