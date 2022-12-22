@@ -219,6 +219,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
                 // Save native tokens so in the next rule we can apply a conditional ternary
                 nativeHostTokens = [...currentRuleTokens];
             } else if ((node as any)._isSyntheticHost) {
+                /* istanbul ignore if */
                 if (!nativeHostTokens) {
                     throw new Error('Unexpected host rules ordering');
                 }
@@ -228,6 +229,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
                 nativeHostTokens = undefined;
             } else {
+                /* istanbul ignore if */
                 if (nativeHostTokens) {
                     throw new Error('Unexpected host rules ordering');
                 }
