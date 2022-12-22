@@ -55,7 +55,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]coped [s]lot [f]actory
-function ssf(slotName: string, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
+function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
     return {
         type: VNodeType.ScopedSlotFragment,
         factory,
