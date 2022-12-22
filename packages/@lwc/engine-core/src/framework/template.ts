@@ -71,6 +71,7 @@ export function setVMBeingRendered(vm: VM | null) {
 function validateSlots(vm: VM, html: Template) {
     /* istanbul ignore if */
     if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
         throw new ReferenceError();
     }
 
