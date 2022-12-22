@@ -9,7 +9,7 @@ describe('dynamic slotting', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 1Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
+            'Default slotNamed 1Overridden default contentBoolean slotBoolean false slotNumber slotNumberObjectFunctionBigint'
         );
     });
     describe('should handle', () => {
@@ -50,13 +50,13 @@ describe('dynamic slotting', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 1Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
+            'Default slotNamed 1Overridden default contentBoolean slotBoolean false slotNumber slotNumberObjectFunctionBigint'
         );
 
         elm.increment();
         await Promise.resolve();
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 2Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
+            'Default slotNamed 2Overridden default contentBoolean slotBoolean false slotNumber slotNumberObjectFunctionBigint'
         ); // notice the 2 in the text
     });
 

@@ -7,6 +7,7 @@ export default class Parent extends LightningElement {
     counter = 1;
     number = 1;
     boolean = true;
+    booleanFalse = false;
     object = { a: 0 };
     functionProp = function () {};
     bigint = BigInt('39438943894384938493829198495749898939');
