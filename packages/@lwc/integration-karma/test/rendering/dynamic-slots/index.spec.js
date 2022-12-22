@@ -70,12 +70,12 @@ describe('dynamic slotting', () => {
         expect(() => {
             const elm = createElement('x-symbol', { is: Symbol });
             document.body.appendChild(elm);
-        }).toThrowError(/Cannot convert a Symbol value to a string/);
+        }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
     });
     it('should throw on empty object', () => {
         expect(() => {
             const elm = createElement('x-emptyobject', { is: EmptyObject });
             document.body.appendChild(elm);
-        }).toThrowError(/Cannot convert object to primitive value/);
+        }).toThrowError(TypeError);
     });
 });
