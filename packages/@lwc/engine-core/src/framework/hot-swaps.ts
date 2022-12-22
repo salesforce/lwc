@@ -12,7 +12,7 @@ import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { StylesheetFactory } from './stylesheet';
-import { flattenStylesheets } from './utils';
+import { assertNotProd, flattenStylesheets } from './utils';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
@@ -21,14 +21,6 @@ const swappedStyleMap = new WeakMap<StylesheetFactory, StylesheetFactory>();
 const activeTemplates = new WeakMap<Template, Set<VM>>();
 const activeComponents = new WeakMap<LightningElementConstructor, Set<VM>>();
 const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
-
-function assertNotProd() {
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-}
 
 function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);

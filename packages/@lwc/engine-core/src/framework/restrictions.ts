@@ -26,13 +26,7 @@ import { getComponentTag } from '../shared/format';
 import { LightningElement } from './base-lightning-element';
 import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
-
-function assertNotProd() {
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV === 'production') {
-        throw new ReferenceError();
-    }
-}
+import { assertNotProd } from './utils';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(

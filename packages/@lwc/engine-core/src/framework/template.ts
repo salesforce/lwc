@@ -30,7 +30,7 @@ import {
     TemplateCache,
     VM,
 } from './vm';
-import { EmptyArray } from './utils';
+import { assertNotProd, EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
@@ -69,11 +69,7 @@ export function setVMBeingRendered(vm: VM | null) {
 }
 
 function validateSlots(vm: VM, html: Template) {
-    /* istanbul ignore if */
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
