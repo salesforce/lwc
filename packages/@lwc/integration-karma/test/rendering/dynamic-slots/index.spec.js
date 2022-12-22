@@ -2,13 +2,14 @@ import { createElement } from 'lwc';
 import Parent from 'x/parent';
 import LightParent from 'x/lightParent';
 import Symbol from 'x/symbol';
+import EmptyObject from 'x/emptyobject';
 
 describe('dynamic slotting', () => {
     it('should render all slots', async function () {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 1Overridden default contentBoolean slotNumber slotObjectFunctionBigint'
+            'Default slotNamed 1Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
         );
     });
     describe('should handle', () => {
@@ -49,13 +50,13 @@ describe('dynamic slotting', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 1Overridden default contentBoolean slotNumber slotObjectFunctionBigint'
+            'Default slotNamed 1Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
         );
 
         elm.increment();
         await Promise.resolve();
         expect(elm.shadowRoot.textContent).toEqual(
-            'Default slotNamed 2Overridden default contentBoolean slotNumber slotObjectFunctionBigint'
+            'Default slotNamed 2Overridden default contentBoolean slotNumber slotNumberObjectFunctionBigint'
         ); // notice the 2 in the text
     });
 
@@ -70,5 +71,11 @@ describe('dynamic slotting', () => {
             const elm = createElement('x-symbol', { is: Symbol });
             document.body.appendChild(elm);
         }).toThrowError(/Cannot convert a Symbol value to a string/);
+    });
+    it('should throw on empty object', () => {
+        expect(() => {
+            const elm = createElement('x-emptyobject', { is: EmptyObject });
+            document.body.appendChild(elm);
+        }).toThrowError(/Cannot convert object to primitive value/);
     });
 });

@@ -753,7 +753,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
             continue;
         }
 
-        let slotName: string | number | boolean = '';
+        let slotName: unknown = '';
         if (isVBaseElement(vnode)) {
             slotName = vnode.data.attrs?.slot ?? '';
         } else if (isVScopedSlotFragment(vnode)) {
