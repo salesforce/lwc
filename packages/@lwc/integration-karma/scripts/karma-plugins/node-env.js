@@ -39,7 +39,7 @@ function createPreprocessor(config, emitter, logger) {
         if (!process.env.COVERAGE) {
             output += `\n//# sourceMappingURL=${map.toUrl()}\n`;
 
-            // We need to assign the source to the original file so Karma can source map the error in the console. Add
+            // We need to assign the source to the original file so Karma can source map the error in the console.
             // also adding the source map inline for browser debugging.
             // eslint-disable-next-line require-atomic-updates
             file.sourceMap = map;
