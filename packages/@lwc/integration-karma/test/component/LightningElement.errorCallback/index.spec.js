@@ -343,7 +343,8 @@ if (!process.env.COMPAT) {
                             expect(
                                 throwElm.shadowRoot.querySelector('x-after-throwing-child')
                             ).toBeNull();
-                            // the non-throwing child is still updated
+                            // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
+                            // give up rendering entirely just because one element threw in errorCallback.
                             expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
                                 'shown'
                             );
