@@ -26,7 +26,7 @@ import { logError } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -45,7 +45,6 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-import { queueMicrotask } from './queue-microtask';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -573,7 +572,7 @@ function flushRehydrationQueue() {
             if (i + 1 < len) {
                 // pieces of the queue are still pending to be rehydrated, those should have priority
                 if (rehydrateQueue.length === 0) {
-                    queueMicrotask(flushRehydrationQueue);
+                    addCallbackToNextTick(flushRehydrationQueue);
                 }
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
@@ -738,7 +737,7 @@ export function scheduleRehydration(vm: VM) {
 
     vm.isScheduled = true;
     if (rehydrateQueue.length === 0) {
-        queueMicrotask(flushRehydrationQueue);
+        addCallbackToNextTick(flushRehydrationQueue);
     }
 
     ArrayPush.call(rehydrateQueue, vm);
