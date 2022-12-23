@@ -15,6 +15,23 @@ import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
 import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
 import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
+import XParentThrowsChildConnectedThrows from 'x/parentThrowsChildConnectedThrows';
+import XParentThrowsChildConstructorThrows from 'x/parentThrowsChildConstructorThrows';
+import XParentThrowsChildRenderThrows from 'x/parentThrowsChildRenderThrows';
+import XParentThrowsChildRenderedThrows from 'x/parentThrowsChildRenderedThrows';
+
+import XGrandparentThrowsChildConnectedThrows from 'x/grandparentThrowsChildConnectedThrows';
+import XGrandparentThrowsChildConstructorThrows from 'x/grandparentThrowsChildConstructorThrows';
+import XGrandparentThrowsChildRenderThrows from 'x/grandparentThrowsChildRenderThrows';
+import XGrandparentThrowsChildRenderedThrows from 'x/grandparentThrowsChildRenderedThrows';
+
+import XParentThrowsOnMutateChildConstructorThrows from 'x/parentThrowsOnMutateChildConstructorThrows';
+import XParentThrowsOnMutateChildRenderThrows from 'x/parentThrowsOnMutateChildRenderThrows';
+import XParentThrowsOnMutateChildRenderedThrows from 'x/parentThrowsOnMutateChildRenderedThrows';
+import XParentThrowsOnMutateChildConnectedThrows from 'x/parentThrowsOnMutateChildConnectedThrows';
+
+import XNoThrowOnMutate from 'x/noThrowOnMutate';
+
 describe('error boundary', () => {
     it('should propagate frozen error to errorCallback()', () => {
         const elm = createElement('x-boundary-rendered-throw-frozen', {
@@ -205,3 +222,153 @@ describe('error boundary during initial component construction', () => {
         'Child threw in connectedCallback'
     );
 });
+
+describe('error thrown in errorCallback', () => {
+    function testStub(testcase, hostSelector, hostClass) {
+        it(`parent errorCallback throws ${testcase}`, () => {
+            const elm = createElement(hostSelector, { is: hostClass });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrowError(/error in the parent error callback/);
+        });
+    }
+
+    testStub(
+        'when child throws in connectedCallback',
+        'x-parent-throws-child-connected-throws',
+        XParentThrowsChildConnectedThrows
+    );
+    testStub(
+        'when child throws in constructor',
+        'x-parent-throws-child-constructor-throws',
+        XParentThrowsChildConstructorThrows
+    );
+    testStub(
+        'when child throws in render',
+        'x-parent-throws-child-render-throws',
+        XParentThrowsChildRenderThrows
+    );
+    testStub(
+        'when child throws in renderedCallback',
+        'x-parent-throws-child-rendered-throws',
+        XParentThrowsChildRenderedThrows
+    );
+});
+
+describe('errorCallback error caught by another errorCallback', () => {
+    function testStub(testcase, hostSelector, hostClass) {
+        it(`grandparent errorCallback throws, parent errorCallback throws ${testcase}`, () => {
+            const elm = createElement(hostSelector, { is: hostClass });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrowError(/error in the grandparent error callback/);
+        });
+    }
+
+    testStub(
+        'when child throws in connectedCallback',
+        'x-grandparent-throws-child-connected-throws',
+        XGrandparentThrowsChildConnectedThrows
+    );
+    testStub(
+        'when child throws in constructor',
+        'x-grandparent-throws-child-constructor-throws',
+        XGrandparentThrowsChildConstructorThrows
+    );
+    testStub(
+        'when child throws in render',
+        'x-grandparent-throws-child-render-throws',
+        XGrandparentThrowsChildRenderThrows
+    );
+    testStub(
+        'when child throws in renderedCallback',
+        'x-grandparent-throws-child-rendered-throws',
+        XGrandparentThrowsChildRenderedThrows
+    );
+});
+
+// "unhandledrejection" event is not available in older browsers
+if (!process.env.COMPAT) {
+    describe('errorCallback throws after value mutation', () => {
+        let originalOnError;
+        let caughtError;
+
+        const onRejection = (e) => {
+            // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
+            e.preventDefault();
+            caughtError = e.reason;
+        };
+
+        beforeEach(() => {
+            // Overriding window.onerror disables Jasmine's global error handler, so we can listen for errors
+            // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
+            // https://github.com/jasmine/jasmine/pull/1860
+            originalOnError = window.onerror;
+            // Dummy onError because Jasmine tries to call it in case of a rejection:
+            // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
+            window.onerror = () => {};
+            caughtError = undefined;
+            window.addEventListener('unhandledrejection', onRejection);
+        });
+
+        afterEach(() => {
+            window.removeEventListener('unhandledrejection', onRejection);
+            window.onerror = originalOnError;
+        });
+
+        function testStub(testcase, hostSelector, hostClass) {
+            it(`parent errorCallback throws after value mutation ${testcase}`, () => {
+                const throwElm = createElement(hostSelector, { is: hostClass });
+                const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
+                document.body.appendChild(throwElm);
+                document.body.appendChild(noThrowElm);
+                return (
+                    Promise.resolve()
+                        .then(() => {
+                            throwElm.show = true;
+                            noThrowElm.show = true;
+                        })
+                        // Need to wait a few ticks so flushRehydrationQueue can finish
+                        .then(() => new Promise((resolve) => setTimeout(resolve)))
+                        .then(() => new Promise((resolve) => setTimeout(resolve)))
+                        .then(() => {
+                            // error is thrown by parent's errorCallback
+                            expect(caughtError).not.toBeUndefined();
+                            expect(caughtError.message).toMatch(
+                                /error in the parent error callback after value mutation/
+                            );
+                            // child after the throwing child is not rendered
+                            expect(
+                                throwElm.shadowRoot.querySelector('x-after-throwing-child')
+                            ).toBeNull();
+                            // the non-throwing child is still updated
+                            expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
+                                'shown'
+                            );
+                        })
+                );
+            });
+        }
+
+        testStub(
+            'when child throws in connectedCallback',
+            'x-parent-throws-on-mutate-child-connected-throws',
+            XParentThrowsOnMutateChildConnectedThrows
+        );
+        testStub(
+            'when child throws in constructor',
+            'x-parent-throws-on-mutate-child-constructor-throws',
+            XParentThrowsOnMutateChildConstructorThrows
+        );
+        testStub(
+            'when child throws in render',
+            'x-parent-throws-on-mutate-child-render-throws',
+            XParentThrowsOnMutateChildRenderThrows
+        );
+        testStub(
+            'when child throws in renderedCallback',
+            'x-parent-throws-on-mutate-child-rendered-throws',
+            XParentThrowsOnMutateChildRenderedThrows
+        );
+    });
+}
