@@ -229,7 +229,7 @@ describe('error thrown in errorCallback', () => {
             const elm = createElement(hostSelector, { is: hostClass });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowError(/error in the parent error callback/);
+            }).toThrowConnectedError(/error in the parent error callback/);
         });
     }
 
@@ -261,7 +261,7 @@ describe('errorCallback error caught by another errorCallback', () => {
             const elm = createElement(hostSelector, { is: hostClass });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowError(/error in the grandparent error callback/);
+            }).toThrowConnectedError(/error in the grandparent error callback/);
         });
     }
 
@@ -295,6 +295,13 @@ if (!process.env.COMPAT) {
         let originalOnError;
         let caughtError;
 
+        // Depending on whether ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE is set or not,
+        // this may be an unhandled error or an unhandled rejection
+        const onError = (e) => {
+            e.preventDefault(); // Avoids logging to the console
+            caughtError = e;
+        };
+
         const onRejection = (e) => {
             // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
             e.preventDefault();
@@ -310,15 +317,17 @@ if (!process.env.COMPAT) {
             // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
             window.onerror = () => {};
             caughtError = undefined;
+            window.addEventListener('error', onError);
             window.addEventListener('unhandledrejection', onRejection);
         });
 
         afterEach(() => {
+            window.removeEventListener('error', onError);
             window.removeEventListener('unhandledrejection', onRejection);
             window.onerror = originalOnError;
         });
 
-        function testStub(testcase, hostSelector, hostClass) {
+        function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
             it(`parent errorCallback throws after value mutation ${testcase}`, () => {
                 const throwElm = createElement(hostSelector, { is: hostClass });
                 const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
@@ -340,9 +349,14 @@ if (!process.env.COMPAT) {
                                 /error in the parent error callback after value mutation/
                             );
                             // child after the throwing child is not rendered
-                            expect(
-                                throwElm.shadowRoot.querySelector('x-after-throwing-child')
-                            ).toBeNull();
+                            // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
+                            const afterThrowingChild =
+                                throwElm.shadowRoot.querySelector('x-after-throwing-child');
+                            if (expectAfterThrowingChildToExist) {
+                                expect(afterThrowingChild).not.toBeNull();
+                            } else {
+                                expect(afterThrowingChild).toBeNull();
+                            }
                             // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
                             // give up rendering entirely just because one element threw in errorCallback.
                             expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
@@ -356,22 +370,26 @@ if (!process.env.COMPAT) {
         testStub(
             'when child throws in connectedCallback',
             'x-parent-throws-on-mutate-child-connected-throws',
-            XParentThrowsOnMutateChildConnectedThrows
+            XParentThrowsOnMutateChildConnectedThrows,
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         );
         testStub(
             'when child throws in constructor',
             'x-parent-throws-on-mutate-child-constructor-throws',
-            XParentThrowsOnMutateChildConstructorThrows
+            XParentThrowsOnMutateChildConstructorThrows,
+            false
         );
         testStub(
             'when child throws in render',
             'x-parent-throws-on-mutate-child-render-throws',
-            XParentThrowsOnMutateChildRenderThrows
+            XParentThrowsOnMutateChildRenderThrows,
+            false
         );
         testStub(
             'when child throws in renderedCallback',
             'x-parent-throws-on-mutate-child-rendered-throws',
-            XParentThrowsOnMutateChildRenderedThrows
+            XParentThrowsOnMutateChildRenderedThrows,
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         );
     });
 }
