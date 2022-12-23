@@ -22,6 +22,7 @@ const {
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY,
     DISABLE_ARIA_REFLECTION_POLYFILL,
+    NODE_ENV_FOR_TEST,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -43,7 +44,7 @@ function createEnvFile() {
         };
         window.process = {
             env: {
-                NODE_ENV: 'development',
+                NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
                 COMPAT: ${COMPAT},
                 MIXED_SHADOW: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},

@@ -19,6 +19,6 @@ describe('restriction', () => {
 
         expect(() => {
             elm.querySelector('div').outerHTML = 'foo';
-        }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on Element.');
+        }).toThrowErrorDev(TypeError, 'Invalid attempt to set outerHTML on Element.');
     });
 });

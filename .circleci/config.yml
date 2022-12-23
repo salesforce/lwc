@@ -57,6 +57,9 @@ commands:
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
+      node_env_production:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -81,6 +84,7 @@ commands:
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
             <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
+            <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -174,6 +178,9 @@ commands:
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
+      node_env_production:
+        type: boolean
+        default: false
       compat:
         type: boolean
         default: false
@@ -189,6 +196,7 @@ commands:
           enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
           enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
+          node_env_production: << parameters.node_env_production >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -265,6 +273,11 @@ jobs:
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true
+      - run_karma:
+          node_env_production: true
+      - run_karma:
+          node_env_production: true
+          disable_synthetic: true
       - retry_command:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce

@@ -12,6 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
+const karmaPluginNodeEnv = require('../../karma-plugins/node-env');
 const { COMPAT, SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
@@ -31,6 +32,15 @@ const FETCH_COMPAT = require.resolve('whatwg-fetch'); // not included in es5-pro
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
+
+const ALL_FRAMEWORK_FILES = [
+    SYNTHETIC_SHADOW,
+    SYNTHETIC_SHADOW_COMPAT,
+    LWC_ENGINE,
+    LWC_ENGINE_COMPAT,
+    WIRE_SERVICE,
+    WIRE_SERVICE_COMPAT,
+];
 
 // Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
 // This is due to the fact that we are running so many simultaneous rollup commands
@@ -73,9 +83,11 @@ module.exports = (config) => {
         basePath: BASE_DIR,
         files: getFiles(),
 
-        // Transform all the spec files with the lwc karma plugin.
         preprocessors: {
+            // Transform all the spec files with the lwc karma plugin.
             '**/*.spec.js': ['lwc'],
+            // Transform all framework files with the node-env plugin
+            ...Object.fromEntries(ALL_FRAMEWORK_FILES.map((file) => [file, ['node-env']])),
         },
 
         // Use the env plugin to inject the right environment variables into the app
@@ -83,7 +95,7 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv],
+        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv, karmaPluginNodeEnv],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.
@@ -99,9 +111,9 @@ module.exports = (config) => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
-        config.preprocessors[COMPAT ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
-        config.preprocessors[COMPAT ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
-        config.preprocessors[COMPAT ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW] = ['coverage'];
+        config.preprocessors[COMPAT ? LWC_ENGINE_COMPAT : LWC_ENGINE].push('coverage');
+        config.preprocessors[COMPAT ? WIRE_SERVICE_COMPAT : WIRE_SERVICE].push('coverage');
+        config.preprocessors[COMPAT ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW].push('coverage');
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

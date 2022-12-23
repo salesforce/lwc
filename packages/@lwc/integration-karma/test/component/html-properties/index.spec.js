@@ -223,8 +223,11 @@ describe('global html properties', () => {
                 setPropertyValue(valueToSet);
 
                 const retrievedPropValue = getPropertyValue();
-                // In the case of non-original descriptors, the property value is not set
-                const expectedPropValue = isOriginalDescriptor ? valueToSet : undefined;
+                // In the case of non-original descriptors, the property value is not set, in dev mode
+                const expectedPropValue =
+                    isOriginalDescriptor || process.env.NODE_ENV === 'production'
+                        ? valueToSet
+                        : undefined;
                 expect(retrievedPropValue).toEqual(expectedPropValue);
             });
 
