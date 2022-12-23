@@ -25,7 +25,7 @@ const TAGS = [
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE && 'native-lifecycle',
     ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY && 'scoped-registry',
     DISABLE_ARIA_REFLECTION_POLYFILL && 'disable-aria-polyfill',
-    NODE_ENV_FOR_TEST,
+    `NODE_ENV-${NODE_ENV_FOR_TEST}`
 ].filter(Boolean);
 
 module.exports = TAGS;
