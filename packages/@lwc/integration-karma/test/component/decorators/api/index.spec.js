@@ -125,7 +125,7 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
-        }).toThrowError(
+        }).toThrowErrorDev(
             'Invalid @api showFeatures field. Found a duplicate method with the same name.'
         );
     });

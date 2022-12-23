@@ -50,7 +50,7 @@ describe('Light DOM styling at the global level', () => {
             const elm = createElement('x-container', { is: Container });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogErrorDev(/Unscoped CSS is not supported in Light DOM/);
+            }).toLogError(/Unscoped CSS is not supported in Light DOM/);
             expect(getComputedStyle(elm.querySelector('x-one .globally-styled')).color).toEqual(
                 'rgb(0, 0, 0)'
             );
