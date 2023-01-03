@@ -223,6 +223,8 @@ describe('error boundary during initial component construction', () => {
     );
 });
 
+// TODO [#3262]: when an error is thrown from errorCallback itself, behavior is unpredictable
+// The below tests confirm existing functionality
 describe('error thrown in errorCallback', () => {
     function testStub(testcase, hostSelector, hostClass) {
         it(`parent errorCallback throws ${testcase}`, () => {
