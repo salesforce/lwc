@@ -35,18 +35,23 @@ describe('Element.innerHTML - set', () => {
 
         expect(() => {
             elm.innerHTML = '<span>Hello World!</span>';
-        }).toThrowError(TypeError);
+        }).toThrowErrorDev(TypeError, /Invalid attempt to set innerHTML on HTMLElement/);
     });
 
-    it('should log an error when invoking setter for an element in the shadow', () => {
+    it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');
 
-        expect(() => {
+        // eslint-disable-next-line jest/valid-expect
+        let expected = expect(() => {
             div.innerHTML = '<span>Hello World!</span>';
-        }).toLogErrorDev(
+        });
+        if (process.env.NATIVE_SHADOW) {
+            expected = expected.not; // no error
+        }
+        expected.toLogErrorDev(
             /\[LWC error\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });

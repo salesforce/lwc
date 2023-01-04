@@ -30,6 +30,7 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
+    isExternalComponent,
     isScopedSlotFragment,
     isSlotBindDirective,
 } from '../shared/ast';
@@ -185,13 +186,21 @@ function transform(codeGen: CodeGen): t.Expression {
         } = scopedSlotFragment;
         codeGen.beginScope();
         codeGen.declareIdentifier(dataIdentifier);
-        // TODO [#3111]: Next Step: Return a VFragment
-        const fragment = transformChildren(scopedSlotFragment);
+
+        // At runtime, the 'key' of the <slot> element will be propagated to the fragment vnode
+        // produced by the ScopedSlotFactory
+        const key = t.identifier('key');
+        codeGen.declareIdentifier(key);
+
+        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
         codeGen.endScope();
 
+        // The factory is invoked with two parameters:
+        // 1. The value of the binding specified in lwc:slot-bind directive
+        // 2. The key to be applied to the fragment vnode, this will be used for diffing
         const slotFragmentFactory = t.functionExpression(
             null,
-            [dataIdentifier],
+            [dataIdentifier, key],
             t.blockStatement([t.returnStatement(fragment)])
         );
         return codeGen.getScopedSlotFactory(slotFragmentFactory, t.literal(slotName.value));
@@ -410,15 +419,18 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(expression);
             }
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    codeGen.genScopedFragId(expression),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        codeGen.genScopedFragId(expression),
+                    ]);
+                }
+                return codeGen.genScopedFragId(expression);
             }
 
             return expression;
@@ -449,17 +461,22 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(attrValue.value);
             }
 
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                // apply the fragment id tranformation if necessary
+                const value = isFragmentOnlyUrl(attrValue.value)
+                    ? codeGen.genScopedFragId(attrValue.value)
+                    : t.literal(attrValue.value);
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    isFragmentOnlyUrl(attrValue.value)
-                        ? codeGen.genScopedFragId(attrValue.value)
-                        : t.literal(attrValue.value),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        value,
+                    ]);
+                }
+                return value;
             }
 
             return t.literal(attrValue.value);
@@ -638,6 +655,11 @@ function transform(codeGen: CodeGen): t.Expression {
                 )
             );
         }
+
+        if (isExternalComponent(element)) {
+            data.push(t.property(t.identifier('external'), t.literal(true)));
+        }
+
         return t.objectExpression(data);
     }
 

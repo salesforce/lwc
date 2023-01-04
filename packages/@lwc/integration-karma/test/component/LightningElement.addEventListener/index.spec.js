@@ -40,10 +40,7 @@ it('should throw an error if event handler is not a function', () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowConnectedError(
-        Error,
-        /Invariant Violation: Invalid second argument for this\.addEventListener\(\) in \[.*\] for event "click"\. Expected an EventListener but received undefined\./
-    );
+    }).toThrowConnectedError(/Expected an EventListener but received undefined/);
 });
 
 it('should not invoke newly added event listeners in the middle of the dispatch', () => {

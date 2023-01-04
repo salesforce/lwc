@@ -18,7 +18,11 @@ describe('if-block', () => {
         });
     });
 
-    xit('should throw error when parent and child have mismatched slot types', () => {
+    it('should throw error when parent and child have mismatched slot types', () => {
+        let errorMsg;
+        const consoleErrorSpy = spyOn(console, 'error').and.callFake((error) => {
+            errorMsg = error.message;
+        });
         const elm = createElement('x-parent', { is: MixedSlotParent });
         elm.showStandard = true;
         document.body.appendChild(elm);
@@ -32,7 +36,13 @@ describe('if-block', () => {
                 child.switchFromVariantToStandard();
             })
             .then(() => {
-                expect(child.innerHTML).toBe('<span>1 - slots and if block</span>');
+                if (process.env.NODE_ENV === 'production') {
+                    expect(consoleErrorSpy).not.toHaveBeenCalled();
+                } else {
+                    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+                    expect(errorMsg).toMatch(/Mismatched slot types for \(default\) slot/);
+                }
+                expect(child.innerHTML).toBe('');
             });
     });
 });

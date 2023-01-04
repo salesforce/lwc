@@ -28,7 +28,7 @@ export type VNode =
     | VStatic
     | VFragment
     | VScopedSlotFragment;
-export type VParentElement = VElement | VCustomElement | VFragment;
+
 export type VNodes = Readonly<Array<VNode | null>>;
 
 export interface BaseVParent {
@@ -44,7 +44,7 @@ export interface BaseVNode {
 }
 
 export interface VScopedSlotFragment extends BaseVNode {
-    factory: (value: any) => VNodes;
+    factory: (value: any, key: any) => VFragment;
     type: VNodeType.ScopedSlotFragment;
     slotName: string;
 }
@@ -119,6 +119,7 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly external?: boolean;
     readonly ref?: string;
     readonly slotData?: any;
 }

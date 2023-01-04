@@ -18,7 +18,6 @@ branches:
         - communities/shared-experience-components
         - communities/talon-template-byo
         - communities/ui-b2b-components
-        - communities/ui-commerce-components
         - communities/ui-dxp-components
         - communities/ui-feeds-components
         - communities/ui-lightning-community
@@ -44,6 +43,9 @@ branches:
     pull-request:
       <<: *branch-definition
   winter23:
+    pull-request:
+      <<: *branch-definition
+  spring23:
     pull-request:
       <<: *branch-definition
 steps:

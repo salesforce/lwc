@@ -8,4 +8,7 @@
 // Tests
 import './testFeatureFlag';
 
+// Patches ---------------------------------------------------------------------------------------
+import './patches/detect-synthetic-cross-root-aria';
+
 export * from './framework/main';

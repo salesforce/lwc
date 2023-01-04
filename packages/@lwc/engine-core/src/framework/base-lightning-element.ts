@@ -27,6 +27,8 @@ import {
     keys,
     setPrototypeOf,
 } from '@lwc/shared';
+import features from '@lwc/features';
+import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
@@ -55,6 +57,7 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
+import { TemplateStylesheetFactories } from './stylesheet';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -138,6 +141,7 @@ export interface LightningElementConstructor {
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
     shadowSupportMode?: ShadowSupportMode;
+    stylesheets: TemplateStylesheetFactories;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -179,8 +183,6 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     >;
 
 type RefNodes = { [name: string]: Element };
-
-const EMPTY_REFS: RefNodes = freeze(create(null));
 
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
@@ -521,7 +523,7 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'refs');
         }
 
-        const { refVNodes, hasRefVNodes, cmpTemplate } = vm;
+        const { refVNodes, cmpTemplate } = vm;
 
         // If the `cmpTemplate` is null, that means that the template has not been rendered yet. Most likely this occurs
         // if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been rendered yet,
@@ -545,15 +547,9 @@ LightningElement.prototype = {
         // were introduced, we return undefined if the template has no refs defined
         // anywhere. This fixes components that may want to add an expando called `refs`
         // and are checking if it exists with `if (this.refs)`  before adding it.
-        // Note it is not sufficient to just check if `refVNodes` is null or empty,
-        // because a template may have `lwc:ref` defined within a falsy `if:true` block.
-        if (!hasRefVNodes) {
-            return;
-        }
-        // For templates that are using `lwc:ref`, if there are no refs currently available
-        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
+        // Note we use a null refVNodes to indicate that the template has no refs defined.
         if (isNull(refVNodes)) {
-            return EMPTY_REFS;
+            return;
         }
 
         // The refNodes can be cached based on the refVNodes, since the refVNodes
@@ -693,6 +689,21 @@ for (const propName in HTMLElementOriginalDescriptors) {
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+
+function applyAriaReflectionToLightningElement() {
+    // If ARIA reflection is not applied globally to Element.prototype, or if we are running server-side,
+    // apply it to LightningElement.prototype.
+    // This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
+    applyAriaReflection(LightningElement.prototype);
+}
+
+// The reason for this odd if/else branching is limitations in @lwc/features:
+// https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#only-works-with-if-statements
+if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    applyAriaReflectionToLightningElement();
+} else if (!process.env.IS_BROWSER) {
+    applyAriaReflectionToLightningElement();
+}
 
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {

@@ -6,7 +6,7 @@
  */
 
 // Polyfills ---------------------------------------------------------------------------------------
-import '@lwc/aria-reflection-polyfill';
+import './aria-reflection-polyfill';
 
 // Tests -------------------------------------------------------------------------------------------
 import './testFeatureFlag.ts';
@@ -43,6 +43,7 @@ export {
     swapTemplate,
     getComponentConstructor,
     __unstable__ProfilerControl,
+    __unstable__ReportingControl,
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------

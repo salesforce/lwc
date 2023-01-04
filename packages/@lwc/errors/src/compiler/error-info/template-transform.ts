@@ -53,14 +53,6 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-
-    DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
-        code: 1152,
-        message:
-            'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
 };
 
 export const ParserDiagnostics = {
@@ -518,7 +510,7 @@ export const ParserDiagnostics = {
     LWC_LIGHT_SLOT_INVALID_ATTRIBUTES: {
         code: 1134,
         message:
-            "Invalid attribute(s) '{0}' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have 'name' attribute",
+            "Invalid attribute(s) '{0}' on slot. Slots in Light DOM templates (which have 'lwc:render-mode' directive) can only have [{1}] attributes",
         level: DiagnosticLevel.Error,
         url: '',
     },

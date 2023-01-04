@@ -6,62 +6,64 @@
  */
 import {
     ArrayPush,
+    ArrayPop,
     ArraySome,
     assert,
     create,
     isArray,
-    isTrue,
     isFalse,
     isNull,
+    isTrue,
     isUndefined,
-    keys,
-    SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
+    keys,
+    SVG_NAMESPACE,
 } from '@lwc/shared';
 import features from '@lwc/features';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { RendererAPI } from './renderer';
+import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
+import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
-    createVM,
     appendVM,
-    removeVM,
-    rerenderVM,
+    connectRootElement,
+    createVM,
+    disconnectRootElement,
     getAssociatedVMIfPresent,
+    LwcDomMode,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
+    ShadowMode,
     VM,
     VMState,
-    ShadowMode,
-    RenderMode,
-    LwcDomMode,
-    connectRootElement,
-    disconnectRootElement,
 } from './vm';
 import {
-    VNode,
-    VNodes,
-    VCustomElement,
-    VElement,
-    VText,
-    VComment,
-    Key,
-    VBaseElement,
-    isVBaseElement,
     isSameVnode,
-    VNodeType,
-    VStatic,
-    VFragment,
+    isVBaseElement,
     isVFragment,
     isVScopedSlotFragment,
+    Key,
+    VBaseElement,
+    VComment,
+    VCustomElement,
+    VElement,
+    VFragment,
+    VNode,
+    VNodes,
+    VNodeType,
+    VStatic,
+    VText,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
+import { patchAttrUnlessProp } from './modules/attr-unless-prop';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -309,17 +311,17 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const connectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            connectRootElement(elm);
-        }
-    };
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
 
-    const disconnectedCallback = (elm: HTMLElement) => {
-        if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
+            connectRootElement(elm);
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
-        }
-    };
+        };
+    }
 
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java
@@ -393,6 +395,30 @@ function patchCustomElement(
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
             allocateChildren(n2, vm);
+
+            // Solves an edge case with slotted VFragments in native shadow mode.
+            //
+            // During allocation, in native shadow, slotted VFragment nodes are flattened and their text delimiters are removed
+            // to avoid interfering with native slot behavior. When this happens, if any of the fragments
+            // were not stable, the children must go through the dynamic diffing algo.
+            //
+            // If the new children (n2.children) contain no VFragments, but the previous children (n1.children) were dynamic,
+            // the new nodes must be marked dynamic so that all nodes are properly updated. The only indicator that the new
+            // nodes need to be dynamic comes from the previous children, so we check that to determine whether we need to
+            // mark the new children dynamic.
+            //
+            // Example:
+            // n1.children: [div, VFragment('', div, null, ''), div] => [div, div, null, div]; // marked dynamic
+            // n2.children: [div, null, div] => [div, null, div] // marked ???
+            const { shadowMode, renderMode } = vm;
+            if (
+                shadowMode == ShadowMode.Native &&
+                renderMode !== RenderMode.Light &&
+                hasDynamicChildren(n1.children)
+            ) {
+                // No-op if children has already been marked dynamic by 'allocateChildren()'.
+                markAsDynamicChildren(n2.children);
+            }
         }
 
         // in fallback mode, the children will be always empty, so, nothing
@@ -544,7 +570,13 @@ function patchElementPropsAndAttrs(
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
     patchStyleAttribute(oldVnode, vnode, renderer);
-    patchAttributes(oldVnode, vnode, renderer);
+
+    if (vnode.data.external) {
+        patchAttrUnlessProp(oldVnode, vnode, renderer);
+    } else {
+        patchAttributes(oldVnode, vnode, renderer);
+    }
+
     patchProps(oldVnode, vnode, renderer);
 }
 
@@ -577,12 +609,14 @@ function applyDomManual(elm: Element, vnode: VBaseElement) {
 
 function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     if (process.env.NODE_ENV !== 'production') {
+        const isSynthetic = vnode.owner.shadowMode === ShadowMode.Synthetic;
         const isPortal =
             vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === LwcDomMode.Manual;
         const isLight = vnode.owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, {
             isPortal,
             isLight,
+            isSynthetic,
         });
     }
 }
@@ -600,8 +634,6 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     // In case #2, we will always get a fresh VCustomElement.
     const children = vnode.aChildren || vnode.children;
 
-    vm.aChildren = children;
-
     const { renderMode, shadowMode } = vm;
     if (process.env.NODE_ENV !== 'production') {
         // If any of the children being allocated is a scoped slot fragment, make sure the receiving
@@ -618,14 +650,67 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
             );
         }
     }
+
+    // If any of the children being allocated are VFragments, we remove the text delimiters and flatten all immediate
+    // children VFragments to avoid them interfering with default slot behavior.
+    const allocatedChildren = flattenFragmentsInChildren(children);
+    vnode.children = allocatedChildren;
+    vm.aChildren = allocatedChildren;
+
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children, vnode.owner);
+        allocateInSlot(vm, allocatedChildren, vnode.owner);
         // save the allocated children in case this vnode is reused.
-        vnode.aChildren = children;
+        vnode.aChildren = allocatedChildren;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
+}
+
+/**
+ * Flattens the contents of all VFragments in an array of VNodes, removes the text delimiters on those VFragments, and
+ * marks the resulting children array as dynamic. Uses a stack (array) to iteratively traverse the nested VFragments
+ * and avoid the perf overhead of creating/destroying throwaway arrays/objects in a recursive approach.
+ *
+ * With the delimiters removed, the contents are marked dynamic so they are diffed correctly.
+ *
+ * This function is used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
+ */
+function flattenFragmentsInChildren(children: VNodes): VNodes {
+    const flattenedChildren: VNodes = [];
+
+    // Initialize our stack with the direct children of the custom component and check whether we have a VFragment.
+    // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
+    const nodeStack: VNodes = [];
+    let fragmentFound = false;
+    for (let i = children.length - 1; i > -1; i -= 1) {
+        const child = children[i];
+        ArrayPush.call(nodeStack, child);
+        fragmentFound = fragmentFound || !!(child && isVFragment(child));
+    }
+
+    if (!fragmentFound) {
+        return children;
+    }
+
+    let currentNode: VNode | null | undefined;
+    while (!isUndefined((currentNode = ArrayPop.call(nodeStack)))) {
+        if (!isNull(currentNode) && isVFragment(currentNode)) {
+            const fChildren = currentNode.children;
+            // Ignore the start and end text node delimiters
+            for (let i = fChildren.length - 2; i > 0; i -= 1) {
+                ArrayPush.call(nodeStack, fChildren[i]);
+            }
+        } else {
+            ArrayPush.call(flattenedChildren, currentNode);
+        }
+    }
+
+    // We always mark the children as dynamic because nothing generates stable VFragments yet.
+    // If/when stable VFragments are generated by the compiler, this code should be updated to
+    // not mark dynamic if all flattened VFragments were stable.
+    markAsDynamicChildren(flattenedChildren);
+    return flattenedChildren;
 }
 
 function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
@@ -655,20 +740,16 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-/**
- * Collects all slots into a SlotSet, traversing through VFragment Nodes
- */
-function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]: VNodes }) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+    const {
+        cmpSlots: { slotAssignments: oldSlotsMapping },
+    } = vm;
+    const cmpSlotsMapping = create(null);
+
+    // Collect all slots into cmpSlotsMapping
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
-            continue;
-        }
-
-        // Dive further iff the content is wrapped in a VFragment
-        if (isVFragment(vnode)) {
-            // Remove the text delimiter nodes to avoid overriding default slot content
-            collectSlots(vm, vnode.children.slice(1, -1), cmpSlotsMapping);
             continue;
         }
 
@@ -682,15 +763,8 @@ function collectSlots(vm: VM, children: VNodes, cmpSlotsMapping: { [key: string]
         const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
-}
-
-function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
-    const {
-        cmpSlots: { slotAssignments: oldSlotsMapping },
-    } = vm;
-    const cmpSlotsMapping = create(null);
-    collectSlots(vm, children, cmpSlotsMapping);
     vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
+
     if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
@@ -721,16 +795,16 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
-const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
+const DynamicChildren: WeakMap<VNodes, 1> = new WeakMap();
 
-// dynamic children means it was generated by an iteration
-// in a template, and will require a more complex diffing algo.
+// dynamic children means it was either generated by an iteration in a template
+// or part of an unstable fragment, and will require a more complex diffing algo.
 export function markAsDynamicChildren(children: VNodes) {
-    FromIteration.set(children, 1);
+    DynamicChildren.set(children, 1);
 }
 
 function hasDynamicChildren(children: VNodes): boolean {
-    return FromIteration.has(children);
+    return DynamicChildren.has(children);
 }
 
 function createKeyToOldIdx(

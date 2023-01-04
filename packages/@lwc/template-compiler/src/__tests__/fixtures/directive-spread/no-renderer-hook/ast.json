@@ -1,0 +1,132 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 179,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 168,
+                "end": 179
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Component should be compiled with no errors and no custom renderer hook ",
+                "value": " Component should be compiled with no errors and no custom renderer hook ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 85,
+                    "start": 15,
+                    "end": 95
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 72,
+                    "start": 100,
+                    "end": 167,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 64,
+                        "start": 100,
+                        "end": 159
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 64,
+                        "endLine": 3,
+                        "endColumn": 72,
+                        "start": 159,
+                        "end": 167
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Dynamic",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "dynamicCtor",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 37,
+                                "start": 107,
+                                "end": 132
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 37,
+                            "start": 107,
+                            "end": 132
+                        }
+                    },
+                    {
+                        "type": "Directive",
+                        "name": "Spread",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 13,
+                            "name": "dynamicProps",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 38,
+                                "endLine": 3,
+                                "endColumn": 63,
+                                "start": 133,
+                                "end": 158
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 38,
+                            "endLine": 3,
+                            "endColumn": 63,
+                            "start": 133,
+                            "end": 158
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

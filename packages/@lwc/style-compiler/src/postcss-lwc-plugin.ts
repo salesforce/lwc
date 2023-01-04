@@ -33,10 +33,11 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
 export default function postCssLwcPlugin(options: { scoped: boolean }): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
+    // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.
     const nativeShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: false,
     });
-    const fakeShadowSelectorProcessor = selectorProcessorFactory({
+    const syntheticShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: true,
     });
 
@@ -51,21 +52,21 @@ export default function postCssLwcPlugin(options: { scoped: boolean }): Transfor
             }
 
             // Let transform the selector with the 2 processors.
-            const fakeShadowSelector = fakeShadowSelectorProcessor.processSync(rule);
-            const nativeShadowSelector = nativeShadowSelectorProcessor.processSync(rule);
-            rule.selector = fakeShadowSelector;
+            const syntheticSelector = syntheticShadowSelectorProcessor.processSync(rule);
+            const nativeSelector = nativeShadowSelectorProcessor.processSync(rule);
+            rule.selector = syntheticSelector;
             // If the resulting selector are different it means that the selector use the :host selector. In
             // this case we need to duplicate the CSS rule and assign the other selector.
-            if (fakeShadowSelector !== nativeShadowSelector) {
+            if (syntheticSelector !== nativeSelector) {
                 // The cloned selector is inserted before the currently processed selector to avoid processing
                 // again the cloned selector.
                 const currentRule = rule;
                 const clonedRule = rule.cloneBefore();
-                clonedRule.selector = nativeShadowSelector;
+                clonedRule.selector = nativeSelector;
 
                 // Safe a reference to each other
-                (clonedRule as any)._isHostNative = true;
-                (currentRule as any)._isFakeNative = true;
+                (clonedRule as any)._isNativeHost = true;
+                (currentRule as any)._isSyntheticHost = true;
             }
         });
     };

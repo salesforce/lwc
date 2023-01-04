@@ -39,6 +39,7 @@ export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
+export { reportingControl as __unstable__ReportingControl } from './reporting';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 export { freezeTemplate } from './freeze-template';

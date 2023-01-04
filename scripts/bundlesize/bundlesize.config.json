@@ -2,7 +2,7 @@
     "files": [
         {
             "path": "packages/lwc/dist/engine-dom/umd/es2017/engine-dom.min.js",
-            "maxSize": "20.1KB"
+            "maxSize": "21.5KB"
         },
         {
             "path": "packages/lwc/dist/synthetic-shadow/umd/es2017/synthetic-shadow.min.js",

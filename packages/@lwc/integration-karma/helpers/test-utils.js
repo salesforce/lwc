@@ -63,7 +63,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-    function consoleDevMatcherFactory(methodName, internalMethodName) {
+    function consoleDevMatcherFactory(methodName, expectInProd) {
         return function consoleDevMatcher() {
             return {
                 negativeCompare: function negativeCompare(actual) {
@@ -74,7 +74,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (arg) {
                             return '"' + formatConsoleCall(arg) + '"';
@@ -126,16 +126,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (callArgs) {
                             return '"' + formatConsoleCall(callArgs) + '"';
                         })
                         .join(', ');
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (callsArgs.length !== 0) {
-                            fail(
+                            return fail(
                                 'Expected console.' +
                                     methodName +
                                     ' to never called in production mode, but it was called ' +
@@ -192,7 +192,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
-    function errorMatcherFactory(errorListener) {
+    function errorMatcherFactory(errorListener, expectInProd) {
         return function toThrowError() {
             return {
                 compare: function (actual, expectedErrorCtor, expectedMessage) {
@@ -245,7 +245,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
                     var thrown = errorListener(actual);
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
                             return fail(
                                 'Expected function not to throw an error in production mode, but it threw ' +
@@ -328,9 +328,11 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     var customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
+        toLogError: consoleDevMatcherFactory('error', true),
         toLogWarningDev: consoleDevMatcherFactory('warn'),
         toThrowErrorDev: errorMatcherFactory(directErrorListener),
-        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener),
+        toThrowConnectedErrorDev: errorMatcherFactory(customElementConnectedErrorListener),
+        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener, true),
     };
 
     beforeAll(function () {
@@ -442,6 +444,65 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         }
     }
 
+    // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
+    var ariaPropertiesMapping = {
+        ariaAutoComplete: 'aria-autocomplete',
+        ariaChecked: 'aria-checked',
+        ariaCurrent: 'aria-current',
+        ariaDisabled: 'aria-disabled',
+        ariaExpanded: 'aria-expanded',
+        ariaHasPopup: 'aria-haspopup',
+        ariaHidden: 'aria-hidden',
+        ariaInvalid: 'aria-invalid',
+        ariaLabel: 'aria-label',
+        ariaLevel: 'aria-level',
+        ariaMultiLine: 'aria-multiline',
+        ariaMultiSelectable: 'aria-multiselectable',
+        ariaOrientation: 'aria-orientation',
+        ariaPressed: 'aria-pressed',
+        ariaReadOnly: 'aria-readonly',
+        ariaRequired: 'aria-required',
+        ariaSelected: 'aria-selected',
+        ariaSort: 'aria-sort',
+        ariaValueMax: 'aria-valuemax',
+        ariaValueMin: 'aria-valuemin',
+        ariaValueNow: 'aria-valuenow',
+        ariaValueText: 'aria-valuetext',
+        ariaLive: 'aria-live',
+        ariaRelevant: 'aria-relevant',
+        ariaAtomic: 'aria-atomic',
+        ariaBusy: 'aria-busy',
+        ariaActiveDescendant: 'aria-activedescendant',
+        ariaControls: 'aria-controls',
+        ariaDescribedBy: 'aria-describedby',
+        ariaFlowTo: 'aria-flowto',
+        ariaLabelledBy: 'aria-labelledby',
+        ariaOwns: 'aria-owns',
+        ariaPosInSet: 'aria-posinset',
+        ariaSetSize: 'aria-setsize',
+        ariaColCount: 'aria-colcount',
+        ariaColSpan: 'aria-colspan',
+        ariaColIndex: 'aria-colindex',
+        ariaDetails: 'aria-details',
+        ariaErrorMessage: 'aria-errormessage',
+        ariaKeyShortcuts: 'aria-keyshortcuts',
+        ariaModal: 'aria-modal',
+        ariaPlaceholder: 'aria-placeholder',
+        ariaRoleDescription: 'aria-roledescription',
+        ariaRowCount: 'aria-rowcount',
+        ariaRowIndex: 'aria-rowindex',
+        ariaRowSpan: 'aria-rowspan',
+        role: 'role',
+    };
+
+    var ariaProperties = Object.keys(ariaPropertiesMapping);
+
+    // Can't use Object.values because we need to support IE11
+    var ariaAttributes = [];
+    for (let i = 0; i < ariaProperties.length; i++) {
+        ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
+    }
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -455,5 +516,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         setHooks: setHooks,
         spyConsole: spyConsole,
         customElementConnectedErrorListener: customElementConnectedErrorListener,
+        ariaPropertiesMapping: ariaPropertiesMapping,
+        ariaProperties: ariaProperties,
+        ariaAttributes: ariaAttributes,
     };
 })(LWC, jasmine, beforeAll);

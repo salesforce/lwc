@@ -43,6 +43,7 @@ function createPreprocessor(config, emitter, logger) {
 
         const plugins = [
             lwcRollupPlugin({
+                sourcemap: true,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
@@ -107,7 +108,6 @@ function createPreprocessor(config, emitter, logger) {
             // also adding the source map inline for browser debugging.
             // eslint-disable-next-line require-atomic-updates
             file.sourceMap = map;
-            code + `\n//# sourceMappingURL=${map.toUrl()}\n`;
 
             done(null, code);
         } catch (error) {

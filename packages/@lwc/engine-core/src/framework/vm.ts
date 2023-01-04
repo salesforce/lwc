@@ -12,7 +12,9 @@ import {
     assert,
     create,
     getOwnPropertyNames,
+    isArray,
     isFalse,
+    isFunction,
     isNull,
     isObject,
     isTrue,
@@ -20,10 +22,11 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
+import { logError } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -39,9 +42,9 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { AccessorReactiveObserver } from './accessor-reactive-observer';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
+import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -115,8 +118,6 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** References to elements rendered using lwc:ref (template refs) */
     refVNodes: RefVNodes | null;
-    /** Whether this template has any references to elements (template refs) */
-    hasRefVNodes: boolean;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -159,9 +160,6 @@ export interface VM<N = HostNode, E = HostElement> {
     renderRoot: ShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
-    /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
-     *  is enabled. */
-    oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
     setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
@@ -174,10 +172,12 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Renderer API */
     renderer: RendererAPI;
-
     /**
      * Debug info bag. Stores useful debug information about the component. */
     debugInfo?: Record<string, any>;
+    /**
+     * Any stylesheets associated with the component */
+    stylesheets: TemplateStylesheetFactories | null;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -239,13 +239,9 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { oar, tro } = vm;
+        const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        // Making sure that any observing accessor record will not trigger the setter to be reinvoked
-        for (const key in oar) {
-            oar[key].reset();
-        }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
@@ -302,14 +298,12 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         refVNodes: null,
-        hasRefVNodes: false,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
         cmpSlots: { slotAssignments: create(null) },
-        oar: create(null),
         cmpTemplate: null,
         hydrated: Boolean(hydrated),
 
@@ -328,6 +322,7 @@ export function createVM<HostNode, HostElement>(
         // Properties set right after VM creation.
         tro: null!,
         shadowMode: null!,
+        stylesheets: null!,
 
         // Properties set by the LightningElement constructor.
         component: null!,
@@ -345,6 +340,7 @@ export function createVM<HostNode, HostElement>(
         vm.debugInfo = create(null);
     }
 
+    vm.stylesheets = computeStylesheets(vm, def.ctor);
     vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
@@ -366,6 +362,49 @@ export function createVM<HostNode, HostElement>(
     }
 
     return vm;
+}
+
+function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFactories): boolean {
+    let valid = true;
+
+    const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
+        if (isArray(arrayOrStylesheet)) {
+            for (let i = 0; i < arrayOrStylesheet.length; i++) {
+                validate((arrayOrStylesheet as TemplateStylesheetFactories)[i]);
+            }
+        } else if (!isFunction(arrayOrStylesheet)) {
+            // function assumed to be a stylesheet factory
+            valid = false;
+        }
+    };
+
+    if (!isArray(stylesheets)) {
+        valid = false;
+    } else {
+        validate(stylesheets);
+    }
+
+    return valid;
+}
+
+// Validate and flatten any stylesheets defined as `static stylesheets`
+function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
+    if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
+        const { stylesheets } = ctor;
+        if (!isUndefined(stylesheets)) {
+            const valid = validateComponentStylesheets(vm, stylesheets);
+
+            if (valid) {
+                return flattenStylesheets(stylesheets);
+            } else if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                    vm
+                );
+            }
+        }
+    }
+    return null;
 }
 
 function computeShadowMode(vm: VM, renderer: RendererAPI) {

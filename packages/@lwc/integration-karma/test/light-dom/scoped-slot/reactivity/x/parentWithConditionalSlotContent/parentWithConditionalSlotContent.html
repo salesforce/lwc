@@ -1,0 +1,10 @@
+<template>
+    <x-child-for-conditional-slot-content variations={data}>
+        <template lwc:slot-data="variations">
+            <div if:true={variations.variation1}>Variation 1</div>
+            <template if:true={variations.variation2}>
+                <div>Variation 2</div>
+            </template>
+        </template>
+    </x-child-for-conditional-slot-content>
+</template>

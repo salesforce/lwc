@@ -30,7 +30,7 @@ import {
     TemplateCache,
     VM,
 } from './vm';
-import { EmptyArray } from './utils';
+import { assertNotProd, EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
@@ -69,10 +69,7 @@ export function setVMBeingRendered(vm: VM | null) {
 }
 
 function validateSlots(vm: VM, html: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
@@ -251,7 +248,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.tplCache = create(null);
 
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
-                    context.hasScopedStyles = computeHasScopedStyles(html);
+                    context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html);
@@ -273,9 +270,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 }
 
                 // reset the refs; they will be set during the tmpl() instantiation
-                const hasRefVNodes = Boolean(html.hasRefs);
-                vm.hasRefVNodes = hasRefVNodes;
-                vm.refVNodes = hasRefVNodes ? create(null) : null;
+                vm.refVNodes = html.hasRefs ? create(null) : null;
 
                 // right before producing the vnodes, we clear up all internal references
                 // to custom elements from the template.
@@ -308,9 +303,10 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-export function computeHasScopedStyles(template: Template): boolean {
-    const { stylesheets } = template;
-    if (!isUndefined(stylesheets)) {
+function computeHasScopedStylesInStylesheets(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): boolean {
+    if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
                 return true;
@@ -318,4 +314,20 @@ export function computeHasScopedStyles(template: Template): boolean {
         }
     }
     return false;
+}
+
+export function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
+    const { stylesheets } = template;
+    const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
+
+    return (
+        computeHasScopedStylesInStylesheets(stylesheets) ||
+        computeHasScopedStylesInStylesheets(vmStylesheets)
+    );
+}
+
+export function hasStyles(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): stylesheets is TemplateStylesheetFactories {
+    return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

@@ -5,9 +5,11 @@ const stc0 = {
 };
 const stc1 = {
   key: 1,
+  external: true,
 };
 const stc2 = {
   key: 2,
+  external: true,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, h: api_element } = $api;
