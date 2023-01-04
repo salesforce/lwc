@@ -1325,12 +1325,14 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             );
         }
 
-        if (!/^-*[a-z]/.test(name)) {
-            ctx.throwOnNode(
-                ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
-                attr,
-                [name, tag]
-            );
+        // The leading '-' is necessary to preserve attribute to property reflection as the '-' is a signal
+        // to the compiler to convert the first character following it to an uppercase.
+        // This is needed for property names with an @api annotation because they can begin with an upper case character.
+        if (!/^-*[a-z_$]/.test(name)) {
+            ctx.throwOnNode(ParserDiagnostics.ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER, attr, [
+                name,
+                tag,
+            ]);
         }
 
         if (ast.isStringLiteral(attr.value)) {

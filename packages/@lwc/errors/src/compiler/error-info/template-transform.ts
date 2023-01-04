@@ -460,10 +460,10 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER: {
+    ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER: {
         code: 1124,
         message:
-            '{0} is not valid attribute for {1}. Attribute name must start with alphabetic character or a hyphen.',
+            '{0} is not valid attribute for {1}. Attribute name must start with alphabetic character, hyphen, underscore, or a dollar sign.',
         level: DiagnosticLevel.Error,
         url: '',
     },
