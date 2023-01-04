@@ -4,10 +4,10 @@
         "location": {
             "startLine": 3,
             "startColumn": 1,
-            "endLine": 6,
+            "endLine": 9,
             "endColumn": 12,
             "start": 233,
-            "end": 371,
+            "end": 492,
             "startTag": {
                 "startLine": 3,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 243
             },
             "endTag": {
-                "startLine": 6,
+                "startLine": 9,
                 "startColumn": 1,
-                "endLine": 6,
+                "endLine": 9,
                 "endColumn": 12,
-                "start": 360,
-                "end": 371
+                "start": 481,
+                "end": 492
             }
         },
         "directives": [],
@@ -85,6 +85,71 @@
                             "endColumn": 34,
                             "start": 328,
                             "end": 347
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " attribute name with leading hyphen + underscore \"-_\" combination ",
+                "value": " attribute name with leading hyphen + underscore \"-_\" combination ",
+                "location": {
+                    "startLine": 7,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 78,
+                    "start": 365,
+                    "end": 438
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 8,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 42,
+                    "start": 443,
+                    "end": 480,
+                    "startTag": {
+                        "startLine": 8,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 31,
+                        "start": 443,
+                        "end": 469
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 31,
+                        "endLine": 8,
+                        "endColumn": 42,
+                        "start": 469,
+                        "end": 480
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "_leading",
+                        "attributeName": "-_leading",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 15,
+                            "endLine": 8,
+                            "endColumn": 30,
+                            "start": 453,
+                            "end": 468
                         }
                     }
                 ],

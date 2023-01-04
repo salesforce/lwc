@@ -6,9 +6,18 @@ const stc0 = {
   },
   key: 0,
 };
+const stc1 = {
+  props: {
+    _leading: "bar",
+  },
+  key: 1,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
-  return [api_custom_element("x-button", _xButton, stc0)];
+  return [
+    api_custom_element("x-button", _xButton, stc0),
+    api_custom_element("x-button", _xButton, stc1),
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
