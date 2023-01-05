@@ -1330,7 +1330,7 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
         // The leading '-' is necessary to preserve attribute to property reflection as the '-' is a signal
         // to the compiler to convert the first character following it to an uppercase.
         // This is needed for property names with an @api annotation because they can begin with an upper case character.
-        if (!/^-*[a-z_$]/.test(name)) {
+        if (!/^-*[a-z]|^[_$]/.test(name)) {
             ctx.throwOnNode(ParserDiagnostics.ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER, attr, [
                 name,
                 tag,
