@@ -40,7 +40,7 @@ interface Definition {
 
 /**
  * Create a scoped registry, i.e. a function that can create custom elements whose tag names
- * do not conflict with vanilla custom elements having the same tag name.
+ * do not conflict with third-party custom elements having the same tag name.
  */
 export function createScopedRegistry(): CreateScopedConstructor {
     if (!hasCustomElements) {
