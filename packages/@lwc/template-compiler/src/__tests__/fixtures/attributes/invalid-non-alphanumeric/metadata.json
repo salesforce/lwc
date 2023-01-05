@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1124,
-            "message": "LWC1124: ñana is not valid attribute for x-button. Attribute name must start with alphabetic character, hyphen, underscore, or a dollar sign.",
+            "message": "LWC1124: ñana is not valid attribute for x-button. Attribute name must start with an underscore, dollar sign, or an optional hyphen character followed by an alphabetic character.",
             "level": 1,
             "location": {
                 "line": 6,
