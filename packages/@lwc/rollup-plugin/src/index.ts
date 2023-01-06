@@ -12,7 +12,6 @@ import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
 import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
-import { generateCompilerError, ModuleResolutionErrors } from '@lwc/errors';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {
@@ -60,7 +59,7 @@ function isImplicitHTMLImport(importee: string, importer: string): boolean {
     );
 }
 
-function isImplicitCssImport(importee: string, importer: string) {
+function isImplicitCssImport(importee: string, importer: string): boolean {
     return (
         path.extname(importee) === '.css' &&
         path.extname(importer) === '.html' &&
@@ -172,10 +171,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
                 let absPath = pluginUtils.addExtension(normalizedPath, ext);
 
-                const { scoped, filename } = parseQueryParamsForScopedOption(absPath);
-                if (scoped) {
-                    absPath = filename; // remove query param
-                }
+                const { filename } = parseQueryParamsForScopedOption(absPath);
+                absPath = filename; // remove query param
 
                 if (isImplicitHTMLImport(absPath, importer) && !fs.existsSync(absPath)) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
@@ -212,19 +209,21 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             // Have to parse the `?scoped=true` in `load`, because it's not guaranteed
             // that `resolveId` will always be called (e.g. if another plugin resolves it first)
-            const { scoped, filename } = parseQueryParamsForScopedOption(id);
-            if (scoped) {
-                id = filename; // remove query param
-            }
+            const { filename } = parseQueryParamsForScopedOption(id);
+            id = filename; // remove query param
 
-            const exists = fs.existsSync(id);
-            if (exists) {
-                return fs.readFileSync(id, 'utf8');
-            } else {
-                throw generateCompilerError(ModuleResolutionErrors.NONEXISTENT_FILE, {
-                    messageArgs: [filename],
-                    origin: { filename },
-                });
+            const isCSS = path.extname(id) === '.css';
+
+            if (isCSS) {
+                const exists = fs.existsSync(id);
+                if (exists) {
+                    return fs.readFileSync(id, 'utf8');
+                } else {
+                    this.warn(
+                        `The imported CSS file ${id} does not exist: Importing it as undefined.`
+                    );
+                    return EMPTY_IMPLICIT_CSS_CONTENT;
+                }
             }
         },
 
