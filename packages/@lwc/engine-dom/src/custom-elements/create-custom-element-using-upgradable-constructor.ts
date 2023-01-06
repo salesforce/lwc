@@ -11,7 +11,7 @@ const cachedConstructors = new Map<string, CustomElementConstructor>();
 const elementsUpgradedOutsideLWC = new WeakSet<HTMLElement>();
 let elementBeingUpgradedByLWC = false;
 
-// Creates a constructor that is intended to be used as a vanilla custom element, except that the upgradeCallback is
+// Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
 // Another benefit is that only LWC can create components that actually do anything – if you do
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
@@ -64,7 +64,7 @@ const createUpgradableConstructor = (
     return UpgradableConstructor;
 };
 
-export const createCustomElementVanilla = (
+export const createCustomElementUsingUpgradableConstructor = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
     connectedCallback?: LifecycleCallback,
