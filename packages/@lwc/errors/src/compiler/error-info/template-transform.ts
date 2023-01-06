@@ -460,10 +460,10 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER: {
+    ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER: {
         code: 1124,
         message:
-            '{0} is not valid attribute for {1}. Attribute name must start with alphabetic character or a hyphen.',
+            '{0} is not valid attribute for {1}. Attribute name must start with an underscore, dollar sign, or an optional hyphen character followed by an alphabetic character.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -472,14 +472,6 @@ export const ParserDiagnostics = {
         code: 1125,
         message:
             '{0} is not valid attribute for {1}. Attribute name must end with alpha-numeric character.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS: {
-        code: 1126,
-        message:
-            '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and special characters.',
         level: DiagnosticLevel.Error,
         url: '',
     },
