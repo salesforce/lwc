@@ -2,19 +2,19 @@ import _xButton from "x/button";
 import { registerTemplate } from "lwc";
 const stc0 = {
   props: {
-    nåna: "nana",
+    foo__bar: "underscore",
   },
   key: 0,
 };
 const stc1 = {
   props: {
-    $leading: "bar",
+    foo__3ar: "underscore",
   },
   key: 1,
 };
 const stc2 = {
   props: {
-    _leading: "bar",
+    fo0__bar: "underscore",
   },
   key: 2,
 };
