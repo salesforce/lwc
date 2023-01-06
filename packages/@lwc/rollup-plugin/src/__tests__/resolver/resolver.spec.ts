@@ -161,4 +161,16 @@ describe('resolver', () => {
 
         expect(warnings).toHaveLength(0);
     });
+
+    it('should throw an error when import stylesheet file is missing', async () => {
+        try {
+            await rollup({
+                input: path.resolve(__dirname, 'fixtures/missing-css/missing-css.js'),
+                plugins: [lwc()],
+            });
+        } catch (error: any) {
+            expect(error.pluginCode).toBe(1004);
+            expect(error.filename).toContain('missing-css/stylesheet.css');
+        }
+    });
 });
