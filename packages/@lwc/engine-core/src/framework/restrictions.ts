@@ -268,6 +268,11 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
 
 function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
     assertNotProd(); // this method should never leak to prod
+    if (process.env.NODE_ENV === 'test') {
+        // In Jest, throwing an error for the tagName breaks certain Jest built-in functionality:
+        // https://github.com/salesforce/sfdx-lwc-jest/issues/299
+        return {};
+    }
     return {
         tagName: generateAccessorDescriptor({
             get(this: LightningElement) {
