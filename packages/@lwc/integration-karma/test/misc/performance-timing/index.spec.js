@@ -77,7 +77,8 @@ function testNestedComponentCreation(expected) {
     });
 }
 
-if (isUserTimingSupported) {
+// Timings are not enabled in prod mode
+if (isUserTimingSupported && process.env.NODE_ENV !== 'production') {
     beforeEach(() => {
         patchUserTiming();
         resetMeasures();

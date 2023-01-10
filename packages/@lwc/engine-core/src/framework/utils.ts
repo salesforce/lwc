@@ -117,3 +117,12 @@ export function setRefVNode(vm: VM, ref: string, vnode: VBaseElement) {
         refVNodes[ref] = vnode;
     }
 }
+
+// Throw an error if we're running in prod mode. Ensures code is truly removed from prod mode.
+export function assertNotProd() {
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+}

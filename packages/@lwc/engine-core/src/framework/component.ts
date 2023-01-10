@@ -89,7 +89,7 @@ const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap()
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (!isFunction(listener)) {
-        throw new TypeError(); // avoiding problems with non-valid listeners
+        throw new TypeError('Expected an EventListener but received ' + typeof listener); // avoiding problems with non-valid listeners
     }
     let wrappedListener = cmpEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {

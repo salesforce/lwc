@@ -1327,23 +1327,14 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             );
         }
 
-        if (!/^-*[a-z]/.test(name)) {
-            ctx.throwOnNode(
-                ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
-                attr,
-                [name, tag]
-            );
-        }
-
-        // disallow attr name which combines underscore character with special character.
-        // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
-        // Note 1: underscore followed by a hyphen is valid to accomodate property names like thirsty_Camel -> thirsty_-camel
-        if (name.match(/_[^a-z0-9-]|[^a-z0-9]_/)) {
-            ctx.throwOnNode(
-                ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
-                attr,
-                [name, tag]
-            );
+        // The leading '-' is necessary to preserve attribute to property reflection as the '-' is a signal
+        // to the compiler to convert the first character following it to an uppercase.
+        // This is needed for property names with an @api annotation because they can begin with an upper case character.
+        if (!/^-*[a-z]|^[_$]/.test(name)) {
+            ctx.throwOnNode(ParserDiagnostics.ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER, attr, [
+                name,
+                tag,
+            ]);
         }
 
         if (ast.isStringLiteral(attr.value)) {

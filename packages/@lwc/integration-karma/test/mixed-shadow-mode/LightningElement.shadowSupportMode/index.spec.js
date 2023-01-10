@@ -8,7 +8,7 @@ describe('shadowSupportMode static property', () => {
     it('should throw for invalid values', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowError(/Invalid value for static property shadowSupportMode: 'true'/);
+        }).toThrowErrorDev(/Invalid value for static property shadowSupportMode: 'true'/);
     });
 
     it('should not throw for valid values', () => {

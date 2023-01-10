@@ -12,7 +12,7 @@ import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { StylesheetFactory } from './stylesheet';
-import { flattenStylesheets } from './utils';
+import { assertNotProd, flattenStylesheets } from './utils';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
@@ -85,10 +85,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
 }
 
 export function getTemplateOrSwappedTemplate(tpl: Template): Template {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const visited: Set<Template> = new Set();
     while (swappedTemplateMap.has(tpl) && !visited.has(tpl)) {
@@ -102,10 +99,7 @@ export function getTemplateOrSwappedTemplate(tpl: Template): Template {
 export function getComponentOrSwappedComponent(
     Ctor: LightningElementConstructor
 ): LightningElementConstructor {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const visited: Set<LightningElementConstructor> = new Set();
     while (swappedComponentMap.has(Ctor) && !visited.has(Ctor)) {
@@ -117,10 +111,7 @@ export function getComponentOrSwappedComponent(
 }
 
 export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFactory {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const visited: Set<StylesheetFactory> = new Set();
     while (swappedStyleMap.has(style) && !visited.has(style)) {
@@ -132,10 +123,7 @@ export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFact
 }
 
 export function setActiveVM(vm: VM) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     // tracking active component
     const Ctor = vm.def.ctor;
@@ -182,10 +170,7 @@ export function setActiveVM(vm: VM) {
 }
 
 export function removeActiveVM(vm: VM) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     // tracking inactive component
     const Ctor = vm.def.ctor;

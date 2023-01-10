@@ -161,4 +161,26 @@ describe('resolver', () => {
 
         expect(warnings).toHaveLength(0);
     });
+
+    it('should emit a warning when import stylesheet file is missing', async () => {
+        const warnings: any = [];
+
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/missing-css/missing-css.js'),
+            plugins: [lwc()],
+            onwarn(warning) {
+                warnings.push(warning);
+            },
+        });
+
+        const { output } = await bundle.generate({
+            format: 'esm',
+        });
+
+        expect(warnings).toHaveLength(1);
+        expect(warnings[0].message).toMatch(
+            /The imported CSS file .+\/stylesheet.css does not exist: Importing it as undefined./
+        );
+        expect(output[0].code).toContain('var stylesheet = undefined;');
+    });
 });
