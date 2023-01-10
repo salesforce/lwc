@@ -47,6 +47,8 @@ const DEFAULT_MODULES = [
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
+const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
+const EMPTY_IMPLICIT_CSS_CONTENT = '';
 
 function isImplicitHTMLImport(importee: string, importer: string): boolean {
     return (
@@ -54,6 +56,15 @@ function isImplicitHTMLImport(importee: string, importer: string): boolean {
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
         path.basename(importer, '.js') === path.basename(importee, '.html')
+    );
+}
+
+function isImplicitCssImport(importee: string, importer: string): boolean {
+    return (
+        path.extname(importee) === '.css' &&
+        path.extname(importer) === '.html' &&
+        (path.basename(importee, '.css') === path.basename(importer, '.html') ||
+            path.basename(importee, '.scoped.css') === path.basename(importer, '.html'))
     );
 }
 
@@ -158,10 +169,17 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 const ext = path.extname(importee) || importerExt;
 
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
-                const absPath = pluginUtils.addExtension(normalizedPath, ext);
+                let absPath = pluginUtils.addExtension(normalizedPath, ext);
 
-                if (isImplicitHTMLImport(normalizedPath, importer) && !fs.existsSync(absPath)) {
+                const { filename } = parseQueryParamsForScopedOption(absPath);
+                absPath = filename; // remove query param
+
+                if (isImplicitHTMLImport(absPath, importer) && !fs.existsSync(absPath)) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
+                }
+
+                if (isImplicitCssImport(absPath, importer) && !fs.existsSync(absPath)) {
+                    return IMPLICIT_DEFAULT_CSS_PATH;
                 }
 
                 return pluginUtils.addExtension(normalizedPath, ext);
@@ -185,18 +203,29 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
+            if (id === IMPLICIT_DEFAULT_CSS_PATH) {
+                return EMPTY_IMPLICIT_CSS_CONTENT;
+            }
+
             // Have to parse the `?scoped=true` in `load`, because it's not guaranteed
             // that `resolveId` will always be called (e.g. if another plugin resolves it first)
-            const { scoped, filename } = parseQueryParamsForScopedOption(id);
-            if (scoped) {
-                id = filename; // remove query param
-            }
+            const { filename } = parseQueryParamsForScopedOption(id);
+            id = filename; // remove query param
+
             const isCSS = path.extname(id) === '.css';
 
             if (isCSS) {
                 const exists = fs.existsSync(id);
-                const code = exists ? fs.readFileSync(id, 'utf8') : '';
-                return code;
+                if (exists) {
+                    return fs.readFileSync(id, 'utf8');
+                } else {
+                    this.warn(
+                        `The imported CSS file ${id} does not exist: Importing it as undefined. ` +
+                            `This behavior may be removed in a future version of LWC. Please avoid importing a ` +
+                            `CSS file that does not exist.`
+                    );
+                    return EMPTY_IMPLICIT_CSS_CONTENT;
+                }
             }
         },
 
