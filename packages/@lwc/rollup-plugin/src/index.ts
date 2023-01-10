@@ -220,7 +220,9 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                     return fs.readFileSync(id, 'utf8');
                 } else {
                     this.warn(
-                        `The imported CSS file ${id} does not exist: Importing it as undefined.`
+                        `The imported CSS file ${id} does not exist: Importing it as undefined. ` +
+                            `This behavior may be removed in a future version of LWC. Please avoid importing a ` +
+                            `CSS file that does not exist.`
                     );
                     return EMPTY_IMPLICIT_CSS_CONTENT;
                 }
