@@ -88,7 +88,7 @@ function scopeSelector(selector: Selector) {
                 selector.insertBefore(firstSelector, shadowAttribute);
                 // Move any whitespace before the selector (e.g. "  ::after") to before the shadow attribute,
                 // so that the resulting selector is correct (e.g. "  [attr]::after", not "[attr]  ::after")
-                if (firstSelector.spaces.before) {
+                if (firstSelector && firstSelector.spaces.before) {
                     shadowAttribute.spaces.before = firstSelector.spaces.before;
                     const clonedFirstSelector = firstSelector.clone({});
                     clonedFirstSelector.spaces.before = '';
