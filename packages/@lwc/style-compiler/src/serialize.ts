@@ -38,6 +38,7 @@ const BINARY_EXPRESSION_LIMIT = 100;
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
+const SUFFIX_TOKEN_IDENTIFIER = 'suffixToken';
 const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
 const USE_NATIVE_DIR_PSEUDOCLASS = 'useNativeDirPseudoclass';
 const TOKEN = 'token';
@@ -95,6 +96,8 @@ export default function serialize(result: Result, config: Config): string {
             buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("[" + ${TOKEN} + "]") : "";\n`;
             buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = ${TOKEN} ? ("[" + ${TOKEN} + "-host]") : "";\n`;
         }
+        // Used for keyframes
+        buffer += `  var ${SUFFIX_TOKEN_IDENTIFIER} = ${TOKEN} ? ("-" + ${TOKEN}) : "";\n`;
         buffer += `  return ${serializedStyle};\n`;
         buffer += `  /*${LWC_VERSION_COMMENT}*/\n`;
         buffer += `}\n`;
@@ -339,9 +342,9 @@ function tokenizeCss(data: string): Token[] {
         } else {
             // suffix for an at-rule, e.g. `@keyframes spin-__shadowAttribute__`
             tokens.push({
-                type: TokenType.expression,
-                // remove the '[' and ']' at the beginning and end, add an initial '-'
-                value: `${identifier} ? ('-' + ${identifier}.substring(1, ${identifier}.length - 1)) : ''`,
+                type: TokenType.identifier,
+                // Suffix the keyframe (i.e. "-" plus the token)
+                value: SUFFIX_TOKEN_IDENTIFIER,
             });
         }
 
