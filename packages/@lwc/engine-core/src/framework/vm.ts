@@ -11,6 +11,7 @@ import {
     ArrayUnshift,
     assert,
     create,
+    defineProperty,
     getOwnPropertyNames,
     isArray,
     isFalse,
@@ -390,6 +391,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
 // Validate and flatten any stylesheets defined as `static stylesheets`
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
     if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
+        warnOnStylesheetsMutation(ctor);
         const { stylesheets } = ctor;
         if (!isUndefined(stylesheets)) {
             const valid = validateComponentStylesheets(vm, stylesheets);
@@ -405,6 +407,26 @@ function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
         }
     }
     return null;
+}
+
+function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
+    if (process.env.NODE_ENV !== 'production') {
+        let stylesheets = ctor.stylesheets;
+        defineProperty(ctor, 'stylesheets', {
+            enumerable: true,
+            configurable: true,
+            get() {
+                return stylesheets;
+            },
+            set(newValue) {
+                logError(
+                    'Dynamically setting the stylesheets static property on a LightningElementConstructor ' +
+                        'will not affect the stylesheets injected.'
+                );
+                stylesheets = newValue;
+            },
+        });
+    }
 }
 
 function computeShadowMode(vm: VM, renderer: RendererAPI) {

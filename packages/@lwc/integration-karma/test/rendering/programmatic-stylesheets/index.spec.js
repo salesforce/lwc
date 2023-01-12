@@ -12,6 +12,7 @@ import Multi from 'x/multi';
 import MultiScoped from 'x/multiScoped';
 import MultiStyles from 'x/multiStyles';
 import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
+import StylesheetsMutation from 'x/stylesheetsMutation';
 
 describe('programmatic stylesheets', () => {
     beforeEach(() => {
@@ -231,6 +232,20 @@ describe('programmatic stylesheets', () => {
             );
 
             document.body.appendChild(elm);
+            expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
+        });
+
+        it('warn if stylesheets is mutated', () => {
+            let elm;
+            expect(() => {
+                elm = createElement('x-stylesheets-mutation', {
+                    is: StylesheetsMutation,
+                });
+                document.body.appendChild(elm);
+            }).toLogErrorDev(
+                /\[LWC error]: Dynamically setting the stylesheets static property on a LightningElementConstructor will not affect the stylesheets injected./
+            );
+
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
         });
 
