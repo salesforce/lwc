@@ -8,9 +8,9 @@ describe('legacy undocumented stylesheetTokens API', () => {
         const elm = createElement('x-patches-stylesheet', { is: PatchesStylesheet });
         expect(() => {
             document.body.appendChild(elm);
-        }).toLogErrorDev([
-            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./,
-            /Dynamically setting the "stylesheetToken" property on a template function is deprecated and may be removed in a future version of LWC./,
+        }).toLogWarningDev([
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
+            /Mutating the "stylesheetToken" property on a template is deprecated and will be removed in a future version of LWC/,
         ]);
         const div = elm.shadowRoot.querySelector('div');
         expect(div.textContent).toEqual('without stylesheet');
@@ -23,9 +23,9 @@ describe('legacy undocumented stylesheetTokens API', () => {
         });
         expect(() => {
             document.body.appendChild(elm);
-        }).toLogErrorDev([
-            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./,
-            /Dynamically setting the "stylesheetToken" property on a template function is deprecated and may be removed in a future version of LWC./,
+        }).toLogWarningDev([
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
+            /Mutating the "stylesheetToken" property on a template is deprecated and will be removed in a future version of LWC/,
         ]);
         const div = elm.shadowRoot.querySelector('div');
         expect(div.textContent).toEqual('a');
@@ -56,8 +56,8 @@ describe('legacy undocumented stylesheetTokens API', () => {
         expect(() => {
             // patch the one with a stylesheet onto the one without
             withoutStylesheet.stylesheetTokens = withStylesheet.stylesheetTokens;
-        }).toLogErrorDev(
-            /Dynamically setting the "stylesheetTokens" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         // stylesheetTokens should reflect stylesheetToken

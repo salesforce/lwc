@@ -520,6 +520,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         CrossRootAriaInSyntheticShadow: 0,
         CompilerRuntimeVersionMismatch: 1,
         NonStandardAriaReflection: 2,
+        TemplateMutation: 3,
+        StylesheetMutation: 4,
     };
 
     return {

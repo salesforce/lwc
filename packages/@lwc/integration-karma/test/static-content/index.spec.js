@@ -45,14 +45,16 @@ describe('static content when stylesheets change', () => {
         const elm = createElement('x-container', { is: MultipleStyles });
 
         const stylesheetsWarning =
-            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./;
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/;
 
         expect(() => {
             elm.updateTemplate({
                 name: 'a',
                 useScopedCss: false,
             });
-        }).toLogErrorDev(stylesheetsWarning);
+        }).toLogWarningDev(stylesheetsWarning);
+
+        window.__lwcResetAlreadyLoggedMessages();
 
         document.body.appendChild(elm);
 
@@ -64,7 +66,9 @@ describe('static content when stylesheets change', () => {
                 name: 'b',
                 useScopedCss: true,
             });
-        }).toLogErrorDev(stylesheetsWarning);
+        }).toLogWarningDev(stylesheetsWarning);
+
+        window.__lwcResetAlreadyLoggedMessages();
 
         return Promise.resolve()
             .then(() => {
@@ -76,7 +80,7 @@ describe('static content when stylesheets change', () => {
                         name: 'a',
                         useScopedCss: false,
                     });
-                }).toLogErrorDev(stylesheetsWarning);
+                }).toLogWarningDev(stylesheetsWarning);
             })
             .then(() => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
