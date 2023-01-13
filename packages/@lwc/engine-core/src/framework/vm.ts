@@ -11,6 +11,7 @@ import {
     ArrayUnshift,
     assert,
     create,
+    defineProperty,
     getOwnPropertyNames,
     isArray,
     isFalse,
@@ -22,7 +23,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -390,6 +391,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
 // Validate and flatten any stylesheets defined as `static stylesheets`
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
     if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
+        warnOnStylesheetsMutation(ctor);
         const { stylesheets } = ctor;
         if (!isUndefined(stylesheets)) {
             const valid = validateComponentStylesheets(vm, stylesheets);
@@ -405,6 +407,26 @@ function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
         }
     }
     return null;
+}
+
+function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
+    if (process.env.NODE_ENV !== 'production') {
+        let { stylesheets } = ctor;
+        defineProperty(ctor, 'stylesheets', {
+            enumerable: true,
+            configurable: true,
+            get() {
+                return stylesheets;
+            },
+            set(newValue) {
+                logWarnOnce(
+                    `Dynamically setting the "stylesheets" static property on ${ctor.name} ` +
+                        'will not affect the stylesheets injected.'
+                );
+                stylesheets = newValue;
+            },
+        });
+    }
 }
 
 function computeShadowMode(vm: VM, renderer: RendererAPI) {
