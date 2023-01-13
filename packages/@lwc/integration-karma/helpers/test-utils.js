@@ -495,6 +495,18 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         role: 'role',
     };
 
+    // See the README for @lwc/aria-reflection
+    var nonStandardAriaProperties = [
+        'ariaActiveDescendant',
+        'ariaControls',
+        'ariaDescribedBy',
+        'ariaDetails',
+        'ariaErrorMessage',
+        'ariaFlowTo',
+        'ariaLabelledBy',
+        'ariaOwns',
+    ];
+
     var ariaProperties = Object.keys(ariaPropertiesMapping);
 
     // Can't use Object.values because we need to support IE11
@@ -507,6 +519,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     var ReportingEventId = {
         CrossRootAriaInSyntheticShadow: 0,
         CompilerRuntimeVersionMismatch: 1,
+        NonStandardAriaReflection: 2,
     };
 
     return {
@@ -525,6 +538,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaPropertiesMapping: ariaPropertiesMapping,
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
+        nonStandardAriaProperties: nonStandardAriaProperties,
         ReportingEventId: ReportingEventId,
     };
 })(LWC, jasmine, beforeAll);
