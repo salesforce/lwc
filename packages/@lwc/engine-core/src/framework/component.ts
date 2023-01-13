@@ -28,6 +28,8 @@ export function registerComponent(
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
+            // There is no point in running this in production, because the version mismatch check relies
+            // on code comments which are stripped out in production by minifiers
             checkVersionMismatch(Ctor, 'component');
         }
         signedTemplateMap.set(Ctor, tmpl);

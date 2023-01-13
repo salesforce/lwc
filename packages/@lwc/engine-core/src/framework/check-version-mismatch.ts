@@ -11,6 +11,7 @@ import { logError } from '../shared/logger';
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
 import { LightningElementConstructor } from './base-lightning-element';
+import { report, ReportingEventId } from './reporting';
 
 let warned = false;
 
@@ -46,6 +47,7 @@ export function checkVersionMismatch(
             logError(
                 `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
             );
+            report(ReportingEventId.CompilerRuntimeVersionMismatch);
         }
     }
 }
