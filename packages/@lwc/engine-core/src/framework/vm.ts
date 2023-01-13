@@ -23,7 +23,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -411,7 +411,7 @@ function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
 
 function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        let stylesheets = ctor.stylesheets;
+        let { stylesheets } = ctor;
         defineProperty(ctor, 'stylesheets', {
             enumerable: true,
             configurable: true,
@@ -419,8 +419,8 @@ function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
                 return stylesheets;
             },
             set(newValue) {
-                logError(
-                    'Dynamically setting the stylesheets static property on a LightningElementConstructor ' +
+                logWarnOnce(
+                    `Dynamically setting the "stylesheets" static property on ${ctor.name} ` +
                         'will not affect the stylesheets injected.'
                 );
                 stylesheets = newValue;

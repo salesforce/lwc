@@ -5,10 +5,6 @@ export default class StylesheetsMutation extends LightningElement {
     static stylesheets = [stylesheet];
 
     connectedCallback() {
-        StylesheetsMutation.stylesheets = [
-            () => {
-                return '';
-            },
-        ];
+        StylesheetsMutation.stylesheets = [stylesheet];
     }
 }

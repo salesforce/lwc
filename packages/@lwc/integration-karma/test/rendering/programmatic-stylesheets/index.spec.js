@@ -242,8 +242,8 @@ describe('programmatic stylesheets', () => {
                     is: StylesheetsMutation,
                 });
                 document.body.appendChild(elm);
-            }).toLogErrorDev(
-                /\[LWC error]: Dynamically setting the stylesheets static property on a LightningElementConstructor will not affect the stylesheets injected./
+            }).toLogWarningDev(
+                /\[LWC warn]: Dynamically setting the "stylesheets" static property on StylesheetsMutation will not affect the stylesheets injected./
             );
 
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
