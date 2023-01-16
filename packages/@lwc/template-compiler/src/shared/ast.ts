@@ -217,7 +217,7 @@ export function scopedSlotFragment(
     identifier: Identifier,
     elementLocation: SourceLocation,
     directiveLocation: SourceLocation,
-    slotName: Literal
+    slotName: Literal | Expression
 ): ScopedSlotFragment {
     return {
         type: 'ScopedSlotFragment',

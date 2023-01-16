@@ -1,0 +1,128 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 79,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 68,
+                "end": 79
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "ns-cmp",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 14,
+                    "start": 15,
+                    "end": 67,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 13,
+                        "start": 15,
+                        "end": 23
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 14,
+                        "start": 58,
+                        "end": 67
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 30,
+                            "start": 32,
+                            "end": 53,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 26,
+                                "start": 32,
+                                "end": 49
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 26,
+                                "endLine": 3,
+                                "endColumn": 30,
+                                "start": 49,
+                                "end": 53
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "slot",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 7,
+                                    "name": "mySlot",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 12,
+                                        "endLine": 3,
+                                        "endColumn": 25,
+                                        "start": 35,
+                                        "end": 48
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 25,
+                                    "start": 35,
+                                    "end": 48
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

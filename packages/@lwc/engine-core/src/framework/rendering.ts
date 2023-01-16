@@ -753,14 +753,21 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
             continue;
         }
 
-        let slotName = '';
+        let slotName: unknown = '';
         if (isVBaseElement(vnode)) {
-            slotName = (vnode.data.attrs?.slot as string) ?? '';
+            slotName = vnode.data.attrs?.slot ?? '';
         } else if (isVScopedSlotFragment(vnode)) {
             slotName = vnode.slotName;
         }
 
-        const vnodes: VNodes = (cmpSlotsMapping[slotName] = cmpSlotsMapping[slotName] || []);
+        // Can't use toString here because Symbol(1).toString() is 'Symbol(1)'
+        // but elm.setAttribute('slot', Symbol(1)) is an error.
+        // the following line also throws same error for symbols
+        // Similar for Object.create(null)
+        const normalizedSlotName = '' + slotName;
+
+        const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =
+            cmpSlotsMapping[normalizedSlotName] || []);
         ArrayPush.call(vnodes, vnode);
     }
     vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };

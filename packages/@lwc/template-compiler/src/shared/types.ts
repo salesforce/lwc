@@ -252,7 +252,7 @@ export interface ForOf extends DirectiveParentNode<'ForOf'> {
  */
 export interface ScopedSlotFragment extends DirectiveParentNode<'ScopedSlotFragment'> {
     slotData: SlotDataDirective;
-    slotName: Literal;
+    slotName: Literal | Expression;
 }
 
 export type ForBlock = ForEach | ForOf;
