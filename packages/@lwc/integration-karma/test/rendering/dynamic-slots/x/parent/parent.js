@@ -10,7 +10,6 @@ export default class Parent extends LightningElement {
     booleanFalse = false;
     object = { a: 0 };
     functionProp = function () {};
-    bigint = BigInt('39438943894384938493829198495749898939');
 
     @api
     setUndefinedName() {
