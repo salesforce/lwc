@@ -8,7 +8,7 @@ function testAriaProperty(property, attribute) {
             expected = expected.not;
         }
         expected.toLogWarningDev(
-            `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`
+            `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
         );
     }
 
