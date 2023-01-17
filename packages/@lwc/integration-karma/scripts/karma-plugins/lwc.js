@@ -17,7 +17,7 @@ const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
-const { COMPAT } = require('../shared/options');
+const { COMPAT, DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER } = require('../shared/options');
 const Watcher = require('./Watcher');
 
 function createPreprocessor(config, emitter, logger) {
@@ -50,6 +50,7 @@ function createPreprocessor(config, emitter, logger) {
                 },
                 enableLwcSpread: true,
                 enableScopedSlots: true,
+                disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             }),
         ];
 

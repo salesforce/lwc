@@ -55,4 +55,23 @@ describe('templateConfig', () => {
 
         expect(output[0].code).toContain('Application container');
     });
+
+    it('should accept disableSyntheticShadowSupport config flag', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/test/test.js'),
+            plugins: [
+                lwc({
+                    disableSyntheticShadowSupport: true,
+                }),
+            ],
+        });
+
+        const { output } = await bundle.generate({
+            format: 'esm',
+        });
+
+        // This function takes no arguments, corresponding to the optimization used
+        // for `disableSyntheticShadowSupport: true` by serialize.ts in @lwc/style-compiler
+        expect(output[0].code).toContain('function stylesheet()');
+    });
 });

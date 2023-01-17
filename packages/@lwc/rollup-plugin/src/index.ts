@@ -35,6 +35,8 @@ export interface RollupLwcOptions {
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.*/
     enableScopedSlots?: boolean;
+    /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
+    disableSyntheticShadowSupport?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -131,6 +133,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicComponent,
         enableLwcSpread,
         enableScopedSlots,
+        disableSyntheticShadowSupport,
     } = pluginOptions;
 
     return {
@@ -253,6 +256,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 scopedStyles: scoped,
                 enableLwcSpread,
                 enableScopedSlots,
+                disableSyntheticShadowSupport,
             });
 
             if (warnings) {

@@ -60,6 +60,9 @@ commands:
       node_env_production:
         type: boolean
         default: false
+      disable_synthetic_shadow_support_in_compiler:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -85,6 +88,7 @@ commands:
             <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
+            <<# parameters.disable_synthetic_shadow_support_in_compiler >> DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 <</ parameters.disable_synthetic_shadow_support_in_compiler >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
@@ -181,6 +185,9 @@ commands:
       node_env_production:
         type: boolean
         default: false
+      disable_synthetic_shadow_support_in_compiler:
+        type: boolean
+        default: false
       compat:
         type: boolean
         default: false
@@ -197,6 +204,7 @@ commands:
           enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           node_env_production: << parameters.node_env_production >>
+          disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -273,6 +281,9 @@ jobs:
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true
+      - run_karma:
+          disable_synthetic: true
+          disable_synthetic_shadow_support_in_compiler: true
       - run_karma:
           node_env_production: true
       - run_karma:
