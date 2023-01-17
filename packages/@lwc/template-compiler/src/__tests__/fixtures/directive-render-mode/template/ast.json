@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 5,
+            "endLine": 6,
             "endColumn": 12,
             "start": 0,
-            "end": 123,
+            "end": 182,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 34
             },
             "endTag": {
-                "startLine": 5,
+                "startLine": 6,
                 "startColumn": 1,
-                "endLine": 5,
+                "endLine": 6,
                 "endColumn": 12,
-                "start": 112,
-                "end": 123
+                "start": 171,
+                "end": 182
             }
         },
         "directives": [
@@ -212,6 +212,91 @@
                             "endColumn": 29,
                             "start": 99,
                             "end": 104
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "forwarded",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 59,
+                    "start": 116,
+                    "end": 170,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 43,
+                        "start": 116,
+                        "end": 154
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 52,
+                        "endLine": 5,
+                        "endColumn": 59,
+                        "start": 163,
+                        "end": 170
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "forwarded"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 11,
+                            "endLine": 5,
+                            "endColumn": 27,
+                            "start": 122,
+                            "end": 138
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "slot",
+                        "value": {
+                            "type": "Literal",
+                            "value": "forward"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 28,
+                            "endLine": 5,
+                            "endColumn": 42,
+                            "start": 139,
+                            "end": 153
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Forwarded",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Forwarded"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 43,
+                            "endLine": 5,
+                            "endColumn": 52,
+                            "start": 154,
+                            "end": 163
                         }
                     }
                 ]

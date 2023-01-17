@@ -7,6 +7,7 @@ import LightConsumer from 'x/lightConsumer';
 import ShadowConsumer from 'x/shadowConsumer';
 import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
+import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });
@@ -95,6 +96,14 @@ describe('Slotting', () => {
         await Promise.resolve();
         expect(elm.innerHTML).toEqual(
             '<x-conditional-slot data-id="conditional-slot"><button data-id="button">Toggle</button></x-conditional-slot>'
+        );
+    });
+
+    it('should forward slots', () => {
+        const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
+        const elm = nodes['x-forwarded-slot-consumer'];
+        expect(elm.innerHTML).toEqual(
+            '<x-forwarded-slot><x-light-container><p slot="upper">Upper slot content forwarded</p><p>Default slot forwarded</p><p slot="lower">Lower slot content forwarded</p></x-light-container></x-forwarded-slot>'
         );
     });
 });
