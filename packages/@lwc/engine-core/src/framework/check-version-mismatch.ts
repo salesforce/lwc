@@ -47,7 +47,10 @@ export function checkVersionMismatch(
             logError(
                 `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
             );
-            report(ReportingEventId.CompilerRuntimeVersionMismatch);
+            report(ReportingEventId.CompilerRuntimeVersionMismatch, {
+                compilerVersion: version,
+                runtimeVersion: LWC_VERSION,
+            });
         }
     }
 }

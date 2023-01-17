@@ -55,7 +55,10 @@ function reportViolation(source: Element, target: Element, attrName: string) {
         // vm should never be undefined here, but just to be safe, bail out and don't report
         return;
     }
-    report(ReportingEventId.CrossRootAriaInSyntheticShadow, vm);
+    report(ReportingEventId.CrossRootAriaInSyntheticShadow, {
+        tagName: vm.tagName,
+        attributeName: attrName,
+    });
     if (process.env.NODE_ENV !== 'production') {
         // Avoid excessively logging to the console in the case of duplicates.
         logWarnOnce(
