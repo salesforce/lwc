@@ -11,6 +11,8 @@ export const enum ReportingEventId {
     CrossRootAriaInSyntheticShadow = 0,
     CompilerRuntimeVersionMismatch = 1,
     NonStandardAriaReflection = 2,
+    TemplateMutation = 3,
+    StylesheetMutation = 4,
 }
 
 type ReportingDispatcher = (

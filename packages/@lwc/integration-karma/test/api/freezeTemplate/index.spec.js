@@ -1,6 +1,23 @@
-import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
+import {
+    registerTemplate,
+    freezeTemplate,
+    setFeatureFlagForTest,
+    __unstable__ReportingControl as reportingControl,
+} from 'lwc';
+import { ReportingEventId } from 'test-utils';
 
 describe('freezeTemplate', () => {
+    let dispatcher;
+
+    beforeEach(() => {
+        dispatcher = jasmine.createSpy();
+        reportingControl.attachDispatcher(dispatcher);
+    });
+
+    afterEach(() => {
+        reportingControl.detachDispatcher();
+    });
+
     it('should warn when setting tmpl.stylesheetToken', () => {
         const template = registerTemplate(() => []);
         const stylesheet = () => 'div { color: red }';
@@ -12,11 +29,14 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.stylesheetToken = 'newToken';
-        }).toLogErrorDev(
-            /Dynamically setting the "stylesheetToken" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheetToken" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.stylesheetToken).toEqual('newToken');
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when setting tmpl.stylesheetTokens', () => {
@@ -36,14 +56,17 @@ describe('freezeTemplate', () => {
                 hostAttribute: 'newToken-host',
                 shadowAttribute: 'newToken',
             };
-        }).toLogErrorDev(
-            /Dynamically setting the "stylesheetTokens" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.stylesheetTokens).toEqual({
             hostAttribute: 'newToken-host',
             shadowAttribute: 'newToken',
         });
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when setting tmpl.stylesheets', () => {
@@ -60,12 +83,15 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.stylesheets = [newStylesheet];
-        }).toLogErrorDev(
-            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when mutating tmpl.stylesheets array', () => {
@@ -82,9 +108,11 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.stylesheets.push(newStylesheet);
-        }).toLogErrorDev(
-            /Mutating the "stylesheets" array on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
+
+        window.__lwcResetAlreadyLoggedMessages();
 
         expect(template.stylesheets.length).toEqual(2);
         expect(template.stylesheets[0]).toBe(stylesheet);
@@ -92,12 +120,16 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.stylesheets.pop();
-        }).toLogErrorDev(
-            /Mutating the "stylesheets" array on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(stylesheet);
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when mutating a deep tmpl.stylesheets array', () => {
@@ -112,9 +144,12 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.stylesheets[1].push(newStylesheet);
-        }).toLogErrorDev(
-            /Mutating the "stylesheets" array on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when setting tmpl.slots', () => {
@@ -128,11 +163,14 @@ describe('freezeTemplate', () => {
         const newSlots = [];
         expect(() => {
             template.slots = newSlots;
-        }).toLogErrorDev(
-            /Dynamically setting the "slots" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "slots" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.slots).toBe(newSlots);
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when setting tmpl.renderMOde', () => {
@@ -144,11 +182,14 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             template.renderMode = undefined;
-        }).toLogErrorDev(
-            /Dynamically setting the "renderMode" property on a template function is deprecated and may be removed in a future version of LWC./
+        }).toLogWarningDev(
+            /Mutating the "renderMode" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         expect(template.renderMode).toBe(undefined);
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.TemplateMutation, undefined, undefined],
+        ]);
     });
 
     it('should warn when setting stylesheet.$scoped$', () => {
@@ -160,9 +201,12 @@ describe('freezeTemplate', () => {
 
         expect(() => {
             stylesheet.$scoped$ = true;
-        }).toLogErrorDev(
-            /Dynamically setting the "\$scoped\$" property on a stylesheet function is deprecated and may be removed in a future version of LWC\./
+        }).toLogWarningDev(
+            /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
         );
+        expect(dispatcher.calls.allArgs()).toEqual([
+            [ReportingEventId.StylesheetMutation, undefined, undefined],
+        ]);
     });
 
     it('tmpl expando props are enumerable and configurable', () => {
@@ -185,6 +229,7 @@ describe('freezeTemplate', () => {
             expect(descriptor.enumerable).toEqual(true);
             expect(descriptor.configurable).toEqual(true);
         }
+        expect(dispatcher).not.toHaveBeenCalled();
     });
 
     describe('ENABLE_FROZEN_TEMPLATE set to true', () => {
@@ -205,6 +250,7 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(Object.isFrozen(template.stylesheets)).toEqual(true);
+            expect(dispatcher).not.toHaveBeenCalled();
         });
 
         it('freezes a template with no stylesheets', () => {
@@ -213,6 +259,7 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(template.stylesheets).toEqual(undefined);
+            expect(dispatcher).not.toHaveBeenCalled();
         });
 
         it('deep-freezes the stylesheets', () => {
@@ -229,6 +276,7 @@ describe('freezeTemplate', () => {
             expect(Object.isFrozen(stylesheets[0])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1][0])).toEqual(true);
+            expect(dispatcher).not.toHaveBeenCalled();
         });
     });
 });
