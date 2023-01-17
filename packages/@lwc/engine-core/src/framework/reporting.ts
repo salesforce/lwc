@@ -10,6 +10,7 @@ import { VM } from './vm';
 export const enum ReportingEventId {
     CrossRootAriaInSyntheticShadow = 0,
     CompilerRuntimeVersionMismatch = 1,
+    NonStandardAriaReflection = 2,
 }
 
 type ReportingDispatcher = (

@@ -10,5 +10,6 @@ import './testFeatureFlag';
 
 // Patches ---------------------------------------------------------------------------------------
 import './patches/detect-synthetic-cross-root-aria';
+import './patches/detect-non-standard-aria';
 
 export * from './framework/main';
