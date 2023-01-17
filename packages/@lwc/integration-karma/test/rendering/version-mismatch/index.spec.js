@@ -1,4 +1,11 @@
-import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
+import {
+    createElement,
+    LightningElement,
+    registerTemplate,
+    registerComponent,
+    __unstable__ReportingControl as reportingControl,
+} from 'lwc';
+import { ReportingEventId } from 'test-utils';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
@@ -40,8 +47,16 @@ if (!process.env.COMPAT) {
         });
 
         describe('version mismatch warning', () => {
+            let dispatcher;
+
             beforeEach(() => {
                 window.__lwcResetWarnedOnVersionMismatch();
+                dispatcher = jasmine.createSpy();
+                reportingControl.attachDispatcher(dispatcher);
+            });
+
+            afterEach(() => {
+                reportingControl.detachDispatcher();
             });
 
             it('template', () => {
@@ -57,6 +72,13 @@ if (!process.env.COMPAT) {
                         `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v123.456.789`
                     )
                 );
+                if (process.env.NODE_ENV === 'production') {
+                    expect(dispatcher).not.toHaveBeenCalled();
+                } else {
+                    expect(dispatcher.calls.allArgs()).toEqual([
+                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                    ]);
+                }
             });
 
             it('stylesheet', () => {
@@ -83,6 +105,13 @@ if (!process.env.COMPAT) {
                         `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`
                     )
                 );
+                if (process.env.NODE_ENV === 'production') {
+                    expect(dispatcher).not.toHaveBeenCalled();
+                } else {
+                    expect(dispatcher.calls.allArgs()).toEqual([
+                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                    ]);
+                }
             });
 
             it('component', () => {
@@ -108,6 +137,13 @@ if (!process.env.COMPAT) {
                         `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but component CustomElement was compiled with v123.456.789`
                     )
                 );
+                if (process.env.NODE_ENV === 'production') {
+                    expect(dispatcher).not.toHaveBeenCalled();
+                } else {
+                    expect(dispatcher.calls.allArgs()).toEqual([
+                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                    ]);
+                }
             });
         });
     });

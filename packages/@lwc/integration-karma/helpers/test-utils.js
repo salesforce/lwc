@@ -503,6 +503,12 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
     }
 
+    // Should be kept in sync with the enum ReportingEventId in reporting.ts
+    var ReportingEventId = {
+        CrossRootAriaInSyntheticShadow: 0,
+        CompilerRuntimeVersionMismatch: 1,
+    };
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -519,5 +525,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaPropertiesMapping: ariaPropertiesMapping,
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
+        ReportingEventId: ReportingEventId,
     };
 })(LWC, jasmine, beforeAll);
