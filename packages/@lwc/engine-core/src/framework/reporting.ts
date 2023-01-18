@@ -76,7 +76,7 @@ export const reportingControl = {
      *
      * @param dispatcher - reporting control
      */
-    attachDispatcher(dispatcher: ReportingDispatcher<ReportingEventId>): void {
+    attachDispatcher(dispatcher: ReportingDispatcher): void {
         enabled = true;
         currentDispatcher = dispatcher;
         for (const callback of onReportingEnabledCallbacks) {
