@@ -1206,7 +1206,12 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
 }
 
 const RESTRICTED_DIRECTIVES_ON_SLOT = Object.values(TemplateDirectiveName).join(', ');
-const ALLOWED_SLOT_ATTRIBUTES = ['name', ElementDirectiveName.SlotBind, ElementDirectiveName.Key];
+const ALLOWED_SLOT_ATTRIBUTES = [
+    ElementDirectiveName.Key,
+    ElementDirectiveName.SlotBind,
+    'name',
+    'slot',
+];
 const ALLOWED_SLOT_ATTRIBUTES_SET = new Set<string>(ALLOWED_SLOT_ATTRIBUTES);
 function parseSlot(
     ctx: ParserCtx,
