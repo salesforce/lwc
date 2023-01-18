@@ -59,10 +59,9 @@ function testAriaProperty(property, attribute) {
         // TODO [#3284]: The spec and our polyfill are inconsistent with WebKit/Chromium on setting undefined
         // Here we detect the native WebKit/Chromium behavior and either align with that or our polyfill
         // See also: https://github.com/w3c/aria/issues/1858
-        const isNative =
-            Object.getOwnPropertyDescriptor(Element.prototype, property)
-                .set.toString()
-                .indexOf('[native code]') !== -1;
+        const isNative = Object.getOwnPropertyDescriptor(Element.prototype, property)
+            .set.toString()
+            .includes('[native code]');
         const settingUndefinedRemoves = () => {
             // This test is just in case Chromium/WebKit change their behavior, or Firefox ships their version
             const div = document.createElement('div');
@@ -112,7 +111,9 @@ function testAriaProperty(property, attribute) {
     });
 }
 
-if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+// These tests don't make sense if the global polyfill is not loaded
+// Also IE11 has some bugs, so we disable for COMPAT mode
+if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL && !process.env.COMPAT) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
         testAriaProperty(ariaProperty, ariaAttribute);
     }
