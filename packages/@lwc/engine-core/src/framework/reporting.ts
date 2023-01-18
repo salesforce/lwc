@@ -39,20 +39,17 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
-export type Payload<T extends ReportingEventId> =
-    T extends ReportingEventId.CrossRootAriaInSyntheticShadow
-        ? CrossRootAriaInSyntheticShadowPayload
-        : T extends ReportingEventId.CompilerRuntimeVersionMismatch
-        ? CompilerRuntimeVersionMismatchPayload
-        : T extends ReportingEventId.NonStandardAriaReflection
-        ? NonStandardAriaReflectionPayload
-        : T extends ReportingEventId.TemplateMutation
-        ? TemplateMutationPayload
-        : /* T extends ReportingEventId.StylesheetMutation */ StylesheetMutationPayload;
+export type ReportingPayloadMapping = {
+    [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
+    [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
+    [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
+    [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
+    [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
+}
 
-export type ReportingDispatcher<T extends ReportingEventId> = (
+export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
     reportingEventId: T,
-    payload: Payload<T>
+    payload: ReportingPayloadMapping[T]
 ) => void;
 
 /** Callbacks to invoke when reporting is enabled **/
