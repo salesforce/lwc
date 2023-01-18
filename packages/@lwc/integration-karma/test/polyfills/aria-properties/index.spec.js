@@ -50,14 +50,64 @@ function testAriaProperty(property, attribute) {
             expect(value).toBe('foo');
         });
 
-        it('should remove the attribute if the property is set to null', () => {
-            const el = document.createElement('div');
-            el.setAttribute(attribute, 'foo');
+        // Falsy values that are treated as removing the attribute when set
+        const falsyValuesThatRemove = [null];
 
-            expectWarningIfNonStandard(() => {
-                el[property] = null;
+        // Falsy values that are *not* treated as removing the attribute when set
+        const falsyValuesThatDoNotRemove = [0, false, '', NaN];
+
+        // TODO [#3284]: The spec and our polyfill are inconsistent with WebKit/Chromium on setting undefined
+        // Here we detect the native WebKit/Chromium behavior and either align with that or our polyfill
+        // See also: https://github.com/w3c/aria/issues/1858
+        const isNative =
+            Object.getOwnPropertyDescriptor(Element.prototype, property)
+                .set.toString()
+                .indexOf('[native code]') !== -1;
+        const settingUndefinedRemoves = () => {
+            // This test is just in case Chromium/WebKit change their behavior, or Firefox ships their version
+            const div = document.createElement('div');
+            div[property] = undefined;
+            return div[property] === null;
+        };
+        if (isNative && settingUndefinedRemoves()) {
+            // Native Webkit/Chromium – setting undefined is treated the same as null
+            falsyValuesThatRemove.push(undefined);
+        } else {
+            // Our polyfill or the current spec – setting undefined is not treated like null
+            falsyValuesThatDoNotRemove.push(undefined);
+        }
+
+        const prettyPrint = (value) => (value === '' ? 'the empty string' : '' + value);
+
+        falsyValuesThatRemove.forEach((value) => {
+            it(`should remove the attribute if the property is set to ${prettyPrint(
+                value
+            )}`, () => {
+                const el = document.createElement('div');
+                el.setAttribute(attribute, 'foo');
+
+                expectWarningIfNonStandard(() => {
+                    el[property] = value;
+                });
+                expect(el.hasAttribute(attribute)).toBe(false);
+                expect(el[property]).toBeNull();
             });
-            expect(el.hasAttribute(attribute)).toBe(false);
+        });
+
+        falsyValuesThatDoNotRemove.forEach((value) => {
+            it(`should not remove the attribute if the property is set to ${prettyPrint(
+                value
+            )}`, () => {
+                const el = document.createElement('div');
+                el.setAttribute(attribute, 'foo');
+
+                expectWarningIfNonStandard(() => {
+                    el[property] = value;
+                });
+                expect(el.hasAttribute(attribute)).toBe(true);
+                expect(el.getAttribute(attribute)).toBe('' + value);
+                expect(el[property]).toBe('' + value);
+            });
         });
     });
 }
