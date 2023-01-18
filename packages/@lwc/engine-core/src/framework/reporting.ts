@@ -45,7 +45,7 @@ export type ReportingPayloadMapping = {
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
-}
+};
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
     reportingEventId: T,
@@ -57,7 +57,7 @@ type OnReportingEnabledCallback = () => void;
 const onReportingEnabledCallbacks: OnReportingEnabledCallback[] = [];
 
 /** The currently assigned reporting dispatcher. */
-let currentDispatcher: ReportingDispatcher<ReportingEventId> = noop;
+let currentDispatcher: ReportingDispatcher = noop;
 
 /**
  * Whether reporting is enabled.
@@ -117,7 +117,10 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
  * @param reportingEventId
  * @param payload - data to report
  */
-export function report<T extends ReportingEventId>(reportingEventId: T, payload: Payload<T>) {
+export function report<T extends ReportingEventId>(
+    reportingEventId: T,
+    payload: ReportingPayloadMapping[T]
+) {
     if (enabled) {
         currentDispatcher(reportingEventId, payload);
     }
