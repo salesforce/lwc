@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, isNull, isUndefined } from '@lwc/shared';
+import { assert, isNull, isUndefined, StringToLowerCase } from '@lwc/shared';
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
@@ -60,7 +60,7 @@ if (SUPPORTS_TEMPLATE) {
 
     // Via https://github.com/webcomponents/polyfills/blob/ee1db33/packages/template/template.js#L282-L288
     const getTagName = function (text: string) {
-        return (/<([a-z][^/\0>\x20\t\r\n\f]+)/i.exec(text) || ['', ''])[1].toLowerCase();
+        return StringToLowerCase.call((/<([a-z][^/\0>\x20\t\r\n\f]+)/i.exec(text) || ['', ''])[1]);
     };
 
     // Via https://github.com/webcomponents/polyfills/blob/ee1db33/packages/template/template.js#L295-L320

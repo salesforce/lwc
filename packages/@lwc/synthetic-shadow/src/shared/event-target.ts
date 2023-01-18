@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
+import {
+    assert,
+    isFalse,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    ArrayIncludes,
+} from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { isSyntheticShadowHost } from '../faux-shadow/shadow-root';
@@ -41,7 +49,7 @@ export function shouldInvokeListener(
         ComposedPathMap.set(event, composedPath);
     }
 
-    return composedPath.includes(currentTarget);
+    return ArrayIncludes.call(composedPath, currentTarget);
 }
 
 export function getEventListenerWrapper(fnOrObj: unknown) {

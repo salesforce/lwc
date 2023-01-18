@@ -4,7 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
+import {
+    isUndefined,
+    ArrayJoin,
+    assert,
+    keys,
+    isNull,
+    ArrayFilter,
+    StringToLowerCase,
+    ArrayPush,
+    entries,
+    StringEndsWith,
+    StringStartsWith,
+    StringTrim,
+} from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -202,10 +215,9 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
             } else {
                 if (process.env.NODE_ENV !== 'production') {
                     logWarn(
-                        `Mismatch hydrating element <${getProperty(
-                            elm,
-                            'tagName'
-                        ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
+                        `Mismatch hydrating element <${StringToLowerCase.call(
+                            getProperty(elm, 'tagName')
+                        )}>: innerHTML values do not match for element, will recover from the difference`,
                         owner
                     );
                 }
@@ -358,13 +370,12 @@ function hasCorrectNodeType<T extends Node>(
 
 function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
     const { getProperty } = renderer;
-    if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
+    if (StringToLowerCase.call(vnode.sel) !== StringToLowerCase.call(getProperty(elm, 'tagName'))) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
-                `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}".`,
+                `Hydration mismatch: expecting element with tag "${StringToLowerCase.call(
+                    vnode.sel
+                )}" but found "${StringToLowerCase.call(getProperty(elm, 'tagName'))}".`,
                 vnode.owner
             );
         }
@@ -388,7 +399,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
 
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
-    for (const [attrName, attrValue] of Object.entries(attrs)) {
+    for (const [attrName, attrValue] of entries(attrs)) {
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
@@ -396,10 +407,9 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
             if (process.env.NODE_ENV !== 'production') {
                 const { getProperty } = renderer;
                 logError(
-                    `Mismatch hydrating element <${getProperty(
-                        elm,
-                        'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                    `Mismatch hydrating element <${StringToLowerCase.call(
+                        getProperty(elm, 'tagName')
+                    )}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
                     owner
                 );
             }
@@ -466,7 +476,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
-        readableVnodeClassname = computedClassName.trim();
+        readableVnodeClassname = StringTrim.call(computedClassName);
 
         if (classList.length > keys(classMap).length) {
             nodesAreCompatible = false;
@@ -480,10 +490,9 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
-                `Mismatch hydrating element <${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
+                `Mismatch hydrating element <${StringToLowerCase.call(
+                    getProperty(elm, 'tagName')
+                )}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
                 vnode.owner
             );
         }
@@ -506,19 +515,19 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
         vnodeStyle = style;
     } else if (!isUndefined(styleDecls)) {
         const parsedVnodeStyle = parseStyleText(elmStyle);
-        const expectedStyle = [];
+        const expectedStyle: string[] = [];
         // styleMap is used when style is set to static value.
         for (let i = 0, n = styleDecls.length; i < n; i++) {
             const [prop, value, important] = styleDecls[i];
-            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
+            ArrayPush.call(expectedStyle, `${prop}: ${value + (important ? ' important!' : '')}`);
 
             const parsedPropValue = parsedVnodeStyle[prop];
 
             if (isUndefined(parsedPropValue)) {
                 nodesAreCompatible = false;
-            } else if (!parsedPropValue.startsWith(value)) {
+            } else if (!StringStartsWith.call(parsedPropValue, value)) {
                 nodesAreCompatible = false;
-            } else if (important && !parsedPropValue.endsWith('!important')) {
+            } else if (important && !StringEndsWith.call(parsedPropValue, '!important')) {
                 nodesAreCompatible = false;
             }
         }
@@ -534,10 +543,9 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
         if (process.env.NODE_ENV !== 'production') {
             const { getProperty } = renderer;
             logError(
-                `Mismatch hydrating element <${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
+                `Mismatch hydrating element <${StringToLowerCase.call(
+                    getProperty(elm, 'tagName')
+                )}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
                 vnode.owner
             );
         }
@@ -572,10 +580,9 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
     if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
-                `Hydration mismatch: expecting element with tag "${getProperty(
-                    client,
-                    'tagName'
-                ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
+                `Hydration mismatch: expecting element with tag "${StringToLowerCase.call(
+                    getProperty(client, 'tagName')
+                )}" but found "${StringToLowerCase.call(getProperty(ssr, 'tagName'))}".`,
                 vnode.owner
             );
         }
@@ -585,13 +592,12 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 
     const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
 
-    clientAttrsNames.forEach((attrName) => {
+    for (const attrName of clientAttrsNames) {
         if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
             logError(
-                `Mismatch hydrating element <${getProperty(
-                    client,
-                    'tagName'
-                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                `Mismatch hydrating element <${StringToLowerCase.call(
+                    getProperty(client, 'tagName')
+                )}>: attribute "${attrName}" has different values, expected "${getAttribute(
                     client,
                     attrName
                 )}" but found "${getAttribute(ssr, attrName)}"`,
@@ -599,7 +605,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
             );
             isCompatibleElements = false;
         }
-    });
+    }
 
     return isCompatibleElements;
 }

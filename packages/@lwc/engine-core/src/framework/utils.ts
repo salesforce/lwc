@@ -4,7 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isArray, isFunction, isUndefined, keys, seal } from '@lwc/shared';
+import {
+    ArrayPush,
+    create,
+    isArray,
+    isFunction,
+    isUndefined,
+    keys,
+    seal,
+    NumberToString,
+    StringSubstring,
+    StringSplit,
+    StringTrim,
+} from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { RefVNodes, VM } from './vm';
 import { VBaseElement } from './vnodes';
@@ -48,9 +60,10 @@ export function addCallbackToNextTick(callback: Callback) {
 
 export function guid(): string {
     function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
+        return StringSubstring.call(
+            NumberToString.call(Math.floor((1 + Math.random()) * 0x10000), 16),
+            1
+        );
     }
 
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
@@ -64,13 +77,13 @@ const PROPERTY_DELIMITER = /:(.+)/;
 export function parseStyleText(cssText: string): { [name: string]: string } {
     const styleMap: { [name: string]: string } = {};
 
-    const declarations = cssText.split(DECLARATION_DELIMITER);
+    const declarations = StringSplit.call(cssText, DECLARATION_DELIMITER);
     for (const declaration of declarations) {
         if (declaration) {
-            const [prop, value] = declaration.split(PROPERTY_DELIMITER);
+            const [prop, value] = StringSplit.call(declaration, PROPERTY_DELIMITER);
 
             if (prop !== undefined && value !== undefined) {
-                styleMap[prop.trim()] = value.trim();
+                styleMap[StringTrim.call(prop)] = StringTrim.call(value);
             }
         }
     }
@@ -93,9 +106,9 @@ export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): St
     const list: StylesheetFactory[] = [];
     for (const stylesheet of stylesheets) {
         if (!isArray(stylesheet)) {
-            list.push(stylesheet);
+            ArrayPush.call(list, stylesheet);
         } else {
-            list.push(...flattenStylesheets(stylesheet));
+            ArrayPush.apply(list, flattenStylesheets(stylesheet));
         }
     }
     return list;

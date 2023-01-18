@@ -4,11 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {
+    isUndefined,
+    freeze,
+    defineProperty,
+    isExtensible,
+    keys,
+    ArraySome,
+    ArrayPush,
+    forEach,
+    ArraySplice,
+    ArrayIndexOf,
+} from '@lwc/shared';
 import { WireConfigValue, WireAdapter, DataCallback } from '@lwc/engine-core';
 import { ValueChangedEvent } from './value-changed-event';
-
-const { freeze, defineProperty, isExtensible } = Object;
 
 // This value needs to be in sync with wiring.ts from @lwc/engine-core
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
@@ -60,8 +69,6 @@ export function register(
  */
 export function registerWireService() {}
 
-const { forEach, splice: ArraySplice, indexOf: ArrayIndexOf } = Array.prototype;
-
 // wire event target life cycle connectedCallback hook event type
 const CONNECT = 'connect';
 // wire event target life cycle disconnectedCallback hook event type
@@ -89,12 +96,12 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
 }
 
 function isEmptyConfig(config: Record<string, any>): boolean {
-    return Object.keys(config).length === 0;
+    return keys(config).length === 0;
 }
 
 function isValidConfig(config: Record<string, any>, params: string[]): boolean {
     // The config is valid if there is no params, or if exist a param for which config[param] !== undefined.
-    return params.length === 0 || params.some((param) => !isUndefined(config[param]));
+    return params.length === 0 || ArraySome.call(params, (param) => !isUndefined(config[param]));
 }
 
 function isDifferentConfig(
@@ -102,7 +109,7 @@ function isDifferentConfig(
     oldConfig: Record<string, any>,
     params: string[]
 ) {
-    return params.some((param) => newConfig[param] !== oldConfig[param]);
+    return ArraySome.call(params, (param) => newConfig[param] !== oldConfig[param]);
 }
 
 class LegacyWireAdapterBridge implements WireAdapter {
@@ -142,15 +149,15 @@ class LegacyWireAdapterBridge implements WireAdapter {
             addEventListener: (type: string, listener: WireEventTargetListener): void => {
                 switch (type) {
                     case CONNECT: {
-                        this.connecting.push(listener as NoArgumentListener);
+                        ArrayPush.call(this.connecting, listener as NoArgumentListener);
                         break;
                     }
                     case DISCONNECT: {
-                        this.disconnecting.push(listener as NoArgumentListener);
+                        ArrayPush.call(this.disconnecting, listener as NoArgumentListener);
                         break;
                     }
                     case CONFIG: {
-                        this.configuring.push(listener as ConfigListener);
+                        ArrayPush.call(this.configuring, listener as ConfigListener);
 
                         if (this.currentConfig !== undefined) {
                             (listener as ConfigListener).call(undefined, this.currentConfig);

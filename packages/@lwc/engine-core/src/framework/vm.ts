@@ -8,6 +8,7 @@ import features from '@lwc/features';
 import {
     ArrayPush,
     ArraySlice,
+    ArraySort,
     ArrayUnshift,
     assert,
     create,
@@ -346,6 +347,7 @@ export function createVM<HostNode, HostElement>(
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-restricted-properties
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
@@ -584,7 +586,7 @@ function flushRehydrationQueue() {
             `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
-    const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
+    const vms = ArraySort.call(rehydrateQueue, (a: VM, b: VM): number => a.idx - b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];

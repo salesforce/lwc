@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create } from '@lwc/shared';
+import { assign, create, defineProperties } from '@lwc/shared';
 
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937
@@ -67,7 +67,7 @@ export default function apply() {
         const event = new EventConstructor(type, eventInitDict);
 
         const isComposed = !!(eventInitDict && eventInitDict.composed);
-        Object.defineProperties(event, {
+        defineProperties(event, {
             composed: {
                 get(): boolean {
                     return isComposed;
@@ -89,7 +89,7 @@ export default function apply() {
     (window as any).Event = PatchedEvent;
 
     // Patch the Event prototype to add the composed property on user agent dispatched event.
-    Object.defineProperties(Event.prototype, {
+    defineProperties(Event.prototype, {
         composed: {
             get() {
                 const { type } = this;

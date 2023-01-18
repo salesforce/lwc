@@ -11,6 +11,8 @@ import {
     isObject,
     isFunction,
     StringToLowerCase,
+    ArrayFilter,
+    ArrayPush,
 } from '@lwc/shared';
 import { hasCustomElements } from './has-custom-elements';
 
@@ -251,7 +253,8 @@ export function createScopedRegistry(): CreateScopedConstructor {
         // care of by the browser, only the difference between the two sets has to be taken
         // care by the patched version.
         return new Set(
-            [...pivotDefinition.observedAttributes].filter(
+            ArrayFilter.call(
+                [...pivotDefinition.observedAttributes],
                 (x) => !registeredDefinition.observedAttributes.has(x)
             )
         );
@@ -349,12 +352,12 @@ export function createScopedRegistry(): CreateScopedConstructor {
         }
         const { attributeChangedCallback } = pivotDefinition;
         // Approximate observedAttributes from the user class, but only for the new observed attributes
-        newObservedAttributes.forEach((name) => {
+        for (const name of newObservedAttributes) {
             if (nativeHasAttribute.call(instance, name)) {
                 const newValue = nativeGetAttribute.call(instance, name);
                 attributeChangedCallback!.call(instance, name, null, newValue);
             }
-        });
+        }
     }
 
     // User extends this HTMLElement, which returns the CE being upgraded
@@ -410,7 +413,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 resolvers = [];
                 pendingWhenDefinedCallbacks.set(tagName, resolvers);
             }
-            resolvers.push(resolve);
+            ArrayPush.call(resolvers, resolve);
         });
     }
 

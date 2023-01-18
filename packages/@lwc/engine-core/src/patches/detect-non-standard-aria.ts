@@ -6,7 +6,13 @@
  */
 
 import features from '@lwc/features';
-import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
+import {
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+    StringToLowerCase,
+} from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { LightningElement } from '../framework/base-lightning-element';
 import { logWarnOnce } from '../shared/logger';
@@ -62,8 +68,10 @@ function checkAndReportViolation(elm: Element, prop: string) {
 
         if (process.env.NODE_ENV !== 'production') {
             logWarnOnce(
-                `Element <${elm.tagName.toLowerCase()}> ` +
-                    (isUndefined(vm) ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
+                `Element <${StringToLowerCase.call(elm.tagName)}> ` +
+                    (isUndefined(vm)
+                        ? ''
+                        : `owned by <${StringToLowerCase.call(vm.elm.tagName)}> `) +
                     `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
                     `See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`
             );

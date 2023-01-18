@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction } from '@lwc/shared';
+import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction, ArrayPush } from '@lwc/shared';
 
 //
 // Feature detection
@@ -111,7 +111,7 @@ function insertConstructableStylesheet(
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
-        adoptedStyleSheets.push(stylesheet);
+        ArrayPush.call(adoptedStyleSheets, stylesheet);
     } else {
         target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet];
     }

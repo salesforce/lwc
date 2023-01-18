@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { defineProperties } from '@lwc/shared';
+
 const CustomEventConstructor = CustomEvent;
 
 function PatchedCustomEvent<T>(
@@ -14,7 +16,7 @@ function PatchedCustomEvent<T>(
     const event = new CustomEventConstructor(type, eventInitDict);
 
     const isComposed = !!(eventInitDict && eventInitDict.composed);
-    Object.defineProperties(event, {
+    defineProperties(event, {
         composed: {
             get() {
                 return isComposed;

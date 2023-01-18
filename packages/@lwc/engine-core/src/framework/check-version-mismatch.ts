@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+import {
+    isNull,
+    LWC_VERSION,
+    LWC_VERSION_COMMENT_REGEX,
+    StringMatch,
+    StringSplit,
+    toString,
+} from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
@@ -35,11 +42,11 @@ export function checkVersionMismatch(
     func: Template | StylesheetFactory | LightningElementConstructor,
     type: 'template' | 'stylesheet' | 'component'
 ) {
-    const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
+    const versionMatcher = StringMatch.call(toString(func), LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         const version = versionMatcher[1];
-        const [major, minor] = version.split('.');
-        const [expectedMajor, expectedMinor] = LWC_VERSION.split('.');
+        const [major, minor] = StringSplit.call(version, /\./);
+        const [expectedMajor, expectedMinor] = StringSplit.call(LWC_VERSION, /\./);
         if (major !== expectedMajor || minor !== expectedMinor) {
             warned = true; // only warn once to avoid flooding the console
             // stylesheets and templates do not have user-meaningful names, but components do

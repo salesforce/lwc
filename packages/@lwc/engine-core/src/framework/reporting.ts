@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { noop } from '@lwc/shared';
+import { ArrayPush, noop } from '@lwc/shared';
 import { VM } from './vm';
 
 export const enum ReportingEventId {
@@ -78,7 +78,7 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
         callback();
     } else {
         // call later
-        onReportingEnabledCallbacks.push(callback);
+        ArrayPush.call(onReportingEnabledCallbacks, callback);
     }
 }
 

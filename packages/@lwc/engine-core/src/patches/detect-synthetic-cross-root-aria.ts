@@ -21,6 +21,7 @@ import {
     ArrayFilter,
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
+    StringToLowerCase,
 } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
@@ -59,8 +60,12 @@ function reportViolation(source: Element, target: Element, attrName: string) {
     if (process.env.NODE_ENV !== 'production') {
         // Avoid excessively logging to the console in the case of duplicates.
         logWarnOnce(
-            `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
-                `<${target.tagName.toLowerCase()}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
+            `Element <${StringToLowerCase.call(
+                source.tagName
+            )}> uses attribute "${attrName}" to reference element ` +
+                `<${StringToLowerCase.call(
+                    target.tagName
+                )}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
                 `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
             vm
         );

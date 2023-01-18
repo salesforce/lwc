@@ -5,9 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFilter,
     ArrayFind,
     ArrayIndexOf,
     ArrayReverse,
+    ArrayShift,
     ArraySlice,
     assert,
     isNull,
@@ -64,7 +66,7 @@ const FocusableSelector = `
 const formElementTagNames = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA']);
 
 function filterSequentiallyFocusableElements(elements: Element[]): Element[] {
-    return elements.filter((element) => {
+    return ArrayFilter.call(elements, (element) => {
         if (hasAttribute.call(element, 'tabindex')) {
             // Even though LWC only supports tabindex values of 0 or -1,
             // passing through elements with tabindex="0" is a tighter criteria
@@ -138,7 +140,7 @@ export function hostElementFocus(this: HTMLElement) {
 
     let didFocus = false;
     while (!didFocus && focusables.length !== 0) {
-        const focusable = focusables.shift()!;
+        const focusable = ArrayShift.call(focusables)!;
         // @ts-ignore type-mismatch
         focusable.focus.apply(focusable, arguments);
         // Get the root node of the current focusable in case it was slotted.

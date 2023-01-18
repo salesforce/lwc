@@ -25,13 +25,13 @@ const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
 function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);
     if (!isUndefined(list)) {
-        list.forEach((vm) => {
+        for (const vm of list) {
             if (isFalse(vm.isDirty)) {
                 // forcing the vm to rehydrate in the micro-task:
                 markComponentAsDirty(vm);
                 scheduleRehydration(vm);
             }
-        });
+        }
         // resetting the Set to release the memory of those vm references
         // since they are not longer related to this template, instead
         // they will get re-associated once these instances are rehydrated.
@@ -43,11 +43,11 @@ function rehydrateHotTemplate(tpl: Template): boolean {
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const list = activeStyles.get(style);
     if (!isUndefined(list)) {
-        list.forEach((vm) => {
+        for (const vm of list) {
             // if a style definition is swapped, we must reset
             // vm's template content in the next micro-task:
             forceRehydration(vm);
-        });
+        }
         // resetting the Set to release the memory of those vm references
         // since they are not longer related to this style, instead
         // they will get re-associated once these instances are rehydrated.
@@ -60,7 +60,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
     const list = activeComponents.get(Ctor);
     let canRefreshAllInstances = true;
     if (!isUndefined(list)) {
-        list.forEach((vm) => {
+        for (const vm of list) {
             const { owner } = vm;
             if (!isNull(owner)) {
                 // if a component class definition is swapped, we must reset
@@ -75,7 +75,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
                 // for example: reload the entire page.
                 canRefreshAllInstances = false;
             }
-        });
+        }
         // resetting the Set to release the memory of those vm references
         // since they are not longer related to this constructor, instead
         // they will get re-associated once these instances are rehydrated.
@@ -150,21 +150,21 @@ export function setActiveVM(vm: VM) {
         // tracking active styles associated to template
         const stylesheets = tpl.stylesheets;
         if (!isUndefined(stylesheets)) {
-            flattenStylesheets(stylesheets).forEach((stylesheet) => {
+            for (const stylesheet of flattenStylesheets(stylesheets)) {
                 // this is necessary because we don't hold the list of styles
                 // in the vm, we only hold the selected (already swapped template)
                 // but the styles attached to the template might not be the actual
                 // active ones, but the swapped versions of those.
-                stylesheet = getStyleOrSwappedStyle(stylesheet);
-                let stylesheetVMs = activeStyles.get(stylesheet);
+                const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
+                let stylesheetVMs = activeStyles.get(swappedStylesheet);
                 if (isUndefined(stylesheetVMs)) {
                     stylesheetVMs = new Set();
-                    activeStyles.set(stylesheet, stylesheetVMs);
+                    activeStyles.set(swappedStylesheet, stylesheetVMs);
                 }
                 // this will allow us to keep track of the stylesheet that are
                 // being used by a hot component
                 stylesheetVMs.add(vm);
-            });
+            }
         }
     }
 }
@@ -190,13 +190,13 @@ export function removeActiveVM(vm: VM) {
         // removing active styles associated to template
         const styles = tpl.stylesheets;
         if (!isUndefined(styles)) {
-            flattenStylesheets(styles).forEach((style) => {
+            for (const style of flattenStylesheets(styles)) {
                 list = activeStyles.get(style);
                 if (!isUndefined(list)) {
                     // deleting the vm from the set to avoid leaking memory
                     list.delete(vm);
                 }
-            });
+            }
         }
     }
 }

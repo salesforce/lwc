@@ -18,6 +18,8 @@ import {
     setPrototypeOf,
     isObject,
     isNull,
+    ArrayPush,
+    ArrayJoin,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -325,13 +327,19 @@ function getLightningElementPrototypeRestrictionsDescriptors(
             get(this: LightningElement) {
                 const { error, attribute } = globalHTMLProperties[propName];
                 const msg: string[] = [];
-                msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
+                ArrayPush.call(
+                    msg,
+                    `Accessing the global HTML property "${propName}" is disabled.`
+                );
                 if (error) {
-                    msg.push(error);
+                    ArrayPush.call(msg, error);
                 } else if (attribute) {
-                    msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
+                    ArrayPush.call(
+                        msg,
+                        `Instead access it via \`this.getAttribute("${attribute}")\`.`
+                    );
                 }
-                logError(msg.join('\n'), getAssociatedVM(this));
+                logError(ArrayJoin.call(msg, '\n'), getAssociatedVM(this));
             },
             set(this: LightningElement) {
                 const { readOnly } = globalHTMLProperties[propName];
