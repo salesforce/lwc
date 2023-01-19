@@ -70,7 +70,7 @@ const AriaPropertyNames = [
 ] as const;
 
 export type AccessibleElementProperties = {
-    [prop in typeof AriaPropertyNames[number]]: string | null;
+    [prop in (typeof AriaPropertyNames)[number]]: string | null;
 };
 
 const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (() => {
