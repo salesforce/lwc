@@ -220,6 +220,7 @@ jobs:
       - restore_nx_cache
       - run:
           name: Install dependencies and build
+          # Puppeteer Chromium download is only needed for @best/runner-local, which is unused here
           command: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
       - run:
           name: Check missing file headers
