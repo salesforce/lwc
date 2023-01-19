@@ -27,7 +27,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
 
       - name: Build benchmarks
         run: yarn build:performance
