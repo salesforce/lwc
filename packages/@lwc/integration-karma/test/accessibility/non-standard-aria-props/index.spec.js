@@ -68,6 +68,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     {
                                         tagName,
                                         propertyName: prop,
+                                        isSetter: true,
+                                        setValueType: 'string',
                                     },
                                 ],
                                 [
@@ -75,6 +77,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     {
                                         tagName,
                                         propertyName: prop,
+                                        isSetter: false,
+                                        setValueType: undefined,
                                     },
                                 ],
                             ]);
@@ -96,6 +100,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     {
                                         tagName: undefined,
                                         propertyName: prop,
+                                        isSetter: true,
+                                        setValueType: 'string',
                                     },
                                 ],
                                 [
@@ -103,6 +109,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     {
                                         tagName: undefined,
                                         propertyName: prop,
+                                        isSetter: false,
+                                        setValueType: undefined,
                                     },
                                 ],
                             ]);

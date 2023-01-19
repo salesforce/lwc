@@ -29,6 +29,8 @@ export interface CompilerRuntimeVersionMismatchPayload extends BasePayload {
 
 export interface NonStandardAriaReflectionPayload extends BasePayload {
     propertyName: string;
+    isSetter: boolean;
+    setValueType: string | undefined;
 }
 
 export interface TemplateMutationPayload extends BasePayload {
