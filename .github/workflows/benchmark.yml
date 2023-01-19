@@ -27,7 +27,8 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        # Puppeteer Chromium download is only needed for @best/runner-local, which is unused here
+        run: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
 
       - name: Build benchmarks
         run: yarn build:performance
