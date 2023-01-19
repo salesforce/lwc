@@ -76,7 +76,13 @@ if (!process.env.COMPAT) {
                     expect(dispatcher).not.toHaveBeenCalled();
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
-                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                        [
+                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            {
+                                runtimeVersion: process.env.LWC_VERSION,
+                                compilerVersion: '123.456.789',
+                            },
+                        ],
                     ]);
                 }
             });
@@ -109,7 +115,13 @@ if (!process.env.COMPAT) {
                     expect(dispatcher).not.toHaveBeenCalled();
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
-                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                        [
+                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            {
+                                runtimeVersion: process.env.LWC_VERSION,
+                                compilerVersion: '123.456.789',
+                            },
+                        ],
                     ]);
                 }
             });
@@ -141,7 +153,13 @@ if (!process.env.COMPAT) {
                     expect(dispatcher).not.toHaveBeenCalled();
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
-                        [ReportingEventId.CompilerRuntimeVersionMismatch, undefined, undefined],
+                        [
+                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            {
+                                runtimeVersion: process.env.LWC_VERSION,
+                                compilerVersion: '123.456.789',
+                            },
+                        ],
                     ]);
                 }
             });

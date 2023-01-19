@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { noop } from '@lwc/shared';
-import { VM } from './vm';
 
 export const enum ReportingEventId {
     CrossRootAriaInSyntheticShadow = 0,
@@ -15,15 +14,46 @@ export const enum ReportingEventId {
     StylesheetMutation = 4,
 }
 
-type ReportingDispatcher = (
-    reportingEventId: ReportingEventId,
-    tagName?: string,
-    vmIndex?: number
+export interface BasePayload {
+    tagName?: string;
+}
+
+export interface CrossRootAriaInSyntheticShadowPayload extends BasePayload {
+    attributeName: string;
+}
+
+export interface CompilerRuntimeVersionMismatchPayload extends BasePayload {
+    compilerVersion: string;
+    runtimeVersion: string;
+}
+
+export interface NonStandardAriaReflectionPayload extends BasePayload {
+    propertyName: string;
+}
+
+export interface TemplateMutationPayload extends BasePayload {
+    propertyName: string;
+}
+
+export interface StylesheetMutationPayload extends BasePayload {
+    propertyName: string;
+}
+
+export type ReportingPayloadMapping = {
+    [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
+    [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
+    [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
+    [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
+    [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
+};
+
+export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
+    reportingEventId: T,
+    payload: ReportingPayloadMapping[T]
 ) => void;
 
-type OnReportingEnabledCallback = () => void;
-
 /** Callbacks to invoke when reporting is enabled **/
+type OnReportingEnabledCallback = () => void;
 const onReportingEnabledCallbacks: OnReportingEnabledCallback[] = [];
 
 /** The currently assigned reporting dispatcher. */
@@ -85,10 +115,13 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
 /**
  * Report to the current dispatcher, if there is one.
  * @param reportingEventId
- * @param vm
+ * @param payload - data to report
  */
-export function report(reportingEventId: ReportingEventId, vm?: VM) {
+export function report<T extends ReportingEventId>(
+    reportingEventId: T,
+    payload: ReportingPayloadMapping[T]
+) {
     if (enabled) {
-        currentDispatcher(reportingEventId, vm?.tagName, vm?.idx);
+        currentDispatcher(reportingEventId, payload);
     }
 }
