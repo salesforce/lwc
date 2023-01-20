@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
 import { hasCustomElements } from './has-custom-elements';
 import { createCustomElementCompat } from './create-custom-element-compat';
 import { createCustomElementUsingUpgradableConstructor } from './create-custom-element-using-upgradable-constructor';
@@ -32,7 +31,7 @@ export let createCustomElement: (
 ) => HTMLElement;
 
 if (hasCustomElements) {
-    if (features.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
+    if (lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
         createCustomElement = createCustomElementScoped;
     } else {
         // use the global registry, with an upgradable constructor for the defined custom element

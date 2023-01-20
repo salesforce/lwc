@@ -25,7 +25,7 @@ if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-export const lwcRuntimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
+const flags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
@@ -55,10 +55,10 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
     // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
     if (process.env.NODE_ENV === 'test-karma-lwc' || process.env.NODE_ENV !== 'production') {
         // Allow the same flag to be set more than once outside of production to enable testing
-        lwcRuntimeFlags[name] = value;
+        flags[name] = value;
     } else {
         // Disallow the same flag to be set more than once in production
-        const runtimeValue = lwcRuntimeFlags[name];
+        const runtimeValue = flags[name];
         if (!isUndefined(runtimeValue)) {
             // eslint-disable-next-line no-console
             console.error(
@@ -66,7 +66,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
             );
             return;
         }
-        defineProperty(lwcRuntimeFlags, name, { value });
+        defineProperty(flags, name, { value });
     }
 }
 
@@ -81,8 +81,15 @@ export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagV
     }
 }
 
-export const runtimeFlags = lwcRuntimeFlags; // backwards compatibility for before this was renamed
-
 export default features;
 
+export {
+    flags as runtimeFlags, // backwards compatibility for before this was renamed
+    flags as lwcRuntimeFlags,
+};
+
 export type { FeatureFlagMap };
+
+declare global {
+    const lwcRuntimeFlags: Partial<FeatureFlagMap>;
+}

@@ -27,7 +27,6 @@ import {
     keys,
     setPrototypeOf,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError } from '../shared/logger';
@@ -697,11 +696,7 @@ function applyAriaReflectionToLightningElement() {
     applyAriaReflection(LightningElement.prototype);
 }
 
-// The reason for this odd if/else branching is limitations in @lwc/features:
-// https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#only-works-with-if-statements
-if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
-    applyAriaReflectionToLightningElement();
-} else if (!process.env.IS_BROWSER) {
+if (!process.env.IS_BROWSER || lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
     applyAriaReflectionToLightningElement();
 }
 

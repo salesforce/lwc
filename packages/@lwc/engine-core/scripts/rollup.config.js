@@ -11,7 +11,6 @@ const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescript = require('../../../../scripts/rollup/typescript');
-const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 
 const { version, dependencies, peerDependencies } = require('../package.json');
@@ -38,7 +37,6 @@ module.exports = {
         }),
         typescript(),
         writeDistAndTypes(),
-        lwcFeatures(),
     ],
 
     onwarn({ code, message }) {

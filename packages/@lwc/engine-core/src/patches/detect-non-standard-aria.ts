@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import features from '@lwc/features';
 import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { LightningElement } from '../framework/base-lightning-element';
@@ -111,7 +110,7 @@ function enableDetection() {
 
 // No point in running this code if we're not in a browser, or if the global polyfill is not loaded
 if (process.env.IS_BROWSER) {
-    if (!features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    if (!lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
         // Always run detection in dev mode, so we can at least print to the console
         if (process.env.NODE_ENV !== 'production') {
             enableDetection();

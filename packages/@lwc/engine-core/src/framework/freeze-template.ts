@@ -20,7 +20,6 @@ import {
     isArray,
     isUndefined,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
@@ -244,7 +243,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
 
 export function freezeTemplate(tmpl: Template) {
     // TODO [#2782]: remove this flag and delete the legacy behavior
-    if (features.ENABLE_FROZEN_TEMPLATE) {
+    if (lwcRuntimeFlags.ENABLE_FROZEN_TEMPLATE) {
         // Deep freeze the template
         freeze(tmpl);
         if (!isUndefined(tmpl.stylesheets)) {

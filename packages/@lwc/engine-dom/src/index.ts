@@ -5,14 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Globals -----------------------------------------------------------------------------------------
+import '@lwc/features';
+
 // Polyfills ---------------------------------------------------------------------------------------
 import './aria-reflection-polyfill';
-
-// Tests -------------------------------------------------------------------------------------------
-import './testFeatureFlag.ts';
-
-// Tests -------------------------------------------------------------------------------------------
-import './testFeatureFlag.ts';
 
 // DevTools Formatters
 import './formatters';
