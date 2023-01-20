@@ -13,6 +13,7 @@
     "//": [
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
         "Also note we are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.",
+        "Breaking change: https://github.com/google/tachometer/issues/244",
         "Also note that we use rollup-plugin-node-resolve-v13 because Best uses an old version of Rollup."
     ],
     "dependencies": {
