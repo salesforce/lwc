@@ -21,10 +21,12 @@ const features: FeatureFlagMap = {
     ENABLE_PROGRAMMATIC_STYLESHEETS: null,
 };
 
+// eslint-disable-next-line no-restricted-properties
 if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
+// eslint-disable-next-line no-restricted-properties
 const flags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 
 /**
