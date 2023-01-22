@@ -17,7 +17,6 @@ import {
     isForBlock,
     isIf,
     isParentNode,
-    isSlot,
     isText,
 } from '../shared/ast';
 import {
@@ -69,8 +68,6 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
         return (
             // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
-            // light DOM slots
-            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.
             // Search children to determine if it should be flattened.
             (isIf(child) && shouldFlatten(codeGen, child.children))
