@@ -7,7 +7,6 @@
 import { hasCustomElements } from './has-custom-elements';
 import { createCustomElementCompat } from './create-custom-element-compat';
 import { createCustomElementUsingUpgradableConstructor } from './create-custom-element-using-upgradable-constructor';
-import { createCustomElementScoped } from './create-custom-element-scoped';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 /**
@@ -31,12 +30,8 @@ export let createCustomElement: (
 ) => HTMLElement;
 
 if (hasCustomElements) {
-    if (lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-        createCustomElement = createCustomElementScoped;
-    } else {
-        // use the global registry, with an upgradable constructor for the defined custom element
-        createCustomElement = createCustomElementUsingUpgradableConstructor;
-    }
+    // use the global registry, with an upgradable constructor for the defined custom element
+    createCustomElement = createCustomElementUsingUpgradableConstructor;
 } else {
     // no registry available here
     createCustomElement = createCustomElementCompat;
