@@ -99,7 +99,7 @@ function reportViolation(
                 `See: https://lwc.dev/guide/css#deprecated-template-mutation`
         );
     }
-    report(eventId);
+    report(eventId, { propertyName: prop });
 }
 
 function reportTemplateViolation(prop: TemplateProp) {

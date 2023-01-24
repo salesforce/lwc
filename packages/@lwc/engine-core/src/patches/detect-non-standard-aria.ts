@@ -76,7 +76,10 @@ function checkAndReportViolation(elm: Element, prop: string) {
                     `See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`
             );
         }
-        report(ReportingEventId.NonStandardAriaReflection, vm);
+        report(ReportingEventId.NonStandardAriaReflection, {
+            tagName: vm?.tagName,
+            propertyName: prop,
+        });
     }
 }
 

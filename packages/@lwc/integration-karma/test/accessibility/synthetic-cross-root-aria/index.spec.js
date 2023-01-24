@@ -50,15 +50,19 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         ? [
                               [
                                   ReportingEventId.NonStandardAriaReflection,
-                                  'x-aria-source',
-                                  jasmine.any(Number),
+                                  {
+                                      tagName: 'x-aria-source',
+                                      propertyName: 'ariaLabelledBy',
+                                  },
                               ],
                           ]
                         : []),
                     [
                         ReportingEventId.CrossRootAriaInSyntheticShadow,
-                        'x-aria-source',
-                        jasmine.any(Number),
+                        {
+                            tagName: 'x-aria-source',
+                            attributeName: 'aria-labelledby',
+                        },
                     ],
                 ];
 
@@ -114,8 +118,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expect(dispatcher.calls.allArgs()).toEqual([
                             [
                                 ReportingEventId.CrossRootAriaInSyntheticShadow,
-                                'x-aria-target',
-                                jasmine.any(Number),
+                                {
+                                    tagName: 'x-aria-target',
+                                    attributeName: 'aria-labelledby',
+                                },
                             ],
                         ]);
                     });
@@ -135,8 +141,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     ? [
                                           [
                                               ReportingEventId.NonStandardAriaReflection,
-                                              'x-aria-source',
-                                              jasmine.any(Number),
+                                              {
+                                                  tagName: 'x-aria-source',
+                                                  propertyName: 'ariaLabelledBy',
+                                              },
                                           ],
                                       ]
                                     : []),
@@ -153,8 +161,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                 ? [
                                       [
                                           ReportingEventId.NonStandardAriaReflection,
-                                          'x-aria-source',
-                                          jasmine.any(Number),
+                                          {
+                                              tagName: 'x-aria-source',
+                                              propertyName: 'ariaLabelledBy',
+                                          },
                                       ],
                                   ]
                                 : []),
@@ -188,8 +198,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     ...expectedDispatcherCalls,
                                     [
                                         ReportingEventId.CrossRootAriaInSyntheticShadow,
-                                        'x-aria-source',
-                                        jasmine.any(Number),
+                                        {
+                                            tagName: 'x-aria-source',
+                                            attributeName: 'aria-labelledby',
+                                        },
                                     ],
                                 ]);
                             });
@@ -215,13 +227,17 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
             expect(dispatcher.calls.allArgs()).toEqual([
                 [
                     ReportingEventId.CrossRootAriaInSyntheticShadow,
-                    'x-aria-source',
-                    jasmine.any(Number),
+                    {
+                        tagName: 'x-aria-source',
+                        attributeName: 'aria-labelledby',
+                    },
                 ],
                 [
                     ReportingEventId.CrossRootAriaInSyntheticShadow,
-                    'x-aria-source',
-                    jasmine.any(Number),
+                    {
+                        tagName: 'x-aria-source',
+                        attributeName: 'aria-labelledby',
+                    },
                 ],
             ]);
         });

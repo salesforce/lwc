@@ -65,13 +65,17 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
                                     ReportingEventId.NonStandardAriaReflection,
-                                    tagName,
-                                    jasmine.any(Number),
+                                    {
+                                        tagName,
+                                        propertyName: prop,
+                                    },
                                 ],
                                 [
                                     ReportingEventId.NonStandardAriaReflection,
-                                    tagName,
-                                    jasmine.any(Number),
+                                    {
+                                        tagName,
+                                        propertyName: prop,
+                                    },
                                 ],
                             ]);
                         });
@@ -87,8 +91,20 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
 
                             expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
-                                [ReportingEventId.NonStandardAriaReflection, undefined, undefined],
-                                [ReportingEventId.NonStandardAriaReflection, undefined, undefined],
+                                [
+                                    ReportingEventId.NonStandardAriaReflection,
+                                    {
+                                        tagName: undefined,
+                                        propertyName: prop,
+                                    },
+                                ],
+                                [
+                                    ReportingEventId.NonStandardAriaReflection,
+                                    {
+                                        tagName: undefined,
+                                        propertyName: prop,
+                                    },
+                                ],
                             ]);
                         });
                     });

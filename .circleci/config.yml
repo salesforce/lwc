@@ -51,9 +51,6 @@ commands:
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
-      enable_scoped_custom_element_registry:
-        type: boolean
-        default: false
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
@@ -85,7 +82,6 @@ commands:
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
-            <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
             <<# parameters.disable_synthetic_shadow_support_in_compiler >> DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 <</ parameters.disable_synthetic_shadow_support_in_compiler >> \
@@ -176,9 +172,6 @@ commands:
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
-      enable_scoped_custom_element_registry:
-        type: boolean
-        default: false
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
@@ -201,7 +194,6 @@ commands:
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
           enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
-          enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           node_env_production: << parameters.node_env_production >>
           disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
@@ -220,7 +212,8 @@ jobs:
       - restore_nx_cache
       - run:
           name: Install dependencies and build
-          command: yarn install --frozen-lockfile
+          # Puppeteer Chromium download is only needed for @best/runner-local, which is unused here
+          command: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
       - run:
           name: Check missing file headers
           command: node ./scripts/tasks/check-license-headers.js
@@ -264,20 +257,8 @@ jobs:
       - run_karma:
           enable_native_custom_element_lifecycle: true
       - run_karma:
-          enable_scoped_custom_element_registry: true
-      - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
-      - run_karma:
-          disable_synthetic: true
-          enable_scoped_custom_element_registry: true
-      - run_karma:
-          enable_native_custom_element_lifecycle: true
-          enable_scoped_custom_element_registry: true
-      - run_karma:
-          disable_synthetic: true
-          enable_native_custom_element_lifecycle: true
-          enable_scoped_custom_element_registry: true
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true

@@ -35,7 +35,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheetToken).toEqual('newToken');
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheetToken' }],
         ]);
     });
 
@@ -65,7 +65,7 @@ describe('freezeTemplate', () => {
             shadowAttribute: 'newToken',
         });
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheetTokens' }],
         ]);
     });
 
@@ -90,7 +90,7 @@ describe('freezeTemplate', () => {
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -127,8 +127,8 @@ describe('freezeTemplate', () => {
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(stylesheet);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -148,7 +148,7 @@ describe('freezeTemplate', () => {
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -169,7 +169,7 @@ describe('freezeTemplate', () => {
 
         expect(template.slots).toBe(newSlots);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'slots' }],
         ]);
     });
 
@@ -188,7 +188,7 @@ describe('freezeTemplate', () => {
 
         expect(template.renderMode).toBe(undefined);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, undefined, undefined],
+            [ReportingEventId.TemplateMutation, { propertyName: 'renderMode' }],
         ]);
     });
 
@@ -205,7 +205,7 @@ describe('freezeTemplate', () => {
             /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
         );
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.StylesheetMutation, undefined, undefined],
+            [ReportingEventId.StylesheetMutation, { propertyName: '$scoped$' }],
         ]);
     });
 
