@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { lwcRuntimeFlags, default as features } from '../flags';
+import { lwcRuntimeFlags } from '../flags';
 
 describe('lwcRuntimeFlags', () => {
     it('known flags default to undefined', () => {
@@ -15,19 +15,5 @@ describe('lwcRuntimeFlags', () => {
     it('unknown flags default to undefined', () => {
         // @ts-ignore
         expect(lwcRuntimeFlags.DOES_NOT_EXIST).toBeUndefined();
-    });
-});
-
-describe('features', () => {
-    it('known flags in the features map are null', () => {
-        expect(features.DUMMY_TEST_FLAG).toBeNull();
-        for (const value of Object.values(features)) {
-            expect(value).toBeNull();
-        }
-    });
-
-    it('unknown flags in the features map are undefined', () => {
-        // @ts-ignore
-        expect(features.DOES_NOT_EXIST).toBeUndefined();
     });
 });
