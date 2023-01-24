@@ -223,6 +223,7 @@ function isStaticNode(node: BaseElement): boolean {
     const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
 
     if (namespace !== HTML_NAMESPACE) {
+        // TODO [#3313]: re-enable static optimization for SVGs once scope token is always lowercase
         return false;
     }
 
