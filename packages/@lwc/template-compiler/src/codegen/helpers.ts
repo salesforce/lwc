@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { HTML_NAMESPACE } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
@@ -220,6 +221,11 @@ export function parseClassNames(classNames: string): string[] {
 function isStaticNode(node: BaseElement): boolean {
     let result = true;
     const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+
+    if (namespace !== HTML_NAMESPACE) {
+        // TODO [#3313]: re-enable static optimization for SVGs once scope token is always lowercase
+        return false;
+    }
 
     result &&= isElement(node);
 
