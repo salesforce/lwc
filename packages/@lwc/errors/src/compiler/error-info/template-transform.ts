@@ -589,7 +589,7 @@ export const ParserDiagnostics = {
         code: 1145,
         message:
             'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
-            'please visit https://lwc.dev/guide/reference#html-template-directives',
+            'please visit https://sfdc.co/template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
     },
@@ -630,7 +630,7 @@ export const ParserDiagnostics = {
         code: 1153,
         message:
             'Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. ' +
-            'For more information please visit https://lwc.dev/guide/reference#html-template-directives',
+            'For more information please visit https://sfdc.co/template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
     },

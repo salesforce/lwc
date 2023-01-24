@@ -31,7 +31,7 @@ import { logWarnOnce } from '../shared/logger';
 // The goal of this code is to detect invalid cross-root ARIA references in synthetic shadow DOM.
 // These invalid references should be fixed before the offending components can be migrated to native shadow DOM.
 // When invalid usage is detected, we warn in dev mode and call the reporting API if enabled.
-// See: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates
+// See: https://sfdc.co/synthetic-aria
 //
 
 // Use the unpatched native getElementById/querySelectorAll rather than the synthetic one
@@ -69,7 +69,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
                 `<${StringToLowerCase.call(
                     target.tagName
                 )}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
-                `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
+                `For details, see: https://sfdc.co/synthetic-aria`,
             vm
         );
     }

@@ -73,7 +73,7 @@ function checkAndReportViolation(elm: Element, prop: string) {
                         ? ''
                         : `owned by <${StringToLowerCase.call(vm.elm.tagName)}> `) +
                     `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
-                    `See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`
+                    `See https://sfdc.co/deprecated-aria`
             );
         }
         report(ReportingEventId.NonStandardAriaReflection, {
