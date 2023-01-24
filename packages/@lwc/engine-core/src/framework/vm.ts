@@ -390,20 +390,18 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
 
 // Validate and flatten any stylesheets defined as `static stylesheets`
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
-    if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
-        warnOnStylesheetsMutation(ctor);
-        const { stylesheets } = ctor;
-        if (!isUndefined(stylesheets)) {
-            const valid = validateComponentStylesheets(vm, stylesheets);
+    warnOnStylesheetsMutation(ctor);
+    const { stylesheets } = ctor;
+    if (!isUndefined(stylesheets)) {
+        const valid = validateComponentStylesheets(vm, stylesheets);
 
-            if (valid) {
-                return flattenStylesheets(stylesheets);
-            } else if (process.env.NODE_ENV !== 'production') {
-                logError(
-                    `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
-                    vm
-                );
-            }
+        if (valid) {
+            return flattenStylesheets(stylesheets);
+        } else if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                vm
+            );
         }
     }
     return null;
