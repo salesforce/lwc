@@ -46,8 +46,8 @@ describe('styling svg', () => {
             const elm = createElement(tag, { is: Ctor });
             document.body.appendChild(elm);
             await new Promise((resolve) => requestAnimationFrame(() => resolve()));
-            expect(getComputedStyle(elm.shadowRoot.querySelector('svg')).display).toEqual(
-                'inline-block'
+            expect(getComputedStyle(elm.shadowRoot.querySelector('svg')).fill).toEqual(
+                'rgb(255, 0, 0)'
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('text')).display).toEqual('none');
         });
