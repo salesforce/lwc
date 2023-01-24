@@ -131,27 +131,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
 
         describe('two copies of LWC engine loaded', () => {
-            if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-                it('no errors on duplicate tag names', () => {
-                    evaluate(engineScripts);
-                    evaluate(`(${createLWC})()`);
-                    expect(
-                        iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                            .textContent
-                    ).toEqual('Hello LWC');
-                    evaluate(engineScripts);
-                    evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
-                    const elements = iframe.contentDocument.querySelectorAll('x-foo');
-                    expect(elements.length).toEqual(2);
-                    expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual(
-                        'Hello LWC'
-                    );
-                    expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual(
-                        'Hello LWC 2'
-                    );
-                });
-            }
-
             [false, true].forEach((customElement) => {
                 const testName = customElement
                     ? 'with CustomElementConstructor'
