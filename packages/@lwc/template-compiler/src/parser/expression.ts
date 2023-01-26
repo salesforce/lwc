@@ -33,8 +33,15 @@ function validateExpression(
     node: t.BaseNode,
     config: NormalizedConfig
 ): asserts node is Expression {
-    const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
-    invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
+    // eslint-disable-next-line
+    // TODO: add detection of lone identifiers & member expressions to
+    //       provide optimized compilation & avoid perf regressions on
+    //       template compilation
+
+    // eslint-disable-next-line
+    // TODO: remove this hack and provide correct detection of the node
+    //       types that will be permitted
+    (node as any).isExpression = true;
 
     if (t.isMemberExpression(node)) {
         invariant(

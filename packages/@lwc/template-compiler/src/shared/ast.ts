@@ -461,7 +461,9 @@ export function isComment(node: BaseNode): node is Comment {
 }
 
 export function isExpression(node: Expression | Literal): node is Expression {
-    return node.type === 'Identifier' || node.type === 'MemberExpression';
+    // eslint-disable-next-line
+    // TODO: remove this massive hack and provide reliable expression node detection
+    return !!(node as any).isExpression;
 }
 
 export function isStringLiteral(node: Expression | Literal): node is Literal<string> {

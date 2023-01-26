@@ -427,6 +427,8 @@ export default class CodeGen {
      * Bind the passed expression to the component instance. It applies the following transformation to the expression:
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
+     * - {foo ?? bar} --> {$cmp.foo ?? $cmp.bar}
+     * - {foo?.bar} --> {$cmp.foo?.bar}
      */
     bindExpression(expression: Expression | Literal): t.Expression {
         if (t.isIdentifier(expression)) {
@@ -443,8 +445,10 @@ export default class CodeGen {
                 if (
                     parent !== null &&
                     t.isIdentifier(node) &&
-                    t.isMemberExpression(parent) &&
-                    parent.object === node &&
+                    // eslint-disable-next-line
+                    // TODO: provide more elaborate detection for Identifiers that may
+                    //       need special handling, as is the case with member expressions
+                    (!t.isMemberExpression(parent) || parent.object === node) &&
                     !scope.isLocalIdentifier(node)
                 ) {
                     this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
