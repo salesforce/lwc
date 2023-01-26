@@ -106,7 +106,7 @@ export function parseExpression(
 ): Expression {
     return ctx.withErrorWrapping(
         () => {
-            const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
+            const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2022 });
 
             validateSourceIsParsedExpression(source, parsed);
             validateExpression(parsed, ctx.config);
