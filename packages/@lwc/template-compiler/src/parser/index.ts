@@ -491,15 +491,25 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 
 function parseIf(
     ctx: ParserCtx,
-    _parse5Elm: parse5.Element,
+    parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): If | undefined {
-    const ifAttribute = parsedAttr.pick(IF_RE);
-    if (!ifAttribute) {
+    const ifAttributes = parsedAttr.pickAll(IF_RE);
+    if (ifAttributes.length === 0) {
         return;
     }
+
+    for (let i = 1; i < ifAttributes.length; i++) {
+        ctx.warnAtLocation(
+            ParserDiagnostics.SINGLE_IF_DIRECTIVE_ALLOWED,
+            ast.sourceLocation(parse5ElmLocation),
+            [parse5Elm.tagName]
+        );
+    }
+
+    const ifAttribute = ifAttributes[0];
 
     // if:true cannot be used with lwc:if, lwc:elseif, lwc:else
     const incompatibleDirective = ctx.findInCurrentElementScope(ast.isConditionalBlock);
