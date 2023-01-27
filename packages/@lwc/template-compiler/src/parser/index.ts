@@ -491,7 +491,7 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 
 function parseIf(
     ctx: ParserCtx,
-    _parse5Elm: parse5.Element,
+    parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
@@ -505,7 +505,7 @@ function parseIf(
         ctx.warnAtLocation(
             ParserDiagnostics.SINGLE_IF_DIRECTIVE_ALLOWED,
             ast.sourceLocation(parse5ElmLocation),
-            [ifAttributes[i].name]
+            [parse5Elm.tagName]
         );
     }
 
