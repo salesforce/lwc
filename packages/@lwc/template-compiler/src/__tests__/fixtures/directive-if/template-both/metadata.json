@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1054,
-            "message": "LWC1054: Only one If directive is allowed. The rest are ignored.",
+            "code": 1182,
+            "message": "LWC1182: Only one If directive is allowed. The rest are ignored.",
             "level": 2,
             "location": {
                 "line": 2,
