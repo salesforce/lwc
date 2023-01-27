@@ -839,4 +839,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    SINGLE_IF_DIRECTIVE_ALLOWED: {
+        code: 1182,
+        message: 'Only one If directive is allowed. The rest are ignored.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };

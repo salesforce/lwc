@@ -266,12 +266,24 @@ export class ParsedAttribute {
         }
     }
 
+    getAll(pattern: RegExp): Attribute[] {
+        return this.getKeys(pattern).map((key) => this.attributes.get(key)!);
+    }
+
     pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
         }
         return attr;
+    }
+
+    pickAll(pattern: RegExp): Attribute[] {
+        const attrs = this.getAll(pattern);
+        for (const attr of attrs) {
+            this.attributes.delete(attr.name);
+        }
+        return attrs;
     }
 
     private getKey(pattern: string | RegExp): string | undefined {
@@ -282,6 +294,10 @@ export class ParsedAttribute {
             match = Array.from(this.attributes.keys()).find((name) => !!name.match(pattern));
         }
         return match;
+    }
+
+    private getKeys(pattern: RegExp): string[] {
+        return Array.from(this.attributes.keys()).filter((name) => !!name.match(pattern));
     }
 
     getAttributes(): Attribute[] {
