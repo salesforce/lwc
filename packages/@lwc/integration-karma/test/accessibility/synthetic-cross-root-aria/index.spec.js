@@ -45,7 +45,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     expectedMessageForCrossRoot,
                 ];
 
-                const expectedDispatcherCalls = [
+                const getExpectedDispatcherCalls = (isSetter) => [
                     ...(usePropertyAccess
                         ? [
                               [
@@ -53,6 +53,8 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                   {
                                       tagName: 'x-aria-source',
                                       propertyName: 'ariaLabelledBy',
+                                      isSetter,
+                                      setValueType: isSetter ? 'string' : undefined,
                                   },
                               ],
                           ]
@@ -87,14 +89,18 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expect(() => {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('setting id', () => {
                         expect(() => {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(false)
+                        );
                     });
 
                     it('linking to an element in global light DOM', () => {
@@ -104,7 +110,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expect(() => {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('linking from an element in global light DOM', () => {
@@ -144,6 +152,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                               {
                                                   tagName: 'x-aria-source',
                                                   propertyName: 'ariaLabelledBy',
+                                                  isSetter: true,
+                                                  setValueType:
+                                                      value === null ? 'null' : typeof value,
                                               },
                                           ],
                                       ]
@@ -164,6 +175,8 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                           {
                                               tagName: 'x-aria-source',
                                               propertyName: 'ariaLabelledBy',
+                                              isSetter: true,
+                                              setValueType: 'string',
                                           },
                                       ],
                                   ]
@@ -184,7 +197,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                 expect(() => {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessages);
-                                expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                                expect(dispatcher.calls.allArgs()).toEqual(
+                                    getExpectedDispatcherCalls(true)
+                                );
                             });
 
                             it('linking multiple targets', () => {
@@ -195,7 +210,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     expectedMessageForCrossRootForSecondTarget,
                                 ]);
                                 expect(dispatcher.calls.allArgs()).toEqual([
-                                    ...expectedDispatcherCalls,
+                                    ...getExpectedDispatcherCalls(true),
                                     [
                                         ReportingEventId.CrossRootAriaInSyntheticShadow,
                                         {
