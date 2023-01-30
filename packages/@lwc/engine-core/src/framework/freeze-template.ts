@@ -95,7 +95,7 @@ function reportViolation(
         logWarnOnce(
             `Mutating the "${prop}" property on a ${type} ` +
                 `is deprecated and will be removed in a future version of LWC. ` +
-                `See: https://lwc.dev/guide/css#deprecated-template-mutation`
+                `See: https://sfdc.co/template-mutation`
         );
     }
     report(eventId, { propertyName: prop });
