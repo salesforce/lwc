@@ -34,3 +34,4 @@ export {
 export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
+export { createElement } from './apis/create-element';

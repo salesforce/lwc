@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Basic from 'x/basic';
 import Direct from 'x/direct';
 import Scoped from 'x/scoped';
@@ -15,26 +15,6 @@ import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
 import StylesheetsMutation from 'x/stylesheetsMutation';
 
 describe('programmatic stylesheets', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', true);
-    });
-
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', false);
-    });
-
-    it('does not override styles if flag is not set', () => {
-        setFeatureFlagForTest('ENABLE_PROGRAMMATIC_STYLESHEETS', false);
-        const elm = createElement('x-basic', { is: Basic });
-        document.body.appendChild(elm);
-
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(0, 0, 0)'
-            );
-        });
-    });
-
     it('works for a basic usage of static stylesheets', () => {
         const elm = createElement('x-basic', { is: Basic });
         document.body.appendChild(elm);

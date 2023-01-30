@@ -25,8 +25,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                 ];
 
                 scenarios.forEach(({ name, Ctor, tagName }) => {
-                    const inComponentWarning = `Error: [LWC warn]: Element <div> owned by <${tagName}> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`;
-                    const outsideComponentWarning = `Error: [LWC warn]: Element <span> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`;
+                    const inComponentWarning = `Error: [LWC warn]: Element <div> owned by <${tagName}> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`;
+                    const outsideComponentWarning = `Error: [LWC warn]: Element <span> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`;
 
                     describe(name, () => {
                         let elm;

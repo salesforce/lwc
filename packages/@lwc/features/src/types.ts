@@ -58,14 +58,6 @@ export interface FeatureFlagMap {
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
 
     /**
-     * Flag to enable scoped custom element registry (aka pivots). This patches the global custom elements registry
-     * to support having LWC components with the same tag name as third-party custom elements.
-     *
-     * If this flag is disabled, then LWC components with the same tag name as third-party custom elements may conflict.
-     */
-    ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY: FeatureFlagValue;
-
-    /**
      * Flag to enable the "frozen template" feature. With this flag enabled, the template object
      * imported from HTML files is frozen and cannot be modified. E.g. this will throw:
      * ```js
@@ -81,13 +73,6 @@ export interface FeatureFlagMap {
      * and HTMLBridgeElement base classes, not on every Element.
      */
     DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
-
-    /**
-     * Flag to enable programmatic stylesheets, aka dynamic stylesheet injection, aka CSS extensibility. Allows
-     * for a `static stylesheets` property at the component level that injects stylesheets alongside the template
-     * stylsheets.
-     */
-    ENABLE_PROGRAMMATIC_STYLESHEETS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

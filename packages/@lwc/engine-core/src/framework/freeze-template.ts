@@ -50,7 +50,7 @@ const ARRAY_MUTATION_METHODS = [
 
 let mutationTrackingDisabled = false;
 
-function getOriginalArrayMethod(prop: typeof ARRAY_MUTATION_METHODS[number]) {
+function getOriginalArrayMethod(prop: (typeof ARRAY_MUTATION_METHODS)[number]) {
     switch (prop) {
         case 'pop':
             return ArrayPop;
@@ -74,8 +74,8 @@ function getOriginalArrayMethod(prop: typeof ARRAY_MUTATION_METHODS[number]) {
 }
 
 // stylesheetTokens is a legacy prop
-type TemplateProp = typeof TEMPLATE_PROPS[number] | 'stylesheetTokens';
-type StylesheetProp = typeof STYLESHEET_PROPS[number];
+type TemplateProp = (typeof TEMPLATE_PROPS)[number] | 'stylesheetTokens';
+type StylesheetProp = (typeof STYLESHEET_PROPS)[number];
 
 function reportViolation(
     type: 'template',
@@ -96,7 +96,7 @@ function reportViolation(
         logWarnOnce(
             `Mutating the "${prop}" property on a ${type} ` +
                 `is deprecated and will be removed in a future version of LWC. ` +
-                `See: https://lwc.dev/guide/css#deprecated-template-mutation`
+                `See: https://sfdc.co/template-mutation`
         );
     }
     report(eventId, { propertyName: prop });

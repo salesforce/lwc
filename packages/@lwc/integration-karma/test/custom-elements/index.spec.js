@@ -1,7 +1,5 @@
 import { createElement } from 'lwc';
 import Nonce1 from 'x/nonce1';
-import Nonce2 from 'x/nonce2';
-import Nonce3 from 'x/nonce3';
 import Nonce4 from 'x/nonce4';
 import Nonce5 from 'x/nonce5';
 import Nonce6 from 'x/nonce6';
@@ -15,13 +13,7 @@ import Nonce13 from 'x/nonce13';
 import Nonce14 from 'x/nonce14';
 import Nonce15 from 'x/nonce15';
 import Nonce16 from 'x/nonce16';
-import Nonce17 from 'x/nonce17';
-import Nonce18 from 'x/nonce18';
 import Nonce19 from 'x/nonce19';
-import Nonce20 from 'x/nonce20';
-import ObserveNothing from 'x/observeNothing';
-import ObserveFoo from 'x/observeFoo';
-import ObserveNothingThrow from 'x/observeNothingThrow';
 import Component from 'x/component';
 
 const invalidTagNameError = /(not a valid custom element name|must contain a hyphen)/;
@@ -59,103 +51,18 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     expect(Ctor).toBe(Nonce1.CustomElementConstructor);
                 });
         });
-
-        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-            it('using lwc.createElement', () => {
-                const tagName = 'x-nonce2';
-                expect(customElements.get(tagName)).toBeUndefined();
-                let resolvedCtor;
-                const promise = customElements.whenDefined(tagName).then((ctor) => {
-                    resolvedCtor = ctor;
-                });
-                const elm = createElement(tagName, { is: Nonce2 });
-                const Ctor = customElements.get(tagName);
-                //lwc.createElement is "invisible" to customElements.get
-                expect(Ctor).toBeUndefined();
-                document.body.appendChild(elm);
-                expect(elm.expectedTagName).toEqual(tagName);
-                class MyCustomComponent extends HTMLElement {}
-                // Do an explicit microtask here
-                return Promise.resolve()
-                    .then(() => {
-                        // If the `resolvedCtor` is undefined at this point, which happens after a microtask
-                        // (Promise.resolve()`), then `whenDefined` probably does not leak the pivot constructor.
-                        // (We could wait for some timeout to be safe, but `Promise.resolve()` should be enough.)
-                        expect(resolvedCtor).toEqual(undefined);
-                        customElements.define(tagName, MyCustomComponent);
-                        return promise;
-                    })
-                    .then(() => {
-                        expect(resolvedCtor).toBe(MyCustomComponent);
-                        return customElements.whenDefined(tagName);
-                    })
-                    .then((thisResolvedCtor) => {
-                        expect(thisResolvedCtor).toBe(MyCustomComponent);
-                    });
-            });
-
-            it('using vanilla custom elements, multiple whenDefined promises', () => {
-                const tagName = 'x-nonce20';
-                expect(customElements.get(tagName)).toBeUndefined();
-                let resolvedCtor1;
-                let resolvedCtor2;
-                const promise1 = customElements.whenDefined(tagName).then((ctor) => {
-                    resolvedCtor1 = ctor;
-                });
-                const promise2 = customElements.whenDefined(tagName).then((ctor) => {
-                    resolvedCtor2 = ctor;
-                });
-                expect(customElements.get(tagName)).toBeUndefined();
-                createElement('x-nonce20', { is: Nonce20 });
-
-                class Vanilla extends HTMLElement {}
-
-                // The promise is only resolved when customElements.define is called,
-                // not when lwc.createElement is called. lwc.createElement is
-                // "invisible" to customElements.whenDefined
-                return Promise.resolve()
-                    .then(() => {
-                        expect(resolvedCtor1).toBeUndefined();
-                        expect(resolvedCtor2).toBeUndefined();
-                        customElements.define(tagName, Vanilla);
-                        const Ctor = customElements.get(tagName);
-                        expect(Ctor).toBe(Vanilla);
-                        return Promise.all([promise1, promise2]);
-                    })
-                    .then(() => {
-                        expect(resolvedCtor1).toBe(Vanilla);
-                        expect(resolvedCtor2).toBe(Vanilla);
-                    });
-            });
-        }
     });
 
     describe('patched registry', () => {
-        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-            it('throws error for unsupported "extends" option', () => {
-                expect(() => {
-                    customElements.define('x-unsupported-extends', class extends HTMLElement {}, {
-                        extends: 'button',
-                    });
-                }).toThrowError(
-                    'NotSupportedError: "extends" key in customElements.define() options is not supported.'
-                );
-            });
-        }
+        it('elements have the same constructor as defined in the registry', () => {
+            const tagName = 'x-same-ctor-as-in-registry';
+            class Component extends HTMLElement {}
+            customElements.define(tagName, Component);
 
-        if (!window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-            // This test doesn't make sense for the scoped registry, because it uses a PivotCtor
-            // which is different from the UserCtor
-            it('elements have the same constructor as defined in the registry', () => {
-                const tagName = 'x-same-ctor-as-in-registry';
-                class Component extends HTMLElement {}
-                customElements.define(tagName, Component);
-
-                const elm = document.createElement(tagName);
-                expect(elm instanceof Component).toEqual(true);
-                expect(elm.constructor).toBe(Component);
-            });
-        }
+            const elm = document.createElement(tagName);
+            expect(elm instanceof Component).toEqual(true);
+            expect(elm.constructor).toBe(Component);
+        });
 
         it('throws error for duplicate tag definition', () => {
             class Foo extends HTMLElement {}
@@ -177,22 +84,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             }).toThrowError(sameConstructorError);
         });
 
-        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-            it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
-                const elm = createElement('x-nonce3', { is: Nonce3 });
-                document.body.appendChild(elm);
-                expect(elm.tagName.toLowerCase()).toEqual('x-nonce3');
-                expect(elm.expectedTagName).toEqual('x-nonce3');
-
-                class Foo extends HTMLElement {}
-
-                customElements.define('x-nonce3', Foo);
-                const elm2 = new Foo();
-                document.body.appendChild(elm2);
-                expect(elm2.tagName.toLowerCase()).toEqual('x-nonce3');
-            });
-        }
-
         it('allows two LWC custom elements to use the same tag name', () => {
             const elm1 = createElement('x-nonce4', { is: Nonce4 });
             document.body.appendChild(elm1);
@@ -207,19 +98,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
 
         describe('same constructor returned from get/whenDefined', () => {
-            function defineFirstElement(tagName, Component) {
-                // For the scoped registry, we want to test the global customElements API and
-                // make sure it consistently returns the same constructor. For vanilla custom elements,
-                // we can test lwc.createElement instead since it's also registered globally.
-                if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-                    customElements.define(tagName, Component.CustomElementConstructor);
-                } else {
-                    createElement(tagName, { is: Component });
-                }
-            }
-
             it('get() should always return the same constructor', () => {
-                defineFirstElement('x-nonce10', Nonce10);
+                createElement('x-nonce10', { is: Nonce10 });
                 const firstCtor = customElements.get('x-nonce10');
                 expect(firstCtor).not.toBeUndefined();
                 createElement('x-nonce10', { is: Nonce11 });
@@ -229,7 +109,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             });
 
             it('whenDefined() should always return the same constructor - defined before whenDefined', () => {
-                defineFirstElement('x-nonce6', Nonce6);
+                createElement('x-nonce6', { is: Nonce6 });
                 let firstCtor;
                 return customElements
                     .whenDefined('x-nonce6')
@@ -249,7 +129,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
                 // Check `cE.whenDefined()` called _before_ `cE.define()`
                 const promise = customElements.whenDefined('x-nonce12');
-                defineFirstElement('x-nonce12', Nonce12);
+                createElement('x-nonce12', { is: Nonce12 });
                 let firstCtor;
                 return promise
                     .then((Ctor) => {
@@ -407,68 +287,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 upgradeCalled = true;
             };
 
-            if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-                // In scoped registry mode, we throw an error
-                expect(() => {
-                    new Ctor(upgradeCallback);
-                }).toThrowError(
-                    /Failed to create custom element: the provided constructor is not a constructor\./
-                );
-            } else {
-                // In non-scoped registry mode, we just silently ignore the upgradeCallback
-                document.body.appendChild(new Ctor(upgradeCallback));
-            }
+            document.body.appendChild(new Ctor(upgradeCallback));
             expect(upgradeCalled).toEqual(false);
         });
-
-        if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-            it('pre-existing custom element, LWC defined first', () => {
-                const tagName = 'x-preexisting-in-dom';
-                const vanilla = document.createElement(tagName);
-                document.body.appendChild(vanilla);
-                const lwcElm = createElement(tagName, { is: Component });
-                document.body.appendChild(lwcElm);
-
-                customElements.define(
-                    tagName,
-                    class extends HTMLElement {
-                        constructor() {
-                            super();
-                            this.notLWC = true;
-                        }
-                    }
-                );
-
-                expect(vanilla.notLWC).toEqual(true);
-            });
-
-            it('does not allow passing arbitrary UserCtors into the PivotCtor', () => {
-                const tagName = 'x-nonce-17';
-                document.body.appendChild(createElement(tagName, { is: Nonce17 }));
-                const Ctor = document.createElement(tagName).constructor;
-
-                class MyUserCtor extends HTMLElement {
-                    isMyUserCtor = true;
-                }
-
-                expect(() => {
-                    new Ctor(MyUserCtor);
-                }).toThrowError(
-                    /Failed to create custom element: the provided constructor is unregistered: MyUserCtor\./
-                );
-            });
-
-            it('does not allow passing non-functions into the PivotCtor', () => {
-                const tagName = 'x-nonce-18';
-                document.body.appendChild(createElement(tagName, { is: Nonce18 }));
-                const Ctor = document.createElement(tagName).constructor;
-                expect(() => {
-                    new Ctor(null);
-                }).toThrowError(
-                    /Failed to create custom element: the provided constructor is not a constructor\./
-                );
-            });
-        }
     });
 
     describe('errors', () => {
@@ -644,319 +465,4 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(elm.getAttribute('foo')).toBeNull();
         });
     });
-
-    // These tests only make sense for scoped custom elements, because we create two elements with the same tag name
-    if (window.lwcRuntimeFlags.ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY) {
-        describe('Observed attributes on vanilla component with same tag as LWC component', () => {
-            let observations;
-
-            beforeEach(() => {
-                observations = [];
-            });
-
-            function createVanillaElement(tagName) {
-                class Observed extends HTMLElement {
-                    static observedAttributes = ['foo'];
-
-                    attributeChangedCallback(name, oldValue, newValue) {
-                        observations.push({ name, oldValue, newValue });
-                    }
-                }
-
-                customElements.define(tagName, Observed);
-
-                const observed = new Observed();
-                document.body.appendChild(observed);
-                return observed;
-            }
-
-            function createVanillaElementWithSuper(tagName) {
-                class Observed extends HTMLElement {
-                    static observedAttributes = ['foo'];
-
-                    attributeChangedCallback(name, oldValue, newValue) {
-                        observations.push({ name, oldValue, newValue });
-                    }
-                }
-
-                customElements.define(tagName, Observed);
-
-                const observed = new Observed();
-                document.body.appendChild(observed);
-                return observed;
-            }
-
-            function createVanillaElementUpgradedWithNoPreexistingAttrs(tagName) {
-                const elm = document.createElement(tagName);
-                document.body.appendChild(elm);
-
-                class Observed extends HTMLElement {
-                    static observedAttributes = ['foo'];
-
-                    attributeChangedCallback(name, oldValue, newValue) {
-                        observations.push({ name, oldValue, newValue });
-                    }
-                }
-
-                customElements.define(tagName, Observed);
-
-                return elm;
-            }
-
-            function createVanillaElementUpgradedWithPreexistingAttr(tagName) {
-                const elm = document.createElement(tagName);
-                elm.setAttribute('foo', 'preexisting');
-                document.body.appendChild(elm);
-
-                class Observed extends HTMLElement {
-                    static observedAttributes = ['foo'];
-
-                    attributeChangedCallback(name, oldValue, newValue) {
-                        observations.push({ name, oldValue, newValue });
-                    }
-                }
-
-                customElements.define(tagName, Observed);
-
-                return elm;
-            }
-
-            const scenarios = [
-                {
-                    name: 'Basic',
-                    tagName: 'x-observed-attr',
-                    createVanillaElement: createVanillaElement,
-                    LwcComponent: ObserveNothing,
-                },
-                {
-                    name: 'attributeChangedCallback on super',
-                    tagName: 'x-observed-attr-super',
-                    createVanillaElement: createVanillaElementWithSuper,
-                    LwcComponent: ObserveNothing,
-                },
-                {
-                    name: 'same observed attributes on both LWC and vanilla components',
-                    tagName: 'x-observed-attr-same',
-                    createVanillaElement: createVanillaElement,
-                    LwcComponent: ObserveFoo,
-                },
-                {
-                    name: 'Upgrade',
-                    tagName: 'x-observed-attr-upgrade',
-                    createVanillaElement: createVanillaElementUpgradedWithNoPreexistingAttrs,
-                    LwcComponent: ObserveNothing,
-                },
-                {
-                    name: 'Upgrade with preexisting attribute',
-                    tagName: 'x-observed-attr-upgrade-preexisting',
-                    createVanillaElement: createVanillaElementUpgradedWithPreexistingAttr,
-                    LwcComponent: ObserveNothing,
-                    expectedPreexistingObservations: [
-                        {
-                            name: 'foo',
-                            oldValue: null,
-                            newValue: 'preexisting',
-                        },
-                    ],
-                },
-            ];
-
-            scenarios.forEach(
-                ({
-                    name,
-                    tagName,
-                    createVanillaElement,
-                    LwcComponent,
-                    expectedPreexistingObservations = [],
-                }) => {
-                    // Register an LWC component, then a vanilla one that has observed attributes.
-                    // It should still work with pivots.
-                    it(name, () => {
-                        const elm1 = createElement(tagName, { is: LwcComponent });
-                        document.body.appendChild(elm1);
-                        const elm2 = createVanillaElement(tagName);
-                        document.body.appendChild(elm2);
-                        const initialValue = elm2.getAttribute('foo');
-                        // set an attr
-                        elm2.setAttribute('foo', 'bar');
-                        const firstChange = {
-                            name: 'foo',
-                            oldValue: initialValue,
-                            newValue: 'bar',
-                        };
-                        expect(observations).toEqual([
-                            ...expectedPreexistingObservations,
-                            firstChange,
-                        ]);
-                        // remove an attr
-                        elm2.removeAttribute('foo');
-                        const secondChange = {
-                            name: 'foo',
-                            oldValue: 'bar',
-                            newValue: null,
-                        };
-                        expect(observations).toEqual([
-                            ...expectedPreexistingObservations,
-                            firstChange,
-                            secondChange,
-                        ]);
-                        // set and remove an attr that is not observed
-                        elm2.setAttribute('unobserved', 'true');
-                        elm2.removeAttribute('unobserved');
-                        expect(observations).toEqual([
-                            ...expectedPreexistingObservations,
-                            firstChange,
-                            secondChange,
-                        ]);
-                    });
-                }
-            );
-
-            it('custom element with attributeChangedCallback but no observedAttributes', () => {
-                // The LWC component observes foo, but the vanilla component doesn't,
-                // so its attributeChangedCallback should never fire
-                const elm1 = createElement('x-no-observed-attrs', { is: ObserveFoo });
-                document.body.appendChild(elm1);
-                const observations = [];
-
-                class Custom extends HTMLElement {
-                    attributeChangedCallback(name, oldValue, newValue) {
-                        observations.push({ name, oldValue, newValue });
-                    }
-                }
-
-                customElements.define('x-no-observed-attrs', Custom);
-                const elm2 = new Custom();
-                document.body.appendChild(elm2);
-
-                elm2.setAttribute('foo', 'bar');
-                elm2.removeAttribute('foo');
-                expect(elm2.getAttribute('foo')).toBeNull();
-                expect(observations).toEqual([]);
-            });
-
-            it('LWC element with attributeChangedCallback but no observedAttributes', () => {
-                // The LWC component observes nothing, but the vanilla component observes foo.
-                // Changing the foo attribute on the LWC component should not fire attributeChangedCallback.
-                class Custom extends HTMLElement {
-                    static observedAttributes = ['foo'];
-
-                    attributeChangedCallback() {
-                        throw new Error('should not be invoked');
-                    }
-                }
-
-                customElements.define('x-no-observed-attrs-2', Custom);
-
-                const lwcElm = createElement('x-no-observed-attrs-2', {
-                    is: ObserveNothingThrow,
-                });
-                document.body.appendChild(lwcElm);
-
-                lwcElm.setAttribute('foo', 'bar');
-                lwcElm.removeAttribute('foo');
-                expect(lwcElm.getAttribute('foo')).toBeNull();
-            });
-
-            it('attributeChangedCallback fires on upgrade', () => {
-                // The LWC component observes nothing, but the vanilla component observes foo
-                const tagName = 'x-attr-change-on-upgrade';
-                const lwcElm = createElement(tagName, {
-                    is: ObserveNothingThrow, // throws if invoked, which should not happen
-                });
-                document.body.appendChild(lwcElm);
-                const nativeElm = document.createElement(tagName);
-                nativeElm.setAttribute('foo', '1');
-                document.body.appendChild(nativeElm);
-
-                const invocations = [];
-
-                // At this point, because we've already defined an LWC component with the same tag
-                // name, the native element should be forced to use the manual attributeChangedCallback
-                // logic. It should be called during the upgrade, since the attribute was already set.
-                customElements.define(
-                    tagName,
-                    class extends HTMLElement {
-                        static observedAttributes = ['foo'];
-
-                        attributeChangedCallback(name, oldVal, newVal) {
-                            invocations.push([name, oldVal, newVal]);
-                        }
-                    }
-                );
-
-                nativeElm.setAttribute('foo', '2');
-
-                return new Promise((resolve) => setTimeout(resolve)).then(() => {
-                    expect(invocations).toEqual([
-                        ['foo', null, '1'],
-                        ['foo', '1', '2'],
-                    ]);
-                });
-            });
-
-            describe('attributeChangedCallback timing', () => {
-                let originalOnError;
-                let errors;
-
-                const onError = (e) => {
-                    e.preventDefault(); // avoids logging the error to the console
-                    errors.push(e);
-                };
-
-                beforeEach(() => {
-                    errors = [];
-
-                    // Nulling out window.onerror disables Jasmine's global error handler, so we can listen for errors
-                    // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
-                    // https://github.com/jasmine/jasmine/pull/1860
-                    originalOnError = window.onerror;
-                    window.onerror = null;
-                    window.addEventListener('error', onError);
-                });
-
-                afterEach(() => {
-                    window.onerror = originalOnError;
-                    window.removeEventListener('error', onError);
-                });
-
-                ['native', 'pivot'].forEach((behavior) => {
-                    it(`Element that observes attribute and throws in attributeChangedCallback - ${behavior}`, () => {
-                        const tagName = `x-observes-and-throws-${behavior}`;
-
-                        if (behavior === 'pivot') {
-                            // Registering an LWC component with the same tag name triggers the pivot behavior
-                            // for the native element
-                            createElement(tagName, { is: ObserveNothing });
-                        }
-
-                        class Custom extends HTMLElement {
-                            static observedAttributes = ['foo'];
-
-                            attributeChangedCallback() {
-                                throw new Error('Error in attributeChangedCallback!');
-                            }
-                        }
-
-                        customElements.define(tagName, Custom);
-
-                        const elm = document.createElement(tagName);
-                        document.body.appendChild(elm);
-
-                        // None of these should throw synchronously, because this matches native browser behavior.
-                        // Details: https://github.com/salesforce/lwc/pull/2724#discussion_r899066735
-                        elm.setAttribute('foo', 'bar');
-                        elm.removeAttribute('foo');
-
-                        return new Promise((resolve) => setTimeout(resolve)).then(() => {
-                            expect(errors.length).toEqual(2);
-                            for (const { message } of errors) {
-                                expect(message).toContain('Error in attributeChangedCallback!');
-                            }
-                        });
-                    });
-                });
-            });
-        });
-    }
 }
