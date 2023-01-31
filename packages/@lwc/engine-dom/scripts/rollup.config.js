@@ -13,7 +13,6 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const replace = require('@rollup/plugin-replace');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
-const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
 const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
@@ -98,7 +97,6 @@ module.exports = {
         }),
         ...sharedPlugins(),
         writeDistAndTypes(),
-        lwcFeatures(),
         injectInlineRenderer(),
     ],
 

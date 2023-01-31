@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayReduce, ArrayPush, assert, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
-import features from '@lwc/features';
 
 import { arrayFromCollection } from '../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
@@ -151,7 +150,7 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     const ownerKey = getNodeNearestOwnerKey(node);
 
     if (isUndefined(ownerKey)) {
-        if (features.ENABLE_LIGHT_GET_ROOT_NODE_PATCH) {
+        if (lwcRuntimeFlags.ENABLE_LIGHT_GET_ROOT_NODE_PATCH) {
             // in case of root level light DOM element slotting into a synthetic shadow
             const host = parentNodeGetter.call(node);
             if (!isNull(host) && isSyntheticSlotElement(host)) {

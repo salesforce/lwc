@@ -42,7 +42,6 @@
         "@types/node": "^18.11.17",
         "@typescript-eslint/eslint-plugin": "^5.49.0",
         "@typescript-eslint/parser": "^5.49.0",
-        "babel-plugin-tester": "^11.0.4",
         "bytes": "^3.1.2",
         "es5-proxy-compat": "^0.22.4",
         "eslint": "^8.33.0",

@@ -14,7 +14,6 @@ import {
     toString,
     StringToLowerCase,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import {
     createVM,
     connectRootElement,
@@ -47,7 +46,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
     // Monkey patching Node methods to be able to detect the insertions and removal of root elements
     // created via createElement.
     const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
@@ -126,7 +125,7 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
@@ -135,7 +134,7 @@ export function createElement(
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
 
-    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
             connectRootElement(elm);
         };

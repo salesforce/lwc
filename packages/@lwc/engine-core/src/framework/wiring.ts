@@ -13,7 +13,6 @@ import {
     defineProperties,
     noop,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 import { LightningElement } from './base-lightning-element';
 import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -380,7 +379,7 @@ export function installWireAdapters(vm: VM) {
             const hasDynamicParams = wireDef.dynamic.length > 0;
             ArrayPush.call(wiredConnecting, () => {
                 connector.connect();
-                if (!featureFlags.ENABLE_WIRE_SYNC_EMIT) {
+                if (!lwcRuntimeFlags.ENABLE_WIRE_SYNC_EMIT) {
                     if (hasDynamicParams) {
                         Promise.resolve().then(computeConfigAndUpdate);
                         return;
