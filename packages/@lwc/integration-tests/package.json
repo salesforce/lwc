@@ -31,7 +31,7 @@
         "@wdio/selenium-standalone-service": "^7.26.0",
         "@wdio/spec-reporter": "^7.26.0",
         "@wdio/static-server-service": "^7.26.0",
-        "deepmerge": "^4.2.2",
+        "deepmerge": "^4.3.0",
         "dotenv": "^16.0.3",
         "lwc": "2.37.0",
         "minimist": "^1.2.7",
