@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { DocumentFragment } from 'parse5/dist/tree-adapters/default';
+import { DefaultTreeAdapterMap, DocumentFragment } from 'parse5/dist/tree-adapters/default';
 import * as he from 'he';
+import { parseExpressionAt } from 'acorn';
 
 import { ParserDiagnostics } from '@lwc/errors';
 
@@ -31,6 +32,67 @@ function getLwcErrorFromParse5Error(code: string) {
     }
 }
 
+const OPENING_CURLY_BRACKET = 0x7b;
+const CLOSING_CURLY_BRACKET = 0x7d;
+
+// @ts-ignore
+class TemplateHtmlTokenizer extends parse5.Tokenizer {
+    private checkedAttrs = new WeakSet<parse5.Token.Attribute>();
+
+    // This property is defined on the superclass as private; we're redefining it
+    // here to avoid TypeScript warnings regarding private property access.
+    private currentAttr: parse5.Token.Attribute = { name: '', value: '' };
+
+    _stateAttributeValueUnquoted(cp: number) {
+        if (cp === OPENING_CURLY_BRACKET && !this.checkedAttrs.has(this.currentAttr)) {
+            this.checkedAttrs.add(this.currentAttr);
+            // We add one to the offset to account for the opening curly brace.
+            const startIdx: number = this.preprocessor.offset + 1;
+            const { html } = this.preprocessor;
+            const parsedJsExpression = parseExpressionAt(html, startIdx, {
+                ecmaVersion: 2022,
+                locations: true,
+                ranges: true,
+            });
+            const expressionLen = parsedJsExpression.end - parsedJsExpression.start;
+
+            const endIdx = startIdx + expressionLen;
+            if (html.codePointAt(endIdx) !== CLOSING_CURLY_BRACKET) {
+                throw new Error('IPITYTHEFOOL: Expression must end with curly brace!');
+            }
+            // @ts-ignore
+            this._advanceBy(expressionLen);
+            this.currentAttr.value += html.slice(startIdx - 1, endIdx);
+        } else {
+            // If the first character in an unquoted attr value is not an opening
+            // curly brace, it isn't a template expression. Opening curly braces
+            // coming _later_ in an unquoted attr value should not be considered
+            // the beginning of a template expression.
+            this.checkedAttrs.add(this.currentAttr);
+            // @ts-ignore
+            super._stateAttributeValueUnquoted.call(this, cp);
+            // (parse5.Tokenizer.prototype as any)._stateAttributeValueUnquoted.call(this, cp);
+        }
+    }
+}
+
+class TemplateHtmlParser extends parse5.Parser<DefaultTreeAdapterMap> {
+    constructor(
+        options?: parse5.ParserOptions<DefaultTreeAdapterMap>,
+        document?: DefaultTreeAdapterMap['document'],
+        public fragmentContext: DefaultTreeAdapterMap['element'] | null = null,
+        public scriptHandler:
+            | null
+            | ((pendingScript: DefaultTreeAdapterMap['element']) => void) = null
+    ) {
+        super(options, document, fragmentContext, scriptHandler);
+        this.tokenizer = new TemplateHtmlTokenizer(
+            this.options,
+            this
+        ) as unknown as parse5.Tokenizer;
+    }
+}
+
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
@@ -39,7 +101,7 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         ctx.warnAtLocation(lwcError, sourceLocation(location as parse5.Token.Location), [code]);
     };
 
-    const parser = parse5.Parser.getFragmentParser(null, {
+    const parser = TemplateHtmlParser.getFragmentParser(null, {
         sourceCodeLocationInfo: true,
         onParseError,
     });

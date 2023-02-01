@@ -1,5 +1,12 @@
 <template>
-    Counter: {counter}
+    <p style={foo ?? attrColorStyle}>This should be blue</p>
+    <p>Thing: {thing?.number}</p>
+    <p>FooBar: {foo ?? bar}</p>
+    <p>FooThing: {foo ?? thing?.number}</p>
+    <span>Counter: {counter}</span>&nbsp;
     <button onclick={decrement}>-</button>
     <button onclick={increment}>+</button>
+    <hr />
+    <span>Nested Counter: {thing?.number}</span>&nbsp;
+    <button onclick={incrementNested}>+</button>
 </template>
