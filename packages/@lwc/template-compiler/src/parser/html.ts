@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
+import { DocumentFragment } from 'parse5/dist/tree-adapters/default';
 import * as he from 'he';
 
 import { ParserDiagnostics } from '@lwc/errors';
@@ -38,10 +39,12 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         ctx.warnAtLocation(lwcError, sourceLocation(location as parse5.Token.Location), [code]);
     };
 
-    return parse5.parseFragment(source, {
+    const parser = parse5.Parser.getFragmentParser(null, {
         sourceCodeLocationInfo: true,
         onParseError,
     });
+    parser.tokenizer.write(source, true);
+    return parser.getFragment() as DocumentFragment;
 }
 
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55
