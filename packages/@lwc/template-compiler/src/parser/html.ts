@@ -7,7 +7,7 @@
 import * as parse5 from 'parse5';
 import { DefaultTreeAdapterMap, DocumentFragment } from 'parse5/dist/tree-adapters/default';
 import * as he from 'he';
-import { parseExpressionAt } from 'acorn';
+import { parseExpressionAt, Node as AcornNode } from 'acorn';
 
 import { ParserDiagnostics } from '@lwc/errors';
 
@@ -37,11 +37,18 @@ const CLOSING_CURLY_BRACKET = 0x7d;
 
 // @ts-ignore
 class TemplateHtmlTokenizer extends parse5.Tokenizer {
+    parser: TemplateHtmlParser;
+
     private checkedAttrs = new WeakSet<parse5.Token.Attribute>();
 
     // This property is defined on the superclass as private; we're redefining it
     // here to avoid TypeScript warnings regarding private property access.
     private currentAttr: parse5.Token.Attribute = { name: '', value: '' };
+
+    constructor(options: parse5.TokenizerOptions, parser: TemplateHtmlParser) {
+        super(options, parser);
+        this.parser = parser;
+    }
 
     _stateAttributeValueUnquoted(cp: number) {
         if (cp === OPENING_CURLY_BRACKET && !this.checkedAttrs.has(this.currentAttr)) {
@@ -54,6 +61,7 @@ class TemplateHtmlTokenizer extends parse5.Tokenizer {
                 locations: true,
                 ranges: true,
             });
+            this.parser.cacheParsedJsExpression(html, startIdx, parsedJsExpression);
             const expressionLen = parsedJsExpression.end - parsedJsExpression.start;
 
             const endIdx = startIdx + expressionLen;
@@ -77,6 +85,8 @@ class TemplateHtmlTokenizer extends parse5.Tokenizer {
 }
 
 class TemplateHtmlParser extends parse5.Parser<DefaultTreeAdapterMap> {
+    preparsedJsExpressions: Map<string, Map<number, AcornNode>>;
+
     constructor(
         options?: parse5.ParserOptions<DefaultTreeAdapterMap>,
         document?: DefaultTreeAdapterMap['document'],
@@ -90,6 +100,15 @@ class TemplateHtmlParser extends parse5.Parser<DefaultTreeAdapterMap> {
             this.options,
             this
         ) as unknown as parse5.Tokenizer;
+        this.preparsedJsExpressions = new Map();
+    }
+
+    cacheParsedJsExpression(sourceHtml: string, expressionStartIdx: number, node: AcornNode) {
+        if (!this.preparsedJsExpressions.has(sourceHtml)) {
+            this.preparsedJsExpressions.set(sourceHtml, new Map());
+        }
+        const sourceCachedExpressions = this.preparsedJsExpressions.get(sourceHtml)!;
+        sourceCachedExpressions.set(expressionStartIdx, node);
     }
 }
 
@@ -104,7 +123,8 @@ export function parseHTML(ctx: ParserCtx, source: string) {
     const parser = TemplateHtmlParser.getFragmentParser(null, {
         sourceCodeLocationInfo: true,
         onParseError,
-    });
+    }) as TemplateHtmlParser;
+    parser.preparsedJsExpressions = ctx.preparsedJsExpressions;
     parser.tokenizer.write(source, true);
     return parser.getFragment() as DocumentFragment;
 }

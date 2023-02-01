@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { Node as AcornNode } from 'acorn';
 import {
     CompilerDiagnostic,
     CompilerError,
@@ -84,6 +85,8 @@ export default class ParserCtx {
      * This set is not aware of if-elseif-else blocks.
      */
     readonly seenScopedSlots: Set<string> = new Set();
+
+    readonly preparsedJsExpressions: Map<string, Map<number, AcornNode>> = new Map();
 
     /**
      * 'elementScopes' keeps track of the hierarchy of ParentNodes as the parser
