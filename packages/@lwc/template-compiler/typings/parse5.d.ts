@@ -5,13 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import 'parse5';
+import { Token } from 'parse5';
 
 declare module 'parse5' {
-    export interface ParsingError extends Location {
+    export interface ParsingError extends Token.Location {
         code: string;
-    }
-
-    export interface ParserOptions {
-        onParseError?: (error: ParsingError) => void;
     }
 }

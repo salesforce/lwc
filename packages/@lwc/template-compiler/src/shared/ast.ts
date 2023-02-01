@@ -6,6 +6,7 @@
  */
 import { HTML_NAMESPACE } from '@lwc/shared';
 import * as parse5 from 'parse5';
+import * as parse5NodeTypes from 'parse5/dist/tree-adapters/default';
 
 import {
     Literal,
@@ -50,7 +51,7 @@ import {
     SlotDataDirective,
 } from './types';
 
-export function root(parse5ElmLocation: parse5.ElementLocation): Root {
+export function root(parse5ElmLocation: parse5.Token.ElementLocation): Root {
     return {
         type: 'Root',
         location: elementSourceLocation(parse5ElmLocation),
@@ -60,8 +61,8 @@ export function root(parse5ElmLocation: parse5.ElementLocation): Root {
 }
 
 export function element(
-    parse5Elm: parse5.Element,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5Elm: parse5NodeTypes.Element,
+    parse5ElmLocation: parse5.Token.ElementLocation
 ): Element {
     return {
         type: 'Element',
@@ -77,8 +78,8 @@ export function element(
 }
 
 export function externalComponent(
-    parse5Elm: parse5.Element,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5Elm: parse5NodeTypes.Element,
+    parse5ElmLocation: parse5.Token.ElementLocation
 ): ExternalComponent {
     return {
         type: 'ExternalComponent',
@@ -94,8 +95,8 @@ export function externalComponent(
 }
 
 export function component(
-    parse5Elm: parse5.Element,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5Elm: parse5NodeTypes.Element,
+    parse5ElmLocation: parse5.Token.ElementLocation
 ): Component {
     return {
         type: 'Component',
@@ -110,7 +111,7 @@ export function component(
     };
 }
 
-export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation): Slot {
+export function slot(slotName: string, parse5ElmLocation: parse5.Token.ElementLocation): Slot {
     return {
         type: 'Slot',
         name: 'slot',
@@ -128,7 +129,7 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
 export function text(
     raw: string,
     value: Literal | Expression,
-    parse5Location: parse5.Location
+    parse5Location: parse5.Token.Location
 ): Text {
     return {
         type: 'Text',
@@ -138,7 +139,11 @@ export function text(
     };
 }
 
-export function comment(raw: string, value: string, parse5Location: parse5.Location): Comment {
+export function comment(
+    raw: string,
+    value: string,
+    parse5Location: parse5.Token.Location
+): Comment {
     return {
         type: 'Comment',
         raw,
@@ -148,20 +153,20 @@ export function comment(raw: string, value: string, parse5Location: parse5.Locat
 }
 
 export function elementSourceLocation(
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.Token.ElementLocation
 ): ElementSourceLocation {
     const elementLocation = sourceLocation(parse5ElmLocation);
-    const startTag = sourceLocation(parse5ElmLocation.startTag);
+    const startTag = sourceLocation(parse5ElmLocation.startTag!);
     // endTag must be optional because Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
     const endTag = parse5ElmLocation.endTag
         ? sourceLocation(parse5ElmLocation.endTag)
         : parse5ElmLocation.endTag;
 
-    return { ...elementLocation, startTag, endTag };
+    return { ...elementLocation, startTag, endTag: endTag as SourceLocation };
 }
 
-export function sourceLocation(location: parse5.Location): SourceLocation {
+export function sourceLocation(location: parse5.Token.Location): SourceLocation {
     return {
         startLine: location.startLine,
         startColumn: location.startCol,

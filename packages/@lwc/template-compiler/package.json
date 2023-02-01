@@ -36,7 +36,7 @@
         "astring": "~1.8.3",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0",
-        "parse5": "~6.0.1"
+        "parse5": "~7.1.2"
     },
     "files": [
         "dist/"

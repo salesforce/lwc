@@ -35,7 +35,7 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         const { code, ...location } = err;
 
         const lwcError = getLwcErrorFromParse5Error(code);
-        ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
+        ctx.warnAtLocation(lwcError, sourceLocation(location as parse5.Token.Location), [code]);
     };
 
     return parse5.parseFragment(source, {

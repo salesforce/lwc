@@ -82,7 +82,7 @@ export function normalizeAttributeValue(
     ctx: ParserCtx,
     raw: string,
     tag: string,
-    attr: parse5.Attribute,
+    attr: parse5.Token.Attribute,
     location: SourceLocation
 ): {
     value: string;
@@ -161,7 +161,7 @@ export function normalizeAttributeValue(
     return { value, escapedExpression: false };
 }
 
-export function attributeName(attr: parse5.Attribute): string {
+export function attributeName(attr: parse5.Token.Attribute): string {
     const { prefix, name } = attr;
     return prefix ? `${prefix}:${name}` : name;
 }
