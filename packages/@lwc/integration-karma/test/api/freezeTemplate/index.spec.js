@@ -4,7 +4,6 @@ import {
     setFeatureFlagForTest,
     __unstable__ReportingControl as reportingControl,
 } from 'lwc';
-import { ReportingEventId } from 'test-utils';
 
 describe('freezeTemplate', () => {
     let dispatcher;
@@ -35,7 +34,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheetToken).toEqual('newToken');
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheetToken' }],
+            ['TemplateMutation', { propertyName: 'stylesheetToken' }],
         ]);
     });
 
@@ -65,7 +64,7 @@ describe('freezeTemplate', () => {
             shadowAttribute: 'newToken',
         });
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheetTokens' }],
+            ['TemplateMutation', { propertyName: 'stylesheetTokens' }],
         ]);
     });
 
@@ -90,7 +89,7 @@ describe('freezeTemplate', () => {
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
+            ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -127,8 +126,8 @@ describe('freezeTemplate', () => {
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(stylesheet);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
+            ['TemplateMutation', { propertyName: 'stylesheets' }],
+            ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -148,7 +147,7 @@ describe('freezeTemplate', () => {
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'stylesheets' }],
+            ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
 
@@ -169,7 +168,7 @@ describe('freezeTemplate', () => {
 
         expect(template.slots).toBe(newSlots);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'slots' }],
+            ['TemplateMutation', { propertyName: 'slots' }],
         ]);
     });
 
@@ -188,7 +187,7 @@ describe('freezeTemplate', () => {
 
         expect(template.renderMode).toBe(undefined);
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.TemplateMutation, { propertyName: 'renderMode' }],
+            ['TemplateMutation', { propertyName: 'renderMode' }],
         ]);
     });
 
@@ -205,7 +204,7 @@ describe('freezeTemplate', () => {
             /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
         );
         expect(dispatcher.calls.allArgs()).toEqual([
-            [ReportingEventId.StylesheetMutation, { propertyName: '$scoped$' }],
+            ['StylesheetMutation', { propertyName: '$scoped$' }],
         ]);
     });
 

@@ -1,4 +1,4 @@
-import { ariaPropertiesMapping, nonStandardAriaProperties, ReportingEventId } from 'test-utils';
+import { ariaPropertiesMapping, nonStandardAriaProperties } from 'test-utils';
 import { __unstable__ReportingControl as reportingControl } from 'lwc';
 
 function testAriaProperty(property, attribute) {
@@ -29,7 +29,7 @@ function testAriaProperty(property, attribute) {
             if (nonStandardAriaProperties.includes(property)) {
                 expect(dispatcher.calls.allArgs()).toEqual([
                     [
-                        ReportingEventId.NonStandardAriaReflection,
+                        'NonStandardAriaReflection',
                         {
                             tagName: undefined,
                             propertyName: property,
@@ -47,7 +47,7 @@ function testAriaProperty(property, attribute) {
             if (nonStandardAriaProperties.includes(property)) {
                 expect(dispatcher.calls.allArgs()).toEqual([
                     [
-                        ReportingEventId.NonStandardAriaReflection,
+                        'NonStandardAriaReflection',
                         {
                             tagName: undefined,
                             propertyName: property,

@@ -1,5 +1,5 @@
 import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
-import { ReportingEventId, nonStandardAriaProperties } from 'test-utils';
+import { nonStandardAriaProperties } from 'test-utils';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 
@@ -64,7 +64,7 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                             expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName,
                                         propertyName: prop,
@@ -73,7 +73,7 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     },
                                 ],
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName,
                                         propertyName: prop,
@@ -96,7 +96,7 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                             expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName: undefined,
                                         propertyName: prop,
@@ -105,7 +105,7 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                                     },
                                 ],
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName: undefined,
                                         propertyName: prop,

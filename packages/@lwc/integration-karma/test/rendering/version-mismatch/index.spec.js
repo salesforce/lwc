@@ -5,7 +5,6 @@ import {
     registerComponent,
     __unstable__ReportingControl as reportingControl,
 } from 'lwc';
-import { ReportingEventId } from 'test-utils';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
@@ -77,7 +76,7 @@ if (!process.env.COMPAT) {
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
                         [
-                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            'CompilerRuntimeVersionMismatch',
                             {
                                 runtimeVersion: process.env.LWC_VERSION,
                                 compilerVersion: '123.456.789',
@@ -116,7 +115,7 @@ if (!process.env.COMPAT) {
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
                         [
-                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            'CompilerRuntimeVersionMismatch',
                             {
                                 runtimeVersion: process.env.LWC_VERSION,
                                 compilerVersion: '123.456.789',
@@ -154,7 +153,7 @@ if (!process.env.COMPAT) {
                 } else {
                     expect(dispatcher.calls.allArgs()).toEqual([
                         [
-                            ReportingEventId.CompilerRuntimeVersionMismatch,
+                            'CompilerRuntimeVersionMismatch',
                             {
                                 runtimeVersion: process.env.LWC_VERSION,
                                 compilerVersion: '123.456.789',
