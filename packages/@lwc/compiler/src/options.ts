@@ -66,6 +66,9 @@ export interface TransformOptions {
     namespace?: string;
     stylesheetConfig?: StylesheetConfig;
     experimentalDynamicComponent?: DynamicComponentConfig;
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    experimentalDynamicDirective?: boolean;
+    enableDynamicComponents?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
@@ -85,6 +88,8 @@ type RequiredTransformOptions = Omit<
     | 'customRendererConfig'
     | 'enableLwcSpread'
     | 'enableScopedSlots'
+    | 'enableDynamicComponents'
+    | 'experimentalDynamicDirective'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
@@ -93,6 +98,9 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
+    enableDynamicComponents?: boolean;
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    experimentalDynamicDirective?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {

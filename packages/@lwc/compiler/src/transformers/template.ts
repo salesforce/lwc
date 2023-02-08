@@ -34,18 +34,23 @@ export default function templateTransform(
         customRendererConfig,
         enableLwcSpread,
         enableScopedSlots,
+        enableDynamicComponents,
+        // TODO [#3331]: remove usage of lwc:dynamic in 246
+        experimentalDynamicDirective,
     } = options;
-    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
-            experimentalDynamicDirective,
+            // TODO [#3331]: remove usage of lwc:dynamic in 246
+            experimentalDynamicDirective:
+                experimentalDynamicDirective ?? Boolean(experimentalDynamicComponent),
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
             enableScopedSlots,
+            enableDynamicComponents,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
