@@ -45,8 +45,9 @@ import {
     RootDirectiveName,
     ScopedSlotFragment,
     TemplateDirectiveName,
+    LwcTagName,
 } from '../shared/types';
-import { isCustomElementTag } from '../shared/utils';
+import { isCustomElementTag, isLwcElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 
@@ -298,7 +299,7 @@ function parseBaseElement(
     parent: ParentNode,
     parse5ElmLocation: parse5.ElementLocation
 ): BaseElement | undefined {
-    const { tagName: tag } = parse5Elm;
+    const { tagName: tag, namespaceURI } = parse5Elm;
 
     let element: BaseElement | undefined;
     if (tag === 'slot') {
@@ -309,12 +310,16 @@ function parseBaseElement(
         // element name containing a dash.
         if (isCustomElementTag(tag)) {
             if (parsedAttr.get(ElementDirectiveName.External)) {
-                element = ast.externalComponent(parse5Elm, parse5ElmLocation);
+                element = ast.externalComponent(tag, parse5ElmLocation);
             } else {
-                element = ast.component(parse5Elm, parse5ElmLocation);
+                element = ast.component(tag, parse5ElmLocation);
             }
+        } else if (ctx.config.enableDynamicComponents && isLwcElementTag(tag)) {
+            // Special tag names that begin with lwc:*
+            element = parseLwcElement(ctx, parse5Elm, parsedAttr, parse5ElmLocation);
         } else {
-            element = ast.element(parse5Elm, parse5ElmLocation);
+            // Built-in HTML elements
+            element = ast.element(tag, namespaceURI, parse5ElmLocation);
         }
     }
 
@@ -324,6 +329,36 @@ function parseBaseElement(
     }
 
     return element;
+}
+
+function parseLwcElement(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation
+) {
+    const { tagName: tag, namespaceURI } = parse5Elm;
+
+    if (tag === LwcTagName.Component) {
+        if (parsedAttr.get(ElementDirectiveName.Is)) {
+            return ast.lwcComponent(tag, parse5ElmLocation);
+        } else {
+            ctx.throwAtLocation(
+                ParserDiagnostics.LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE,
+                ast.sourceLocation(parse5ElmLocation)
+            );
+        }
+    } else {
+        // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
+        // These tag names are listed in LwcTagNames in types.ts.
+        // Issue a warning when component authors use an unrecognized lwc:* tag.
+        ctx.warnAtLocation(
+            ParserDiagnostics.UNSUPPORTED_LWC_TAG_NAME,
+            ast.sourceLocation(parse5ElmLocation),
+            [tag]
+        );
+        return ast.element(tag, namespaceURI, parse5ElmLocation);
+    }
 }
 
 function parseChildren(
@@ -755,6 +790,17 @@ function applyLwcPreserveCommentsDirective(
     );
 }
 
+const LWC_DIRECTIVE_BINDINGS = [
+    applyLwcExternalDirective,
+    applyLwcDynamicDirective,
+    applyLwcIsDirective,
+    applyLwcDomDirective,
+    applyLwcInnerHtmlDirective,
+    applyRefDirective,
+    applyLwcSpreadDirective,
+    applyLwcSlotBindDirective,
+];
+
 function applyLwcDirectives(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -787,13 +833,10 @@ function applyLwcDirectives(
         ]);
     }
 
-    applyLwcExternalDirective(ctx, parsedAttr, element);
-    applyLwcDynamicDirective(ctx, parsedAttr, element);
-    applyLwcDomDirective(ctx, parsedAttr, element);
-    applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
-    applyRefDirective(ctx, parsedAttr, element);
-    applyLwcSpreadDirective(ctx, parsedAttr, element);
-    applyLwcSlotBindDirective(ctx, parsedAttr, element);
+    // Bind LWC directives to element
+    for (const binding of LWC_DIRECTIVE_BINDINGS) {
+        binding(ctx, parsedAttr, element);
+    }
 }
 
 function applyLwcSlotBindDirective(
@@ -874,6 +917,7 @@ function applyLwcExternalDirective(
     }
 }
 
+// TODO [#3331]: remove usage of lwc:dynamic in 246
 function applyLwcDynamicDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
@@ -896,12 +940,45 @@ function applyLwcDynamicDirective(
         ]);
     }
 
-    const { value: lwcDynamicAttr } = lwcDynamicAttribute;
+    const { value: lwcDynamicAttr, location } = lwcDynamicAttribute;
     if (!ast.isExpression(lwcDynamicAttr)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttribute.location));
+    // lwc:dynamic will be deprecated in 246, issue a warning when usage is detected.
+    ctx.warnOnNode(ParserDiagnostics.DEPRECATED_LWC_DYNAMIC_ATTRIBUTE, element);
+
+    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, location));
+}
+
+function applyLwcIsDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+
+    const lwcIsAttribute = parsedAttr.pick(ElementDirectiveName.Is);
+    if (!lwcIsAttribute) {
+        return;
+    }
+
+    if (!ctx.config.enableDynamicComponents) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS, element);
+    }
+
+    if (!ast.isLwcComponent(element)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_IS_INVALID_ELEMENT, element, [`<${tag}>`]);
+    }
+
+    const { value: lwcIsAttrValue, location } = lwcIsAttribute;
+    if (!ast.isExpression(lwcIsAttrValue)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_IS_DIRECTIVE_VALUE, element, [
+            lwcIsAttrValue.value,
+        ]);
+    }
+
+    element.directives.push(ast.isDirective(lwcIsAttrValue, location));
 }
 
 function applyLwcDomDirective(
@@ -951,7 +1028,7 @@ function applyLwcInnerHtmlDirective(
         return;
     }
 
-    if (ast.isComponent(element)) {
+    if (ast.isComponent(element) || ast.isLwcComponent(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT, element, [
             `<${element.name}>`,
         ]);
@@ -1444,6 +1521,7 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
         const isKnownTag =
             ast.isComponent(element) ||
             ast.isExternalComponent(element) ||
+            ast.isBaseLwcElement(element) ||
             KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
@@ -1483,6 +1561,10 @@ function validateTemplate(
 
     if (parsedAttr.get(ElementDirectiveName.Ref)) {
         ctx.throwAtLocation(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, location, ['<template>']);
+    }
+
+    if (parsedAttr.get(ElementDirectiveName.Is)) {
+        ctx.throwAtLocation(ParserDiagnostics.LWC_IS_INVALID_ELEMENT, location, ['<template>']);
     }
 
     // At this point in the parsing all supported attributes from a non root template element
@@ -1627,7 +1709,7 @@ function getTemplateAttribute(
     const rawAttribute = ctx.getSource(attributeLocation.startOffset, attributeLocation.endOffset);
     const location = ast.sourceLocation(attributeLocation);
 
-    // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
+    // parse5 automatically converts the casing from camel case to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
     const attrName = attributeName(attribute);
     if (!rawAttribute.startsWith(attrName)) {
