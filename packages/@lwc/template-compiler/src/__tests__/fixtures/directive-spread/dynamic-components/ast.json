@@ -1,0 +1,119 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 91,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 80,
+                "end": 91
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 69,
+                    "start": 15,
+                    "end": 79,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 53,
+                        "start": 15,
+                        "end": 63
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 53,
+                        "endLine": 2,
+                        "endColumn": 69,
+                        "start": 63,
+                        "end": 79
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "name": "ctor",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 20,
+                                "endLine": 2,
+                                "endColumn": 33,
+                                "start": 30,
+                                "end": 43
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 20,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 30,
+                            "end": 43
+                        }
+                    },
+                    {
+                        "type": "Directive",
+                        "name": "Spread",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "hello",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 34,
+                                "endLine": 2,
+                                "endColumn": 52,
+                                "start": 44,
+                                "end": 62
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 34,
+                            "endLine": 2,
+                            "endColumn": 52,
+                            "start": 44,
+                            "end": 62
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

@@ -35,7 +35,7 @@
         },
         {
             "code": 1140,
-            "message": "LWC1140: Invalid lwc:inner-html usage on element \"<x-foo>\". The directive can't be used on a custom element.",
+            "message": "LWC1140: Invalid lwc:inner-html usage on element \"<x-foo>\". The directive can't be used on a custom element or special LWC managed elements denoted with lwc:*.",
             "level": 1,
             "location": {
                 "line": 15,
@@ -53,6 +53,17 @@
                 "column": 5,
                 "start": 601,
                 "length": 46
+            }
+        },
+        {
+            "code": 1140,
+            "message": "LWC1140: Invalid lwc:inner-html usage on element \"<lwc:component>\". The directive can't be used on a custom element or special LWC managed elements denoted with lwc:*.",
+            "level": 1,
+            "location": {
+                "line": 21,
+                "column": 5,
+                "start": 699,
+                "length": 70
             }
         }
     ]

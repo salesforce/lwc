@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1185,
+            "message": "LWC1185: Invalid lwc:is usage for value ctor. The value assigned to lwc:is must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 45
+            }
+        },
+        {
+            "code": 1185,
+            "message": "LWC1185: Invalid lwc:is usage for value true. The value assigned to lwc:is must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 65,
+                "length": 38
+            }
+        }
+    ]
+}

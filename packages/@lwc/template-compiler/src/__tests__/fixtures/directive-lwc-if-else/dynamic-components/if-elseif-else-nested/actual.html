@@ -1,0 +1,25 @@
+<template>
+    <template lwc:if={outer.if}>
+        <h1>outer if</h1>
+    </template>
+    <template lwc:elseif={outer.elseif1}>
+        <h1>outer elseif</h1>
+    </template>
+    <template lwc:elseif={outer.elseif2}>
+        <template lwc:if={inner.if}>
+            <h1>inner if</h1>
+        </template>
+        <template lwc:elseif={inner.elseif}>
+            <h1>inner elseif</h1>
+        </template>
+        <template lwc:elseif={inner.elseif2}>
+            <lwc:component lwc:is={trackedProp.foo}></lwc:component>
+        </template>
+        <template lwc:else>
+            <h1>inner else</h1>
+        </template>
+    </template>
+    <template lwc:else>
+        <h1>outer else</h1>
+    </template>
+</template>

@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 4,
+            "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 179,
+            "end": 262,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 4,
+                "startLine": 5,
                 "startColumn": 1,
-                "endLine": 4,
+                "endLine": 5,
                 "endColumn": 12,
-                "start": 168,
-                "end": 179
+                "start": 251,
+                "end": 262
             }
         },
         "directives": [],
@@ -121,6 +121,93 @@
                             "endColumn": 63,
                             "start": 133,
                             "end": 158
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 83,
+                    "start": 172,
+                    "end": 250,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 67,
+                        "start": 172,
+                        "end": 234
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 67,
+                        "endLine": 4,
+                        "endColumn": 83,
+                        "start": 234,
+                        "end": 250
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "dynamicCtor",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 20,
+                                "endLine": 4,
+                                "endColumn": 40,
+                                "start": 187,
+                                "end": 207
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 20,
+                            "endLine": 4,
+                            "endColumn": 40,
+                            "start": 187,
+                            "end": 207
+                        }
+                    },
+                    {
+                        "type": "Directive",
+                        "name": "Spread",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 13,
+                            "name": "dynamicProps",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 41,
+                                "endLine": 4,
+                                "endColumn": 66,
+                                "start": 208,
+                                "end": 233
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 41,
+                            "endLine": 4,
+                            "endColumn": 66,
+                            "start": 208,
+                            "end": 233
                         }
                     }
                 ],
