@@ -25,7 +25,7 @@
     },
     "devDependencies": {
         "@types/estree": "1.0.0",
-        "@types/he": "^1.1.1",
+        "@types/he": "^1.2.0",
         "@types/parse5": "^6.0.2",
         "@types/source-map": "0.5.2"
     },
