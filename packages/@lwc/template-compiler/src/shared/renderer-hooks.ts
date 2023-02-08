@@ -49,7 +49,8 @@ function checkElement(element: BaseElement, state: State): boolean {
     // Custom elements are not allowed to have a custom renderer hook.
     // The renderer is cascaded down from the owner(custom element) to all its child nodes who
     // do not have a renderer specified.
-    if (element.type === 'Component') {
+    // lwc:component will resolve to a custom element at runtime.
+    if (element.type === 'Component' || element.name === 'lwc:component') {
         return false;
     }
 

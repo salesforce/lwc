@@ -48,6 +48,10 @@ import {
     SlotBindDirective,
     ScopedSlotFragment,
     SlotDataDirective,
+    IsDirective,
+    LwcComponent,
+    LwcTagName,
+    BaseLwcElement,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -60,13 +64,14 @@ export function root(parse5ElmLocation: parse5.ElementLocation): Root {
 }
 
 export function element(
-    parse5Elm: parse5.Element,
+    tagName: string,
+    namespaceURI: string,
     parse5ElmLocation: parse5.ElementLocation
 ): Element {
     return {
         type: 'Element',
-        name: parse5Elm.nodeName,
-        namespace: parse5Elm.namespaceURI,
+        name: tagName,
+        namespace: namespaceURI,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -77,12 +82,12 @@ export function element(
 }
 
 export function externalComponent(
-    parse5Elm: parse5.Element,
+    tagName: string,
     parse5ElmLocation: parse5.ElementLocation
 ): ExternalComponent {
     return {
         type: 'ExternalComponent',
-        name: parse5Elm.nodeName,
+        name: tagName,
         namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
@@ -93,13 +98,27 @@ export function externalComponent(
     };
 }
 
-export function component(
-    parse5Elm: parse5.Element,
-    parse5ElmLocation: parse5.ElementLocation
-): Component {
+export function component(tagName: string, parse5ElmLocation: parse5.ElementLocation): Component {
     return {
         type: 'Component',
-        name: parse5Elm.nodeName,
+        name: tagName,
+        namespace: HTML_NAMESPACE,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function lwcComponent(
+    tagName: LwcTagName,
+    parse5ElmLocation: parse5.ElementLocation
+): LwcComponent {
+    return {
+        type: 'Lwc',
+        name: tagName,
         namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
@@ -307,10 +326,20 @@ export function keyDirective(value: Expression, location: SourceLocation): KeyDi
     };
 }
 
+// TODO [#3331]: remove usage of lwc:dynamic in 246
 export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
     return {
         type: 'Directive',
         name: 'Dynamic',
+        value,
+        location,
+    };
+}
+
+export function isDirective(value: Expression, location: SourceLocation): IsDirective {
+    return {
+        type: 'Directive',
+        name: 'Is',
         value,
         location,
     };
@@ -449,7 +478,23 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node) || isExternalComponent(node);
+    return (
+        isElement(node) ||
+        isComponent(node) ||
+        isSlot(node) ||
+        isExternalComponent(node) ||
+        isLwcComponent(node)
+    );
+}
+
+// BaseLwcElement represents special LWC tags denoted lwc:*
+export function isBaseLwcElement(node: BaseNode): node is BaseLwcElement<LwcTagName> {
+    return node.type === 'Lwc';
+}
+
+// Represents the lwc:component tag
+export function isLwcComponent(node: BaseNode): node is LwcComponent {
+    return isBaseLwcElement(node) && node.name === 'lwc:component';
 }
 
 export function isText(node: BaseNode): node is Text {
@@ -518,8 +563,13 @@ export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
 
+// TODO [#3331]: remove usage of lwc:dynamic in 246
 export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
     return directive.name === 'Dynamic';
+}
+
+export function isLwcIsDirective(directive: ElementDirective): directive is IsDirective {
+    return directive.name === 'Is';
 }
 
 export function isDomDirective(directive: ElementDirective): directive is DomDirective {
