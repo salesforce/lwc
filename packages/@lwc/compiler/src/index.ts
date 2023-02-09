@@ -11,7 +11,7 @@ export {
     TransformOptions,
     StylesheetConfig,
     CustomPropertiesResolution,
-    DynamicComponentConfig,
+    DynamicImportConfig,
     OutputConfig,
 } from './options';
 

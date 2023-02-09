@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS = {
     disableSyntheticShadowSupport: false,
 };
 
-const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {
+const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
     loader: '',
     strictSpecifier: true,
 };
@@ -56,7 +56,7 @@ export interface OutputConfig {
     minify?: boolean;
 }
 
-export interface DynamicComponentConfig {
+export interface DynamicImportConfig {
     loader?: string;
     strictSpecifier?: boolean;
 }
@@ -65,7 +65,7 @@ export interface TransformOptions {
     name?: string;
     namespace?: string;
     stylesheetConfig?: StylesheetConfig;
-    experimentalDynamicComponent?: DynamicComponentConfig;
+    dynamicImportConfig?: DynamicImportConfig;
     // TODO [#3331]: remove usage of lwc:dynamic in 246
     experimentalDynamicDirective?: boolean;
     enableDynamicComponents?: boolean;
@@ -173,9 +173,9 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         },
     };
 
-    const experimentalDynamicComponent: Required<DynamicComponentConfig> = {
-        ...DEFAULT_DYNAMIC_CMP_CONFIG,
-        ...options.experimentalDynamicComponent,
+    const dynamicImportConfig: Required<DynamicImportConfig> = {
+        ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
+        ...options.dynamicImportConfig,
     };
 
     return {
@@ -183,6 +183,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options,
         stylesheetConfig,
         outputConfig,
-        experimentalDynamicComponent,
+        dynamicImportConfig,
     };
 }
