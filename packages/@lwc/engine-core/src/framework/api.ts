@@ -540,7 +540,7 @@ function fid(url: string | undefined | null): string | null | undefined {
  *
  * TODO [#3331]: deprecate usage of lwc:dynamic in 246
  */
-function ddc(
+function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
@@ -568,7 +568,7 @@ function ddc(
 /**
  * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
  */
-function dc(
+function ndc(
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
     children: VNodes = EmptyArray
@@ -669,7 +669,7 @@ const api = ObjectFreeze({
     fid,
     shc,
     ssf,
-    ddc,
+    ndc,
 });
 
 export default api;
