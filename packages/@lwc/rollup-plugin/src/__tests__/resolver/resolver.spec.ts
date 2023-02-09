@@ -183,4 +183,21 @@ describe('resolver', () => {
         );
         expect(output[0].code).toContain('var stylesheet = undefined;');
     });
+
+    it('should resolve the namespace and name to the alias value', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/namespace/src/index.js'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+
+        const { code } = result.output[0];
+        // alias name
+        expect(code).toContain(`sel: "alias-bar"`);
+        // original name
+        expect(code).not.toContain(`sel: "x-foo"`);
+    });
 });
