@@ -8,7 +8,12 @@ const { basename, extname } = require('path');
 
 const moduleImports = require('@babel/helper-module-imports');
 
-const { LWC_PACKAGE_ALIAS, REGISTER_COMPONENT_ID, TEMPLATE_KEY } = require('./constants');
+const {
+    LWC_PACKAGE_ALIAS,
+    REGISTER_COMPONENT_ID,
+    TEMPLATE_KEY,
+    COMPONENT_NAME_KEY,
+} = require('./constants');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -32,6 +37,12 @@ function needsComponentRegistration(path) {
     );
 }
 
+function getComponentRegisteredName(t, state) {
+    const { namespace, name } = state.opts;
+    const componentName = namespace && name ? `${namespace}-${name}` : '';
+    return t.stringLiteral(componentName);
+}
+
 module.exports = function ({ types: t }) {
     function createRegisterComponent(declarationPath, state) {
         const registerComponentId = moduleImports.addNamed(
@@ -41,6 +52,7 @@ module.exports = function ({ types: t }) {
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         const statementPath = declarationPath.getStatementParent();
+        const componentRegisteredName = getComponentRegisteredName(t, state);
         let node = declarationPath.node;
 
         if (declarationPath.isClassDeclaration()) {
@@ -56,7 +68,10 @@ module.exports = function ({ types: t }) {
 
         return t.callExpression(registerComponentId, [
             node,
-            t.objectExpression([t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier)]),
+            t.objectExpression([
+                t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
+                t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
+            ]),
         ]);
     }
 
