@@ -4,5 +4,6 @@ class Test extends Component {
   /*LWC compiler vX.X.X*/
 }
 export default _registerComponent(Test, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

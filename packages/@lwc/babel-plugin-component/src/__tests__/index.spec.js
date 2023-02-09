@@ -11,11 +11,16 @@ const { LWC_VERSION } = require('@lwc/shared');
 const { testFixtureDir } = require('@lwc/jest-utils-lwc-internals');
 const plugin = require('../index');
 
+const BASE_OPTS = {
+    namespace: 'lwc',
+    name: 'test',
+};
+
 const BASE_CONFIG = {
     babelrc: false,
     configFile: false,
-    filename: 'test.js',
-    // Force Babel to generate new line and whitespaces. This prevent Babel from generating
+    filename: `${BASE_OPTS.name}.js`,
+    // Force Babel to generate new line and white spaces. This prevent Babel from generating
     // an error when the generated code is over 500KB.
     compact: false,
 };
@@ -38,7 +43,7 @@ function normalizeError(err) {
 function transform(source, opts = {}) {
     const testConfig = {
         ...BASE_CONFIG,
-        plugins: [[plugin, opts]],
+        plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
     };
 
     let { code } = babel.transformSync(source, testConfig);
