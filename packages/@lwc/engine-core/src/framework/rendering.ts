@@ -44,6 +44,7 @@ import {
     VMState,
 } from './vm';
 import {
+    areDynamicVCustomElements,
     isSameVnode,
     isVBaseElement,
     isVFragment,
@@ -89,7 +90,10 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isSameVnode(n1, n2)) {
+        // The only scenario where the n1.sel and n2.sel are different is when the constructor
+        // of a dynamic custom element has changed.
+        // ex: <lwc:component lwc:is={ctor}>
+        if (!isSameVnode(n1, n2) && !areDynamicVCustomElements(n1, n2)) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
@@ -968,6 +972,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
+                    // note: dynamic components can be patched in this call
                     patch(n1, n2, parent, renderer);
                     anchor = n2.elm!;
                 } else {

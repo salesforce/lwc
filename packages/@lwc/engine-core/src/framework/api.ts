@@ -47,6 +47,7 @@ import {
     isVScopedSlotFragment,
     VScopedSlotFragment,
 } from './vnodes';
+import { getComponentRegisteredName } from './component';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -249,7 +250,8 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray
+    children: VNodes = EmptyArray,
+    dynamic: boolean = false
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -298,6 +300,7 @@ function c(
         children,
         elm,
         key,
+        dynamic,
 
         ctor: Ctor,
         owner: vmBeingRendered,
@@ -533,9 +536,11 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ * [ddc] - create a (deprecated) dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ *
+ * TODO [#3331]: deprecate usage of lwc:dynamic in 246
  */
-function dc(
+function ddc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
@@ -550,7 +555,7 @@ function dc(
         );
     }
     // null or undefined values should produce a null value in the VNodes
-    if (Ctor == null) {
+    if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
     if (!isComponentConstructor(Ctor)) {
@@ -558,6 +563,42 @@ function dc(
     }
 
     return c(sel, Ctor, data, children);
+}
+
+/**
+ * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
+ */
+function dc(
+    Ctor: LightningElementConstructor | null | undefined,
+    data: VElementData,
+    children: VNodes = EmptyArray
+): VCustomElement | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isObject(data), `dc() 2nd argument data must be an object.`);
+        assert.isTrue(
+            arguments.length === 3 || isArray(children),
+            `dc() 3rd argument data must be an array.`
+        );
+    }
+    // null or undefined values should produce a null value in the VNodes
+    if (isNull(Ctor) || isUndefined(Ctor)) {
+        return null;
+    }
+
+    if (!isComponentConstructor(Ctor)) {
+        throw new Error(
+            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
+        );
+    }
+
+    const sel = getComponentRegisteredName(Ctor);
+    if (isUndefined(sel)) {
+        throw new Error(
+            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
+        );
+    }
+
+    return c(sel, Ctor, data, children, true);
 }
 
 /**
@@ -628,6 +669,7 @@ const api = ObjectFreeze({
     fid,
     shc,
     ssf,
+    ddc,
 });
 
 export default api;
