@@ -21,7 +21,6 @@ import {
     SVG_NAMESPACE,
     StringToLowerCase,
 } from '@lwc/shared';
-import features from '@lwc/features';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
@@ -315,7 +314,7 @@ function mountCustomElement(
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
 
-    if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
             connectRootElement(elm);
         };
@@ -351,7 +350,7 @@ function mountCustomElement(
 
     if (vm) {
         if (process.env.IS_BROWSER) {
-            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                 if (process.env.NODE_ENV !== 'production') {
                     // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
                     // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.

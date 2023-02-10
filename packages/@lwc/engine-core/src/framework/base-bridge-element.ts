@@ -22,9 +22,7 @@ import {
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { applyAriaReflection } from '@lwc/aria-reflection';
-
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
@@ -208,7 +206,7 @@ if (process.env.IS_BROWSER) {
     // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
     // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
     // ARIA props outside the LightningElement
-    if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    if (lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
         // If ARIA reflection is not applied globally to Element.prototype, apply it to HTMLBridgeElement.prototype.
         // This allows `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*` attrs.
         // This is especially important because the template compiler compiles aria-* attrs on components to aria* props

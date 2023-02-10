@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import features from '@lwc/features';
 import {
     defineProperty,
     getOwnPropertyDescriptor,
@@ -62,7 +61,7 @@ function findVM(elm: Element): VM | undefined {
     // If we return undefined, it's because the element was rendered wholly outside a LightningElement
 }
 
-function checkAndReportViolation(elm: Element, prop: string) {
+function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, setValue: any) {
     if (!isLightningElement(elm)) {
         const vm = findVM(elm);
 
@@ -76,9 +75,19 @@ function checkAndReportViolation(elm: Element, prop: string) {
                     `See https://sfdc.co/deprecated-aria`
             );
         }
+
+        let setValueType: string | undefined;
+        if (isSetter) {
+            // `typeof null` is "object" which is not very useful for detecting null.
+            // We mostly want to know null vs undefined vs other types here, due to
+            // https://github.com/salesforce/lwc/issues/3284
+            setValueType = isNull(setValue) ? 'null' : typeof setValue;
+        }
         report(ReportingEventId.NonStandardAriaReflection, {
             tagName: vm?.tagName,
             propertyName: prop,
+            isSetter,
+            setValueType,
         });
     }
 }
@@ -104,11 +113,11 @@ function enableDetection() {
         const { get, set } = descriptor;
         defineProperty(prototype, prop, {
             get() {
-                checkAndReportViolation(this, prop);
+                checkAndReportViolation(this, prop, false, undefined);
                 return get.call(this);
             },
             set(val) {
-                checkAndReportViolation(this, prop);
+                checkAndReportViolation(this, prop, true, val);
                 return set.call(this, val);
             },
             configurable: true,
@@ -119,7 +128,7 @@ function enableDetection() {
 
 // No point in running this code if we're not in a browser, or if the global polyfill is not loaded
 if (process.env.IS_BROWSER) {
-    if (!features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    if (!lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
         // Always run detection in dev mode, so we can at least print to the console
         if (process.env.NODE_ENV !== 'production') {
             enableDetection();

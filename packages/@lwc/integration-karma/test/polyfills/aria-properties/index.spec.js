@@ -1,18 +1,66 @@
 import { ariaPropertiesMapping, nonStandardAriaProperties } from 'test-utils';
+import { __unstable__ReportingControl as reportingControl } from 'lwc';
 
 function testAriaProperty(property, attribute) {
-    function expectWarningIfNonStandard(callback) {
-        // eslint-disable-next-line jest/valid-expect
-        let expected = expect(callback);
-        if (!nonStandardAriaProperties.includes(property)) {
-            expected = expected.not;
-        }
-        expected.toLogWarningDev(
-            `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
-        );
-    }
-
     describe(property, () => {
+        let dispatcher;
+
+        beforeEach(() => {
+            dispatcher = jasmine.createSpy();
+            reportingControl.attachDispatcher(dispatcher);
+        });
+
+        afterEach(() => {
+            reportingControl.detachDispatcher();
+        });
+
+        function expectWarningIfNonStandard(callback) {
+            // eslint-disable-next-line jest/valid-expect
+            let expected = expect(callback);
+            if (!nonStandardAriaProperties.includes(property)) {
+                expected = expected.not;
+            }
+            expected.toLogWarningDev(
+                `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
+            );
+        }
+
+        function expectGetterReportIfNonStandard() {
+            if (nonStandardAriaProperties.includes(property)) {
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'NonStandardAriaReflection',
+                        {
+                            tagName: undefined,
+                            propertyName: property,
+                            isSetter: false,
+                            setValueType: undefined,
+                        },
+                    ],
+                ]);
+            } else {
+                expect(dispatcher).not.toHaveBeenCalled();
+            }
+        }
+
+        function expectSetterReportIfNonStandard(setValueType) {
+            if (nonStandardAriaProperties.includes(property)) {
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'NonStandardAriaReflection',
+                        {
+                            tagName: undefined,
+                            propertyName: property,
+                            isSetter: true,
+                            setValueType,
+                        },
+                    ],
+                ]);
+            } else {
+                expect(dispatcher).not.toHaveBeenCalled();
+            }
+        }
+
         it(`should assign property ${property} to Element prototype`, () => {
             expect(Object.prototype.hasOwnProperty.call(Element.prototype, property)).toBe(true);
         });
@@ -22,6 +70,7 @@ function testAriaProperty(property, attribute) {
             expectWarningIfNonStandard(() => {
                 expect(el[property]).toBe(null);
             });
+            expectGetterReportIfNonStandard();
         });
 
         it('should return the right value from the getter', () => {
@@ -29,6 +78,7 @@ function testAriaProperty(property, attribute) {
             expectWarningIfNonStandard(() => {
                 el[property] = 'foo';
             });
+            expectSetterReportIfNonStandard('string');
             expect(el[property]).toBe('foo');
         });
 
@@ -37,6 +87,7 @@ function testAriaProperty(property, attribute) {
             expectWarningIfNonStandard(() => {
                 el[property] = 'foo';
             });
+            expectSetterReportIfNonStandard('string');
             expect(el.getAttribute(attribute)).toBe('foo');
         });
 
@@ -47,6 +98,7 @@ function testAriaProperty(property, attribute) {
             expectWarningIfNonStandard(() => {
                 value = el[property];
             });
+            expectGetterReportIfNonStandard();
             expect(value).toBe('foo');
         });
 
@@ -88,6 +140,7 @@ function testAriaProperty(property, attribute) {
                 expectWarningIfNonStandard(() => {
                     el[property] = value;
                 });
+                expectSetterReportIfNonStandard(value === null ? 'null' : typeof value);
                 expect(el.hasAttribute(attribute)).toBe(false);
                 expect(el[property]).toBeNull();
             });
@@ -103,6 +156,7 @@ function testAriaProperty(property, attribute) {
                 expectWarningIfNonStandard(() => {
                     el[property] = value;
                 });
+                expectSetterReportIfNonStandard(value === null ? 'null' : typeof value);
                 expect(el.hasAttribute(attribute)).toBe(true);
                 expect(el.getAttribute(attribute)).toBe('' + value);
                 expect(el[property]).toBe('' + value);

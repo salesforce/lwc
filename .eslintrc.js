@@ -92,6 +92,10 @@ module.exports = {
       "object": "Math",
       "property": "pow",
       "message": "Use the exponentiation operator (**) instead."
+    }, {
+      "object": "globalThis",
+      "property": "lwcRuntimeFlags",
+      "message": "Use the bare global lwcRuntimeFlags instead."
     }],
     "no-self-compare": "error",
     "no-undef-init": "error",
@@ -108,7 +112,12 @@ module.exports = {
     "import/order": [
       "error",
       {"groups": ["builtin", "external", "internal", "parent", "index", "sibling", "object", "type"]}
-    ]
+    ],
+    "no-restricted-imports": ["error", {
+      "name": "@lwc/features",
+      "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
+      "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
+    }]
   },
 
   "overrides": [

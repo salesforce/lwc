@@ -1,90 +1,25 @@
-# Features
-
-[RFC](https://github.com/salesforce/lwc-rfcs/blob/master/text/0111-feature-flags.md)
-
-## Compile-time flags
-
-## Runtime flags
+# @lwc/features
 
 Runtime flags can be enabled or disabled by setting a boolean value for that
-flag in `globalThis.LWC_config.features`. If the flag is not explicitly
-configured, the feature is disabled by default. This configuration object
+flag in `globalThis.lwcRuntimeFlags`, e.g.:
+
+```js
+lwcRuntimeFlags.ENABLE_SOME_FEATURE = true;
+```
+
+If the flag is not explicitly
+set, the feature is disabled by default. The `lwcRuntimeFlags` object
 must appear before the engine is initialized and should be defined at the
 application layer.
 
-### Limitations
+Internally, LWC will reference runtime flags like so:
 
-#### Must be all uppercase
-
-```
-// Does not work
-if (enableFoo) {
-    ...
-}
-
-// Does work
-if (ENABLE_FOO) {
-    ...
+```js
+if (lwcRuntimeFlags.ENABLE_SOME_FEATURE) {
+    // etc.
 }
 ```
 
-#### Only works with if-statements
+This makes it possible for consumers to replace these flags at compile time, using something like [Rollup's `@rollup/plugin-replace`](https://www.npmjs.com/package/@rollup/plugin-replace) or [ESBuild's `define`](https://esbuild.github.io/api/#define).
 
-```
-// Does not work
-const foo = ENABLE_FOO ? 1 : 2;
-
-// Does work
-let foo;
-if (ENABLE_FOO) {
-    foo = 1;
-} else {
-    foo = 2;
-}
-```
-
-#### Only works with identifiers
-
-```
-// Does not work
-if (isTrue(ENABLE_AWESOME_FEATURE)) {
-    // awesome feature
-}
-
-// Does work
-if (ENABLE_AWESOME_FEATURE) {
-    // awesome feature
-}
-```
-
-```
-// Does not work
-if (isTrue(features.ENABLE_AWESOME_FEATURE)) {
-    // awesome feature
-}
-
-// Does work
-if (features.ENABLE_AWESOME_FEATURE) {
-    // awesome feature
-}
-```
-
-#### Initialization code cannot be tested
-
-Toggling the value of `ENABLE_FOO` during a test will not change the return
-value of `getFooValue`.
-
-```
-import { ENABLE_FOO } from '@lwc/features';
-
-let foo;
-if (ENABLE_FOO) {
-    foo = 1;
-} else {
-    foo = 2;
-}
-
-function getFooValue() {
-    return foo;
-}
-```
+Note that `@lwc/features` is an internal package used by LWC and (most likely) should not be directly used by consumers.

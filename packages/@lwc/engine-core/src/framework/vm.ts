@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
 import {
     ArrayPush,
     ArraySlice,
@@ -351,7 +350,7 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        if (features.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
+        if (lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             vm.shadowMode = ShadowMode.Native;
         }
     }
@@ -392,20 +391,18 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
 
 // Validate and flatten any stylesheets defined as `static stylesheets`
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
-    if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
-        warnOnStylesheetsMutation(ctor);
-        const { stylesheets } = ctor;
-        if (!isUndefined(stylesheets)) {
-            const valid = validateComponentStylesheets(vm, stylesheets);
+    warnOnStylesheetsMutation(ctor);
+    const { stylesheets } = ctor;
+    if (!isUndefined(stylesheets)) {
+        const valid = validateComponentStylesheets(vm, stylesheets);
 
-            if (valid) {
-                return flattenStylesheets(stylesheets);
-            } else if (process.env.NODE_ENV !== 'production') {
-                logError(
-                    `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
-                    vm
-                );
-            }
+        if (valid) {
+            return flattenStylesheets(stylesheets);
+        } else if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                vm
+            );
         }
     }
     return null;
@@ -444,7 +441,7 @@ function computeShadowMode(vm: VM, renderer: RendererAPI) {
         } else if (isNativeShadowDefined) {
             // Not combined with above condition because @lwc/features only supports identifiers in
             // the if-condition.
-            if (features.ENABLE_MIXED_SHADOW_MODE) {
+            if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
