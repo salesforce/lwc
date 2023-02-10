@@ -1,7 +1,5 @@
 export default {
-    advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
-        hydrateComponent(target, Component, {});
-
+    test(target, snapshots, consoleCalls) {
         const divs = target.shadowRoot.querySelectorAll('div');
 
         const expectedAttrValues = ['false', null, null, 'true', '', '0', 'NaN'];
@@ -12,7 +10,6 @@ export default {
             expect(divs[i].getAttribute('data-foo')).toEqual(expectedAttrValues[i]);
         }
 
-        const consoleCalls = consoleSpy.calls;
         expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(0);
     },
