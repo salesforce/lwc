@@ -16,5 +16,6 @@ export default {
 
         const consoleCalls = consoleSpy.calls;
         expect(consoleCalls.warn).toHaveSize(0);
+        expect(consoleCalls.error).toHaveSize(0);
     },
 };
