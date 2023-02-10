@@ -118,6 +118,7 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
     }
 
     // Special case for empty text nodes – these are serialized differently on the server
+    // See https://github.com/salesforce/lwc/pull/2656
     if (nodeValue === '\u200D' && vnode.text === '') {
         return true;
     }
