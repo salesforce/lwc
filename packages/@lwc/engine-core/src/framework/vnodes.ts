@@ -104,7 +104,7 @@ export interface VNodeData {
     // All props are readonly because VElementData may be shared across VNodes
     // due to hoisting optimizations
     readonly props?: Readonly<Record<string, any>>;
-    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean | undefined>>;
     readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
