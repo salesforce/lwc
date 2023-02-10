@@ -54,7 +54,7 @@ async function getCompiledModule(dirName) {
                         dir: dirName,
                     },
                 ],
-                dynamicImportConfig: {
+                experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
                 },

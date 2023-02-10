@@ -471,7 +471,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_DYNAMIC: {
         code: 1128,
         message:
-            'Invalid lwc:dynamic usage. The LWC dynamic Directive must be enabled in order to use this feature.',
+            'Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -880,7 +880,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS: {
         code: 1187,
         message:
-            'Invalid lwc:is usage. The LWC dynamic Directive must be enabled in order to use this feature.',
+            'Invalid lwc:is usage. The LWC dynamic directive must be enabled in order to use this feature.',
         level: DiagnosticLevel.Error,
         url: '',
     },

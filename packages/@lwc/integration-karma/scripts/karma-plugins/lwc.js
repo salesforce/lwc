@@ -44,7 +44,7 @@ function createPreprocessor(config, emitter, logger) {
         const plugins = [
             lwcRollupPlugin({
                 sourcemap: true,
-                dynamicImportConfig: {
+                experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
                 },

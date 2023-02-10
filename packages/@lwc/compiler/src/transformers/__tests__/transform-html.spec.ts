@@ -124,68 +124,68 @@ describe('transformSync', () => {
         expect(code).not.toMatch('renderer: renderer');
     });
 
-    it('should allow dynamic components when enableDynamicComponents is set to true', () => {
-        const template = `
-            <template>
-                <lwc:component lwc:is={ctor}></lwc:component>
-            </template>
-        `;
-        const { code, warnings } = transformSync(template, 'foo.html', {
-            enableDynamicComponents: true,
-            ...TRANSFORMATION_OPTIONS,
-        });
-
-        expect(warnings).toHaveLength(0);
-        expect(code).toContain('api_dynamic_component');
-    });
-
-    it('should not allow dynamic components when enableDynamicComponents is set to false', () => {
-        const template = `
-            <template>
-                <lwc:component lwc:is={ctor}></lwc:component>
-            </template>
-        `;
-        expect(() =>
-            transformSync(template, 'foo.html', {
-                enableDynamicComponents: false,
+    describe('dynamic components', () => {
+        it('should allow dynamic components when enableDynamicComponents is set to true', () => {
+            const template = `
+                <template>
+                    <lwc:component lwc:is={ctor}></lwc:component>
+                </template>
+            `;
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                enableDynamicComponents: true,
                 ...TRANSFORMATION_OPTIONS,
-            })
-        ).toThrow('LWC1187: Invalid lwc:is usage');
-    });
+            });
 
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
-    it('should allow deprecated dynamic components when experimentalDynamicDirective is set to true', () => {
-        const template = `
-            <template>
-                <x-dynamic lwc:dynamic={ctor}></x-dynamic>
-            </template>
-        `;
-        const { code, warnings } = transformSync(template, 'foo.html', {
-            experimentalDynamicDirective: true,
-            ...TRANSFORMATION_OPTIONS,
+            expect(warnings).toHaveLength(0);
+            expect(code).toContain('api_dynamic_component');
         });
 
-        expect(warnings).toHaveLength(1);
-        expect(warnings?.[0]).toMatchObject({
-            message: expect.stringContaining('lwc:dynamic directive is deprecated'),
+        it('should not allow dynamic components when enableDynamicComponents is set to false', () => {
+            const template = `
+                <template>
+                    <lwc:component lwc:is={ctor}></lwc:component>
+                </template>
+            `;
+            expect(() =>
+                transformSync(template, 'foo.html', {
+                    enableDynamicComponents: false,
+                    ...TRANSFORMATION_OPTIONS,
+                })
+            ).toThrow('LWC1187: Invalid lwc:is usage');
         });
-        expect(code).toContain('api_deprecated_dynamic_component');
-    });
 
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
-    it('should not allow dynamic components when experimentalDynamicDirective is set to false', () => {
-        const template = `
-            <template>
-                <x-dynamic lwc:dynamic={ctor}></x-dynamic>
-            </template>
-        `;
-        expect(() =>
-            transformSync(template, 'foo.html', {
-                experimentalDynamicDirective: false,
+        it('should allow deprecated dynamic components when experimentalDynamicDirective is set to true', () => {
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                </template>
+            `;
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                experimentalDynamicDirective: true,
                 ...TRANSFORMATION_OPTIONS,
-            })
-        ).toThrowErrorMatchingInlineSnapshot(
-            '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic Directive must be enabled in order to use this feature."'
-        );
+            });
+
+            expect(warnings).toHaveLength(1);
+            expect(warnings?.[0]).toMatchObject({
+                message: expect.stringContaining('lwc:dynamic directive is deprecated'),
+            });
+            expect(code).toContain('api_deprecated_dynamic_component');
+        });
+
+        it('should not allow dynamic components when experimentalDynamicDirective is set to false', () => {
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                </template>
+            `;
+            expect(() =>
+                transformSync(template, 'foo.html', {
+                    experimentalDynamicDirective: false,
+                    ...TRANSFORMATION_OPTIONS,
+                })
+            ).toThrowErrorMatchingInlineSnapshot(
+                '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."'
+            );
+        });
     });
 });

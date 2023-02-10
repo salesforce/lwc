@@ -1,9 +1,10 @@
 import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-    ctor;
+    lazyCtor;
 
     async connectedCallback() {
-        this.ctor = await import('test');
+        const { default: ctor } = await import('test');
+        this.lazyCtor = ctor;
     }
 }

@@ -119,13 +119,13 @@ describe('templateConfig', () => {
 });
 
 describe('javaScriptConfig', () => {
-    it('should accept dynamicImportConfig config flag', async () => {
+    it('should accept experimentalDynamicComponent config flag', async () => {
         const CUSTOM_LOADER = '@salesforce/loader';
         const bundle = await rollup({
             input: path.resolve(__dirname, 'fixtures/dynamicImportConfig/dynamicImportConfig.js'),
             plugins: [
                 lwc({
-                    dynamicImportConfig: { loader: CUSTOM_LOADER, strictSpecifier: true },
+                    experimentalDynamicComponent: { loader: CUSTOM_LOADER, strictSpecifier: true },
                 }),
             ],
             external: [CUSTOM_LOADER],
