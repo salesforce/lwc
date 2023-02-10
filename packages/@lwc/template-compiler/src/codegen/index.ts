@@ -89,13 +89,11 @@ function transform(codeGen: CodeGen): t.Expression {
         const children = transformChildren(element);
 
         const { name } = element;
-        // TODO [#3331]: remove usage of lwc:dynamic in 246
         // lwc:dynamic directive
         const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
         // lwc:is directive
         const dynamicDirective = element.directives.find(isLwcIsDirective);
 
-        // TODO [#3331]: remove usage of lwc:dynamic in 246
         if (deprecatedDynamicDirective) {
             const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
             res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);

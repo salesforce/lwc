@@ -326,7 +326,6 @@ export function keyDirective(value: Expression, location: SourceLocation): KeyDi
     };
 }
 
-// TODO [#3331]: remove usage of lwc:dynamic in 246
 export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
     return {
         type: 'Directive',
@@ -563,7 +562,6 @@ export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
 
-// TODO [#3331]: remove usage of lwc:dynamic in 246
 export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
     return directive.name === 'Dynamic';
 }

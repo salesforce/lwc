@@ -917,7 +917,6 @@ function applyLwcExternalDirective(
     }
 }
 
-// TODO [#3331]: remove usage of lwc:dynamic in 246
 function applyLwcDynamicDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,

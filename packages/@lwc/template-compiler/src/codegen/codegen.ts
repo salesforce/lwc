@@ -194,7 +194,6 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
     }
 
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
     genDeprecatedDynamicElement(
         tagName: string,
         ctor: t.Expression,

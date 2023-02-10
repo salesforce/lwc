@@ -92,7 +92,6 @@ export interface KeyDirective extends Directive<'Key'> {
     value: Expression;
 }
 
-// TODO [#3331]: remove usage of lwc:dynamic in 246
 export interface DynamicDirective extends Directive<'Dynamic'> {
     value: Expression;
 }

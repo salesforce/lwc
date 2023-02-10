@@ -22,7 +22,7 @@ export default function scriptTransform(
 ): TransformResult {
     const {
         isExplicitImport,
-        dynamicImportConfig: dynamicImports,
+        experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
     } = options;
 

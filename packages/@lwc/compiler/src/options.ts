@@ -65,9 +65,12 @@ export interface TransformOptions {
     name?: string;
     namespace?: string;
     stylesheetConfig?: StylesheetConfig;
-    dynamicImportConfig?: DynamicImportConfig;
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    // TODO [#3331]: deprecate / rename this compiler option in 246
+    /* Config applied in usage of dynamic import statements in javascript */
+    experimentalDynamicComponent?: DynamicImportConfig;
+    /* Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
     experimentalDynamicDirective?: boolean;
+    /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
@@ -90,6 +93,7 @@ type RequiredTransformOptions = Omit<
     | 'enableScopedSlots'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
+    | 'experimentalDynamicComponent'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
@@ -99,8 +103,8 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
     enableDynamicComponents?: boolean;
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
     experimentalDynamicDirective?: boolean;
+    experimentalDynamicComponent?: DynamicImportConfig;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
@@ -173,9 +177,9 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         },
     };
 
-    const dynamicImportConfig: Required<DynamicImportConfig> = {
+    const experimentalDynamicComponent: Required<DynamicImportConfig> = {
         ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
-        ...options.dynamicImportConfig,
+        ...options.experimentalDynamicComponent,
     };
 
     return {
@@ -183,6 +187,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options,
         stylesheetConfig,
         outputConfig,
-        dynamicImportConfig,
+        experimentalDynamicComponent,
     };
 }

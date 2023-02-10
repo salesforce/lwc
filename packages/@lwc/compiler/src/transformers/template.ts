@@ -28,22 +28,21 @@ export default function templateTransform(
     options: NormalizedTransformOptions
 ): TransformResult {
     const {
-        dynamicImportConfig,
+        experimentalDynamicComponent,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
         enableScopedSlots,
         enableDynamicComponents,
-        // TODO [#3331]: remove usage of lwc:dynamic in 246
         experimentalDynamicDirective: deprecatedDynamicDirective,
     } = options;
-    const experimentalDynamicDirective = deprecatedDynamicDirective ?? Boolean(dynamicImportConfig);
+    const experimentalDynamicDirective =
+        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
-            // TODO [#3331]: remove usage of lwc:dynamic in 246
             experimentalDynamicDirective,
             preserveHtmlComments,
             enableStaticContentOptimization,
