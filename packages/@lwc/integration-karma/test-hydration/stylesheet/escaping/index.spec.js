@@ -1,7 +1,5 @@
 export default {
-    advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
-        hydrateComponent(target, Component, {});
-
+    test(target, snapshots, consoleCalls) {
         const h1 = target.shadowRoot.querySelector('h1');
         const h2 = target.shadowRoot.querySelector('h2');
         const div = target.shadowRoot.querySelector('div');
@@ -14,7 +12,6 @@ export default {
         expect(getComputedStyle(div).color).toEqual('rgb(128, 0, 128)');
         expect(getComputedStyle(div).backgroundColor).toEqual('rgb(255, 255, 0)');
 
-        const consoleCalls = consoleSpy.calls;
         expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(0);
     },
