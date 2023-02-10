@@ -380,7 +380,7 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
 }
 
 function attributeValuesAreEqual(
-    vnodeValue: string | number | boolean | undefined,
+    vnodeValue: string | number | boolean | null | undefined,
     value: string | null
 ) {
     const vnodeValueAsString = String(vnodeValue);
