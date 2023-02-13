@@ -414,6 +414,26 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
     return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 }
 
+function attributeValuesAreEqual(
+    vnodeValue: string | number | boolean | null | undefined,
+    value: string | null
+) {
+    const vnodeValueAsString = String(vnodeValue);
+
+    if (vnodeValueAsString === value) {
+        return true;
+    }
+
+    // If the expected value is null, this means that the attribute does not exist. In that case,
+    // we accept any nullish value (undefined or null).
+    if (isNull(value) && (isUndefined(vnodeValue) || isNull(vnodeValue))) {
+        return true;
+    }
+
+    // In all other cases, the two values are not considered equal
+    return false;
+}
+
 function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const {
         data: { attrs = {} },
@@ -427,14 +447,16 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
-        if (String(attrValue) !== elmAttrValue) {
+        if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
             if (process.env.NODE_ENV !== 'production') {
                 const { getProperty } = renderer;
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         elm,
                         'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
+                        isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
+                    }`,
                     owner
                 );
             }
