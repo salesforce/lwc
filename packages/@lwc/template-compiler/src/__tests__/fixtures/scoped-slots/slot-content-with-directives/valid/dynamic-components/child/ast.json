@@ -1,0 +1,393 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 334,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 35,
+                "start": 0,
+                "end": 34
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 323,
+                "end": 334
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "RenderMode",
+                "value": {
+                    "type": "Literal",
+                    "value": "light"
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 34,
+                    "start": 10,
+                    "end": 33
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 21,
+                    "start": 39,
+                    "end": 155,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 35,
+                        "start": 39,
+                        "end": 69
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 21,
+                        "start": 139,
+                        "end": 155
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "ctor1",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 20,
+                                "endLine": 2,
+                                "endColumn": 34,
+                                "start": 54,
+                                "end": 68
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 20,
+                            "endLine": 2,
+                            "endColumn": 34,
+                            "start": 54,
+                            "end": 68
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "slotname1",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 65,
+                            "start": 78,
+                            "end": 134,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 58,
+                                "start": 78,
+                                "end": 127
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 58,
+                                "endLine": 3,
+                                "endColumn": 65,
+                                "start": 127,
+                                "end": 134
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "name",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "slotname1"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 15,
+                                    "endLine": 3,
+                                    "endColumn": 31,
+                                    "start": 84,
+                                    "end": 100
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "SlotBind",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 10,
+                                    "name": "slot1data",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 32,
+                                        "endLine": 3,
+                                        "endColumn": 57,
+                                        "start": 101,
+                                        "end": 126
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 32,
+                                    "endLine": 3,
+                                    "endColumn": 57,
+                                    "start": 101,
+                                    "end": 126
+                                }
+                            }
+                        ],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 21,
+                    "start": 160,
+                    "end": 276,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 35,
+                        "start": 160,
+                        "end": 190
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 21,
+                        "start": 260,
+                        "end": 276
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "ctor2",
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 20,
+                                "endLine": 5,
+                                "endColumn": 34,
+                                "start": 175,
+                                "end": 189
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 20,
+                            "endLine": 5,
+                            "endColumn": 34,
+                            "start": 175,
+                            "end": 189
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "slotname2",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 65,
+                            "start": 199,
+                            "end": 255,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 58,
+                                "start": 199,
+                                "end": 248
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 58,
+                                "endLine": 6,
+                                "endColumn": 65,
+                                "start": 248,
+                                "end": 255
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "name",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "slotname2"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 15,
+                                    "endLine": 6,
+                                    "endColumn": 31,
+                                    "start": 205,
+                                    "end": 221
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "SlotBind",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 10,
+                                    "name": "slot2data",
+                                    "location": {
+                                        "startLine": 6,
+                                        "startColumn": 32,
+                                        "endLine": 6,
+                                        "endColumn": 57,
+                                        "start": 222,
+                                        "end": 247
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 32,
+                                    "endLine": 6,
+                                    "endColumn": 57,
+                                    "start": 222,
+                                    "end": 247
+                                }
+                            }
+                        ],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 8,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 46,
+                    "start": 281,
+                    "end": 322,
+                    "startTag": {
+                        "startLine": 8,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 39,
+                        "start": 281,
+                        "end": 315
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 39,
+                        "endLine": 8,
+                        "endColumn": 46,
+                        "start": 315,
+                        "end": 322
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "SlotBind",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "defaultdata",
+                            "location": {
+                                "startLine": 8,
+                                "startColumn": 11,
+                                "endLine": 8,
+                                "endColumn": 38,
+                                "start": 287,
+                                "end": 314
+                            }
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 11,
+                            "endLine": 8,
+                            "endColumn": 38,
+                            "start": 287,
+                            "end": 314
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

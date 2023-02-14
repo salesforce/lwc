@@ -46,6 +46,8 @@ import {
     ScopedSlotFragment,
     TemplateDirectiveName,
     LwcTagName,
+    LwcComponent,
+    Element,
 } from '../shared/types';
 import { isCustomElementTag, isLwcElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -314,7 +316,7 @@ function parseBaseElement(
             } else {
                 element = ast.component(tag, parse5ElmLocation);
             }
-        } else if (ctx.config.enableDynamicComponents && isLwcElementTag(tag)) {
+        } else if (isLwcElementTag(tag)) {
             // Special tag names that begin with lwc:*
             element = parseLwcElement(ctx, parse5Elm, parsedAttr, parse5ElmLocation);
         } else {
@@ -337,17 +339,50 @@ function parseLwcElement(
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation
 ) {
+    let lwcElementParser;
+
+    switch (parse5Elm.tagName) {
+        case ctx.config.enableDynamicComponents && LwcTagName.Component:
+            lwcElementParser = parseLwcComponent;
+            break;
+        default:
+            lwcElementParser = parseLwcElementAsBuiltIn;
+    }
+
+    return lwcElementParser(ctx, parse5Elm, parsedAttr, parse5ElmLocation);
+}
+
+function parseLwcComponent(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation
+): LwcComponent {
+    // <lwc:component> must be used with lwc:is directive
+    if (!parsedAttr.get(ElementDirectiveName.Is)) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
+    return ast.lwcComponent(parse5Elm.tagName as LwcTagName.Component, parse5ElmLocation);
+}
+
+function parseLwcElementAsBuiltIn(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    _parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation
+): Element {
     const { tagName: tag, namespaceURI } = parse5Elm;
 
-    if (tag === LwcTagName.Component) {
-        if (parsedAttr.get(ElementDirectiveName.Is)) {
-            return ast.lwcComponent(tag, parse5ElmLocation);
-        } else {
-            ctx.throwAtLocation(
-                ParserDiagnostics.LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE,
-                ast.sourceLocation(parse5ElmLocation)
-            );
-        }
+    if (!ctx.config.enableDynamicComponents && tag === LwcTagName.Component) {
+        ctx.warnAtLocation(
+            ParserDiagnostics.LWC_COMPONENT_USED_WITHOUT_OPT,
+            ast.sourceLocation(parse5ElmLocation),
+            [tag]
+        );
     } else {
         // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
         // These tag names are listed in LwcTagNames in types.ts.
@@ -357,8 +392,9 @@ function parseLwcElement(
             ast.sourceLocation(parse5ElmLocation),
             [tag]
         );
-        return ast.element(tag, namespaceURI, parse5ElmLocation);
     }
+
+    return ast.element(tag, namespaceURI, parse5ElmLocation);
 }
 
 function parseChildren(
@@ -790,7 +826,7 @@ function applyLwcPreserveCommentsDirective(
     );
 }
 
-const LWC_DIRECTIVE_BINDINGS = [
+const LWC_DIRECTIVE_PROCESSORS = [
     applyLwcExternalDirective,
     applyLwcDynamicDirective,
     applyLwcIsDirective,
@@ -834,8 +870,8 @@ function applyLwcDirectives(
     }
 
     // Bind LWC directives to element
-    for (const binding of LWC_DIRECTIVE_BINDINGS) {
-        binding(ctx, parsedAttr, element);
+    for (const matchAndApply of LWC_DIRECTIVE_PROCESSORS) {
+        matchAndApply(ctx, parsedAttr, element);
     }
 }
 

@@ -63,7 +63,18 @@
                 "line": 21,
                 "column": 5,
                 "start": 695,
-                "length": 36
+                "length": 61
+            }
+        },
+        {
+            "code": 1140,
+            "message": "LWC1140: Invalid lwc:inner-html usage on element \"<x-lazy>\". The directive can't be used on a custom element or special LWC managed elements denoted with lwc:*.",
+            "level": 1,
+            "location": {
+                "line": 21,
+                "column": 5,
+                "start": 695,
+                "length": 61
             }
         },
         {
@@ -73,7 +84,7 @@
             "location": {
                 "line": 24,
                 "column": 5,
-                "start": 793,
+                "start": 818,
                 "length": 70
             }
         }

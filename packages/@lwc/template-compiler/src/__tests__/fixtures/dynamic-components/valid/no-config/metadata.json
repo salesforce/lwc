@@ -1,6 +1,17 @@
 {
     "warnings": [
         {
+            "code": 1189,
+            "message": "LWC1189: The dynamic component option has not been enabled, lwc:component will be treated as an HTML element.",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 104,
+                "length": 73
+            }
+        },
+        {
             "code": 1123,
             "message": "LWC1123: Unknown html tag '<lwc:component>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
