@@ -891,12 +891,4 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-
-    LWC_COMPONENT_USED_WITHOUT_OPT: {
-        code: 1189,
-        message:
-            'The dynamic component option has not been enabled, lwc:component will be treated as an HTML element.',
-        level: DiagnosticLevel.Warning,
-        url: '',
-    },
 };

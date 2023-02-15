@@ -1,14 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1187,
-            "message": "LWC1187: Invalid lwc:is usage. The LWC dynamic directive must be enabled in order to use this feature.",
+            "code": 1183,
+            "message": "LWC1183: <lwc:component> must have an 'lwc:is' attribute.",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
                 "start": 15,
-                "length": 45
+                "length": 73
             }
         }
     ]

@@ -342,7 +342,7 @@ function parseLwcElement(
     let lwcElementParser;
 
     switch (parse5Elm.tagName) {
-        case ctx.config.enableDynamicComponents && LwcTagName.Component:
+        case LwcTagName.Component:
             lwcElementParser = parseLwcComponent;
             break;
         default:
@@ -376,23 +376,14 @@ function parseLwcElementAsBuiltIn(
     parse5ElmLocation: parse5.ElementLocation
 ): Element {
     const { tagName: tag, namespaceURI } = parse5Elm;
-
-    if (!ctx.config.enableDynamicComponents && tag === LwcTagName.Component) {
-        ctx.warnAtLocation(
-            ParserDiagnostics.LWC_COMPONENT_USED_WITHOUT_OPT,
-            ast.sourceLocation(parse5ElmLocation),
-            [tag]
-        );
-    } else {
-        // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
-        // These tag names are listed in LwcTagNames in types.ts.
-        // Issue a warning when component authors use an unrecognized lwc:* tag.
-        ctx.warnAtLocation(
-            ParserDiagnostics.UNSUPPORTED_LWC_TAG_NAME,
-            ast.sourceLocation(parse5ElmLocation),
-            [tag]
-        );
-    }
+    // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
+    // These tag names are listed in LwcTagNames in types.ts.
+    // Issue a warning when component authors use an unrecognized lwc:* tag.
+    ctx.warnAtLocation(
+        ParserDiagnostics.UNSUPPORTED_LWC_TAG_NAME,
+        ast.sourceLocation(parse5ElmLocation),
+        [tag]
+    );
 
     return ast.element(tag, namespaceURI, parse5ElmLocation);
 }
