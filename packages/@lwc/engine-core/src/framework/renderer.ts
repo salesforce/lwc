@@ -65,4 +65,6 @@ export interface RendererAPI {
         connectedCallback?: LifecycleCallback,
         disconnectedCallback?: LifecycleCallback
     ) => E;
+
+    ownerDocument(elm: E): Document;
 }
