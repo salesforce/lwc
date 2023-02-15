@@ -90,9 +90,14 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        // The only scenario where the n1.sel and n2.sel are different is when the constructor
-        // of a dynamic custom element has changed.
-        // ex: <lwc:component lwc:is={ctor}>
+        /**
+         * The only scenario when n1.sel !== n2.sel is when a dynamic component's constructor changes.
+         * Dynamic components are allowed to be patched when the value of sel changes because they are
+         * expected to be unmounted / remounted using the new constructor.
+         *
+         * We check to ensure that both n1 and n2 are dynamic VCustomElements to avoid patching props from one
+         * component to a different component.
+         */
         if (!isSameVnode(n1, n2) && !areDynamicVCustomElements(n1, n2)) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +

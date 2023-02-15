@@ -3,6 +3,10 @@
         { 
             "name": "alias/bar",
             "path": "src/modules/x/foo/foo.js"
+        },
+        {
+            "name": "zoo",
+            "path": "src/modules/x/zoo/zoo.js"
         }
     ]
 }

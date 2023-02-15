@@ -195,9 +195,16 @@ describe('resolver', () => {
         });
 
         const { code } = result.output[0];
-        // alias name
+        // Alias name
         expect(code).toContain(`sel: "alias-bar"`);
-        // original name
+        // Original name
         expect(code).not.toContain(`sel: "x-foo"`);
+
+        // The alias name must be in the format namespace / name.
+        // Otherwise, the folder structure is used to determine the namespace / name.
+        // Folder structure name
+        expect(code).toContain('sel: "x-zoo');
+        // Invalid alias name
+        expect(code).not.toContain('sel: zoo');
     });
 });
