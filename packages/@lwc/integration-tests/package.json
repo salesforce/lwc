@@ -34,7 +34,7 @@
         "deepmerge": "^4.3.0",
         "dotenv": "^16.0.3",
         "lwc": "2.37.2",
-        "minimist": "^1.2.7",
+        "minimist": "^1.2.8",
         "webdriverio": "^7.26.0"
     }
 }
