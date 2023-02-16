@@ -26,6 +26,10 @@ export function isProperty(node: t.BaseNode): node is t.Property {
     return node.type === 'Property';
 }
 
+export function isArrowFunctionExpression(node: t.BaseNode): node is t.ArrowFunctionExpression {
+    return node.type === 'ArrowFunctionExpression';
+}
+
 export function identifier(name: string, config?: Partial<t.Identifier>): t.Identifier {
     return {
         type: 'Identifier',
@@ -416,10 +420,14 @@ export type Property = t.Property;
 export type ObjectExpression = t.ObjectExpression;
 export type ObjectPattern = t.ObjectPattern;
 export type ArrayExpression = t.ArrayExpression;
+export type ArrayPattern = t.ArrayPattern;
+export type RestElement = t.RestElement;
 export type ExpressionStatement = t.ExpressionStatement;
 export type FunctionExpression = t.FunctionExpression;
 export type Expression = t.Expression;
 export type FunctionDeclaration = t.FunctionDeclaration;
+export type ArrowFunctionExpression = t.ArrowFunctionExpression;
+export type AssignmentPattern = t.AssignmentPattern;
 export type BlockStatement = t.BlockStatement;
 export type ReturnStatement = t.ReturnStatement;
 export type VariableDeclarator = t.VariableDeclarator;

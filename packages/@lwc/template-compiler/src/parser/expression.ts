@@ -44,10 +44,10 @@ function validateExpression(
     (node as any).isExpression = true;
 
     if (t.isMemberExpression(node)) {
-        invariant(
-            config.experimentalComputedMemberExpression || !node.computed,
-            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
-        );
+        // invariant(
+        //     config.experimentalComputedMemberExpression || !node.computed,
+        //     ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
+        // );
 
         const { object, property } = node;
 

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { walk } from 'estree-walker';
 import { SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
@@ -26,6 +25,7 @@ import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
+import { bindExpression } from './expression';
 
 type RenderPrimitive =
     | 'iterator'
@@ -439,24 +439,7 @@ export default class CodeGen {
             }
         }
 
-        const scope = this;
-        walk(expression, {
-            leave(node, parent) {
-                if (
-                    parent !== null &&
-                    t.isIdentifier(node) &&
-                    // eslint-disable-next-line
-                    // TODO: provide more elaborate detection for Identifiers that may
-                    //       need special handling, as is the case with member expressions
-                    (!t.isMemberExpression(parent) || parent.object === node) &&
-                    !scope.isLocalIdentifier(node)
-                ) {
-                    this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
-                }
-            },
-        });
-
-        return expression as t.Expression;
+        return bindExpression(expression, this);
     }
 
     genHoistedElement(element: Element, slotParentName?: string): t.Expression {
