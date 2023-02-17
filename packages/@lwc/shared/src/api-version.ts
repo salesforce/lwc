@@ -49,11 +49,17 @@ export const enum APIFeature {
      * This is just used as a placeholder.
      */
     DUMMY_FEATURE,
+    /**
+     * If enabled, all parse5 errors will result in a compile-time error, rather than some being treated as warnings
+     * (for backwards compatibility).
+     */
+    TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
 }
 
 export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
     switch (apiVersionFeature) {
         case APIFeature.DUMMY_FEATURE:
+        case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
     }
 }
