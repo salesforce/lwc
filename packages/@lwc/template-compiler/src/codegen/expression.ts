@@ -86,10 +86,8 @@ class ExpressionScopes {
         }
     }
 
-    // If a variable was introduced in an arrow function but is now
-    // out of scope, return true. If a variable was never observed
-    // in the params of an arrow function, return true. Otherwise,
-    // return false.
+    // If a variable was introduced in an arrow function and is still
+    // in scope, return true. Otherwise, return false.
     isScopedToExpression(node: t.Identifier): boolean {
         return !!this.variableShadowingCount.get(node.name);
     }
