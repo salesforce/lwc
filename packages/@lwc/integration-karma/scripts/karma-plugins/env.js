@@ -19,10 +19,10 @@ const {
     COMPAT,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     SYNTHETIC_SHADOW_ENABLED,
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     DISABLE_ARIA_REFLECTION_POLYFILL,
     NODE_ENV_FOR_TEST,
 } = require('../shared/options');
+const { API_VERSION } = require('../shared/options.js');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
@@ -37,7 +37,6 @@ function createEnvFile() {
         `
         window.lwcRuntimeFlags = {
             ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-            ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: ${ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE},
             DISABLE_ARIA_REFLECTION_POLYFILL: ${DISABLE_ARIA_REFLECTION_POLYFILL}
         };
         window.process = {
@@ -48,7 +47,8 @@ function createEnvFile() {
                 NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
                 SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
-                LWC_VERSION: ${JSON.stringify(LWC_VERSION)}
+                LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
+                API_VERSION: ${API_VERSION}
             }
         };
     `

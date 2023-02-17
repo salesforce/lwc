@@ -54,12 +54,18 @@ export const enum APIFeature {
      * (for backwards compatibility).
      */
     TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
+    /**
+     * If enabled, we use the native custom element lifecycle events: connectedCallback, disconnectedCallback
+     * rather than synthetic events.
+     */
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 }
 
 export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
     switch (apiVersionFeature) {
         case APIFeature.DUMMY_FEATURE:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
+        case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
     }
 }

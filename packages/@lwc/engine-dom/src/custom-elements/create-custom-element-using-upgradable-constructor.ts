@@ -8,67 +8,58 @@ import { isUndefined } from '@lwc/shared';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 const cachedConstructors = new Map<string, CustomElementConstructor>();
-const elementsUpgradedOutsideLWC = new WeakSet<HTMLElement>();
+
 let elementBeingUpgradedByLWC = false;
+let upgradeCallbackToUse: LifecycleCallback | undefined;
+let connectedCallbackToUse: LifecycleCallback | undefined;
+let disconnectedCallbackToUse: LifecycleCallback | undefined;
+
+const instancesToConnectedCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
+const instancesToDisconnectedCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
 
 // Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
 // Another benefit is that only LWC can create components that actually do anything – if you do
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
-const createUpgradableConstructor = (
-    connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback
-) => {
-    const hasConnectedCallback = !isUndefined(connectedCallback);
-    const hasDisconnectedCallback = !isUndefined(disconnectedCallback);
-
+const createUpgradableConstructor = () => {
     // TODO [#2972]: this class should expose observedAttributes as necessary
-    class UpgradableConstructor extends HTMLElement {
-        constructor(upgradeCallback: LifecycleCallback) {
+    return class UpgradableConstructor extends HTMLElement {
+        constructor() {
             super();
             // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
             // then elementBeingUpgraded will be false
             if (elementBeingUpgradedByLWC) {
-                upgradeCallback(this);
-            } else if (hasConnectedCallback || hasDisconnectedCallback) {
-                // If this element has connected or disconnected callbacks, then we need to keep track of
-                // instances that were created outside LWC (i.e. not created by `lwc.createElement()`).
-                // If the element has no connected or disconnected callbacks, then we don't need to track this.
-                elementsUpgradedOutsideLWC.add(this);
-
-                // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
-                // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
+                // Cache the callbacks in the weak maps
+                instancesToConnectedCallbacks.set(this, connectedCallbackToUse!);
+                instancesToDisconnectedCallbacks.set(this, disconnectedCallbackToUse!);
+                upgradeCallbackToUse!(this);
             }
+            // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
+            // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
         }
-    }
 
-    // Do not unnecessarily add a connectedCallback/disconnectedCallback, as it introduces perf overhead
-    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
-    if (hasConnectedCallback) {
-        (UpgradableConstructor.prototype as any).connectedCallback = function () {
-            if (!elementsUpgradedOutsideLWC.has(this)) {
+        connectedCallback() {
+            const connectedCallback = instancesToConnectedCallbacks.get(this);
+            if (!isUndefined(connectedCallback)) {
                 connectedCallback(this);
             }
-        };
-    }
+        }
 
-    if (hasDisconnectedCallback) {
-        (UpgradableConstructor.prototype as any).disconnectedCallback = function () {
-            if (!elementsUpgradedOutsideLWC.has(this)) {
+        disconnectedCallback() {
+            const disconnectedCallback = instancesToDisconnectedCallbacks.get(this);
+            if (!isUndefined(disconnectedCallback)) {
                 disconnectedCallback(this);
             }
-        };
-    }
-
-    return UpgradableConstructor;
+        }
+    };
 };
 
 export const createCustomElementUsingUpgradableConstructor = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback
+    connectedCallback: LifecycleCallback,
+    disconnectedCallback: LifecycleCallback
 ) => {
     // use global custom elements registry
     let UpgradableConstructor = cachedConstructors.get(tagName);
@@ -79,18 +70,21 @@ export const createCustomElementUsingUpgradableConstructor = (
                 `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
             );
         }
-        UpgradableConstructor = createUpgradableConstructor(
-            connectedCallback,
-            disconnectedCallback
-        );
+        UpgradableConstructor = createUpgradableConstructor();
         customElements.define(tagName, UpgradableConstructor);
         cachedConstructors.set(tagName, UpgradableConstructor);
     }
 
     elementBeingUpgradedByLWC = true;
+    upgradeCallbackToUse = upgradeCallback;
+    connectedCallbackToUse = connectedCallback;
+    disconnectedCallbackToUse = disconnectedCallback;
     try {
-        return new UpgradableConstructor(upgradeCallback);
+        return new UpgradableConstructor();
     } finally {
         elementBeingUpgradedByLWC = false;
+        upgradeCallbackToUse = undefined;
+        connectedCallbackToUse = undefined;
+        disconnectedCallbackToUse = undefined;
     }
 };

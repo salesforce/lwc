@@ -321,7 +321,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
     //    only be caught with window.addEventListener('error')
     function customElementConnectedErrorListener(callback) {
-        return window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+        return isNativeCustomElementLifecycleEnabled()
             ? windowErrorListener(callback)
             : directErrorListener(callback);
     }
@@ -526,6 +526,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         } while (object);
     }
 
+    function isNativeCustomElementLifecycleEnabled() {
+        return process.env.API_VERSION >= 59;
+    }
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -544,5 +548,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaAttributes: ariaAttributes,
         nonStandardAriaProperties: nonStandardAriaProperties,
         getPropertyDescriptor: getPropertyDescriptor,
+        isNativeCustomElementLifecycleEnabled: isNativeCustomElementLifecycleEnabled,
     };
 })(LWC, jasmine, beforeAll);

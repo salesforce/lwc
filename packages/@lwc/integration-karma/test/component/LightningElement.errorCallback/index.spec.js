@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
 import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
@@ -297,7 +298,7 @@ if (!process.env.COMPAT) {
         let originalOnError;
         let caughtError;
 
-        // Depending on whether ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE is set or not,
+        // Depending on whether native custom element lifecycle is enabled or not,
         // this may be an unhandled error or an unhandled rejection
         const onError = (e) => {
             e.preventDefault(); // Avoids logging to the console
@@ -373,7 +374,7 @@ if (!process.env.COMPAT) {
             'when child throws in connectedCallback',
             'x-parent-throws-on-mutate-child-connected-throws',
             XParentThrowsOnMutateChildConnectedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            isNativeCustomElementLifecycleEnabled()
         );
         testStub(
             'when child throws in constructor',
@@ -391,7 +392,7 @@ if (!process.env.COMPAT) {
             'when child throws in renderedCallback',
             'x-parent-throws-on-mutate-child-rendered-throws',
             XParentThrowsOnMutateChildRenderedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            isNativeCustomElementLifecycleEnabled()
         );
     });
 }
