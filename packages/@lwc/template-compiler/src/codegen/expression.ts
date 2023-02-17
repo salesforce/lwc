@@ -32,12 +32,14 @@ export function bindExpression(expression: Expression | Literal, codeGen: CodeGe
             if (t.isArrowFunctionExpression(node)) {
                 expressionScopes.exitScope(node);
             } else if (
-                parent !== null &&
-                t.isIdentifier(node) &&
                 // eslint-disable-next-line
                 // TODO: provide more elaborate detection for Identifiers that may
                 //       need special handling, as is the case with member expressions
-                (!t.isMemberExpression(parent) || parent.object === node) &&
+
+                parent !== null &&
+                t.isIdentifier(node) &&
+                !(t.isMemberExpression(parent) && parent.property === node) &&
+                !(t.isProperty(parent) && parent.key === node) &&
                 !codeGen.isLocalIdentifier(node) &&
                 !expressionScopes.isScopedToExpression(node)
             ) {
@@ -98,6 +100,8 @@ function collectParams(node: t.BaseNode, vars: VariableNames) {
         collectParamsFromIdentifier(node as t.Identifier, vars);
     } else if (node.type === 'ObjectPattern') {
         collectParamsFromObjectPattern(node as t.ObjectPattern, vars);
+    } else if (node.type === 'Property') {
+        collectParamsFromProperty(node as t.Property, vars);
     } else if (node.type === 'ArrayPattern') {
         collectParamsFromArrayPattern(node as t.ArrayPattern, vars);
     } else if (node.type === 'RestElement') {
@@ -119,6 +123,10 @@ function collectParamsFromObjectPattern(node: t.ObjectPattern, vars: VariableNam
     for (const property of node.properties) {
         collectParams(property, vars);
     }
+}
+
+function collectParamsFromProperty(node: t.Property, vars: VariableNames) {
+    collectParams(node.value, vars);
 }
 
 function collectParamsFromArrayPattern(node: t.ArrayPattern, vars: VariableNames) {
