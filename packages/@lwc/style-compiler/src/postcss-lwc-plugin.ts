@@ -6,9 +6,9 @@
  */
 import { Rule, AtRule, TransformCallback } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
+import { APIVersion } from '@lwc/shared';
 
 import validateIdSelectors from './no-id-selectors/validate';
-
 import transformImport from './css-import/transform';
 import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
 import transformCustomProperties from './custom-properties/transform';
@@ -30,7 +30,10 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     });
 }
 
-export default function postCssLwcPlugin(options: { scoped: boolean }): TransformCallback {
+export default function postCssLwcPlugin(options: {
+    scoped: boolean;
+    apiVersion: APIVersion;
+}): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.

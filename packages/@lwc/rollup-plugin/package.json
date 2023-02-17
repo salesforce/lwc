@@ -28,7 +28,8 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "2.37.3",
-        "@rollup/pluginutils": "~5.0.2"
+        "@rollup/pluginutils": "~5.0.2",
+        "fast-xml-parser": "^4.1.2"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0||^3.0.0"

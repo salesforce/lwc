@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import {
+    assert,
+    isFalse,
+    isFunction,
+    isUndefined,
+    APIVersion,
+    LOWEST_API_VERSION,
+} from '@lwc/shared';
 
 import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 
@@ -16,6 +23,7 @@ import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
 const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
+const templateToApiVersionMap: Map<LightningElementConstructor, APIVersion> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -24,7 +32,7 @@ const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl }: { tmpl: Template }
+    { tmpl, v: apiVersion }: { tmpl: Template; v: APIVersion }
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -33,6 +41,7 @@ export function registerComponent(
             checkVersionMismatch(Ctor, 'component');
         }
         signedTemplateMap.set(Ctor, tmpl);
+        templateToApiVersionMap.set(Ctor, apiVersion);
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
@@ -43,6 +52,18 @@ export function getComponentRegisteredTemplate(
     Ctor: LightningElementConstructor
 ): Template | undefined {
     return signedTemplateMap.get(Ctor);
+}
+
+export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVersion {
+    const apiVersion = templateToApiVersionMap.get(Ctor);
+
+    if (isUndefined(apiVersion)) {
+        // This should only occur in our Karma tests; in practice every component
+        // is registered, and so this code path should not get hit. But to be safe,
+        // return the lowest possible version.
+        return LOWEST_API_VERSION;
+    }
+    return apiVersion;
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {

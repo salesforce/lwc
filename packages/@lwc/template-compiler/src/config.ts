@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { hasOwnProperty } from '@lwc/shared';
+import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
 
@@ -47,12 +47,15 @@ export interface Config {
      * When true, enables usage of `lwc:slot-bind` and `lwc:slot-data` directives for declaring scoped slots
      */
     enableScopedSlots?: boolean;
+
+    apiVersion?: number;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
     Partial<Pick<Config, 'customRendererConfig'>>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
+    'apiVersion',
     'customRendererConfig',
     'enableLwcSpread',
     'enableScopedSlots',
@@ -113,6 +116,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         }
     }
 
+    const apiVersion = getAPIVersionFromNumber(config.apiVersion);
+
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
@@ -120,6 +125,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableStaticContentOptimization: true,
         enableLwcSpread: false,
         enableScopedSlots: false,
+        apiVersion,
         ...config,
         ...{ customRendererConfig },
     };

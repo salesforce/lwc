@@ -34,6 +34,7 @@ export default function templateTransform(
         customRendererConfig,
         enableLwcSpread,
         enableScopedSlots,
+        apiVersion,
     } = options;
     const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
@@ -46,6 +47,7 @@ export default function templateTransform(
             customRendererConfig,
             enableLwcSpread,
             enableScopedSlots,
+            apiVersion,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

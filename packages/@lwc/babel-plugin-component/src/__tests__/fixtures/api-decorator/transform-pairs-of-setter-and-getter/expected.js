@@ -28,5 +28,6 @@ _registerDecorators(Test, {
   fields: ["_a", "_b"]
 });
 export default _registerComponent(Test, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  v: 58
 });

@@ -26,6 +26,7 @@ describe('customRendererConfig normalization', () => {
             })
         ).toMatchInlineSnapshot(`
             {
+              "apiVersion": 58,
               "customRendererConfig": {
                 "directives": [],
                 "elements": [
