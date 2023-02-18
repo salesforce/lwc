@@ -245,6 +245,8 @@ function ownerDocument(element: Element): Document {
     return element.ownerDocument;
 }
 
+export { registerContextConsumer, registerContextProvider } from './context';
+
 export {
     insert,
     remove,
