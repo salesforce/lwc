@@ -23,9 +23,9 @@
         "@lwc/synthetic-shadow": "2.37.3"
     },
     "devDependencies": {
-        "@best/cli": "^8.1.2",
-        "@best/runner-headless": "^8.1.2",
-        "@best/runner-remote": "^8.1.2",
+        "@best/cli": "^8.1.3",
+        "@best/runner-headless": "^8.1.3",
+        "@best/runner-remote": "^8.1.3",
         "@lwc/rollup-plugin-node-resolve-v13": "npm:@rollup/plugin-node-resolve@13.0.5",
         "glob-hash": "^1.0.5",
         "markdown-table": "^3.0.3",
