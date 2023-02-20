@@ -1,0 +1,11 @@
+<template>
+    <lwc:component lwc:is={ctor1} lwc:if={visible.if}>
+        <h1>if condition</h1>
+    </lwc:component>
+    <lwc:component lwc:is={ctor2} lwc:elseif={visible.elseif}>
+        <h1>elseif condition</h1>
+    </lwc:component>
+    <lwc:component lwc:is={ctor3} lwc:else>
+        <h1>else condition</h1>
+    </lwc:component>
+</template>

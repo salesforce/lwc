@@ -10,7 +10,7 @@ import { URLSearchParams } from 'url';
 
 import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/compiler';
+import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
@@ -30,7 +30,11 @@ export interface RollupLwcOptions {
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
     /** The configuration to pass to `@lwc/compiler`. */
-    experimentalDynamicComponent?: DynamicComponentConfig;
+    experimentalDynamicComponent?: DynamicImportConfig;
+    /** The configuration to pass to `@lwc/template-compiler`. */
+    experimentalDynamicDirective?: boolean;
+    /** The configuration to pass to `@lwc/template-compiler`. */
+    enableDynamicComponents?: boolean;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.*/
@@ -131,6 +135,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         sourcemap = false,
         preserveHtmlComments,
         experimentalDynamicComponent,
+        experimentalDynamicDirective,
+        enableDynamicComponents,
         enableLwcSpread,
         enableScopedSlots,
         disableSyntheticShadowSupport,
@@ -252,6 +258,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 outputConfig: { sourcemap },
                 stylesheetConfig,
                 experimentalDynamicComponent,
+                experimentalDynamicDirective,
+                enableDynamicComponents,
                 preserveHtmlComments,
                 scopedStyles: scoped,
                 enableLwcSpread,

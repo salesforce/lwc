@@ -36,7 +36,7 @@ export default function scriptTransform(
             babelrc: false,
             configFile: false,
 
-            // Force Babel to generate new line and whitespaces. This prevent Babel from generating
+            // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
 

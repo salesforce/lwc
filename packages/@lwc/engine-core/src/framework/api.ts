@@ -533,9 +533,11 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ * [ddc] - create a (deprecated) dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ *
+ * TODO [#3331]: remove usage of lwc:dynamic in 246
  */
-function dc(
+function ddc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
@@ -550,7 +552,7 @@ function dc(
         );
     }
     // null or undefined values should produce a null value in the VNodes
-    if (Ctor == null) {
+    if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
     if (!isComponentConstructor(Ctor)) {
@@ -558,6 +560,35 @@ function dc(
     }
 
     return c(sel, Ctor, data, children);
+}
+
+/**
+ * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
+ */
+function dc(
+    Ctor: LightningElementConstructor | null | undefined,
+    data: VElementData,
+    children: VNodes = EmptyArray
+): VCustomElement | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isObject(data), `dc() 2nd argument data must be an object.`);
+        assert.isTrue(
+            arguments.length === 3 || isArray(children),
+            `dc() 3rd argument data must be an array.`
+        );
+    }
+    // null or undefined values should produce a null value in the VNodes
+    if (isNull(Ctor) || isUndefined(Ctor)) {
+        return null;
+    }
+
+    if (!isComponentConstructor(Ctor)) {
+        throw new Error(
+            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
+        );
+    }
+
+    return null;
 }
 
 /**
@@ -628,6 +659,7 @@ const api = ObjectFreeze({
     fid,
     shc,
     ssf,
+    ddc,
 });
 
 export default api;

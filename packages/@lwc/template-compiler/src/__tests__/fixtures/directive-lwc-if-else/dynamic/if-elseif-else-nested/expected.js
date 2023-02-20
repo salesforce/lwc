@@ -12,7 +12,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
     fr: api_fragment,
-    dc: api_dynamic_component,
+    ddc: api_deprecated_dynamic_component,
   } = $api;
   return [
     $cmp.outer.if
@@ -30,7 +30,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               : $cmp.inner.elseif2
               ? api_fragment(
                   5,
-                  [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
+                  [
+                    api_deprecated_dynamic_component(
+                      "x-foo",
+                      $cmp.trackedProp.foo,
+                      stc0
+                    ),
+                  ],
                   0
                 )
               : api_fragment(5, [api_static_fragment($fragment5(), 12)], 0),
