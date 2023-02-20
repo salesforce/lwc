@@ -10,9 +10,6 @@ import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties'
 import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
 
-// import babelUnforgeablesTransformPlugin from '@locker/babel-plugin-transform-unforgeables';
-// import babelAsyncGeneratorTransformPlugin from '@babel/plugin-transform-async-to-generator';
-
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { NormalizedTransformOptions } from '../options';
@@ -30,6 +27,23 @@ export default function scriptTransform(
         lws,
     } = options;
 
+    const plugins = [
+        [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+        [babelClassPropertiesPlugin, { loose: true }],
+
+        // This plugin should be removed in a future version. The object-rest-spread is
+        // already a stage 4 feature. The LWC compile should leave this syntax untouched.
+        babelObjectRestSpreadPlugin,
+    ];
+
+    if (lws) {
+        plugins.push(
+            '@locker/babel-plugin-transform-unforgeables',
+            '@babel/plugin-transform-async-to-generator',
+            '@babel/plugin-proposal-async-generator-functions'
+        );
+    }
+
     let result;
     try {
         result = babel.transformSync(code, {
@@ -44,19 +58,7 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
 
-            plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
-                [babelClassPropertiesPlugin, { loose: true }],
-
-                // [babelUnforgeablesTransformPlugin, lws],
-                // [babelAsyncGeneratorTransformPlugin, lws],
-                ['@locker/babel-plugin-transform-unforgeables', lws],
-                ['@babel/plugin-transform-async-to-generator', lws],
-
-                // This plugin should be removed in a future version. The object-rest-spread is
-                // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-                babelObjectRestSpreadPlugin,
-            ],
+            plugins,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
