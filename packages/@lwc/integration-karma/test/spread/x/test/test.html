@@ -3,4 +3,5 @@
     <x-child class="x-child-overridden" name="lwc" onclick={templateClick} lwc:spread={overriddenProps}></x-child>
     <span lwc:spread={spanProps}>Hello</span>
     <x-cmp lwc:dynamic={dynamicCtor} lwc:spread={dynamicProps}></x-cmp>
+    <lwc:component data-id="lwc-component" lwc:is={dynamicCtor} lwc:spread={dynamicProps}></lwc:component>
 </template>

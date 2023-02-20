@@ -1,6 +1,5 @@
 import { LightningElement, track, api } from 'lwc';
-
-export default class extends LightningElement {
+export default class DynamicCtor extends LightningElement {
     @track customCtor = undefined;
 
     async loadCtor() {

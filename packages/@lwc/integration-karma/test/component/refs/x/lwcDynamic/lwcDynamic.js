@@ -1,11 +1,11 @@
 import { LightningElement, api } from 'lwc';
+import Basic from 'x/basic';
 
 export default class extends LightningElement {
-    show = false;
-    showFourth = false;
+    ctor = Basic;
 
     @api
-    triggerDiffingAlgo() {
-        this.show = true;
+    getRef(name) {
+        return this.refs[name];
     }
 }
