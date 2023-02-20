@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1188,
-            "message": "LWC1188: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
+            "code": 1187,
+            "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
             "level": 2,
             "location": {
                 "line": 3,

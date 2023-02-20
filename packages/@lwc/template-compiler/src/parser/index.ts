@@ -358,6 +358,13 @@ function parseLwcComponent(
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation
 ): LwcComponent {
+    if (!ctx.config.enableDynamicComponents) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS,
+            ast.sourceLocation(parse5ElmLocation)
+        );
+    }
+
     // <lwc:component> must be used with lwc:is directive
     if (!parsedAttr.get(ElementDirectiveName.Is)) {
         ctx.throwAtLocation(
@@ -989,10 +996,6 @@ function applyLwcIsDirective(
         return;
     }
 
-    if (!ctx.config.enableDynamicComponents) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS, element);
-    }
-
     if (!ast.isLwcComponent(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_IS_INVALID_ELEMENT, element, [`<${tag}>`]);
     }
@@ -1004,7 +1007,7 @@ function applyLwcIsDirective(
         ]);
     }
 
-    element.directives.push(ast.isDirective(lwcIsAttrValue, location));
+    element.directives.push(ast.lwcIsDirective(lwcIsAttrValue, location));
 }
 
 function applyLwcDomDirective(

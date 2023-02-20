@@ -877,18 +877,18 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS: {
+    DEPRECATED_LWC_DYNAMIC_ATTRIBUTE: {
         code: 1187,
-        message:
-            'Invalid lwc:is usage. The LWC dynamic directive must be enabled in order to use this feature.',
-        level: DiagnosticLevel.Error,
+        message: `The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.`,
+        level: DiagnosticLevel.Warning,
         url: '',
     },
 
-    DEPRECATED_LWC_DYNAMIC_ATTRIBUTE: {
+    INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS: {
         code: 1188,
-        message: `The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.`,
-        level: DiagnosticLevel.Warning,
+        message:
+            'Invalid dynamic components usage, lwc:component and lwc:is can only be used when dynamic components have been enabled.',
+        level: DiagnosticLevel.Error,
         url: '',
     },
 };

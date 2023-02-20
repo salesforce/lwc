@@ -112,7 +112,7 @@ describe('templateConfig', () => {
 
         expect(warnings).toHaveLength(1);
         expect(warnings?.[0]?.message).toContain(
-            'LWC1188: The lwc:dynamic directive is deprecated'
+            'LWC1187: The lwc:dynamic directive is deprecated'
         );
         expect(output[0].code).toContain('api_deprecated_dynamic_component');
     });

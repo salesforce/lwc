@@ -151,7 +151,7 @@ describe('transformSync', () => {
                     enableDynamicComponents: false,
                     ...TRANSFORMATION_OPTIONS,
                 })
-            ).toThrow('LWC1187: Invalid lwc:is usage');
+            ).toThrow('LWC1188: Invalid dynamic components usage');
         });
 
         it('should allow deprecated dynamic components when experimentalDynamicDirective is set to true', () => {

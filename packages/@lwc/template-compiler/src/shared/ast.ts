@@ -335,7 +335,7 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
-export function isDirective(value: Expression, location: SourceLocation): IsDirective {
+export function lwcIsDirective(value: Expression, location: SourceLocation): IsDirective {
     return {
         type: 'Directive',
         name: 'Is',
