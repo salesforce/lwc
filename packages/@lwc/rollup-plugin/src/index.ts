@@ -246,6 +246,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Extract module name and namespace from file path
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
+            const lws = true;
+
             const { code, map, warnings } = transformSync(src, id, {
                 name,
                 namespace,
@@ -257,6 +259,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 enableLwcSpread,
                 enableScopedSlots,
                 disableSyntheticShadowSupport,
+                lws,
             });
 
             if (warnings) {
