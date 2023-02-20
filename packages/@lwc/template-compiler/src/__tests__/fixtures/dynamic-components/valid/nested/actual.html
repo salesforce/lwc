@@ -1,0 +1,8 @@
+<template>
+    <lwc:component lwc:is={ctor1} class="outer-style" my-prop="outer-prop" onclick={handleOuterClick}>
+        <span>Inside the outer component</span>
+        <lwc:component lwc:is={ctor2} class="outer-style" my-prop="outer-prop" onclick={handleOuterClick}>
+            <span>Inside the nested component</span>
+        </lwc:component>
+    </lwc:component>
+</template>

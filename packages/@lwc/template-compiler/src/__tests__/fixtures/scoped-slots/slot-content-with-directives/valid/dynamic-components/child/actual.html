@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <lwc:component lwc:is={ctor1}>
+        <slot name="slotname1" lwc:slot-bind={slot1data}></slot>
+    </lwc:component>
+    <lwc:component lwc:is={ctor2}>
+        <slot name="slotname2" lwc:slot-bind={slot2data}></slot>
+    </lwc:component>
+    <slot lwc:slot-bind={defaultdata}></slot>
+</template>

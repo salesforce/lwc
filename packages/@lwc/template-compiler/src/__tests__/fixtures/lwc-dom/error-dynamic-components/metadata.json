@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1058,
+            "message": "LWC1058: Invalid HTML syntax: end-tag-with-attributes. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-end-tag-with-attributes",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 80,
+                "start": 90,
+                "length": 0
+            }
+        }
+    ]
+}

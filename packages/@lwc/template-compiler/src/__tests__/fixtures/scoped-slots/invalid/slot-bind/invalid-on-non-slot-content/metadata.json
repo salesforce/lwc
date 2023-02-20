@@ -43,6 +43,39 @@
                 "start": 121,
                 "length": 78
             }
+        },
+        {
+            "code": 1187,
+            "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
+            "level": 2,
+            "location": {
+                "line": 7,
+                "column": 5,
+                "start": 204,
+                "length": 57
+            }
+        },
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <x-lazy>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 5,
+                "start": 204,
+                "length": 57
+            }
+        },
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <lwc:component>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 8,
+                "column": 5,
+                "start": 266,
+                "length": 66
+            }
         }
     ]
 }

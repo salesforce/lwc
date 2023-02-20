@@ -33,6 +33,7 @@ import {
     isExternalComponent,
     isScopedSlotFragment,
     isSlotBindDirective,
+    isLwcIsDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -87,13 +88,18 @@ function transform(codeGen: CodeGen): t.Expression {
 
         const children = transformChildren(element);
 
-        // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = element.directives.find(isDynamicDirective);
+        // lwc:dynamic directive
+        const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
+        // lwc:is directive
+        const dynamicDirective = element.directives.find(isLwcIsDirective);
 
-        if (dynamic) {
-            const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
+        if (deprecatedDynamicDirective) {
+            const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
+            res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);
+        } else if (dynamicDirective) {
+            const expression = codeGen.bindExpression(dynamicDirective.value);
+            res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(
                 name,

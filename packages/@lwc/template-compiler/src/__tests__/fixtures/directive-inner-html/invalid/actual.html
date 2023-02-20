@@ -16,4 +16,10 @@
     
     <!-- Invalid usage on <template> -->
     <template lwc:inner-html={content}></template>
+
+    <!-- Invalid usage on lwc:dynamic -->
+    <x-lazy lwc:dynamic={ctor} lwc:inner-html={content}></x-lazy>
+
+    <!-- Invalid usage on <lwc:component lwc:is={}> -->
+    <lwc:component lwc:is={ctor} lwc:inner-html={content}></lwc:component>
 </template>
