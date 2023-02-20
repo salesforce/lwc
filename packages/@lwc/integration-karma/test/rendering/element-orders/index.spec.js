@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import SlotFallback from 'x/slotFallback';
 import WithLwcDynamic from 'x/withLwcDynamic';
 import WithEach from 'x/withEach';
-import WithDynamic from 'x/WithDynamic';
+import WithDynamic from 'x/withDynamic';
 
 describe('updateDynamicChildren diffing algo', () => {
     it('should render slot default elements in correct order', function () {
