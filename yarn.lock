@@ -2054,6 +2054,11 @@
   resolved "https://registry.yarnpkg.com/@kwsites/promise-deferred/-/promise-deferred-1.1.1.tgz#8ace5259254426ccef57f3175bc64ed7095ed919"
   integrity sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==
 
+"@locker/babel-plugin-transform-unforgeables@0.18.11":
+  version "0.18.11"
+  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.18.11.tgz#ea560c017a1d0cbdc8a003aa8b9815f811052d87"
+  integrity sha512-qTqbEiRhUE1v5XpKhFIvC02T+v7Kig50oz/Slch6ku1bJQ0Jgc67A8iz3b+53KdrTZdBd+QPe0i+1eiSYqvEUg==
+
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
   uid ""
