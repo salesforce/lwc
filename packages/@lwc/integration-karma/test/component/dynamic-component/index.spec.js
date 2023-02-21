@@ -80,11 +80,7 @@ describe('dynamic components', () => {
 
         const verifyListContent = (expectedChildren) => {
             const actualChildren = container.shadowRoot.children;
-            expect(actualChildren.length).toBe(expectedChildren.length);
-
-            for (let i = 0; i < expectedChildren.length; i++) {
-                expect(actualChildren[i].tagName.toLowerCase()).toBe(expectedChildren[i]);
-            }
+            expect([...actualChildren].map(_ => _.tagName.toLowerCase())).toEqual(expectedChildren);
         };
 
         it('renders the components in the correct order', () => {
