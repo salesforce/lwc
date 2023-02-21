@@ -408,6 +408,8 @@ function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback
     return new (UpgradableConstructor as any)(upgradeCallback);
 }
 
+const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
+
 export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
@@ -446,4 +448,5 @@ export const renderer = {
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
+    ownerDocument,
 };
