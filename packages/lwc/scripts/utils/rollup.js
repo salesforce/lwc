@@ -46,7 +46,17 @@ function rollupTerserPlugin() {
 }
 
 function rollupConfig(config) {
-    const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
+    const {
+        input,
+        format,
+        name,
+        prod,
+        target,
+        targetDirectory,
+        dir,
+        debug = false,
+        sourcemap = true,
+    } = config;
     const compatMode = target === 'es5';
     return {
         inputOptions: {
@@ -65,6 +75,7 @@ function rollupConfig(config) {
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
             plugins: [prod && !debug && rollupTerserPlugin()],
+            sourcemap,
         },
         display: { name, dir, format, target, prod, debug },
     };
