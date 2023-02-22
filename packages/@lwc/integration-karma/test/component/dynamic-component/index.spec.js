@@ -56,15 +56,14 @@ describe('dynamic components', () => {
 
             // declaratively assigned
             expect(foo.className).toContain('slds-snazzy');
+            expect(elm.clickEvtSrcElement).toBeNull();
             foo.click();
-            // eslint-disable-next-line no-console
-            expect(console.log).toHaveBeenCalledWith('template click called');
+            expect(elm.clickEvtSrcElement).toBe('x-foo');
 
             // imperatively assigned
             expect(bar.className).toContain('slds-more-snazzy');
             bar.click();
-            // eslint-disable-next-line no-console
-            expect(console.log).toHaveBeenCalledWith('refs click called');
+            expect(elm.clickEvtSrcElement).toBe('x-bar');
         });
     });
 
@@ -80,7 +79,9 @@ describe('dynamic components', () => {
 
         const verifyListContent = (expectedChildren) => {
             const actualChildren = container.shadowRoot.children;
-            expect([...actualChildren].map(_ => _.tagName.toLowerCase())).toEqual(expectedChildren);
+            expect([...actualChildren].map((_) => _.tagName.toLowerCase())).toEqual(
+                expectedChildren
+            );
         };
 
         it('renders the components in the correct order', () => {

@@ -6,6 +6,9 @@ export default class extends LightningElement {
     fooCtor;
     barCtor;
 
+    @api
+    clickEvtSrcElement = null;
+
     connectedCallback() {
         this.fooCtor = Foo;
         this.barCtor = Bar;
@@ -15,13 +18,12 @@ export default class extends LightningElement {
         if (this.refs.barRef) {
             this.refs.barRef.classList.add('slds-more-snazzy');
             // eslint-disable-next-line no-console
-            this.refs.barRef.addEventListener('click', () => console.log('refs click called'));
+            this.refs.barRef.addEventListener('click', this.handleClick.bind(this));
         }
     }
 
     @api
-    handleClick() {
-        // eslint-disable-next-line no-console
-        console.log('template click called');
+    handleClick(evt) {
+        this.clickEvtSrcElement = evt.target?.tagName.toLowerCase();
     }
 }
