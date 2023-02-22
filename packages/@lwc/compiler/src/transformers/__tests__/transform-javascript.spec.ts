@@ -51,3 +51,15 @@ it('should object spread', async () => {
     expect(code).toContain('b: 1');
     expect(code).not.toContain('...a');
 });
+
+it('should apply the babel transformations when Lightning Web Security is on', async () => {
+    const actual = `
+        export const test = window.location.href;
+    `;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = true;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(code).toContain(
+        '(window === globalThis || window === document ? location : window.location).href'
+    );
+});
