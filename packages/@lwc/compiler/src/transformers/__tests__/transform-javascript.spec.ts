@@ -13,6 +13,10 @@ const TRANSFORMATION_OPTIONS: TransformOptions = {
     name: 'foo',
 };
 
+function stripWhitespace(string: string) {
+    return string.replace(/\s/g, '');
+}
+
 it('should throw when processing an invalid javascript file', async () => {
     await expect(transform(`const`, 'foo.js', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
@@ -52,7 +56,7 @@ it('should object spread', async () => {
     expect(code).not.toContain('...a');
 });
 
-it('should apply the babel transformations when Lightning Web Security is on', async () => {
+it('should transform unforgeables when Lightning Web Security is on', async () => {
     const actual = `
         export const test = window.location.href;
     `;
@@ -62,4 +66,81 @@ it('should apply the babel transformations when Lightning Web Security is on', a
     expect(code).toContain(
         '(window === globalThis || window === document ? location : window.location).href'
     );
+});
+
+it('should not transform unforgeables when Lightning Web Security is off', async () => {
+    const actual = `export const test = window.location.href;`;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = false;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
+});
+
+it('should transform async await functions when Lightning Web Security is on', async () => {
+    const actual = `
+        export async function foo() {
+            await bar();
+        }
+    `;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = true;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(stripWhitespace(code)).toContain(
+        stripWhitespace(`
+        function _asyncToGenerator(fn) {
+    `)
+    );
+
+    expect(stripWhitespace(code)).toContain(
+        stripWhitespace(`
+        _foo = _asyncToGenerator(function* () {
+            yield bar();
+        });
+    `)
+    );
+});
+
+it('should not transform async await functions when Lightning Web Security is off', async () => {
+    const actual = `
+        export async function foo() {
+            await bar();
+        }
+    `;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = false;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
+});
+
+it('should transform async generator functions when Lightning Web Security is on', async () => {
+    const actual = `
+        async function* agf() {
+            await 1;
+            yield 2;
+        }
+    `;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = true;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(stripWhitespace(code)).toContain(
+        stripWhitespace(`
+        function _agf() {
+            _agf = _wrapAsyncGenerator(function* () {
+            yield _awaitAsyncGenerator(1);
+            yield 2;
+            });
+            return _agf.apply(this, arguments);
+        }
+    `)
+    );
+});
+
+it('should not transform async generator functions when Lightning Web Security is off', async () => {
+    const actual = `
+        async function* agf() {
+            await 1;
+            yield 2;
+        }
+    `;
+    TRANSFORMATION_OPTIONS.enableLightningWebSecurityTransforms = false;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
 });
