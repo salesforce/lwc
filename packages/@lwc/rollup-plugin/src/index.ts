@@ -37,8 +37,6 @@ export interface RollupLwcOptions {
     enableScopedSlots?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
-    /** Boolean to determine if LWS is on or off */
-    lws?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -136,7 +134,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         enableLwcSpread,
         enableScopedSlots,
         disableSyntheticShadowSupport,
-        lws = false,
     } = pluginOptions;
 
     return {
@@ -260,7 +257,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 enableLwcSpread,
                 enableScopedSlots,
                 disableSyntheticShadowSupport,
-                lws,
+                enableLightningWebSecurityTransforms: false,
             });
 
             if (warnings) {

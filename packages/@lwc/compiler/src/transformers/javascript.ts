@@ -24,7 +24,7 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
-        lws,
+        enableLightningWebSecurityTransforms,
     } = options;
 
     const plugins = [
@@ -36,7 +36,7 @@ export default function scriptTransform(
         babelObjectRestSpreadPlugin,
     ];
 
-    if (lws) {
+    if (enableLightningWebSecurityTransforms) {
         plugins.push(
             '@locker/babel-plugin-transform-unforgeables',
             '@babel/plugin-transform-async-to-generator',

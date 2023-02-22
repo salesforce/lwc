@@ -75,7 +75,7 @@ export interface TransformOptions {
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
     disableSyntheticShadowSupport?: boolean;
-    lws?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
 }
 
 type RequiredTransformOptions = Omit<
@@ -86,7 +86,7 @@ type RequiredTransformOptions = Omit<
     | 'customRendererConfig'
     | 'enableLwcSpread'
     | 'enableScopedSlots'
-    | 'lws'
+    | 'enableLightningWebSecurityTransforms'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
@@ -95,7 +95,7 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
-    lws?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
