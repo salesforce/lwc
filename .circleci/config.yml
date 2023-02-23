@@ -281,7 +281,7 @@ jobs:
           working_directory: packages/@lwc/integration-karma
 
 
-  test_integration:
+  test_integration_prod:
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
@@ -340,7 +340,13 @@ workflows:
           requires:
             - test_unit
 
-      - test_integration:
+      - test_integration_prod:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_integration_dev:
           filters:
             <<: *ignore_forks
           requires:
