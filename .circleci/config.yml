@@ -289,8 +289,20 @@ jobs:
       - load_workspace
       - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - Chrome SauceLabs
+          command_name: Run integration test - Chrome SauceLabs - prod mode
           command: yarn sauce:prod --browsers chrome
+          working_directory: packages/@lwc/integration-tests
+
+  test_integration_dev:
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+    steps:
+      - load_workspace
+      - start_sauce_connect
+      - retry_command:
+          command_name: Run integration test - Chrome SauceLabs - dev mode
+          command: yarn sauce:dev --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
 

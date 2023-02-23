@@ -71,6 +71,7 @@ exports.config = {
                 ],
             },
         ],
+        ['devtools']
     ],
 
     before(caps, spec, browser) {
