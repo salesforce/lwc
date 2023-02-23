@@ -17,7 +17,6 @@ export default class extends LightningElement {
     renderedCallback() {
         if (this.refs.barRef) {
             this.refs.barRef.classList.add('slds-more-snazzy');
-            // eslint-disable-next-line no-console
             this.refs.barRef.addEventListener('click', this.handleClick.bind(this));
         }
     }
