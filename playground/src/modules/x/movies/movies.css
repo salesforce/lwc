@@ -1,0 +1,45 @@
+.outer {
+
+}
+.movie-container {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	margin-bottom: 6px;
+}
+.movie-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background-color: rgb(228, 236, 245);
+	color: rgb(28, 43, 47);
+	border-radius: 0 6px 6px 0;
+	padding: 12px;
+	border: rgb(41, 77, 87) 2px solid;
+	margin-left: 2px;
+	white-space: nowrap;
+}
+.title {
+	font-size: 1.2em;
+	font-family: sans-serif;
+}
+.metadata {
+	font-size: 0.8em;
+	font-family: sans-serif;
+	font-weight: 200;
+	font-style: italic;
+}
+.options {
+	border-bottom: dotted 1px #999;
+	margin-bottom: 12px;
+	padding-bottom: 8px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+x-filter-year {
+	margin-right: 16px;
+}
+.options input {
+	margin-right: 6px;
+}

@@ -1,0 +1,24 @@
+<template>
+  <div class="outer">
+    <label for="filter-year">Filter by Year:</label>
+    <div class="inner">
+      <input
+          id="filter-year"
+          type="range"
+          value={value ?? lowerlimit}
+          oninput={({ target: { value } }) => handleChange(value)}
+          min={lowerlimit}
+          max={upperlimit}
+          list="markers"
+      ></input>
+      <datalist id="markers">
+        <option value={lowerlimit}></option>
+        <option value={upperlimit}></option>
+      </datalist>
+      <div class="range">
+        <div class="min">{lowerlimit}</div>
+        <div class="max">{upperlimit}</div>
+      </div>
+    </div>
+  </div>
+</template>

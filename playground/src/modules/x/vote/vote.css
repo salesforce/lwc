@@ -1,0 +1,32 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: rgb(41, 77, 87);
+	color: rgb(238, 238, 238);
+	border-radius: 6px 0 0 6px;
+	padding: 6px 4px;
+}
+.button {
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	color: rgb(238, 238, 238);;
+}
+.up-vote {
+/*	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;*/
+}
+.current-vote {
+
+}
+.down-vote {
+/*	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid black;*/
+}

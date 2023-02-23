@@ -1,0 +1,17 @@
+.outer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+label {
+	margin-right: 8px;
+}
+.inner {
+	display: flex;
+	flex-direction: column;
+}
+.range {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}

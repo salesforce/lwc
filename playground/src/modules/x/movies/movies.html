@@ -1,0 +1,36 @@
+<template>
+    <div class="options">
+        <x-filter-year
+            onchange={({ detail }) => productionYearCutoff = detail}
+            lowerlimit={productionYearRange.min}
+            upperlimit={productionYearRange.max}
+        ></x-filter-year>
+        <input
+            id="toggle-filter"
+            type="checkbox"
+            checked={applyFilter}
+            onchange={() => applyFilter = !applyFilter}
+        ></input>
+        <label for="toggle-filter">Enable filter</label>
+    </div>
+    <div class="outer">
+        <template
+            for:each={sortByVotes(filter(movies))}
+            for:item="movie"
+        >
+            <div class="movie-container" key={movie.title}>
+                <x-vote
+                    count={movie.votes}
+                    upvote={() => movie.votes++}
+                    downvote={() => movie.votes--}
+                ></x-vote>
+                <div class="movie-content">
+                    <div class="title">{movie.title}</div>
+                    <div class="metadata">
+                        {(movie.genres ?? ['Unknown']).join(', ')}
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
