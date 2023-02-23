@@ -22,7 +22,7 @@ executors:
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node-browsers:16.19.0
+      - image: cimg/node:16.19.0-browsers
 
 
 # Custom commands definition
