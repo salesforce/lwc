@@ -19,6 +19,10 @@ executors:
     working_directory: ~/lwc
     docker:
       - image: cimg/node:16.19.0
+  node-browsers:
+    working_directory: ~/lwc
+    docker:
+      - image: cimg/node-browsers:16.19.0
 
 
 # Custom commands definition
@@ -293,7 +297,7 @@ jobs:
           working_directory: packages/@lwc/integration-tests
 
   test_integration_dev:
-    executor: node
+    executor: node-browsers
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
@@ -305,7 +309,7 @@ jobs:
 
 
   test_integration_compat:
-    executor: node
+    executor: node-browsers
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
     steps:
