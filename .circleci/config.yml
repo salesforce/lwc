@@ -287,8 +287,6 @@ jobs:
 
   test_integration_prod:
     executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
       - load_workspace
       - retry_command:
@@ -298,8 +296,6 @@ jobs:
 
   test_integration_dev:
     executor: node-browsers
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
       - load_workspace
       - retry_command:
