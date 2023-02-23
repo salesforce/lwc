@@ -44,7 +44,15 @@ import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, VFragment, isVFragment } from './vnodes';
+import {
+    VNodes,
+    VCustomElement,
+    VNode,
+    VNodeType,
+    VBaseElement,
+    VFragment,
+    isVFragment,
+} from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
