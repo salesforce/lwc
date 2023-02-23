@@ -750,10 +750,12 @@ export function resetComponentRoot(vm: VM) {
 
         // VFragments are special; their .elm property does not point to the root element since they have no root,
         // so we have to clean them up differently.
-        if (!isNull(child) && isVFragment(child)) {
-            removeFragmentChildren(child, vm);
-        } else if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, renderRoot);
+        if (!isNull(child)) {
+            if (isVFragment(child)) {
+                removeFragmentChildren(child, vm);
+            } else if (!isUndefined(child.elm)) {
+                remove(child.elm, renderRoot);
+            }
         }
     }
     vm.children = EmptyArray;
@@ -776,10 +778,12 @@ function removeFragmentChildren(vnode: VFragment, vm: VM) {
 
     let currentNode: VNode | null | undefined;
     while (!isUndefined((currentNode = ArrayPop.call(nodeStack)))) {
-        if (!isNull(currentNode) && isVFragment(currentNode)) {
-            ArrayPush.call(nodeStack, ...currentNode.children);
-        } else if (!isNull(currentNode) && !isUndefined(currentNode.elm)) {
-            remove(currentNode.elm, renderRoot);
+        if (!isNull(currentNode)) {
+            if (isVFragment(currentNode)) {
+                ArrayPush.call(nodeStack, ...currentNode.children);
+            } else if (!isUndefined(currentNode.elm)) {
+                remove(currentNode.elm, renderRoot);
+            }
         }
     }
 }
