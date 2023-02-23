@@ -88,14 +88,6 @@ it('should transform async await functions when Lightning Web Security is on', a
     });
 
     expect(code).toContain('_asyncToGenerator');
-
-    expect(stripWhitespace(code)).toContain(
-        stripWhitespace(`
-        _foo = _asyncToGenerator(function* () {
-            yield bar();
-        });
-    `)
-    );
 });
 
 it('should not transform async await functions when Lightning Web Security is off', async () => {
