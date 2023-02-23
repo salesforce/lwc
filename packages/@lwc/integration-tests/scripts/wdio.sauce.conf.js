@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+/* global globalThis */
+
 const path = require('path');
 
 const merge = require('deepmerge');
@@ -144,5 +146,9 @@ exports.config = merge(baseConfig.config, {
         // Specify test timeout threshold time enforced by mocha.
         // https://mochajs.org/#-timeout-ms-t-ms
         timeout: 30 * 1000, // 30 seconds
+    },
+    beforeSession() {
+        // Let us know we're running in Sauce Labs so tests can rely on this
+        globalThis.IS_RUNNING_IN_SAUCE_LABS = true;
     },
 });

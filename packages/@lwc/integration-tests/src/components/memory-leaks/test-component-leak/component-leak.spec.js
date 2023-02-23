@@ -4,10 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+/* global globalThis */
+
 const assert = require('assert');
 
-// CDP only works in Chrome, not IE11
-if (!/compat/.test(process.env.MODE)) {
+// CDP only works in Chrome, not IE11. And it only works locally because of the DevTools Protocol usage
+// See: https://webdriver.io/docs/devtools-service/
+if (!/compat/.test(process.env.MODE) && !globalThis.IS_RUNNING_IN_SAUCE_LABS) {
     describe('Component does not leak', () => {
         const URL = '/component-leak';
 

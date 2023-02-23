@@ -39,6 +39,7 @@ exports.config = merge(baseConfig.config, {
                     drivers,
                 },
             },
+            'devtools',
         ],
     ],
 });
