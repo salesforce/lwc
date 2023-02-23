@@ -1,3 +1,6 @@
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
+
 # Shared config
 ignore_forks: &ignore_forks
   branches:
@@ -19,6 +22,10 @@ executors:
     working_directory: ~/lwc
     docker:
       - image: cimg/node:16.19.0
+  node-browsers:
+    working_directory: ~/lwc
+    docker:
+      - image: cimg/node:16.19.0-browsers
 
 
 # Custom commands definition
@@ -281,16 +288,24 @@ jobs:
           working_directory: packages/@lwc/integration-karma
 
 
-  test_integration:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+  test_integration_prod:
+    executor: node-browsers
     steps:
+      - browser-tools/install-browser-tools
       - load_workspace
-      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - Chrome SauceLabs
-          command: yarn sauce:prod --browsers chrome
+          command_name: Run integration test - local Chrome - prod mode
+          command: yarn local:prod
+          working_directory: packages/@lwc/integration-tests
+
+  test_integration_dev:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools
+      - load_workspace
+      - retry_command:
+          command_name: Run integration test - local Chrome - dev mode
+          command: yarn local:dev
           working_directory: packages/@lwc/integration-tests
 
 
@@ -328,7 +343,13 @@ workflows:
           requires:
             - test_unit
 
-      - test_integration:
+      - test_integration_prod:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_integration_dev:
           filters:
             <<: *ignore_forks
           requires:
@@ -368,7 +389,15 @@ workflows:
             - build
             - hold
 
-      - test_integration:
+      - test_integration_prod:
+          context: lwc-sauce-labs
+          filters:
+            <<: *only_forks
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_dev:
           context: lwc-sauce-labs
           filters:
             <<: *only_forks
