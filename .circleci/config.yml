@@ -386,7 +386,15 @@ workflows:
             - build
             - hold
 
-      - test_integration:
+      - test_integration_prod:
+          context: lwc-sauce-labs
+          filters:
+            <<: *only_forks
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_dev:
           context: lwc-sauce-labs
           filters:
             <<: *only_forks
