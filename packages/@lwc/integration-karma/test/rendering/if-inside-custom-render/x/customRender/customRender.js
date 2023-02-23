@@ -15,15 +15,8 @@ export default class CustomRender extends LightningElement {
     }
 
     @api
-    back() {
-        if (this.templateIndex > 0) {
-            this.templateIndex--;
-        }
-    }
-
-    @api
     next() {
-        if (this.templateIndex < 2) {
+        if (this.templateIndex < 1) {
             this.templateIndex++;
         }
     }
