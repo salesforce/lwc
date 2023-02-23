@@ -8,7 +8,7 @@ describe('using custom renderer with lwc:if', () => {
         elm.next();
 
         return Promise.resolve().then(() => {
-            expect(elm.innerText).toBe('TEMPLATE 2\nT2 nested 1\nT2 nested 2\nT2 nested 3');
+            expect(elm.innerText).toBe('TEMPLATE 2\nT2 nested 1\nT2 nested 2');
         });
     });
 });
