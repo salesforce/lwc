@@ -257,7 +257,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 enableLwcSpread,
                 enableScopedSlots,
                 disableSyntheticShadowSupport,
-                enableLightningWebSecurityTransforms: false,
             });
 
             if (warnings) {

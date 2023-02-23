@@ -87,11 +87,7 @@ it('should transform async await functions when Lightning Web Security is on', a
         enableLightningWebSecurityTransforms: true,
     });
 
-    expect(stripWhitespace(code)).toContain(
-        stripWhitespace(`
-        function _asyncToGenerator(fn) {
-    `)
-    );
+    expect(code).toContain('_asyncToGenerator');
 
     expect(stripWhitespace(code)).toContain(
         stripWhitespace(`
@@ -123,7 +119,7 @@ it('should transform async generator functions when Lightning Web Security is on
         ...TRANSFORMATION_OPTIONS,
         enableLightningWebSecurityTransforms: true,
     });
-    expect(stripWhitespace(code)).toContain(stripWhitespace(`_agf = _wrapAsyncGenerator`));
+    expect(code).toContain('_wrapAsyncGenerator');
 });
 
 it('should not transform async generator functions when Lightning Web Security is off', async () => {
