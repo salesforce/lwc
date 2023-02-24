@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2023, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 // TODO [#3366]: Remove this when we upgrade the tsconfig lib to ES2021+
 // This is copied from https://github.com/microsoft/TypeScript/blob/1a76569/src/lib/es2021.weakref.d.ts
 
