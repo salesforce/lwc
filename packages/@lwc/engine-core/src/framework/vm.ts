@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayPop,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -43,7 +44,15 @@ import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
+import {
+    VNodes,
+    VCustomElement,
+    VNode,
+    VNodeType,
+    VBaseElement,
+    VFragment,
+    isVFragment,
+} from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -739,14 +748,44 @@ export function resetComponentRoot(vm: VM) {
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
 
-        if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, renderRoot);
+        // VFragments are special; their .elm property does not point to the root element since they have no root,
+        // so we have to clean them up differently.
+        if (!isNull(child)) {
+            if (isVFragment(child)) {
+                removeFragmentChildren(child, vm);
+            } else if (!isUndefined(child.elm)) {
+                remove(child.elm, renderRoot);
+            }
         }
     }
     vm.children = EmptyArray;
 
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
+}
+
+// Helper function to traverse a tree of VFragment nodes and remove all root children.
+// This is moved into a separate function to minimize the perf/mem impact of the stack traversal
+// on non-vfragment use cases
+function removeFragmentChildren(vnode: VFragment, vm: VM) {
+    const {
+        renderRoot,
+        renderer: { remove },
+    } = vm;
+
+    const nodeStack: VNode[] = [];
+    ArrayPush.call(nodeStack, ...vnode.children);
+
+    let currentNode: VNode | null | undefined;
+    while (!isUndefined((currentNode = ArrayPop.call(nodeStack)))) {
+        if (!isNull(currentNode)) {
+            if (isVFragment(currentNode)) {
+                ArrayPush.call(nodeStack, ...currentNode.children);
+            } else if (!isUndefined(currentNode.elm)) {
+                remove(currentNode.elm, renderRoot);
+            }
+        }
+    }
 }
 
 export function scheduleRehydration(vm: VM) {
