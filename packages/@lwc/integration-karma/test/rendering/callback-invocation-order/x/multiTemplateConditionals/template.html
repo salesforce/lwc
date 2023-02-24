@@ -3,8 +3,12 @@
         <x-leaf name="T1-1"></x-leaf>
         <template lwc:if={show}>
             <x-leaf name="T1-2"></x-leaf>
-            <x-leaf name="T1-3"></x-leaf>
+            <template lwc:if={show}>
+                <x-leaf name="T1-3"></x-leaf>
+                <x-leaf name="T1-4"></x-leaf>
+            </template>
+            <x-leaf name="T1-5"></x-leaf>
         </template>
-        <x-leaf name="T1-4"></x-leaf>
+        <x-leaf name="T1-6"></x-leaf>
     </template>
 </template>

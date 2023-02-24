@@ -241,6 +241,8 @@ it('should invoke callbacks on the right order when multiple templates are used 
         'leaf:T1-2:connectedCallback',
         'leaf:T1-3:connectedCallback',
         'leaf:T1-4:connectedCallback',
+        'leaf:T1-5:connectedCallback',
+        'leaf:T1-6:connectedCallback',
     ]);
 
     resetTimingBuffer();
@@ -251,6 +253,8 @@ it('should invoke callbacks on the right order when multiple templates are used 
             // disconnect x-shadow-parent +
             // connect x-shadow-container with 2 parents, 'a' and 'b'
             expect(window.timingBuffer).toEqual([
+                'leaf:T1-6:disconnectedCallback',
+                'leaf:T1-5:disconnectedCallback',
                 'leaf:T1-4:disconnectedCallback',
                 'leaf:T1-3:disconnectedCallback',
                 'leaf:T1-2:disconnectedCallback',
@@ -259,12 +263,16 @@ it('should invoke callbacks on the right order when multiple templates are used 
                 'leaf:T2-2:connectedCallback',
                 'leaf:T2-3:connectedCallback',
                 'leaf:T2-4:connectedCallback',
+                'leaf:T2-5:connectedCallback',
+                'leaf:T2-6:connectedCallback',
             ]);
             resetTimingBuffer();
             elm.show = false;
         })
         .then(() => {
             expect(window.timingBuffer).toEqual([
+                'leaf:T2-6:disconnectedCallback',
+                'leaf:T2-5:disconnectedCallback',
                 'leaf:T2-4:disconnectedCallback',
                 'leaf:T2-3:disconnectedCallback',
                 'leaf:T2-2:disconnectedCallback',
