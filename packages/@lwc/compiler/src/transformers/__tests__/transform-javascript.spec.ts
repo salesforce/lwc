@@ -106,32 +106,7 @@ it('should transform async generator functions when Lightning Web Security is on
             await 1;
             yield 2;
         }
-    `;
-    const { code } = await transform(actual, 'foo.js', {
-        ...TRANSFORMATION_OPTIONS,
-        enableLightningWebSecurityTransforms: true,
-    });
-    expect(code).toContain('_wrapAsyncGenerator');
-});
 
-it('should not transform async generator functions when Lightning Web Security is off', async () => {
-    const actual = `
-        async function* agf() {
-            await 1;
-            yield 2;
-        }
-    `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
-});
-
-it('should transform async generator functions when Lightning Web Security is on', async () => {
-    const actual = `
-        async function* foo() {
-            yield 1;
-            yield 2;
-        }
-      
         (async function() {
             for await (const num of foo()) {
                 console.log(num);
@@ -143,6 +118,24 @@ it('should transform async generator functions when Lightning Web Security is on
         ...TRANSFORMATION_OPTIONS,
         enableLightningWebSecurityTransforms: true,
     });
-
+    expect(code).toContain('_wrapAsyncGenerator');
     expect(code).toContain('_asyncIterator');
+});
+
+it('should not transform async generator functions when Lightning Web Security is off', async () => {
+    const actual = `
+        async function* agf() {
+            await 1;
+            yield 2;
+        }
+        
+        (async function() {
+            for await (const num of foo()) {
+                console.log(num);
+                break;
+            }
+        })();
+    `;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
 });
