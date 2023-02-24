@@ -288,7 +288,7 @@ jobs:
           working_directory: packages/@lwc/integration-karma
 
 
-  test_integration_prod:
+  test_integration:
     executor: node-browsers
     steps:
       - browser-tools/install-browser-tools
@@ -343,7 +343,7 @@ workflows:
           requires:
             - test_unit
 
-      - test_integration_prod:
+      - test_integration:
           filters:
             <<: *ignore_forks
           requires:
@@ -389,7 +389,7 @@ workflows:
             - build
             - hold
 
-      - test_integration_prod:
+      - test_integration:
           context: lwc-sauce-labs
           filters:
             <<: *only_forks
