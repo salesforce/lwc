@@ -30,7 +30,7 @@ if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunne
             const queriedObjectsObjectId = queryObjectsResult.objects.objectId;
 
             // Call .length on the returned array
-            const functionDeclaration = /* istanbul ignore next */ function () {
+            const functionDeclaration = function () {
                 return this.length;
             }.toString();
 
