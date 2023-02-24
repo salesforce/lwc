@@ -2,7 +2,7 @@ import { LightningElement, api } from 'lwc';
 import template from './template.html';
 import template2 from './template2.html';
 
-export default class MultiTemplateContainer extends LightningElement {
+export default class MultiTemplateConditionals extends LightningElement {
     templateIndex = 0;
     templateMapping = {
         0: template,

@@ -5,7 +5,7 @@ import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
 import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
-import MultiTemplateContainer from 'x/multiTemplateContainer';
+import MultiTemplateConditionals from 'x/multiTemplateConditionals';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -231,45 +231,17 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
 });
 
 it('should invoke callbacks on the right order when multiple templates are used with lwc:if', () => {
-    const elm = createElement('x-multi-template-container', { is: MultiTemplateContainer });
+    const elm = createElement('x-multi-template-conditionals', { is: MultiTemplateConditionals });
     elm.show = true;
     document.body.appendChild(elm);
 
     // initial load is x-shadow-parent
-    expect(window.timingBuffer).toEqual(
-        process.env.NATIVE_SHADOW
-            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                ? [
-                      'shadowParent:connectedCallback',
-                      'leaf:before-container:connectedCallback',
-                      'shadowContainer:connectedCallback',
-                      'leaf:before-slot:connectedCallback',
-                      'leaf:after-slot:connectedCallback',
-                      'leaf:slotted-a:connectedCallback',
-                      'leaf:slotted-b:connectedCallback',
-                      'leaf:after-container:connectedCallback',
-                  ]
-                : [
-                      'shadowParent:connectedCallback',
-                      'leaf:before-container:connectedCallback',
-                      'shadowContainer:connectedCallback',
-                      'leaf:slotted-a:connectedCallback',
-                      'leaf:slotted-b:connectedCallback',
-                      'leaf:before-slot:connectedCallback',
-                      'leaf:after-slot:connectedCallback',
-                      'leaf:after-container:connectedCallback',
-                  ]
-            : [
-                  'shadowParent:connectedCallback',
-                  'leaf:before-container:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:slotted-a:connectedCallback',
-                  'leaf:slotted-b:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-                  'leaf:after-container:connectedCallback',
-              ]
-    );
+    expect(window.timingBuffer).toEqual([
+        'leaf:T1-1:connectedCallback',
+        'leaf:T1-2:connectedCallback',
+        'leaf:T1-3:connectedCallback',
+        'leaf:T1-4:connectedCallback',
+    ]);
 
     resetTimingBuffer();
     elm.next();
@@ -278,85 +250,25 @@ it('should invoke callbacks on the right order when multiple templates are used 
         .then(() => {
             // disconnect x-shadow-parent +
             // connect x-shadow-container with 2 parents, 'a' and 'b'
-            expect(window.timingBuffer).toEqual(
-                process.env.NATIVE_SHADOW
-                    ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? [
-                              'shadowParent:disconnectedCallback',
-                              'leaf:after-container:disconnectedCallback',
-                              'shadowContainer:disconnectedCallback',
-                              'leaf:after-slot:disconnectedCallback',
-                              'leaf:before-slot:disconnectedCallback',
-                              'leaf:slotted-a:disconnectedCallback',
-                              'leaf:slotted-b:disconnectedCallback',
-                              'leaf:before-container:disconnectedCallback',
-                              'shadowContainer:connectedCallback',
-                              'leaf:before-slot:connectedCallback',
-                              'leaf:after-slot:connectedCallback',
-                              'parent:a:connectedCallback',
-                              'leaf:a:connectedCallback',
-                              'parent:b:connectedCallback',
-                              'leaf:b:connectedCallback',
-                          ]
-                        : [
-                              'shadowParent:disconnectedCallback',
-                              'leaf:after-container:disconnectedCallback',
-                              'shadowContainer:disconnectedCallback',
-                              'leaf:after-slot:disconnectedCallback',
-                              'leaf:before-slot:disconnectedCallback',
-                              'leaf:slotted-a:disconnectedCallback',
-                              'leaf:slotted-b:disconnectedCallback',
-                              'leaf:before-container:disconnectedCallback',
-                              'shadowContainer:connectedCallback',
-                              'parent:a:connectedCallback',
-                              'leaf:a:connectedCallback',
-                              'parent:b:connectedCallback',
-                              'leaf:b:connectedCallback',
-                              'leaf:before-slot:connectedCallback',
-                              'leaf:after-slot:connectedCallback',
-                          ]
-                    : [
-                          'shadowParent:disconnectedCallback',
-                          'leaf:after-container:disconnectedCallback',
-                          'shadowContainer:disconnectedCallback',
-                          'leaf:after-slot:disconnectedCallback',
-                          'leaf:before-slot:disconnectedCallback',
-                          'leaf:slotted-a:disconnectedCallback',
-                          'leaf:slotted-b:disconnectedCallback',
-                          'leaf:before-container:disconnectedCallback',
-                          'shadowContainer:connectedCallback',
-                          'leaf:before-slot:connectedCallback',
-                          'parent:a:connectedCallback',
-                          'leaf:a:connectedCallback',
-                          'parent:b:connectedCallback',
-                          'leaf:b:connectedCallback',
-                          'leaf:after-slot:connectedCallback',
-                      ]
-            );
+            expect(window.timingBuffer).toEqual([
+                'leaf:T1-4:disconnectedCallback',
+                'leaf:T1-3:disconnectedCallback',
+                'leaf:T1-2:disconnectedCallback',
+                'leaf:T1-1:disconnectedCallback',
+                'leaf:T2-1:connectedCallback',
+                'leaf:T2-2:connectedCallback',
+                'leaf:T2-3:connectedCallback',
+                'leaf:T2-4:connectedCallback',
+            ]);
             resetTimingBuffer();
             elm.show = false;
         })
         .then(() => {
-            expect(window.timingBuffer).toEqual(
-                window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                    ? [
-                          'shadowContainer:disconnectedCallback',
-                          'leaf:after-slot:disconnectedCallback',
-                          'leaf:before-slot:disconnectedCallback',
-                          'parent:a:disconnectedCallback',
-                          'leaf:a:disconnectedCallback',
-                          'parent:b:disconnectedCallback',
-                          'leaf:b:disconnectedCallback',
-                      ]
-                    : [
-                          'shadowContainer:disconnectedCallback',
-                          'leaf:after-slot:disconnectedCallback',
-                          'leaf:before-slot:disconnectedCallback',
-                          'parent:a:disconnectedCallback',
-                          'leaf:a:disconnectedCallback',
-                          'parent:b:disconnectedCallback',
-                          'leaf:b:disconnectedCallback',
-                      ]
-            );
+            expect(window.timingBuffer).toEqual([
+                'leaf:T2-4:disconnectedCallback',
+                'leaf:T2-3:disconnectedCallback',
+                'leaf:T2-2:disconnectedCallback',
+                'leaf:T2-1:disconnectedCallback',
+            ]);
         });
 });
