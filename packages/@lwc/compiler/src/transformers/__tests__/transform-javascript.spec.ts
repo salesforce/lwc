@@ -124,3 +124,25 @@ it('should not transform async generator functions when Lightning Web Security i
     const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
     expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
 });
+
+it('should transform async generator functions when Lightning Web Security is on', async () => {
+    const actual = `
+        async function* foo() {
+            yield 1;
+            yield 2;
+        }
+      
+        (async function() {
+            for await (const num of foo()) {
+                console.log(num);
+                break;
+            }
+        })();
+    `;
+    const { code } = await transform(actual, 'foo.js', {
+        ...TRANSFORMATION_OPTIONS,
+        enableLightningWebSecurityTransforms: true,
+    });
+
+    expect(code).toContain('_asyncIterator');
+});
