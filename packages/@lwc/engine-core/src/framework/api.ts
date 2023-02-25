@@ -250,8 +250,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray,
-    dynamic: boolean = false
+    children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -300,7 +299,6 @@ function c(
         children,
         elm,
         key,
-        dynamic,
 
         ctor: Ctor,
         owner: vmBeingRendered,
@@ -580,7 +578,8 @@ function dc(
             `dc() 3rd argument data must be an array.`
         );
     }
-    // null or undefined values should produce a null value in the VNodes
+    // Null or undefined values should produce a null value in the VNodes.
+    // This is the only value at compile time as the constructor will not be known.
     if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
@@ -591,14 +590,16 @@ function dc(
         );
     }
 
+    // Look up the dynamic component's name at runtime once the constructor is available.
+    // This information is only known at runtime and is stored as part of registerComponent.
     const sel = getComponentRegisteredName(Ctor);
-    if (isUndefined(sel)) {
+    if (isUndefined(sel) || sel === '') {
         throw new Error(
             `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
         );
     }
 
-    return c(sel, Ctor, data, children, true);
+    return c(sel, Ctor, data, children);
 }
 
 /**

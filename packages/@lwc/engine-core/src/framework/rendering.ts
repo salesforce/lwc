@@ -44,7 +44,6 @@ import {
     VMState,
 } from './vm';
 import {
-    areDynamicVCustomElements,
     isSameVnode,
     isVBaseElement,
     isVFragment,
@@ -90,15 +89,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        /**
-         * The only scenario when n1.sel !== n2.sel is when a dynamic component's constructor changes.
-         * Dynamic components are allowed to be patched when the value of sel changes because they are
-         * expected to be unmounted / remounted using the new constructor.
-         *
-         * We check to ensure that both n1 and n2 are dynamic VCustomElements to avoid patching props from one
-         * component to a different component.
-         */
-        if (!isSameVnode(n1, n2) && !areDynamicVCustomElements(n1, n2)) {
+        if (!isSameVnode(n1, n2)) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
@@ -386,6 +377,8 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
+    // TODO [#3331]: this check and the corresponding code block is only needed for lwc:dynamic.
+    // It can be safely removed with the directive.
     if (n1.ctor !== n2.ctor) {
         // If the constructor, unmount the current component and mount a new one using the new
         // constructor.
@@ -976,9 +969,28 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
-                    // both vnodes are equivalent, and we just need to patch them
-                    // note: dynamic components can be patched in this call
-                    patch(n1, n2, parent, renderer);
+                    if (isSameVnode(n1, n2)) {
+                        // both vnodes are equivalent, and we just need to patch them
+                        patch(n1, n2, parent, renderer);
+                    } else {
+                        // In the case of dynamic components, the element will always occupy the same position in the DOM
+                        // as specified by lwc:component. In such cases, we need to unmount the existing element and
+                        // mount the new one using the new constructor.
+                        if (
+                            n1.type === VNodeType.CustomElement &&
+                            n2.type === VNodeType.CustomElement
+                        ) {
+                            if (n1.ctor !== n2.ctor) {
+                                // If the constructors differ, unmount the current component and mount a new one using
+                                // the new constructor. This scenario only occurs for dynamic components.
+                                const dynElmRenderer = n2.data.renderer ?? renderer;
+                                const dynElmAnchor = dynElmRenderer.nextSibling(n1.elm);
+
+                                unmount(n1, parent, dynElmRenderer, true);
+                                mountCustomElement(n2, parent, dynElmAnchor, dynElmRenderer);
+                            }
+                        }
+                    }
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null

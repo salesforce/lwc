@@ -98,7 +98,6 @@ export interface VCustomElement extends VBaseElement {
     ctor: any;
     aChildren: VNodes | undefined;
     vm: VM | undefined;
-    dynamic: boolean;
 }
 
 export interface VNodeData {
@@ -144,13 +143,4 @@ export function isVFragment(vnode: VNode): vnode is VFragment {
 
 export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
     return vnode.type === VNodeType.ScopedSlotFragment;
-}
-
-export function areDynamicVCustomElements(vnode1: VNode, vnode2: VNode): boolean {
-    return (
-        vnode1.type === VNodeType.CustomElement &&
-        vnode1.dynamic &&
-        vnode2.type === VNodeType.CustomElement &&
-        vnode2.dynamic
-    );
 }
