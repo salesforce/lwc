@@ -56,82 +56,50 @@ it('should object spread', async () => {
     expect(code).not.toContain('...a');
 });
 
-it('should transform unforgeables when Lightning Web Security is on', async () => {
+it('should apply babel plugins when Lightning Web Security is on', async () => {
     const actual = `
         export const test = window.location.href;
-    `;
-    const { code } = await transform(actual, 'foo.js', {
-        ...TRANSFORMATION_OPTIONS,
-        enableLightningWebSecurityTransforms: true,
-    });
-
-    expect(code).toContain(
-        '(window === globalThis || window === document ? location : window.location).href'
-    );
-});
-
-it('should not transform unforgeables when Lightning Web Security is off', async () => {
-    const actual = `export const test = window.location.href;`;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
-});
-
-it('should transform async await functions when Lightning Web Security is on', async () => {
-    const actual = `
         export async function foo() {
             await bar();
         }
-    `;
-    const { code } = await transform(actual, 'foo.js', {
-        ...TRANSFORMATION_OPTIONS,
-        enableLightningWebSecurityTransforms: true,
-    });
-
-    expect(code).toContain('_asyncToGenerator');
-});
-
-it('should not transform async await functions when Lightning Web Security is off', async () => {
-    const actual = `
-        export async function foo() {
-            await bar();
-        }
-    `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
-});
-
-it('should transform async generator functions when Lightning Web Security is on', async () => {
-    const actual = `
-        async function* agf() {
-            await 1;
+        async function* baz() {
+            yield 1;
             yield 2;
         }
-
         (async function() {
-            for await (const num of foo()) {
-                console.log(num);
+            for await (const num of baz()) {
                 break;
             }
         })();
     `;
+
     const { code } = await transform(actual, 'foo.js', {
         ...TRANSFORMATION_OPTIONS,
         enableLightningWebSecurityTransforms: true,
     });
+
+    expect(stripWhitespace(code)).toContain(
+        stripWhitespace(
+            '(window === globalThis || window === document ? location : window.location).href'
+        )
+    );
+    expect(code).toContain('_asyncToGenerator');
     expect(code).toContain('_wrapAsyncGenerator');
     expect(code).toContain('_asyncIterator');
 });
 
-it('should not transform async generator functions when Lightning Web Security is off', async () => {
+it('should not apply babel plugins when Lightning Web Security is off', async () => {
     const actual = `
-        async function* agf() {
-            await 1;
+        export const test = window.location.href;
+        export async function foo() {
+            await bar();
+        }
+        async function* baz() {
+            yield 1;
             yield 2;
         }
-        
         (async function() {
-            for await (const num of foo()) {
-                console.log(num);
+            for await (const num of baz()) {
                 break;
             }
         })();
