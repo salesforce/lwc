@@ -593,6 +593,7 @@ function dc(
     // Look up the dynamic component's name at runtime once the constructor is available.
     // This information is only known at runtime and is stored as part of registerComponent.
     const sel = getComponentRegisteredName(Ctor);
+    // TODO [#3331]: convert this error to a dev-only warning
     if (isUndefined(sel) || sel === '') {
         throw new Error(
             `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`

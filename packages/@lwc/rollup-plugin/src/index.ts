@@ -240,7 +240,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
                         if (type === RegistryType.alias) {
                             // specifier must be in in namespace/name format
-                            const hasValidSpecifier = specifier.split('/').length > 1;
+                            const hasValidSpecifier = specifier.split('/').length === 2;
                             if (hasValidSpecifier) {
                                 return appendAliasSpecifierQueryParam(entry, specifier);
                             }

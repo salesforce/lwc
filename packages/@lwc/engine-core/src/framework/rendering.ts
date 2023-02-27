@@ -89,7 +89,15 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isSameVnode(n1, n2)) {
+        if (
+            !isSameVnode(n1, n2) &&
+            // Currently the only scenario when patch does not receive the same vnodes are for
+            // dynamic components. This is why the final check here ensures n2.type is a custom element.
+            // When a dynamic component's constructor changes, the value of its tag name (sel) will be
+            // different. The engine will unmount the previous element and mount the new one using the
+            // new constructor in patchCustomElement.
+            n2.type !== VNodeType.CustomElement
+        ) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
@@ -377,10 +385,8 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
-    // TODO [#3331]: this check and the corresponding code block is only needed for lwc:dynamic.
-    // It can be safely removed with the directive.
     if (n1.ctor !== n2.ctor) {
-        // If the constructor, unmount the current component and mount a new one using the new
+        // If the constructor differs, unmount the current component and mount a new one using the new
         // constructor.
         const anchor = renderer.nextSibling(n1.elm);
 
@@ -969,28 +975,8 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
-                    if (isSameVnode(n1, n2)) {
-                        // both vnodes are equivalent, and we just need to patch them
-                        patch(n1, n2, parent, renderer);
-                    } else {
-                        // In the case of dynamic components, the element will always occupy the same position in the DOM
-                        // as specified by lwc:component. In such cases, we need to unmount the existing element and
-                        // mount the new one using the new constructor.
-                        if (
-                            n1.type === VNodeType.CustomElement &&
-                            n2.type === VNodeType.CustomElement
-                        ) {
-                            if (n1.ctor !== n2.ctor) {
-                                // If the constructors differ, unmount the current component and mount a new one using
-                                // the new constructor. This scenario only occurs for dynamic components.
-                                const dynElmRenderer = n2.data.renderer ?? renderer;
-                                const dynElmAnchor = dynElmRenderer.nextSibling(n1.elm);
-
-                                unmount(n1, parent, dynElmRenderer, true);
-                                mountCustomElement(n2, parent, dynElmAnchor, dynElmRenderer);
-                            }
-                        }
-                    }
+                    // both vnodes are equivalent, and we just need to patch them
+                    patch(n1, n2, parent, renderer);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
