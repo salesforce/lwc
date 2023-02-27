@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWC_VERSION_COMMENT } = require('@lwc/shared');
+import { types, Visitor } from '@babel/core';
+import { LWC_VERSION_COMMENT } from '@lwc/shared';
+import { BabelAPI, LwcBabelPluginPass } from './types';
 
-module.exports = function compilerVersionNumber({ types: t }) {
+export default function compilerVersionNumber({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     return {
         ClassBody(path) {
-            if (path.parent.superClass === null) {
+            if ((path.parent as types.ClassDeclaration).superClass === null) {
                 // Components *must* extend from either LightningElement or some other superclass (e.g. a mixin).
                 // We can skip classes without a superclass to avoid adding unnecessary comments.
                 return;
@@ -30,4 +32,4 @@ module.exports = function compilerVersionNumber({ types: t }) {
             }
         },
     };
-};
+}

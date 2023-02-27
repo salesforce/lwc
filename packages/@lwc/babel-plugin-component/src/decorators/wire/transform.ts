@@ -1,48 +1,56 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
-
-const { isWireDecorator } = require('./shared');
+import { types } from '@babel/core';
+import { NodePath, Scope } from '@babel/traverse';
+import { LWC_COMPONENT_PROPERTIES } from '../../constants';
+import { DecoratorMeta } from '../index';
+import { BindingOptions } from '../types';
+import { isWireDecorator } from './shared';
 
 const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';
 
-function isObservedProperty(configProperty) {
-    const propertyValue = configProperty.get('value');
+function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
+    const propertyValue = configProperty.get('value') as NodePath;
     return (
         propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX)
     );
 }
 
-function getWiredStatic(wireConfig) {
+function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.ObjectProperty[] {
     return wireConfig
         .get('properties')
-        .filter((property) => !isObservedProperty(property))
-        .map((path) => path.node);
+        .filter((property) => !isObservedProperty(property as NodePath<types.ObjectProperty>))
+        .map((path) => path.node) as types.ObjectProperty[];
 }
 
-function getWiredParams(t, wireConfig) {
+function getWiredParams(
+    t: typeof types,
+    wireConfig: NodePath<types.ObjectExpression>
+): types.ObjectProperty[] {
     return wireConfig
         .get('properties')
-        .filter((property) => isObservedProperty(property))
+        .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
         .map((path) => {
             // Need to clone deep the observed property to remove the param prefix
-            const clonedProperty = t.cloneDeep(path.node);
-            clonedProperty.value.value = clonedProperty.value.value.slice(1);
+            const clonedProperty = t.cloneDeep(path.node) as types.ObjectProperty;
+            (clonedProperty.value as types.StringLiteral).value = (
+                clonedProperty.value as types.StringLiteral
+            ).value.slice(1);
 
             return clonedProperty;
         });
 }
 
-function getGeneratedConfig(t, wiredValue) {
+function getGeneratedConfig(t: typeof types, wiredValue: WiredValue) {
     let counter = 0;
     const configBlockBody = [];
-    const configProps = [];
-    const generateParameterConfigValue = (memberExprPaths) => {
+    const configProps: (types.ObjectMethod | types.ObjectProperty | types.SpreadElement)[] = [];
+    const generateParameterConfigValue = (memberExprPaths: string[]) => {
         // Note: When memberExprPaths ($foo.bar) has an invalid identifier (eg: foo..bar, foo.bar[3])
         //       it should (ideally) resolve in a compilation error during validation phase.
         //       This is not possible due that platform components may have a param definition which is invalid
@@ -53,7 +61,9 @@ function getGeneratedConfig(t, wiredValue) {
             (maybeIdentifier) =>
                 !(t.isValidES3Identifier(maybeIdentifier) && maybeIdentifier.length > 0)
         );
-        const memberExprPropertyGen = !isInvalidMemberExpr ? t.identifier : t.StringLiteral;
+        const memberExprPropertyGen = !isInvalidMemberExpr
+            ? t.identifier
+            : (t as any).StringLiteral;
 
         if (memberExprPaths.length === 1) {
             return {
@@ -77,7 +87,11 @@ function getGeneratedConfig(t, wiredValue) {
         ]);
 
         // Results in: v != null && ... (v = v.i) != null && ... (v = v.(n-1)) != null
-        let conditionTest = t.binaryExpression('!=', t.identifier(varName), t.nullLiteral());
+        let conditionTest: types.Expression = t.binaryExpression(
+            '!=',
+            t.identifier(varName),
+            t.nullLiteral()
+        );
 
         for (let i = 1, n = memberExprPaths.length; i < n - 1; i++) {
             const nextPropValue = t.assignmentExpression(
@@ -120,10 +134,15 @@ function getGeneratedConfig(t, wiredValue) {
 
     if (wiredValue.params) {
         wiredValue.params.forEach((param) => {
-            const memberExprPaths = param.value.value.split('.');
+            const memberExprPaths = ((param as any).value.value as string).split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
-            configProps.push(t.objectProperty(param.key, paramConfigValue.configValueExpression));
+            configProps.push(
+                t.objectProperty(
+                    (param as types.ObjectProperty).key,
+                    paramConfigValue.configValueExpression
+                )
+            );
 
             if (paramConfigValue.varDeclaration) {
                 configBlockBody.push(paramConfigValue.varDeclaration);
@@ -142,7 +161,7 @@ function getGeneratedConfig(t, wiredValue) {
     return t.objectProperty(t.identifier('config'), fnExpression);
 }
 
-function buildWireConfigValue(t, wiredValues) {
+function buildWireConfigValue(t: typeof types, wiredValues: WiredValue[]) {
     return t.objectExpression(
         wiredValues.map((wiredValue) => {
             const wireConfig = [];
@@ -154,7 +173,9 @@ function buildWireConfigValue(t, wiredValues) {
 
             if (wiredValue.params) {
                 const dynamicParamNames = wiredValue.params.map((p) => {
-                    return t.stringLiteral(t.isIdentifier(p.key) ? p.key.name : p.key.value);
+                    return t.stringLiteral(
+                        t.isIdentifier(p.key) ? p.key.name : (p.key as types.StringLiteral).value
+                    );
                 });
                 wireConfig.push(
                     t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
@@ -181,7 +202,7 @@ const SUPPORTED_VALUE_TO_TYPE_MAP = {
     BooleanLiteral: 'boolean',
 };
 
-const scopedReferenceLookup = (scope) => (name) => {
+const scopedReferenceLookup = (scope: Scope) => (name: string) => {
     const binding = scope.getBinding(name);
 
     let type;
@@ -191,17 +212,24 @@ const scopedReferenceLookup = (scope) => (name) => {
         if (binding.kind === 'module') {
             // Resolves module import to the name of the module imported
             // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
-            const parentPathNode = binding.path.parentPath.node;
+            const parentPathNode = binding.path.parentPath!.node as types.ImportDeclaration;
             if (parentPathNode && parentPathNode.source) {
                 type = 'module';
                 value = parentPathNode.source.value;
             }
         } else if (binding.kind === 'const') {
             // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
-            const init = binding.path.node.init;
-            if (init && SUPPORTED_VALUE_TO_TYPE_MAP[init.type]) {
-                type = SUPPORTED_VALUE_TO_TYPE_MAP[init.type];
-                value = init.value;
+            const init = (binding.path.node as BindingOptions).init;
+            if (
+                init &&
+                SUPPORTED_VALUE_TO_TYPE_MAP[init.type as keyof typeof SUPPORTED_VALUE_TO_TYPE_MAP]
+            ) {
+                type =
+                    SUPPORTED_VALUE_TO_TYPE_MAP[
+                        init.type as keyof typeof SUPPORTED_VALUE_TO_TYPE_MAP
+                    ];
+                value = (init as types.StringLiteral | types.NumericLiteral | types.BooleanLiteral)
+                    .value;
             }
         }
     }
@@ -211,17 +239,32 @@ const scopedReferenceLookup = (scope) => (name) => {
     };
 };
 
-module.exports = function transform(t, decoratorMetas) {
+type WiredValue = {
+    propertyName: string;
+    isClassMethod: boolean;
+    static?: types.ObjectProperty[];
+    params?: types.ObjectProperty[];
+    adapter?: {
+        name: string;
+        expression: types.Expression;
+        reference: any;
+    };
+};
+
+export default function transform(t: typeof types, decoratorMetas: DecoratorMeta[]) {
     const objectProperties = [];
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
-        const [id, config] = path.get('expression.arguments');
+        const [id, config] = path.get('expression.arguments') as [
+            NodePath,
+            NodePath<types.ObjectExpression> | undefined
+        ];
 
-        const propertyName = path.parentPath.get('key.name').node;
+        const propertyName = (path.parentPath.get('key.name') as any).node as string;
         const isClassMethod = path.parentPath.isClassMethod({
             kind: 'method',
         });
 
-        const wiredValue = {
+        const wiredValue: WiredValue = {
             propertyName,
             isClassMethod,
         };
@@ -236,7 +279,7 @@ module.exports = function transform(t, decoratorMetas) {
         const isIdentifier = id.isIdentifier();
 
         if (isIdentifier || isMemberExpression) {
-            const referenceName = isMemberExpression ? id.node.object.name : id.node.name;
+            const referenceName = isMemberExpression ? (id.node.object as any).name : id.node.name;
             const reference = referenceLookup(referenceName);
             wiredValue.adapter = {
                 name: referenceName,
@@ -258,4 +301,4 @@ module.exports = function transform(t, decoratorMetas) {
     }
 
     return objectProperties;
-};
+}

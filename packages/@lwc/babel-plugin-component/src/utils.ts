@@ -1,15 +1,20 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { generateErrorMessage } = require('@lwc/errors');
-const lineColumn = require('line-column');
+import lineColumn from 'line-column';
+import { types } from '@babel/core';
+import { NodePath } from '@babel/traverse';
+import { generateErrorMessage } from '@lwc/errors';
+import { LWC_PACKAGE_ALIAS } from './constants';
+import { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
 
-const { LWC_PACKAGE_ALIAS } = require('./constants');
-
-function isClassMethod(classMethod, properties = {}) {
+function isClassMethod(
+    classMethod: NodePath<types.Node>,
+    properties: { kind?: string; name?: string; static?: boolean } = {}
+): classMethod is NodePath<types.ClassMethod> {
     const { kind = 'method', name } = properties;
     return (
         classMethod.isClassMethod({ kind }) &&
@@ -18,7 +23,10 @@ function isClassMethod(classMethod, properties = {}) {
     );
 }
 
-function isGetterClassMethod(classMethod, properties = {}) {
+function isGetterClassMethod(
+    classMethod: NodePath<types.Node>,
+    properties: { kind?: string; name?: string; static?: boolean } = {}
+) {
     return isClassMethod(classMethod, {
         kind: 'get',
         name: properties.name,
@@ -26,7 +34,10 @@ function isGetterClassMethod(classMethod, properties = {}) {
     });
 }
 
-function isSetterClassMethod(classMethod, properties = {}) {
+function isSetterClassMethod(
+    classMethod: NodePath<types.Node>,
+    properties: { kind?: string; name?: string; static?: boolean } = {}
+) {
     return isClassMethod(classMethod, {
         kind: 'set',
         name: properties.name,
@@ -34,22 +45,18 @@ function isSetterClassMethod(classMethod, properties = {}) {
     });
 }
 
-function staticClassProperty(types, name, expression) {
-    const classProperty = types.classProperty(types.identifier(name), expression);
-    classProperty.static = true;
-    return classProperty;
-}
-
-function getEngineImportsStatements(path) {
-    const programPath = path.isProgram() ? path : path.findParent((node) => node.isProgram());
+function getEngineImportsStatements(path: NodePath): NodePath<types.ImportDeclaration>[] {
+    const programPath = path.isProgram()
+        ? path
+        : (path.findParent((node) => node.isProgram()) as NodePath<types.Program>);
 
     return programPath.get('body').filter((node) => {
-        const source = node.get('source');
+        const source = node.get('source') as NodePath<types.Node>;
         return node.isImportDeclaration() && source.isStringLiteral({ value: LWC_PACKAGE_ALIAS });
-    });
+    }) as NodePath<types.ImportDeclaration>[];
 }
 
-function getEngineImportSpecifiers(path) {
+function getEngineImportSpecifiers(path: NodePath): ImportSpecifier[] {
     const imports = getEngineImportsStatements(path);
     return (
         imports
@@ -59,20 +66,23 @@ function getEngineImportSpecifiers(path) {
             .filter((specifier) => specifier.type === 'ImportSpecifier')
             // Get the list of specifiers with their name
             .map((specifier) => {
-                const imported = specifier.get('imported').node.name;
+                const imported = (specifier.get('imported') as NodePath<types.Identifier>).node
+                    .name;
                 return { name: imported, path: specifier };
             })
     );
 }
 
-function normalizeFilename(source) {
+function normalizeFilename(source: NodePath<types.Node>) {
     return (
+        // @ts-ignore
         (source.hub && source.hub.file && source.hub.file.opts && source.hub.file.opts.filename) ||
         null
     );
 }
 
-function normalizeLocation(source) {
+function normalizeLocation(source: NodePath<types.Node>) {
+    // @ts-ignore
     const location = (source.node && (source.node.loc || source.node._loc)) || null;
     if (!location) {
         return null;
@@ -96,21 +106,23 @@ function normalizeLocation(source) {
     };
 }
 
-function generateError(source, { errorInfo, messageArgs } = {}) {
+function generateError(
+    source: NodePath<types.Node>,
+    { errorInfo, messageArgs }: DecoratorErrorOptions
+) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
 
-    error.filename = normalizeFilename(source);
-    error.loc = normalizeLocation(source);
-    error.lwcCode = errorInfo && errorInfo.code;
+    (error as any).filename = normalizeFilename(source);
+    (error as any).loc = normalizeLocation(source);
+    (error as any).lwcCode = errorInfo && errorInfo.code;
     return error;
 }
 
-module.exports = {
+export {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
     generateError,
     getEngineImportSpecifiers,
-    staticClassProperty,
 };
