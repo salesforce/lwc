@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPop,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -44,15 +43,7 @@ import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { removeActiveVM } from './hot-swaps';
-import {
-    VNodes,
-    VCustomElement,
-    VNode,
-    VNodeType,
-    VBaseElement,
-    VFragment,
-    isVFragment,
-} from './vnodes';
+import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, isVFragment } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -739,50 +730,32 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const {
-        children,
-        renderRoot,
-        renderer: { remove },
-    } = vm;
-
-    for (let i = 0, len = children.length; i < len; i++) {
-        const child = children[i];
-
-        // VFragments are special; their .elm property does not point to the root element since they have no root,
-        // so we have to clean them up differently.
-        if (!isNull(child)) {
-            if (isVFragment(child)) {
-                removeFragmentChildren(child, vm);
-            } else if (!isUndefined(child.elm)) {
-                remove(child.elm, renderRoot);
-            }
-        }
-    }
+    recursivelyRemoveChildren(vm.children, vm);
     vm.children = EmptyArray;
 
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 }
 
-// Helper function to traverse a tree of VFragment nodes and remove all root children.
-// This is moved into a separate function to minimize the perf/mem impact of the stack traversal
-// on non-vfragment use cases
-function removeFragmentChildren(vnode: VFragment, vm: VM) {
+// Helper function to remove all children of the root node.
+// If the set of children includes VFragment nodes, we need to remove the children of those nodes too.
+// Since VFragments can contain other VFragments, we need to traverse the entire of tree of VFragments.
+// If the set contains no VFragment nodes, no traversal is needed.
+function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
     const {
         renderRoot,
         renderer: { remove },
     } = vm;
 
-    const nodeStack: VNode[] = [];
-    ArrayPush.call(nodeStack, ...vnode.children);
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode = vnodes[i];
 
-    let currentNode: VNode | null | undefined;
-    while (!isUndefined((currentNode = ArrayPop.call(nodeStack)))) {
-        if (!isNull(currentNode)) {
-            if (isVFragment(currentNode)) {
-                ArrayPush.call(nodeStack, ...currentNode.children);
-            } else if (!isUndefined(currentNode.elm)) {
-                remove(currentNode.elm, renderRoot);
+        if (!isNull(vnode)) {
+            // VFragments are special; their .elm property does not point to the root element since they have no single root.
+            if (isVFragment(vnode)) {
+                recursivelyRemoveChildren(vnode.children, vm);
+            } else if (!isUndefined(vnode.elm)) {
+                remove(vnode.elm, renderRoot);
             }
         }
     }
