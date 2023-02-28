@@ -46,6 +46,7 @@ import {
 import {
     isSameVnode,
     isVBaseElement,
+    isVCustomElement,
     isVFragment,
     isVScopedSlotFragment,
     Key,
@@ -92,11 +93,10 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
         if (
             !isSameVnode(n1, n2) &&
             // Currently the only scenario when patch does not receive the same vnodes are for
-            // dynamic components. This is why the final check here ensures n2.type is a custom element.
-            // When a dynamic component's constructor changes, the value of its tag name (sel) will be
-            // different. The engine will unmount the previous element and mount the new one using the
-            // new constructor in patchCustomElement.
-            n2.type !== VNodeType.CustomElement
+            // dynamic components. When a dynamic component's constructor changes, the value of its
+            // tag name (sel) will be different. The engine will unmount the previous element
+            // and mount the new one using the new constructor in patchCustomElement.
+            !(isVCustomElement(n1) && isVCustomElement(n2))
         ) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
