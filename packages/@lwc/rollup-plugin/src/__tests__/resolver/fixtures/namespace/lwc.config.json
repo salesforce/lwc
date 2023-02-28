@@ -7,6 +7,14 @@
         {
             "name": "zoo",
             "path": "src/modules/x/zoo/zoo.js"
+        },
+        {
+            "name": "baz/",
+            "path": "src/modules/x/baz/baz.js"
+        },
+        {
+            "name": "foo/bar/baz",
+            "path": "src/modules/x/quux/quux.js"
         }
     ]
 }

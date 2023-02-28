@@ -240,7 +240,15 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
                         if (type === RegistryType.alias) {
                             // specifier must be in in namespace/name format
-                            const hasValidSpecifier = specifier.split('/').length > 1;
+                            const [namespace, name, ...rest] = specifier.split('/');
+                            // Alias specifier must have been in the namespace / name format
+                            // to be used as the tag name of a custom element.
+                            // Verify 3 things about the alias specifier:
+                            // 1. The namespace is a non-empty string
+                            // 2. The name is an non-empty string
+                            // 3. The specifier was in a namespace / name format, ie no extra '/' (this is what rest checks)
+                            const hasValidSpecifier =
+                                !!namespace?.length && !!name?.length && !rest?.length;
                             if (hasValidSpecifier) {
                                 return appendAliasSpecifierQueryParam(entry, specifier);
                             }

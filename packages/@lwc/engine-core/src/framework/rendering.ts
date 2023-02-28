@@ -44,7 +44,6 @@ import {
     VMState,
 } from './vm';
 import {
-    areDynamicVCustomElements,
     isSameVnode,
     isVBaseElement,
     isVFragment,
@@ -90,15 +89,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        /**
-         * The only scenario when n1.sel !== n2.sel is when a dynamic component's constructor changes.
-         * Dynamic components are allowed to be patched when the value of sel changes because they are
-         * expected to be unmounted / remounted using the new constructor.
-         *
-         * We check to ensure that both n1 and n2 are dynamic VCustomElements to avoid patching props from one
-         * component to a different component.
-         */
-        if (!isSameVnode(n1, n2) && !areDynamicVCustomElements(n1, n2)) {
+        if (!isSameVnode(n1, n2)) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
@@ -386,8 +377,9 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
+    // TODO [#3331]: This if branch should be removed in 246 with lwc:dynamic
     if (n1.ctor !== n2.ctor) {
-        // If the constructor, unmount the current component and mount a new one using the new
+        // If the constructor differs, unmount the current component and mount a new one using the new
         // constructor.
         const anchor = renderer.nextSibling(n1.elm);
 
@@ -976,10 +968,16 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
-                    // both vnodes are equivalent, and we just need to patch them
-                    // note: dynamic components can be patched in this call
-                    patch(n1, n2, parent, renderer);
-                    anchor = n2.elm!;
+                    if (isSameVnode(n1, n2)) {
+                        // both vnodes are equivalent, and we just need to patch them
+                        patch(n1, n2, parent, renderer);
+                        anchor = n2.elm!;
+                    } else {
+                        // removing the old vnode since the new one is different
+                        unmount(n1, parent, renderer, true);
+                        mount(n2, parent, renderer, anchor);
+                        anchor = n2.elm!;
+                    }
                 } else {
                     // removing the old vnode since the new one is null
                     unmount(n1, parent, renderer, true);

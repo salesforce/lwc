@@ -15,8 +15,12 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
-const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
-const registeredComponentNameMap: Map<LightningElementConstructor, string> = new Map();
+type ComponentConstructorMetadata = {
+    tmpl: Template;
+    sel: string;
+};
+const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
+    new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -25,7 +29,7 @@ const registeredComponentNameMap: Map<LightningElementConstructor, string> = new
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl, sel }: { tmpl: Template; sel: string }
+    metadata: ComponentConstructorMetadata
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -33,12 +37,8 @@ export function registerComponent(
             // on code comments which are stripped out in production by minifiers
             checkVersionMismatch(Ctor, 'component');
         }
-        signedTemplateMap.set(Ctor, tmpl);
-
-        // Do not assign values for empty strings.
-        if (sel) {
-            registeredComponentNameMap.set(Ctor, sel);
-        }
+        // TODO [#3331]: add validation to check the value of metadata.sel is not an empty string.
+        registeredComponentMap.set(Ctor, metadata);
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
@@ -48,11 +48,11 @@ export function registerComponent(
 export function getComponentRegisteredTemplate(
     Ctor: LightningElementConstructor
 ): Template | undefined {
-    return signedTemplateMap.get(Ctor);
+    return registeredComponentMap.get(Ctor)?.tmpl;
 }
 
 export function getComponentRegisteredName(Ctor: LightningElementConstructor): string | undefined {
-    return registeredComponentNameMap.get(Ctor);
+    return registeredComponentMap.get(Ctor)?.sel;
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
