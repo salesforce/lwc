@@ -291,7 +291,7 @@ jobs:
   test_integration:
     executor: node-browsers
     steps:
-      - browser-tools/install-browser-tools
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
       - retry_command:
           command_name: Run integration test - local Chrome - prod mode
@@ -301,7 +301,7 @@ jobs:
   test_integration_dev:
     executor: node-browsers
     steps:
-      - browser-tools/install-browser-tools
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
       - retry_command:
           command_name: Run integration test - local Chrome - dev mode
