@@ -390,7 +390,7 @@ workflows:
             - hold
 
       - test_integration:
-          context: lwc-sauce-labs
+          # lwc-sauce-labs context not needed due to using local chrome
           filters:
             <<: *only_forks
           requires:
@@ -398,7 +398,7 @@ workflows:
             - test_karma
 
       - test_integration_dev:
-          context: lwc-sauce-labs
+          # lwc-sauce-labs context not needed due to using local chrome
           filters:
             <<: *only_forks
           requires:
