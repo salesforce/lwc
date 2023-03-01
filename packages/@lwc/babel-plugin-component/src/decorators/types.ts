@@ -21,7 +21,8 @@ export type DecoratorErrorOptions = {
     messageArgs?: any[];
 };
 
-// Copied from @babel/traverse's Binding type
+// Copied from:
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a767e24/types/babel__traverse/index.d.ts#L143-L148
 export type BindingOptions = {
     id: t.LVal;
     init?: t.Expression | undefined;
