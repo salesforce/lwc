@@ -10,8 +10,14 @@ import { isUndefined } from '@lwc/shared';
 const supportsWeakRefs =
     typeof WeakRef === 'function' && typeof FinalizationRegistry === 'function';
 
-// A map where the keys are weakly held and the values are a Set that are also each weakly held.
-// The goal is to avoid leaking the Values, which is what would happen with a WeakMap<T, Set<V>>.
+/**
+ * A map where the keys are weakly held and the values are a Set that are also each weakly held.
+ * The goal is to avoid leaking the Values, which is what would happen with a WeakMap<T, Set<V>>.
+ *
+ *
+ * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
+ * It leaks in legacy browsers, which may be undesired.
+ */
 export interface WeakMultiMap<T extends object, V extends object> {
     get(key: T): ReadonlySet<V>;
     add(key: T, vm: V): void;
@@ -94,8 +100,4 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
     }
 }
 
-/**
- * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
- * It leaks in legacy browsers, which may be undesired.
- */
 export const WeakMultiMap = supportsWeakRefs ? ModernWeakMultiMap : LegacyWeakMultiMap;
