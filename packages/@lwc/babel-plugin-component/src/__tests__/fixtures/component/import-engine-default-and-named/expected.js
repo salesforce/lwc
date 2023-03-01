@@ -5,5 +5,6 @@ console.log(lwc);
 export default _registerComponent(class extends LightningElement {
   /*LWC compiler vX.X.X*/
 }, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

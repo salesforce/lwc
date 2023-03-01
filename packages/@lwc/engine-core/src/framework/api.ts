@@ -47,6 +47,7 @@ import {
     isVScopedSlotFragment,
     VScopedSlotFragment,
 } from './vnodes';
+import { getComponentRegisteredName } from './component';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -577,7 +578,8 @@ function dc(
             `dc() 3rd argument data must be an array.`
         );
     }
-    // null or undefined values should produce a null value in the VNodes
+    // Null or undefined values should produce a null value in the VNodes.
+    // This is the only value at compile time as the constructor will not be known.
     if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
@@ -588,7 +590,16 @@ function dc(
         );
     }
 
-    return null;
+    // Look up the dynamic component's name at runtime once the constructor is available.
+    // This information is only known at runtime and is stored as part of registerComponent.
+    const sel = getComponentRegisteredName(Ctor);
+    if (isUndefined(sel) || sel === '') {
+        throw new Error(
+            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
+        );
+    }
+
+    return c(sel, Ctor, data, children);
 }
 
 /**

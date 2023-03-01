@@ -7,6 +7,7 @@
 
 import '../../scripts/jest/types';
 import { resolveModule } from '../index';
+import { RegistryType } from '../types';
 import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
 describe('resolve mapped modules', () => {
@@ -16,6 +17,7 @@ describe('resolve mapped modules', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('mapping/node_modules/@lwc/lwc-modules-foo'),
             entry: fixture('mapping/node_modules/@lwc/lwc-modules-foo/src/common-util.js'),
         });
@@ -27,6 +29,7 @@ describe('resolve mapped modules', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('mapping/node_modules/@lwc/lwc-modules-bar/node_modules/common-util'),
             entry: fixture(
                 'mapping/node_modules/@lwc/lwc-modules-bar/node_modules/common-util/src/common-util.js'
