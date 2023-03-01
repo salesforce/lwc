@@ -7,6 +7,16 @@
 
 const assert = require('assert');
 
+//
+// This test captures a bug (https://github.com/salesforce/lwc/issues/3361) that was triggered by certain conditions:
+//
+// 1) A component is inserted and then removed from the dom using `container.innerHTML = ''`
+// 2) The component has HTML, CSS, and JS (Notably CSS)
+// 3) We're running in dev mode
+//
+// This test could also fail if a new memory leak is _introduced_, but it also detects that prior bug.
+//
+
 // CDP only works in Chrome. And it only works locally because of the DevTools Protocol usage, so if
 // tunnelIdentifier exists, we know we're running in Sauce Labs and should bail out.
 // See: https://webdriver.io/docs/devtools-service/
