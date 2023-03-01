@@ -13,12 +13,12 @@ import {
     HostAttributesKey,
     HostChildrenKey,
     HostElement,
-    HostEventListenersKey,
     HostNamespaceKey,
     HostNodeType,
     HostParentKey,
     HostShadowRootKey,
     HostTypeKey,
+    HostContextProvidersKey,
 } from '../types';
 
 const FakeRootElement: HostElement = {
@@ -29,7 +29,7 @@ const FakeRootElement: HostElement = {
     [HostShadowRootKey]: null,
     [HostChildrenKey]: [],
     [HostAttributesKey]: [],
-    [HostEventListenersKey]: {},
+    [HostContextProvidersKey]: new Map(),
 };
 
 export function renderComponent(

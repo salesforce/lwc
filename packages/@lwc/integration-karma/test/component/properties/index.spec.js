@@ -28,6 +28,7 @@ const expectedEnumerableProps = [
     'lang',
     'lastChild',
     'lastElementChild',
+    'ownerDocument',
     'querySelector',
     'querySelectorAll',
     'refs',

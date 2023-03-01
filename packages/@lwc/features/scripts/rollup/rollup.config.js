@@ -22,6 +22,7 @@ function rollupConfig({ format }) {
         input: entry,
         output: {
             file: generateTargetName({ format }),
+            sourcemap: true,
             format,
             banner,
             footer,

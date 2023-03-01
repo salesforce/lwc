@@ -11,6 +11,7 @@ const path = require('path');
 const { rollup } = require('rollup');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const replace = require('@rollup/plugin-replace');
+const MagicString = require('magic-string');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
@@ -68,12 +69,16 @@ function injectInlineRenderer() {
                     this.addWatchFile(filename);
                 }
 
+                const magic = new MagicString(source);
+
                 // The IIFE will contain the string `var renderer = `, which we don't actually need. We just need the
                 // part after, which is the actual IIFE (e.g. `(function () { /* code */ })()`)
-                return source.replace(
-                    RENDERER_REPLACEMENT_STRING,
-                    code.replace('var renderer = ', '')
-                );
+                magic.replace(RENDERER_REPLACEMENT_STRING, code.replace('var renderer = ', ''));
+
+                return {
+                    code: magic.toString(),
+                    map: magic.generateMap(),
+                };
             }
         },
     };
@@ -85,6 +90,7 @@ module.exports = {
     output: formats.map((format) => {
         return {
             file: `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`,
+            sourcemap: true,
             format,
             banner: banner,
             footer: footer,

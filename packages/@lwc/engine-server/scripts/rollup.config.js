@@ -22,6 +22,7 @@ module.exports = {
     output: formats.map((format) => {
         return {
             file: `engine-server${format === 'cjs' ? '.cjs' : ''}.js`,
+            sourcemap: true,
             format,
             banner: banner,
             footer: footer,
