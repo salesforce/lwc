@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { WireContextSubscriptionCallback } from '@lwc/engine-core';
+
 // We use Symbols as the keys for HostElement properties to avoid conflicting
 // with public component properties defined by a component author.
 export const HostNamespaceKey = Symbol('namespace');
@@ -13,8 +15,9 @@ export const HostParentKey = Symbol('parent');
 export const HostShadowRootKey = Symbol('shadow-root');
 export const HostChildrenKey = Symbol('children');
 export const HostAttributesKey = Symbol('attributes');
-export const HostEventListenersKey = Symbol('event-listeners');
 export const HostValueKey = Symbol('value');
+export const HostHostKey = Symbol('host');
+export const HostContextProvidersKey = Symbol('context-providers');
 
 export enum HostNodeType {
     Text = 'text',
@@ -48,11 +51,17 @@ export interface HostAttribute {
     value: string;
 }
 
+// During SSR, a `HostElement` object is the equivalent of an `Element` object in
+// the DOM. `HostElement[HostParentKey]` can be thought of as `Element.prototype.parentNode`,
+// which can be either another element or a shadow root.
+export type HostParentNode = HostElement | HostShadowRoot;
+
 export interface HostShadowRoot {
     [HostTypeKey]: HostNodeType.ShadowRoot;
     [HostChildrenKey]: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
+    [HostHostKey]: HostElement;
 }
 
 export interface HostElement {
@@ -61,11 +70,11 @@ export interface HostElement {
     // explicitly given only a getter, so it doesn't need to be a Symbol.
     tagName: string;
     [HostNamespaceKey]: string;
-    [HostParentKey]: HostElement | null;
+    [HostParentKey]: HostParentNode | null;
     [HostShadowRootKey]: HostShadowRoot | null;
     [HostChildrenKey]: HostChildNode[];
     [HostAttributesKey]: HostAttribute[];
-    [HostEventListenersKey]: Record<string, Function[]>;
+    [HostContextProvidersKey]: Map<string, WireContextSubscriptionCallback>;
 }
 
 export type HostNode = HostText | HostElement | HostComment;

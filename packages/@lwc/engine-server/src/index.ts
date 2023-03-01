@@ -12,7 +12,6 @@ import './polyfills';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
-    createContextProvider,
     register,
     api,
     track,
@@ -38,3 +37,4 @@ export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
 export { createElement } from './apis/create-element';
+export { createContextProvider } from './context';

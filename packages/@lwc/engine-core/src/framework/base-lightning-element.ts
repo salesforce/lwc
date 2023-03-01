@@ -169,6 +169,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'lang'
         | 'lastChild'
         | 'lastElementChild'
+        | 'ownerDocument'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
@@ -636,6 +637,15 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'lastElementChild');
         }
         return renderer.getLastElementChild(vm.elm);
+    },
+
+    get ownerDocument() {
+        const vm = getAssociatedVM(this);
+        const renderer = vm.renderer;
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'ownerDocument');
+        }
+        return renderer.ownerDocument(vm.elm);
     },
 
     render(): Template {
