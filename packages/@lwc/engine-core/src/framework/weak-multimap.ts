@@ -94,4 +94,8 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
     }
 }
 
+/**
+ * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
+ * It leaks in legacy browsers, which may be undesired.
+ */
 export const WeakMultiMap = supportsWeakRefs ? ModernWeakMultiMap : LegacyWeakMultiMap;
