@@ -22,9 +22,7 @@ const assert = require('assert');
 // See: https://webdriver.io/docs/devtools-service/
 if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunnelIdentifier) {
     describe('Component does not leak', () => {
-        this.timeout(30000); // Allow more time for GC, counting objects in heap, etc.
-
-        const URL = '/component-leak';
+        const URL = '/devmode-lifecycle-leak';
 
         // Count the number of objects using queryObjects(). Based on:
         // https://media-codings.com/articles/automatically-detect-memory-leaks-with-puppeteer
@@ -67,15 +65,18 @@ if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunne
         });
 
         it('should not leak', async () => {
-            const addChild = await browser.shadowDeep$('integration-component-leak', '.add-child');
+            const addChild = await browser.shadowDeep$(
+                'integration-devmode-lifecycle-leak',
+                '.add-child'
+            );
             const removeChildren = await browser.shadowDeep$(
-                'integration-component-leak',
+                'integration-devmode-lifecycle-leak',
                 '.remove-children'
             );
 
             const getNumChildren = () => {
                 return document
-                    .querySelector('integration-component-leak')
+                    .querySelector('integration-devmode-lifecycle-leak')
                     .shadowRoot.querySelectorAll('integration-child').length;
             };
 
