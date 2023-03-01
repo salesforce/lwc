@@ -22,6 +22,8 @@ const assert = require('assert');
 // See: https://webdriver.io/docs/devtools-service/
 if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunnelIdentifier) {
     describe('Component does not leak', () => {
+        this.timeout(30000); // Allow more time for GC, counting objects in heap, etc.
+
         const URL = '/component-leak';
 
         // Count the number of objects using queryObjects(). Based on:
