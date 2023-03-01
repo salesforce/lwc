@@ -40,6 +40,11 @@ const querySelectorAll = globalThis[
     KEY__NATIVE_QUERY_SELECTOR_ALL
 ] as typeof document.querySelectorAll;
 
+// This is a "handoff" from synthetic-shadow to engine-core – we want to clean up after ourselves
+// so nobody else can misuse these global APIs.
+delete globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID];
+delete globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL];
+
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
     return rootNode !== document && isTrue((rootNode as any).synthetic);
 }

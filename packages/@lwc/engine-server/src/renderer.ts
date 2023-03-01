@@ -15,6 +15,7 @@ import {
     isFunction,
     HTML_NAMESPACE,
 } from '@lwc/shared';
+import { LifecycleCallback } from '@lwc/engine-core';
 
 import {
     HostNode,
@@ -25,14 +26,15 @@ import {
     HostTypeKey,
     HostNamespaceKey,
     HostParentKey,
-    HostEventListenersKey,
     HostShadowRootKey,
     HostAttributesKey,
     HostChildrenKey,
     HostValueKey,
+    HostHostKey,
+    HostContextProvidersKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
-import type { LifecycleCallback } from '@lwc/engine-core';
+import { registerContextConsumer } from './context';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -49,7 +51,7 @@ function createElement(tagName: string, namespace?: string): HostElement {
         [HostShadowRootKey]: null,
         [HostChildrenKey]: [],
         [HostAttributesKey]: [],
-        [HostEventListenersKey]: {},
+        [HostContextProvidersKey]: new Map(),
     };
 }
 
@@ -133,6 +135,7 @@ function attachShadow(element: E, config: ShadowRootInit) {
     element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
         [HostChildrenKey]: [],
+        [HostHostKey]: element,
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
@@ -408,6 +411,8 @@ function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback
     return new (UpgradableConstructor as any)(upgradeCallback);
 }
 
+const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
+
 export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
@@ -446,4 +451,6 @@ export const renderer = {
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
+    ownerDocument,
+    registerContextConsumer,
 };

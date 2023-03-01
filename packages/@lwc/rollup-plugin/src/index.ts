@@ -182,8 +182,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         resolveId(importee, importer) {
             if (importer) {
                 // Importer has been resolved already and may contain an alias specifier
-                const { filename: importerFilename, specifier: importerSpecifier } =
-                    parseDescriptorFromFilePath(importer);
+                const { filename: importerFilename } = parseDescriptorFromFilePath(importer);
 
                 // Normalize relative import to absolute import
                 // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
@@ -221,12 +220,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         !fs.existsSync(importeeNormalizedFilename)
                     ) {
                         return IMPLICIT_DEFAULT_CSS_PATH;
-                    }
-
-                    if ((importeeExt === '.html' || importeeExt === '.css') && importerSpecifier) {
-                        // html and css files should inherit the namespace and name of the module
-                        // importing them
-                        return appendAliasSpecifierQueryParam(importeeAbsPath, importerSpecifier);
                     }
 
                     return importeeAbsPath;

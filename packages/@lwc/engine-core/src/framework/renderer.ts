@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import type { WireContextSubscriptionPayload } from './wiring';
+
 export type HostNode = any;
 export type HostElement = any;
 
@@ -65,4 +67,10 @@ export interface RendererAPI {
         connectedCallback?: LifecycleCallback,
         disconnectedCallback?: LifecycleCallback
     ) => E;
+    ownerDocument(elm: E): Document;
+    registerContextConsumer: (
+        element: E,
+        adapterContextToken: string,
+        subscriptionPayload: WireContextSubscriptionPayload
+    ) => void;
 }

@@ -27,6 +27,7 @@ function rollupConfig({ wrap } = {}) {
     return {
         input: entry,
         output: {
+            sourcemap: true,
             file: path.join(targetDirectory, targetName),
             name: 'SyntheticShadow',
             format: 'es',

@@ -167,17 +167,24 @@ function testFixtures() {
                 },
             });
 
-            const result = lwcEngineServer!.renderComponent(
-                module!.tagName,
-                module!.default,
-                config.props || {}
-            );
+            let result;
+            let err;
+            try {
+                result = lwcEngineServer!.renderComponent(
+                    module!.tagName,
+                    module!.default,
+                    config.props || {}
+                );
+            } catch (_err: any) {
+                err = _err.message;
+            }
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });
 
             return {
-                'expected.html': formatHTML(result),
+                'expected.html': result ? formatHTML(result) : undefined,
+                'error.txt': err,
             };
         }
     );
