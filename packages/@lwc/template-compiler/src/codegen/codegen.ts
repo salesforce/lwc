@@ -12,6 +12,7 @@ import {
     ChildNode,
     Element,
     Expression,
+    ComplexExpression,
     Literal,
     LWCDirectiveRenderMode,
     Root,
@@ -26,6 +27,7 @@ import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
+import { bindComplexExpression } from './expression';
 
 type RenderPrimitive =
     | 'iterator'
@@ -441,13 +443,18 @@ export default class CodeGen {
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
      */
-    bindExpression(expression: Expression | Literal): t.Expression {
+    bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
         if (t.isIdentifier(expression)) {
             if (!this.isLocalIdentifier(expression)) {
                 return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
             } else {
                 return expression;
             }
+        }
+
+        // TODO [#3370]: remove experimental template expression flag
+        if (this.state.config.experimentalComplexExpressions) {
+            return bindComplexExpression(expression as ComplexExpression, this);
         }
 
         const scope = this;

@@ -162,3 +162,6 @@ export const ATTR_NAME = {
     XLINK_HREF: 'xlink:href',
 };
 export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
+
+// TODO [#3370]: remove experimental template expression flag
+export const TMPL_EXPR_ECMASCRIPT_EDITION = 2022;

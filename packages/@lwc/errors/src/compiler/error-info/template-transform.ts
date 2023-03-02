@@ -875,4 +875,76 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_PARAM: {
+        code: 1189,
+        message: "Template expression doesn't allow {0} in arrow function params.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_STATEMENTS_PROHIBITED: {
+        code: 1190,
+        message: 'Statements are disallowed in template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_MUTATION_OUTSIDE_ARROW: {
+        code: 1191,
+        message: 'Field mutations are only permitted within arrow functions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_DELETE_OP: {
+        code: 1192,
+        message: 'Use of the delete operator is prohibited within template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_BODY: {
+        code: 1193,
+        message: 'The body of arrow functions in template expressions must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_KIND: {
+        code: 1194,
+        message: 'Arrow functions in template expressions cannot be {0}.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_EARLY_STAGE_FEATURE: {
+        code: 1195,
+        message: 'Early-stage JS features are disallowed in template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_PROHIBITED_NODE_TYPE: {
+        code: 1196,
+        message: 'Use of {} is disallowed within template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_COMMENTS_DISALLOWED: {
+        code: 1197,
+        message: 'Use of comments is disallowed within template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

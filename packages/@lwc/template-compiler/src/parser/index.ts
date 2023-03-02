@@ -463,6 +463,23 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
         return parsedTextNodes;
     }
 
+    // TODO [#3370]: remove experimental template expression flag
+    if (ctx.config.experimentalComplexExpressions && isExpression(rawText)) {
+        // Implementation of the lexer ensures that each text-node template expression
+        // will be contained in its own text node. Adjacent static text will be in
+        // separate text nodes.
+        const preparsedExpression = ctx.preparsedJsExpressions!.get(location.startOffset);
+        if (!preparsedExpression) {
+            throw new Error('Implementation error: cannot find preparsed template expression');
+        }
+
+        const value = {
+            ...preparsedExpression,
+            location: ast.sourceLocation(location),
+        };
+        return [ast.text(rawText, value, location)];
+    }
+
     // Split the text node content arround expression and create node for each
     const tokenizedContent = rawText.split(EXPRESSION_RE);
 
@@ -1750,6 +1767,11 @@ function getTemplateAttribute(
     );
 
     let attrValue: Literal | Expression;
+
+    // TODO [#3370]: If complex template expressions are adopted, `preparsedJsExpressions`
+    // should be checked. However, to avoid significant complications in the internal types,
+    // arising from supporting both implementations simultaneously, we will re-parse the
+    // expression here when `ctx.config.experimentalComplexExpressions` is true.
     if (isExpression(value) && !escapedExpression) {
         attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
