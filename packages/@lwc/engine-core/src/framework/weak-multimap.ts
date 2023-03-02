@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined } from '@lwc/shared';
+import { ArrayPush, ArraySplice, isUndefined } from '@lwc/shared';
 
 const supportsWeakRefs =
     typeof WeakRef === 'function' && typeof FinalizationRegistry === 'function';
@@ -61,7 +61,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         for (let i = weakRefs.length - 1; i >= 0; i--) {
             const vm = weakRefs[i].deref();
             if (isUndefined(vm)) {
-                weakRefs.splice(i, 1); // remove
+                ArraySplice.call(weakRefs, i, 1); // remove
             }
         }
     });
@@ -90,7 +90,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         const weakRefs = this._getWeakRefs(key);
         // We could check for duplicate values here, but it doesn't seem worth it.
         // We transform the output into a Set anyway
-        weakRefs.push(new WeakRef<V>(value));
+        ArrayPush.call(weakRefs, new WeakRef<V>(value));
 
         // It's important here not to leak the second argument, which is the "held value." The FinalizationRegistry
         // effectively creates a strong reference between the first argument (the "target") and the held value. When
