@@ -39,7 +39,7 @@ function rehydrateHotTemplate(tpl: Template): boolean {
     }
     // Resetting the Set since these VMs are no longer related to this template, instead
     // they will get re-associated once these instances are rehydrated.
-    activeTemplates.clear(tpl);
+    activeTemplates.delete(tpl);
     return true;
 }
 
@@ -52,7 +52,7 @@ function rehydrateHotStyle(style: StylesheetFactory): boolean {
     }
     // Resetting the Set since these VMs are no longer related to this style, instead
     // they will get re-associated once these instances are rehydrated.
-    activeStyles.clear(style);
+    activeStyles.delete(style);
     return true;
 }
 
@@ -77,7 +77,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
     }
     // resetting the Set since these VMs are no longer related to this constructor, instead
     // they will get re-associated once these instances are rehydrated.
-    activeComponents.clear(Ctor);
+    activeComponents.delete(Ctor);
     return canRefreshAllInstances;
 }
 

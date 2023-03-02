@@ -12,8 +12,7 @@ const supportsWeakRefs =
 
 /**
  * A map where the keys are weakly held and the values are a Set that are also each weakly held.
- * The goal is to avoid leaking the Values, which is what would happen with a WeakMap<T, Set<V>>.
- *
+ * The goal is to avoid leaking the values, which is what would happen with a WeakMap<K, Set<V>>.
  *
  * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
  * It leaks in legacy browsers, which may be undesired.
@@ -21,7 +20,7 @@ const supportsWeakRefs =
 export interface WeakMultiMap<T extends object, V extends object> {
     get(key: T): ReadonlySet<V>;
     add(key: T, vm: V): void;
-    clear(key: T): void;
+    delete(key: T): void;
 }
 
 // In browsers that doesn't support WeakRefs, the values will still leak, but at least the keys won't
@@ -44,7 +43,7 @@ class LegacyWeakMultiMap<K extends object, V extends object> implements WeakMult
         const set = this._getValues(key);
         set.add(vm);
     }
-    clear(key: K) {
+    delete(key: K) {
         this._map.delete(key);
     }
 }
@@ -102,7 +101,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         // https://gist.github.com/nolanlawson/79a3d36e8e6cc25c5048bb17c1795aea
         this._registry.register(value, weakRefs);
     }
-    clear(key: K) {
+    delete(key: K) {
         this._map.delete(key);
     }
 }
