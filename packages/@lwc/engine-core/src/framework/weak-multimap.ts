@@ -54,10 +54,9 @@ class LegacyWeakMultiMap<K extends object, V extends object> implements WeakMult
 class ModernWeakMultiMap<K extends object, V extends object> implements WeakMultiMap<K, V> {
     private _map = new WeakMap<K, WeakRef<V>[]>();
 
-    private _registry = new FinalizationRegistry((heldValue: K) => {
+    private _registry = new FinalizationRegistry((weakRefs: WeakRef<V>[]) => {
         // This should be considered an optional cleanup method to remove GC'ed values from their respective arrays.
         // JS VMs are not obligated to call FinalizationRegistry callbacks.
-        const weakRefs = this._getWeakRefs(heldValue);
 
         // Work backwards, removing stale VMs
         for (let i = weakRefs.length - 1; i >= 0; i--) {
@@ -93,7 +92,15 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         // We could check for duplicate values here, but it doesn't seem worth it.
         // We transform the output into a Set anyway
         weakRefs.push(new WeakRef<V>(value));
-        this._registry.register(value, key);
+
+        // It's important here not to leak the second argument, which is the "held value." The FinalizationRegistry
+        // effectively creates a strong reference between the first argument (the "target") and the held value. When
+        // the target is GC'ed, the callback is called, and then the held value is GC'ed.
+        // Putting the key here would mean the key is not GC'ed until the value is GC'ed, which defeats the purpose
+        // of the WeakMap. Whereas putting the weakRefs array here is fine, because it doesn't have a strong reference
+        // to anything. See also this example:
+        // https://gist.github.com/nolanlawson/79a3d36e8e6cc25c5048bb17c1795aea
+        this._registry.register(value, weakRefs);
     }
     clear(key: K) {
         this._map.delete(key);
