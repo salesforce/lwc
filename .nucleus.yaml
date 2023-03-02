@@ -25,7 +25,6 @@ branches:
         - ris-gpta/core_via_components
         - salesforce/builder-framework
         - salesforce-experience-platform-emu/lds-lightning-platform
-        - salesforce-experience-platform-emu/lightning-components
         - salesforce-experience-platform-emu/luvio
         - salesforce-experience-platform-emu/lwr
         - salesforce/lwr-lightning-platform
