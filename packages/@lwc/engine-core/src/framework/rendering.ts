@@ -385,6 +385,7 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
+    // TODO [#3331]: This if branch should be removed in 246 with lwc:dynamic
     if (n1.ctor !== n2.ctor) {
         // If the constructor differs, unmount the current component and mount a new one using the new
         // constructor.
@@ -975,9 +976,16 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
-                    // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2, parent, renderer);
-                    anchor = n2.elm!;
+                    if (isSameVnode(n1, n2)) {
+                        // both vnodes are equivalent, and we just need to patch them
+                        patch(n1, n2, parent, renderer);
+                        anchor = n2.elm!;
+                    } else {
+                        // removing the old vnode since the new one is different
+                        unmount(n1, parent, renderer, true);
+                        mount(n2, parent, renderer, anchor);
+                        anchor = n2.elm!;
+                    }
                 } else {
                     // removing the old vnode since the new one is null
                     unmount(n1, parent, renderer, true);

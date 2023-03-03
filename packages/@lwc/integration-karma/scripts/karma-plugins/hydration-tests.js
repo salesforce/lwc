@@ -58,6 +58,7 @@ async function getCompiledModule(dirName) {
                     loader: 'test-utils',
                     strict: true,
                 },
+                enableDynamicComponents: true,
             }),
         ],
         cache,

@@ -10,6 +10,7 @@ import Conflict from 'x/conflict';
 import Parent from 'x/parent';
 import Light from 'x/light';
 import Dynamic from 'x/dynamic';
+import LwcDynamic from 'x/lwcDynamic';
 import Conditional from 'x/conditional';
 import Construct from 'x/construct';
 import Connect from 'x/connect';
@@ -178,13 +179,40 @@ describe('refs', () => {
         expect(elm.getRefTextContent('foo')).toEqual('foo');
     });
 
-    it('ref on a dynamic component', () => {
+    it('ref on a dynamic component - lwc:dynamic', () => {
+        const elm = createElement('x-dynamic', { is: LwcDynamic });
+        document.body.appendChild(elm);
+
+        // Constructor not set
+        expect(elm.getRef('dynamic')).toBeUndefined();
+
+        // Set the constructor
+        elm.setDynamicConstructor();
+
+        return Promise.resolve().then(() => {
+            const dynamic = elm.getRef('dynamic');
+            // Ref is available after constructor set
+            expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
+            expect(dynamic.getRefTextContent('first')).toEqual('first');
+        });
+    });
+
+    it('ref on a dynamic component - <lwc:component lwc:is={}>', () => {
         const elm = createElement('x-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
-        const dynamic = elm.getRef('dynamic');
-        expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
-        expect(dynamic.getRefTextContent('first')).toEqual('first');
+        // Constructor not set
+        expect(elm.getRef('dynamic')).toBeUndefined();
+
+        // Set the constructor
+        elm.setDynamicConstructor();
+
+        return Promise.resolve().then(() => {
+            const dynamic = elm.getRef('dynamic');
+            // Ref is available after constructor set
+            expect(dynamic.tagName.toLowerCase()).toEqual('x-basic');
+            expect(dynamic.getRefTextContent('first')).toEqual('first');
+        });
     });
 
     it('ref with conditional', () => {

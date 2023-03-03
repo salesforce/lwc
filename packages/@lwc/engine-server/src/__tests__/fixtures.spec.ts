@@ -38,6 +38,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         plugins: [
             lwcRollupPlugin({
                 enableScopedSlots: true,
+                enableDynamicComponents: true,
                 modules: [
                     {
                         dir: modulesDir,
