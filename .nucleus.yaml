@@ -24,9 +24,9 @@ branches:
         - omnistudio/ui-omniscript-components
         - ris-gpta/core_via_components
         - salesforce/builder-framework
-        - salesforce/lds-lightning-platform
-        - salesforce-experience-platform/luvio
-        - salesforce-experience-platform/lwr
+        - salesforce-experience-platform-emu/lds-lightning-platform
+        - salesforce-experience-platform-emu/luvio
+        - salesforce-experience-platform-emu/lwr
         - salesforce/lwr-lightning-platform
         - salesforce/o11y-sample-app
         - salesforcedevs/doc-framework-monorepo
