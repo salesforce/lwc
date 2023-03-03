@@ -33,8 +33,6 @@ export interface RollupLwcOptions {
     experimentalDynamicComponent?: DynamicComponentConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcSpread?: boolean;
-    /** The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.*/
-    enableScopedSlots?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
 }
@@ -132,7 +130,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         preserveHtmlComments,
         experimentalDynamicComponent,
         enableLwcSpread,
-        enableScopedSlots,
         disableSyntheticShadowSupport,
     } = pluginOptions;
 
@@ -255,7 +252,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 preserveHtmlComments,
                 scopedStyles: scoped,
                 enableLwcSpread,
-                enableScopedSlots,
                 disableSyntheticShadowSupport,
             });
 

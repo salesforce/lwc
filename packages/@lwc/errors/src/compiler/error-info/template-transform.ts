@@ -732,22 +732,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_OPTS_LWC_SLOT_BIND: {
-        code: 1167,
-        message:
-            'Invalid lwc:slot-bind usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_OPTS_LWC_SLOT_DATA: {
-        code: 1168,
-        message:
-            'Invalid lwc:slot-data usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY: {
         code: 1169,
         message:

@@ -73,18 +73,12 @@ export interface TransformOptions {
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
     disableSyntheticShadowSupport?: boolean;
 }
 
 type RequiredTransformOptions = Omit<
     TransformOptions,
-    | 'name'
-    | 'namespace'
-    | 'scopedStyles'
-    | 'customRendererConfig'
-    | 'enableLwcSpread'
-    | 'enableScopedSlots'
+    'name' | 'namespace' | 'scopedStyles' | 'customRendererConfig' | 'enableLwcSpread'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
@@ -92,7 +86,6 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
