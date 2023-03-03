@@ -35,6 +35,9 @@ export interface RollupLwcOptions {
     experimentalDynamicDirective?: boolean;
     /** The configuration to pass to `@lwc/template-compiler`. */
     enableDynamicComponents?: boolean;
+    // TODO [#3370]: remove experimental template expression flag
+    /** The configuration to pass to `@lwc/template-compiler`. */
+    experimentalComplexExpressions?: boolean;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.*/
@@ -147,6 +150,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicComponent,
         experimentalDynamicDirective,
         enableDynamicComponents,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         enableLwcSpread,
         enableScopedSlots,
         disableSyntheticShadowSupport,
@@ -308,6 +313,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 experimentalDynamicComponent,
                 experimentalDynamicDirective,
                 enableDynamicComponents,
+                // TODO [#3370]: remove experimental template expression flag
+                experimentalComplexExpressions,
                 preserveHtmlComments,
                 scopedStyles: scoped,
                 enableLwcSpread,

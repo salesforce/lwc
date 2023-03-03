@@ -21,8 +21,22 @@ export interface Config {
      *        {list[0].name}
      *    </template>
      */
-
     experimentalComputedMemberExpression?: boolean;
+
+    // TODO [#3370]: remove experimental template expression flag
+    /**
+     * Enable use of (a subset of) JavaScript expressions in place of template bindings.
+     *
+     *    <template>
+     *        <input
+     *            attr={complex ?? expressions()}
+     *            onchange={({ target }) => componentMethod(target.value)}
+     *        >
+     *            Hey there {inAustralia ? 'mate' : 'friend'}
+     *        </input>
+     *    </template>
+     */
+    experimentalComplexExpressions?: boolean;
 
     /**
      * TODO [#3331]: remove usage of lwc:dynamic in 246
@@ -69,6 +83,8 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'enableLwcSpread',
     'enableScopedSlots',
     'enableStaticContentOptimization',
+    // TODO [#3370]: remove experimental template expression flag
+    'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'enableDynamicComponents',
@@ -129,6 +145,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions: false,
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
