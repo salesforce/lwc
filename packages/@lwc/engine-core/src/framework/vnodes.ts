@@ -133,7 +133,7 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
     return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
-export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
+export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
 

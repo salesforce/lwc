@@ -15,7 +15,7 @@ import {
     ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
 
-import { isComponent, isExternalComponent } from '../shared/ast';
+import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
@@ -193,7 +193,8 @@ function isFrameworkAttribute(attrName: string): boolean {
 }
 
 export function isAttribute(element: BaseElement, attrName: string): boolean {
-    if (isComponent(element)) {
+    // lwc:component will resolve to an LWC custom element at runtime
+    if (isComponent(element) || isLwcComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||

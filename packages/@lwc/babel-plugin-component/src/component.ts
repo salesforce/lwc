@@ -9,7 +9,12 @@ import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import { Visitor } from '@babel/core';
-import { LWC_PACKAGE_ALIAS, REGISTER_COMPONENT_ID, TEMPLATE_KEY } from './constants';
+import {
+    LWC_PACKAGE_ALIAS,
+    REGISTER_COMPONENT_ID,
+    TEMPLATE_KEY,
+    COMPONENT_NAME_KEY,
+} from './constants';
 import { BabelAPI, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {
@@ -49,6 +54,12 @@ function needsComponentRegistration(
     );
 }
 
+function getComponentRegisteredName(t: typeof types, state: LwcBabelPluginPass) {
+    const { namespace, name } = state.opts;
+    const componentName = namespace && name ? `${namespace}-${name}` : '';
+    return t.stringLiteral(componentName);
+}
+
 export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     function createRegisterComponent(
         declarationPath: NodePath<
@@ -66,6 +77,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         const statementPath = declarationPath.getStatementParent();
+        const componentRegisteredName = getComponentRegisteredName(t, state);
         let node = declarationPath.node;
 
         if (declarationPath.isClassDeclaration()) {
@@ -81,7 +93,10 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
 
         return t.callExpression(registerComponentId, [
             node as unknown as types.Expression,
-            t.objectExpression([t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier)]),
+            t.objectExpression([
+                t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
+                t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
+            ]),
         ]);
     }
 

@@ -1,3 +1,5 @@
 {
-   "enableScopedSlots": true
+   "enableScopedSlots": true,
+   "enableDynamicComponents": true,
+   "experimentalDynamicDirective": true
 }

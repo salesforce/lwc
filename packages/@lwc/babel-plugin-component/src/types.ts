@@ -18,6 +18,8 @@ export interface LwcBabelPluginPass extends PluginPass {
             loader?: string;
             strictSpecifier?: boolean;
         };
+        namespace?: string;
+        name?: string;
     };
     dynamicImports?: string[];
     loaderRef?: types.Identifier;

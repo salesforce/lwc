@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 import { isFalse, isUndefined, isNull } from '@lwc/shared';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
@@ -13,74 +14,70 @@ import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { StylesheetFactory } from './stylesheet';
 import { assertNotProd, flattenStylesheets } from './utils';
+import { WeakMultiMap } from './weak-multimap';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
 const swappedStyleMap = new WeakMap<StylesheetFactory, StylesheetFactory>();
 
-const activeTemplates = new WeakMap<Template, Set<VM>>();
-const activeComponents = new WeakMap<LightningElementConstructor, Set<VM>>();
-const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
+// The important thing here is the weak values – VMs are transient (one per component instance) and should be GC'ed,
+// so we don't want to create strong references to them.
+// The weak keys are kind of useless, because Templates, LightningElementConstructors, and StylesheetFactories are
+// never GC'ed. But maybe they will be someday, so we may as well use weak keys too.
+const activeTemplates: WeakMultiMap<Template, VM> = new WeakMultiMap();
+const activeComponents: WeakMultiMap<LightningElementConstructor, VM> = new WeakMultiMap();
+const activeStyles: WeakMultiMap<StylesheetFactory, VM> = new WeakMultiMap();
 
 function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);
-    if (!isUndefined(list)) {
-        list.forEach((vm) => {
-            if (isFalse(vm.isDirty)) {
-                // forcing the vm to rehydrate in the micro-task:
-                markComponentAsDirty(vm);
-                scheduleRehydration(vm);
-            }
-        });
-        // resetting the Set to release the memory of those vm references
-        // since they are not longer related to this template, instead
-        // they will get re-associated once these instances are rehydrated.
-        list.clear();
+    for (const vm of list) {
+        if (isFalse(vm.isDirty)) {
+            // forcing the vm to rehydrate in the micro-task:
+            markComponentAsDirty(vm);
+            scheduleRehydration(vm);
+        }
     }
+    // Resetting the Set since these VMs are no longer related to this template, instead
+    // they will get re-associated once these instances are rehydrated.
+    activeTemplates.delete(tpl);
     return true;
 }
 
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const list = activeStyles.get(style);
-    if (!isUndefined(list)) {
-        list.forEach((vm) => {
-            // if a style definition is swapped, we must reset
-            // vm's template content in the next micro-task:
-            forceRehydration(vm);
-        });
-        // resetting the Set to release the memory of those vm references
-        // since they are not longer related to this style, instead
-        // they will get re-associated once these instances are rehydrated.
-        list.clear();
+    for (const vm of list) {
+        // if a style definition is swapped, we must reset
+        // vm's template content in the next micro-task:
+        forceRehydration(vm);
     }
+    // Resetting the Set since these VMs are no longer related to this style, instead
+    // they will get re-associated once these instances are rehydrated.
+    activeStyles.delete(style);
     return true;
 }
 
 function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
     const list = activeComponents.get(Ctor);
     let canRefreshAllInstances = true;
-    if (!isUndefined(list)) {
-        list.forEach((vm) => {
-            const { owner } = vm;
-            if (!isNull(owner)) {
-                // if a component class definition is swapped, we must reset
-                // owner's template content in the next micro-task:
-                forceRehydration(owner);
-            } else {
-                // the hot swapping for components only work for instances of components
-                // created from a template, root elements can't be swapped because we
-                // don't have a way to force the creation of the element with the same state
-                // of the current element.
-                // Instead, we can report the problem to the caller so it can take action,
-                // for example: reload the entire page.
-                canRefreshAllInstances = false;
-            }
-        });
-        // resetting the Set to release the memory of those vm references
-        // since they are not longer related to this constructor, instead
-        // they will get re-associated once these instances are rehydrated.
-        list.clear();
+    for (const vm of list) {
+        const { owner } = vm;
+        if (!isNull(owner)) {
+            // if a component class definition is swapped, we must reset
+            // owner's template content in the next micro-task:
+            forceRehydration(owner);
+        } else {
+            // the hot swapping for components only work for instances of components
+            // created from a template, root elements can't be swapped because we
+            // don't have a way to force the creation of the element with the same state
+            // of the current element.
+            // Instead, we can report the problem to the caller so it can take action,
+            // for example: reload the entire page.
+            canRefreshAllInstances = false;
+        }
     }
+    // resetting the Set since these VMs are no longer related to this constructor, instead
+    // they will get re-associated once these instances are rehydrated.
+    activeComponents.delete(Ctor);
     return canRefreshAllInstances;
 }
 
@@ -127,76 +124,29 @@ export function setActiveVM(vm: VM) {
 
     // tracking active component
     const Ctor = vm.def.ctor;
-    let componentVMs = activeComponents.get(Ctor);
-    if (isUndefined(componentVMs)) {
-        componentVMs = new Set();
-        activeComponents.set(Ctor, componentVMs);
-    }
     // this will allow us to keep track of the hot components
-    componentVMs.add(vm);
+    activeComponents.add(Ctor, vm);
 
     // tracking active template
     const tpl = vm.cmpTemplate;
     if (tpl) {
-        let templateVMs = activeTemplates.get(tpl);
-        if (isUndefined(templateVMs)) {
-            templateVMs = new Set();
-            activeTemplates.set(tpl, templateVMs);
-        }
         // this will allow us to keep track of the templates that are
         // being used by a hot component
-        templateVMs.add(vm);
+        activeTemplates.add(tpl, vm);
 
         // tracking active styles associated to template
         const stylesheets = tpl.stylesheets;
         if (!isUndefined(stylesheets)) {
-            flattenStylesheets(stylesheets).forEach((stylesheet) => {
+            for (const stylesheet of flattenStylesheets(stylesheets)) {
                 // this is necessary because we don't hold the list of styles
                 // in the vm, we only hold the selected (already swapped template)
                 // but the styles attached to the template might not be the actual
                 // active ones, but the swapped versions of those.
-                stylesheet = getStyleOrSwappedStyle(stylesheet);
-                let stylesheetVMs = activeStyles.get(stylesheet);
-                if (isUndefined(stylesheetVMs)) {
-                    stylesheetVMs = new Set();
-                    activeStyles.set(stylesheet, stylesheetVMs);
-                }
+                const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
                 // this will allow us to keep track of the stylesheet that are
                 // being used by a hot component
-                stylesheetVMs.add(vm);
-            });
-        }
-    }
-}
-
-export function removeActiveVM(vm: VM) {
-    assertNotProd(); // this method should never leak to prod
-
-    // tracking inactive component
-    const Ctor = vm.def.ctor;
-    let list = activeComponents.get(Ctor);
-    if (!isUndefined(list)) {
-        // deleting the vm from the set to avoid leaking memory
-        list.delete(vm);
-    }
-    // removing inactive template
-    const tpl = vm.cmpTemplate;
-    if (tpl) {
-        list = activeTemplates.get(tpl);
-        if (!isUndefined(list)) {
-            // deleting the vm from the set to avoid leaking memory
-            list.delete(vm);
-        }
-        // removing active styles associated to template
-        const styles = tpl.stylesheets;
-        if (!isUndefined(styles)) {
-            flattenStylesheets(styles).forEach((style) => {
-                list = activeStyles.get(style);
-                if (!isUndefined(list)) {
-                    // deleting the vm from the set to avoid leaking memory
-                    list.delete(vm);
-                }
-            });
+                activeStyles.add(swappedStylesheet, vm);
+            }
         }
     }
 }

@@ -21,5 +21,6 @@ _registerDecorators(Outer, {
   fields: ["a"]
 });
 export default _registerComponent(Outer, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

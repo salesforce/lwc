@@ -42,7 +42,6 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, isVFragment } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
@@ -246,10 +245,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        removeActiveVM(vm);
     }
 }
 

@@ -23,10 +23,22 @@ export interface Config {
      */
 
     experimentalComputedMemberExpression?: boolean;
+
     /**
-     * Enable <x-foo lwc:directive={expr}>
+     * TODO [#3331]: remove usage of lwc:dynamic in 246
+     *
+     * Enable lwc:dynamic directive - Deprecated
+     *
+     * <x-foo lwc:dynamic={expr}>
      */
     experimentalDynamicDirective?: boolean;
+
+    /**
+     * When true, enables `lwc:is` directive.
+     *
+     * <lwc:component lwc:is={expr}>
+     */
+    enableDynamicComponents?: boolean;
 
     /**
      * When true, HTML comments in the template will be preserved.
@@ -59,6 +71,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'enableStaticContentOptimization',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
+    'enableDynamicComponents',
     'preserveHtmlComments',
 ]);
 
@@ -117,6 +130,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
+        enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: false,
         enableScopedSlots: false,
