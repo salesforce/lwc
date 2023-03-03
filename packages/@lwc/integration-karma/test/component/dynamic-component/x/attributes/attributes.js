@@ -23,6 +23,6 @@ export default class extends LightningElement {
 
     @api
     handleClick(evt) {
-        this.clickEvtSrcElement = evt.target?.tagName.toLowerCase();
+        this.clickEvtSrcElement = evt.target.tagName.toLowerCase();
     }
 }
