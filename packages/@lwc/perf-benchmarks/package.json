@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "2.38.1",
+    "version": "2.39.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -17,10 +17,10 @@
         "Also note that we use rollup-plugin-node-resolve-v13 because Best uses an old version of Rollup."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "2.38.1",
-        "@lwc/engine-server": "2.38.1",
-        "@lwc/perf-benchmarks-components": "2.38.1",
-        "@lwc/synthetic-shadow": "2.38.1"
+        "@lwc/engine-dom": "2.39.0",
+        "@lwc/engine-server": "2.39.0",
+        "@lwc/perf-benchmarks-components": "2.39.0",
+        "@lwc/synthetic-shadow": "2.39.0"
     },
     "devDependencies": {
         "@best/cli": "^8.1.3",
