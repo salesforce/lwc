@@ -471,7 +471,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_DYNAMIC: {
         code: 1128,
         message:
-            'Invalid lwc:dynamic usage. The LWC dynamic Directive must be enabled in order to use this feature.',
+            'Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -548,7 +548,7 @@ export const ParserDiagnostics = {
     LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT: {
         code: 1140,
         message:
-            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on a custom element.',
+            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on a custom element or special LWC managed elements denoted with lwc:*.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -844,6 +844,51 @@ export const ParserDiagnostics = {
         code: 1182,
         message: `Multiple if: directives found on '{0}'. Only one if: directive is allowed; the rest are ignored.Only one If directive is allowed. The rest are ignored.`,
         level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE: {
+        code: 1183,
+        message: `<lwc:component> must have an 'lwc:is' attribute.`,
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    UNSUPPORTED_LWC_TAG_NAME: {
+        code: 1184,
+        message: '{0} is not a special LWC tag name and will be treated as an HTML element.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    INVALID_LWC_IS_DIRECTIVE_VALUE: {
+        code: 1185,
+        message:
+            'Invalid lwc:is usage for value {0}. The value assigned to lwc:is must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    LWC_IS_INVALID_ELEMENT: {
+        code: 1186,
+        message:
+            'Invalid lwc:is usage for element {0}. The directive can only be used with <lwc:component>',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    DEPRECATED_LWC_DYNAMIC_ATTRIBUTE: {
+        code: 1187,
+        message: `The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.`,
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS: {
+        code: 1188,
+        message:
+            'Invalid dynamic components usage, lwc:component and lwc:is can only be used when dynamic components have been enabled.',
+        level: DiagnosticLevel.Error,
         url: '',
     },
 };

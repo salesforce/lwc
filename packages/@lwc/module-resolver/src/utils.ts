@@ -17,6 +17,7 @@ import {
     ModuleResolverConfig,
     RegistryEntry,
     InnerResolverOptions,
+    RegistryType,
 } from './types';
 import { isObject } from './shared';
 
@@ -203,11 +204,13 @@ export function getLwcConfig(dirname: string): LwcConfig {
 export function createRegistryEntry(
     entry: string,
     specifier: string,
+    type: RegistryType,
     opts: InnerResolverOptions
 ): RegistryEntry {
     return {
         entry,
         specifier,
+        type,
         scope: opts.rootDir,
     };
 }

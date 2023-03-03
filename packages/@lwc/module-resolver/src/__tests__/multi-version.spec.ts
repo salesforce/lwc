@@ -6,6 +6,7 @@
  */
 import '../../scripts/jest/types';
 import { resolveModule } from '../index';
+import { RegistryType } from '../types';
 import { fixture, NO_LWC_MODULE_FOUND_CODE } from './test-utils';
 
 describe('multi version', () => {
@@ -15,6 +16,7 @@ describe('multi version', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.dir,
             scope: fixture('multi-version/node_modules/fancy-components'),
             entry: fixture(
                 'multi-version/node_modules/fancy-components/src/modules/fancy/bar/bar.js'
@@ -28,6 +30,7 @@ describe('multi version', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('multi-version/node_modules/@ui/components'),
             entry: fixture(
                 'multi-version/node_modules/@ui/components/src/modules/ui/button/button.js'
@@ -41,6 +44,7 @@ describe('multi version', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('multi-version/node_modules/@ui/components'),
             entry: fixture('multi-version/node_modules/@ui/components/src/modules/ui/icon/icon.js'),
         });
@@ -52,6 +56,7 @@ describe('multi version', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture(
                 'multi-version/node_modules/fancy-components/node_modules/@ui/components'
             ),

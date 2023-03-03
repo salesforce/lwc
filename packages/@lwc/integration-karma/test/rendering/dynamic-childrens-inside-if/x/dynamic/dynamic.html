@@ -1,0 +1,10 @@
+<template>
+    <button onclick={toggleSection}>toggle section</button>
+
+    <div>
+        <template if:true={sectionOpen}>
+            <p>item</p>
+            <lwc:component lwc:is={ctor}></lwc:component>
+        </template>
+    </div>
+</template>

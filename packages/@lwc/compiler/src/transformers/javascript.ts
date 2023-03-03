@@ -24,6 +24,8 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
+        namespace,
+        name,
     } = options;
 
     let result;
@@ -36,12 +38,12 @@ export default function scriptTransform(
             babelrc: false,
             configFile: false,
 
-            // Force Babel to generate new line and whitespaces. This prevent Babel from generating
+            // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
 
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, namespace, name }],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is

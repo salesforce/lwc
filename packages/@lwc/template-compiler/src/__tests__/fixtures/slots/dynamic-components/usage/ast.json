@@ -1,0 +1,230 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 162,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 151,
+                "end": 162
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 21,
+                    "start": 15,
+                    "end": 150,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 34,
+                        "start": 15,
+                        "end": 44
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 21,
+                        "start": 134,
+                        "end": 150
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "name": "ctor",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 20,
+                                "endLine": 2,
+                                "endColumn": 33,
+                                "start": 30,
+                                "end": 43
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 20,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 30,
+                            "end": 43
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 49,
+                            "start": 53,
+                            "end": 93,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 26,
+                                "start": 53,
+                                "end": 70
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 45,
+                                "endLine": 3,
+                                "endColumn": 49,
+                                "start": 89,
+                                "end": 93
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "slot",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "header"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 25,
+                                    "start": 56,
+                                    "end": 69
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Header Slot Content",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Header Slot Content"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 26,
+                                    "endLine": 3,
+                                    "endColumn": 45,
+                                    "start": 70,
+                                    "end": 89
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 36,
+                            "start": 102,
+                            "end": 129,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 17,
+                                "start": 102,
+                                "end": 110
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 32,
+                                "endLine": 4,
+                                "endColumn": 36,
+                                "start": 125,
+                                "end": 129
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "slot",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": true
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 12,
+                                    "endLine": 4,
+                                    "endColumn": 16,
+                                    "start": 105,
+                                    "end": 109
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Default Content",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Default Content"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 32,
+                                    "start": 110,
+                                    "end": 125
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

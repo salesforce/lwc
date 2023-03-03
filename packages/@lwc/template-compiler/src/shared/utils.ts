@@ -32,3 +32,12 @@ export function toPropertyName(attr: string) {
 export function isCustomElementTag(tagName: string): boolean {
     return tagName.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tagName);
 }
+
+/**
+ * Test if given tag name is a custom LWC tag denoted lwc:*.
+ * @param tagName element tag name to test
+ * @returns true if given tag name represents a custom LWC tag, false otherwise.
+ */
+export function isLwcElementTag(tagName: string): boolean {
+    return tagName.startsWith('lwc:');
+}

@@ -8,7 +8,7 @@
 // This set is for attributes that have a camel cased property name
 // For example, div.tabIndex.
 // We do not want users to define @api properties with these names
-// Because the template will never call them. It'll alawys call the camel
+// Because the template will never call them. It'll always call the camel
 // cased version.
 const AMBIGUOUS_PROP_SET = new Map([
     ['bgcolor', 'bgColor'],
@@ -51,6 +51,7 @@ const DECORATOR_TYPES = {
 const REGISTER_COMPONENT_ID = 'registerComponent';
 const REGISTER_DECORATORS_ID = 'registerDecorators';
 const TEMPLATE_KEY = 'tmpl';
+const COMPONENT_NAME_KEY = 'sel';
 
 module.exports = {
     AMBIGUOUS_PROP_SET,
@@ -62,4 +63,5 @@ module.exports = {
     REGISTER_COMPONENT_ID,
     REGISTER_DECORATORS_ID,
     TEMPLATE_KEY,
+    COMPONENT_NAME_KEY,
 };

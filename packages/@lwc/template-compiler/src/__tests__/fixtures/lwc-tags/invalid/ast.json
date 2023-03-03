@@ -1,0 +1,79 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 128,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 117,
+                "end": 128
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " The only valid LWC tags are listed in LwcTagName of types.ts ",
+                "value": " The only valid LWC tags are listed in LwcTagName of types.ts ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 74,
+                    "start": 15,
+                    "end": 84
+                }
+            },
+            {
+                "type": "Element",
+                "name": "lwc:invalid",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 32,
+                    "start": 89,
+                    "end": 116,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 18,
+                        "start": 89,
+                        "end": 102
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 18,
+                        "endLine": 3,
+                        "endColumn": 32,
+                        "start": 102,
+                        "end": 116
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

@@ -10,8 +10,8 @@ import { URLSearchParams } from 'url';
 
 import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/compiler';
-import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
+import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
+import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {
@@ -30,7 +30,11 @@ export interface RollupLwcOptions {
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
     /** The configuration to pass to `@lwc/compiler`. */
-    experimentalDynamicComponent?: DynamicComponentConfig;
+    experimentalDynamicComponent?: DynamicImportConfig;
+    /** The configuration to pass to `@lwc/template-compiler`. */
+    experimentalDynamicDirective?: boolean;
+    /** The configuration to pass to `@lwc/template-compiler`. */
+    enableDynamicComponents?: boolean;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/template-compiler` to enable scoped slots feature.*/
@@ -70,19 +74,29 @@ function isImplicitCssImport(importee: string, importer: string): boolean {
     );
 }
 
-interface scopedOption {
+interface Descriptor {
     filename: string;
     scoped: boolean;
+    specifier: string | null;
 }
 
-function parseQueryParamsForScopedOption(id: string): scopedOption {
+function parseDescriptorFromFilePath(id: string): Descriptor {
     const [filename, query] = id.split('?', 2);
-    const params = query && new URLSearchParams(query);
-    const scoped = !!(params && params.get('scoped'));
+    const params = new URLSearchParams(query);
+    const scoped = params.has('scoped');
+    const specifier = params.get('specifier');
     return {
         filename,
+        specifier,
         scoped,
     };
+}
+
+function appendAliasSpecifierQueryParam(id: string, specifier: string): string {
+    const [filename, query] = id.split('?', 2);
+    const params = new URLSearchParams(query);
+    params.set('specifier', specifier);
+    return `${filename}?${params.toString()}`;
 }
 
 function transformWarningToRollupWarning(
@@ -131,6 +145,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         sourcemap = false,
         preserveHtmlComments,
         experimentalDynamicComponent,
+        experimentalDynamicDirective,
+        enableDynamicComponents,
         enableLwcSpread,
         enableScopedSlots,
         disableSyntheticShadowSupport,
@@ -164,38 +180,78 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         },
 
         resolveId(importee, importer) {
-            // Normalize relative import to absolute import
-            // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
-            // be in absolute format (e.g. "/path/to/module.js") so we have to check that as well.
-            if ((importee.startsWith('.') || importee.startsWith('/')) && importer) {
-                const importerExt = path.extname(importer);
-                const ext = path.extname(importee) || importerExt;
+            if (importer) {
+                // Importer has been resolved already and may contain an alias specifier
+                const { filename: importerFilename } = parseDescriptorFromFilePath(importer);
 
-                const normalizedPath = path.resolve(path.dirname(importer), importee);
-                let absPath = pluginUtils.addExtension(normalizedPath, ext);
+                // Normalize relative import to absolute import
+                // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
+                // be in absolute format (e.g. "/path/to/module.js") so we have to check that as well.
+                if (importee.startsWith('.') || importee.startsWith('/')) {
+                    const importerExt = path.extname(importerFilename);
+                    // if importee has query params importeeExt will store them.
+                    // ex: if scoped.css?scoped=true, importeeExt = .css?scoped=true
+                    const importeeExt = path.extname(importee) || importerExt;
 
-                const { filename } = parseQueryParamsForScopedOption(absPath);
-                absPath = filename; // remove query param
+                    const importeeResolvedPath = path.resolve(
+                        path.dirname(importerFilename),
+                        importee
+                    );
+                    // importeeAbsPath will contain query params because they are attached to importeeExt.
+                    // ex: myfile.scoped.css?scoped=true
+                    const importeeAbsPath = pluginUtils.addExtension(
+                        importeeResolvedPath,
+                        importeeExt
+                    );
 
-                if (isImplicitHTMLImport(absPath, importer) && !fs.existsSync(absPath)) {
-                    return IMPLICIT_DEFAULT_HTML_PATH;
-                }
+                    // remove query params
+                    const { filename: importeeNormalizedFilename } =
+                        parseDescriptorFromFilePath(importeeAbsPath);
 
-                if (isImplicitCssImport(absPath, importer) && !fs.existsSync(absPath)) {
-                    return IMPLICIT_DEFAULT_CSS_PATH;
-                }
+                    if (
+                        isImplicitHTMLImport(importeeNormalizedFilename, importerFilename) &&
+                        !fs.existsSync(importeeNormalizedFilename)
+                    ) {
+                        return IMPLICIT_DEFAULT_HTML_PATH;
+                    }
 
-                return pluginUtils.addExtension(normalizedPath, ext);
-            } else if (importer) {
-                // Could be an import like `import component from 'x/component'`
-                try {
-                    return resolveModule(importee, importer, {
-                        modules,
-                        rootDir,
-                    }).entry;
-                } catch (err: any) {
-                    if (err && err.code !== 'NO_LWC_MODULE_FOUND') {
-                        throw err;
+                    if (
+                        isImplicitCssImport(importeeNormalizedFilename, importerFilename) &&
+                        !fs.existsSync(importeeNormalizedFilename)
+                    ) {
+                        return IMPLICIT_DEFAULT_CSS_PATH;
+                    }
+
+                    return importeeAbsPath;
+                } else {
+                    // Could be an import like `import component from 'x/component'`
+                    try {
+                        const { entry, specifier, type } = resolveModule(importee, importer, {
+                            modules,
+                            rootDir,
+                        });
+
+                        if (type === RegistryType.alias) {
+                            // specifier must be in in namespace/name format
+                            const [namespace, name, ...rest] = specifier.split('/');
+                            // Alias specifier must have been in the namespace / name format
+                            // to be used as the tag name of a custom element.
+                            // Verify 3 things about the alias specifier:
+                            // 1. The namespace is a non-empty string
+                            // 2. The name is an non-empty string
+                            // 3. The specifier was in a namespace / name format, ie no extra '/' (this is what rest checks)
+                            const hasValidSpecifier =
+                                !!namespace?.length && !!name?.length && !rest?.length;
+                            if (hasValidSpecifier) {
+                                return appendAliasSpecifierQueryParam(entry, specifier);
+                            }
+                        }
+
+                        return entry;
+                    } catch (err: any) {
+                        if (err && err.code !== 'NO_LWC_MODULE_FOUND') {
+                            throw err;
+                        }
                     }
                 }
             }
@@ -212,18 +268,16 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             // Have to parse the `?scoped=true` in `load`, because it's not guaranteed
             // that `resolveId` will always be called (e.g. if another plugin resolves it first)
-            const { filename } = parseQueryParamsForScopedOption(id);
-            id = filename; // remove query param
+            const { filename, specifier: hasAlias } = parseDescriptorFromFilePath(id);
+            const isCSS = path.extname(filename) === '.css';
 
-            const isCSS = path.extname(id) === '.css';
-
-            if (isCSS) {
-                const exists = fs.existsSync(id);
+            if (isCSS || hasAlias) {
+                const exists = fs.existsSync(filename);
                 if (exists) {
-                    return fs.readFileSync(id, 'utf8');
-                } else {
+                    return fs.readFileSync(filename, 'utf8');
+                } else if (isCSS) {
                     this.warn(
-                        `The imported CSS file ${id} does not exist: Importing it as undefined. ` +
+                        `The imported CSS file ${filename} does not exist: Importing it as undefined. ` +
                             `This behavior may be removed in a future version of LWC. Please avoid importing a ` +
                             `CSS file that does not exist.`
                     );
@@ -233,25 +287,27 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         },
 
         transform(src, id) {
+            const { scoped, filename, specifier } = parseDescriptorFromFilePath(id);
+
             // Filter user-land config and lwc import
-            if (!filter(id)) {
+            if (!filter(filename)) {
                 return;
             }
 
-            const { scoped, filename } = parseQueryParamsForScopedOption(id);
-            if (scoped) {
-                id = filename; // remove query param
-            }
+            // Extract module name and namespace from file path.
+            // Specifier will only exist for modules with alias paths.
+            // Otherwise, use the file directory structure to resolve namespace and name.
+            const [namespace, name] =
+                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
-            // Extract module name and namespace from file path
-            const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
-
-            const { code, map, warnings } = transformSync(src, id, {
+            const { code, map, warnings } = transformSync(src, filename, {
                 name,
                 namespace,
                 outputConfig: { sourcemap },
                 stylesheetConfig,
                 experimentalDynamicComponent,
+                experimentalDynamicDirective,
+                enableDynamicComponents,
                 preserveHtmlComments,
                 scopedStyles: scoped,
                 enableLwcSpread,
@@ -261,7 +317,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             if (warnings) {
                 for (const warning of warnings) {
-                    this.warn(transformWarningToRollupWarning(warning, src, id));
+                    this.warn(transformWarningToRollupWarning(warning, src, filename));
                 }
             }
 

@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS = {
     disableSyntheticShadowSupport: false,
 };
 
-const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {
+const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
     loader: '',
     strictSpecifier: true,
 };
@@ -56,7 +56,7 @@ export interface OutputConfig {
     minify?: boolean;
 }
 
-export interface DynamicComponentConfig {
+export interface DynamicImportConfig {
     loader?: string;
     strictSpecifier?: boolean;
 }
@@ -65,7 +65,13 @@ export interface TransformOptions {
     name?: string;
     namespace?: string;
     stylesheetConfig?: StylesheetConfig;
-    experimentalDynamicComponent?: DynamicComponentConfig;
+    // TODO [#3331]: deprecate / rename this compiler option in 246
+    /* Config applied in usage of dynamic import statements in javascript */
+    experimentalDynamicComponent?: DynamicImportConfig;
+    /* Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
+    experimentalDynamicDirective?: boolean;
+    /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
+    enableDynamicComponents?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
@@ -85,6 +91,9 @@ type RequiredTransformOptions = Omit<
     | 'customRendererConfig'
     | 'enableLwcSpread'
     | 'enableScopedSlots'
+    | 'enableDynamicComponents'
+    | 'experimentalDynamicDirective'
+    | 'experimentalDynamicComponent'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
@@ -93,6 +102,9 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     enableScopedSlots?: boolean;
+    enableDynamicComponents?: boolean;
+    experimentalDynamicDirective?: boolean;
+    experimentalDynamicComponent?: DynamicImportConfig;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
@@ -165,8 +177,8 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         },
     };
 
-    const experimentalDynamicComponent: Required<DynamicComponentConfig> = {
-        ...DEFAULT_DYNAMIC_CMP_CONFIG,
+    const experimentalDynamicComponent: Required<DynamicImportConfig> = {
+        ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
         ...options.experimentalDynamicComponent,
     };
 
