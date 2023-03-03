@@ -96,6 +96,10 @@ export interface DynamicDirective extends Directive<'Dynamic'> {
     value: Expression;
 }
 
+export interface IsDirective extends Directive<'Is'> {
+    value: Expression;
+}
+
 export interface DomDirective extends Directive<'Dom'> {
     value: Literal<'manual'>;
 }
@@ -131,6 +135,7 @@ export interface SlotDataDirective extends Directive<'SlotData'> {
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
+    | IsDirective
     | DomDirective
     | InnerHTMLDirective
     | RefDirective
@@ -184,7 +189,25 @@ export interface Slot extends AbstractBaseElement {
     slotName: string;
 }
 
-export type BaseElement = Element | ExternalComponent | Component | Slot;
+// Special LWC tag names denoted with lwc:*
+export interface BaseLwcElement<T extends `${LwcTagName}`> extends AbstractBaseElement {
+    type: 'Lwc';
+    name: T;
+}
+
+/**
+ * Node representing the lwc:component element
+ */
+export interface LwcComponent extends BaseLwcElement<'lwc:component'> {}
+
+/**
+ * All supported special LWC tags, they should all begin with lwc:*
+ */
+export enum LwcTagName {
+    Component = 'lwc:component',
+}
+
+export type BaseElement = Element | ExternalComponent | Component | Slot | LwcComponent;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
@@ -292,7 +315,9 @@ export type Node =
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
     Dynamic = 'lwc:dynamic',
+    Is = 'lwc:is',
     External = 'lwc:external',
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',

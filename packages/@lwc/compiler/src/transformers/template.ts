@@ -33,8 +33,11 @@ export default function templateTransform(
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
+        enableDynamicComponents,
+        experimentalDynamicDirective: deprecatedDynamicDirective,
     } = options;
-    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
+    const experimentalDynamicDirective =
+        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
@@ -44,6 +47,7 @@ export default function templateTransform(
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
+            enableDynamicComponents,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

@@ -6,6 +6,7 @@
  */
 import '../../scripts/jest/types';
 import { resolveModule } from '../index';
+import { RegistryType } from '../types';
 import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
 describe('parameters checks', () => {
@@ -45,6 +46,7 @@ describe('alias resolution', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: dirname,
             entry: fixture('custom-resolution/custom/module.js'),
         });
@@ -70,6 +72,7 @@ describe('dir resolution', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.dir,
             scope: dirname,
             entry: fixture('module-entries/modules/ns/jsEntry/jsEntry.js'),
         });
@@ -107,6 +110,7 @@ describe('NPM resolution', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('from-npm/node_modules/deps'),
             entry: fixture('from-npm/node_modules/deps/deps.js'),
         });
@@ -118,6 +122,7 @@ describe('NPM resolution', () => {
 
         expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: fixture('from-npm/node_modules/@scoped/deps'),
             entry: fixture('from-npm/node_modules/@scoped/deps/scoped-deps.js'),
         });
@@ -188,6 +193,7 @@ describe('NPM resolution', () => {
 
             expect(resolveModule(specifier, dirname)).toEqual({
                 specifier,
+                type: RegistryType.alias,
                 scope: fixture('symlink/app/node_modules/linked'),
                 entry: fixture('symlink/app/node_modules/linked/linked.js'),
             });
@@ -199,6 +205,7 @@ describe('NPM resolution', () => {
 
             expect(resolveModule(specifier, dirname)).toEqual({
                 specifier,
+                type: RegistryType.alias,
                 scope: fixture('symlink/app/node_modules/shared'),
                 entry: fixture('symlink/app/node_modules/shared/shared.js'),
             });
@@ -223,6 +230,7 @@ describe('resolution override', () => {
 
         expect(resolveModule(specifier, dirname, options)).toEqual({
             specifier,
+            type: RegistryType.alias,
             scope: dirname,
             entry: fixture('no-config/custom/module.js'),
         });
@@ -242,6 +250,7 @@ describe('resolution override', () => {
 
         expect(resolveModule(specifier, dirname, options)).toEqual({
             specifier,
+            type: RegistryType.dir,
             scope: dirname,
             entry: fixture('no-config/modules/foo/bar/bar.css'),
         });

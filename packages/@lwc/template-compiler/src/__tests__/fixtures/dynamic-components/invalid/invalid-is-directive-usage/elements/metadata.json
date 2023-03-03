@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1186,
+            "message": "LWC1186: Invalid lwc:is usage for element <x-foo>. The directive can only be used with <lwc:component>",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 43,
+                "length": 29
+            }
+        },
+        {
+            "code": 1186,
+            "message": "LWC1186: Invalid lwc:is usage for element <div>. The directive can only be used with <lwc:component>",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 5,
+                "start": 104,
+                "length": 25
+            }
+        },
+        {
+            "code": 1186,
+            "message": "LWC1186: Invalid lwc:is usage for element <template>. The directive can only be used with <lwc:component>",
+            "level": 1,
+            "location": {
+                "line": 9,
+                "column": 5,
+                "start": 164,
+                "length": 35
+            }
+        }
+    ]
+}

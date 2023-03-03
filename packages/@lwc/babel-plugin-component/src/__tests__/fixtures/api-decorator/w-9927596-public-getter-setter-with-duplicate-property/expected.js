@@ -14,5 +14,6 @@ _registerDecorators(Text, {
   fields: ["foo"]
 });
 export default _registerComponent(Text, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

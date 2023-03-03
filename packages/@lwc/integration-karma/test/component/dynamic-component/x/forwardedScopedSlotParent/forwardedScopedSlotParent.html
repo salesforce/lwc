@@ -1,0 +1,7 @@
+<template>
+    <x-forwarded-scoped-slot-child>
+        <template lwc:slot-data="childSlotCtor">
+            <lwc:component lwc:is={childSlotCtor}></lwc:component>
+        </template>
+    </x-forwarded-scoped-slot-child>
+</template>
