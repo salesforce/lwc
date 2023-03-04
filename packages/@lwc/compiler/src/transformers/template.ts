@@ -29,6 +29,8 @@ export default function templateTransform(
 ): TransformResult {
     const {
         experimentalDynamicComponent,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
@@ -44,6 +46,8 @@ export default function templateTransform(
     try {
         result = compile(src, {
             experimentalDynamicDirective,
+            // TODO [#3370]: remove experimental template expression flag
+            experimentalComplexExpressions,
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,

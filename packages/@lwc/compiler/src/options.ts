@@ -16,6 +16,8 @@ const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
     enableStaticContentOptimization: true,
+    // TODO [#3370]: remove experimental template expression flag
+    experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
 };
 
@@ -72,6 +74,8 @@ export interface TransformOptions {
     experimentalDynamicDirective?: boolean;
     /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
+    // TODO [#3370]: remove experimental template expression flag
+    experimentalComplexExpressions?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
