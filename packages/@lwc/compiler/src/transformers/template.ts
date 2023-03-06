@@ -35,7 +35,6 @@ export default function templateTransform(
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
-        enableScopedSlots,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
     } = options;
@@ -52,7 +51,6 @@ export default function templateTransform(
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
-            enableScopedSlots,
             enableDynamicComponents,
         });
     } catch (e) {

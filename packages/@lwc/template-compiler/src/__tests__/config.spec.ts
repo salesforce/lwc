@@ -45,7 +45,6 @@ describe('customRendererConfig normalization', () => {
               },
               "enableDynamicComponents": false,
               "enableLwcSpread": false,
-              "enableScopedSlots": false,
               "enableStaticContentOptimization": true,
               "experimentalComplexExpressions": false,
               "experimentalComputedMemberExpression": false,

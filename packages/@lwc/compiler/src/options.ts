@@ -83,7 +83,6 @@ export interface TransformOptions {
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
     disableSyntheticShadowSupport?: boolean;
 }
 
@@ -94,7 +93,6 @@ type RequiredTransformOptions = Omit<
     | 'scopedStyles'
     | 'customRendererConfig'
     | 'enableLwcSpread'
-    | 'enableScopedSlots'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
@@ -105,7 +103,6 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;

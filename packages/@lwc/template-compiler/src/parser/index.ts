@@ -884,10 +884,6 @@ function applyLwcSlotBindDirective(
         return;
     }
 
-    if (!ctx.config.enableScopedSlots) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_BIND, element);
-    }
-
     if (!ast.isSlot(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SLOT_BIND_NON_SLOT_ELEMENT, element, [
             `<${tag}>`,
@@ -1224,10 +1220,6 @@ function parseScopedSlotFragment(
     const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
     if (!slotDataAttr) {
         return;
-    }
-
-    if (!ctx.config.enableScopedSlots) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SLOT_DATA, slotDataAttr);
     }
 
     if (parse5Elm.tagName !== 'template') {

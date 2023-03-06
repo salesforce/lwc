@@ -49,7 +49,6 @@ function createPreprocessor(config, emitter, logger) {
                     strict: true,
                 },
                 enableLwcSpread: true,
-                enableScopedSlots: true,
                 enableDynamicComponents: true,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             }),
