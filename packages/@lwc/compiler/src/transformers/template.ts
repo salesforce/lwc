@@ -29,11 +29,12 @@ export default function templateTransform(
 ): TransformResult {
     const {
         experimentalDynamicComponent,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
-        enableScopedSlots,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
     } = options;
@@ -44,11 +45,12 @@ export default function templateTransform(
     try {
         result = compile(src, {
             experimentalDynamicDirective,
+            // TODO [#3370]: remove experimental template expression flag
+            experimentalComplexExpressions,
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
-            enableScopedSlots,
             enableDynamicComponents,
         });
     } catch (e) {

@@ -16,6 +16,8 @@ const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
     enableStaticContentOptimization: true,
+    // TODO [#3370]: remove experimental template expression flag
+    experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
 };
 
@@ -72,6 +74,8 @@ export interface TransformOptions {
     experimentalDynamicDirective?: boolean;
     /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
+    // TODO [#3370]: remove experimental template expression flag
+    experimentalComplexExpressions?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
@@ -79,7 +83,6 @@ export interface TransformOptions {
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
     disableSyntheticShadowSupport?: boolean;
 }
 
@@ -90,7 +93,6 @@ type RequiredTransformOptions = Omit<
     | 'scopedStyles'
     | 'customRendererConfig'
     | 'enableLwcSpread'
-    | 'enableScopedSlots'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
@@ -101,7 +103,6 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
-    enableScopedSlots?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;

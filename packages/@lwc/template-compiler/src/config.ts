@@ -21,8 +21,22 @@ export interface Config {
      *        {list[0].name}
      *    </template>
      */
-
     experimentalComputedMemberExpression?: boolean;
+
+    // TODO [#3370]: remove experimental template expression flag
+    /**
+     * Enable use of (a subset of) JavaScript expressions in place of template bindings.
+     *
+     *    <template>
+     *        <input
+     *            attr={complex ?? expressions()}
+     *            onchange={({ target }) => componentMethod(target.value)}
+     *        >
+     *            Hey there {inAustralia ? 'mate' : 'friend'}
+     *        </input>
+     *    </template>
+     */
+    experimentalComplexExpressions?: boolean;
 
     /**
      * TODO [#3331]: remove usage of lwc:dynamic in 246
@@ -54,11 +68,6 @@ export interface Config {
      * When true, enables `lwc:spread` directive.
      */
     enableLwcSpread?: boolean;
-
-    /**
-     * When true, enables usage of `lwc:slot-bind` and `lwc:slot-data` directives for declaring scoped slots
-     */
-    enableScopedSlots?: boolean;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
@@ -67,8 +76,9 @@ export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
 const AVAILABLE_OPTION_NAMES = new Set([
     'customRendererConfig',
     'enableLwcSpread',
-    'enableScopedSlots',
     'enableStaticContentOptimization',
+    // TODO [#3370]: remove experimental template expression flag
+    'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'enableDynamicComponents',
@@ -129,11 +139,12 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions: false,
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: false,
-        enableScopedSlots: false,
         ...config,
         ...{ customRendererConfig },
     };
