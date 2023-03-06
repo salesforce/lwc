@@ -1,0 +1,277 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 141,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 130,
+                "end": 141
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 129,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 15,
+                        "start": 119,
+                        "end": 129
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 44,
+                            "start": 33,
+                            "end": 68,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 29,
+                                "start": 33,
+                                "end": 53
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 35,
+                                "endLine": 3,
+                                "endColumn": 44,
+                                "start": 59,
+                                "end": 68
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "Literal",
+                                    "start": 1,
+                                    "end": 5,
+                                    "value": true,
+                                    "raw": "true",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 28,
+                                        "start": 41,
+                                        "end": 52
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 28,
+                                    "start": 41,
+                                    "end": 52
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{true}",
+                                "value": {
+                                    "type": "Literal",
+                                    "start": 54,
+                                    "end": 58,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 29
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 33
+                                        }
+                                    },
+                                    "range": [
+                                        54,
+                                        58
+                                    ],
+                                    "value": true,
+                                    "raw": "true",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 29,
+                                        "endLine": 3,
+                                        "endColumn": 35,
+                                        "start": 53,
+                                        "end": 59
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 29,
+                                    "endLine": 3,
+                                    "endColumn": 35,
+                                    "start": 53,
+                                    "end": 59
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 46,
+                            "start": 77,
+                            "end": 114,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 30,
+                                "start": 77,
+                                "end": 98
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 37,
+                                "endLine": 4,
+                                "endColumn": 46,
+                                "start": 105,
+                                "end": 114
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "Literal",
+                                    "start": 1,
+                                    "end": 6,
+                                    "value": false,
+                                    "raw": "false",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 17,
+                                        "endLine": 4,
+                                        "endColumn": 29,
+                                        "start": 85,
+                                        "end": 97
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 29,
+                                    "start": 85,
+                                    "end": 97
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{false}",
+                                "value": {
+                                    "type": "Literal",
+                                    "start": 99,
+                                    "end": 104,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 30
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 35
+                                        }
+                                    },
+                                    "range": [
+                                        99,
+                                        104
+                                    ],
+                                    "value": false,
+                                    "raw": "false",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 30,
+                                        "endLine": 4,
+                                        "endColumn": 37,
+                                        "start": 98,
+                                        "end": 105
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 30,
+                                    "endLine": 4,
+                                    "endColumn": 37,
+                                    "start": 98,
+                                    "end": 105
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

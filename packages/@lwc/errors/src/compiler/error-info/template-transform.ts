@@ -935,7 +935,7 @@ export const ParserDiagnostics = {
     // TODO [#3370]: remove this error if template expressions is removed
     INVALID_EXPR_PROHIBITED_NODE_TYPE: {
         code: 1196,
-        message: 'Use of {} is disallowed within template expressions.',
+        message: 'Use of {0} is disallowed within template expressions.',
         level: DiagnosticLevel.Error,
         url: '',
     },

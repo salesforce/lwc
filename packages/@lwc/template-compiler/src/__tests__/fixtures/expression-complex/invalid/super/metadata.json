@@ -1,0 +1,13 @@
+{
+    "warnings": [
+        {
+            "code": 1052,
+            "message": "Unexpected compilation error: LWC1052: Error parsing attribute: 'super' keyword outside a method (3:25)",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 25
+            }
+        }
+    ]
+}
