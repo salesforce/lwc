@@ -14,13 +14,13 @@ import { BabelAPI, LwcBabelPluginPass } from '../types';
 import api from './api';
 import wire from './wire';
 import track from './track';
-import { ClassBodyItem, ImportSpecifier } from './types';
+import { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
 export type DecoratorMeta = {
-    name: 'api' | 'track' | 'wire';
+    name: LwcDecoratorName;
     propertyName: string;
     path: NodePath<types.Decorator>;
     decoratedNodeType: string;
@@ -165,14 +165,11 @@ function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<type
 function getDecoratorMetadata(decoratorPath: NodePath<types.Decorator>): DecoratorMeta {
     const expressionPath = decoratorPath.get('expression') as NodePath<types.Node>;
 
-    let name: 'api' | 'track' | 'wire';
+    let name: LwcDecoratorName;
     if (expressionPath.isIdentifier()) {
-        name = expressionPath.node.name as 'api' | 'track' | 'wire';
+        name = expressionPath.node.name as LwcDecoratorName;
     } else if (expressionPath.isCallExpression()) {
-        name = (expressionPath.node.callee as types.V8IntrinsicIdentifier).name as
-            | 'api'
-            | 'track'
-            | 'wire';
+        name = (expressionPath.node.callee as types.V8IntrinsicIdentifier).name as LwcDecoratorName;
     } else {
         throw generateInvalidDecoratorError(decoratorPath);
     }

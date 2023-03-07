@@ -37,3 +37,5 @@ export type ClassBodyItem =
     | types.ClassPrivateProperty
     | types.ClassAccessorProperty
     | types.StaticBlock;
+
+export type LwcDecoratorName = 'api' | 'track' | 'wire';
