@@ -32,8 +32,8 @@ function isLwcDecoratorName(name: string) {
 }
 
 /** Returns a list of all the references to an identifier */
-function getReferences(identifier: NodePath<types.StringLiteral>) {
-    return identifier.scope.getBinding((identifier.node as any).name)!.referencePaths;
+function getReferences(identifier: NodePath<types.Identifier>) {
+    return identifier.scope.getBinding(identifier.node.name)!.referencePaths;
 }
 
 /** Returns the type of decorator depdending on the property or method if get applied to */
@@ -59,7 +59,7 @@ function validateImportedLwcDecoratorUsage(engineImportSpecifiers: ImportSpecifi
         .filter(({ name }) => isLwcDecoratorName(name))
         .reduce((acc, { name, path }) => {
             // Get a list of all the  local references
-            const local = path.get('imported') as NodePath<types.StringLiteral>;
+            const local = path.get('imported') as NodePath<types.Identifier>;
             const references = getReferences(local).map((reference) => ({
                 name,
                 reference,
