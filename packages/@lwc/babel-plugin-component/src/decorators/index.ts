@@ -155,7 +155,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>) {
 function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<types.Decorator>[] {
     return bodyItems.reduce((acc: NodePath<types.Decorator>[], bodyItem) => {
         const decorators = bodyItem.get('decorators');
-        if (Array.isArray(decorators)) {
+        if (decorators && (decorators as NodePath<types.Decorator>[]).length) {
             acc.push(...(decorators as NodePath<types.Decorator>[]));
         }
         return acc;
