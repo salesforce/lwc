@@ -14,7 +14,7 @@ import { BabelAPI, LwcBabelPluginPass } from '../types';
 import api from './api';
 import wire from './wire';
 import track from './track';
-import { ImportSpecifier } from './types';
+import { ClassBodyItem, ImportSpecifier } from './types';
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
@@ -191,7 +191,7 @@ function getDecoratorMetadata(decoratorPath: NodePath<types.Decorator>): Decorat
 function getMetadataObjectPropertyList(
     t: typeof types,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<types.Node>[]
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     const list = [
         ...api.transform(t, decoratorMetas, classBodyItems),
@@ -232,7 +232,9 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             }
             visitedClasses.add(node);
 
-            const classBodyItems: NodePath<Node>[] = path.get('body.body') as NodePath<Node>[];
+            const classBodyItems: NodePath<ClassBodyItem>[] = path.get(
+                'body.body'
+            ) as NodePath<ClassBodyItem>[];
             if (classBodyItems.length === 0) {
                 return;
             }

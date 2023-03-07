@@ -29,3 +29,11 @@ export type BindingOptions = {
     unique?: boolean | undefined;
     kind?: 'var' | 'let' | 'const' | undefined;
 };
+
+export type ClassBodyItem =
+    | types.ClassMethod
+    | types.ClassPrivateMethod
+    | types.ClassProperty
+    | types.ClassPrivateProperty
+    | types.ClassAccessorProperty
+    | types.StaticBlock;

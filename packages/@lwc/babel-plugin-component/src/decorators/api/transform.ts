@@ -8,6 +8,7 @@ import { types } from '@babel/core';
 import { NodePath } from '@babel/traverse';
 import { DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { DecoratorMeta } from '../index';
+import { ClassBodyItem } from '../types';
 import { isApiDecorator } from './shared';
 
 const { PUBLIC_PROPS, PUBLIC_METHODS } = LWC_COMPONENT_PROPERTIES;
@@ -34,7 +35,7 @@ function getPropertyBitmask(type: string) {
 function getSiblingGetSetPairType(
     propertyName: string,
     type: string,
-    classBodyItems: NodePath<types.Node>[]
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     const siblingKind = type === DECORATOR_TYPES.GETTER ? 'set' : 'get';
     const siblingNode = classBodyItems.find((classBodyItem) => {
@@ -51,7 +52,7 @@ function getSiblingGetSetPairType(
 
 function computePublicPropsConfig(
     publicPropertyMetas: DecoratorMeta[],
-    classBodyItems: NodePath<types.Node>[]
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     return publicPropertyMetas.reduce((acc, { propertyName, decoratedNodeType }) => {
         if (!(propertyName in acc)) {
@@ -82,7 +83,7 @@ function computePublicPropsConfig(
 export default function transform(
     t: typeof types,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<types.Node>[]
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     const objectProperties = [];
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
