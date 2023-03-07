@@ -136,7 +136,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>) {
     if (expressionPath.isIdentifier()) {
         name = (expression as types.Identifier).name;
     } else if (expressionPath.isCallExpression()) {
-        name = (expression as any).callee.name;
+        name = ((expression as types.CallExpression).callee as types.V8IntrinsicIdentifier).name;
     }
 
     if (name) {
