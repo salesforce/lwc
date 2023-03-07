@@ -77,7 +77,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         }
 
         return t.callExpression(registerComponentId, [
-            node as unknown as types.Expression,
+            node as types.Expression,
             t.objectExpression([
                 t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
                 t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
