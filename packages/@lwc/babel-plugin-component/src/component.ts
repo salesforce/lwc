@@ -22,15 +22,12 @@ function getBaseName(classPath: string) {
     return basename(classPath, ext);
 }
 
-function importDefaultTemplate(
-    path: NodePath<
-        | types.ClassDeclaration
-        | types.FunctionDeclaration
-        | types.TSDeclareFunction
-        | types.Expression
-    >,
-    state: LwcBabelPluginPass
-) {
+type DeclarationOrExpression =
+    | types.ClassDeclaration
+    | types.FunctionDeclaration
+    | types.Expression;
+
+function importDefaultTemplate(path: NodePath<DeclarationOrExpression>, state: LwcBabelPluginPass) {
     const { filename } = state.file.opts;
     const componentName = getBaseName(filename!);
     return addDefault(path, `./${componentName}.html`, {
@@ -38,14 +35,7 @@ function importDefaultTemplate(
     });
 }
 
-function needsComponentRegistration(
-    path: NodePath<
-        | types.ClassDeclaration
-        | types.FunctionDeclaration
-        | types.TSDeclareFunction
-        | types.Expression
-    >
-) {
+function needsComponentRegistration(path: NodePath<DeclarationOrExpression>) {
     return (
         (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
         path.isCallExpression() ||
@@ -62,12 +52,7 @@ function getComponentRegisteredName(t: typeof types, state: LwcBabelPluginPass) 
 
 export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     function createRegisterComponent(
-        declarationPath: NodePath<
-            | types.ClassDeclaration
-            | types.FunctionDeclaration
-            | types.TSDeclareFunction
-            | types.Expression
-        >,
+        declarationPath: NodePath<DeclarationOrExpression>,
         state: LwcBabelPluginPass
     ) {
         const registerComponentId = addNamed(
@@ -104,7 +89,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {
-                const declaration = path.get('declaration');
+                const declaration = path.get('declaration') as NodePath<DeclarationOrExpression>;
                 if (needsComponentRegistration(declaration)) {
                     declaration.replaceWith(createRegisterComponent(declaration, state));
                 }
