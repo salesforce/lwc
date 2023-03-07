@@ -27,7 +27,7 @@
         "@lwc/aria-reflection": "2.40.0",
         "@lwc/engine-core": "2.40.0",
         "@lwc/shared": "2.40.0",
-        "magic-string": "^0.29.0"
+        "magic-string": "^0.30.0"
     },
     "lwc": {
         "modules": [
