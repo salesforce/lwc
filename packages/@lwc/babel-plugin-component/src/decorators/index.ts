@@ -134,7 +134,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>) {
 
     let name;
     if (expressionPath.isIdentifier()) {
-        name = (expression as any).name;
+        name = (expression as types.Identifier).name;
     } else if (expressionPath.isCallExpression()) {
         name = (expression as any).callee.name;
     }
