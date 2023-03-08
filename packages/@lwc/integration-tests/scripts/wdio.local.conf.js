@@ -40,5 +40,6 @@ exports.config = merge(baseConfig.config, {
                 },
             },
         ],
+        'devtools', // exposes browser.cdp, only works locally: https://webdriver.io/docs/devtools-service/
     ],
 });
