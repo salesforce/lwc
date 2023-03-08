@@ -21,7 +21,8 @@ const assert = require('assert');
 // tunnelIdentifier exists, we know we're running in Sauce Labs and should bail out.
 // See: https://webdriver.io/docs/devtools-service/
 if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunnelIdentifier) {
-    describe('Component does not leak', () => {
+    // TODO [#3393]: re-enable once Circle CI can handle CDP again
+    describe.skip('Component does not leak', () => {
         const URL = '/lifecycle-leak';
 
         // Count the number of objects using queryObjects(). Based on:
