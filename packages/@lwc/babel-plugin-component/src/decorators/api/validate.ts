@@ -23,7 +23,7 @@ function validateConflict(path: NodePath<types.Node>, decorators: DecoratorMeta[
     const isPublicFieldTracked = decorators.some(
         (decorator) =>
             decorator.name === TRACK_DECORATOR &&
-            decorator.path.parentPath.node === path.parentPath!.node
+            decorator.path.parentPath.node === path.parentPath?.node
     );
 
     if (isPublicFieldTracked) {
