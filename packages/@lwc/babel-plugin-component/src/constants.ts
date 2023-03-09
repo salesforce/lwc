@@ -46,7 +46,7 @@ const DECORATOR_TYPES = {
     GETTER: 'getter',
     SETTER: 'setter',
     METHOD: 'method',
-};
+} as const;
 
 const REGISTER_COMPONENT_ID = 'registerComponent';
 const REGISTER_DECORATORS_ID = 'registerDecorators';

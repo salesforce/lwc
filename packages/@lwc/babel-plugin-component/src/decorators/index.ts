@@ -19,12 +19,14 @@ import { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
+export type DecoratorType = (typeof DECORATOR_TYPES)[keyof typeof DECORATOR_TYPES];
+
 export interface DecoratorMeta {
     name: LwcDecoratorName;
     propertyName: string;
     path: NodePath<types.Decorator>;
-    decoratedNodeType: string;
-    type?: 'property' | 'getter' | 'setter' | 'method';
+    decoratedNodeType: DecoratorType;
+    type?: DecoratorType;
 }
 
 function isLwcDecoratorName(name: string) {
@@ -37,7 +39,7 @@ function getReferences(identifier: NodePath<types.Identifier>) {
 }
 
 /** Returns the type of decorator depdending on the property or method if get applied to */
-function getDecoratedNodeType(decoratorPath: NodePath<types.Decorator>) {
+function getDecoratedNodeType(decoratorPath: NodePath<types.Decorator>): DecoratorType {
     const propertyOrMethod = decoratorPath.parentPath;
     if (isClassMethod(propertyOrMethod)) {
         return DECORATOR_TYPES.METHOD;
