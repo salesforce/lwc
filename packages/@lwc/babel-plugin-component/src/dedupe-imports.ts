@@ -7,10 +7,10 @@
 
 import { types } from '@babel/core';
 import { NodePath } from '@babel/traverse';
-import { BabelAPI } from './types';
+import { BabelAPI, BabelTypes } from './types';
 
 function defaultImport(
-    t: typeof types,
+    t: BabelTypes,
     specifiers: (
         | types.ImportDefaultSpecifier
         | types.ImportNamespaceSpecifier

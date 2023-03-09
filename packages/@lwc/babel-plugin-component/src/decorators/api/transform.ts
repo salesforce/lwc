@@ -8,6 +8,7 @@ import { types } from '@babel/core';
 import { NodePath } from '@babel/traverse';
 import { DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { DecoratorMeta } from '../index';
+import { BabelTypes } from '../../types';
 import { ClassBodyItem } from '../types';
 import { isApiDecorator } from './shared';
 
@@ -81,7 +82,7 @@ function computePublicPropsConfig(
 }
 
 export default function transform(
-    t: typeof types,
+    t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
     classBodyItems: NodePath<ClassBodyItem>[]
 ) {

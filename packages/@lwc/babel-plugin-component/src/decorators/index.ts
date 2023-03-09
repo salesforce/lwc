@@ -10,7 +10,7 @@ import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
 import { generateError, isClassMethod, isSetterClassMethod, isGetterClassMethod } from '../utils';
-import { BabelAPI, LwcBabelPluginPass } from '../types';
+import { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
 import api from './api';
 import wire from './wire';
 import track from './track';
@@ -186,7 +186,7 @@ function getDecoratorMetadata(decoratorPath: NodePath<types.Decorator>): Decorat
 }
 
 function getMetadataObjectPropertyList(
-    t: typeof types,
+    t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
     classBodyItems: NodePath<ClassBodyItem>[]
 ) {

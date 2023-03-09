@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { types } from '@babel/core';
 import { DecoratorErrors } from '@lwc/errors';
 import { LWC_COMPONENT_PROPERTIES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
@@ -12,6 +11,7 @@ import { generateError } from '../../utils';
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 import { DecoratorMeta } from '../index';
+import { BabelTypes } from '../../types';
 
 const TRACK_PROPERTY_VALUE = 1;
 
@@ -29,7 +29,7 @@ function validate(decorators: DecoratorMeta[]) {
     });
 }
 
-function transform(t: typeof types, decoratorMetas: DecoratorMeta[]) {
+function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
     const objectProperties = [];
     const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
     if (trackDecoratorMetas.length) {

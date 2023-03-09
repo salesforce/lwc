@@ -15,7 +15,7 @@ import {
     TEMPLATE_KEY,
     COMPONENT_NAME_KEY,
 } from './constants';
-import { BabelAPI, LwcBabelPluginPass } from './types';
+import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {
     const ext = extname(classPath);
@@ -44,7 +44,7 @@ function needsComponentRegistration(path: NodePath<DeclarationOrExpression>) {
     );
 }
 
-function getComponentRegisteredName(t: typeof types, state: LwcBabelPluginPass) {
+function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     const { namespace, name } = state.opts;
     const componentName = namespace && name ? `${namespace}-${name}` : '';
     return t.stringLiteral(componentName);

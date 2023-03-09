@@ -8,6 +8,7 @@ import { types } from '@babel/core';
 import { NodePath, Scope } from '@babel/traverse';
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { DecoratorMeta } from '../index';
+import { BabelTypes } from '../../types';
 import { BindingOptions } from '../types';
 import { isWireDecorator } from './shared';
 
@@ -29,7 +30,7 @@ function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.Obj
 }
 
 function getWiredParams(
-    t: typeof types,
+    t: BabelTypes,
     wireConfig: NodePath<types.ObjectExpression>
 ): types.ObjectProperty[] {
     return wireConfig
@@ -46,7 +47,7 @@ function getWiredParams(
         });
 }
 
-function getGeneratedConfig(t: typeof types, wiredValue: WiredValue) {
+function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
     let counter = 0;
     const configBlockBody = [];
     const configProps: (types.ObjectMethod | types.ObjectProperty | types.SpreadElement)[] = [];
@@ -161,7 +162,7 @@ function getGeneratedConfig(t: typeof types, wiredValue: WiredValue) {
     return t.objectProperty(t.identifier('config'), fnExpression);
 }
 
-function buildWireConfigValue(t: typeof types, wiredValues: WiredValue[]) {
+function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
     return t.objectExpression(
         wiredValues.map((wiredValue) => {
             const wireConfig = [];
@@ -251,7 +252,7 @@ type WiredValue = {
     };
 };
 
-export default function transform(t: typeof types, decoratorMetas: DecoratorMeta[]) {
+export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
     const objectProperties = [];
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments') as [
