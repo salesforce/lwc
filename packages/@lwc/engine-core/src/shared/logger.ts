@@ -12,12 +12,11 @@ import { getComponentStack } from './format';
 const alreadyLoggedMessages = new Set();
 
 // Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // @ts-ignore
-    window.__lwcResetAlreadyLoggedMessages = () => {
-        alreadyLoggedMessages.clear();
-    };
-}
+/* --begin-karma-only-code--
+window.__lwcResetAlreadyLoggedMessages = () => {
+    alreadyLoggedMessages.clear();
+};
+--end-karma-only-code-- */
 
 function log(method: 'warn' | 'error', message: string, vm: VM | undefined, once: boolean) {
     let msg = `[LWC ${method}]: ${message}`;

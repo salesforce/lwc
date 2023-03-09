@@ -12,7 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
-const karmaPluginNodeEnv = require('../../karma-plugins/node-env');
+const karmaPluginKarmaOnlyCode = require('../../karma-plugins/karma-only-code');
 const { COMPAT, SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
@@ -86,8 +86,8 @@ module.exports = (config) => {
         preprocessors: {
             // Transform all the spec files with the lwc karma plugin.
             '**/*.spec.js': ['lwc'],
-            // Transform all framework files with the node-env plugin
-            ...Object.fromEntries(ALL_FRAMEWORK_FILES.map((file) => [file, ['node-env']])),
+            // Transform all framework files with the karma-only-code plugin
+            ...Object.fromEntries(ALL_FRAMEWORK_FILES.map((file) => [file, ['karma-only-code']])),
         },
 
         // Use the env plugin to inject the right environment variables into the app
@@ -95,7 +95,7 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv, karmaPluginNodeEnv],
+        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv, karmaPluginKarmaOnlyCode],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.

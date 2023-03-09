@@ -15,14 +15,6 @@ import { report, ReportingEventId } from './reporting';
 
 let warned = false;
 
-// Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // @ts-ignore
-    window.__lwcResetWarnedOnVersionMismatch = () => {
-        warned = false;
-    };
-}
-
 /**
  * Validate a template, stylesheet, or component to make sure that its compiled version matches
  * the version used by the LWC engine at runtime. Note that this only works in dev mode because
@@ -54,3 +46,10 @@ export function checkVersionMismatch(
         }
     }
 }
+
+// Only used in LWC's Karma tests
+/* --begin-karma-only-code--
+window.__lwcResetWarnedOnVersionMismatch = () => {
+    warned = false;
+};
+--end-karma-only-code-- */
