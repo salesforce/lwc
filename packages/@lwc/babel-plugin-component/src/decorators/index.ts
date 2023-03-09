@@ -19,13 +19,13 @@ import { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
-export type DecoratorMeta = {
+export interface DecoratorMeta {
     name: LwcDecoratorName;
     propertyName: string;
     path: NodePath<types.Decorator>;
     decoratedNodeType: string;
     type?: 'property' | 'getter' | 'setter' | 'method';
-};
+}
 
 function isLwcDecoratorName(name: string) {
     return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
