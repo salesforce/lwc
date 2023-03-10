@@ -62,7 +62,7 @@ const stylesheetCache: Map<String, CacheData> = new Map();
 
 // Only used in LWC's Karma tests
 /* --begin-karma-only-code--
-window.__lwcResetGlobalStylesheets = () => {
+window.__lwcResetGlobalStylesheets = function () {
     stylesheetCache.clear();
 };
 --end-karma-only-code-- */

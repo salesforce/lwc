@@ -13,7 +13,7 @@ const alreadyLoggedMessages = new Set();
 
 // Only used in LWC's Karma tests
 /* --begin-karma-only-code--
-window.__lwcResetAlreadyLoggedMessages = () => {
+window.__lwcResetAlreadyLoggedMessages = function () {
     alreadyLoggedMessages.clear();
 };
 --end-karma-only-code-- */

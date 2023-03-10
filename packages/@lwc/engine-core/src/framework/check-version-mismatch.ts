@@ -49,7 +49,7 @@ export function checkVersionMismatch(
 
 // Only used in LWC's Karma tests
 /* --begin-karma-only-code--
-window.__lwcResetWarnedOnVersionMismatch = () => {
+window.__lwcResetWarnedOnVersionMismatch = function () {
     warned = false;
 };
 --end-karma-only-code-- */
