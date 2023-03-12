@@ -1,0 +1,8 @@
+<template>
+    <template for:each={items} for:item="item">
+        <div class="item" key={item}>{item}</div>
+    </template>
+    <template lwc:if={items}>
+        <div class="item lwc-if">lwc:if</div>
+    </template>
+</template>
