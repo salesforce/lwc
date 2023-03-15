@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { CompilerDiagnostic } from '@lwc/errors';
+import type { Node as AcornNode } from 'acorn';
 
 export interface TemplateParseResult {
     root?: Root;
@@ -60,6 +61,12 @@ export interface MemberExpression extends BaseNode {
 }
 
 export type Expression = Identifier | MemberExpression;
+
+// TODO [#3370]: when the template expression flag is removed, the
+// ComplexExpression type should be redefined as an ESTree Node. Doing
+// so when the flag is still in place results in a cascade of required
+// type changes across the codebase.
+export type ComplexExpression = AcornNode & { value?: any };
 
 export interface Attribute extends BaseNode {
     type: 'Attribute';
@@ -147,7 +154,8 @@ export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
     type: 'Text';
-    value: Literal | Expression;
+    // TODO [#3370]: remove experimental template expression flag
+    value: Literal | Expression | ComplexExpression;
     raw: string;
 }
 

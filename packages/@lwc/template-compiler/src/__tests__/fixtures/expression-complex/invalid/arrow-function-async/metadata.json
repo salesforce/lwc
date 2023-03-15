@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1194,
+            "message": "Invalid expression {async () => doSomething()} - LWC1194: Arrow functions in template expressions cannot be async.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 41,
+                "length": 35
+            }
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {() => new Day()} - LWC1196: Use of object instantiation is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 16,
+                "start": 40,
+                "length": 24
+            }
+        }
+    ]
+}

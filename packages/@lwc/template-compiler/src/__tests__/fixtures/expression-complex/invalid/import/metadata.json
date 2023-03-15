@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {() => import('foo').then(doThingWithFoo)} - LWC1196: Use of imports is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 41,
+                "length": 50
+            }
+        }
+    ]
+}

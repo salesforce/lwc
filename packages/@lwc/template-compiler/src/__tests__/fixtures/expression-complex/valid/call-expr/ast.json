@@ -1,0 +1,216 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 103,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 92,
+                "end": 103
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 91,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 81,
+                        "end": 91
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 52,
+                            "start": 33,
+                            "end": 76,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 33,
+                                "start": 33,
+                                "end": 57
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 43,
+                                "endLine": 3,
+                                "endColumn": 52,
+                                "start": 67,
+                                "end": 76
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "CallExpression",
+                                    "start": 1,
+                                    "end": 9,
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 7,
+                                            "name": "getFoo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "arguments": [],
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 32,
+                                        "start": 41,
+                                        "end": 56
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 32,
+                                    "start": 41,
+                                    "end": 56
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{getBaz()}",
+                                "value": {
+                                    "type": "CallExpression",
+                                    "start": 58,
+                                    "end": 66,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 33
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 41
+                                        }
+                                    },
+                                    "range": [
+                                        58,
+                                        66
+                                    ],
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 58,
+                                            "end": 64,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 33
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 39
+                                                }
+                                            },
+                                            "range": [
+                                                58,
+                                                64
+                                            ],
+                                            "name": "getBaz"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "arguments": [],
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 33,
+                                        "endLine": 3,
+                                        "endColumn": 43,
+                                        "start": 57,
+                                        "end": 67
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 33,
+                                    "endLine": 3,
+                                    "endColumn": 43,
+                                    "start": 57,
+                                    "end": 67
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

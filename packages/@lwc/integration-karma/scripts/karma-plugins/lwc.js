@@ -41,6 +41,9 @@ function createPreprocessor(config, emitter, logger) {
             .join('\n');
         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
+        // TODO [#3370]: remove experimental template expression flag
+        const experimentalComplexExpressions = suiteDir.includes('template-expressions');
+
         const plugins = [
             lwcRollupPlugin({
                 sourcemap: true,
@@ -50,6 +53,7 @@ function createPreprocessor(config, emitter, logger) {
                 },
                 enableLwcSpread: true,
                 enableDynamicComponents: true,
+                experimentalComplexExpressions,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             }),
         ];

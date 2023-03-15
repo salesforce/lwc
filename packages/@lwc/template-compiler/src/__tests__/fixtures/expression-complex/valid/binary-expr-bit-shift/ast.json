@@ -1,0 +1,343 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 190,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 179,
+                "end": 190
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 178,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 15,
+                        "start": 168,
+                        "end": 178
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-child",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 46,
+                            "start": 33,
+                            "end": 70,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 36,
+                                "start": 33,
+                                "end": 60
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 36,
+                                "endLine": 3,
+                                "endColumn": 46,
+                                "start": 60,
+                                "end": 70
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 11,
+                                    "left": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "operator": ">>",
+                                    "right": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 8,
+                                            "end": 11,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 18,
+                                        "endLine": 3,
+                                        "endColumn": 35,
+                                        "start": 42,
+                                        "end": 59
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 18,
+                                    "endLine": 3,
+                                    "endColumn": 35,
+                                    "start": 42,
+                                    "end": 59
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-child",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 46,
+                            "start": 79,
+                            "end": 116,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 36,
+                                "start": 79,
+                                "end": 106
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 36,
+                                "endLine": 4,
+                                "endColumn": 46,
+                                "start": 106,
+                                "end": 116
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 11,
+                                    "left": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "operator": "<<",
+                                    "right": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 8,
+                                            "end": 11,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 18,
+                                        "endLine": 4,
+                                        "endColumn": 35,
+                                        "start": 88,
+                                        "end": 105
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 18,
+                                    "endLine": 4,
+                                    "endColumn": 35,
+                                    "start": 88,
+                                    "end": 105
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-child",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 47,
+                            "start": 125,
+                            "end": 163,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 37,
+                                "start": 125,
+                                "end": 153
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 37,
+                                "endLine": 5,
+                                "endColumn": 47,
+                                "start": 153,
+                                "end": 163
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 12,
+                                    "left": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "operator": ">>>",
+                                    "right": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 9,
+                                            "end": 12,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 18,
+                                        "endLine": 5,
+                                        "endColumn": 36,
+                                        "start": 134,
+                                        "end": 152
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 18,
+                                    "endLine": 5,
+                                    "endColumn": 36,
+                                    "start": 134,
+                                    "end": 152
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

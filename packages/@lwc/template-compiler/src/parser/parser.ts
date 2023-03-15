@@ -13,9 +13,9 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
+
 import { NormalizedConfig } from '../config';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
-
 import {
     Root,
     SourceLocation,
@@ -26,6 +26,9 @@ import {
     ElseifBlock,
     ElseBlock,
 } from '../shared/types';
+import { TMPL_EXPR_ECMASCRIPT_EDITION } from './constants';
+import type { ecmaVersion as EcmaVersion } from 'acorn';
+import type { PreparsedExpressionMap } from './expression-complex';
 
 function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
@@ -85,6 +88,17 @@ export default class ParserCtx {
      */
     readonly seenScopedSlots: Set<string> = new Set();
 
+    // TODO [#3370]: remove experimental template expression flag
+    readonly ecmaVersion: EcmaVersion;
+
+    // TODO [#3370]: remove experimental template expression flag
+    /**
+     * Parsing of template expressions is deferred to acorn, in order to ensure that JavaScript expressions
+     * are parsed correctly. As such, we should cache the ESTree AST for each expression, so that the
+     * expression need not be re-parsed when the template compiler's AST is being created.
+     */
+    readonly preparsedJsExpressions?: PreparsedExpressionMap;
+
     /**
      * 'elementScopes' keeps track of the hierarchy of ParentNodes as the parser
      * traverses the parse5 AST. Each 'elementScope' is an array where each node in
@@ -112,6 +126,13 @@ export default class ParserCtx {
         this.config = config;
         this.renderMode = LWCDirectiveRenderMode.shadow;
         this.preserveComments = config.preserveHtmlComments;
+        // TODO [#3370]: remove experimental template expression flag
+        if (config.experimentalComplexExpressions) {
+            this.preparsedJsExpressions = new Map();
+        }
+        this.ecmaVersion = config.experimentalComplexExpressions
+            ? TMPL_EXPR_ECMASCRIPT_EDITION
+            : 2020;
     }
 
     getSource(start: number, end: number): string {
