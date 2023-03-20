@@ -40,7 +40,6 @@ import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './accessor-reactive-observer';
-import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, isVFragment } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -250,10 +249,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        removeActiveVM(vm);
     }
 }
 
