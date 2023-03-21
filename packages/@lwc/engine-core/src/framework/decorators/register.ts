@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    assert,
     create,
     isFunction,
     isUndefined,
@@ -16,7 +15,7 @@ import {
 } from '@lwc/shared';
 import { LightningElementConstructor } from '../base-lightning-element';
 
-import { EmptyObject } from '../utils';
+import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';
 import { createObservedFieldPropertyDescriptor } from '../observed-fields';
 import {
@@ -81,17 +80,13 @@ function validateObservedField(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // [W-9927596] Ideally we always throw an error when detecting duplicate observed field.
-        // This branch is only here for backward compatibility reasons.
-        if (type === DescriptorType.Accessor) {
-            logError(message);
-        } else {
-            assert.fail(message);
-        }
+        // TODO [#3408]: this should throw, not log
+        logError(message);
     }
 }
 
@@ -100,9 +95,11 @@ function validateFieldDecoratedWithTrack(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        assert.fail(
+        // TODO [#3408]: this should throw, not log
+        logError(
             `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`
         );
     }
@@ -113,11 +110,11 @@ function validateFieldDecoratedWithWire(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        assert.fail(
-            `Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`
-        );
+        // TODO [#3408]: this should throw, not log
+        logError(`Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`);
     }
 }
 
@@ -126,8 +123,13 @@ function validateMethodDecoratedWithWire(
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
-        assert.fail(`Invalid @wire ${methodName} method.`);
+        // TODO [#3408]: this should throw, not log
+        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        logError(
+            `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
+        );
     }
 }
 
@@ -136,17 +138,13 @@ function validateFieldDecoratedWithApi(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // [W-9927596] Ideally we always throw an error when detecting duplicate public properties.
-        // This branch is only here for backward compatibility reasons.
-        if (type === DescriptorType.Accessor) {
-            logError(message);
-        } else {
-            assert.fail(message);
-        }
+        // TODO [#3408]: this should throw, not log
+        logError(message);
     }
 }
 
@@ -155,15 +153,23 @@ function validateAccessorDecoratedWithApi(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor)) {
-        assert.fail(`Invalid @api get ${fieldName} accessor.`);
+        // TODO [#3408]: this should throw, not log
+        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        logError(`Invalid @api get ${fieldName} accessor.`);
     } else if (isFunction(descriptor.set)) {
-        assert.isTrue(
-            isFunction(descriptor.get),
-            `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
-        );
+        if (!isFunction(descriptor.get)) {
+            // TODO [#3408]: this should throw, not log
+            // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+            logError(
+                `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
+            );
+        }
     } else if (!isFunction(descriptor.get)) {
-        assert.fail(`Missing @api get ${fieldName} accessor.`);
+        // TODO [#3408]: this should throw, not log
+        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        logError(`Missing @api get ${fieldName} accessor.`);
     }
 }
 
@@ -172,8 +178,11 @@ function validateMethodDecoratedWithApi(
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
+    assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
-        assert.fail(`Invalid @api ${methodName} method.`);
+        // TODO [#3408]: this should throw, not log
+        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        logError(`Invalid @api ${methodName} method.`);
     }
 }
 
@@ -251,10 +260,12 @@ export function registerDecorators(
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isTrue(
-                        adapter,
-                        `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
-                    );
+                    if (!adapter) {
+                        // TODO [#3408]: this should throw, not log
+                        logError(
+                            `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
+                        );
+                    }
                     validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
                 if (isUndefined(descriptor)) {
@@ -264,10 +275,12 @@ export function registerDecorators(
                 storeWiredMethodMeta(descriptor, adapter, configCallback, dynamic);
             } else {
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isTrue(
-                        adapter,
-                        `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
-                    );
+                    if (!adapter) {
+                        // TODO [#3408]: this should throw, not log
+                        logError(
+                            `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
+                        );
+                    }
                     validateFieldDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
                 descriptor = internalWireFieldDecorator(fieldOrMethodName);

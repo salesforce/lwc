@@ -74,15 +74,10 @@ export function createPublicAccessorDescriptor(
     descriptor: PropertyDescriptor
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
-    if (!isFunction(get)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.invariant(
-                isFunction(get),
-                `Invalid compiler output for public accessor ${toString(key)} decorated with @api`
-            );
-        }
-        throw new Error();
-    }
+    assert.invariant(
+        isFunction(get),
+        `Invalid compiler output for public accessor ${toString(key)} decorated with @api`
+    );
     return {
         get(this: LightningElement): any {
             if (process.env.NODE_ENV !== 'production') {
