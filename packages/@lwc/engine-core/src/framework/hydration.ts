@@ -4,7 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
+import {
+    isUndefined,
+    ArrayJoin,
+    assert,
+    keys,
+    isNull,
+    ArrayFilter,
+    isTrue,
+    isString,
+} from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -122,6 +131,22 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
     }
 
     return false;
+}
+
+function getAttrsToNotValidate(optOutStaticProp: string[] | true | undefined) {
+    if (isUndefined(optOutStaticProp)) {
+        return;
+    }
+    if (isTrue(optOutStaticProp)) {
+        return;
+    }
+    if (!Array.isArray(optOutStaticProp) || !optOutStaticProp.every((el) => isString(el))) {
+        logWarn(
+            'Validation opt out must be `true` or an array of attributes that should not be validated.'
+        );
+        return;
+    }
+    return new Set(optOutStaticProp);
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
@@ -243,11 +268,25 @@ function hydrateCustomElement(
     vnode: VCustomElement,
     renderer: RendererAPI
 ): Node | null {
-    if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
-    ) {
-        return handleMismatch(elm, vnode, renderer);
+    const { validationOptOut } = vnode.ctor;
+    const attrsToNotValidate = getAttrsToNotValidate(validationOptOut);
+
+    // The validationOptOut static property can be an array of attribute names.
+    // Any attribute names specified in that array will not be validated, and the
+    // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+    //
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
+    //
+    // Therefore, if validationOptOut is falsey or an array of strings, we need to
+    // examine some or all of the custom element's attributes.
+    if (!validationOptOut || attrsToNotValidate) {
+        if (
+            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !isMatchingElement(vnode, elm, renderer, attrsToNotValidate)
+        ) {
+            return handleMismatch(elm, vnode, renderer);
+        }
     }
 
     const { sel, mode, ctor, owner } = vnode;
@@ -259,7 +298,7 @@ function hydrateCustomElement(
         hydrated: true,
     });
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
@@ -275,7 +314,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm);
     }
 
     hydrateVM(vm);
@@ -371,7 +410,12 @@ function hasCorrectNodeType<T extends Node>(
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
+function isMatchingElement(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    attrsToNotValidate?: Set<string>
+) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
@@ -387,11 +431,15 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm, renderer);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm, renderer);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, renderer);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, attrsToNotValidate);
+    const hasCompatibleClass = attrsToNotValidate?.has?.('class')
+        ? true
+        : validateClassAttr(vnode, elm, renderer);
+    const hasCompatibleStyle = attrsToNotValidate?.has?.('style')
+        ? true
+        : validateStyleAttr(vnode, elm, renderer);
 
-    return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
+    return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
 }
 
 function attributeValuesAreEqual(
@@ -414,7 +462,12 @@ function attributeValuesAreEqual(
     return false;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
+function validateAttrs(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    attrsToNotValidate?: Set<string>
+): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -424,6 +477,9 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        if (attrsToNotValidate?.has?.(attrName)) {
+            continue;
+        }
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
