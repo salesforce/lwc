@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const glob = require('glob');
+const { globSync } = require('glob');
 
 (async () => {
     const newVersion = await promptVersion();
@@ -80,7 +80,7 @@ function getPackagesToUpdate() {
 
     const workspacePkgs = rootPackageJson.workspaces.reduce(
         (accWorkspacePkgs, workspace) => {
-            const workspacePkg = glob.sync(`${workspace}/package.json`);
+            const workspacePkg = globSync(`${workspace}/package.json`);
             return [...accWorkspacePkgs, ...workspacePkg];
         },
         [rootPackageJsonPath]
