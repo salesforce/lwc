@@ -425,10 +425,10 @@ function isMatchingElement(
 
     const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, attrsToSkip);
     const hasCompatibleClass = attrsToSkip?.has?.('class')
-        ? false
+        ? true
         : validateClassAttr(vnode, elm, renderer);
     const hasCompatibleStyle = attrsToSkip?.has?.('style')
-        ? false
+        ? true
         : validateStyleAttr(vnode, elm, renderer);
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
