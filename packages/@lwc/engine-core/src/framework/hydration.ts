@@ -263,11 +263,22 @@ function hydrateCustomElement(
     vnode: VCustomElement,
     renderer: RendererAPI
 ): Node | null {
-    if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
-    ) {
-        return handleMismatch(elm, vnode, renderer);
+    if (vnode.ctor.validationOptOut) {
+        if (Array.isArray(vnode.ctor.validationOptOut)) {
+            if (
+                !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+                !isMatchingElement(vnode, elm, renderer, new Set(vnode.ctor.validationOptOut))
+            ) {
+                return handleMismatch(elm, vnode, renderer);
+            }
+        }
+    } else {
+        if (
+            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !isMatchingElement(vnode, elm, renderer)
+        ) {
+            return handleMismatch(elm, vnode, renderer);
+        }
     }
 
     const { sel, mode, ctor, owner } = vnode;
@@ -279,7 +290,7 @@ function hydrateCustomElement(
         hydrated: true,
     });
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
@@ -295,7 +306,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm);
     }
 
     hydrateVM(vm);
@@ -391,7 +402,12 @@ function hasCorrectNodeType<T extends Node>(
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
+function isMatchingElement(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    attrsToSkip?: Set<string>
+) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
@@ -407,11 +423,15 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm, renderer);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm, renderer);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, renderer);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, attrsToSkip);
+    const hasCompatibleClass = attrsToSkip?.has?.('class')
+        ? false
+        : validateClassAttr(vnode, elm, renderer);
+    const hasCompatibleStyle = attrsToSkip?.has?.('style')
+        ? false
+        : validateStyleAttr(vnode, elm, renderer);
 
-    return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
+    return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
 }
 
 function attributeValuesAreEqual(
@@ -434,7 +454,12 @@ function attributeValuesAreEqual(
     return false;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
+function validateAttrs(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    attrsToSkip?: Set<string>
+): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -444,6 +469,9 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        if (attrsToSkip?.has?.(attrName)) {
+            continue;
+        }
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
