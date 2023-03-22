@@ -42,8 +42,8 @@ const { code } = babel.transformSync(source, {
 
 ## Options
 
--   `name` (type: `string`, optional) - name of the component, e.g. `foo` in `x/foo`
--   `namespace` (type: `string`, optional) - namepace of the component, e.g. `x` in `x/foo`
+-   `name` (type: `string`, optional) - name of the component, e.g. `foo` in `x/foo`.
+-   `namespace` (type: `string`, optional) - namepace of the component, e.g. `x` in `x/foo`.
 -   `isExplicitImport` (type: `boolean`, optional) - true if this is an explicit import.
 -   `dynamicImporta` (type: `object`, optional) - see below:
     -   `loader` (type: `string`, optional) - loader to use at runtime.
