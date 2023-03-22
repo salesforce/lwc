@@ -143,7 +143,9 @@ describe('restrictions', () => {
                     }
                 }
             }).toThrowError(/Invalid compiler output for public accessor foo decorated with @api/);
-        }).toLogErrorDev(/Missing getter for property foo decorated with @api in class Invalid/);
+        }).toLogErrorDev(
+            /Missing getter for property foo decorated with @api in (class|function) Invalid/
+        );
     });
 
     it('does not throw or log an error when an @api field has a getter but no setter', () => {
