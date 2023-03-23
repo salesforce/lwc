@@ -177,6 +177,8 @@ function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
     }
 }
 
+const fragmentAnchors = new WeakSet<Node>();
+
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
     const { owner } = vnode;
     const { createText } = renderer;
@@ -185,6 +187,11 @@ function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, render
     linkNodeToShadow(textNode, owner, renderer);
 
     insertNode(textNode, parent, anchor, renderer);
+
+    if (vnode.fragment) {
+        // Look into only adding the leading text node anchor
+        fragmentAnchors.add(textNode);
+    }
 }
 
 function patchComment(n1: VComment, n2: VComment, renderer: RendererAPI) {
@@ -547,7 +554,19 @@ function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: Ren
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    renderer.insert(node, parent, anchor);
+
+    // Handle vfragment-based nodes
+    if (fragmentAnchors.has(node)) {
+        // vfragment-based nodes are sandwiched by leading and trailing anchors
+        const content = renderer.nextSibling(node);
+        const trailing = renderer.nextSibling(content);
+        renderer.insert(node, parent, anchor); // insert leading anchor
+        renderer.insert(content, parent, anchor); // insert fragment content
+        renderer.insert(trailing, parent, anchor); // insert trailing anchor
+    } else {
+        renderer.insert(node, parent, anchor);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
