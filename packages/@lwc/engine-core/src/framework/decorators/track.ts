@@ -12,6 +12,7 @@ import { getReactiveProxy } from '../membrane';
 import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 import { updateComponentValue } from '../update-component-value';
+import { logError } from '../../shared/logger';
 
 /**
  * @track decorator function to mark field value as reactive in
@@ -46,18 +47,20 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
+                if (isInvokingRender) {
+                    logError(
+                        `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
+                            key
+                        )}`
+                    );
+                }
+                if (isUpdatingTemplate) {
+                    logError(
+                        `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
+                            key
+                        )}`
+                    );
+                }
             }
             const reactiveOrAnyValue = getReactiveProxy(newValue);
             updateComponentValue(vm, key, reactiveOrAnyValue);

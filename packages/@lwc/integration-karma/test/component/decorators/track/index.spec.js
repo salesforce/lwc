@@ -32,15 +32,12 @@ it('rerenders the component when a track property is updated - object', () => {
 });
 
 describe('restrictions', () => {
-    it('throws when updating a track property during render', () => {
+    it('logs an error when updating a track property during render', () => {
         const elm = createElement('x-side-effect', { is: SideEffect });
 
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowConnectedErrorDev(
-            Error,
-            /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of \[.+\]\.prop/
-        );
+        }).toLogErrorDev(/\[.+\]\.render\(\) method has side effects on the state of \[.+\]\.prop/);
     });
 
     it('logs a property error when a track field conflicts with a method', () => {

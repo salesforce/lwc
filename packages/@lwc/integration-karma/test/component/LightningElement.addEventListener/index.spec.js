@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { spyConsole } from 'test-utils';
 
 import EventHandler from 'x/eventHandler';
 import EventHandlerOptions from 'x/eventHandlerOptions';
@@ -35,12 +36,31 @@ it('should warn when passing a 3rd parameter to the event handler', () => {
     );
 });
 
-it('should throw an error if event handler is not a function', () => {
-    const elm = createElement('x-event-handler', { is: EventHandler });
+describe('event handler is not a function', () => {
+    let consoleSpy;
+    beforeEach(() => {
+        consoleSpy = spyConsole();
+    });
+    afterEach(() => {
+        consoleSpy.reset();
+    });
 
-    expect(() => {
-        document.body.appendChild(elm);
-    }).toThrowConnectedError(/Expected an EventListener but received undefined/);
+    it('should throw an error if event handler is not a function', () => {
+        const elm = createElement('x-event-handler', { is: EventHandler });
+
+        expect(() => {
+            document.body.appendChild(elm);
+        }).toThrowConnectedError(/Expected an EventListener but received undefined/);
+
+        if (process.env.NODE_ENV === 'production') {
+            expect(consoleSpy.calls.error.length).toEqual(0);
+        } else {
+            expect(consoleSpy.calls.error.length).toEqual(1);
+            expect(consoleSpy.calls.error[0][0].message).toContain(
+                'Invalid second argument for this.addEventListener()'
+            );
+        }
+    });
 });
 
 it('should not invoke newly added event listeners in the middle of the dispatch', () => {

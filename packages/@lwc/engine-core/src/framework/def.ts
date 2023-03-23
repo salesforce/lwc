@@ -14,7 +14,6 @@
  */
 
 import {
-    assert,
     assign,
     create,
     defineProperties,
@@ -33,6 +32,7 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 
+import { logError } from '../shared/logger';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -101,22 +101,31 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
         // assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
-        assert.isTrue(
-            Ctor.constructor,
-            `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
-        );
 
-        if (!isUndefined(ctorShadowSupportMode)) {
-            assert.invariant(
-                ctorShadowSupportMode === ShadowSupportMode.Any ||
-                    ctorShadowSupportMode === ShadowSupportMode.Default,
+        if (!Ctor.constructor) {
+            // This error seems impossible to hit, due to an earlier check in `isComponentConstructor()`.
+            // But we keep it here just in case.
+            logError(
+                `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
+            );
+        }
+
+        if (
+            !isUndefined(ctorShadowSupportMode) &&
+            ctorShadowSupportMode !== ShadowSupportMode.Any &&
+            ctorShadowSupportMode !== ShadowSupportMode.Default
+        ) {
+            logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
 
-        if (!isUndefined(ctorRenderMode)) {
-            assert.invariant(
-                ctorRenderMode === 'light' || ctorRenderMode === 'shadow',
+        if (
+            !isUndefined(ctorRenderMode) &&
+            ctorRenderMode !== 'light' &&
+            ctorRenderMode !== 'shadow'
+        ) {
+            logError(
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }

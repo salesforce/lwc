@@ -34,7 +34,7 @@ describe('Node.textContent - setter', () => {
 
         expect(() => {
             elm.shadowRoot.textContent = '<span>Hello World!</span>';
-        }).toThrowErrorDev(TypeError, /Invalid attempt to set textContent on ShadowRoot/);
+        }).toLogErrorDev(/Invalid attempt to set textContent on ShadowRoot/);
     });
 
     it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {

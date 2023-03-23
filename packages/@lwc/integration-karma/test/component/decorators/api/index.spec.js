@@ -132,7 +132,7 @@ describe('restrictions', () => {
         );
     });
 
-    it('throws an error when an @api field has a setter but no getter', () => {
+    it('logs an error when an @api field has a setter but no getter', () => {
         expect(() => {
             expect(() => {
                 // The following class is wrapped by the compiler with registerDecorators. We check here
