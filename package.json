@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "2.40.1",
+    "version": "2.41.0",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
