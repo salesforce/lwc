@@ -907,8 +907,9 @@ function updateDynamicChildren(
             patch(oldStartVnode, newEndVnode, parent, renderer);
             let elm = oldEndVnode.elm!;
 
-            // If this is a leading anchor for a vfragment, then we want to use the node after the
-            // trailing anchor: [..., [leading, ...content, trailing], nextSibling, ...]
+            // In the case of fragments, we want to use the trailing anchor as the argument to
+            // nextSibling() to determine the nextSibling of the fragment:
+            // [..., [leading, ...content, trailing], nextSibling, ...]
             if (LeadingToTrailingMap.has(elm)) {
                 const trailing = LeadingToTrailingMap.get(elm);
                 while (elm !== trailing) {
