@@ -87,7 +87,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
         sel: undefined,
         key,
         elm: undefined,
-        children: [t('', true), ...children, t('', true)],
+        children: [t('', true), ...children, t('')],
         stable,
         owner: getVMBeingRendered()!,
     };
@@ -427,7 +427,7 @@ function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
 }
 
 // [t]ext node
-function t(text: string, fragment = false): VText {
+function t(text: string, isLeadingFragmentAnchor = false): VText {
     let sel, key, elm;
     return {
         type: VNodeType.Text,
@@ -436,7 +436,7 @@ function t(text: string, fragment = false): VText {
         elm,
         key,
         owner: getVMBeingRendered()!,
-        fragment,
+        isLeadingFragmentAnchor,
     };
 }
 

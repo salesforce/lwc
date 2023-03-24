@@ -177,7 +177,7 @@ function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
     }
 }
 
-const fragmentAnchors = new WeakSet<Node>();
+const leadingFragmentAnchors = new WeakSet<Node>();
 
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
     const { owner } = vnode;
@@ -188,9 +188,8 @@ function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, render
 
     insertNode(textNode, parent, anchor, renderer);
 
-    if (vnode.fragment) {
-        // Look into only adding the leading text node anchor
-        fragmentAnchors.add(textNode);
+    if (vnode.isLeadingFragmentAnchor) {
+        leadingFragmentAnchors.add(textNode);
     }
 }
 
@@ -556,13 +555,14 @@ function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: Ren
     }
 
     // Handle vfragment-based nodes
-    if (fragmentAnchors.has(node)) {
-        // vfragment-based nodes are sandwiched by leading and trailing anchors
+    if (leadingFragmentAnchors.has(node)) {
+        // The content of vfragment-based nodes are delimited by leading and trailing anchors.
+        const leading = node;
         const content = renderer.nextSibling(node);
         const trailing = renderer.nextSibling(content);
-        renderer.insert(node, parent, anchor); // insert leading anchor
-        renderer.insert(content, parent, anchor); // insert fragment content
-        renderer.insert(trailing, parent, anchor); // insert trailing anchor
+        renderer.insert(leading, parent, anchor);
+        renderer.insert(content, parent, anchor);
+        renderer.insert(trailing, parent, anchor);
     } else {
         renderer.insert(node, parent, anchor);
     }
@@ -906,7 +906,7 @@ function updateDynamicChildren(
             let nextSibling = renderer.nextSibling(elm);
             // If this is a leading anchor for a vfragment, then we want to use the node after the
             // trailing anchor: [..., [leading, content, trailing], nextSibling, ...]
-            if (fragmentAnchors.has(elm)) {
+            if (leadingFragmentAnchors.has(elm)) {
                 const trailing = renderer.nextSibling(nextSibling);
                 nextSibling = renderer.nextSibling(trailing);
             }
