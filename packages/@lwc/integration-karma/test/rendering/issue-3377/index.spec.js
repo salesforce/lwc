@@ -11,8 +11,8 @@ describe('issue-3377', () => {
 
         await Promise.resolve();
 
-        const items = elm.shadowRoot.querySelectorAll('.item');
-        expect(items.length).toBe(3);
-        expect(items[items.length - 1].className).toContain('lwc-if');
+        const childNodes = elm.shadowRoot.childNodes;
+        const contents = Array.from(childNodes).map((node) => node.textContent);
+        expect(contents).toEqual(['0', '1', '', 'lwc:if', '']);
     });
 });
