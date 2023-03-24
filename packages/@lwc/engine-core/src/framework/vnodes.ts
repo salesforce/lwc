@@ -72,7 +72,7 @@ export interface VText extends BaseVNode {
     sel: undefined;
     text: string;
     key: undefined;
-    fragment: boolean;
+    isLeadingFragmentAnchor: boolean;
 }
 
 export interface VComment extends BaseVNode {
