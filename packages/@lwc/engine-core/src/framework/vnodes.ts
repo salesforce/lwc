@@ -72,7 +72,6 @@ export interface VText extends BaseVNode {
     sel: undefined;
     text: string;
     key: undefined;
-    isLeadingFragmentAnchor: boolean;
 }
 
 export interface VComment extends BaseVNode {

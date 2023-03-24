@@ -177,8 +177,6 @@ function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
     }
 }
 
-const leadingFragmentAnchors = new WeakSet<Node>();
-
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
     const { owner } = vnode;
     const { createText } = renderer;
@@ -187,10 +185,6 @@ function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, render
     linkNodeToShadow(textNode, owner, renderer);
 
     insertNode(textNode, parent, anchor, renderer);
-
-    if (vnode.isLeadingFragmentAnchor) {
-        leadingFragmentAnchors.add(textNode);
-    }
 }
 
 function patchComment(n1: VComment, n2: VComment, renderer: RendererAPI) {
@@ -218,6 +212,8 @@ function mountComment(
     insertNode(commentNode, parent, anchor, renderer);
 }
 
+const LeadingToTrailingMap = new WeakMap<Node, Node>();
+
 function mountFragment(
     vnode: VFragment,
     parent: ParentNode,
@@ -227,8 +223,11 @@ function mountFragment(
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
 
-    // children of a fragment will always have at least the two delimiters.
-    vnode.elm = children[0]!.elm;
+    // Children of a fragment will always have a leading and trailing text node anchor.
+    const leadingAnchor = children[0]!.elm!;
+    const trailingAnchor = children[children.length - 1]!.elm!;
+    LeadingToTrailingMap.set(leadingAnchor, trailingAnchor);
+    vnode.elm = leadingAnchor;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -555,14 +554,19 @@ function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: Ren
     }
 
     // Handle vfragment-based nodes
-    if (leadingFragmentAnchors.has(node)) {
-        // The content of vfragment-based nodes are delimited by leading and trailing anchors.
-        const leading = node;
-        const content = renderer.nextSibling(node);
-        const trailing = renderer.nextSibling(content);
-        renderer.insert(leading, parent, anchor);
-        renderer.insert(content, parent, anchor);
-        renderer.insert(trailing, parent, anchor);
+    if (LeadingToTrailingMap.has(node)) {
+        // The content of vfragment-based nodes are delimited by leading and trailing anchors
+        const trailing = LeadingToTrailingMap.get(node);
+        const fragmentSibling = renderer.nextSibling(trailing);
+        const nodesToInsert = [];
+
+        // Identify all nodes to insert before insertion to avoid unexpected nextSibling() values
+        let newNode = node;
+        while (newNode !== fragmentSibling) {
+            nodesToInsert.push(newNode);
+            newNode = renderer.nextSibling(newNode);
+        }
+        nodesToInsert.forEach((node) => renderer.insert(node, parent, anchor));
     } else {
         renderer.insert(node, parent, anchor);
     }
@@ -901,17 +905,18 @@ function updateDynamicChildren(
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, renderer);
+            let elm = oldEndVnode.elm!;
 
-            const elm = oldEndVnode.elm!;
-            let nextSibling = renderer.nextSibling(elm);
             // If this is a leading anchor for a vfragment, then we want to use the node after the
-            // trailing anchor: [..., [leading, content, trailing], nextSibling, ...]
-            if (leadingFragmentAnchors.has(elm)) {
-                const trailing = renderer.nextSibling(nextSibling);
-                nextSibling = renderer.nextSibling(trailing);
+            // trailing anchor: [..., [leading, ...content, trailing], nextSibling, ...]
+            if (LeadingToTrailingMap.has(elm)) {
+                const trailing = LeadingToTrailingMap.get(elm);
+                while (elm !== trailing) {
+                    elm = renderer.nextSibling(elm);
+                }
             }
 
-            insertNode(oldStartVnode.elm!, parent, nextSibling, renderer);
+            insertNode(oldStartVnode.elm!, parent, renderer.nextSibling(elm), renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
