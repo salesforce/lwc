@@ -10,9 +10,8 @@ describe('issue-3396', () => {
 
         await Promise.resolve();
 
-        const items = elm.shadowRoot.querySelectorAll('.item');
-        const contents = Array.from(items).map((item) => item.innerText);
-
-        expect(contents).toEqual(['1', '2', '3']);
+        const childNodes = elm.shadowRoot.childNodes;
+        const contents = Array.from(childNodes).map((node) => node.textContent);
+        expect(contents).toEqual(['', '1', '', '', '2', '', '', '3', '']);
     });
 });

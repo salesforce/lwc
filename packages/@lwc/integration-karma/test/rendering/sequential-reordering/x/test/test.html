@@ -1,14 +1,14 @@
 <template>
     <template for:each={beforeItems} for:item="beforeItem">
         <!-- lwc:if is only used to make this a vfragment -->
-        <div key={beforeItem} class="item" lwc:if={beforeItems}>{beforeItem}</div>
+        <div key={beforeItem} lwc:if={beforeItems}>{beforeItem}</div>
     </template>
 
     <!-- lwc:if is only used to make this a vfragment -->
-    <div class="item" lwc:if={beforeItems}>fragment</div>
+    <div lwc:if={beforeItems}>fragment</div>
 
     <template for:each={afterItems} for:item="afterItem">
         <!-- lwc:if is only used to make this a vfragment -->
-        <div key={afterItem} class="item" lwc:if={afterItems}>{afterItem}</div>
+        <div key={afterItem} lwc:if={afterItems}>{afterItem}</div>
     </template>
 </template>
