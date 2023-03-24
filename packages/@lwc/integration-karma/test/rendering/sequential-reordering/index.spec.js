@@ -20,7 +20,7 @@ describe('vfragment sequential reordering', () => {
 
         const childNodes = elm.shadowRoot.childNodes;
         const contents = Array.from(childNodes).map((node) => node.textContent);
-        expect(contents).toEqual(['', 'fragment', '', '', 'bar', '']);
+        expect(contents).toEqual(['', '一', '二', '三', '', '', 'bar', '']);
     });
 
     it('move fragment right (["fragment", "foo"] => ["bar", "fragment"])', async () => {
@@ -40,6 +40,6 @@ describe('vfragment sequential reordering', () => {
 
         const childNodes = elm.shadowRoot.childNodes;
         const contents = Array.from(childNodes).map((node) => node.textContent);
-        expect(contents).toEqual(['', 'bar', '', '', 'fragment', '']);
+        expect(contents).toEqual(['', 'bar', '', '', '一', '二', '三', '']);
     });
 });
