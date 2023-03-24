@@ -901,12 +901,17 @@ function updateDynamicChildren(
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, renderer);
-            insertNode(
-                oldStartVnode.elm!,
-                parent,
-                renderer.nextSibling(oldEndVnode.elm!),
-                renderer
-            );
+
+            const elm = oldEndVnode.elm!;
+            let nextSibling = renderer.nextSibling(elm);
+            // If this is a leading anchor for a vfragment, then we want to use the node after the
+            // trailing anchor: [..., [leading, content, trailing], nextSibling, ...]
+            if (fragmentAnchors.has(elm)) {
+                const trailing = renderer.nextSibling(nextSibling);
+                nextSibling = renderer.nextSibling(trailing);
+            }
+
+            insertNode(oldStartVnode.elm!, parent, nextSibling, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
