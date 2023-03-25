@@ -905,19 +905,16 @@ function updateDynamicChildren(
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, renderer);
-            let elm = oldEndVnode.elm!;
-
-            // In the case of fragments, we want to use the trailing anchor as the argument to
-            // nextSibling() to determine the nextSibling of the fragment:
-            // [..., [leading, ...content, trailing], nextSibling, ...]
-            if (LeadingToTrailingMap.has(elm)) {
-                const trailing = LeadingToTrailingMap.get(elm);
-                while (elm !== trailing) {
-                    elm = renderer.nextSibling(elm);
-                }
-            }
-
-            insertNode(oldStartVnode.elm!, parent, renderer.nextSibling(elm), renderer);
+            // The env property of a vfragment points to the leading anchor. To compute the next
+            // sibling of the vfragment, we need to use the trailing anchor:
+            // [..., (leading, ...content, trailing), nextSibling, ...]
+            const trailing = LeadingToTrailingMap.get(oldEndVnode.elm!);
+            insertNode(
+                oldStartVnode.elm!,
+                parent,
+                renderer.nextSibling(trailing || oldEndVnode.elm!),
+                renderer
+            );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
