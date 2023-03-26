@@ -22,7 +22,8 @@ const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
 const WHITESPACES_RE = /\s/;
 
 export function isExpression(source: string): boolean {
-    return source[0] === '{' && source.slice(-1) === '}';
+    // Issue #3418: Legacy behavior, previous regex treated "{}" attribute value as non expression
+    return source[0] === '{' && source.slice(-1) === '}' && source.length > 2;
 }
 
 export function isPotentialExpression(source: string): boolean {
