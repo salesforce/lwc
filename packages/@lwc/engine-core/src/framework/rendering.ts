@@ -212,8 +212,6 @@ function mountComment(
     insertNode(commentNode, parent, anchor, renderer);
 }
 
-const LeadingToTrailingMap = new WeakMap<Node, Node>();
-
 function mountFragment(
     vnode: VFragment,
     parent: ParentNode,
@@ -222,12 +220,7 @@ function mountFragment(
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
-
-    // Children of a fragment will always have a leading and trailing text node anchor.
-    const leadingAnchor = children[0]!.elm!;
-    const trailingAnchor = children[children.length - 1]!.elm!;
-    LeadingToTrailingMap.set(leadingAnchor, trailingAnchor);
-    vnode.elm = leadingAnchor;
+    vnode.elm = children[0]!.elm!;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -548,29 +541,36 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     }
 }
 
-function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: RendererAPI) {
+function insertFragment(
+    vnode: VFragment,
+    parent: Node,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
 
-    // Handle vfragment-based nodes
-    if (LeadingToTrailingMap.has(node)) {
-        // The content of vfragment-based nodes are delimited by leading and trailing anchors
-        const trailing = LeadingToTrailingMap.get(node);
-        const fragmentSibling = renderer.nextSibling(trailing);
-        const nodesToInsert = [];
-
-        // Identify all nodes to insert before insertion to avoid unexpected nextSibling() values
-        let newNode = node;
-        while (newNode !== fragmentSibling) {
-            nodesToInsert.push(newNode);
-            newNode = renderer.nextSibling(newNode);
+    const children = vnode.children;
+    const nodesToInsert = [];
+    for (let i = 0; i < children.length; i += 1) {
+        const child = children[i];
+        if (!isNull(child)) {
+            nodesToInsert.push(child.elm!);
         }
-        nodesToInsert.forEach((node) => renderer.insert(node, parent, anchor));
-    } else {
-        renderer.insert(node, parent, anchor);
     }
+    nodesToInsert.forEach((node) => renderer.insert(node, parent, anchor));
 
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
+}
+
+function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: RendererAPI) {
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    renderer.insert(node, parent, anchor);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -905,22 +905,37 @@ function updateDynamicChildren(
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, renderer);
-            // The env property of a vfragment points to the leading anchor. To compute the next
-            // sibling of the vfragment, we need to use the trailing anchor:
-            // [..., (leading, ...content, trailing), nextSibling, ...]
-            const trailing = LeadingToTrailingMap.get(oldEndVnode.elm!);
-            insertNode(
-                oldStartVnode.elm!,
-                parent,
-                renderer.nextSibling(trailing || oldEndVnode.elm!),
-                renderer
-            );
+
+            // In the case of fragments, the `elm` property of a vfragment points to the leading
+            // anchor. To determine the next sibling of the whole fragment, we need to use the
+            // trailing anchor as the argument to nextSibling():
+            // [..., [leading, ...content, trailing], nextSibling, ...]
+            let anchor: Node | null;
+            if (isVFragment(oldEndVnode)) {
+                const trailing = oldEndVnode.children[oldEndVnode.children.length - 1]!.elm!;
+                anchor = renderer.nextSibling(trailing);
+            } else {
+                anchor = renderer.nextSibling(oldEndVnode.elm!);
+            }
+
+            if (isVFragment(oldStartVnode)) {
+                insertFragment(oldStartVnode, parent, anchor, renderer);
+            } else {
+                insertNode(oldStartVnode.elm!, parent, anchor, renderer);
+            }
+
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode, parent, renderer);
-            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
+
+            if (isVFragment(newStartVnode)) {
+                insertFragment(newStartVnode, parent, oldStartVnode.elm!, renderer);
+            } else {
+                insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
+            }
+
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -952,7 +967,11 @@ function updateDynamicChildren(
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
+                        if (isVFragment(elmToMove)) {
+                            insertFragment(elmToMove, parent, oldStartVnode.elm!, renderer);
+                        } else {
+                            insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
+                        }
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
