@@ -221,6 +221,7 @@ function mountFragment(
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
     vnode.elm = children[0]!.elm!;
+    vnode.trailingAnchor = children[children.length - 1]!.elm!;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -914,8 +915,7 @@ function updateDynamicChildren(
             // [..., [leading, ...content, trailing], nextSibling, ...]
             let anchor: Node | null;
             if (isVFragment(oldEndVnode)) {
-                const trailing = oldEndVnode.children[oldEndVnode.children.length - 1]!.elm!;
-                anchor = renderer.nextSibling(trailing);
+                anchor = renderer.nextSibling(oldEndVnode.trailingAnchor);
             } else {
                 anchor = renderer.nextSibling(oldEndVnode.elm!);
             }

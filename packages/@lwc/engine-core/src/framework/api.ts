@@ -90,6 +90,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
         children: [t(''), ...children, t('')],
         stable,
         owner: getVMBeingRendered()!,
+        trailingAnchor: undefined,
     };
 }
 
