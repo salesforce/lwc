@@ -553,15 +553,11 @@ function insertFragmentOrNode(
 
     if (isVFragment(vnode)) {
         const children = vnode.children;
-        const nodesToInsert = [];
         for (let i = 0; i < children.length; i += 1) {
             const child = children[i];
             if (!isNull(child)) {
-                nodesToInsert.push(child.elm!);
+                renderer.insert(child.elm, parent, anchor);
             }
-        }
-        for (let i = 0; i < nodesToInsert.length; i += 1) {
-            renderer.insert(nodesToInsert[i], parent, anchor);
         }
     } else {
         renderer.insert(vnode.elm!, parent, anchor);
