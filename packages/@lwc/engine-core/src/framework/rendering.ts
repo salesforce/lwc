@@ -541,6 +541,19 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     }
 }
 
+function insertFragmentOrNode(
+    vnode: VFragment | VNode,
+    parent: Node,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    if (isVFragment(vnode)) {
+        insertFragment(vnode, parent, anchor, renderer);
+    } else {
+        insertNode(vnode.elm!, parent, anchor, renderer);
+    }
+}
+
 function insertFragment(
     vnode: VFragment,
     parent: Node,
@@ -920,11 +933,7 @@ function updateDynamicChildren(
                 anchor = renderer.nextSibling(oldEndVnode.elm!);
             }
 
-            if (isVFragment(oldStartVnode)) {
-                insertFragment(oldStartVnode, parent, anchor, renderer);
-            } else {
-                insertNode(oldStartVnode.elm!, parent, anchor, renderer);
-            }
+            insertFragmentOrNode(oldStartVnode, parent, anchor, renderer);
 
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
@@ -932,11 +941,7 @@ function updateDynamicChildren(
             // Vnode moved left
             patch(oldEndVnode, newStartVnode, parent, renderer);
 
-            if (isVFragment(newStartVnode)) {
-                insertFragment(newStartVnode, parent, oldStartVnode.elm!, renderer);
-            } else {
-                insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
-            }
+            insertFragmentOrNode(newStartVnode, parent, oldStartVnode.elm!, renderer);
 
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -969,11 +974,7 @@ function updateDynamicChildren(
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        if (isVFragment(elmToMove)) {
-                            insertFragment(elmToMove, parent, oldStartVnode.elm!, renderer);
-                        } else {
-                            insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
-                        }
+                        insertFragmentOrNode(elmToMove, parent, oldStartVnode.elm!, renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
