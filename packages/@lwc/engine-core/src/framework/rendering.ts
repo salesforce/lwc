@@ -220,8 +220,7 @@ function mountFragment(
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
-    vnode.elm = children[0]!.elm!;
-    vnode.trailingAnchor = children[children.length - 1]!.elm!;
+    vnode.elm = vnode.leading.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -234,7 +233,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
     }
 
     // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
-    n2.elm = children[0]!.elm;
+    n2.elm = n2.leading.elm;
 }
 
 function mountElement(
@@ -542,8 +541,8 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     }
 }
 
-function insertFragment(
-    vnode: VFragment,
+function insertFragmentOrNode(
+    vnode: VNode,
     parent: Node,
     anchor: Node | null,
     renderer: RendererAPI
@@ -552,16 +551,20 @@ function insertFragment(
         unlockDomMutation();
     }
 
-    const children = vnode.children;
-    const nodesToInsert = [];
-    for (let i = 0; i < children.length; i += 1) {
-        const child = children[i];
-        if (!isNull(child)) {
-            nodesToInsert.push(child.elm!);
+    if (isVFragment(vnode)) {
+        const children = vnode.children;
+        const nodesToInsert = [];
+        for (let i = 0; i < children.length; i += 1) {
+            const child = children[i];
+            if (!isNull(child)) {
+                nodesToInsert.push(child.elm!);
+            }
         }
-    }
-    for (let i = 0; i < nodesToInsert.length; i += 1) {
-        renderer.insert(nodesToInsert[i], parent, anchor);
+        for (let i = 0; i < nodesToInsert.length; i += 1) {
+            renderer.insert(nodesToInsert[i], parent, anchor);
+        }
+    } else {
+        renderer.insert(vnode.elm!, parent, anchor);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -915,29 +918,18 @@ function updateDynamicChildren(
             // [..., [leading, ...content, trailing], nextSibling, ...]
             let anchor: Node | null;
             if (isVFragment(oldEndVnode)) {
-                anchor = renderer.nextSibling(oldEndVnode.trailingAnchor);
+                anchor = renderer.nextSibling(oldEndVnode.trailing.elm);
             } else {
                 anchor = renderer.nextSibling(oldEndVnode.elm!);
             }
 
-            if (isVFragment(oldStartVnode)) {
-                insertFragment(oldStartVnode, parent, anchor, renderer);
-            } else {
-                insertNode(oldStartVnode.elm!, parent, anchor, renderer);
-            }
-
+            insertFragmentOrNode(oldStartVnode, parent, anchor, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode, parent, renderer);
-
-            if (isVFragment(newStartVnode)) {
-                insertFragment(newStartVnode, parent, oldStartVnode.elm!, renderer);
-            } else {
-                insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
-            }
-
+            insertFragmentOrNode(newStartVnode, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -969,11 +961,7 @@ function updateDynamicChildren(
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        if (isVFragment(elmToMove)) {
-                            insertFragment(elmToMove, parent, oldStartVnode.elm!, renderer);
-                        } else {
-                            insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
-                        }
+                        insertFragmentOrNode(elmToMove, parent, oldStartVnode.elm!, renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];

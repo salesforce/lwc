@@ -65,7 +65,8 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
     // which diffing strategy to use.
     stable: 0 | 1;
-    trailingAnchor: Node | undefined;
+    leading: VText;
+    trailing: VText;
 }
 
 export interface VText extends BaseVNode {
