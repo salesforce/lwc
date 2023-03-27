@@ -559,7 +559,9 @@ function insertFragment(
             nodesToInsert.push(child.elm!);
         }
     }
-    nodesToInsert.forEach((node) => renderer.insert(node, parent, anchor));
+    for (let i = 0; i < nodesToInsert.length; i += 1) {
+        renderer.insert(nodesToInsert[i], parent, anchor);
+    }
 
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
