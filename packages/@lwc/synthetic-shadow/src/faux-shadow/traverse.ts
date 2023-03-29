@@ -150,12 +150,10 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     const ownerKey = getNodeNearestOwnerKey(node);
 
     if (isUndefined(ownerKey)) {
-        if (lwcRuntimeFlags.ENABLE_LIGHT_GET_ROOT_NODE_PATCH) {
-            // in case of root level light DOM element slotting into a synthetic shadow
-            const host = parentNodeGetter.call(node);
-            if (!isNull(host) && isSyntheticSlotElement(host)) {
-                return false;
-            }
+        // in case of root level light DOM element slotting into a synthetic shadow
+        const host = parentNodeGetter.call(node);
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
+            return false;
         }
 
         // in case of manually inserted elements
