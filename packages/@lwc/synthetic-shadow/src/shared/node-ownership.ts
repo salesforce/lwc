@@ -58,11 +58,7 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
 
-        if (
-            lwcRuntimeFlags.ENABLE_LIGHT_GET_ROOT_NODE_PATCH &&
-            !isNull(host) &&
-            isSyntheticSlotElement(host)
-        ) {
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
             return undefined;
         }
     }

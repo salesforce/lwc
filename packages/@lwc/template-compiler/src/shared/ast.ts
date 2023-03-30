@@ -14,6 +14,7 @@ import {
     ExternalComponent,
     Component,
     Expression,
+    ComplexExpression,
     Comment,
     Text,
     ForEach,
@@ -146,7 +147,8 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
 
 export function text(
     raw: string,
-    value: Literal | Expression,
+    // TODO [#3370]: remove experimental template expression flag
+    value: Literal | Expression | ComplexExpression,
     parse5Location: parse5.Location
 ): Text {
     return {
@@ -504,11 +506,13 @@ export function isComment(node: BaseNode): node is Comment {
     return node.type === 'Comment';
 }
 
-export function isExpression(node: Expression | Literal): node is Expression {
-    return node.type === 'Identifier' || node.type === 'MemberExpression';
+export function isExpression(node: BaseNode | Literal): node is Expression {
+    return node.type !== 'Literal';
 }
 
-export function isStringLiteral(node: Expression | Literal): node is Literal<string> {
+export function isStringLiteral(
+    node: Expression | Literal | ComplexExpression
+): node is Literal<string> {
     return node.type === 'Literal' && typeof node.value === 'string';
 }
 

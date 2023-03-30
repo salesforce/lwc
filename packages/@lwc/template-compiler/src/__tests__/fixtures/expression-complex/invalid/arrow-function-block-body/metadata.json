@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1193,
+            "message": "Invalid expression {() => { doSomething(); }} - LWC1193: The body of arrow functions in template expressions must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 41,
+                "length": 34
+            }
+        }
+    ]
+}

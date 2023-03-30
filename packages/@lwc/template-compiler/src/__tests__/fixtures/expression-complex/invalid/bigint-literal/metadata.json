@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {transformBigInt(1n)} - LWC1196: Use of BigInts is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 18,
+                "start": 42,
+                "length": 25
+            }
+        }
+    ]
+}

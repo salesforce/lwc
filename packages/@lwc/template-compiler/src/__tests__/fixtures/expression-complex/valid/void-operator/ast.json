@@ -1,0 +1,145 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 92,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 81,
+                "end": 92
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 80,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 70,
+                        "end": 80
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 41,
+                            "start": 33,
+                            "end": 65,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 32,
+                                "start": 33,
+                                "end": 56
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 32,
+                                "endLine": 3,
+                                "endColumn": 41,
+                                "start": 56,
+                                "end": 65
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "foo",
+                                "attributeName": "foo",
+                                "value": {
+                                    "type": "UnaryExpression",
+                                    "start": 1,
+                                    "end": 9,
+                                    "operator": "void",
+                                    "prefix": true,
+                                    "argument": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 6,
+                                            "end": 9,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 31,
+                                        "start": 41,
+                                        "end": 55
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 31,
+                                    "start": 41,
+                                    "end": 55
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}
