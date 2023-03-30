@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const glob = require('glob');
+const { globSync } = require('glob');
 
 const reports = require('istanbul-reports');
 const libReport = require('istanbul-lib-report');
@@ -19,7 +19,7 @@ const COVERAGE_DIR = path.resolve(__dirname, '../coverage');
 const COMBINED_COVERAGE_DIR = 'combined';
 const REPORT_TYPES = ['html', 'json', 'text'];
 
-const coverageFiles = glob.sync('**/coverage-*.json', {
+const coverageFiles = globSync('**/coverage-*.json', {
     absolute: true,
     cwd: COVERAGE_DIR,
     ignore: COMBINED_COVERAGE_DIR,

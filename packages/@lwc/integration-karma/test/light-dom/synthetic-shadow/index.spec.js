@@ -39,11 +39,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         });
 
         it('getRootNode', () => {
-            const expectedRootNode = process.env.NATIVE_SHADOW
-                ? document // native, correct behavior
-                : nodes['consumer.shadowRoot']; // incorrect, existing behavior
-
-            expect(nodes.p.getRootNode()).toEqual(expectedRootNode);
+            expect(nodes.p.getRootNode()).toEqual(document);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
         // TODO [#2425]: Incorrect serialization

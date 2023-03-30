@@ -46,13 +46,6 @@ export interface FeatureFlagMap {
     ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
 
     /**
-     * Flag to fix `getRootNode` on elements slotted from root into Synthetic Shadow.
-     * The following API is affected by this flag:
-     *  - `Node.prototype.getRootNode`
-     */
-    ENABLE_LIGHT_GET_ROOT_NODE_PATCH: FeatureFlagValue;
-
-    /**
      * Disables unscoped CSS in Light DOM
      */
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
