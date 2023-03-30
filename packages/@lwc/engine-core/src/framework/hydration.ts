@@ -505,7 +505,12 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     let nodesAreCompatible = true;
     let readableVnodeClassname;
 
-    const elmClassName = getProperty(elm, 'className');
+    const rawElmClassName: string | SVGAnimatedString = getProperty(elm, 'className');
+
+    // In <svg>s, the `class` attribute becomes an SVGAnimatedString
+    const elmClassName =
+        rawElmClassName instanceof SVGAnimatedString ? rawElmClassName.baseVal : rawElmClassName;
+
     if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
