@@ -48,6 +48,7 @@ const { code } = transformSync(source, filename, options);
     -   `outputConfig` (type: `object`, optional) - see below:
         -   `sourcemap` (type: `boolean`, optional) - if `true`, a sourcemap is generated for the transformed file.
         -   `minify` (type: `boolean`, optional, deprecated) - this option has no effect.
+    -   `experimentalComplexExpressions` (type: `boolean`, optional) - set to true to enable use of (a subset of) JavaScript expressions in place of template bindings. Passed to `@lwc/template-compiler`.
     -   `isExplicitImport` (type: `boolean`, optional) - true if this is an explicit import, passed to `@lwc/babel-plugin-component`.
     -   `preserveHtmlComments` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
     -   `scopedStyles` (type: `boolean`, optional) - True if the CSS file being compiled is a scoped stylesheet. Passed to `@lwc/style-compiler`.
