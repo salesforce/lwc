@@ -510,7 +510,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     if (!isUndefined(className) && (isNull(elmClassName) || String(className) !== elmClassName)) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
-        readableVnodeClassname = isUndefined(className) ? 'undefined' : JSON.stringify(className);
+        readableVnodeClassname = JSON.stringify(className);
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
         const classList = getClassList(elm);
