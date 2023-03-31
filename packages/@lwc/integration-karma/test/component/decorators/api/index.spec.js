@@ -1,5 +1,7 @@
 import { createElement, LightningElement, api } from 'lwc';
+import { getPropertyDescriptor } from 'test-utils';
 
+import GetterSetterAndProp from 'x/getterSetterAndProp';
 import Properties from 'x/properties';
 import Mutate from 'x/mutate';
 import GetterSetter from 'x/getterSetter';
@@ -128,6 +130,65 @@ describe('restrictions', () => {
         }).toThrowErrorDev(
             'Invalid @api showFeatures field. Found a duplicate method with the same name.'
         );
+    });
+});
+
+describe('non-LightningElement `this` when calling accessor', () => {
+    let elm;
+
+    beforeEach(() => {
+        elm = createElement('x-getter-setter-and-prop', { is: GetterSetterAndProp });
+        document.body.appendChild(elm);
+    });
+
+    const expectedErrorMessage =
+        /(undefined is not a VM|Cannot destructure property '(getHook|setHook)' of 'vm' as it is undefined|Cannot read properties of undefined)/;
+
+    const scenarios = [
+        { type: 'getterSetter', prop: 'getterSetterProp' },
+        { type: 'classProp', prop: 'classProp' },
+    ];
+
+    scenarios.forEach(({ type, prop }) => {
+        describe(type, () => {
+            it('getter - external', () => {
+                const { get } = getPropertyDescriptor(elm, prop);
+                expect(() => {
+                    get.call({});
+                }).toThrowError(TypeError, expectedErrorMessage);
+            });
+
+            it('setter - external', () => {
+                const { set } = getPropertyDescriptor(elm, prop);
+                expect(() => {
+                    set.call({}, 'foo');
+                }).toThrowError(TypeError, expectedErrorMessage);
+            });
+
+            it('getter - internal', () => {
+                const callback = () => {
+                    elm.callGetterInternallyWithWrongThis(prop);
+                };
+                // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
+                if (type === 'classProp') {
+                    expect(callback).toThrowError(TypeError, expectedErrorMessage);
+                } else {
+                    expect(callback).toThrowErrorDev(TypeError, expectedErrorMessage);
+                }
+            });
+
+            it('setter - internal', () => {
+                const callback = () => {
+                    elm.callSetterInternallyWithWrongThis(prop, 'foo');
+                };
+                // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
+                if (type === 'classProp') {
+                    expect(callback).toThrowError(TypeError, expectedErrorMessage);
+                } else {
+                    expect(callback).toThrowErrorDev(TypeError, expectedErrorMessage);
+                }
+            });
+        });
     });
 });
 
