@@ -22,12 +22,11 @@ function getBaseName(classPath: string) {
     return basename(classPath, ext);
 }
 
-type DeclarationOrExpression =
-    | types.ClassDeclaration
-    | types.FunctionDeclaration
-    | types.Expression;
+type DeclarationPath = NodePath<
+    types.ClassDeclaration | types.FunctionDeclaration | types.Expression
+>;
 
-function importDefaultTemplate(path: NodePath<DeclarationOrExpression>, state: LwcBabelPluginPass) {
+function importDefaultTemplate(path: DeclarationPath, state: LwcBabelPluginPass) {
     const { filename } = state.file.opts;
     const componentName = getBaseName(filename!);
     return addDefault(path, `./${componentName}.html`, {
@@ -35,7 +34,7 @@ function importDefaultTemplate(path: NodePath<DeclarationOrExpression>, state: L
     });
 }
 
-function needsComponentRegistration(path: NodePath<DeclarationOrExpression>) {
+function needsComponentRegistration(path: DeclarationPath) {
     return (
         (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
         path.isCallExpression() ||
@@ -51,10 +50,7 @@ function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
 }
 
 export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
-    function createRegisterComponent(
-        declarationPath: NodePath<DeclarationOrExpression>,
-        state: LwcBabelPluginPass
-    ) {
+    function createRegisterComponent(declarationPath: DeclarationPath, state: LwcBabelPluginPass) {
         const registerComponentId = addNamed(
             declarationPath,
             REGISTER_COMPONENT_ID,
@@ -89,7 +85,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {
-                const declaration = path.get('declaration') as NodePath<DeclarationOrExpression>;
+                const declaration = path.get('declaration') as DeclarationPath;
                 if (needsComponentRegistration(declaration)) {
                     declaration.replaceWith(createRegisterComponent(declaration, state));
                 }
