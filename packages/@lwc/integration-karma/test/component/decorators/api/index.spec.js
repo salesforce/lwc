@@ -1,5 +1,6 @@
 import { createElement, LightningElement, api } from 'lwc';
 
+import GetterSetterAndProp from 'x/getterSetterAndProp';
 import Properties from 'x/properties';
 import Mutate from 'x/mutate';
 import GetterSetter from 'x/getterSetter';
@@ -128,6 +129,72 @@ describe('restrictions', () => {
         }).toThrowErrorDev(
             'Invalid @api showFeatures field. Found a duplicate method with the same name.'
         );
+    });
+});
+
+describe('non-LightningElement `this` when calling accessor', () => {
+    function getDescriptor(obj, prop) {
+        while (obj) {
+            const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+            if (descriptor) {
+                return descriptor;
+            }
+            obj = Object.getPrototypeOf(obj);
+        }
+    }
+
+    let elm;
+
+    beforeEach(() => {
+        elm = createElement('x-getter-setter-and-prop', { is: GetterSetterAndProp });
+        document.body.appendChild(elm);
+    });
+
+    const scenarios = [
+        { name: 'getter/setter', prop: 'getterSetterProp' },
+        { name: 'class property', prop: 'classProp' },
+    ];
+
+    scenarios.forEach(({ name, prop }) => {
+        describe(name, () => {
+            it('getter - external', () => {
+                const { get } = getDescriptor(elm, prop);
+                expect(() => {
+                    get.call({});
+                }).toThrowError(
+                    TypeError,
+                    /(undefined is not a VM|Cannot destructure property 'getHook' of 'vm' as it is undefined)/
+                );
+            });
+
+            it('setter - external', () => {
+                const { set } = getDescriptor(elm, prop);
+                expect(() => {
+                    set.call({}, 'foo');
+                }).toThrowError(
+                    TypeError,
+                    /(undefined is not a VM|Cannot destructure property 'setHook' of 'vm' as it is undefined)/
+                );
+            });
+
+            it('getter - internal', () => {
+                expect(() => {
+                    elm.callGetterInternallyWithWrongThis(prop);
+                }).toThrowError(
+                    TypeError,
+                    /(undefined is not a VM|Cannot destructure property 'getHook' of 'vm' as it is undefined)/
+                );
+            });
+
+            it('setter - internal', () => {
+                expect(() => {
+                    elm.callSetterInternallyWithWrongThis(prop, 'foo');
+                }).toThrowError(
+                    TypeError,
+                    /(undefined is not a VM|Cannot destructure property 'setHook' of 'vm' as it is undefined)/
+                );
+            });
+        });
     });
 });
 
