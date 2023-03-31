@@ -507,7 +507,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
 
     const elmClassName = getAttribute(elm, 'class');
 
-    if (!isUndefined(className) && (isNull(elmClassName) || String(className) !== elmClassName)) {
+    if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
         readableVnodeClassname = JSON.stringify(className);
