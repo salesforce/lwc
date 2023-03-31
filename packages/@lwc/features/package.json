@@ -1,6 +1,6 @@
 {
     "name": "@lwc/features",
-    "version": "2.13.0",
+    "version": "2.42.0",
     "description": "LWC Features Flags",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -16,7 +16,6 @@
     "typings": "types/flags.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/ types/",
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -25,9 +24,19 @@
         "types/"
     ],
     "dependencies": {
-        "@lwc/shared": "2.13.0"
+        "@lwc/shared": "2.42.0"
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

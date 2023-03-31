@@ -1,0 +1,59 @@
+{
+    "warnings": [
+        {
+            "code": 1142,
+            "message": "LWC1142: Invalid lwc:inner-html usage on element \"<div>\". The directive can't be used on an element with content.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 69,
+                "length": 48
+            }
+        },
+        {
+            "code": 1143,
+            "message": "LWC1143: Invalid lwc:inner-html usage on element \"<div>\". The directive binding can only be an expression or a string.",
+            "level": 1,
+            "location": {
+                "line": 9,
+                "column": 5,
+                "start": 343,
+                "length": 26
+            }
+        },
+        {
+            "code": 1141,
+            "message": "LWC1141: Invalid lwc:inner-html usage on element \"<slot>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 12,
+                "column": 5,
+                "start": 416,
+                "length": 38
+            }
+        },
+        {
+            "code": 1140,
+            "message": "LWC1140: Invalid lwc:inner-html usage on element \"<x-foo>\". The directive can't be used on a custom element or special LWC managed elements denoted with lwc:*.",
+            "level": 1,
+            "location": {
+                "line": 15,
+                "column": 5,
+                "start": 510,
+                "length": 40
+            }
+        },
+        {
+            "code": 1141,
+            "message": "LWC1141: Invalid lwc:inner-html usage on element \"<template>\". The directive can't be used on a slot or a template element.",
+            "level": 1,
+            "location": {
+                "line": 18,
+                "column": 5,
+                "start": 601,
+                "length": 46
+            }
+        }
+    ]
+}

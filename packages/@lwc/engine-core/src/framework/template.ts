@@ -14,33 +14,34 @@ import {
     isNull,
     isTrue,
     isUndefined,
-    toString,
     KEY__SCOPED_CSS,
+    toString,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-
 import api, { RenderAPI } from './api';
 import {
+    RenderMode,
     resetComponentRoot,
     runWithBoundaryProtection,
+    ShadowMode,
     SlotSet,
     TemplateCache,
     VM,
-    RenderMode,
 } from './vm';
-import { EmptyArray } from './utils';
+import { assertNotProd, EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
-    TemplateStylesheetFactories,
     createStylesheet,
     getStylesheetsContent,
+    TemplateStylesheetFactories,
     updateStylesheetToken,
 } from './stylesheet';
-import { logOperationStart, logOperationEnd, OperationId } from './profiler';
+import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
+import { RendererAPI } from './renderer';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -53,6 +54,8 @@ export interface Template {
     stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
+    /** True if this template contains template refs, undefined or false otherwise */
+    hasRefs?: boolean;
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -66,26 +69,23 @@ export function setVMBeingRendered(vm: VM | null) {
 }
 
 function validateSlots(vm: VM, html: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
 
-    for (const slotName in cmpSlots) {
-        // eslint-disable-next-line lwc-internal/no-production-assert
+    for (const slotName in cmpSlots.slotAssignments) {
+        // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
         assert.isTrue(
-            isArray(cmpSlots[slotName]),
+            isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
+                cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
 
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO [#1297]: this should never really happen because the compiler should always validate
-            // eslint-disable-next-line lwc-internal/no-production-assert
+            // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
             logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm
@@ -112,6 +112,82 @@ function validateLightDomTemplate(template: Template, vm: VM) {
         );
     }
 }
+
+const enum FragmentCache {
+    HAS_SCOPED_STYLE = 1 << 0,
+    SHADOW_MODE_SYNTHETIC = 1 << 1,
+}
+
+function buildParseFragmentFn(
+    createFragmentFn: (html: string, renderer: RendererAPI) => Element
+): (strings: string[], ...keys: number[]) => () => Element {
+    return (strings: string[], ...keys: number[]) => {
+        const cache = create(null);
+
+        return function (): Element {
+            const {
+                context: { hasScopedStyles, stylesheetToken },
+                shadowMode,
+                renderer,
+            } = getVMBeingRendered()!;
+            const hasStyleToken = !isUndefined(stylesheetToken);
+            const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
+
+            let cacheKey = 0;
+            if (hasStyleToken && hasScopedStyles) {
+                cacheKey |= FragmentCache.HAS_SCOPED_STYLE;
+            }
+            if (hasStyleToken && isSyntheticShadow) {
+                cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
+            }
+
+            if (!isUndefined(cache[cacheKey])) {
+                return cache[cacheKey];
+            }
+
+            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
+            const classAttrToken =
+                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
+            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
+
+            let htmlFragment = '';
+            for (let i = 0, n = keys.length; i < n; i++) {
+                switch (keys[i]) {
+                    case 0: // styleToken in existing class attr
+                        htmlFragment += strings[i] + classToken;
+                        break;
+                    case 1: // styleToken for added class attr
+                        htmlFragment += strings[i] + classAttrToken;
+                        break;
+                    case 2: // styleToken as attr
+                        htmlFragment += strings[i] + attrToken;
+                        break;
+                    case 3: // ${1}${2}
+                        htmlFragment += strings[i] + classAttrToken + attrToken;
+                        break;
+                }
+            }
+
+            htmlFragment += strings[strings.length - 1];
+
+            cache[cacheKey] = createFragmentFn(htmlFragment, renderer);
+
+            return cache[cacheKey];
+        };
+    };
+}
+
+// Note: at the moment this code executes, we don't have a renderer yet.
+export const parseFragment = buildParseFragmentFn((html, renderer) => {
+    const { createFragment } = renderer;
+    return createFragment(html);
+});
+
+export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
+    const { createFragment, getFirstChild } = renderer;
+    const fragment = createFragment('<svg>' + html + '</svg>');
+    return getFirstChild(fragment);
+});
 
 export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
@@ -172,7 +248,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.tplCache = create(null);
 
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
-                    context.hasScopedStyles = computeHasScopedStyles(html);
+                    context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html);
@@ -180,7 +256,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
                     const stylesheetsContent = getStylesheetsContent(vm, html);
-                    context.styleVNode =
+                    context.styleVNodes =
                         stylesheetsContent.length === 0
                             ? null
                             : createStylesheet(vm, stylesheetsContent);
@@ -193,6 +269,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     setActiveVM(vm);
                 }
 
+                // reset the refs; they will be set during the tmpl() instantiation
+                vm.refVNodes = html.hasRefs ? create(null) : null;
+
                 // right before producing the vnodes, we clear up all internal references
                 // to custom elements from the template.
                 vm.velements = [];
@@ -200,9 +279,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 isUpdatingTemplate = true;
 
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
-                const { styleVNode } = context;
-                if (!isNull(styleVNode)) {
-                    ArrayUnshift.call(vnodes, styleVNode);
+                const { styleVNodes } = context;
+                if (!isNull(styleVNodes)) {
+                    ArrayUnshift.apply(vnodes, styleVNodes);
                 }
             });
         },
@@ -224,9 +303,10 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-function computeHasScopedStyles(template: Template): boolean {
-    const { stylesheets } = template;
-    if (!isUndefined(stylesheets)) {
+function computeHasScopedStylesInStylesheets(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): boolean {
+    if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
                 return true;
@@ -234,4 +314,20 @@ function computeHasScopedStyles(template: Template): boolean {
         }
     }
     return false;
+}
+
+export function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
+    const { stylesheets } = template;
+    const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
+
+    return (
+        computeHasScopedStylesInStylesheets(stylesheets) ||
+        computeHasScopedStylesInStylesheets(vmStylesheets)
+    );
+}
+
+export function hasStyles(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): stylesheets is TemplateStylesheetFactories {
+    return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

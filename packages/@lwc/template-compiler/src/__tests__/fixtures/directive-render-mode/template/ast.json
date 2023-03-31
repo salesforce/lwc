@@ -1,0 +1,306 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 182,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 35,
+                "start": 0,
+                "end": 34
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 171,
+                "end": 182
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "RenderMode",
+                "value": {
+                    "type": "Literal",
+                    "value": "light"
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 34,
+                    "start": 10,
+                    "end": 33
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 16,
+                    "start": 39,
+                    "end": 50,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 8,
+                        "start": 39,
+                        "end": 42
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 12,
+                        "endLine": 2,
+                        "endColumn": 16,
+                        "start": 46,
+                        "end": 50
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Root",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Root"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 12,
+                            "start": 42,
+                            "end": 46
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 25,
+                    "start": 55,
+                    "end": 75,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 11,
+                        "start": 55,
+                        "end": 61
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 18,
+                        "endLine": 3,
+                        "endColumn": 25,
+                        "start": 68,
+                        "end": 75
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Default",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Default"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 11,
+                            "endLine": 3,
+                            "endColumn": 18,
+                            "start": 61,
+                            "end": 68
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "named",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 36,
+                    "start": 80,
+                    "end": 111,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 24,
+                        "start": 80,
+                        "end": 99
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 29,
+                        "endLine": 4,
+                        "endColumn": 36,
+                        "start": 104,
+                        "end": 111
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "named"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 11,
+                            "endLine": 4,
+                            "endColumn": 23,
+                            "start": 86,
+                            "end": 98
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Named",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Named"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 24,
+                            "endLine": 4,
+                            "endColumn": 29,
+                            "start": 99,
+                            "end": 104
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "forwarded",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 59,
+                    "start": 116,
+                    "end": 170,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 43,
+                        "start": 116,
+                        "end": 154
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 52,
+                        "endLine": 5,
+                        "endColumn": 59,
+                        "start": 163,
+                        "end": 170
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "forwarded"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 11,
+                            "endLine": 5,
+                            "endColumn": 27,
+                            "start": 122,
+                            "end": 138
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "slot",
+                        "value": {
+                            "type": "Literal",
+                            "value": "forward"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 28,
+                            "endLine": 5,
+                            "endColumn": 42,
+                            "start": 139,
+                            "end": 153
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Forwarded",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Forwarded"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 43,
+                            "endLine": 5,
+                            "endColumn": 52,
+                            "start": 154,
+                            "end": 163
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

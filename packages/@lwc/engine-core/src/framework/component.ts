@@ -6,7 +6,7 @@
  */
 import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
 
-import { ReactiveObserver } from '../libs/mutation-tracker';
+import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
@@ -15,7 +15,12 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
-const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
+type ComponentConstructorMetadata = {
+    tmpl: Template;
+    sel: string;
+};
+const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
+    new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -24,13 +29,16 @@ const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl }: { tmpl: Template }
+    metadata: ComponentConstructorMetadata
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
+            // There is no point in running this in production, because the version mismatch check relies
+            // on code comments which are stripped out in production by minifiers
             checkVersionMismatch(Ctor, 'component');
         }
-        signedTemplateMap.set(Ctor, tmpl);
+        // TODO [#3331]: add validation to check the value of metadata.sel is not an empty string.
+        registeredComponentMap.set(Ctor, metadata);
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
@@ -40,11 +48,15 @@ export function registerComponent(
 export function getComponentRegisteredTemplate(
     Ctor: LightningElementConstructor
 ): Template | undefined {
-    return signedTemplateMap.get(Ctor);
+    return registeredComponentMap.get(Ctor)?.tmpl;
+}
+
+export function getComponentRegisteredName(Ctor: LightningElementConstructor): string | undefined {
+    return registeredComponentMap.get(Ctor)?.sel;
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
-    return new ReactiveObserver(() => {
+    return createReactiveObserver(() => {
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);
@@ -89,7 +101,7 @@ const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap()
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (!isFunction(listener)) {
-        throw new TypeError(); // avoiding problems with non-valid listeners
+        throw new TypeError('Expected an EventListener but received ' + typeof listener); // avoiding problems with non-valid listeners
     }
     let wrappedListener = cmpEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {

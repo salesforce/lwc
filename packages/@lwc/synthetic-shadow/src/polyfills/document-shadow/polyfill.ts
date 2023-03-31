@@ -84,7 +84,8 @@ defineProperty(Document.prototype, 'getElementById', {
         if (isNull(elm)) {
             return null;
         }
-        // TODO [#1222]: remove global bypass
+        // Note: we deviate from native shadow here, but are not fixing
+        // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
         return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
     },
     writable: true,
@@ -99,7 +100,8 @@ defineProperty(Document.prototype, 'querySelector', {
         );
         const filtered = ArrayFind.call(
             elements,
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return !isUndefined(filtered) ? filtered : null;
@@ -116,7 +118,8 @@ defineProperty(Document.prototype, 'querySelectorAll', {
         );
         const filtered = ArrayFilter.call(
             elements,
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticNodeList(filtered);
@@ -133,7 +136,8 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
         );
         const filtered = ArrayFilter.call(
             elements,
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -150,7 +154,8 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
         );
         const filtered = ArrayFilter.call(
             elements,
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -170,7 +175,8 @@ defineProperty(Document.prototype, 'getElementsByTagNameNS', {
         );
         const filtered = ArrayFilter.call(
             elements,
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -193,7 +199,8 @@ defineProperty(
             );
             const filtered = ArrayFilter.call(
                 elements,
-                // TODO [#1222]: remove global bypass
+                // Note: we deviate from native shadow here, but are not fixing
+                // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);

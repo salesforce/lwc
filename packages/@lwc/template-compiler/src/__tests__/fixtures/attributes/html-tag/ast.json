@@ -1,0 +1,151 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 94,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 83,
+                "end": 94
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 82,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 72,
+                        "end": 82
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 43,
+                            "start": 33,
+                            "end": 67,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 38,
+                                "start": 33,
+                                "end": 62
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 39,
+                                "endLine": 3,
+                                "endColumn": 43,
+                                "start": 63,
+                                "end": 67
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "title",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "x"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 21,
+                                    "start": 36,
+                                    "end": 45
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "aria-hidden",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "x"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 22,
+                                    "endLine": 3,
+                                    "endColumn": 37,
+                                    "start": 46,
+                                    "end": 61
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "x",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "x"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 38,
+                                    "endLine": 3,
+                                    "endColumn": 39,
+                                    "start": 62,
+                                    "end": 63
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

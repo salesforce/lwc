@@ -1,6 +1,6 @@
 {
     "name": "@lwc/rollup-plugin",
-    "version": "2.13.0",
+    "version": "2.42.0",
     "description": "Rollup plugin to compile LWC",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -15,7 +15,6 @@
     "types": "dist/types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "tsc",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
@@ -23,17 +22,27 @@
         "dist/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "2.13.0",
-        "@lwc/engine-dom": "2.13.0"
+        "@lwc/compiler": "2.42.0",
+        "@lwc/engine-dom": "2.42.0",
+        "@lwc/errors": "2.42.0"
     },
     "dependencies": {
-        "@lwc/module-resolver": "2.13.0",
-        "@rollup/pluginutils": "~4.2.0"
+        "@lwc/module-resolver": "2.42.0",
+        "@rollup/pluginutils": "~5.0.2"
     },
     "peerDependencies": {
-        "rollup": "^1.2.0||^2.0.0"
+        "rollup": "^1.2.0||^2.0.0||^3.0.0"
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

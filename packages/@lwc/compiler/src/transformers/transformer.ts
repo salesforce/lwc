@@ -7,7 +7,12 @@
 import * as path from 'path';
 
 import { isString } from '@lwc/shared';
-import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
+import {
+    TransformerErrors,
+    generateCompilerError,
+    invariant,
+    CompilerDiagnostic,
+} from '@lwc/errors';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
@@ -17,6 +22,7 @@ import scriptTransformer from './javascript';
 export interface TransformResult {
     code: string;
     map: unknown;
+    warnings?: CompilerDiagnostic[];
 }
 
 /**

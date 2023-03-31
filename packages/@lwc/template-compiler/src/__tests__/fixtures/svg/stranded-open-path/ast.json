@@ -1,0 +1,110 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 95,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 84,
+                "end": 95
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 83,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 45,
+                        "start": 15,
+                        "end": 55
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 77,
+                        "end": 83
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "xmlns",
+                        "value": {
+                            "type": "Literal",
+                            "value": "http://www.w3.org/2000/svg"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 44,
+                            "start": 20,
+                            "end": 54
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "path",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 17,
+                            "start": 64,
+                            "end": 72,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 17,
+                                "start": 64,
+                                "end": 72
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

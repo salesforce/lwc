@@ -17,6 +17,8 @@ export interface Config {
     };
     /** Token that is used for scoping in light DOM scoped styles */
     scoped?: boolean;
+    /** When set to true, synthetic shadow DOM support is removed from the output JavaScript */
+    disableSyntheticShadowSupport?: boolean;
 }
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {

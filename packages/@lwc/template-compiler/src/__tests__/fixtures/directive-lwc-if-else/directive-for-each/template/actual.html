@@ -1,0 +1,10 @@
+<template>
+    <template for:each={items} for:item="item">
+        <template lwc:if={item.visible}>
+            <div key={item.key}>Conditional Iteration</div>
+        </template>
+        <template lwc:else>
+            <div key={item.key}>Else</div>
+        </template>
+    </template>
+</template>

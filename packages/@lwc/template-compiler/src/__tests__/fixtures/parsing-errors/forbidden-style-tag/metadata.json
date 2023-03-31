@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1122,
+            "message": "LWC1122: The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 48,
+                "length": 15
+            }
+        },
+        {
+            "code": 1122,
+            "message": "LWC1122: The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle.",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 9,
+                "start": 125,
+                "length": 15
+            }
+        }
+    ]
+}

@@ -1,0 +1,292 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 13,
+            "endColumn": 12,
+            "start": 0,
+            "end": 499,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 13,
+                "startColumn": 1,
+                "endLine": 13,
+                "endColumn": 12,
+                "start": 488,
+                "end": 499
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " name separated by underscore and starts with alphabetic character ",
+                "value": " name separated by underscore and starts with alphabetic character ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 79,
+                    "start": 15,
+                    "end": 89
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 44,
+                    "start": 94,
+                    "end": 133,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 33,
+                        "start": 94,
+                        "end": 122
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 33,
+                        "endLine": 3,
+                        "endColumn": 44,
+                        "start": 122,
+                        "end": 133
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "under_score",
+                        "attributeName": "under_score",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 15,
+                            "endLine": 3,
+                            "endColumn": 32,
+                            "start": 104,
+                            "end": 121
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " name separated by underscore and starts with a number ",
+                "value": " name separated by underscore and starts with a number ",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 67,
+                    "start": 139,
+                    "end": 201
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 40,
+                    "start": 206,
+                    "end": 241,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 29,
+                        "start": 206,
+                        "end": 230
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 29,
+                        "endLine": 6,
+                        "endColumn": 40,
+                        "start": 230,
+                        "end": 241
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "under_1",
+                        "attributeName": "under_1",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 15,
+                            "endLine": 6,
+                            "endColumn": 28,
+                            "start": 216,
+                            "end": 229
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " name separated by underscore which contains hyphen ",
+                "value": " name separated by underscore which contains hyphen ",
+                "location": {
+                    "startLine": 8,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 64,
+                    "start": 247,
+                    "end": 306
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 9,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 51,
+                    "start": 311,
+                    "end": 357,
+                    "startTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 40,
+                        "start": 311,
+                        "end": 346
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 40,
+                        "endLine": 9,
+                        "endColumn": 51,
+                        "start": 346,
+                        "end": 357
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "under_scoreHyphen",
+                        "attributeName": "under_score-hyphen",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 15,
+                            "endLine": 9,
+                            "endColumn": 39,
+                            "start": 321,
+                            "end": 345
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " name separated by two underscore and contains hyphen ",
+                "value": " name separated by two underscore and contains hyphen ",
+                "location": {
+                    "startLine": 11,
+                    "startColumn": 5,
+                    "endLine": 11,
+                    "endColumn": 66,
+                    "start": 363,
+                    "end": 424
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 12,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 63,
+                    "start": 429,
+                    "end": 487,
+                    "startTag": {
+                        "startLine": 12,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 52,
+                        "start": 429,
+                        "end": 476
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 52,
+                        "endLine": 12,
+                        "endColumn": 63,
+                        "start": 476,
+                        "end": 487
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "under_scoreSecond_underScore",
+                        "attributeName": "under_score-second_under-score",
+                        "value": {
+                            "type": "Literal",
+                            "value": "bar"
+                        },
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 15,
+                            "endLine": 12,
+                            "endColumn": 51,
+                            "start": 439,
+                            "end": 475
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

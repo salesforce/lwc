@@ -1,0 +1,26 @@
+<template>
+    <!-- Invalid usage on an element as boolean -->
+    <div lwc:ref></div>
+    
+    <!-- Invalid usage on <slot> -->
+    <slot lwc:ref="foo"></slot>
+    
+    <!-- Invalid usage on <template> -->
+    <template lwc:ref="foo"></template>
+
+    <!-- Invalid usage with empty string -->
+    <slot lwc:ref="" name="bar"></slot>
+
+    <!-- Invalid usage with expression -->
+    <slot lwc:ref={foo} name="baz"></slot>
+
+    <!-- Invalid usage inside for:each -->
+    <template for:each={items} for:item="item">
+        <div lwc:ref="foo" key={item}></div>
+    </template>
+
+    <!-- Invalid usage inside iterator -->
+    <template iterator:it={items}>
+        <div lwc:ref="foo" key={it}></div>
+    </template>
+</template>

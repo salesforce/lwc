@@ -1,0 +1,7 @@
+{
+    "customRendererConfig": {
+        "directives": ["lwc:inner-html"],
+        "elements": []
+    },
+    "enableDynamicComponents": true
+}

@@ -12,12 +12,14 @@ import {
     isGlobalHtmlAttribute,
     HTML_NAMESPACE,
     SVG_NAMESPACE,
+    ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
 
-import { isComponent } from '../shared/ast';
+import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
+import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
@@ -32,20 +34,16 @@ import {
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
-    DASHED_TAGNAME_ELEMENT_SET,
-    ID_REFERENCING_ATTRIBUTES_SET,
-    KNOWN_HTML_ELEMENTS,
+    KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
-function isQuotedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return value && value.startsWith('"') && value.endsWith('"');
+function isQuotedAttribute(attrVal: string) {
+    return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
 }
 
-function isEscapedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return !value || !(value.includes('{') && value.includes('}'));
+function isEscapedAttribute(attrVal: string) {
+    return !attrVal || !(attrVal.includes('{') && attrVal.includes('}'));
 }
 
 export function isIdReferencingAttribute(attrName: string): boolean {
@@ -107,8 +105,9 @@ export function normalizeAttributeValue(
         }
     }
 
-    const isQuoted = isQuotedAttribute(raw);
-    const isEscaped = isEscapedAttribute(raw);
+    const rawAttrVal = raw.slice(raw.indexOf('=') + 1);
+    const isQuoted = isQuotedAttribute(rawAttrVal);
+    const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
         if (isQuoted) {
             // <input value="{myValue}" />
@@ -180,27 +179,38 @@ export function isValidTabIndexAttributeValue(value: any): boolean {
     return value === '0' || value === '-1';
 }
 
-export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
-    return isAriaAttribute(attrName) || isFmkAttribute(attrName) || isDataAttribute(attrName);
+export function isAriaOrDataOrFrameworkAttribute(attrName: string): boolean {
+    return isAriaAttribute(attrName) || isFrameworkAttribute(attrName) || isDataAttribute(attrName);
 }
 
 function isDataAttribute(attrName: string): boolean {
     return !!attrName.match(DATA_RE);
 }
 
-function isFmkAttribute(attrName: string): boolean {
-    return attrName === 'key' || attrName === 'slot';
+function isFrameworkAttribute(attrName: string): boolean {
+    // 'key' is currently the only LWC framework-specific attribute that doesn't start with "lwc:"
+    return attrName === 'key';
 }
 
 export function isAttribute(element: BaseElement, attrName: string): boolean {
-    if (isComponent(element)) {
+    // lwc:component will resolve to an LWC custom element at runtime
+    if (isComponent(element) || isLwcComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
             attrName === 'key' ||
             attrName === 'slot' ||
+            // `exportparts` is only valid on a shadow host, and only available as an attribute, not a property
+            // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/exportparts
+            attrName === 'exportparts' ||
             !!attrName.match(DATA_RE)
         );
+    }
+
+    // External custom elements default to setting data as attributes. These might be set as
+    // properties during runtime, depending on runtime heuristics.
+    if (isExternalComponent(element)) {
+        return true;
     }
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
@@ -217,11 +227,11 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
     if (
         isGlobalHtmlAttribute(attrName) ||
-        isAriaOrDataOrFmkAttribute(attrName) ||
+        isAriaOrDataOrFrameworkAttribute(attrName) ||
         isTemplateDirective(attrName) ||
         SUPPORTED_SVG_TAGS.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
-        !KNOWN_HTML_ELEMENTS.has(tagName)
+        !KNOWN_HTML_AND_SVG_ELEMENTS.has(tagName)
     ) {
         return true;
     }
@@ -257,12 +267,24 @@ export class ParsedAttribute {
         }
     }
 
+    getAll(pattern: RegExp): Attribute[] {
+        return this.getKeys(pattern).map((key) => this.attributes.get(key)!);
+    }
+
     pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
         }
         return attr;
+    }
+
+    pickAll(pattern: RegExp): Attribute[] {
+        const attrs = this.getAll(pattern);
+        for (const attr of attrs) {
+            this.attributes.delete(attr.name);
+        }
+        return attrs;
     }
 
     private getKey(pattern: string | RegExp): string | undefined {
@@ -273,6 +295,10 @@ export class ParsedAttribute {
             match = Array.from(this.attributes.keys()).find((name) => !!name.match(pattern));
         }
         return match;
+    }
+
+    private getKeys(pattern: RegExp): string[] {
+        return Array.from(this.attributes.keys()).filter((name) => !!name.match(pattern));
     }
 
     getAttributes(): Attribute[] {

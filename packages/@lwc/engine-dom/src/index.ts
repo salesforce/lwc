@@ -5,15 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Polyfills ---------------------------------------------------------------------------------------
-import './polyfills/aria-properties/main';
+// Globals -----------------------------------------------------------------------------------------
+import '@lwc/features';
 
-// Renderer initialization -------------------------------------------------------------------------
-import './initializeRenderer';
+// Polyfills ---------------------------------------------------------------------------------------
+import './aria-reflection-polyfill';
+
+// DevTools Formatters
+import './formatters';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
-    createContextProvider,
     register,
     api,
     track,
@@ -23,22 +25,29 @@ export {
     setFeatureFlag,
     setFeatureFlagForTest,
     registerTemplate,
+    freezeTemplate,
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    parseFragment,
+    parseSVGFragment,
     swapComponent,
     swapStyle,
     swapTemplate,
+    getComponentConstructor,
     __unstable__ProfilerControl,
+    __unstable__ReportingControl,
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
 export { createElement } from './apis/create-element';
-export { getComponentConstructor } from './apis/get-component-constructor';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
 export { LightningElement } from './apis/lightning-element';
+export { renderer } from './renderer';
+export { rendererFactory } from './renderer-factory';
+export { createContextProvider } from './renderer/context';

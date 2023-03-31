@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode } from './language';
+import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
+import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+
+const CAMEL_REGEX = /-([a-z])/g;
 
 /**
  * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names
@@ -49,57 +51,91 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
     );
 }
 
+// This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 const GLOBAL_ATTRIBUTE = new Set([
-    'role',
     'accesskey',
+    'autocapitalize',
+    'autofocus',
     'class',
     'contenteditable',
     'contextmenu',
     'dir',
     'draggable',
-    'dropzone',
+    'enterkeyhint',
+    'exportparts',
     'hidden',
     'id',
+    'inputmode',
+    'is',
+    'itemid',
     'itemprop',
+    'itemref',
+    'itemscope',
+    'itemtype',
     'lang',
+    'nonce',
+    'part',
     'slot',
     'spellcheck',
     'style',
     'tabindex',
     'title',
+    'translate',
 ]);
 
 export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
-/**
- * Map composed of properties to attributes not following the HTML property to attribute mapping
- * convention.
- */
-const NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING = new Map([
-    ['accessKey', 'accesskey'],
-    ['readOnly', 'readonly'],
-    ['tabIndex', 'tabindex'],
-    ['bgColor', 'bgcolor'],
-    ['colSpan', 'colspan'],
-    ['rowSpan', 'rowspan'],
-    ['contentEditable', 'contenteditable'],
-    ['crossOrigin', 'crossorigin'],
-    ['dateTime', 'datetime'],
-    ['formAction', 'formaction'],
-    ['isMap', 'ismap'],
-    ['maxLength', 'maxlength'],
-    ['minLength', 'minlength'],
-    ['noValidate', 'novalidate'],
-    ['useMap', 'usemap'],
-    ['htmlFor', 'for'],
-]);
+// Convoluted map generation so that @lwc/shared remains fully tree-shakable (verify-treeshakable)
+const { NO_STANDARD_ATTRIBUTE_PROPERTY_MAPPING, NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING } =
+    /*#__PURE__*/ (() => {
+        /**
+         * Map composed of properties to attributes not following the HTML property to attribute mapping
+         * convention.
+         */
+        const NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING = new Map([
+            ['accessKey', 'accesskey'],
+            ['readOnly', 'readonly'],
+            ['tabIndex', 'tabindex'],
+            ['bgColor', 'bgcolor'],
+            ['colSpan', 'colspan'],
+            ['rowSpan', 'rowspan'],
+            ['contentEditable', 'contenteditable'],
+            ['crossOrigin', 'crossorigin'],
+            ['dateTime', 'datetime'],
+            ['formAction', 'formaction'],
+            ['isMap', 'ismap'],
+            ['maxLength', 'maxlength'],
+            ['minLength', 'minlength'],
+            ['noValidate', 'novalidate'],
+            ['useMap', 'usemap'],
+            ['htmlFor', 'for'],
+        ]);
+
+        /**
+         * Inverted map with attribute name key and property name value.
+         */
+        const NO_STANDARD_ATTRIBUTE_PROPERTY_MAPPING = new Map();
+        NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING.forEach((value, key) =>
+            NO_STANDARD_ATTRIBUTE_PROPERTY_MAPPING.set(value, key)
+        );
+
+        return {
+            NO_STANDARD_ATTRIBUTE_PROPERTY_MAPPING,
+            NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING,
+        };
+    })();
 
 /**
  * Map associating previously transformed HTML property into HTML attribute.
  */
 const CACHED_PROPERTY_ATTRIBUTE_MAPPING = new Map<string, string>();
+
+/**
+ * Map associating previously transformed HTML attribute into HTML property.
+ */
+const CACHED_ATTRIBUTE_PROPERTY_MAPPING = new Map<string, string>();
 
 export function htmlPropertyToAttribute(propName: string): string {
     const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
@@ -132,4 +168,25 @@ export function htmlPropertyToAttribute(propName: string): string {
 
     CACHED_PROPERTY_ATTRIBUTE_MAPPING.set(propName, attributeName);
     return attributeName;
+}
+
+export function htmlAttributeToProperty(attrName: string): string {
+    const ariaPropertyName = AriaAttrNameToPropNameMap[attrName];
+    if (!isUndefined(ariaPropertyName)) {
+        return ariaPropertyName;
+    }
+
+    const specialPropertyName = NO_STANDARD_ATTRIBUTE_PROPERTY_MAPPING.get(attrName);
+    if (!isUndefined(specialPropertyName)) {
+        return specialPropertyName;
+    }
+
+    const cachedPropertyName = CACHED_ATTRIBUTE_PROPERTY_MAPPING.get(attrName);
+    if (!isUndefined(cachedPropertyName)) {
+        return cachedPropertyName;
+    }
+
+    const propertyName = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+    CACHED_ATTRIBUTE_PROPERTY_MAPPING.set(attrName, propertyName);
+    return propertyName;
 }

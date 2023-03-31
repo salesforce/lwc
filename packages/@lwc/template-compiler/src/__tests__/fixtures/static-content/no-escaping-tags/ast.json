@@ -1,0 +1,271 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 16,
+            "endColumn": 12,
+            "start": 0,
+            "end": 429,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 16,
+                "startColumn": 1,
+                "endLine": 16,
+                "endColumn": 12,
+                "start": 418,
+                "end": 429
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "xmp",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 109,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 11,
+                        "start": 103,
+                        "end": 109
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "&lt;/xmp&gt;Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div>",
+                        "value": {
+                            "type": "Literal",
+                            "value": "</xmp>Hello <div>world</div> <div>foo</div>"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 5,
+                            "endColumn": 5,
+                            "start": 20,
+                            "end": 103
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "iframe",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 14,
+                    "start": 114,
+                    "end": 202,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 13,
+                        "start": 114,
+                        "end": 122
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 14,
+                        "start": 193,
+                        "end": 202
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div>",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Hello <div>world</div> <div>foo</div>"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 13,
+                            "endLine": 9,
+                            "endColumn": 5,
+                            "start": 122,
+                            "end": 193
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "noembed",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 10,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 15,
+                    "start": 207,
+                    "end": 289,
+                    "startTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 14,
+                        "start": 207,
+                        "end": 216
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 15,
+                        "start": 279,
+                        "end": 289
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div>",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Hello <div>world</div> <div>foo</div>"
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 14,
+                            "endLine": 12,
+                            "endColumn": 5,
+                            "start": 216,
+                            "end": 279
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "noframes",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 13,
+                    "startColumn": 5,
+                    "endLine": 15,
+                    "endColumn": 16,
+                    "start": 294,
+                    "end": 417,
+                    "startTag": {
+                        "startLine": 13,
+                        "startColumn": 5,
+                        "endLine": 13,
+                        "endColumn": 15,
+                        "start": 294,
+                        "end": 304
+                    },
+                    "endTag": {
+                        "startLine": 15,
+                        "startColumn": 5,
+                        "endLine": 15,
+                        "endColumn": 16,
+                        "start": 406,
+                        "end": 417
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 14,
+                            "startColumn": 9,
+                            "endLine": 14,
+                            "endColumn": 97,
+                            "start": 313,
+                            "end": 401,
+                            "startTag": {
+                                "startLine": 14,
+                                "startColumn": 9,
+                                "endLine": 14,
+                                "endColumn": 12,
+                                "start": 313,
+                                "end": 316
+                            },
+                            "endTag": {
+                                "startLine": 14,
+                                "startColumn": 93,
+                                "endLine": 14,
+                                "endColumn": 97,
+                                "start": 397,
+                                "end": 401
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "It seems your browser does not support frames or is configured to not allow them.",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "It seems your browser does not support frames or is configured to not allow them."
+                                },
+                                "location": {
+                                    "startLine": 14,
+                                    "startColumn": 12,
+                                    "endLine": 14,
+                                    "endColumn": 93,
+                                    "start": 316,
+                                    "end": 397
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

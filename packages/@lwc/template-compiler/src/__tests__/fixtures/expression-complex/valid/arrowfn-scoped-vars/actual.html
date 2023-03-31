@@ -1,0 +1,10 @@
+<template>
+    <x-pert
+        foo={[
+            foo,
+            (foo) => foo,
+            foo,
+            [(foo) => [foo, (foo) => foo, foo], foo]
+        ]}
+    ></x-pert>
+</template>

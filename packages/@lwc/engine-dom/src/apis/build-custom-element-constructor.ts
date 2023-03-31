@@ -12,6 +12,7 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
+import { renderer } from '../renderer';
 import { hydrateComponent } from './hydrate-component';
 
 type ComponentConstructor = typeof LightningElement;
@@ -52,8 +53,10 @@ const hydratedCustomElements = new WeakSet<Element>();
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
+    const { observedAttributes } = HtmlPrototype as any;
+    const { attributeChangedCallback } = HtmlPrototype.prototype as any;
 
-    return class extends HtmlPrototype {
+    return class extends HTMLElement {
         constructor() {
             super();
 
@@ -62,7 +65,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 hydrateComponent(this, Ctor, {});
                 hydratedCustomElements.add(this);
             } else {
-                createVM(this, Ctor, {
+                createVM(this, Ctor, renderer, {
                     mode: 'open',
                     owner: null,
                     tagName: this.tagName,
@@ -80,5 +83,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         disconnectedCallback() {
             disconnectRootElement(this);
         }
+        attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+            attributeChangedCallback.call(this, name, oldValue, newValue);
+        }
+        static observedAttributes = observedAttributes;
     };
 }

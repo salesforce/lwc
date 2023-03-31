@@ -7,9 +7,9 @@
 import { ObservableMembrane } from 'observable-membrane';
 import { valueObserved, valueMutated } from './mutation-tracker';
 
-export const lockerLivePropertyKey = Symbol.for('@@lockerLiveValue');
+const lockerLivePropertyKey = Symbol.for('@@lockerLiveValue');
 
-export const reactiveMembrane = new ObservableMembrane({
+const reactiveMembrane = new ObservableMembrane({
     valueObserved,
     valueMutated,
     tagPropertyKey: lockerLivePropertyKey,
@@ -21,5 +21,25 @@ export const reactiveMembrane = new ObservableMembrane({
  * change or being removed.
  */
 export function unwrap(value: any): any {
-    return reactiveMembrane.unwrapProxy(value);
+    // On the server side, we don't need mutation tracking. Skipping it improves performance.
+    return process.env.IS_BROWSER ? reactiveMembrane.unwrapProxy(value) : value;
+}
+
+export function getReadOnlyProxy(value: any): any {
+    // We must return a frozen wrapper around the value, so that child components cannot mutate properties passed to
+    // them from their parents. This applies to both the client and server.
+    return reactiveMembrane.getReadOnlyProxy(value);
+}
+
+export function getReactiveProxy(value: any): any {
+    // On the server side, we don't need mutation tracking. Skipping it improves performance.
+    return process.env.IS_BROWSER ? reactiveMembrane.getProxy(value) : value;
+}
+
+// Making the component instance a live value when using Locker to support expandos.
+export function markLockerLiveObject(obj: any): void {
+    // On the server side, we don't need mutation tracking. Skipping it improves performance.
+    if (process.env.IS_BROWSER) {
+        obj[lockerLivePropertyKey] = undefined;
+    }
 }

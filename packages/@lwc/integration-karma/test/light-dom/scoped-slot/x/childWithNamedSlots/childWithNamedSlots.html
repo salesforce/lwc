@@ -1,0 +1,14 @@
+<template lwc:render-mode="light">
+    <div class="slotname2">
+        <slot name="slotname2" lwc:slot-bind={slot2data}>named slot 2: default content</slot>
+    </div>
+    <div class="defaultslot">
+        <slot lwc:slot-bind={defaultdata}>default slot: default content</slot>
+    </div>
+    <div class="slotname1">
+        <slot name="slotname1" lwc:slot-bind={slot1data}>named slot 1: default content</slot>
+    </div>    
+    <div class="slotname3">
+        <slot name="slotname3">named slot 3: default content</slot>
+    </div>
+</template>

@@ -1,0 +1,21 @@
+<template>
+    <template lwc:if={condition}>
+        Conditional Text
+    </template>
+    <template lwc:elseif={altCondition}>
+        <div>
+            <slot name="outside-slot"></slot>
+        </div>
+    </template>
+    <template lwc:else>
+        <slot name="outside-slot"></slot>
+    </template>
+    <template lwc:if={anotherCondition}>
+        Another Conditional Text
+    </template>
+    <template lwc:elseif={anotherAltCondition}>
+        <div>
+            <slot name="outside-slot"></slot>
+        </div>
+    </template>
+</template>

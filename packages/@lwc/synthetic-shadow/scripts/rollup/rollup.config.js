@@ -7,7 +7,6 @@
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescript = require('../../../../../scripts/rollup/typescript');
-const lwcFeatures = require('../../../../../scripts/rollup/lwcFeatures');
 const { version } = require('../../package.json');
 
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -28,6 +27,7 @@ function rollupConfig({ wrap } = {}) {
     return {
         input: entry,
         output: {
+            sourcemap: true,
             file: path.join(targetDirectory, targetName),
             name: 'SyntheticShadow',
             format: 'es',
@@ -40,7 +40,6 @@ function rollupConfig({ wrap } = {}) {
                 only: [/^@lwc\//],
             }),
             typescript(),
-            lwcFeatures(),
         ].filter(Boolean),
         onwarn({ code, message }) {
             if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {

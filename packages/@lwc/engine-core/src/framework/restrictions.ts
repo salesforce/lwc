@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/* eslint lwc-internal/no-production-assert: "off" */
+/* eslint @lwc/lwc-internal/no-production-assert: "off" */
 import {
     assign,
     create,
@@ -26,6 +26,7 @@ import { getComponentTag } from '../shared/format';
 import { LightningElement } from './base-lightning-element';
 import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
+import { assertNotProd } from './utils';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -51,18 +52,12 @@ function generateAccessorDescriptor(options: PropertyDescriptor): PropertyDescri
 let isDomMutationAllowed = false;
 
 export function unlockDomMutation() {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
     isDomMutationAllowed = true;
 }
 
 export function lockDomMutation() {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
     isDomMutationAllowed = false;
 }
 
@@ -74,12 +69,9 @@ function logMissingPortalError(name: string, type: string) {
 
 export function patchElementWithRestrictions(
     elm: Element,
-    options: { isPortal: boolean; isLight: boolean }
+    options: { isPortal: boolean; isLight: boolean; isSynthetic: boolean }
 ): void {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const descriptors: PropertyDescriptorMap = {
@@ -94,7 +86,7 @@ export function patchElementWithRestrictions(
     };
 
     // Apply extra restriction related to DOM manipulation if the element is not a portal.
-    if (!options.isLight && !options.isPortal) {
+    if (!options.isLight && options.isSynthetic && !options.isPortal) {
         const { appendChild, insertBefore, removeChild, replaceChild } = elm;
 
         const originalNodeValueDescriptor = getPropertyDescriptor(elm, 'nodeValue')!;
@@ -166,10 +158,7 @@ export function patchElementWithRestrictions(
 }
 
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     // Disallowing properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
@@ -222,10 +211,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
 // -----------------------------
 
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const originalAddEventListener = elm.addEventListener;
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
@@ -281,10 +267,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
 }
 
 function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
     return {
         tagName: generateAccessorDescriptor({
             get(this: LightningElement) {
@@ -303,10 +286,7 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
 function getLightningElementPrototypeRestrictionsDescriptors(
     proto: typeof LightningElement.prototype
 ): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+    assertNotProd(); // this method should never leak to prod
 
     const originalDispatchEvent = proto.dispatchEvent;
 

@@ -6,10 +6,8 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
-
-import { NormalizedConfig } from '../config';
 
 import {
     isComment,
@@ -18,6 +16,7 @@ import {
     isStringLiteral,
     isForBlock,
     isIf,
+    isIfBlock,
     isForEach,
     isBaseElement,
     isExpression,
@@ -27,14 +26,23 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isRefDirective,
+    isSpreadDirective,
+    isElement,
+    isElseifBlock,
+    isExternalComponent,
+    isScopedSlotFragment,
+    isSlotBindDirective,
+    isLwcIsDirective,
 } from '../shared/ast';
-import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
     Root,
     ParentNode,
     ChildNode,
     Text,
     If,
+    IfBlock,
     ForBlock,
     ForEach,
     Attribute,
@@ -42,8 +50,9 @@ import {
     Comment,
     ForOf,
     BaseElement,
+    ElseifBlock,
+    ScopedSlotFragment,
 } from '../shared/types';
-
 import * as t from '../shared/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -52,14 +61,14 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-
+import State from '../state';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 import {
     identifierFromComponentName,
     objectToAST,
     shouldFlatten,
     memorizeHandler,
-    containsDynamicChildren,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -72,15 +81,25 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
+        if (codeGen.staticNodes.has(element) && isElement(element)) {
+            // do not process children of static nodes.
+            return codeGen.genHoistedElement(element, slotParentName);
+        }
+
         const children = transformChildren(element);
 
-        // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = element.directives.find(isDynamicDirective);
+        // lwc:dynamic directive
+        const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
+        // lwc:is directive
+        const dynamicDirective = element.directives.find(isLwcIsDirective);
 
-        if (dynamic) {
-            const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
+        if (deprecatedDynamicDirective) {
+            const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
+            res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);
+        } else if (dynamicDirective) {
+            const expression = codeGen.bindExpression(dynamicDirective.value);
+            res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(
                 name,
@@ -148,11 +167,15 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformElement(child, slotParentName));
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
+            } else if (isIfBlock(child)) {
+                res.push(transformConditionalParentBlock(child));
+            } else if (isScopedSlotFragment(child)) {
+                res.push(transformScopedSlotFragment(child));
             }
         }
 
         if (shouldFlatten(codeGen, children)) {
-            if (children.length === 1 && !containsDynamicChildren(children)) {
+            if (children.length === 1) {
                 return res[0];
             } else {
                 return codeGen.genFlatten([t.arrayExpression(res)]);
@@ -160,6 +183,39 @@ function transform(codeGen: CodeGen): t.Expression {
         } else {
             return t.arrayExpression(res);
         }
+    }
+
+    function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
+        const {
+            slotName,
+            slotData: { value: dataIdentifier },
+        } = scopedSlotFragment;
+        codeGen.beginScope();
+        codeGen.declareIdentifier(dataIdentifier);
+
+        // At runtime, the 'key' of the <slot> element will be propagated to the fragment vnode
+        // produced by the ScopedSlotFactory
+        const key = t.identifier('key');
+        codeGen.declareIdentifier(key);
+
+        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
+        codeGen.endScope();
+
+        // The factory is invoked with two parameters:
+        // 1. The value of the binding specified in lwc:slot-bind directive
+        // 2. The key to be applied to the fragment vnode, this will be used for diffing
+        const slotFragmentFactory = t.functionExpression(
+            null,
+            [dataIdentifier, key],
+            t.blockStatement([t.returnStatement(fragment)])
+        );
+        let slotNameTransformed: t.Expression | t.SimpleLiteral;
+        if (t.isLiteral(slotName)) {
+            slotNameTransformed = t.literal(slotName.value);
+        } else {
+            slotNameTransformed = codeGen.bindExpression(slotName);
+        }
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, slotNameTransformed);
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
@@ -191,6 +247,41 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
+    /**
+     * Transforms an IfBlock or ElseifBlock along with both its direct descendants and its 'else' descendants.
+     *
+     * @param conditionalParentBlock The IfBlock or ElseifBlock to transform into a conditional expression
+     * @param key The key to use for this chain of IfBlock/ElseifBlock branches, if applicable
+     * @returns A conditional expression representing the full conditional tree with conditionalParentBlock as the root node
+     */
+    function transformConditionalParentBlock(
+        conditionalParentBlock: IfBlock | ElseifBlock,
+        key?: number
+    ): t.Expression {
+        const ifBlockKey = key ?? codeGen.generateKey();
+
+        const childrenExpression = codeGen.genFragment(
+            t.literal(ifBlockKey),
+            transformChildren(conditionalParentBlock)
+        );
+
+        let elseExpression: t.Expression = t.literal(null);
+        if (conditionalParentBlock.else) {
+            elseExpression = isElseifBlock(conditionalParentBlock.else)
+                ? transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey)
+                : codeGen.genFragment(
+                      t.literal(ifBlockKey),
+                      transformChildren(conditionalParentBlock.else)
+                  );
+        }
+
+        return t.conditionalExpression(
+            codeGen.bindExpression(conditionalParentBlock.condition),
+            childrenExpression,
+            elseExpression
+        );
+    }
+
     function applyInlineIf(
         ifNode: If,
         node: t.Expression,
@@ -203,6 +294,8 @@ function transform(codeGen: CodeGen): t.Expression {
 
         let leftExpression: t.Expression;
         const modifier = ifNode.modifier!;
+
+        /* istanbul ignore else */
         if (modifier === 'true') {
             leftExpression = testExpression;
         } else if (modifier === 'false') {
@@ -306,7 +399,11 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function computeAttrValue(attr: Attribute | Property, element: BaseElement): t.Expression {
+    function computeAttrValue(
+        attr: Attribute | Property,
+        element: BaseElement,
+        addLegacySanitizationHook: boolean
+    ): t.Expression {
         const { name: elmName, namespace = '' } = element;
         const { value: attrValue } = attr;
         // Evaluate properties based on their attribute name
@@ -335,14 +432,17 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(expression);
             }
             if (isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    codeGen.genScopedFragId(expression),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        codeGen.genScopedFragId(expression),
+                    ]);
+                }
+                return codeGen.genScopedFragId(expression);
             }
 
             return expression;
@@ -374,16 +474,21 @@ function transform(codeGen: CodeGen): t.Expression {
             }
 
             if (isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+                // apply the fragment id tranformation if necessary
+                const value = isFragmentOnlyUrl(attrValue.value)
+                    ? codeGen.genScopedFragId(attrValue.value)
+                    : t.literal(attrValue.value);
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    isFragmentOnlyUrl(attrValue.value)
-                        ? codeGen.genScopedFragId(attrValue.value)
-                        : t.literal(attrValue.value),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        value,
+                    ]);
+                }
+                return value;
             }
 
             return t.literal(attrValue.value);
@@ -402,6 +507,10 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const ref = element.directives.find(isRefDirective);
+        const spread = element.directives.find(isSpreadDirective);
+        const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
+        const slotBindDirective = element.directives.find(isSlotBindDirective);
 
         // Attributes
         if (attributes.length) {
@@ -438,7 +547,7 @@ function transform(codeGen: CodeGen): t.Expression {
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
                 } else {
-                    rest[name] = computeAttrValue(attr, element);
+                    rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
                 }
             }
 
@@ -457,7 +566,10 @@ function transform(codeGen: CodeGen): t.Expression {
         if (properties.length) {
             for (const prop of properties) {
                 propsObj.properties.push(
-                    t.property(t.literal(prop.name), computeAttrValue(prop, element))
+                    t.property(
+                        t.literal(prop.name),
+                        computeAttrValue(prop, element, !addSanitizationHook)
+                    )
                 );
             }
         }
@@ -468,8 +580,19 @@ function transform(codeGen: CodeGen): t.Expression {
                 ? t.literal(innerHTML.value.value)
                 : codeGen.bindExpression(innerHTML.value);
             propsObj.properties.push(
-                t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
+                t.property(
+                    t.identifier('innerHTML'),
+                    // If lwc:inner-html is added as a directive requiring custom renderer, no need
+                    // to add the legacy sanitizeHtmlContent hook
+                    addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr)
+                )
             );
+        }
+
+        // Properties: lwc:ref directive
+        if (ref) {
+            data.push(t.property(t.identifier('ref'), ref.value));
+            codeGen.hasRefs = true;
         }
 
         if (propsObj.properties.length) {
@@ -485,6 +608,10 @@ function transform(codeGen: CodeGen): t.Expression {
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
+        }
+
+        if (spread) {
+            data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
         }
 
         // Key property on VNode
@@ -527,6 +654,24 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier('svg'), t.literal(true)));
         }
 
+        if (addSanitizationHook) {
+            codeGen.usedLwcApis.add(RENDERER);
+            data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
+        }
+
+        if (!isUndefined(slotBindDirective)) {
+            data.push(
+                t.property(
+                    t.identifier('slotData'),
+                    codeGen.bindExpression(slotBindDirective.value)
+                )
+            );
+        }
+
+        if (isExternalComponent(element)) {
+            data.push(t.property(t.identifier('external'), t.literal(true)));
+        }
+
         return t.objectExpression(data);
     }
 
@@ -543,18 +688,22 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
         TEMPLATE_PARAMS.CONTEXT,
     ].map((id) => t.identifier(id));
 
-    const body: t.Statement[] = [
-        t.variableDeclaration('const', [
-            t.variableDeclarator(
-                t.objectPattern(
-                    Object.keys(codeGen.usedApis).map((name) =>
-                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
-                    )
-                ),
-                t.identifier(TEMPLATE_PARAMS.API)
-            ),
-        ]),
-    ];
+    const usedApis = Object.keys(codeGen.usedApis);
+    const body: t.Statement[] =
+        usedApis.length === 0
+            ? []
+            : [
+                  t.variableDeclaration('const', [
+                      t.variableDeclarator(
+                          t.objectPattern(
+                              usedApis.map((name) =>
+                                  t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                              )
+                          ),
+                          t.identifier(TEMPLATE_PARAMS.API)
+                      ),
+                  ]),
+              ];
 
     if (codeGen.memorizedIds.length) {
         body.push(
@@ -582,11 +731,11 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     );
 }
 
-export default function (root: Root, config: NormalizedConfig): string {
+export default function (root: Root, state: State): string {
     const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,
-        config,
+        state,
         scopeFragmentId,
     });
 

@@ -16,7 +16,6 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 
 import { Node } from '../env/node';
 import {
@@ -288,19 +287,13 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return textContentGetterPatched.call(this);
-                }
-
-                return textContentGetter.call(this);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return textContentGetterPatched.call(this);
             }
 
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return textContentGetter.call(this);
-            }
-            return textContentGetterPatched.call(this);
+            return textContentGetter.call(this);
         },
         set: textContentSetterPatched,
         enumerable: true,
@@ -368,7 +361,8 @@ defineProperties(Node.prototype, {
     },
     compareDocumentPosition: {
         value(this: Node, otherNode: Node): number {
-            // TODO [#1222]: remove global bypass
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             if (isGlobalPatchingSkipped(this)) {
                 return compareDocumentPosition.call(this, otherNode);
             }
@@ -388,23 +382,17 @@ defineProperties(Node.prototype, {
                 return true;
             }
 
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (otherNode == null) {
-                    return false;
-                }
-
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return containsPatched.call(this, otherNode);
-                }
-
-                return contains.call(this, otherNode);
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            if (otherNode == null) {
+                return false;
             }
 
-            // TODO [#1222]: remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return contains.call(this, otherNode);
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                return containsPatched.call(this, otherNode);
             }
-            return containsPatched.call(this, otherNode);
+
+            return contains.call(this, otherNode);
         },
         enumerable: true,
         writable: true,
@@ -412,20 +400,9 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
-                    return cloneNodePatched.call(this, deep);
-                }
-
-                return cloneNode.call(this, deep);
-            }
-
-            if (isTrue(deep)) {
-                // TODO [#1222]: remove global bypass
-                if (isGlobalPatchingSkipped(this)) {
-                    return cloneNode.call(this, deep);
-                }
-
+            // Note: we deviate from native shadow here, but are not fixing
+            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
+            if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                 return cloneNodePatched.call(this, deep);
             }
 

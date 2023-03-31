@@ -1,0 +1,220 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 13,
+            "endColumn": 12,
+            "start": 0,
+            "end": 389,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 13,
+                "startColumn": 1,
+                "endLine": 13,
+                "endColumn": 12,
+                "start": 378,
+                "end": 389
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "lightning-combobox",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 27,
+                    "start": 15,
+                    "end": 377,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 356
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 6,
+                        "endLine": 12,
+                        "endColumn": 27,
+                        "start": 356,
+                        "end": 377
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "ariaDescribedBy",
+                        "attributeName": "aria-describedby",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 38,
+                            "start": 44,
+                            "end": 73
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaActiveDescendant",
+                        "attributeName": "aria-activedescendant",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 43,
+                            "start": 82,
+                            "end": 116
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaErrorMessage",
+                        "attributeName": "aria-errormessage",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 39,
+                            "start": 125,
+                            "end": 155
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaFlowTo",
+                        "attributeName": "aria-flowto",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 33,
+                            "start": 164,
+                            "end": 188
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLabelledBy",
+                        "attributeName": "aria-labelledby",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 37,
+                            "start": 197,
+                            "end": 225
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaControls",
+                        "attributeName": "aria-controls",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 35,
+                            "start": 234,
+                            "end": 260
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaDetails",
+                        "attributeName": "aria-details",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 34,
+                            "start": 269,
+                            "end": 294
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaOwns",
+                        "attributeName": "aria-owns",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 9,
+                            "endLine": 10,
+                            "endColumn": 31,
+                            "start": 303,
+                            "end": 325
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "htmlFor",
+                        "attributeName": "for",
+                        "value": {
+                            "type": "Literal",
+                            "value": "scoped-foo"
+                        },
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 11,
+                            "endColumn": 25,
+                            "start": 334,
+                            "end": 350
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

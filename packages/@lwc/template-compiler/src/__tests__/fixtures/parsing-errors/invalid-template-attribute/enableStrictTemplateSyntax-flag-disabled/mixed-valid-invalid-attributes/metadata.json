@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1145,
+            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: onfoo. For more information, please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 9,
+                "start": 34,
+                "length": 142
+            }
+        }
+    ]
+}

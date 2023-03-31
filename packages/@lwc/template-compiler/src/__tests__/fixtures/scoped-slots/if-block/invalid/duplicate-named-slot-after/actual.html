@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <template lwc:if={showStandard}>
+        <slot name="slotname1"></slot>
+    </template>
+    <template lwc:else>
+        <slot name="slotname1" lwc:slot-bind={slot1VariantData}></slot>
+    </template>
+    <slot name="slotname1" lwc:slot-bind={slot1VariantData}></slot>
+</template>

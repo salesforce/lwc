@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1060,
+            "message": "Invalid expression {this.title} - LWC1060: Template expression doesn't allow ThisExpression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 12,
+                "start": 22,
+                "length": 18
+            }
+        }
+    ]
+}

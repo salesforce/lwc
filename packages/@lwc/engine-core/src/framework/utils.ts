@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, seal } from '@lwc/shared';
+import { ArrayPush, create, isArray, isFunction, isUndefined, keys, seal } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { RefVNodes, VM } from './vm';
+import { VBaseElement } from './vnodes';
 
 type Callback = () => void;
 
@@ -79,7 +81,7 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
 // Make a shallow copy of an object but omit the given key
 export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: string) {
     const result: { [key: string]: any } = {};
-    for (const key of Object.keys(object)) {
+    for (const key of keys(object)) {
         if (key !== keyToOmit) {
             result[key] = object[key];
         }
@@ -90,11 +92,37 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
 export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): StylesheetFactory[] {
     const list: StylesheetFactory[] = [];
     for (const stylesheet of stylesheets) {
-        if (!Array.isArray(stylesheet)) {
+        if (!isArray(stylesheet)) {
             list.push(stylesheet);
         } else {
             list.push(...flattenStylesheets(stylesheet));
         }
     }
     return list;
+}
+
+// Set a ref (lwc:ref) on a VM, from a template API
+export function setRefVNode(vm: VM, ref: string, vnode: VBaseElement) {
+    if (process.env.NODE_ENV !== 'production' && isUndefined(vm.refVNodes)) {
+        throw new Error('refVNodes must be defined when setting a ref');
+    }
+
+    // If this method is called, then vm.refVNodes is set as the template has refs.
+    // If not, then something went wrong and we threw an error above.
+    const refVNodes: RefVNodes = vm.refVNodes!;
+
+    // In cases of conflict (two elements with the same ref), prefer, the last one,
+    // in depth-first traversal order.
+    if (!(ref in refVNodes) || refVNodes[ref].key < vnode.key) {
+        refVNodes[ref] = vnode;
+    }
+}
+
+// Throw an error if we're running in prod mode. Ensures code is truly removed from prod mode.
+export function assertNotProd() {
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
 }

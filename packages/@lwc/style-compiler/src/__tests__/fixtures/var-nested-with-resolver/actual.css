@@ -1,0 +1,6 @@
+div {
+  --slds-c-button-neutral-shadow-focus: var(
+    --slds-c-buttonstateful-shadow-focus,
+    var(--sds-g-color-brand-base-50, #0176d3) 0 0 3px
+  );
+}

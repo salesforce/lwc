@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
-import { testFixtureDir } from 'jest-utils-lwc-internals';
+import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 
 import compiler, { Config } from '../index';
 
@@ -27,7 +27,7 @@ describe('fixtures', () => {
             }
 
             const compiled = compiler(src, config);
-            const { warnings } = compiled;
+            const { warnings, root } = compiled;
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change
             // String.prototype.replaceAll only available in Node 15+
@@ -38,6 +38,7 @@ describe('fixtures', () => {
 
             return {
                 'expected.js': prettier.format(code, { parser: 'babel' }),
+                'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
             };
         }

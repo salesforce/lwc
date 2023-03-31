@@ -1,0 +1,11 @@
+<template>
+    <template lwc:if={showIf}>
+        <lwc:component lwc:is={ifCtor}></lwc:component>
+    </template>
+    <template lwc:elseif={showElseIf}>
+        <lwc:component lwc:is={elseIfCtor}></lwc:component>
+    </template>
+    <template lwc:else>
+        <lwc:component lwc:is={elseCtor}></lwc:component>
+    </template>
+</template>

@@ -5,6 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Provides the global lwcRuntimeFlags variable
+import '@lwc/features';
+
 // Collecting env references before patching anything
 import './env/node';
 import './env/element';

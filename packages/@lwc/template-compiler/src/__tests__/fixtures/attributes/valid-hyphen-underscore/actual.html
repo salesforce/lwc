@@ -1,0 +1,12 @@
+<!-- These test cases are important because a hyphen(-) in attribute name indicates that the
+    next character should be uppercased(https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_names)-->
+<template>
+    <!-- attribute name with hyphen + underscore "-_" combination -->
+    <x-button under-_hyphen="bar"></x-button>
+
+    <!-- attribute name with underscore + hyphen "_-" combination -->
+    <x-button foo_-bar="bar"></x-button>
+
+    <!-- attribute name with leading hyphen + underscore + hyphen "_-" combination -->
+    <x-button -foo_-bar="bar"></x-button>
+</template>

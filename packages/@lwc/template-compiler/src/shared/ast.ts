@@ -4,14 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { HTML_NAMESPACE } from '@lwc/shared';
 import * as parse5 from 'parse5';
 
 import {
     Literal,
     SourceLocation,
     Element,
+    ExternalComponent,
     Component,
     Expression,
+    ComplexExpression,
     Comment,
     Text,
     ForEach,
@@ -32,11 +35,24 @@ import {
     ForOf,
     LWCDirectiveRenderMode,
     If,
+    IfBlock,
+    ElseBlock,
+    ElseifBlock,
     ElementSourceLocation,
     InnerHTMLDirective,
-    Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    RefDirective,
+    SpreadDirective,
+    ElementDirective,
+    RootDirective,
+    SlotBindDirective,
+    ScopedSlotFragment,
+    SlotDataDirective,
+    IsDirective,
+    LwcComponent,
+    LwcTagName,
+    BaseLwcElement,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -49,13 +65,14 @@ export function root(parse5ElmLocation: parse5.ElementLocation): Root {
 }
 
 export function element(
-    parse5Elm: parse5.Element,
+    tagName: string,
+    namespaceURI: string,
     parse5ElmLocation: parse5.ElementLocation
 ): Element {
     return {
         type: 'Element',
-        name: parse5Elm.nodeName,
-        namespace: parse5Elm.namespaceURI,
+        name: tagName,
+        namespace: namespaceURI,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -65,13 +82,45 @@ export function element(
     };
 }
 
-export function component(
-    parse5Elm: parse5.Element,
+export function externalComponent(
+    tagName: string,
     parse5ElmLocation: parse5.ElementLocation
-): Component {
+): ExternalComponent {
+    return {
+        type: 'ExternalComponent',
+        name: tagName,
+        namespace: HTML_NAMESPACE,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function component(tagName: string, parse5ElmLocation: parse5.ElementLocation): Component {
     return {
         type: 'Component',
-        name: parse5Elm.nodeName,
+        name: tagName,
+        namespace: HTML_NAMESPACE,
+        location: elementSourceLocation(parse5ElmLocation),
+        attributes: [],
+        properties: [],
+        directives: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function lwcComponent(
+    tagName: LwcTagName,
+    parse5ElmLocation: parse5.ElementLocation
+): LwcComponent {
+    return {
+        type: 'Lwc',
+        name: tagName,
+        namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -85,6 +134,7 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
     return {
         type: 'Slot',
         name: 'slot',
+        namespace: HTML_NAMESPACE,
         slotName,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
@@ -95,17 +145,24 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
     };
 }
 
-export function text(value: Literal | Expression, parse5Location: parse5.Location): Text {
+export function text(
+    raw: string,
+    // TODO [#3370]: remove experimental template expression flag
+    value: Literal | Expression | ComplexExpression,
+    parse5Location: parse5.Location
+): Text {
     return {
         type: 'Text',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };
 }
 
-export function comment(value: string, parse5Location: parse5.Location): Comment {
+export function comment(raw: string, value: string, parse5Location: parse5.Location): Comment {
     return {
         type: 'Comment',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };
@@ -177,6 +234,22 @@ export function forOf(
     };
 }
 
+export function scopedSlotFragment(
+    identifier: Identifier,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation,
+    slotName: Literal | Expression
+): ScopedSlotFragment {
+    return {
+        type: 'ScopedSlotFragment',
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+        slotData: slotDataDirective(identifier, directiveLocation),
+        slotName: slotName,
+    };
+}
+
 export function ifNode(
     modifier: string,
     condition: Expression,
@@ -187,6 +260,46 @@ export function ifNode(
         type: 'If',
         modifier,
         condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function ifBlockNode(
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): IfBlock {
+    return {
+        type: 'IfBlock',
+        condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function elseifBlockNode(
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): ElseifBlock {
+    return {
+        type: 'ElseifBlock',
+        condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+    };
+}
+
+export function elseBlockNode(
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): ElseBlock {
+    return {
+        type: 'ElseBlock',
         location: elementLocation,
         directiveLocation,
         children: [],
@@ -224,6 +337,42 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
+export function lwcIsDirective(value: Expression, location: SourceLocation): IsDirective {
+    return {
+        type: 'Directive',
+        name: 'Is',
+        value,
+        location,
+    };
+}
+
+export function spreadDirective(value: Expression, location: SourceLocation): SpreadDirective {
+    return {
+        type: 'Directive',
+        name: 'Spread',
+        value,
+        location,
+    };
+}
+
+export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
+export function slotDataDirective(value: Identifier, location: SourceLocation): SlotDataDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotData',
+        value,
+        location,
+    };
+}
+
 export function domDirective(
     lwcDomAttr: LWCDirectiveDomMode,
     location: SourceLocation
@@ -243,6 +392,15 @@ export function innerHTMLDirective(
     return {
         type: 'Directive',
         name: 'InnerHTML',
+        value,
+        location,
+    };
+}
+
+export function refDirective(value: Literal<string>, location: SourceLocation): RefDirective {
+    return {
+        type: 'Directive',
+        name: 'Ref',
         value,
         location,
     };
@@ -308,6 +466,10 @@ export function isRoot(node: BaseNode): node is Root {
     return node.type === 'Root';
 }
 
+export function isExternalComponent(node: BaseNode): node is ExternalComponent {
+    return node.type === 'ExternalComponent';
+}
+
 export function isComponent(node: BaseNode): node is Component {
     return node.type === 'Component';
 }
@@ -317,7 +479,23 @@ export function isSlot(node: BaseNode): node is Slot {
 }
 
 export function isBaseElement(node: BaseNode): node is BaseElement {
-    return isElement(node) || isComponent(node) || isSlot(node);
+    return (
+        isElement(node) ||
+        isComponent(node) ||
+        isSlot(node) ||
+        isExternalComponent(node) ||
+        isLwcComponent(node)
+    );
+}
+
+// BaseLwcElement represents special LWC tags denoted lwc:*
+export function isBaseLwcElement(node: BaseNode): node is BaseLwcElement<LwcTagName> {
+    return node.type === 'Lwc';
+}
+
+// Represents the lwc:component tag
+export function isLwcComponent(node: BaseNode): node is LwcComponent {
+    return isBaseLwcElement(node) && node.name === 'lwc:component';
 }
 
 export function isText(node: BaseNode): node is Text {
@@ -328,11 +506,13 @@ export function isComment(node: BaseNode): node is Comment {
     return node.type === 'Comment';
 }
 
-export function isExpression(node: Expression | Literal): node is Expression {
-    return node.type === 'Identifier' || node.type === 'MemberExpression';
+export function isExpression(node: BaseNode | Literal): node is Expression {
+    return node.type !== 'Literal';
 }
 
-export function isStringLiteral(node: Expression | Literal): node is Literal<string> {
+export function isStringLiteral(
+    node: Expression | Literal | ComplexExpression
+): node is Literal<string> {
     return node.type === 'Literal' && typeof node.value === 'string';
 }
 
@@ -356,36 +536,86 @@ export function isIf(node: BaseNode): node is If {
     return node.type === 'If';
 }
 
+export function isIfBlock(node: BaseNode): node is IfBlock {
+    return node.type === 'IfBlock';
+}
+
+export function isElseifBlock(node: BaseNode): node is ElseifBlock {
+    return node.type === 'ElseifBlock';
+}
+
+export function isElseBlock(node: BaseNode): node is ElseBlock {
+    return node.type === 'ElseBlock';
+}
+
+export function isConditionalParentBlock(node: BaseNode): node is IfBlock | ElseifBlock {
+    return isIfBlock(node) || isElseifBlock(node);
+}
+
+export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBlock | ElseBlock {
+    return isIfBlock(node) || isElseifBlock(node) || isElseBlock(node);
+}
+
+export function isElementDirective(
+    node: BaseNode
+): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If | ScopedSlotFragment {
+    return isConditionalBlock(node) || isForBlock(node) || isIf(node) || isScopedSlotFragment(node);
+}
+
 export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
 
-export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
+export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
     return directive.name === 'Dynamic';
 }
 
-export function isDomDirective(directive: Directive): directive is DomDirective {
+export function isLwcIsDirective(directive: ElementDirective): directive is IsDirective {
+    return directive.name === 'Is';
+}
+
+export function isDomDirective(directive: ElementDirective): directive is DomDirective {
     return directive.name === 'Dom';
 }
 
-export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
+export function isSpreadDirective(directive: ElementDirective): directive is SpreadDirective {
+    return directive.name === 'Spread';
+}
+
+export function isInnerHTMLDirective(directive: ElementDirective): directive is InnerHTMLDirective {
     return directive.name === 'InnerHTML';
 }
 
-export function isKeyDirective(directive: Directive): directive is KeyDirective {
+export function isRefDirective(directive: ElementDirective): directive is RefDirective {
+    return directive.name === 'Ref';
+}
+
+export function isKeyDirective(directive: ElementDirective): directive is KeyDirective {
     return directive.name === 'Key';
 }
 
-export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
+export function isSlotDataDirective(directive: ElementDirective): directive is SlotDataDirective {
+    return directive.name === 'SlotData';
+}
+
+export function isSlotBindDirective(directive: ElementDirective): directive is SlotBindDirective {
+    return directive.name === 'SlotBind';
+}
+
+export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
     return directive.name === 'RenderMode';
 }
 
 export function isPreserveCommentsDirective(
-    directive: Directive
+    directive: RootDirective
 ): directive is PreserveCommentsDirective {
     return directive.name === 'PreserveComments';
 }
 
 export function isProperty(node: BaseNode): node is Property {
     return node.type === 'Property';
+}
+
+export function isScopedSlotFragment(node: BaseNode): node is ScopedSlotFragment {
+    return node.type === 'ScopedSlotFragment';
 }

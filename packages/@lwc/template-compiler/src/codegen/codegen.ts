@@ -5,13 +5,29 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { NormalizedConfig } from '../config';
+import { SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
-import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
-import { TEMPLATE_PARAMS } from '../shared/constants';
+import {
+    ChildNode,
+    Element,
+    Expression,
+    ComplexExpression,
+    Literal,
+    LWCDirectiveRenderMode,
+    Root,
+} from '../shared/types';
+import {
+    PARSE_FRAGMENT_METHOD_NAME,
+    PARSE_SVG_FRAGMENT_METHOD_NAME,
+    TEMPLATE_PARAMS,
+} from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
+import State from '../state';
+import { getStaticNodes } from './helpers';
+import { serializeStaticElement } from './static-element-serializer';
+import { bindComplexExpression } from './expression';
 
 type RenderPrimitive =
     | 'iterator'
@@ -23,12 +39,16 @@ type RenderPrimitive =
     | 'text'
     | 'dynamicText'
     | 'dynamicCtor'
+    | 'deprecatedDynamicCtor'
     | 'key'
     | 'tabindex'
     | 'scopedId'
     | 'scopedFragId'
     | 'comment'
-    | 'sanitizeHtmlContent';
+    | 'sanitizeHtmlContent'
+    | 'fragment'
+    | 'staticFragment'
+    | 'scopedSlotFactory';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -42,6 +62,8 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
@@ -51,6 +73,9 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    fragment: { name: 'fr', alias: 'api_fragment' },
+    staticFragment: { name: 'st', alias: 'api_static_fragment' },
+    scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
 };
 
 interface Scope {
@@ -86,6 +111,17 @@ export default class CodeGen {
      */
     private scope: Scope;
 
+    readonly staticNodes: Set<ChildNode> = new Set<ChildNode>();
+    readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
+
+    /** True if this template contains the lwc:ref directive */
+    hasRefs: boolean = false;
+
+    /**
+     * State maintains information about the current compilation configs.
+     */
+    readonly state: State;
+
     currentId = 0;
     currentKey = 0;
     innerHtmlInstances = 0;
@@ -99,23 +135,28 @@ export default class CodeGen {
 
     constructor({
         root,
-        config,
+        state,
         scopeFragmentId,
     }: {
         root: Root;
-        config: NormalizedConfig;
+        state: State;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
+
+        if (state.config.enableStaticContentOptimization) {
+            this.staticNodes = getStaticNodes(root, state);
+        }
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;
         this.preserveComments =
             root.directives.find(isPreserveCommentsDirective)?.value.value ??
-            config.preserveHtmlComments;
+            state.config.preserveHtmlComments;
 
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
+        this.state = state;
     }
 
     generateKey() {
@@ -145,7 +186,17 @@ export default class CodeGen {
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
     }
-    genDynamicElement(
+
+    genDynamicElement(ctor: t.Expression, data: t.ObjectExpression, children: t.Expression) {
+        const args: t.Expression[] = [ctor, data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+
+        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+    }
+
+    genDeprecatedDynamicElement(
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
@@ -156,7 +207,7 @@ export default class CodeGen {
             args.push(children); // only generate children if non-empty
         }
 
-        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+        return this._renderApiCall(RENDER_APIS.deprecatedDynamicCtor, args);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {
@@ -181,6 +232,15 @@ export default class CodeGen {
 
     genSanitizeHtmlContent(content: t.Expression): t.Expression {
         return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
+    }
+
+    genFragment(
+        key: t.Expression | t.SimpleLiteral,
+        children: t.Expression,
+        stable: boolean = false
+    ): t.Expression {
+        const isStable = stable ? t.literal(1) : t.literal(0);
+        return this._renderApiCall(RENDER_APIS.fragment, [key, children, isStable]);
     }
 
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
@@ -213,6 +273,9 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
+    /**
+     * Generates childs vnodes when slot content is static.
+     */
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         this.slotNames.add(slotName);
 
@@ -222,6 +285,13 @@ export default class CodeGen {
             children,
             t.identifier('$slotset'),
         ]);
+    }
+
+    /**
+     * Generates a factory function that inturn generates child vnodes for scoped slot content.
+     */
+    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.Expression | t.SimpleLiteral) {
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [slotName, callback]);
     }
 
     genTabIndex(children: [t.Expression]) {
@@ -339,6 +409,7 @@ export default class CodeGen {
     }
 
     endScope(): void {
+        /* istanbul ignore if */
         if (!this.scope.parent) {
             throw new Error("Can't invoke endScope if the current scope has no parent");
         }
@@ -372,13 +443,18 @@ export default class CodeGen {
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
      */
-    bindExpression(expression: Expression | Literal): t.Expression {
+    bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
         if (t.isIdentifier(expression)) {
             if (!this.isLocalIdentifier(expression)) {
                 return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
             } else {
                 return expression;
             }
+        }
+
+        // TODO [#3370]: remove experimental template expression flag
+        if (this.state.config.experimentalComplexExpressions) {
+            return bindComplexExpression(expression as ComplexExpression, this);
         }
 
         const scope = this;
@@ -397,5 +473,49 @@ export default class CodeGen {
         });
 
         return expression as t.Expression;
+    }
+
+    genHoistedElement(element: Element, slotParentName?: string): t.Expression {
+        const key =
+            slotParentName !== undefined
+                ? `@${slotParentName}:${this.generateKey()}`
+                : this.generateKey();
+        const html = serializeStaticElement(element, this.preserveComments);
+
+        const parseMethod =
+            element.name !== 'svg' && element.namespace === SVG_NAMESPACE
+                ? PARSE_SVG_FRAGMENT_METHOD_NAME
+                : PARSE_FRAGMENT_METHOD_NAME;
+
+        this.usedLwcApis.add(parseMethod);
+
+        // building the taggedTemplate expression as if it were a string
+        const expr = t.taggedTemplateExpression(
+            t.identifier(parseMethod),
+            t.templateLiteral(
+                [
+                    {
+                        type: 'TemplateElement',
+                        tail: true,
+                        value: {
+                            raw: html,
+                            cooked: html,
+                        },
+                    },
+                ],
+                []
+            )
+        );
+
+        const identifier = t.identifier(`$fragment${this.hoistedNodes.length + 1}`);
+        this.hoistedNodes.push({
+            identifier,
+            expr,
+        });
+
+        return this._renderApiCall(RENDER_APIS.staticFragment, [
+            t.callExpression(identifier, []),
+            t.literal(key),
+        ]);
     }
 }

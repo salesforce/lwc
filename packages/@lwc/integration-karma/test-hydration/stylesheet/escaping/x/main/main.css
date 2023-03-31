@@ -1,0 +1,24 @@
+/* single quote */
+h1[data-foo='bar'] {
+    color: red;
+}
+
+/* double quote */
+h1[data-foo="bar"] {
+    background-color: blue;
+}
+
+/* less-than */
+h2[data-foo="<"] {
+    color: green;
+}
+
+/* greater-than */
+h2 > div {
+    background-color: yellow;
+}
+
+/* ampersand */
+div[data-foo="&"] {
+    color: purple;
+}

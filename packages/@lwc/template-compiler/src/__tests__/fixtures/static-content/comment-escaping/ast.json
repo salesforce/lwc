@@ -1,0 +1,97 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 123,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 33,
+                "start": 0,
+                "end": 32
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 112,
+                "end": 123
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "PreserveComments",
+                "value": {
+                    "type": "Literal",
+                    "value": true
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 32,
+                    "start": 10,
+                    "end": 31
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Element",
+                "name": "h1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 79,
+                    "start": 37,
+                    "end": 111,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 9,
+                        "start": 37,
+                        "end": 41
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 74,
+                        "endLine": 2,
+                        "endColumn": 79,
+                        "start": 106,
+                        "end": 111
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " --&gt;&lt;script&gt;alert('pwned')&lt;/script&gt; &lt!-- ",
+                        "value": " --><script>alert('pwned')</script> <!-- ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 9,
+                            "endLine": 2,
+                            "endColumn": 74,
+                            "start": 41,
+                            "end": 106
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

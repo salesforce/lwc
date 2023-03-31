@@ -84,7 +84,16 @@ function scopeSelector(selector: Selector) {
             } else {
                 // Add the scoping token in the first position of the compound selector as a fallback
                 // when there is no node to scope. For example: ::after {}
-                selector.insertBefore(compoundSelector[0], shadowAttribute);
+                const [firstSelector] = compoundSelector;
+                selector.insertBefore(firstSelector, shadowAttribute);
+                // Move any whitespace before the selector (e.g. "  ::after") to before the shadow attribute,
+                // so that the resulting selector is correct (e.g. "  [attr]::after", not "[attr]  ::after")
+                if (firstSelector && firstSelector.spaces.before) {
+                    shadowAttribute.spaces.before = firstSelector.spaces.before;
+                    const clonedFirstSelector = firstSelector.clone({});
+                    clonedFirstSelector.spaces.before = '';
+                    firstSelector.replaceWith(clonedFirstSelector);
+                }
             }
         }
     }

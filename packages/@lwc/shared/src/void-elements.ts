@@ -5,56 +5,35 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// The following list contains a mix of both void elements from the HTML and the XML namespace
-// without distinction.
-export const VOID_ELEMENTS = [
+import { HTML_NAMESPACE } from './namespaces';
+
+// Void elements are elements that self-close even without an explicit solidus (slash),
+// e.g. `</tagName>` or `<tagName />`. For instance, `<meta>` closes on its own; no need for a slash.
+// These only come from HTML; there are no void elements in the SVG or MathML namespaces.
+// See: https://html.spec.whatwg.org/multipage/syntax.html#syntax-tags
+const VOID_ELEMENTS = [
     'area',
     'base',
     'br',
-    'circle',
     'col',
-    'ellipse',
-    'feBlend',
-    'feColorMatrix',
-    'feFuncR',
-    'feFuncG',
-    'feFuncB',
-    'feFuncA',
-    'feImage',
-    'feComposite',
-    'feConvolveMatrix',
-    'feDiffuseLighting',
-    'feDisplacementMap',
-    'feDropShadow',
-    'feFlood',
-    'feGaussianBlur',
-    'feMerge',
-    'feMergeNode',
-    'feMorphology',
-    'feOffset',
-    'feSpecularLighting',
-    'feTile',
-    'feTurbulence',
-    'fePointLight',
     'embed',
     'hr',
     'img',
     'input',
-    'keygen',
-    'line',
     'link',
-    'menuitem',
     'meta',
-    'param',
-    'path',
-    'rect',
     'source',
     'track',
     'wbr',
 ];
 
-const VOID_ELEMENTS_SET = new Set(VOID_ELEMENTS);
+// These elements have been deprecated but preserving their usage for backwards compatibility
+// until we can officially deprecate them from LWC.
+// See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
+const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
-export function isVoidElement(name: string): boolean {
-    return VOID_ELEMENTS_SET.has(name);
+const VOID_ELEMENTS_SET = new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
+
+export function isVoidElement(name: string, namespace: string): boolean {
+    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
 }

@@ -10,14 +10,31 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
-    create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
     noop,
+    isFunction,
+    HTML_NAMESPACE,
 } from '@lwc/shared';
+import { LifecycleCallback } from '@lwc/engine-core';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
+import {
+    HostNode,
+    HostElement,
+    HostAttribute,
+    HostNodeType,
+    HostChildNode,
+    HostTypeKey,
+    HostNamespaceKey,
+    HostParentKey,
+    HostShadowRootKey,
+    HostAttributesKey,
+    HostChildrenKey,
+    HostValueKey,
+    HostHostKey,
+    HostContextProvidersKey,
+} from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import { registerContextConsumer } from './context';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -25,127 +42,117 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string): HostElement {
+function createElement(tagName: string, namespace?: string): HostElement {
     return {
-        type: HostNodeType.Element,
-        name,
-        parent: null,
-        shadowRoot: null,
-        children: [],
-        attributes: [],
-        eventListeners: {},
+        [HostTypeKey]: HostNodeType.Element,
+        tagName,
+        [HostNamespaceKey]: namespace ?? HTML_NAMESPACE,
+        [HostParentKey]: null,
+        [HostShadowRootKey]: null,
+        [HostChildrenKey]: [],
+        [HostAttributesKey]: [],
+        [HostContextProvidersKey]: new Map(),
     };
 }
 
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElementImpl {
-    constructor() {
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        return createElement(name);
-    }
-}
-
-export const ssr: boolean = true;
-
-export function setIsHydrating(_value: boolean) {
-    /* No-op in SSR */
-}
-
-export function isHydrating(): boolean {
-    return false;
-}
-
-export const isNativeShadowDefined: boolean = false;
-export const isSyntheticShadowDefined: boolean = false;
+const isNativeShadowDefined: boolean = false;
+const isSyntheticShadowDefined: boolean = false;
 
 type N = HostNode;
 type E = HostElement;
 
-export function insert(node: N, parent: E, anchor: N | null) {
-    if (node.parent !== null && node.parent !== parent) {
-        const nodeIndex = node.parent.children.indexOf(node);
-        node.parent.children.splice(nodeIndex, 1);
+function insert(node: N, parent: E, anchor: N | null) {
+    const nodeParent = node[HostParentKey];
+    if (nodeParent !== null && nodeParent !== parent) {
+        const nodeIndex = nodeParent[HostChildrenKey].indexOf(node);
+        nodeParent[HostChildrenKey].splice(nodeIndex, 1);
     }
 
-    node.parent = parent;
+    node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent.children.indexOf(anchor);
+    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
     if (anchorIndex === -1) {
-        parent.children.push(node);
+        parent[HostChildrenKey].push(node);
     } else {
-        parent.children.splice(anchorIndex, 0, node);
+        parent[HostChildrenKey].splice(anchorIndex, 0, node);
     }
 }
 
-export function remove(node: N, parent: E) {
-    const nodeIndex = parent.children.indexOf(node);
-    parent.children.splice(nodeIndex, 1);
+function remove(node: N, parent: E) {
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    parent[HostChildrenKey].splice(nodeIndex, 1);
 }
 
-export { createElement };
+function cloneNode(node: HostChildNode): HostChildNode {
+    // Note: no need to deep clone as cloneNode is only used for nodes of type HostNodeType.Raw.
+    if (process.env.NODE_ENV !== 'production') {
+        if (node[HostTypeKey] !== HostNodeType.Raw) {
+            throw new TypeError(
+                `SSR: cloneNode was called with invalid NodeType <${node[HostTypeKey]}>, only HostNodeType.Raw is supported.`
+            );
+        }
+    }
 
-export function createText(content: string): HostNode {
+    return { ...node };
+}
+
+function createFragment(html: string): HostChildNode {
     return {
-        type: HostNodeType.Text,
-        value: String(content),
-        parent: null,
+        [HostTypeKey]: HostNodeType.Raw,
+        [HostParentKey]: null,
+        [HostValueKey]: html,
     };
 }
 
-export function createComment(content: string): HostNode {
+function createText(content: string): HostNode {
     return {
-        type: HostNodeType.Comment,
-        value: content,
-        parent: null,
+        [HostTypeKey]: HostNodeType.Text,
+        [HostValueKey]: String(content),
+        [HostParentKey]: null,
     };
 }
 
-export function nextSibling(node: N) {
-    const { parent } = node;
+function createComment(content: string): HostNode {
+    return {
+        [HostTypeKey]: HostNodeType.Comment,
+        [HostValueKey]: content,
+        [HostParentKey]: null,
+    };
+}
+
+function nextSibling(node: N) {
+    const parent = node[HostParentKey];
 
     if (isNull(parent)) {
         return null;
     }
 
-    const nodeIndex = parent.children.indexOf(node);
-    return (parent.children[nodeIndex + 1] as HostNode) || null;
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
 }
 
-export function attachShadow(element: E, config: ShadowRootInit) {
-    element.shadowRoot = {
-        type: HostNodeType.ShadowRoot,
-        children: [],
+function attachShadow(element: E, config: ShadowRootInit) {
+    element[HostShadowRootKey] = {
+        [HostTypeKey]: HostNodeType.ShadowRoot,
+        [HostChildrenKey]: [],
+        [HostHostKey]: element,
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
 
-    return element.shadowRoot as any;
+    return element[HostShadowRootKey] as any;
 }
 
-export function getProperty(node: N, key: string) {
+function getProperty(node: N, key: string) {
     if (key in node) {
         return (node as any)[key];
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return getAttribute(node, attrName) ?? false;
         }
 
@@ -156,7 +163,7 @@ export function getProperty(node: N, key: string) {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && key === 'value') {
+        if (node.tagName === 'input' && key === 'value') {
             return getAttribute(node, 'value') ?? '';
         }
     }
@@ -167,27 +174,27 @@ export function getProperty(node: N, key: string) {
     }
 }
 
-export function setProperty(node: N, key: string, value: any): void {
+function setProperty(node: N, key: string, value: any): void {
     if (key in node) {
         return ((node as any)[key] = value);
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         if (key === 'innerHTML') {
-            node.children = [
+            node[HostChildrenKey] = [
                 {
-                    type: HostNodeType.Raw,
-                    parent: node,
-                    value,
+                    [HostTypeKey]: HostNodeType.Raw,
+                    [HostParentKey]: node,
+                    [HostValueKey]: value,
                 },
             ];
             return;
         }
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return value === true
                 ? setAttribute(node, attrName, '')
                 : removeAttribute(node, attrName);
@@ -200,7 +207,7 @@ export function setProperty(node: N, key: string, value: any): void {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && attrName === 'value') {
+        if (node.tagName === 'input' && attrName === 'value') {
             return isNull(value) || isUndefined(value)
                 ? removeAttribute(node, 'value')
                 : setAttribute(node, 'value', value);
@@ -213,35 +220,30 @@ export function setProperty(node: N, key: string, value: any): void {
     }
 }
 
-export function setText(node: N, content: string) {
-    if (node.type === HostNodeType.Text) {
-        node.value = content;
-    } else if (node.type === HostNodeType.Element) {
-        node.children = [
+function setText(node: N, content: string) {
+    if (node[HostTypeKey] === HostNodeType.Text) {
+        node[HostValueKey] = content;
+    } else if (node[HostTypeKey] === HostNodeType.Element) {
+        node[HostChildrenKey] = [
             {
-                type: HostNodeType.Text,
-                parent: node,
-                value: content,
+                [HostTypeKey]: HostNodeType.Text,
+                [HostParentKey]: node,
+                [HostValueKey]: content,
             },
         ];
     }
 }
 
-export function getAttribute(element: E, name: string, namespace: string | null = null) {
-    const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+function getAttribute(element: E, name: string, namespace: string | null = null) {
+    const attribute = element[HostAttributesKey].find(
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
-export function setAttribute(
-    element: E,
-    name: string,
-    value: string,
-    namespace: string | null = null
-) {
-    const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
+    const attribute = element[HostAttributesKey].find(
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
 
     if (isUndefined(namespace)) {
@@ -249,9 +251,9 @@ export function setAttribute(
     }
 
     if (isUndefined(attribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name,
-            namespace,
+            [HostNamespaceKey]: namespace,
             value: String(value),
         });
     } else {
@@ -259,25 +261,25 @@ export function setAttribute(
     }
 }
 
-export function removeAttribute(element: E, name: string, namespace?: string | null) {
-    element.attributes = element.attributes.filter(
-        (attr) => attr.name !== name && attr.namespace !== namespace
+function removeAttribute(element: E, name: string, namespace?: string | null) {
+    element[HostAttributesKey] = element[HostAttributesKey].filter(
+        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
 }
 
-export function getClassList(element: E) {
+function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
-        let classAttribute = element.attributes.find(
-            (attr) => attr.name === 'class' && isNull(attr.namespace)
+        let classAttribute = element[HostAttributesKey].find(
+            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
         );
 
         if (isUndefined(classAttribute)) {
             classAttribute = {
                 name: 'class',
-                namespace: null,
+                [HostNamespaceKey]: null,
                 value: '',
             };
-            element.attributes.push(classAttribute);
+            element[HostAttributesKey].push(classAttribute);
         }
 
         return classAttribute;
@@ -301,17 +303,17 @@ export function getClassList(element: E) {
     } as DOMTokenList;
 }
 
-export function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
-    const styleAttribute = element.attributes.find(
-        (attr) => attr.name === 'style' && isNull(attr.namespace)
+function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
+    const styleAttribute = element[HostAttributesKey].find(
+        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
 
     if (isUndefined(styleAttribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name: 'style',
-            namespace: null,
+            [HostNamespaceKey]: null,
             value: serializedProperty,
         });
     } else {
@@ -319,20 +321,16 @@ export function setCSSStyleProperty(element: E, name: string, value: string, imp
     }
 }
 
-export function isConnected(node: HostNode) {
-    return !isNull(node.parent);
+function isConnected(node: HostNode) {
+    return !isNull(node[HostParentKey]);
 }
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
 // synthetic shadow.
-export const insertGlobalStylesheet = noop as (content: string) => void;
-
-// Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
-// synthetic shadow.
-export const insertStylesheet = noop as (content: string, target: any) => void;
+const insertStylesheet = noop as (content: string, target: any) => void;
 
 // Noop on SSR.
-export const addEventListener = noop as (
+const addEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
@@ -340,69 +338,119 @@ export const addEventListener = noop as (
 ) => void;
 
 // Noop on SSR.
-export const removeEventListener = noop as (
+const removeEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
     options?: AddEventListenerOptions | boolean
 ) => void;
 
-export const dispatchEvent = unsupportedMethod('dispatchEvent') as (
-    target: any,
-    event: Event
-) => boolean;
-export const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
+const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
+const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;
-export const querySelector = unsupportedMethod('querySelector') as (
+const querySelector = unsupportedMethod('querySelector') as (
     element: HostElement,
     selectors: string
 ) => Element | null;
-export const querySelectorAll = unsupportedMethod('querySelectorAll') as (
+const querySelectorAll = unsupportedMethod('querySelectorAll') as (
     element: HostElement,
     selectors: string
 ) => NodeList;
-export const getElementsByTagName = unsupportedMethod('getElementsByTagName') as (
+const getElementsByTagName = unsupportedMethod('getElementsByTagName') as (
     element: HostElement,
     tagNameOrWildCard: string
 ) => HTMLCollection;
-export const getElementsByClassName = unsupportedMethod('getElementsByClassName') as (
+const getElementsByClassName = unsupportedMethod('getElementsByClassName') as (
     element: HostElement,
     names: string
 ) => HTMLCollection;
-export const getChildren = unsupportedMethod('getChildren') as (
-    element: HostElement
-) => HTMLCollection;
-export const getChildNodes = unsupportedMethod('getChildNodes') as (
-    element: HostElement
-) => NodeList;
-export const getFirstChild = unsupportedMethod('getFirstChild') as (
+const getChildren = unsupportedMethod('getChildren') as (element: HostElement) => HTMLCollection;
+const getChildNodes = unsupportedMethod('getChildNodes') as (element: HostElement) => NodeList;
+const getFirstChild = unsupportedMethod('getFirstChild') as (
     element: HostElement
 ) => HostNode | null;
-export const getFirstElementChild = unsupportedMethod('getFirstElementChild') as (
+const getFirstElementChild = unsupportedMethod('getFirstElementChild') as (
     element: HostElement
 ) => HostElement | null;
-export const getLastChild = unsupportedMethod('getLastChild') as (
-    element: HostElement
-) => HostNode | null;
-export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
+const getLastChild = unsupportedMethod('getLastChild') as (element: HostElement) => HostNode | null;
+const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
-
-export function defineCustomElement(
-    name: string,
-    constructor: CustomElementConstructor,
-    _options?: ElementDefinitionOptions
-) {
-    registerCustomElement(name, constructor);
-}
-
-export function getCustomElement(name: string): CustomElementConstructor | undefined {
-    return registry[name];
-}
-
-const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
 
 /* noop */
-export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+
+type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
+
+const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
+
+function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
+    return function Ctor(upgradeCallback: LifecycleCallback) {
+        const elm = createElement(tagName);
+        if (isFunction(upgradeCallback)) {
+            upgradeCallback(elm); // nothing to do with the result for now
+        }
+        return elm;
+    };
+}
+
+function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
+    let ctor = localRegistryRecord.get(tagName);
+    if (!isUndefined(ctor)) {
+        return ctor;
+    }
+
+    ctor = createUpgradableElementConstructor(tagName);
+    localRegistryRecord.set(tagName, ctor);
+    return ctor;
+}
+
+function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
+    const UpgradableConstructor = getUpgradableElement(tagName);
+    return new (UpgradableConstructor as any)(upgradeCallback);
+}
+
+const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
+
+export const renderer = {
+    isNativeShadowDefined,
+    isSyntheticShadowDefined,
+    insert,
+    remove,
+    cloneNode,
+    createFragment,
+    createElement,
+    createText,
+    createComment,
+    createCustomElement,
+    nextSibling,
+    attachShadow,
+    getProperty,
+    setProperty,
+    setText,
+    getAttribute,
+    setAttribute,
+    removeAttribute,
+    addEventListener,
+    removeEventListener,
+    dispatchEvent,
+    getClassList,
+    setCSSStyleProperty,
+    getBoundingClientRect,
+    querySelector,
+    querySelectorAll,
+    getElementsByTagName,
+    getElementsByClassName,
+    getChildren,
+    getChildNodes,
+    getFirstChild,
+    getFirstElementChild,
+    getLastChild,
+    getLastElementChild,
+    isConnected,
+    insertStylesheet,
+    assertInstanceOfHTMLElement,
+    ownerDocument,
+    registerContextConsumer,
+};

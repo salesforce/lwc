@@ -148,7 +148,19 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
         );
     }
     const ownerKey = getNodeNearestOwnerKey(node);
-    return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
+
+    if (isUndefined(ownerKey)) {
+        // in case of root level light DOM element slotting into a synthetic shadow
+        const host = parentNodeGetter.call(node);
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
+            return false;
+        }
+
+        // in case of manually inserted elements
+        return true;
+    }
+
+    return getNodeKey(owner) === ownerKey;
 }
 
 export function shadowRootChildNodes(root: ShadowRoot): Array<Element & Node> {

@@ -9,8 +9,12 @@ import {
     isUndefined,
     KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
+    KEY__SHADOW_STATIC,
+    KEY__SHADOW_STATIC_PRIVATE,
+    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
+import { childNodesGetter } from '../env/node';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -41,6 +45,30 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     },
     get(this: Element): string | undefined {
         return (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
+    },
+    configurable: true,
+});
+
+function recursivelySetShadowResolver(node: Node, fn: any) {
+    (node as any)[KEY__SHADOW_RESOLVER] = fn;
+
+    const childNodes = childNodesGetter.call(node);
+    for (let i = 0, n = childNodes.length; i < n; i++) {
+        recursivelySetShadowResolver(childNodes[i], fn);
+    }
+}
+
+defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
+    set(this: Element, v: boolean) {
+        // Marking an element as static will propagate the shadow resolver to the children.
+        if (v) {
+            const fn = (this as any)[KEY__SHADOW_RESOLVER];
+            recursivelySetShadowResolver(this, fn);
+        }
+        (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
+    },
+    get(this: Element): string | undefined {
+        return (this as any)[KEY__SHADOW_STATIC_PRIVATE];
     },
     configurable: true,
 });

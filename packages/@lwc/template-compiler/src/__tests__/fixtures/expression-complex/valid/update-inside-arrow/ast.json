@@ -1,0 +1,154 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 99,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 88,
+                "end": 99
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 87,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 77,
+                        "end": 87
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "button",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 48,
+                            "start": 33,
+                            "end": 72,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 39,
+                                "start": 33,
+                                "end": 63
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 39,
+                                "endLine": 3,
+                                "endColumn": 48,
+                                "start": 63,
+                                "end": 72
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [
+                            {
+                                "type": "EventListener",
+                                "name": "click",
+                                "handler": {
+                                    "type": "ArrowFunctionExpression",
+                                    "start": 1,
+                                    "end": 12,
+                                    "id": null,
+                                    "expression": true,
+                                    "generator": false,
+                                    "async": false,
+                                    "params": [],
+                                    "body": {
+                                        "type": "UpdateExpression",
+                                        "start": 7,
+                                        "end": 12,
+                                        "operator": "++",
+                                        "prefix": false,
+                                        "argument": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 7,
+                                                "end": 10,
+                                                "name": "foo"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 38,
+                                        "start": 41,
+                                        "end": 62
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 38,
+                                    "start": 41,
+                                    "end": 62
+                                }
+                            }
+                        ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

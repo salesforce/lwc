@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1188,
+            "message": "LWC1188: Invalid dynamic components usage, lwc:component and lwc:is can only be used when dynamic components have been enabled.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 45
+            }
+        },
+        {
+            "code": 1188,
+            "message": "LWC1188: Invalid dynamic components usage, lwc:component and lwc:is can only be used when dynamic components have been enabled.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 98,
+                "length": 73
+            }
+        }
+    ]
+}

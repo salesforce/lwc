@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1057,
+            "message": "LWC1057: props is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 10,
+                "start": 99,
+                "length": 58
+            }
+        }
+    ]
+}

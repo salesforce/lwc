@@ -1,6 +1,6 @@
 {
     "name": "@lwc/shared",
-    "version": "2.13.0",
+    "version": "2.42.0",
     "description": "Utilities and methods that are shared across packages",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -18,8 +18,7 @@
     "scripts": {
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "postbuild": "node ../../../scripts/tasks/verify-treeshakable.js ./dist/index.js",
-        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
-        "clean": "rm -rf dist/ types/"
+        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "files": [
         "dist/",
@@ -27,5 +26,15 @@
     ],
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

@@ -1,0 +1,102 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 82,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 71,
+                "end": 82
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "If",
+                "modifier": "true",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 7,
+                    "name": "ifTrue",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 14,
+                        "endLine": 2,
+                        "endColumn": 30,
+                        "start": 24,
+                        "end": 40
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 60,
+                    "start": 15,
+                    "end": 70
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 14,
+                    "endLine": 2,
+                    "endColumn": 30,
+                    "start": 24,
+                    "end": 40
+                },
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "c-hello",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 5,
+                            "endLine": 2,
+                            "endColumn": 60,
+                            "start": 15,
+                            "end": 70,
+                            "startTag": {
+                                "startLine": 2,
+                                "startColumn": 5,
+                                "endLine": 2,
+                                "endColumn": 50,
+                                "start": 15,
+                                "end": 60
+                            },
+                            "endTag": {
+                                "startLine": 2,
+                                "startColumn": 50,
+                                "endLine": 2,
+                                "endColumn": 60,
+                                "start": 60,
+                                "end": 70
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

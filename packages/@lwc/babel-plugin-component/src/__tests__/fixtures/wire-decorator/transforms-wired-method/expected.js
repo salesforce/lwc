@@ -1,12 +1,9 @@
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 import { getFoo } from "data-service";
-
 class Test {
   wiredMethod() {}
-
 }
-
 _registerDecorators(Test, {
   wire: {
     wiredMethod: {
@@ -22,7 +19,7 @@ _registerDecorators(Test, {
     }
   }
 });
-
 export default _registerComponent(Test, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

@@ -5,18 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Public APIs -------------------------------------------------------------------------------------
-export { createContextProvider } from './context-provider';
-export { LightningElement } from './base-lightning-element';
-export { register } from './services';
-
-export { default as api } from './decorators/api';
-export { default as track } from './decorators/track';
-export { default as wire } from './decorators/wire';
-export { readonly } from './readonly';
-
-export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
-
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentHtmlPrototype } from './def';
 export {
@@ -25,7 +13,9 @@ export {
     disconnectRootElement,
     getAssociatedVMIfPresent,
 } from './vm';
+export { createContextProviderWithRegister } from './wiring';
 
+export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
@@ -38,11 +28,16 @@ export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
-export { getUpgradableConstructor } from './upgradable-element';
+export { reportingControl as __unstable__ReportingControl } from './reporting';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
+export { freezeTemplate } from './freeze-template';
+
+// Experimental or Internal APIs
+export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
+export type { RendererAPI, LifecycleCallback } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
     ContextValue as WireContextValue,
@@ -50,48 +45,17 @@ export type {
     WireAdapter,
     WireAdapterConstructor,
     WireAdapterSchemaValue,
+    WireContextSubscriptionPayload,
+    WireContextSubscriptionCallback,
 } from './wiring';
 
-// Initialization APIs for the renderer, to be used by engine implementations ----------------------
-export {
-    setAssertInstanceOfHTMLElement,
-    setAttachShadow,
-    setCreateComment,
-    setCreateElement,
-    setCreateText,
-    setDefineCustomElement,
-    setDispatchEvent,
-    setGetAttribute,
-    setGetBoundingClientRect,
-    setGetChildNodes,
-    setGetChildren,
-    setGetClassList,
-    setGetCustomElement,
-    setGetElementsByClassName,
-    setGetElementsByTagName,
-    setGetFirstChild,
-    setGetFirstElementChild,
-    setGetLastChild,
-    setGetLastElementChild,
-    setGetProperty,
-    setHTMLElement,
-    setInsert,
-    setInsertGlobalStylesheet,
-    setInsertStylesheet,
-    setIsConnected,
-    setIsHydrating,
-    setIsNativeShadowDefined,
-    setIsSyntheticShadowDefined,
-    setNextSibling,
-    setQuerySelector,
-    setQuerySelectorAll,
-    setRemove,
-    setRemoveAttribute,
-    setRemoveEventListener,
-    setSetAttribute,
-    setSetCSSStyleProperty,
-    setSetProperty,
-    setSetText,
-    setSsr,
-    setAddEventListener,
-} from '../renderer';
+// Public APIs -------------------------------------------------------------------------------------
+export { LightningElement } from './base-lightning-element';
+export { register } from './services';
+
+export { default as api } from './decorators/api';
+export { default as track } from './decorators/track';
+export { default as wire } from './decorators/wire';
+export { readonly } from './readonly';
+
+export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';

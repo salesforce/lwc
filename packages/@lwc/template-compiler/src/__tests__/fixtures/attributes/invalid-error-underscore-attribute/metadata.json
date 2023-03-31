@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1125,
+            "message": "LWC1125: trailing_ is not valid attribute for x-button. Attribute name must end with alpha-numeric character.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 15,
+                "start": 58,
+                "length": 15
+            }
+        },
+        {
+            "code": 1124,
+            "message": "LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with an underscore, dollar sign, or an optional hyphen character followed by an alphabetic character.",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 15,
+                "start": 144,
+                "length": 13
+            }
+        }
+    ]
+}

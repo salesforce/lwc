@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1039,
+            "message": "LWC1039: iterator:items directive is expected to be an expression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 9,
+                "start": 19,
+                "length": 21
+            }
+        }
+    ]
+}

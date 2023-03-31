@@ -1,0 +1,21 @@
+<template>
+    <!-- Inline for each -->
+    <div for:each={items} for:item="item" key={item.key}>
+        <span id="a"></span>
+    </div>
+
+    <!-- Template for each -->
+    <template for:each={items} for:item="item">
+        <span key={item.key} id="b"></span>
+    </template>
+
+    <!-- Inline iterator -->
+    <div iterator:item={items} key={item.key}>
+        <span id="c"></span>
+    </div>
+
+    <!-- Template iterator -->
+    <template iterator:item={items}>
+        <span key={item.key} id="d"></span>
+    </template>
+</template>

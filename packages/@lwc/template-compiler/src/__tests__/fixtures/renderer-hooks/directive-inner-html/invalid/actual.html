@@ -1,0 +1,19 @@
+<template>
+    <!-- Invalid usage on an element with content -->
+    <div lwc:inner-html={content}>With content</div>
+
+    <!-- Valid usage on an element with a comment, since comments are not preserved in this template -->
+    <div lwc:inner-html={content}><!-- With comment --></div>
+
+    <!-- Invalid usage on an element as boolean -->
+    <div lwc:inner-html></div>
+    
+    <!-- Invalid usage on <slot> -->
+    <slot lwc:inner-html={content}></slot>
+    
+    <!-- Invalid usage on custom elements -->
+    <x-foo lwc:inner-html={content}></x-foo>
+    
+    <!-- Invalid usage on <template> -->
+    <template lwc:inner-html={content}></template>
+</template>

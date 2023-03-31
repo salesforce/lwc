@@ -27,6 +27,7 @@ export function registerTemplate(tpl: Template): Template {
         checkVersionMismatch(tpl, 'template');
     }
     signedTemplateSet.add(tpl);
+
     // chaining this method as a way to wrap existing
     // assignment of templates easily, without too much transformation
     return tpl;

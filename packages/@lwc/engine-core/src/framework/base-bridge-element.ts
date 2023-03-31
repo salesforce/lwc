@@ -22,9 +22,9 @@ import {
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
-
+import { applyAriaReflection } from '@lwc/aria-reflection';
 import { getAssociatedVM } from './vm';
-import { reactiveMembrane } from './membrane';
+import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { isAttributeLocked } from './attributes';
@@ -54,7 +54,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
             const { setHook } = vm;
-            newValue = reactiveMembrane.getReadOnlyProxy(newValue);
+            newValue = getReadOnlyProxy(newValue);
             setHook(vm.component, key, newValue);
         };
     }
@@ -177,6 +177,7 @@ export function HTMLBridgeElementFactory(
             configurable: true,
         };
     }
+
     // creating a new attributeChangedCallback per bridge because they are bound to the corresponding
     // map of attributes to props. We do this after all other props and methods to avoid the possibility
     // of getting overrule by a class declaration in user-land, and we make it non-writable, non-configurable
@@ -200,6 +201,21 @@ export const BaseBridgeElement = HTMLBridgeElementFactory(
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     []
 );
+
+if (process.env.IS_BROWSER) {
+    // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
+    // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
+    // ARIA props outside the LightningElement
+    if (lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+        // If ARIA reflection is not applied globally to Element.prototype, apply it to HTMLBridgeElement.prototype.
+        // This allows `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*` attrs.
+        // This is especially important because the template compiler compiles aria-* attrs on components to aria* props
+        //
+        // Also note that we apply this to BaseBridgeElement.prototype to avoid excessively redefining property
+        // accessors inside the HTMLBridgeElementFactory.
+        applyAriaReflection(BaseBridgeElement.prototype);
+    }
+}
 
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);

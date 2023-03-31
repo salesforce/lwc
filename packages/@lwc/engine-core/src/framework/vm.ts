@@ -4,26 +4,29 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
 import {
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
     assert,
     create,
+    defineProperty,
     getOwnPropertyNames,
+    isArray,
     isFalse,
+    isFunction,
     isNull,
     isObject,
     isTrue,
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
+import { logError, logWarnOnce } from '../shared/logger';
 
+import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -39,11 +42,8 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { AccessorReactiveObserver } from './decorators/api';
-import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
-
-import type { HostNode, HostElement } from '../renderer';
+import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, isVFragment } from './vnodes';
+import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -52,7 +52,9 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    [key: string]: VNodes;
+    // Slot assignments by name
+    slotAssignments: { [key: string]: VNodes };
+    owner?: VM;
 }
 
 export const enum VMState {
@@ -89,8 +91,8 @@ export interface Context {
     hasTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
-    /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
-    styleVNode: VNode | null;
+    /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
+    styleVNodes: VNode[] | null;
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
@@ -99,6 +101,8 @@ export interface Context {
     /** List of wire hooks that are invoked when the component gets disconnected. */
     wiredDisconnecting: Array<() => void>;
 }
+
+export type RefVNodes = { [name: string]: VBaseElement };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
@@ -111,6 +115,10 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
+    /** References to elements rendered using lwc:ref (template refs) */
+    refVNodes: RefVNodes | null;
+    /** Whether or not the VM was hydrated */
+    readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
     renderMode: RenderMode;
     shadowMode: ShadowMode;
@@ -129,7 +137,8 @@ export interface VM<N = HostNode, E = HostElement> {
     velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** The mapping between the slot names and the slotted VNodes. */
+    /** Contains information about the mapping between the slot names and the slotted VNodes, and
+     *  the owner of the slot content. */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
@@ -150,9 +159,6 @@ export interface VM<N = HostNode, E = HostElement> {
     renderRoot: ShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
-    /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
-     *  is enabled. */
-    oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
     setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
@@ -162,6 +168,15 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
      *  properties and event handlers). This hook is used by Locker. */
     callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    /**
+     * Renderer API */
+    renderer: RendererAPI;
+    /**
+     * Debug info bag. Stores useful debug information about the component. */
+    debugInfo?: Record<string, any>;
+    /**
+     * Any stylesheets associated with the component */
+    stylesheets: TemplateStylesheetFactories | null;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -223,21 +238,13 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { oar, tro } = vm;
+        const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        // Making sure that any observing accessor record will not trigger the setter to be reinvoked
-        for (const key in oar) {
-            oar[key].reset();
-        }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        removeActiveVM(vm);
     }
 }
 
@@ -264,13 +271,15 @@ function getNearestShadowAncestor(vm: VM): VM | null {
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     ctor: LightningElementConstructor,
+    renderer: RendererAPI,
     options: {
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
+        hydrated?: boolean;
     }
 ): VM {
-    const { mode, owner, tagName } = options;
+    const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
 
     const vm: VM = {
@@ -283,23 +292,23 @@ export function createVM<HostNode, HostElement>(
         tagName,
         mode,
         owner,
+        refVNodes: null,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: create(null),
-        oar: create(null),
+        cmpSlots: { slotAssignments: create(null) },
         cmpTemplate: null,
+        hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
-
         context: {
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
             hasScopedStyles: undefined,
-            styleVNode: null,
+            styleVNodes: null,
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
@@ -308,6 +317,7 @@ export function createVM<HostNode, HostElement>(
         // Properties set right after VM creation.
         tro: null!,
         shadowMode: null!,
+        stylesheets: null!,
 
         // Properties set by the LightningElement constructor.
         component: null!,
@@ -317,16 +327,23 @@ export function createVM<HostNode, HostElement>(
         callHook,
         setHook,
         getHook,
+
+        renderer,
     };
 
-    vm.shadowMode = computeShadowMode(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        vm.debugInfo = create(null);
+    }
+
+    vm.stylesheets = computeStylesheets(vm, def.ctor);
+    vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        if (features.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
+        if (lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             vm.shadowMode = ShadowMode.Native;
         }
     }
@@ -342,8 +359,71 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function computeShadowMode(vm: VM) {
+function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFactories): boolean {
+    let valid = true;
+
+    const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
+        if (isArray(arrayOrStylesheet)) {
+            for (let i = 0; i < arrayOrStylesheet.length; i++) {
+                validate((arrayOrStylesheet as TemplateStylesheetFactories)[i]);
+            }
+        } else if (!isFunction(arrayOrStylesheet)) {
+            // function assumed to be a stylesheet factory
+            valid = false;
+        }
+    };
+
+    if (!isArray(stylesheets)) {
+        valid = false;
+    } else {
+        validate(stylesheets);
+    }
+
+    return valid;
+}
+
+// Validate and flatten any stylesheets defined as `static stylesheets`
+function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
+    warnOnStylesheetsMutation(ctor);
+    const { stylesheets } = ctor;
+    if (!isUndefined(stylesheets)) {
+        const valid = validateComponentStylesheets(vm, stylesheets);
+
+        if (valid) {
+            return flattenStylesheets(stylesheets);
+        } else if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                vm
+            );
+        }
+    }
+    return null;
+}
+
+function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
+    if (process.env.NODE_ENV !== 'production') {
+        let { stylesheets } = ctor;
+        defineProperty(ctor, 'stylesheets', {
+            enumerable: true,
+            configurable: true,
+            get() {
+                return stylesheets;
+            },
+            set(newValue) {
+                logWarnOnce(
+                    `Dynamically setting the "stylesheets" static property on ${ctor.name} ` +
+                        'will not affect the stylesheets injected.'
+                );
+                stylesheets = newValue;
+            },
+        });
+    }
+}
+
+function computeShadowMode(vm: VM, renderer: RendererAPI) {
     const { def } = vm;
+    const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
 
     let shadowMode;
     if (isSyntheticShadowDefined) {
@@ -354,7 +434,7 @@ function computeShadowMode(vm: VM) {
         } else if (isNativeShadowDefined) {
             // Not combined with above condition because @lwc/features only supports identifiers in
             // the if-condition.
-            if (features.ENABLE_MIXED_SHADOW_MODE) {
+            if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
@@ -427,7 +507,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { renderRoot, children: oldCh } = vm;
+    const { renderRoot, children: oldCh, renderer } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -445,7 +525,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    patchChildren(oldCh, newCh, renderRoot);
+                    patchChildren(oldCh, newCh, renderRoot, renderer);
                 },
                 () => {
                     // post
@@ -469,7 +549,7 @@ export function runRenderedCallback(vm: VM) {
         def: { renderedCallback },
     } = vm;
 
-    if (isTrue(ssr)) {
+    if (!process.env.IS_BROWSER) {
         return;
     }
 
@@ -645,23 +725,39 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot } = vm;
-
-    for (let i = 0, len = children.length; i < len; i++) {
-        const child = children[i];
-
-        if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, renderRoot);
-        }
-    }
+    recursivelyRemoveChildren(vm.children, vm);
     vm.children = EmptyArray;
 
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 }
 
+// Helper function to remove all children of the root node.
+// If the set of children includes VFragment nodes, we need to remove the children of those nodes too.
+// Since VFragments can contain other VFragments, we need to traverse the entire of tree of VFragments.
+// If the set contains no VFragment nodes, no traversal is needed.
+function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
+    const {
+        renderRoot,
+        renderer: { remove },
+    } = vm;
+
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode = vnodes[i];
+
+        if (!isNull(vnode)) {
+            // VFragments are special; their .elm property does not point to the root element since they have no single root.
+            if (isVFragment(vnode)) {
+                recursivelyRemoveChildren(vnode.children, vm);
+            } else if (!isUndefined(vnode.elm)) {
+                remove(vnode.elm, renderRoot);
+            }
+        }
+    }
+}
+
 export function scheduleRehydration(vm: VM) {
-    if (isTrue(ssr) || isTrue(vm.isScheduled)) {
+    if (!process.env.IS_BROWSER || isTrue(vm.isScheduled)) {
         return;
     }
 

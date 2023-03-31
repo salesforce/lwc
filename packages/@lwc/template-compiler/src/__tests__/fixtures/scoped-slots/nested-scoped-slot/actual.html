@@ -1,0 +1,13 @@
+<template>
+    <x-table data={data}>
+        <template lwc:slot-data="row">
+            <x-row row={row}> <!-- this is rendered for every row in the table -->
+                <template lwc:slot-data="column">
+                    <span> <!-- this is rendered for every column in the row -->
+                        Coordinates: {row.number} - {column.number} <!-- can refer to both `row` and `column` -->
+                    </span>
+                </template>
+            </x-row>
+        </template>
+    </x-table> 
+</template>

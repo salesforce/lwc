@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1145,
+            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: onfoo. For more information, please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 33,
+                "length": 222
+            }
+        },
+        {
+            "code": 1145,
+            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: class. For more information, please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 13,
+                "start": 127,
+                "length": 108
+            }
+        },
+        {
+            "code": 1153,
+            "message": "LWC1153: Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. For more information please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 13,
+                "start": 127,
+                "length": 108
+            }
+        }
+    ]
+}

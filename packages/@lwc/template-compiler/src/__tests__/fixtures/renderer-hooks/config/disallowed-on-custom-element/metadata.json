@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1187,
+            "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
+            "level": 2,
+            "location": {
+                "line": 6,
+                "column": 5,
+                "start": 121,
+                "length": 41
+            }
+        }
+    ]
+}

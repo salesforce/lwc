@@ -4,24 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import {
-    getClassList,
-    removeAttribute,
-    setAttribute,
-    insertGlobalStylesheet,
-    ssr,
-    isHydrating,
-    insertStylesheet,
-} from '../renderer';
+import { logError } from '../shared/logger';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
-import { Template } from './template';
+import { computeHasScopedStyles, hasStyles, Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
-import { VNode } from './vnodes';
+import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { getComponentInternalDef } from './def';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -58,8 +51,15 @@ function createInlineStyleVNode(content: string): VNode {
 }
 
 export function updateStylesheetToken(vm: VM, template: Template) {
-    const { elm, context, renderMode, shadowMode } = vm;
+    const {
+        elm,
+        context,
+        renderMode,
+        shadowMode,
+        renderer: { getClassList, removeAttribute, setAttribute },
+    } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
+    const { stylesheets: newVmStylesheets } = vm;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
     const { hasScopedStyles } = context;
@@ -85,7 +85,9 @@ export function updateStylesheetToken(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets. In the case of light DOM, also ensure there is at least one scoped stylesheet.
-    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0) {
+    const hasNewStylesheets = hasStyles(newStylesheets);
+    const hasNewVmStylesheets = hasStyles(newVmStylesheets);
+    if (hasNewStylesheets || hasNewVmStylesheets) {
         newToken = newStylesheetToken;
     }
 
@@ -131,6 +133,17 @@ function evaluateStylesheetsContent(
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
             const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
+
+            if (
+                lwcRuntimeFlags.DISABLE_LIGHT_DOM_UNSCOPED_CSS &&
+                !isScopedCss &&
+                vm.renderMode === RenderMode.Light
+            ) {
+                logError(
+                    'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
+                );
+                continue;
+            }
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =
                 isScopedCss ||
@@ -169,11 +182,17 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetToken } = template;
+    const { stylesheets: vmStylesheets } = vm;
 
     let content: string[] = [];
 
-    if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
+    if (hasStyles(stylesheets)) {
         content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
+    }
+
+    // VM (component) stylesheets apply after template stylesheets
+    if (hasStyles(vmStylesheets)) {
+        ArrayPush.apply(content, evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm));
     }
 
     return content;
@@ -193,6 +212,31 @@ function getNearestShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
+/**
+ * If the component that is currently being rendered uses scoped styles,
+ * this returns the unique token for that scoped stylesheet. Otherwise
+ * it returns null.
+ */
+export function getScopeTokenClass(owner: VM): string | null {
+    const { cmpTemplate, context } = owner;
+    return (context.hasScopedStyles && cmpTemplate?.stylesheetToken) || null;
+}
+
+/**
+ * This function returns the host style token for a custom element if it
+ * exists. Otherwise it returns null.
+ *
+ * A host style token is applied to the component if scoped styles are used.
+ */
+export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
+    const { template } = getComponentInternalDef(vnode.ctor);
+    const { vm } = vnode;
+    const { stylesheetToken } = template;
+    return !isUndefined(stylesheetToken) && computeHasScopedStyles(template, vm)
+        ? makeHostToken(stylesheetToken)
+        : null;
+}
+
 function getNearestNativeShadowComponent(vm: VM): VM | null {
     const owner = getNearestShadowComponent(vm);
     if (!isNull(owner) && owner.shadowMode === ShadowMode.Synthetic) {
@@ -203,31 +247,30 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderMode, shadowMode } = vm;
+export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null {
+    const {
+        renderMode,
+        shadowMode,
+        renderer: { insertStylesheet },
+    } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStylesheet(stylesheets[i]);
+            insertStylesheet(stylesheets[i]);
         }
-    } else if (ssr || isHydrating()) {
+    } else if (!process.env.IS_BROWSER || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(combinedStylesheetContent);
+        return ArrayMap.call(stylesheets, createInlineStyleVNode) as VNode[];
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
-        const isGlobal = isNull(root);
+        // null root means a global style
+        const target = isNull(root) ? undefined : root.shadowRoot!;
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isGlobal) {
-                insertGlobalStylesheet(stylesheets[i]);
-            } else {
-                // local level
-                insertStylesheet(stylesheets[i], root!.shadowRoot!);
-            }
+            insertStylesheet(stylesheets[i], target);
         }
     }
     return null;

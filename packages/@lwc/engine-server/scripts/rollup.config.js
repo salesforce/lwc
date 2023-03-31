@@ -7,6 +7,7 @@
 
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
@@ -21,6 +22,7 @@ module.exports = {
     output: formats.map((format) => {
         return {
             file: `engine-server${format === 'cjs' ? '.cjs' : ''}.js`,
+            sourcemap: true,
             format,
             banner: banner,
             footer: footer,
@@ -33,6 +35,12 @@ module.exports = {
         }),
         typescript(),
         writeDistAndTypes(),
+        replace({
+            values: {
+                'process.env.IS_BROWSER': 'false',
+            },
+            preventAssignment: true,
+        }),
     ],
 
     onwarn({ code, message }) {

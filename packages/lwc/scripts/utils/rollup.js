@@ -6,41 +6,57 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const swc = require('@swc/core');
+const babel = require('@babel/core');
+const terser = require('terser');
 const { generateTargetName } = require('./helpers');
 
-function compatPlugin() {
+function babelCompatPlugin() {
     return {
-        name: 'rollup-plugin-compat',
+        name: 'rollup-plugin-babel-compat',
         transform(source) {
-            const { code } = swc.transformSync(source, {
-                sourceMaps: false,
-                jsc: {
-                    target: 'es5',
-                },
+            const { code, map } = babel.transformSync(source, {
+                babelrc: false,
+                configFile: false,
+                presets: [
+                    [
+                        '@babel/preset-env',
+                        {
+                            targets: {
+                                ie: '11',
+                            },
+                            modules: false,
+                        },
+                    ],
+                ],
             });
-            return { code };
+            return { code, map };
         },
     };
 }
 
-function minifyPlugin() {
+function rollupTerserPlugin() {
     return {
-        name: 'rollup-plugin-minify',
+        name: 'rollup-plugin-terser',
         renderChunk(code, chunk, outputOptions) {
-            return swc.minifySync(code, {
-                sourceMap: false,
-                mangle: {
-                    topLevel: ['cjs', 'commonjs'].includes(outputOptions.format),
-                },
-                compress: true,
+            return terser.minify(code, {
+                toplevel: ['cjs', 'commonjs'].includes(outputOptions.format),
             });
         },
     };
 }
 
 function rollupConfig(config) {
-    const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
+    const {
+        input,
+        format,
+        name,
+        prod,
+        target,
+        targetDirectory,
+        dir,
+        debug = false,
+        sourcemap = true,
+    } = config;
     const compatMode = target === 'es5';
     return {
         inputOptions: {
@@ -48,20 +64,18 @@ function rollupConfig(config) {
             plugins: [
                 prod &&
                     rollupReplace({
-                        values: {
-                            'process.env.NODE_ENV': JSON.stringify('production'),
-                        },
+                        'process.env.NODE_ENV': JSON.stringify('production'),
                         preventAssignment: true,
-                        sourceMap: false, // increases the build time and we don't need it
                     }),
-                compatMode && compatPlugin(),
+                compatMode && babelCompatPlugin(),
             ],
         },
         outputOptions: {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
-            plugins: [prod && !debug && minifyPlugin()],
+            plugins: [prod && !debug && rollupTerserPlugin()],
+            sourcemap,
         },
         display: { name, dir, format, target, prod, debug },
     };

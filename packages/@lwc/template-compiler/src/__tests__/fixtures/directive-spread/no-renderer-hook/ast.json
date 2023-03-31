@@ -1,0 +1,219 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 262,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 251,
+                "end": 262
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Component should be compiled with no errors and no custom renderer hook ",
+                "value": " Component should be compiled with no errors and no custom renderer hook ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 85,
+                    "start": 15,
+                    "end": 95
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 72,
+                    "start": 100,
+                    "end": 167,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 64,
+                        "start": 100,
+                        "end": 159
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 64,
+                        "endLine": 3,
+                        "endColumn": 72,
+                        "start": 159,
+                        "end": 167
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Dynamic",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "dynamicCtor",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 37,
+                                "start": 107,
+                                "end": 132
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 37,
+                            "start": 107,
+                            "end": 132
+                        }
+                    },
+                    {
+                        "type": "Directive",
+                        "name": "Spread",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 13,
+                            "name": "dynamicProps",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 38,
+                                "endLine": 3,
+                                "endColumn": 63,
+                                "start": 133,
+                                "end": 158
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 38,
+                            "endLine": 3,
+                            "endColumn": 63,
+                            "start": 133,
+                            "end": 158
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 83,
+                    "start": 172,
+                    "end": 250,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 67,
+                        "start": 172,
+                        "end": 234
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 67,
+                        "endLine": 4,
+                        "endColumn": 83,
+                        "start": 234,
+                        "end": 250
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "dynamicCtor",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 20,
+                                "endLine": 4,
+                                "endColumn": 40,
+                                "start": 187,
+                                "end": 207
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 20,
+                            "endLine": 4,
+                            "endColumn": 40,
+                            "start": 187,
+                            "end": 207
+                        }
+                    },
+                    {
+                        "type": "Directive",
+                        "name": "Spread",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 13,
+                            "name": "dynamicProps",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 41,
+                                "endLine": 4,
+                                "endColumn": 66,
+                                "start": 208,
+                                "end": 233
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 41,
+                            "endLine": 4,
+                            "endColumn": 66,
+                            "start": 208,
+                            "end": 233
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

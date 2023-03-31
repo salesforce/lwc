@@ -1,0 +1,101 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 53,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 42,
+                "end": 53
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 8,
+                    "name": "visible",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 9,
+                        "endLine": 2,
+                        "endColumn": 25,
+                        "start": 19,
+                        "end": 35
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 31,
+                    "start": 15,
+                    "end": 41
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 9,
+                    "endLine": 2,
+                    "endColumn": 25,
+                    "start": 19,
+                    "end": 35
+                },
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "h1",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 5,
+                            "endLine": 2,
+                            "endColumn": 31,
+                            "start": 15,
+                            "end": 41,
+                            "startTag": {
+                                "startLine": 2,
+                                "startColumn": 5,
+                                "endLine": 2,
+                                "endColumn": 26,
+                                "start": 15,
+                                "end": 36
+                            },
+                            "endTag": {
+                                "startLine": 2,
+                                "startColumn": 26,
+                                "endLine": 2,
+                                "endColumn": 31,
+                                "start": 36,
+                                "end": 41
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

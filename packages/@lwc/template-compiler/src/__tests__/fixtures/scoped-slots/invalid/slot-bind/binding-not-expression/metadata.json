@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1170,
+            "message": "LWC1170: Invalid lwc:slot-bind usage on element <slot>. The directive binding must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 39,
+                "length": 34
+            }
+        }
+    ]
+}

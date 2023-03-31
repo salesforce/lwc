@@ -13,20 +13,22 @@ import { sourceLocation } from '../shared/ast';
 
 import ParserCtx from './parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
+import { parseFragment } from './expression-complex';
 
 function getLwcErrorFromParse5Error(code: string) {
+    /* istanbul ignore else */
     if (errorCodesToErrorOn.has(code)) {
         return ParserDiagnostics.INVALID_HTML_SYNTAX;
-    }
-    if (errorCodesToWarnOn.has(code)) {
+    } else if (errorCodesToWarnOn.has(code)) {
+        return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
+    } else {
+        // It should be impossible to reach here; we have a test in parser.spec.ts to ensure
+        // all error codes are accounted for. But just to be safe, make it a warning.
+        // TODO [#2650]: better system for handling unexpected parse5 errors
+        // eslint-disable-next-line no-console
+        console.warn('Found a Parse5 error that we do not know how to handle:', code);
         return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
     }
-    // It should be impossible to reach here; we have a test in parser.spec.ts to ensure
-    // all error codes are accounted for. But just to be safe, make it a warning.
-    // TODO [#2650]: better system for handling unexpected parse5 errors
-    // eslint-disable-next-line no-console
-    console.warn('Found a Parse5 error that we do not know how to handle:', code);
-    return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
 }
 
 export function parseHTML(ctx: ParserCtx, source: string) {
@@ -36,6 +38,15 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         const lwcError = getLwcErrorFromParse5Error(code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
+
+    // TODO [#3370]: remove experimental template expression flag
+    if (ctx.config.experimentalComplexExpressions) {
+        return parseFragment(source, {
+            ctx,
+            sourceCodeLocationInfo: true,
+            onParseError,
+        });
+    }
 
     return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,

@@ -1,0 +1,239 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 137,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 126,
+                "end": 137
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 125,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 115,
+                        "end": 125
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 86,
+                            "start": 33,
+                            "end": 110,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 45,
+                                "start": 33,
+                                "end": 69
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 77,
+                                "endLine": 3,
+                                "endColumn": 86,
+                                "start": 101,
+                                "end": 110
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "ObjectExpression",
+                                    "start": 2,
+                                    "end": 20,
+                                    "properties": [
+                                        {
+                                            "type": "Property",
+                                            "start": 4,
+                                            "end": 18,
+                                            "method": false,
+                                            "shorthand": false,
+                                            "computed": false,
+                                            "key": {
+                                                "type": "Identifier",
+                                                "start": 4,
+                                                "end": 7,
+                                                "name": "obj"
+                                            },
+                                            "value": {
+                                                "type": "Literal",
+                                                "start": 9,
+                                                "end": 18,
+                                                "value": "literal",
+                                                "raw": "'literal'"
+                                            },
+                                            "kind": "init"
+                                        }
+                                    ],
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 44,
+                                        "start": 41,
+                                        "end": 68
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 44,
+                                    "start": 41,
+                                    "end": 68
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{({ obj: 'literal'}).toString()}",
+                                "value": {
+                                    "type": "CallExpression",
+                                    "start": 70,
+                                    "end": 100,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 45
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 75
+                                        }
+                                    },
+                                    "range": [
+                                        70,
+                                        100
+                                    ],
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "start": 70,
+                                        "end": 98,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 45
+                                            },
+                                            "end": {
+                                                "line": 3,
+                                                "column": 73
+                                            }
+                                        },
+                                        "range": [
+                                            70,
+                                            98
+                                        ],
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "stc2"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 90,
+                                            "end": 98,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 65
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 73
+                                                }
+                                            },
+                                            "range": [
+                                                90,
+                                                98
+                                            ],
+                                            "name": "toString"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "arguments": [],
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 45,
+                                        "endLine": 3,
+                                        "endColumn": 77,
+                                        "start": 69,
+                                        "end": 101
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 45,
+                                    "endLine": 3,
+                                    "endColumn": 77,
+                                    "start": 69,
+                                    "end": 101
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

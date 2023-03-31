@@ -64,8 +64,8 @@ export function valueObserved(target: object, key: PropertyKey) {
     }
 }
 
-type CallbackFunction = (rp: ReactiveObserver) => void;
-type JobFunction = () => void;
+export type CallbackFunction = (rp: ReactiveObserver) => void;
+export type JobFunction = () => void;
 
 export class ReactiveObserver {
     private listeners: ObservedMemberPropertyRecords[] = [];

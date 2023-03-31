@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-server",
-    "version": "2.13.0",
+    "version": "2.42.0",
     "description": "Renders LWC components in a server environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -16,7 +16,6 @@
     "typings": "types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/ types/",
         "build": "rollup --config scripts/rollup.config.js",
         "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
@@ -24,11 +23,27 @@
         "dist/",
         "types/"
     ],
+    "//": {
+        "parse5": "Currently can't upgrade parse5: dropped cjs support in v7.0.0 https://github.com/inikulin/parse5/releases/tag/v7.0.0"
+    },
     "devDependencies": {
-        "@lwc/engine-core": "2.13.0",
-        "@lwc/shared": "2.13.0"
+        "@lwc/engine-core": "2.42.0",
+        "@lwc/rollup-plugin": "2.42.0",
+        "@lwc/shared": "2.42.0",
+        "@rollup/plugin-virtual": "^3.0.1",
+        "parse5": "^6.0.1"
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist",
+                    "./types"
+                ]
+            }
+        }
     }
 }

@@ -1,0 +1,366 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 135,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 124,
+                "end": 135
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 123,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 113,
+                        "end": 123
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 84,
+                            "start": 33,
+                            "end": 108,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 49,
+                                "start": 33,
+                                "end": 73
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 75,
+                                "endLine": 3,
+                                "endColumn": 84,
+                                "start": 99,
+                                "end": 108
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "TemplateLiteral",
+                                    "start": 1,
+                                    "end": 25,
+                                    "expressions": [
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 4,
+                                                "end": 8,
+                                                "name": "name"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 13,
+                                                "end": 23,
+                                                "name": "occupation"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        }
+                                    ],
+                                    "quasis": [
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 2,
+                                            "end": 2,
+                                            "value": {
+                                                "raw": "",
+                                                "cooked": ""
+                                            },
+                                            "tail": false
+                                        },
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 9,
+                                            "end": 11,
+                                            "value": {
+                                                "raw": ": ",
+                                                "cooked": ": "
+                                            },
+                                            "tail": false
+                                        },
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 24,
+                                            "end": 24,
+                                            "value": {
+                                                "raw": "",
+                                                "cooked": ""
+                                            },
+                                            "tail": true
+                                        }
+                                    ],
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 48,
+                                        "start": 41,
+                                        "end": 72
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 48,
+                                    "start": 41,
+                                    "end": 72
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{`${name}: ${occupation}`}",
+                                "value": {
+                                    "type": "TemplateLiteral",
+                                    "start": 74,
+                                    "end": 98,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 49
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 73
+                                        }
+                                    },
+                                    "range": [
+                                        74,
+                                        98
+                                    ],
+                                    "expressions": [
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 77,
+                                                "end": 81,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 3,
+                                                        "column": 52
+                                                    },
+                                                    "end": {
+                                                        "line": 3,
+                                                        "column": 56
+                                                    }
+                                                },
+                                                "range": [
+                                                    77,
+                                                    81
+                                                ],
+                                                "name": "name"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 86,
+                                                "end": 96,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 3,
+                                                        "column": 61
+                                                    },
+                                                    "end": {
+                                                        "line": 3,
+                                                        "column": 71
+                                                    }
+                                                },
+                                                "range": [
+                                                    86,
+                                                    96
+                                                ],
+                                                "name": "occupation"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        }
+                                    ],
+                                    "quasis": [
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 75,
+                                            "end": 75,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 50
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 50
+                                                }
+                                            },
+                                            "range": [
+                                                75,
+                                                75
+                                            ],
+                                            "value": {
+                                                "raw": "",
+                                                "cooked": ""
+                                            },
+                                            "tail": false
+                                        },
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 82,
+                                            "end": 84,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 57
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 59
+                                                }
+                                            },
+                                            "range": [
+                                                82,
+                                                84
+                                            ],
+                                            "value": {
+                                                "raw": ": ",
+                                                "cooked": ": "
+                                            },
+                                            "tail": false
+                                        },
+                                        {
+                                            "type": "TemplateElement",
+                                            "start": 97,
+                                            "end": 97,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 72
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 72
+                                                }
+                                            },
+                                            "range": [
+                                                97,
+                                                97
+                                            ],
+                                            "value": {
+                                                "raw": "",
+                                                "cooked": ""
+                                            },
+                                            "tail": true
+                                        }
+                                    ],
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 49,
+                                        "endLine": 3,
+                                        "endColumn": 75,
+                                        "start": 73,
+                                        "end": 99
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 49,
+                                    "endLine": 3,
+                                    "endColumn": 75,
+                                    "start": 73,
+                                    "end": 99
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

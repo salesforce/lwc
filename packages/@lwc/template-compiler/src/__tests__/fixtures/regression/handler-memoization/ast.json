@@ -1,0 +1,397 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 291,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 280,
+                "end": 291
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 42,
+                    "start": 15,
+                    "end": 52,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 30,
+                        "start": 15,
+                        "end": 40
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 33,
+                        "endLine": 2,
+                        "endColumn": 42,
+                        "start": 43,
+                        "end": 52
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "click",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "create",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 13,
+                                "endLine": 2,
+                                "endColumn": 29,
+                                "start": 23,
+                                "end": 39
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 13,
+                            "endLine": 2,
+                            "endColumn": 29,
+                            "start": 23,
+                            "end": 39
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "New",
+                        "value": {
+                            "type": "Literal",
+                            "value": "New"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 30,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 40,
+                            "end": 43
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "ul",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 10,
+                    "start": 57,
+                    "end": 279,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 9,
+                        "start": 57,
+                        "end": 61
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 10,
+                        "start": 274,
+                        "end": 279
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "ForEach",
+                        "expression": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "name": "list",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 19,
+                                "endLine": 4,
+                                "endColumn": 34,
+                                "start": 80,
+                                "end": 95
+                            }
+                        },
+                        "item": {
+                            "type": "Identifier",
+                            "name": "task",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 35,
+                                "endLine": 4,
+                                "endColumn": 50,
+                                "start": 96,
+                                "end": 111
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 20,
+                            "start": 70,
+                            "end": 269
+                        },
+                        "directiveLocation": {
+                            "startLine": 4,
+                            "startColumn": 19,
+                            "endLine": 4,
+                            "endColumn": 34,
+                            "start": 80,
+                            "end": 95
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "li",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 18,
+                                    "start": 125,
+                                    "end": 249,
+                                    "startTag": {
+                                        "startLine": 5,
+                                        "startColumn": 13,
+                                        "endLine": 5,
+                                        "endColumn": 31,
+                                        "start": 125,
+                                        "end": 143
+                                    },
+                                    "endTag": {
+                                        "startLine": 8,
+                                        "startColumn": 13,
+                                        "endLine": 8,
+                                        "endColumn": 18,
+                                        "start": 244,
+                                        "end": 249
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [
+                                    {
+                                        "type": "Directive",
+                                        "name": "Key",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 8,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 5,
+                                                "name": "task"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 6,
+                                                "end": 8,
+                                                "name": "id"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 5,
+                                                "startColumn": 17,
+                                                "endLine": 5,
+                                                "endColumn": 30,
+                                                "start": 129,
+                                                "end": 142
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 17,
+                                            "endLine": 5,
+                                            "endColumn": 30,
+                                            "start": 129,
+                                            "end": 142
+                                        }
+                                    }
+                                ],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "{task.title}",
+                                        "value": {
+                                            "type": "MemberExpression",
+                                            "start": 1,
+                                            "end": 11,
+                                            "object": {
+                                                "type": "Identifier",
+                                                "start": 1,
+                                                "end": 5,
+                                                "name": "task"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 6,
+                                                "end": 11,
+                                                "name": "title"
+                                            },
+                                            "computed": false,
+                                            "optional": false,
+                                            "location": {
+                                                "startLine": 5,
+                                                "startColumn": 31,
+                                                "endLine": 7,
+                                                "endColumn": 17,
+                                                "start": 143,
+                                                "end": 189
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 31,
+                                            "endLine": 7,
+                                            "endColumn": 17,
+                                            "start": 143,
+                                            "end": 189
+                                        }
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "button",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 7,
+                                            "startColumn": 17,
+                                            "endLine": 7,
+                                            "endColumn": 59,
+                                            "start": 189,
+                                            "end": 231,
+                                            "startTag": {
+                                                "startLine": 7,
+                                                "startColumn": 17,
+                                                "endLine": 7,
+                                                "endColumn": 47,
+                                                "start": 189,
+                                                "end": 219
+                                            },
+                                            "endTag": {
+                                                "startLine": 7,
+                                                "startColumn": 50,
+                                                "endLine": 7,
+                                                "endColumn": 59,
+                                                "start": 222,
+                                                "end": 231
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [
+                                            {
+                                                "type": "EventListener",
+                                                "name": "click",
+                                                "handler": {
+                                                    "type": "MemberExpression",
+                                                    "start": 1,
+                                                    "end": 12,
+                                                    "object": {
+                                                        "type": "Identifier",
+                                                        "start": 1,
+                                                        "end": 5,
+                                                        "name": "task"
+                                                    },
+                                                    "property": {
+                                                        "type": "Identifier",
+                                                        "start": 6,
+                                                        "end": 12,
+                                                        "name": "delete"
+                                                    },
+                                                    "computed": false,
+                                                    "optional": false,
+                                                    "location": {
+                                                        "startLine": 7,
+                                                        "startColumn": 25,
+                                                        "endLine": 7,
+                                                        "endColumn": 46,
+                                                        "start": 197,
+                                                        "end": 218
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 7,
+                                                    "startColumn": 25,
+                                                    "endLine": 7,
+                                                    "endColumn": 46,
+                                                    "start": 197,
+                                                    "end": 218
+                                                }
+                                            }
+                                        ],
+                                        "children": [
+                                            {
+                                                "type": "Text",
+                                                "raw": "[X]",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "[X]"
+                                                },
+                                                "location": {
+                                                    "startLine": 7,
+                                                    "startColumn": 47,
+                                                    "endLine": 7,
+                                                    "endColumn": 50,
+                                                    "start": 219,
+                                                    "end": 222
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
