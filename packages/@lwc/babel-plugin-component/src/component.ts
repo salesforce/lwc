@@ -10,10 +10,10 @@ import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import { Visitor } from '@babel/core';
 import {
+    COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,
     REGISTER_COMPONENT_ID,
     TEMPLATE_KEY,
-    COMPONENT_NAME_KEY,
 } from './constants';
 import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 

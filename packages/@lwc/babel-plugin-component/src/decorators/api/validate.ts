@@ -10,9 +10,9 @@ import { types } from '@babel/core';
 import { generateError } from '../../utils';
 import {
     AMBIGUOUS_PROP_SET,
+    DECORATOR_TYPES,
     DISALLOWED_PROP_SET,
     LWC_PACKAGE_EXPORTS,
-    DECORATOR_TYPES,
 } from '../../constants';
 import { DecoratorMeta } from '../index';
 import { isApiDecorator } from './shared';

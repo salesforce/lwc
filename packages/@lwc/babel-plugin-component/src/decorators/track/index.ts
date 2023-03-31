@@ -7,11 +7,10 @@
 import { DecoratorErrors } from '@lwc/errors';
 import { LWC_COMPONENT_PROPERTIES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
-
-const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
-
 import { DecoratorMeta } from '../index';
 import { BabelTypes } from '../../types';
+
+const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 const TRACK_PROPERTY_VALUE = 1;
 

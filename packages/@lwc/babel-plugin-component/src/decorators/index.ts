@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Node, types, Visitor } from '@babel/core';
-import { NodePath, Binding } from '@babel/traverse';
+import { Binding, NodePath } from '@babel/traverse';
 import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
-import { generateError, isClassMethod, isSetterClassMethod, isGetterClassMethod } from '../utils';
+import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
 import { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
 import api from './api';
 import wire from './wire';
