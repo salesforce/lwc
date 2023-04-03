@@ -1,0 +1,15 @@
+:host([data-foo="bar"]) {
+    color: red;
+}
+
+[data-foo="bar"] {
+    color: blue;
+}
+
+:host([data-foo='bar']) {
+    color: purple;
+}
+
+[data-foo='bar'] {
+    color: yellow;
+}
