@@ -1,14 +1,21 @@
 <x-parent>
   <template shadowroot="open">
-    <div>connectedCallback called</div>
+    <div>
+      connectedCallback called
+    </div>
     <x-child>
       <template shadowroot="open">
-        <div>connectedCallback called</div>
-        <slot></slot>
+        <div>
+          connectedCallback called
+        </div>
+        <slot>
+        </slot>
       </template>
       <x-slotted>
         <template shadowroot="open">
-          <div>connectedCallback called</div>
+          <div>
+            connectedCallback called
+          </div>
         </template>
       </x-slotted>
     </x-child>

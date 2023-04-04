@@ -3,15 +3,20 @@
     <x-receiver>
       <template shadowroot="open">
         <div>
-          With fallback:
-          <slot name="with-fallback">I am the slot fallback</slot>
+          With fallback: 
+          <slot name="with-fallback">
+            I am the slot fallback
+          </slot>
         </div>
         <div>
-          With fallback:
-          <slot name="without-fallback"></slot>
+          With fallback: 
+          <slot name="without-fallback">
+          </slot>
         </div>
       </template>
-      <div slot="without-fallback">I am a slotted content</div>
+      <div slot="without-fallback">
+        I am a slotted content
+      </div>
     </x-receiver>
   </template>
 </x-slots-fallback>

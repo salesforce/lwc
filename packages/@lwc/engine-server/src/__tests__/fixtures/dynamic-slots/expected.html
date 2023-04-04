@@ -3,20 +3,28 @@
     <x-receiver>
       <template shadowroot="open">
         <div>
-          Default slot:
-          <slot></slot>
+          Default slot: 
+          <slot>
+          </slot>
         </div>
         <div>
-          Named slot:
-          <slot name="my-slot"></slot>
+          Named slot: 
+          <slot name="my-slot">
+          </slot>
         </div>
       </template>
       A
-      <div slot="my-slot">B</div>
+      <div slot="my-slot">
+        B
+      </div>
       C
-      <div>D</div>
+      <div>
+        D
+      </div>
       E
-      <div slot="my-slot">F</div>
+      <div slot="my-slot">
+        F
+      </div>
       G
     </x-receiver>
   </template>

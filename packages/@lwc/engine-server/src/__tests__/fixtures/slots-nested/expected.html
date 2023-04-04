@@ -3,11 +3,17 @@
     <x-parent>
       <template shadowroot="open">
         <x-child>
-          <template shadowroot="open"><slot></slot></template>
-          <slot></slot>
+          <template shadowroot="open">
+            <slot>
+            </slot>
+          </template>
+          <slot>
+          </slot>
         </x-child>
       </template>
-      <div>foo</div>
+      <div>
+        foo
+      </div>
     </x-parent>
   </template>
 </x-slots-nested>

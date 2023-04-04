@@ -1,9 +1,16 @@
 <x-root>
   <template shadowroot="open">
     <x-provider>
-      <template shadowroot="open"><slot></slot></template>
+      <template shadowroot="open">
+        <slot>
+        </slot>
+      </template>
       <x-consumer>
-        <template shadowroot="open"><div>some context</div></template>
+        <template shadowroot="open">
+          <div>
+            some context
+          </div>
+        </template>
       </x-consumer>
     </x-provider>
   </template>

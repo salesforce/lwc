@@ -82,8 +82,11 @@ function formatHTML(src: string): string {
 
     while (pos < src.length) {
         // Consume element tags and comments.
+        let isInsideStyleTag = false;
         if (src.charAt(pos) === '<') {
             const tagNameMatch = src.slice(pos).match(/(\w+)/);
+
+            isInsideStyleTag = tagNameMatch![0] === 'style';
 
             const isVoid = isVoidElement(tagNameMatch![0], HTML_NAMESPACE);
             const isClosing = src.charAt(pos + 1) === '/';
@@ -110,10 +113,17 @@ function formatHTML(src: string): string {
             }
         }
 
-        // Consume text content.
         start = pos;
-        while (src.charAt(pos) !== '<' && pos < src.length) {
-            pos++;
+
+        if (isInsideStyleTag) {
+            while (src.substring(pos, pos + 8) !== '</string>' && pos < src.length) {
+                pos++;
+            }
+        } else {
+            // Consume text content.
+            while (src.charAt(pos) !== '<' && pos < src.length) {
+                pos++;
+            }
         }
 
         if (start !== pos) {
