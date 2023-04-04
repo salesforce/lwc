@@ -3,10 +3,24 @@
     <style type="text/css">
       div {border: 1px solid turquoise;}
     </style>
-    <style type="text/css">div {background: blue;}
-  </style>
-  <x-child><template shadowroot="open"><style type="text/css">div {border: 1px solid turquoise;}
-</style>
-<style type="text/css">div {color: red;}
-</style>
-<div>Hello child</div></template></x-child><div>Hello parent</div></template></x-parent>
+    <style type="text/css">
+      div {background: blue;}
+    </style>
+    <x-child>
+      <template shadowroot="open">
+        <style type="text/css">
+          div {border: 1px solid turquoise;}
+        </style>
+        <style type="text/css">
+          div {color: red;}
+        </style>
+        <div>
+          Hello child
+        </div>
+      </template>
+    </x-child>
+    <div>
+      Hello parent
+    </div>
+  </template>
+</x-parent>
