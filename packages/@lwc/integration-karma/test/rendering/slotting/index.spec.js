@@ -1,9 +1,11 @@
 import { createElement } from 'lwc';
-
+import { spyConsole } from 'test-utils';
 import RenderCountParent from 'x/renderCountParent';
 import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
 import RegressionContainer from 'x/regressionContainer';
 import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
+import UnknownSlotShadow from 'x/unknownSlotShadow';
+import UnknownSlotLight from 'x/unknownSlotLight';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
@@ -76,5 +78,46 @@ it('should not throw error when updating slotted content triggers next tick re-r
 
             done();
         });
+    });
+});
+
+describe('does not log an error/warning on unknown slot name', () => {
+    let consoleSpy;
+    beforeEach(() => {
+        consoleSpy = spyConsole();
+    });
+    afterEach(() => {
+        consoleSpy.reset();
+    });
+
+    it('shadow dom', async () => {
+        const elm = createElement('x-unknown-slot-shadow', { is: UnknownSlotShadow });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        // nothing slotted into the child
+        expect(
+            elm.shadowRoot
+                .querySelector('x-unknown-slot-shadow-child')
+                .shadowRoot.querySelector('slot')
+                .assignedNodes().length
+        ).toEqual(0);
+
+        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy.calls.warn.length).toEqual(0);
+    });
+
+    it('light dom', async () => {
+        const elm = createElement('x-unknown-slot-light', { is: UnknownSlotLight });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        // nothing slotted into the child
+        expect(elm.querySelector('x-unknown-slot-light-child').children.length).toEqual(0);
+
+        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy.calls.warn.length).toEqual(0);
     });
 });
