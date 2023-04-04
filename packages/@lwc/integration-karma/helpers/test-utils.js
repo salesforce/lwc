@@ -515,6 +515,17 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
     }
 
+    // Keep traversing up the prototype chain until a property descriptor is found
+    function getPropertyDescriptor(object, prop) {
+        do {
+            var descriptor = Object.getOwnPropertyDescriptor(object, prop);
+            if (descriptor) {
+                return descriptor;
+            }
+            object = Object.getPrototypeOf(object);
+        } while (object);
+    }
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -532,5 +543,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
         nonStandardAriaProperties: nonStandardAriaProperties,
+        getPropertyDescriptor: getPropertyDescriptor,
     };
 })(LWC, jasmine, beforeAll);
