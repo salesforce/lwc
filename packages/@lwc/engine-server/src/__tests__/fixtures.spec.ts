@@ -77,7 +77,7 @@ function formatHTML(src: string): string {
     let depth = 0;
 
     const getPadding = () => {
-        return '  '.repeat(depth);
+        return '  '.repeat(Math.max(0, depth));
     };
 
     while (pos < src.length) {
@@ -116,7 +116,7 @@ function formatHTML(src: string): string {
         start = pos;
 
         if (isInsideStyleTag) {
-            while (src.substring(pos, pos + 8) !== '</string>' && pos < src.length) {
+            while (src.substring(pos, pos + 8) !== '</style>' && pos < src.length) {
                 pos++;
             }
         } else {
