@@ -55,7 +55,7 @@ export default function serialize(result: Result, config: Config): string {
     const disableSyntheticShadow = Boolean(config.disableSyntheticShadowSupport);
     const scoped = Boolean(config.scoped);
 
-    let buffer = '';
+    let buffer = `import { registerStylesheet } from 'lwc';\n`;
 
     if (collectVarFunctions && useVarResolver) {
         buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!
@@ -105,6 +105,9 @@ export default function serialize(result: Result, config: Config): string {
             // Mark the stylesheet as scoped so that we can distinguish it later at runtime
             buffer += `${STYLESHEET_IDENTIFIER}.${KEY__SCOPED_CSS} = true;\n`;
         }
+
+        // register the stylesheet
+        buffer += `registerStylesheet(${STYLESHEET_IDENTIFIER});\n`;
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
