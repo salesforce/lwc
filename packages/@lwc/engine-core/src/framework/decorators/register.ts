@@ -125,8 +125,7 @@ function validateMethodDecoratedWithWire(
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
-        // TODO [#3408]: this should throw, not log
-        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        // TODO [#3441]: This line of code does not seem possible to reach.
         logError(
             `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
         );
@@ -155,20 +154,17 @@ function validateAccessorDecoratedWithApi(
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor)) {
-        // TODO [#3408]: this should throw, not log
-        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        // TODO [#3441]: This line of code does not seem possible to reach.
         logError(`Invalid @api get ${fieldName} accessor.`);
     } else if (isFunction(descriptor.set)) {
         if (!isFunction(descriptor.get)) {
-            // TODO [#3408]: this should throw, not log
-            // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+            // TODO [#3441]: This line of code does not seem possible to reach.
             logError(
                 `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
             );
         }
     } else if (!isFunction(descriptor.get)) {
-        // TODO [#3408]: this should throw, not log
-        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        // TODO [#3441]: This line of code does not seem possible to reach.
         logError(`Missing @api get ${fieldName} accessor.`);
     }
 }
@@ -180,8 +176,7 @@ function validateMethodDecoratedWithApi(
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
-        // TODO [#3408]: this should throw, not log
-        // This line of code does not seem possible to reach. Maybe when native decorators are supported?
+        // TODO [#3441]: This line of code does not seem possible to reach.
         logError(`Invalid @api ${methodName} method.`);
     }
 }
