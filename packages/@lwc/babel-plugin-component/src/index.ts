@@ -16,15 +16,18 @@ import dynamicImports from './dynamic-imports';
 import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
 import { getEngineImportSpecifiers } from './utils';
-import { BabelAPI } from './types';
+import { BabelAPI, LwcBabelPluginPass } from './types';
 import type { PluginObj } from '@babel/core';
+
+// This is useful for consumers of this package to define their options
+export type { LwcBabelPluginOptions } from './types';
 
 /**
  * The transform is done in 2 passes:
  *    - First, apply in a single AST traversal the decorators and the component transformation.
  *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  */
-export default function LwcClassTransform(api: BabelAPI): PluginObj {
+export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {
     const { ExportDefaultDeclaration: transformCreateRegisterComponent } = component(api);
     const { Class: transformDecorators } = decorators(api);
     const { Import: transformDynamicImports } = dynamicImports();

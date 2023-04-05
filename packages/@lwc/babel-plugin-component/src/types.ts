@@ -10,16 +10,18 @@ import { PluginPass, types } from '@babel/core';
 export type BabelAPI = typeof BabelCoreNamespace;
 export type BabelTypes = typeof types;
 
-export interface LwcBabelPluginPass extends PluginPass {
-    opts: {
-        isExplicitImport?: boolean;
-        dynamicImports?: {
-            loader?: string;
-            strictSpecifier?: boolean;
-        };
-        namespace?: string;
-        name?: string;
+export interface LwcBabelPluginOptions {
+    isExplicitImport?: boolean;
+    dynamicImports?: {
+        loader?: string;
+        strictSpecifier?: boolean;
     };
+    namespace?: string;
+    name?: string;
+}
+
+export interface LwcBabelPluginPass extends PluginPass {
+    opts: LwcBabelPluginOptions;
     dynamicImports?: string[];
     loaderRef?: types.Identifier;
 }

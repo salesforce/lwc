@@ -41,6 +41,7 @@ function validateWireParameters(path: NodePath) {
         });
     }
 
+    // TODO [#3444]: improve member expression computed typechecking
     // @ts-ignore
     if (isMemberExpression && !id.get('object').isIdentifier()) {
         throw generateError(id, {
@@ -48,6 +49,7 @@ function validateWireParameters(path: NodePath) {
         });
     }
 
+    // TODO [#3444]: improve member expression computed typechecking
     // Ensure wire adapter is imported (check for member expression or identifier)
     // @ts-ignore
     const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;

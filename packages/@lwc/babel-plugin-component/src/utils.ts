@@ -75,15 +75,17 @@ function getEngineImportSpecifiers(path: NodePath): ImportSpecifier[] {
 
 function normalizeFilename(source: NodePath<types.Node>) {
     return (
-        // @ts-ignore
-        (source.hub && source.hub.file && source.hub.file.opts && source.hub.file.opts.filename) ||
+        // TODO [#3444]: use `this.filename` to get the filename
+        (source.hub &&
+            (source.hub as any).file &&
+            (source.hub as any).file.opts &&
+            (source.hub as any).file.opts.filename) ||
         null
     );
 }
 
 function normalizeLocation(source: NodePath<types.Node>) {
-    // @ts-ignore
-    const location = (source.node && (source.node.loc || source.node._loc)) || null;
+    const location = (source.node && (source.node.loc || (source.node as any)._loc)) || null;
     if (!location) {
         return null;
     }

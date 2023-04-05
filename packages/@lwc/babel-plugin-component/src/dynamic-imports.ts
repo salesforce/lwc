@@ -41,6 +41,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
     }
 
     function addDynamicImportDependency(dependency: string, state: LwcBabelPluginPass) {
+        // TODO [#3444]: state.dynamicImports seems unused and can probably be deleted
         if (!state.dynamicImports) {
             state.dynamicImports = [];
         }
