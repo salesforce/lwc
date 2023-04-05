@@ -1,15 +1,16 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('fs');
-const path = require('path');
-const babel = require('@babel/core');
-const { LWC_VERSION } = require('@lwc/shared');
-const { testFixtureDir } = require('@lwc/jest-utils-lwc-internals');
-const plugin = require('../index');
+import fs from 'node:fs';
+
+import path from 'node:path';
+import { transformSync } from '@babel/core';
+import { LWC_VERSION } from '@lwc/shared';
+import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
+import plugin from '../index';
 
 const BASE_OPTS = {
     namespace: 'lwc',
@@ -25,7 +26,7 @@ const BASE_CONFIG = {
     compact: false,
 };
 
-function normalizeError(err) {
+function normalizeError(err: any) {
     if (err.code === 'BABEL_TRANSFORM_ERROR') {
         return {
             // Filter out the filename and the stacktrace, just include the error message
@@ -40,16 +41,16 @@ function normalizeError(err) {
     }
 }
 
-function transform(source, opts = {}) {
+function transform(source: string, opts = {}) {
     const testConfig = {
         ...BASE_CONFIG,
         plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
     };
 
-    let { code } = babel.transformSync(source, testConfig);
+    let { code } = transformSync(source, testConfig)!;
 
     // Replace LWC's version with X.X.X so the snapshots don't frequently change
-    code = code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
+    code = code!.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
 
     return code;
 }
@@ -60,7 +61,7 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',
         },
-        ({ src, _filename, dirname }) => {
+        ({ src, dirname }) => {
             const configPath = path.resolve(dirname, 'config.json');
 
             let config = {};

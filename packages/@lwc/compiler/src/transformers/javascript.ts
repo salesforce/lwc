@@ -14,6 +14,7 @@ import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
+import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 
 export default function scriptTransform(
     code: string,
@@ -27,6 +28,13 @@ export default function scriptTransform(
         namespace,
         name,
     } = options;
+
+    const lwcBabelPluginOptions: LwcBabelPluginOptions = {
+        isExplicitImport,
+        dynamicImports,
+        namespace,
+        name,
+    };
 
     let result;
     try {
@@ -43,7 +51,7 @@ export default function scriptTransform(
             compact: false,
 
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, namespace, name }],
+                [lwcClassTransformPlugin, lwcBabelPluginOptions],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is

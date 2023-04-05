@@ -1,19 +1,24 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { DecoratorErrors } = require('@lwc/errors');
-const {
-    LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR },
-} = require('../../constants');
-const { generateError } = require('../../utils');
+import { types } from '@babel/core';
+import { NodePath } from '@babel/traverse';
+import { DecoratorErrors } from '@lwc/errors';
+import { LWC_PACKAGE_EXPORTS } from '../../constants';
+import { generateError } from '../../utils';
+import { DecoratorMeta } from '../index';
+import { isWireDecorator } from './shared';
 
-const { isWireDecorator } = require('./shared');
+const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
-function validateWireParameters(path) {
-    const [id, config] = path.get('expression.arguments');
+function validateWireParameters(path: NodePath) {
+    const [id, config] = path.get('expression.arguments') as [
+        NodePath | undefined,
+        NodePath<types.ObjectExpression> | undefined
+    ];
 
     if (!id) {
         throw generateError(path, {
@@ -36,13 +41,17 @@ function validateWireParameters(path) {
         });
     }
 
+    // TODO [#3444]: improve member expression computed typechecking
+    // @ts-ignore
     if (isMemberExpression && !id.get('object').isIdentifier()) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
         });
     }
 
+    // TODO [#3444]: improve member expression computed typechecking
     // Ensure wire adapter is imported (check for member expression or identifier)
+    // @ts-ignore
     const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
     if (!path.scope.getBinding(wireBinding)) {
         throw generateError(id, {
@@ -54,8 +63,8 @@ function validateWireParameters(path) {
     // ensure wire adapter is a first parameter
     if (
         wireBinding &&
-        !path.scope.getBinding(wireBinding).path.isImportSpecifier() &&
-        !path.scope.getBinding(wireBinding).path.isImportDefaultSpecifier()
+        !path.scope.getBinding(wireBinding)!.path.isImportSpecifier() &&
+        !path.scope.getBinding(wireBinding)!.path.isImportDefaultSpecifier()
     ) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
@@ -69,7 +78,10 @@ function validateWireParameters(path) {
     }
 }
 
-function validateUsageWithOtherDecorators(path, decorators) {
+function validateUsageWithOtherDecorators(
+    path: NodePath<types.Decorator>,
+    decorators: DecoratorMeta[]
+) {
     decorators.forEach((decorator) => {
         if (
             path !== decorator.path &&
@@ -92,9 +104,9 @@ function validateUsageWithOtherDecorators(path, decorators) {
     });
 }
 
-module.exports = function validate(decorators) {
+export default function validate(decorators: DecoratorMeta[]) {
     decorators.filter(isWireDecorator).forEach(({ path }) => {
         validateUsageWithOtherDecorators(path, decorators);
-        validateWireParameters(path, decorators);
+        validateWireParameters(path);
     });
-};
+}
