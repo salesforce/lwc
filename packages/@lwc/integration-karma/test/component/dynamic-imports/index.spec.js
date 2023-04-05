@@ -128,16 +128,10 @@ describe('slotted content using lwc:dynamic', () => {
         expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBeDefined();
 
         if (process.env.NATIVE_SHADOW) {
+            // `slot-bar` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
-        } else {
-            if (process.env.NODE_ENV === 'production') {
-                expect(consoleSpy.calls.error.length).toEqual(0);
-            } else {
-                expect(consoleSpy.calls.error[0][0].message).toContain(
-                    'Ignoring unknown provided slot name "bar"'
-                );
-            }
         }
+        expect(consoleSpy.calls.error.length).toEqual(0);
 
         // Swap construstor and check if nodes have been reallocated.
         elm.ctor = ContainerBar;
@@ -149,18 +143,12 @@ describe('slotted content using lwc:dynamic', () => {
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
 
             if (process.env.NATIVE_SHADOW) {
+                // `slot-foo` is not rendered in synthetic shadow
                 expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
                     null
                 );
-            } else {
-                if (process.env.NODE_ENV === 'production') {
-                    expect(consoleSpy.calls.error.length).toEqual(0);
-                } else {
-                    expect(consoleSpy.calls.error[1][0].message).toContain(
-                        'Ignoring unknown provided slot name "foo"'
-                    );
-                }
             }
+            expect(consoleSpy.calls.error.length).toEqual(0);
         });
     });
 });
@@ -268,16 +256,10 @@ describe('slotted content', () => {
         expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBeDefined();
 
         if (process.env.NATIVE_SHADOW) {
+            // `slot-bar` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
-        } else {
-            if (process.env.NODE_ENV === 'production') {
-                expect(consoleSpy.calls.error.length).toEqual(0);
-            } else {
-                expect(consoleSpy.calls.error[0][0].message).toContain(
-                    'Ignoring unknown provided slot name "bar"'
-                );
-            }
         }
+        expect(consoleSpy.calls.error.length).toEqual(0);
 
         // Swap constructor and check if nodes have been reallocated.
         elm.ctor = ContainerBar;
@@ -289,18 +271,12 @@ describe('slotted content', () => {
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
 
             if (process.env.NATIVE_SHADOW) {
+                // `slot-foo` is not rendered in synthetic shadow
                 expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
                     null
                 );
-            } else {
-                if (process.env.NODE_ENV === 'production') {
-                    expect(consoleSpy.calls.error.length).toEqual(0);
-                } else {
-                    expect(consoleSpy.calls.error[1][0].message).toContain(
-                        'Ignoring unknown provided slot name "foo"'
-                    );
-                }
             }
+            expect(consoleSpy.calls.error.length).toEqual(0);
         });
     });
 });
