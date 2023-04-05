@@ -20,6 +20,7 @@ export interface Config {
     scoped?: boolean;
     /** When set to true, synthetic shadow DOM support is removed from the output JavaScript */
     disableSyntheticShadowSupport?: boolean;
+    /** The API version to associate with the compiled stylesheet */
     apiVersion?: number;
 }
 

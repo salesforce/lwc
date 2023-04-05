@@ -88,6 +88,8 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
         }
         ```
 
+-   `apiVersion` (type: `number`, optional) - API version to associate with the compiled template.
+
 **Return:**
 The method returns an object with the following fields:
 

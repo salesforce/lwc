@@ -43,13 +43,8 @@ const { code } = compile(source, 'example.css');
 
 -   `source` (string, required) - the css source file to compiler
 -   `id` (string, required) - the css source file path, used by the compiler to produce errors with the file name
--   `options` (object, optional)
-    -   `customProperties` (object, optional)
-        -   `resolverModule` (boolean, optional) - module name for the custom properties resolve
-    -   `scoped` (boolean, optional) - true if the styles are scoped (via Light DOM style scoping)
-    -   `disableSyntheticShadowSupport` (boolean, optional) - true if synthetic shadow DOM support is not needed, which can result in smaller output
-
-**Return:**
+-   `options` (object, optional) - `customProperties` (object, optional) - `resolverModule` (boolean, optional) - module name for the custom properties resolve - `scoped` (boolean, optional) - true if the styles are scoped (via Light DOM style scoping) - `disableSyntheticShadowSupport` (boolean, optional) - true if synthetic shadow DOM support is not needed, which can result in smaller output - `apiVersion` (number, optional) - API version to associate with the compiled stylesheet.
+    **Return:**
 
 -   `code` - the generated code
 

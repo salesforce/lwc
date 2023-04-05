@@ -48,3 +48,4 @@ const { code } = babel.transformSync(source, {
 -   `dynamicImporta` (type: `object`, optional) - see below:
     -   `loader` (type: `string`, optional) - loader to use at runtime.
     -   `strictSpecifier` (type: `boolean`, optional) - true if a strict specifier should be used.
+-   `apiVersion` (type: `number`, optional) - API version to associate with the compiled component.

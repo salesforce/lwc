@@ -70,7 +70,7 @@ export interface Config {
     enableLwcSpread?: boolean;
 
     /**
-     * API version to associate with this template when compiling
+     * The API version to associate with the compiled template
      */
     apiVersion?: number;
 }

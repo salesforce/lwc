@@ -44,6 +44,7 @@ export interface RollupLwcOptions {
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
+    /** The API version to associate with the compiled module */
     apiVersion?: APIVersion;
 }
 
