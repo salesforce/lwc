@@ -16,7 +16,7 @@ const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';
 
 function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
-    const propertyValue = configProperty.get('value') as NodePath;
+    const propertyValue = configProperty.get('value');
     return (
         propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX)
     );
