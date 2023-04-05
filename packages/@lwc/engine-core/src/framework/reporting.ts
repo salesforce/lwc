@@ -42,15 +42,13 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
-export interface UnexpectedStylesheetContentPayload extends BasePayload {}
-
 export type ReportingPayloadMapping = {
     [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
     [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
-    [ReportingEventId.UnexpectedStylesheetContent]: UnexpectedStylesheetContentPayload;
+    [ReportingEventId.UnexpectedStylesheetContent]: BasePayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
