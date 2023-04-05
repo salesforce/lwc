@@ -29,24 +29,30 @@ export default function templateTransform(
 ): TransformResult {
     const {
         experimentalDynamicComponent,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
-        enableScopedSlots,
+        enableDynamicComponents,
+        experimentalDynamicDirective: deprecatedDynamicDirective,
         apiVersion,
     } = options;
-    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
+    const experimentalDynamicDirective =
+        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
             experimentalDynamicDirective,
+            // TODO [#3370]: remove experimental template expression flag
+            experimentalComplexExpressions,
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
-            enableScopedSlots,
+            enableDynamicComponents,
             apiVersion,
         });
     } catch (e) {

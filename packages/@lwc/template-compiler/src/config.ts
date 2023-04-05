@@ -21,12 +21,38 @@ export interface Config {
      *        {list[0].name}
      *    </template>
      */
-
     experimentalComputedMemberExpression?: boolean;
+
+    // TODO [#3370]: remove experimental template expression flag
     /**
-     * Enable <x-foo lwc:directive={expr}>
+     * Enable use of (a subset of) JavaScript expressions in place of template bindings.
+     *
+     *    <template>
+     *        <input
+     *            attr={complex ?? expressions()}
+     *            onchange={({ target }) => componentMethod(target.value)}
+     *        >
+     *            Hey there {inAustralia ? 'mate' : 'friend'}
+     *        </input>
+     *    </template>
+     */
+    experimentalComplexExpressions?: boolean;
+
+    /**
+     * TODO [#3331]: remove usage of lwc:dynamic in 246
+     *
+     * Enable lwc:dynamic directive - Deprecated
+     *
+     * <x-foo lwc:dynamic={expr}>
      */
     experimentalDynamicDirective?: boolean;
+
+    /**
+     * When true, enables `lwc:is` directive.
+     *
+     * <lwc:component lwc:is={expr}>
+     */
+    enableDynamicComponents?: boolean;
 
     /**
      * When true, HTML comments in the template will be preserved.
@@ -44,10 +70,8 @@ export interface Config {
     enableLwcSpread?: boolean;
 
     /**
-     * When true, enables usage of `lwc:slot-bind` and `lwc:slot-data` directives for declaring scoped slots
+     * API version to associate with this template when compiling
      */
-    enableScopedSlots?: boolean;
-
     apiVersion?: number;
 }
 
@@ -58,10 +82,12 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
     'customRendererConfig',
     'enableLwcSpread',
-    'enableScopedSlots',
     'enableStaticContentOptimization',
+    // TODO [#3370]: remove experimental template expression flag
+    'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
+    'enableDynamicComponents',
     'preserveHtmlComments',
 ]);
 
@@ -121,10 +147,12 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions: false,
         experimentalDynamicDirective: false,
+        enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: false,
-        enableScopedSlots: false,
         apiVersion,
         ...config,
         ...{ customRendererConfig },

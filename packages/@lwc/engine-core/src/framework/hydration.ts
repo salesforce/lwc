@@ -470,7 +470,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
 function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const { data, owner } = vnode;
     let { className, classMap } = data;
-    const { getProperty, getClassList } = renderer;
+    const { getProperty, getClassList, getAttribute } = renderer;
     const scopedToken = getScopeTokenClass(owner);
     const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
 
@@ -505,11 +505,13 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     let nodesAreCompatible = true;
     let readableVnodeClassname;
 
-    const elmClassName = getProperty(elm, 'className');
+    const elmClassName = getAttribute(elm, 'class');
+
     if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
-        readableVnodeClassname = className;
+        // stringify for pretty-printing
+        readableVnodeClassname = JSON.stringify(className);
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
         const classList = getClassList(elm);
@@ -523,15 +525,16 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
-        readableVnodeClassname = computedClassName.trim();
+        // stringify for pretty-printing
+        readableVnodeClassname = JSON.stringify(computedClassName.trim());
 
         if (classList.length > keys(classMap).length) {
             nodesAreCompatible = false;
         }
-    } else if (isUndefined(className) && elmClassName !== '') {
+    } else if (isUndefined(className) && !isNull(elmClassName)) {
         // SSR contains a className but client-side VDOM does not
         nodesAreCompatible = false;
-        readableVnodeClassname = '';
+        readableVnodeClassname = '""';
     }
 
     if (!nodesAreCompatible) {
@@ -540,7 +543,9 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
+                ).toLowerCase()}>: attribute "class" has different values, expected ${readableVnodeClassname} but found ${JSON.stringify(
+                    elmClassName
+                )}`,
                 vnode.owner
             );
         }

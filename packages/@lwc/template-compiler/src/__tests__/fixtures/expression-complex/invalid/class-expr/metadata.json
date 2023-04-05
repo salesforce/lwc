@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {\n            class Bar {\n                method() {}\n            }\n        } - LWC1196: Use of classes is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 16,
+                "start": 40,
+                "length": 85
+            }
+        }
+    ]
+}

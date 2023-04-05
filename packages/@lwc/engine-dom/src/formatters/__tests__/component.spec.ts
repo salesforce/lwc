@@ -62,7 +62,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), v: LOWEST_API_VERSION }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', v: LOWEST_API_VERSION }
         );
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
@@ -90,7 +90,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), v: LOWEST_API_VERSION }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', v: LOWEST_API_VERSION }
         );
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
@@ -111,7 +111,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), v: LOWEST_API_VERSION }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', v: LOWEST_API_VERSION }
         );
 
         registerDecorators(Component, {

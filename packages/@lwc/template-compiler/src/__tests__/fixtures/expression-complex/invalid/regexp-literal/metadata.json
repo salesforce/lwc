@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {/wannabe/g} - LWC1196: Use of regular expression literals is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 18,
+                "start": 42,
+                "length": 19
+            }
+        }
+    ]
+}

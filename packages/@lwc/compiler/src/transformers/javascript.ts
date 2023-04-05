@@ -14,6 +14,7 @@ import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
+import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 
 export default function scriptTransform(
     code: string,
@@ -24,8 +25,18 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
+        namespace,
+        name,
         apiVersion,
     } = options;
+
+    const lwcBabelPluginOptions: LwcBabelPluginOptions = {
+        isExplicitImport,
+        dynamicImports,
+        namespace,
+        name,
+        apiVersion,
+    };
 
     let result;
     try {
@@ -37,12 +48,12 @@ export default function scriptTransform(
             babelrc: false,
             configFile: false,
 
-            // Force Babel to generate new line and whitespaces. This prevent Babel from generating
+            // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
 
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, apiVersion }],
+                [lwcClassTransformPlugin, lwcBabelPluginOptions],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is

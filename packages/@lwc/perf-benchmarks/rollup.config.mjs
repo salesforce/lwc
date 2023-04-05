@@ -7,16 +7,16 @@
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import glob from 'glob';
+import { globSync } from 'glob';
 import inject from '@rollup/plugin-inject';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Figure out all the packages we might be importing from @lwc/perf-benchmarks-components
 // so that we can tell Rollup that those are `external`.
-const componentModules = glob
-    .sync(path.join(__dirname, '../perf-benchmarks-components/dist/**/*.js'))
-    .map((filename) => path.relative(path.join(__dirname, '../..'), filename).replace(/^\.\//, ''));
+const componentModules = globSync(
+    path.join(__dirname, '../perf-benchmarks-components/dist/**/*.js')
+).map((filename) => path.relative(path.join(__dirname, '../..'), filename).replace(/^\.\//, ''));
 
 function createConfig(benchmarkFile) {
     // Pseudo-Best benchmark framework implementing globals `before`, `after`, `benchmark`, `run`
@@ -49,7 +49,7 @@ function createConfig(benchmarkFile) {
     };
 }
 
-const benchmarkFiles = glob.sync(path.join(__dirname, 'src/__benchmarks__/**/*.js'));
+const benchmarkFiles = globSync(path.join(__dirname, 'src/__benchmarks__/**/*.js'));
 
 const config = benchmarkFiles.map(createConfig);
 

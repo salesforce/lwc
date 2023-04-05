@@ -22,8 +22,13 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
-const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
-const templateToApiVersionMap: Map<LightningElementConstructor, APIVersion> = new Map();
+type ComponentConstructorMetadata = {
+    tmpl: Template;
+    sel: string;
+    v: APIVersion;
+};
+const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
+    new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -32,7 +37,7 @@ const templateToApiVersionMap: Map<LightningElementConstructor, APIVersion> = ne
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    { tmpl, v: apiVersion }: { tmpl: Template; v: APIVersion }
+    metadata: ComponentConstructorMetadata
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -40,8 +45,8 @@ export function registerComponent(
             // on code comments which are stripped out in production by minifiers
             checkVersionMismatch(Ctor, 'component');
         }
-        signedTemplateMap.set(Ctor, tmpl);
-        templateToApiVersionMap.set(Ctor, apiVersion);
+        // TODO [#3331]: add validation to check the value of metadata.sel is not an empty string.
+        registeredComponentMap.set(Ctor, metadata);
     }
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
@@ -51,11 +56,16 @@ export function registerComponent(
 export function getComponentRegisteredTemplate(
     Ctor: LightningElementConstructor
 ): Template | undefined {
-    return signedTemplateMap.get(Ctor);
+    return registeredComponentMap.get(Ctor)?.tmpl;
+}
+
+export function getComponentRegisteredName(Ctor: LightningElementConstructor): string | undefined {
+    return registeredComponentMap.get(Ctor)?.sel;
 }
 
 export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVersion {
-    const apiVersion = templateToApiVersionMap.get(Ctor);
+    const metadata = registeredComponentMap.get(Ctor);
+    const apiVersion: APIVersion | undefined = metadata?.v;
 
     if (isUndefined(apiVersion)) {
         // This should only occur in our Karma tests; in practice every component

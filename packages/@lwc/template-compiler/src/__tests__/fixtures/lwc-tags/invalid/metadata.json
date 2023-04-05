@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1184,
+            "message": "LWC1184: lwc:invalid is not a special LWC tag name and will be treated as an HTML element.",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 89,
+                "length": 27
+            }
+        },
+        {
+            "code": 1123,
+            "message": "LWC1123: Unknown html tag '<lwc:invalid>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 89,
+                "length": 27
+            }
+        }
+    ]
+}

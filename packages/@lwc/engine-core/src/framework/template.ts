@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayIndexOf,
     ArrayUnshift,
     assert,
     create,
@@ -18,7 +17,6 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import api, { RenderAPI } from './api';
 import {
@@ -30,7 +28,7 @@ import {
     TemplateCache,
     VM,
 } from './vm';
-import { assertNotProd, EmptyArray } from './utils';
+import { assertNotProd } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
@@ -68,11 +66,10 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-function validateSlots(vm: VM, html: Template) {
+function validateSlots(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
-    const { slots = EmptyArray } = html;
 
     for (const slotName in cmpSlots.slotAssignments) {
         // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
@@ -82,15 +79,6 @@ function validateSlots(vm: VM, html: Template) {
                 cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
-
-        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO [#1297]: this should never really happen because the compiler should always validate
-            // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
-            logError(
-                `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
-                vm
-            );
-        }
     }
 }
 
@@ -264,7 +252,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                 if (process.env.NODE_ENV !== 'production') {
                     // validating slots in every rendering since the allocated content might change over time
-                    validateSlots(vm, html);
+                    validateSlots(vm);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
                 }

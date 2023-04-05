@@ -46,6 +46,7 @@ import {
 import {
     isSameVnode,
     isVBaseElement,
+    isVCustomElement,
     isVFragment,
     isVScopedSlotFragment,
     Key,
@@ -89,7 +90,14 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isSameVnode(n1, n2)) {
+        if (
+            !isSameVnode(n1, n2) &&
+            // Currently the only scenario when patch does not receive the same vnodes are for
+            // dynamic components. When a dynamic component's constructor changes, the value of its
+            // tag name (sel) will be different. The engine will unmount the previous element
+            // and mount the new one using the new constructor in patchCustomElement.
+            !(isVCustomElement(n1) && isVCustomElement(n2))
+        ) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
@@ -212,9 +220,7 @@ function mountFragment(
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
-
-    // children of a fragment will always have at least the two delimiters.
-    vnode.elm = children[children.length - 1]!.elm;
+    vnode.elm = vnode.leading.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -227,7 +233,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
     }
 
     // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
-    n2.elm = children[children.length - 1]!.elm;
+    n2.elm = n2.leading.elm;
 }
 
 function mountElement(
@@ -377,8 +383,9 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
+    // TODO [#3331]: This if branch should be removed in 246 with lwc:dynamic
     if (n1.ctor !== n2.ctor) {
-        // If the constructor, unmount the current component and mount a new one using the new
+        // If the constructor differs, unmount the current component and mount a new one using the new
         // constructor.
         const anchor = renderer.nextSibling(n1.elm);
 
@@ -529,6 +536,33 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
         unlockDomMutation();
     }
     setText(elm, text!);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
+}
+
+function insertFragmentOrNode(
+    vnode: VNode,
+    parent: Node,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+
+    if (isVFragment(vnode)) {
+        const children = vnode.children;
+        for (let i = 0; i < children.length; i += 1) {
+            const child = children[i];
+            if (!isNull(child)) {
+                renderer.insert(child.elm, parent, anchor);
+            }
+        }
+    } else {
+        renderer.insert(vnode.elm!, parent, anchor);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -873,18 +907,25 @@ function updateDynamicChildren(
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, renderer);
-            insertNode(
-                oldStartVnode.elm!,
-                parent,
-                renderer.nextSibling(oldEndVnode.elm!),
-                renderer
-            );
+
+            // In the case of fragments, the `elm` property of a vfragment points to the leading
+            // anchor. To determine the next sibling of the whole fragment, we need to use the
+            // trailing anchor as the argument to nextSibling():
+            // [..., [leading, ...content, trailing], nextSibling, ...]
+            let anchor: Node | null;
+            if (isVFragment(oldEndVnode)) {
+                anchor = renderer.nextSibling(oldEndVnode.trailing.elm);
+            } else {
+                anchor = renderer.nextSibling(oldEndVnode.elm!);
+            }
+
+            insertFragmentOrNode(oldStartVnode, parent, anchor, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode, parent, renderer);
-            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
+            insertFragmentOrNode(newStartVnode, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -916,7 +957,7 @@ function updateDynamicChildren(
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
+                        insertFragmentOrNode(elmToMove, parent, oldStartVnode.elm!, renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
@@ -967,9 +1008,16 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
-                    // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2, parent, renderer);
-                    anchor = n2.elm!;
+                    if (isSameVnode(n1, n2)) {
+                        // both vnodes are equivalent, and we just need to patch them
+                        patch(n1, n2, parent, renderer);
+                        anchor = n2.elm!;
+                    } else {
+                        // removing the old vnode since the new one is different
+                        unmount(n1, parent, renderer, true);
+                        mount(n2, parent, renderer, anchor);
+                        anchor = n2.elm!;
+                    }
                 } else {
                     // removing the old vnode since the new one is null
                     unmount(n1, parent, renderer, true);
