@@ -230,7 +230,7 @@ describe('programmatic stylesheets', () => {
         });
 
         // Disallow treating arbitrary functions as stylesheet functions
-        it('logs an error if stylesheets is an array of arbitrary functions', () => {
+        it('logs a warning if stylesheets is an array of arbitrary functions', () => {
             let elm;
             expect(() => {
                 elm = createElement('x-invalid3', {
@@ -240,8 +240,8 @@ describe('programmatic stylesheets', () => {
                 // Error is logged when the element is added to the body and the stylesheets are evaluated,
                 // not during createElement.
                 document.body.appendChild(elm);
-            }).toLogError(
-                /\[LWC error]: TypeError: Unexpected LWC stylesheet content found for component <x-invalid3>./
+            }).toLogWarningDev(
+                /\[LWC warn]: TypeError: Unexpected LWC stylesheet content found for component <x-invalid3>./
             );
         });
     });

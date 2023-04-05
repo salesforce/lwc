@@ -26,7 +26,7 @@ describe('registerStylesheet', () => {
         expect(result).toBe(stylesheet);
     });
 
-    it('should log an error and report if a component tries to use a stylesheet that is not registered', () => {
+    it('should log a warning and report if a component tries to use a stylesheet that is not registered', () => {
         const stylesheet = () => '';
         function tmpl() {
             return [];
@@ -41,9 +41,10 @@ describe('registerStylesheet', () => {
 
         expect(() => {
             document.body.appendChild(elm);
-        }).toLogError(
-            /\[LWC error]: TypeError: Unexpected LWC stylesheet content found for component <x-component>./
+        }).toLogWarningDev(
+            /\[LWC warn]: TypeError: Unexpected LWC stylesheet content found for component <x-component>./
         );
+
         expect(dispatcher).toHaveBeenCalled();
         expect(dispatcher.calls.argsFor(0)).toEqual([
             'UnexpectedStylesheetContent',
@@ -53,7 +54,7 @@ describe('registerStylesheet', () => {
         ]);
     });
 
-    it('should not log an error or report if a component tries to use a stylesheet that is registered', () => {
+    it('should not log a warning or report if a component tries to use a stylesheet that is registered', () => {
         const stylesheet = () => '';
         function tmpl() {
             return [];
