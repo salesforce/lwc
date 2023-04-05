@@ -4,57 +4,73 @@ import {
     registerComponent,
     registerStylesheet,
     registerTemplate,
+    __unstable__ReportingControl as reportingControl,
 } from 'lwc';
-import Test from 'x/test';
 
-it('should accept a function and return the same value', () => {
-    const stylesheet = () => '';
-    const result = registerStylesheet(stylesheet);
+describe('registerStylesheet', () => {
+    let dispatcher;
 
-    expect(result).toBe(stylesheet);
-});
+    beforeEach(() => {
+        dispatcher = jasmine.createSpy();
+        reportingControl.attachDispatcher(dispatcher);
+    });
 
-it('should throw if a component tries to use a stylesheet that is not registered', () => {
-    const stylesheet = () => '';
-    function tmpl() {
-        return [];
-    }
-    tmpl.stylesheetToken = 'x-component_component';
-    tmpl.stylesheets = [stylesheet];
-    registerTemplate(tmpl);
-    class CustomElement extends LightningElement {}
-    registerComponent(CustomElement, { tmpl });
+    afterEach(() => {
+        reportingControl.detachDispatcher();
+    });
 
-    const elm = createElement('x-component', { is: CustomElement });
+    it('should accept a function and return the same value', () => {
+        const stylesheet = () => '';
+        const result = registerStylesheet(stylesheet);
 
-    expect(() => {
-        document.body.appendChild(elm);
-    }).toThrowError(TypeError, 'Unexpected LWC stylesheet content.');
-});
+        expect(result).toBe(stylesheet);
+    });
 
-it('should not throw if a component tries to use a stylesheet that is registered', () => {
-    const stylesheet = () => '';
-    function tmpl() {
-        return [];
-    }
-    tmpl.stylesheetToken = 'x-component_component';
-    tmpl.stylesheets = [stylesheet];
-    registerStylesheet(stylesheet);
-    registerTemplate(tmpl);
+    it('should log an error and report if a component tries to use a stylesheet that is not registered', () => {
+        const stylesheet = () => '';
+        function tmpl() {
+            return [];
+        }
+        tmpl.stylesheetToken = 'x-component_component';
+        tmpl.stylesheets = [stylesheet];
+        registerTemplate(tmpl);
+        class CustomElement extends LightningElement {}
+        registerComponent(CustomElement, { tmpl });
 
-    class CustomElement extends LightningElement {}
-    registerComponent(CustomElement, { tmpl });
+        const elm = createElement('x-component', { is: CustomElement });
 
-    const elm = createElement('x-component', { is: CustomElement });
+        expect(() => {
+            document.body.appendChild(elm);
+        }).toLogError(
+            /\[LWC error]: TypeError: Unexpected LWC stylesheet content found for component <x-component>./
+        );
+        expect(dispatcher).toHaveBeenCalled();
+        expect(dispatcher.calls.argsFor(0)).toEqual([
+            'UnexpectedStylesheetContent',
+            {
+                tagName: 'x-component',
+            },
+        ]);
+    });
 
-    expect(() => {
-        document.body.appendChild(elm);
-    }).not.toThrow();
-});
+    it('should not log an error or report if a component tries to use a stylesheet that is registered', () => {
+        const stylesheet = () => '';
+        function tmpl() {
+            return [];
+        }
+        tmpl.stylesheetToken = 'x-component_component';
+        tmpl.stylesheets = [stylesheet];
+        registerStylesheet(stylesheet);
+        registerTemplate(tmpl);
 
-it('should throw if registerStylesheet is used from userland code', () => {
-    expect(() => {
-        const element = createElement('x-test', { is: Test });
-        document.body.appendChild(element);
-    }).toThrowError(TypeError);
+        class CustomElement extends LightningElement {}
+        registerComponent(CustomElement, { tmpl });
+
+        const elm = createElement('x-component', { is: CustomElement });
+
+        expect(() => {
+            document.body.appendChild(elm);
+        }).not.toLogError();
+        expect(dispatcher).not.toHaveBeenCalled();
+    });
 });

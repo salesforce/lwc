@@ -12,6 +12,7 @@ export const enum ReportingEventId {
     NonStandardAriaReflection = 'NonStandardAriaReflection',
     TemplateMutation = 'TemplateMutation',
     StylesheetMutation = 'StylesheetMutation',
+    UnexpectedStylesheetContent = 'UnexpectedStylesheetContent',
 }
 
 export interface BasePayload {
@@ -41,12 +42,15 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
+export interface UnexpectedStylesheetContentPayload extends BasePayload {}
+
 export type ReportingPayloadMapping = {
     [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
     [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
+    [ReportingEventId.UnexpectedStylesheetContent]: UnexpectedStylesheetContentPayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
