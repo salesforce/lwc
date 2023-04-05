@@ -510,6 +510,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
+        // stringify for pretty-printing
         readableVnodeClassname = JSON.stringify(className);
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
@@ -524,6 +525,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
+        // stringify for pretty-printing
         readableVnodeClassname = JSON.stringify(computedClassName.trim());
 
         if (classList.length > keys(classMap).length) {
