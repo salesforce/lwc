@@ -5,8 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { TransformerErrors } from '@lwc/errors';
+import { APIVersion, LOWEST_API_VERSION } from '@lwc/shared';
 import { TransformOptions } from '../../options';
-import { transform } from '../transformer';
+import { transform, transformSync } from '../transformer';
 
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
@@ -50,4 +52,44 @@ it('should object spread', async () => {
 
     expect(code).toContain('b: 1');
     expect(code).not.toContain('...a');
+});
+
+it('should provide helpful error for decorator outside of LightningElement in v59', async () => {
+    const actual = `
+        import { track } from 'lwc'
+        class Foo {
+          @track bar = 'baz';
+        }
+    `;
+    let errored = false;
+    try {
+        transformSync(actual, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            apiVersion: APIVersion.V59_246_WINTER_24,
+        });
+    } catch (err) {
+        errored = true;
+        expect((err as any).code).toEqual(TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR.code);
+        expect((err as any).message).toContain(
+            'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
+        );
+    }
+
+    if (!errored) {
+        fail('Expected an error to be thrown');
+    }
+});
+
+it('no error for decorator outside of LightningElement in v58', async () => {
+    const actual = `
+        import { track } from 'lwc'
+        class Foo {
+          @track bar = 'baz';
+        }
+    `;
+    const { code } = transformSync(actual, 'foo.js', {
+        ...TRANSFORMATION_OPTIONS,
+        apiVersion: LOWEST_API_VERSION,
+    });
+    expect(code).toContain('registerDecorators');
 });

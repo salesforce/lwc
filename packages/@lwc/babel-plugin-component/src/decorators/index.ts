@@ -8,6 +8,8 @@ import { Node, types, Visitor } from '@babel/core';
 import { Binding, NodePath } from '@babel/traverse';
 import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
+import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
+
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
 import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
 import { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
@@ -223,7 +225,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     const visitedClasses = new WeakSet();
 
     return {
-        Class(path) {
+        Class(path, state) {
             const { node } = path;
 
             if (visitedClasses.has(node)) {
@@ -235,6 +237,19 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 'body.body'
             ) as NodePath<ClassBodyItem>[];
             if (classBodyItems.length === 0) {
+                return;
+            }
+
+            if (
+                node.superClass === null &&
+                isAPIFeatureEnabled(
+                    APIFeature.AVOID_DECORATORS_FOR_NON_LIGHTNING_ELEMENT_CLASSES,
+                    getAPIVersionFromNumber(state.opts.apiVersion)
+                )
+            ) {
+                // Any class exposing a field *must* extend either LightningElement or some other superclass.
+                // Even in the case of superclasses and mixins that expose fields, those must extend something as well.
+                // So we can skip classes without a superclass to avoid adding unnecessary registerDecorators calls.
                 return;
             }
 
