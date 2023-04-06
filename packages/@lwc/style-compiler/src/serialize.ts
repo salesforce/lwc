@@ -45,6 +45,8 @@ const TOKEN = 'token';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
+const REGISTER_STYLESHEET = "import { registerStylesheet } from 'lwc';\n";
+
 export default function serialize(result: Result, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(
@@ -55,7 +57,7 @@ export default function serialize(result: Result, config: Config): string {
     const disableSyntheticShadow = Boolean(config.disableSyntheticShadowSupport);
     const scoped = Boolean(config.scoped);
 
-    let buffer = `import { registerStylesheet } from 'lwc';\n`;
+    let buffer = '';
 
     if (collectVarFunctions && useVarResolver) {
         buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!
@@ -74,6 +76,7 @@ export default function serialize(result: Result, config: Config): string {
     const serializedStyle = serializeCss(result, collectVarFunctions).trim();
 
     if (serializedStyle) {
+        buffer = REGISTER_STYLESHEET + buffer;
         // inline function
         if (disableSyntheticShadow && !scoped) {
             // If synthetic shadow DOM support is disabled and this is not a scoped stylesheet, then the

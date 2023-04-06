@@ -1,4 +1,3 @@
-import { registerStylesheet } from 'lwc';
 import stylesheet0 from "foo";
 import stylesheet1 from "./foo.css";
 
