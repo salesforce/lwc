@@ -1,3 +1,4 @@
+import { registerStylesheet } from 'lwc';
 function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("." + token) : "";
   var hostSelector = token ? ("." + token + "-host") : "";
@@ -6,4 +7,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   /*LWC compiler vX.X.X*/
 }
 stylesheet.$scoped$ = true;
+registerStylesheet(stylesheet);
 export default [stylesheet];
