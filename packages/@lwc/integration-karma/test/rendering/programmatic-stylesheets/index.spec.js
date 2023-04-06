@@ -229,17 +229,32 @@ describe('programmatic stylesheets', () => {
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
         });
 
-        // TODO [#3122]: Disallow treating arbitrary functions as stylesheet functions
-        it('no error thrown if stylesheets is an array of arbitrary functions', () => {
+        // Disallow treating arbitrary functions as stylesheet functions
+        it('logs a warning if stylesheets is an array of arbitrary functions', () => {
             let elm;
             expect(() => {
                 elm = createElement('x-invalid3', {
                     is: Invalid3,
                 });
-            }).not.toLogErrorDev();
 
+                // Error is logged when the element is added to the body and the stylesheets are evaluated,
+                // not during createElement.
+                document.body.appendChild(elm);
+            }).toLogWarningDev(
+                /\[LWC warn]: TypeError: Unexpected LWC stylesheet content found for component <x-invalid3>./
+            );
+        });
+
+        // TODO [#3447]: This test verifies existing behavior is maintained and should be removed
+        // once the warnings are converted into errors.
+        it('applies the styles if the arbitrary function returns a valid string', () => {
+            const elm = createElement('x-invalid3', {
+                is: Invalid3,
+            });
             document.body.appendChild(elm);
-            expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
+
+            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            expect(style.color).toEqual('rgb(255, 0, 0)');
         });
     });
 });
