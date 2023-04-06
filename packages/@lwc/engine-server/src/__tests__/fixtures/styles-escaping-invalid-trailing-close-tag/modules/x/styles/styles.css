@@ -1,0 +1,4 @@
+/* this should result in improper parsed structure because of a trailing style close tag */
+[foo="</style>"] {
+    color: red;
+}
