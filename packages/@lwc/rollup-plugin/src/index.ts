@@ -100,6 +100,12 @@ function appendAliasSpecifierQueryParam(id: string, specifier: string): string {
     return `${filename}?${params.toString()}`;
 }
 
+function camelToKebabCase(name: string): string {
+    // Search for lower case followed by an upper case character
+    const camelRegex = /([a-z])([A-Z])/g;
+    return name.replace(camelRegex, '$1-$2').toLowerCase();
+}
+
 function transformWarningToRollupWarning(
     warning: CompilerDiagnostic,
     src: string,
@@ -303,7 +309,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
             const { code, map, warnings } = transformSync(src, filename, {
-                name,
+                name: camelToKebabCase(name),
                 namespace,
                 outputConfig: { sourcemap },
                 stylesheetConfig,

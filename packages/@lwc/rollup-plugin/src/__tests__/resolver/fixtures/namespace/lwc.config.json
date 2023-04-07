@@ -15,6 +15,13 @@
         {
             "name": "foo/bar/baz",
             "path": "src/modules/x/quux/quux.js"
+        },
+        {
+            "name": "x/fancyButton",
+            "path": "src/modules/x/bar/bar.js"
+        },
+        {
+            "dir": "src/modules"
         }
     ]
 }

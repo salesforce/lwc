@@ -186,7 +186,7 @@ describe('resolver', () => {
 
     it('should resolve the namespace and name to the alias value', async () => {
         const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/namespace/src/index.js'),
+            input: path.resolve(__dirname, 'fixtures/namespace/src/alias.js'),
             plugins: [lwc()],
         });
 
@@ -199,11 +199,15 @@ describe('resolver', () => {
         expect(code).toContain(`sel: "alias-bar"`);
         // Original name
         expect(code).not.toContain(`sel: "x-foo"`);
+        // Alias name, verify camel cased directory names are converted to kebab case
+        expect(code).toContain(`sel: "x-fancy-button"`);
+        // Original name
+        expect(code).not.toContain(`sel: "x-bar"`);
     });
 
     it('should use directory to resolve the namespace and name for invalid alias specifier', async () => {
         const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/namespace/src/invalid.js'),
+            input: path.resolve(__dirname, 'fixtures/namespace/src/invalid-alias.js'),
             plugins: [lwc()],
         });
 
@@ -230,5 +234,23 @@ describe('resolver', () => {
         expect(code).toContain(`sel: "x-quux"`);
         // Alias name
         expect(code).not.toContain(`sel: "foo-bar"`);
+    });
+
+    it('should resolve namespace and name from directory', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/namespace/src/directory.js'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+
+        const { code } = result.output[0];
+
+        // Non camel cased folder name
+        expect(code).toContain(`sel: "x-foo"`);
+        // Camel cased folder name, ex: x/camelCase
+        expect(code).toContain(`sel: "x-camel-case"`);
     });
 });
