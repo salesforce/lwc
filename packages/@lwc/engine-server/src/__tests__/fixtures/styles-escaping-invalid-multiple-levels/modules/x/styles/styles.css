@@ -1,0 +1,4 @@
+/* this is technically safe, but would be parsed as multiple style tags so it should throw */
+[data-foo="<style>yolo</style><style>haha</style>"] {
+    color: red;
+}

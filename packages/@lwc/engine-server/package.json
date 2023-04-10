@@ -26,12 +26,14 @@
     "//": {
         "parse5": "Currently can't upgrade parse5: dropped cjs support in v7.0.0 https://github.com/inikulin/parse5/releases/tag/v7.0.0"
     },
+    "dependencies": {
+        "parse5": "^6.0.1"
+    },
     "devDependencies": {
         "@lwc/engine-core": "2.43.0",
         "@lwc/rollup-plugin": "2.43.0",
         "@lwc/shared": "2.43.0",
-        "@rollup/plugin-virtual": "^3.0.1",
-        "parse5": "^6.0.1"
+        "@rollup/plugin-virtual": "^3.0.1"
     },
     "publishConfig": {
         "access": "public"
