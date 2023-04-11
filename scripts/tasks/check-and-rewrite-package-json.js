@@ -93,7 +93,7 @@ for (const dir of directories) {
         };
     }
 
-    const expected = JSON.stringify(expectedJson, null, 4);
+    const expected = JSON.stringify(expectedJson, null, 4) + '\n';
 
     expectedPkgJsons.push({
         filename,
