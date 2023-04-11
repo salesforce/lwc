@@ -15,7 +15,7 @@ function createDir(dir) {
 }
 
 function getEs6ModuleEntry(pkg) {
-    const pkgFilePath = require.resolve(`${pkg}/package.json`);
+    const pkgFilePath = path.resolve(__dirname, '../../../', pkg, './package.json');
     const pkgDir = path.dirname(pkgFilePath);
     const pkgJson = JSON.parse(fs.readFileSync(pkgFilePath, 'utf8'));
     return path.join(pkgDir, pkgJson.module);

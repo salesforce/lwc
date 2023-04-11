@@ -2,7 +2,7 @@
     "name": "@lwc/wire-service",
     "version": "2.43.0",
     "description": "@wire service",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -12,17 +12,28 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
-    "main": "dist/wire-service.cjs.js",
-    "module": "dist/wire-service.js",
-    "typings": "types/index.d.ts",
-    "scripts": {
-        "build": "rollup --config ./scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+    "publishConfig": {
+        "access": "public"
     },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "files": [
-        "dist/",
-        "types/"
+        "./dist"
     ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
+    },
     "devDependencies": {
         "@lwc/engine-core": "2.43.0",
         "@lwc/shared": "2.43.0"
@@ -30,30 +41,12 @@
     "lwc": {
         "modules": [
             {
-                "name": "wire-service",
-                "path": "dist/wire-service.js"
-            },
-            {
                 "name": "@lwc/wire-service",
-                "path": "dist/wire-service.js"
+                "path": "dist/index.js"
             }
         ],
         "expose": [
-            "@lwc/wire-service",
-            "wire-service"
+            "@lwc/wire-service"
         ]
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "nx": {
-        "targets": {
-            "build": {
-                "outputs": [
-                    "./dist",
-                    "./types"
-                ]
-            }
-        }
     }
 }

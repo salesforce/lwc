@@ -2,7 +2,7 @@
     "name": "@lwc/compiler",
     "version": "2.43.0",
     "description": "LWC compiler",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -11,28 +11,19 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/commonjs/index.js",
-    "typings": "dist/types/index.d.ts",
     "license": "MIT",
-    "scripts": {
-        "build": "tsc && node ./scripts/update-compiler-version.js",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental"
-    },
-    "files": [
-        "dist/"
-    ],
-    "dependencies": {
-        "@babel/core": "~7.21.0",
-        "@babel/plugin-proposal-class-properties": "~7.18.6",
-        "@babel/plugin-proposal-object-rest-spread": "~7.20.2",
-        "@lwc/babel-plugin-component": "2.43.0",
-        "@lwc/errors": "2.43.0",
-        "@lwc/shared": "2.43.0",
-        "@lwc/style-compiler": "2.43.0",
-        "@lwc/template-compiler": "2.43.0"
-    },
     "publishConfig": {
         "access": "public"
+    },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "./dist"
+    ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {
@@ -42,5 +33,15 @@
                 ]
             }
         }
+    },
+    "dependencies": {
+        "@babel/core": "~7.21.0",
+        "@babel/plugin-proposal-class-properties": "~7.18.6",
+        "@babel/plugin-proposal-object-rest-spread": "~7.20.2",
+        "@lwc/babel-plugin-component": "2.43.0",
+        "@lwc/errors": "2.43.0",
+        "@lwc/shared": "2.43.0",
+        "@lwc/style-compiler": "2.43.0",
+        "@lwc/template-compiler": "2.43.0"
     }
 }

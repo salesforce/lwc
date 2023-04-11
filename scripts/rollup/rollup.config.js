@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -7,28 +7,46 @@
 
 /* eslint-env node */
 
-const path = require('path');
-const { rollup } = require('rollup');
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const replace = require('@rollup/plugin-replace');
+const fs = require('node:fs');
+const path = require('node:path');
 const MagicString = require('magic-string');
-const typescript = require('../../../../scripts/rollup/typescript');
-const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
-const { version } = require('../package.json');
+const { rollup } = require('rollup');
+const replace = require('@rollup/plugin-replace');
+const typescript = require('@rollup/plugin-typescript');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
-const banner = `/* proxy-compat-disable */`;
-const footer = `/* version: ${version} */`;
+const pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8'));
+const { name: packageName, version, dependencies, peerDependencies } = pkg;
+const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+const footer = `/** version: ${version} */`;
+const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
 
 const RENDERER_REPLACEMENT_STRING = 'process.env.RENDERER';
 
+const onwarn = ({ code, message }) => {
+    if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
+        throw new Error(message);
+    }
+};
+
 // These plugins are used both by the main Rollup build as well as our sub-Rollup build (injectInlineRenderer).
 function sharedPlugins() {
     return [
-        typescript(),
+        typescript({
+            target: 'es2017',
+            tsconfig: path.join(process.cwd(), 'tsconfig.json'),
+            noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
+            ...(watchMode && {
+                incremental: true,
+                outputToFilesystem: true,
+            }),
+        }),
         replace({
             values: {
-                'process.env.IS_BROWSER': 'true',
+                // This is only used inside @lwc/engine-dom and @lwc/engine-server
+                'process.env.IS_BROWSER': packageName === '@lwc/engine-dom' ? 'true' : 'false',
+                'process.env.LWC_VERSION': JSON.stringify(version),
             },
             preventAssignment: true,
         }),
@@ -36,6 +54,7 @@ function sharedPlugins() {
 }
 
 function injectInlineRenderer() {
+    // Only used for @lwc/engine-dom
     // The renderer in the renderer factory needs to be inlined in the function, with all of its dependencies.
     // The reasons for this are due to how Locker does sandboxing.
     // So we run Rollup inside of a Rollup plugin to accomplish this. This resolves all dependencies and
@@ -46,7 +65,10 @@ function injectInlineRenderer() {
         async transform(source) {
             if (source.includes(RENDERER_REPLACEMENT_STRING)) {
                 const bundle = await rollup({
-                    input: path.resolve(__dirname, '../src/renderer/index.ts'),
+                    input: path.resolve(
+                        __dirname,
+                        '../../packages/@lwc/engine-dom/src/renderer/index.ts'
+                    ),
 
                     plugins: [
                         // In the inline renderer, we only allow certain dependencies. Any others should fail
@@ -55,8 +77,11 @@ function injectInlineRenderer() {
                         }),
                         ...sharedPlugins(),
                     ],
+
+                    onwarn,
                 });
                 const { output } = await bundle.generate({
+                    sourcemap: true,
                     name: 'renderer',
                     format: 'iife',
                     esModule: false, // no need for `Object.defineProperty(exports, '__esModule', { value: true })`
@@ -85,30 +110,30 @@ function injectInlineRenderer() {
 }
 
 module.exports = {
-    input: path.resolve(__dirname, '../src/index.ts'),
+    input: path.resolve(process.cwd(), './src/index.ts'),
 
     output: formats.map((format) => {
         return {
-            file: `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`,
+            file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
             sourcemap: true,
             format,
-            banner: banner,
-            footer: footer,
+            banner,
+            footer,
+            exports: 'named',
+            esModule: true,
         };
     }),
 
     plugins: [
         nodeResolve({
-            resolveOnly: [/^@lwc\//],
+            // These are the devDeps that may be inlined into the dist/ bundles
+            resolveOnly: [/^@lwc\//, 'observable-membrane'],
         }),
         ...sharedPlugins(),
-        writeDistAndTypes(),
         injectInlineRenderer(),
     ],
 
-    onwarn({ code, message }) {
-        if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
-            throw new Error(message);
-        }
-    },
+    onwarn,
+
+    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
 };

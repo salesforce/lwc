@@ -2,7 +2,7 @@
     "name": "@lwc/errors",
     "version": "2.43.0",
     "description": "LWC Error Utilities",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -11,21 +11,19 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/commonjs/index.js",
     "license": "MIT",
-    "typings": "dist/types/index.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental"
-    },
-    "files": [
-        "dist/"
-    ],
-    "keywords": [
-        "lwc"
-    ],
     "publishConfig": {
         "access": "public"
+    },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "./dist"
+    ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {

@@ -29,6 +29,9 @@ export function parse(source: string, config: Config = {}): TemplateParseResult 
     return parseTemplate(source, state);
 }
 
+// Export as a named export as well for easier importing in certain environments (e.g. Jest)
+export { compile };
+
 export default function compile(source: string, config: Config): TemplateCompileResult {
     const options = normalizeConfig(config);
     const state = new State(options);

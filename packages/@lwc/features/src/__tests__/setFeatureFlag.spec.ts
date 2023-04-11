@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { lwcRuntimeFlags, setFeatureFlag } from '../flags';
+import { lwcRuntimeFlags, setFeatureFlag } from '../index';
 
 describe('setFeatureFlag', () => {
     ['development', 'production'].forEach((env) => {

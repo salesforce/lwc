@@ -2,7 +2,7 @@
     "name": "@lwc/engine-dom",
     "version": "2.43.0",
     "description": "Renders LWC components in a DOM environment.",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -11,18 +11,29 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/engine-dom.cjs.js",
-    "module": "dist/engine-dom.js",
-    "typings": "types/index.d.ts",
     "license": "MIT",
-    "scripts": {
-        "build": "rollup --config scripts/rollup.config.js",
-        "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
+    "publishConfig": {
+        "access": "public"
     },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "files": [
-        "dist/",
-        "types/"
+        "./dist"
     ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
+    },
     "devDependencies": {
         "@lwc/aria-reflection": "2.43.0",
         "@lwc/engine-core": "2.43.0",
@@ -33,24 +44,11 @@
         "modules": [
             {
                 "name": "lwc",
-                "path": "dist/engine-dom.js"
+                "path": "dist/index.js"
             }
         ],
         "expose": [
             "lwc"
         ]
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "nx": {
-        "targets": {
-            "build": {
-                "outputs": [
-                    "./dist",
-                    "./types"
-                ]
-            }
-        }
     }
 }

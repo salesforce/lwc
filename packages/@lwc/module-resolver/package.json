@@ -1,7 +1,8 @@
 {
     "name": "@lwc/module-resolver",
+    "version": "2.43.0",
     "description": "Resolves paths for LWC components",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -10,22 +11,19 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "version": "2.43.0",
-    "main": "dist/commonjs/index.js",
-    "typings": "dist/types/index.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental"
-    },
     "license": "MIT",
-    "files": [
-        "dist/"
-    ],
-    "dependencies": {
-        "resolve": "~1.22.1"
-    },
     "publishConfig": {
         "access": "public"
+    },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "./dist"
+    ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {
@@ -35,5 +33,8 @@
                 ]
             }
         }
+    },
+    "dependencies": {
+        "resolve": "~1.22.1"
     }
 }

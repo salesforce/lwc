@@ -12,7 +12,7 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-import compile from '@lwc/template-compiler';
+import * as templateCompiler from '@lwc/template-compiler';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
@@ -43,7 +43,7 @@ export default function templateTransform(
 
     let result;
     try {
-        result = compile(src, {
+        result = templateCompiler.compile(src, {
             experimentalDynamicDirective,
             // TODO [#3370]: remove experimental template expression flag
             experimentalComplexExpressions,

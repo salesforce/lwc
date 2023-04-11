@@ -2,7 +2,7 @@
     "name": "@lwc/synthetic-shadow",
     "version": "2.43.0",
     "description": "Synthetic Shadow Root for LWC",
-    "homepage": "https://lwc.dev/",
+    "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
@@ -12,32 +12,18 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
-    "main": "index.js",
-    "module": "dist/synthetic-shadow.js",
-    "scripts": {
-        "build": "rollup --config ./scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
-    },
-    "files": [
-        "dist/"
-    ],
-    "lwc": {
-        "modules": [
-            {
-                "name": "@lwc/synthetic-shadow",
-                "path": "dist/synthetic-shadow.js"
-            }
-        ],
-        "expose": [
-            "@lwc/synthetic-shadow"
-        ]
-    },
     "publishConfig": {
         "access": "public"
     },
-    "devDependencies": {
-        "@lwc/features": "2.43.0",
-        "@lwc/shared": "2.43.0"
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "./dist"
+    ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {
@@ -47,5 +33,20 @@
                 ]
             }
         }
+    },
+    "devDependencies": {
+        "@lwc/features": "2.43.0",
+        "@lwc/shared": "2.43.0"
+    },
+    "lwc": {
+        "modules": [
+            {
+                "name": "@lwc/synthetic-shadow",
+                "path": "dist/index.js"
+            }
+        ],
+        "expose": [
+            "@lwc/synthetic-shadow"
+        ]
     }
 }

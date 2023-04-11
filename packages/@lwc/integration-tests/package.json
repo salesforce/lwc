@@ -1,26 +1,37 @@
 {
     "name": "@lwc/integration-tests",
-    "private": true,
     "version": "2.43.0",
-    "scripts": {
-        "build": "node scripts/build.js",
-        "build:dev": "MODE=dev yarn build",
-        "build:prod": "MODE=prod yarn build",
-        "build:compat": "MODE=compat yarn build",
-        "build:prod_compat": "MODE=prod_compat yarn build",
-        "local": "yarn local:prod",
-        "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.local.conf.js",
-        "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.local.conf.js",
-        "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.local.conf.js",
-        "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.local.conf.js",
-        "sauce": "yarn sauce:prod",
-        "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
+    "homepage": "https://lwc.dev",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/integration-tests"
     },
-    "//": {
-        "webdriverio, @wdio/cli": "Currently can't upgrade @wdio namespaced dependencies to v8.0.0 because it dropped CommonJS support https://github.com/webdriverio/webdriverio/releases/tag/v8.0.0"
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "main": "./dist/index.cjs.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "./dist"
+    ],
+    "scripts": {
+        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.43.0",
