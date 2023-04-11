@@ -81,9 +81,9 @@ for (const dir of directories) {
 
     const exposedModule = LWC_EXPOSED_MODULES[name];
     if (exposedModule) {
-        // Special case - consumers can do `import { LightningElement } 'lwc'` and have it resolve to `@lwc/engine-dom`
-        // As for @lwc/synthetic-shadow and @lwc/wire-service, we have historically included these in the "default
-        // modules" defined in @lwc/rollup-plugin.
+        // Special case - consumers can do `import { LightningElement } from 'lwc'` and have it resolve to
+        // `@lwc/engine-dom`. As for @lwc/synthetic-shadow and @lwc/wire-service, we have historically included these in
+        // the "default modules" defined in @lwc/rollup-plugin.
         expectedJson.lwc = {
             modules: [
                 {
