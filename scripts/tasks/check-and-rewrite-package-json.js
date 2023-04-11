@@ -18,7 +18,7 @@ const { globSync } = require('glob');
 
 const IGNORED_PACKAGES = [
     'packages/@lwc/integration-karma',
-    'packages/@lwc/integration-test',
+    'packages/@lwc/integration-tests',
     'packages/@lwc/perf-benchmarks',
     'packages/@lwc/perf-benchmarks-components',
 ];
