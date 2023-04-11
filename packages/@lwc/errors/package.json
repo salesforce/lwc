@@ -2,6 +2,9 @@
     "name": "@lwc/errors",
     "version": "2.43.0",
     "description": "LWC Error Utilities",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

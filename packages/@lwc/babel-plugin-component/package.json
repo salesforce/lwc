@@ -2,6 +2,9 @@
     "name": "@lwc/babel-plugin-component",
     "version": "2.43.0",
     "description": "Babel plugin to transform a LWC module",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

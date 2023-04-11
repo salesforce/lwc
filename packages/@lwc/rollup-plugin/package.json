@@ -2,6 +2,9 @@
     "name": "@lwc/rollup-plugin",
     "version": "2.43.0",
     "description": "Rollup plugin to compile LWC",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

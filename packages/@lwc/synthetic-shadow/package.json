@@ -2,6 +2,9 @@
     "name": "@lwc/synthetic-shadow",
     "version": "2.43.0",
     "description": "Synthetic Shadow Root for LWC",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

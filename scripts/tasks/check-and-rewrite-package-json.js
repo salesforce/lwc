@@ -42,12 +42,14 @@ for (const dir of directories) {
     const { name, description, version, dependencies, devDependencies, peerDependencies } = pkg;
     let { keywords } = pkg;
 
+    // Keywords aren't really important, but keep any that already exist and add 'lwc'
     keywords = [...new Set((keywords || []).concat(['lwc']))].sort();
 
     const expectedJson = {
         name,
         version,
         description,
+        keywords,
         homepage: 'https://lwc.dev',
         repository: {
             type: 'git',

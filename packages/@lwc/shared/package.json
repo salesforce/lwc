@@ -2,6 +2,9 @@
     "name": "@lwc/shared",
     "version": "2.43.0",
     "description": "Utilities and methods that are shared across packages",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

@@ -2,6 +2,13 @@
     "name": "@lwc/aria-reflection",
     "version": "2.43.0",
     "description": "ARIA element reflection polyfill for strings",
+    "keywords": [
+        "aom",
+        "aria",
+        "lwc",
+        "polyfill",
+        "reflection"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

@@ -2,6 +2,9 @@
     "name": "@lwc/compiler",
     "version": "2.43.0",
     "description": "LWC compiler",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

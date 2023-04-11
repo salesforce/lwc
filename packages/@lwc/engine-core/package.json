@@ -2,6 +2,9 @@
     "name": "@lwc/engine-core",
     "version": "2.43.0",
     "description": "Core LWC engine APIs.",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",

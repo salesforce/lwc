@@ -2,6 +2,9 @@
     "name": "@lwc/engine-dom",
     "version": "2.43.0",
     "description": "Renders LWC components in a DOM environment.",
+    "keywords": [
+        "lwc"
+    ],
     "homepage": "https://lwc.dev",
     "repository": {
         "type": "git",
