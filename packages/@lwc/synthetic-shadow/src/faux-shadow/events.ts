@@ -206,17 +206,24 @@ export function addCustomElementEventListener(
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        if (!isFunction(listener)) {
+        if (!(isFunction(listener) || isFunction(listener.handleEvent))) {
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
                     this
-                )} for event "${type}". Expected an EventListener but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
             );
         }
     }
     // TODO [#1824]: Lift this restriction on the option parameter
+    let _listener;
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(listener);
+        _listener = listener;
+    } else if (isFunction(listener.handleEvent)) {
+        _listener = listener.handleEvent;
+    }
+
+    if (_listener) {
+        const wrappedListener = getWrappedCustomElementListener(_listener);
         attachDOMListener(this, type, wrappedListener);
     }
 }
