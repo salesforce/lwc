@@ -142,7 +142,9 @@ describe('restrictions', () => {
                         this._foo = val;
                     }
                 }
-            }).toThrowError(/Invalid compiler output for public accessor foo decorated with @api/);
+            }).toThrowError(
+                /Invalid public accessor foo decorated with @api\. The property is missing a getter\./
+            );
         }).toLogErrorDev(
             /Missing getter for property foo decorated with @api in (class|function) Invalid/
         );

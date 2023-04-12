@@ -76,7 +76,9 @@ export function createPublicAccessorDescriptor(
     const { get, set, enumerable, configurable } = descriptor;
     assert.invariant(
         isFunction(get),
-        `Invalid compiler output for public accessor ${toString(key)} decorated with @api`
+        `Invalid public accessor ${toString(
+            key
+        )} decorated with @api. The property is missing a getter.`
     );
     return {
         get(this: LightningElement): any {

@@ -150,13 +150,10 @@ function validateFieldDecoratedWithApi(
 function validateAccessorDecoratedWithApi(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (isUndefined(descriptor)) {
-        // TODO [#3441]: This line of code does not seem possible to reach.
-        logError(`Invalid @api get ${fieldName} accessor.`);
-    } else if (isFunction(descriptor.set)) {
+    if (isFunction(descriptor.set)) {
         if (!isFunction(descriptor.get)) {
             // TODO [#3441]: This line of code does not seem possible to reach.
             logError(
@@ -205,12 +202,13 @@ export function registerDecorators(
 
             descriptor = getOwnPropertyDescriptor(proto, fieldName);
             if (propConfig.config > 0) {
+                if (isUndefined(descriptor)) {
+                    // TODO [#3441]: This line of code does not seem possible to reach.
+                    throw new Error();
+                }
                 // accessor declaration
                 if (process.env.NODE_ENV !== 'production') {
                     validateAccessorDecoratedWithApi(Ctor, fieldName, descriptor);
-                }
-                if (isUndefined(descriptor)) {
-                    throw new Error();
                 }
                 descriptor = createPublicAccessorDescriptor(fieldName, descriptor);
             } else {
