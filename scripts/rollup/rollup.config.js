@@ -32,6 +32,12 @@ const onwarn = ({ code, message }) => {
 
 // These plugins are used both by the main Rollup build as well as our sub-Rollup build (injectInlineRenderer).
 function sharedPlugins() {
+    const engineBrowserConfig = ['@lwc/engine-server', '@lwc/engine-dom'].includes(packageName) && {
+        // This is only used inside @lwc/engine-dom and @lwc/engine-server
+        // Elsewhere, it _not_ be replaced, so that it can be replaced later (e.g. in @lwc/engine-core)
+        'process.env.IS_BROWSER': packageName === '@lwc/engine-dom' ? 'true' : 'false',
+    };
+
     return [
         typescript({
             target: 'es2017',
@@ -44,8 +50,7 @@ function sharedPlugins() {
         }),
         replace({
             values: {
-                // This is only used inside @lwc/engine-dom and @lwc/engine-server
-                'process.env.IS_BROWSER': packageName === '@lwc/engine-dom' ? 'true' : 'false',
+                ...engineBrowserConfig,
                 'process.env.LWC_VERSION': JSON.stringify(version),
             },
             preventAssignment: true,
