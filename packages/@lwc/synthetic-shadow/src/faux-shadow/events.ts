@@ -214,7 +214,7 @@ export function addCustomElementEventListener(
             );
         }
     }
-    // TODO [#1824]: Lift this restriction on the option parameter
+
     let _listener;
     if (isFunction(listener)) {
         _listener = listener;
@@ -234,7 +234,6 @@ export function removeCustomElementEventListener(
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const wrappedListener = getWrappedCustomElementListener(listener);
         detachDOMListener(this, type, wrappedListener);
@@ -256,7 +255,6 @@ export function addShadowRootEventListener(
             );
         }
     }
-    // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
         const wrappedListener = getWrappedShadowRootListener(listener);
@@ -270,7 +268,6 @@ export function removeShadowRootEventListener(
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
         const wrappedListener = getWrappedShadowRootListener(listener);
