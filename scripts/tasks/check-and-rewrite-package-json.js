@@ -59,10 +59,10 @@ for (const dir of directories) {
         bugs: { url: 'https://github.com/salesforce/lwc/issues' },
         license: 'MIT',
         publishConfig: { access: 'public' },
-        main: './dist/index.cjs.js',
-        module: './dist/index.js',
-        types: './dist/index.d.ts',
-        files: ['./dist'],
+        main: 'dist/index.cjs.js',
+        module: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        files: ['dist'],
         scripts: {
             build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
             dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
@@ -70,7 +70,7 @@ for (const dir of directories) {
         nx: {
             targets: {
                 build: {
-                    outputs: ['./dist'],
+                    outputs: ['dist'],
                 },
             },
         },

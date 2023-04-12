@@ -22,11 +22,11 @@
     "publishConfig": {
         "access": "public"
     },
-    "main": "./dist/index.cjs.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "files": [
-        "./dist"
+        "dist"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -36,7 +36,7 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "dist"
                 ]
             }
         }
