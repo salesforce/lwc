@@ -26,10 +26,11 @@ describe('add handleEvent support', () => {
         test(createElement('x-test', { is: Test }).shadowRoot);
     });
 
-    it('native shadow root', () => {
-        const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
-        test(shadowRoot);
-    });
+    if (process.env.COMPAT !== true) {
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
+    }
 });
 
 describe('remove handleEvent support', () => {
@@ -64,10 +65,11 @@ describe('remove handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        it('native shadow root', () => {
-            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
-            test(shadowRoot);
-        });
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
     });
 
     describe('listener identity', () => {
@@ -94,10 +96,11 @@ describe('remove handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        it('native shadow root', () => {
-            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
-            test(shadowRoot);
-        });
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
     });
 });
 
@@ -133,10 +136,11 @@ describe('dedupe behavior for add handleEvent', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        it('native shadow root', () => {
-            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
-            test(shadowRoot);
-        });
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
     });
 
     describe('listener identity', () => {
@@ -163,9 +167,10 @@ describe('dedupe behavior for add handleEvent', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        it('native shadow root', () => {
-            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
-            test(shadowRoot);
-        });
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
     });
 });
