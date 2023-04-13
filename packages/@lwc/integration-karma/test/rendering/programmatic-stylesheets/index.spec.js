@@ -248,13 +248,17 @@ describe('programmatic stylesheets', () => {
         // TODO [#3447]: This test verifies existing behavior is maintained and should be removed
         // once the warnings are converted into errors.
         it('applies the styles if the arbitrary function returns a valid string', () => {
-            const elm = createElement('x-invalid3', {
-                is: Invalid3,
-            });
-            document.body.appendChild(elm);
+            expect(() => {
+                const elm = createElement('x-invalid3', {
+                    is: Invalid3,
+                });
+                document.body.appendChild(elm);
 
-            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-            expect(style.color).toEqual('rgb(255, 0, 0)');
+                const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(style.color).toEqual('rgb(255, 0, 0)');
+            }).toLogWarningDev(
+                /\[LWC warn]: TypeError: Unexpected LWC stylesheet content found for component <x-invalid3>./
+            );
         });
     });
 });
