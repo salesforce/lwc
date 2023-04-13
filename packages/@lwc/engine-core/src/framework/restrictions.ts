@@ -194,7 +194,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
-                        'The shadow root `addEventListener` method does not support options.',
+                        'The `addEventListener` method on ShadowRoot does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
                 }
@@ -252,7 +252,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
-                        'The host element `addEventListener` method does not support options.',
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
                 }
