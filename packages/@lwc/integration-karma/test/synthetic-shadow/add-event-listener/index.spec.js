@@ -14,12 +14,21 @@ describe('add handleEvent support', () => {
         expect(invoked).toBe(true);
     }
 
-    it('host element', () => {
+    it('lwc host element', () => {
         test(createElement('x-test', { is: Test }));
     });
 
     it('native element', () => {
         test(document.createElement('div'));
+    });
+
+    it('lwc shadow root', () => {
+        test(createElement('x-test', { is: Test }).shadowRoot);
+    });
+
+    it('native shadow root', () => {
+        const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
+        test(shadowRoot);
     });
 });
 
@@ -43,12 +52,21 @@ describe('remove handleEvent support', () => {
             expect(invoked).toBe(false);
         }
 
-        it('host element', () => {
+        it('lwc host element', () => {
             test(createElement('x-test', { is: Test }));
         });
 
         it('native element', () => {
             test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        it('native shadow root', () => {
+            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
+            test(shadowRoot);
         });
     });
 
@@ -64,12 +82,21 @@ describe('remove handleEvent support', () => {
             expect(invoked).toBe(true);
         }
 
-        it('host element', () => {
+        it('lwc host element', () => {
             test(createElement('x-test', { is: Test }));
         });
 
         it('native element', () => {
             test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        it('native shadow root', () => {
+            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
+            test(shadowRoot);
         });
     });
 });
@@ -94,12 +121,21 @@ describe('dedupe behavior for add handleEvent', () => {
             expect(count).toBe(1);
         }
 
-        it('host element', () => {
+        it('lwc host element', () => {
             test(createElement('x-test', { is: Test }));
         });
 
         it('native element', () => {
             test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        it('native shadow root', () => {
+            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
+            test(shadowRoot);
         });
     });
 
@@ -115,12 +151,21 @@ describe('dedupe behavior for add handleEvent', () => {
             expect(count).toBe(2);
         }
 
-        it('host element', () => {
+        it('lwc host element', () => {
             test(createElement('x-test', { is: Test }));
         });
 
         it('native element', () => {
             test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        it('native shadow root', () => {
+            const shadowRoot = document.createElement('div').attachShadow({ mode: 'open' });
+            test(shadowRoot);
         });
     });
 });
