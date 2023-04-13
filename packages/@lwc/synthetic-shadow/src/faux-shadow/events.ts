@@ -46,6 +46,20 @@ interface ListenerMap {
     [key: string]: ManagedListener[];
 }
 
+function getEventHandler(listener: EventListenerOrEventListenerObject): EventListener {
+    if (isFunction(listener)) {
+        return listener;
+    } else {
+        return listener.handleEvent;
+    }
+}
+
+function isEventListenerOrEventListenerObject(
+    listener: any
+): listener is EventListenerOrEventListenerObject {
+    return isFunction(listener) || isFunction(listener?.handleEvent);
+}
+
 const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
 
 function getEventMap(elm: EventTarget): ListenerMap {
@@ -225,24 +239,10 @@ function detachDOMListener(elm: Element, type: string, managedListener: ManagedL
     }
 }
 
-function getEventHandler(listener: EventListenerOrEventListenerObject): EventListener {
-    if (isFunction(listener)) {
-        return listener;
-    } else {
-        return listener.handleEvent;
-    }
-}
-
-function isEventListenerOrEventListenerObject(
-    listener: EventListenerOrEventListenerObject
-): boolean {
-    return isFunction(listener) || isFunction(listener.handleEvent);
-}
-
 export function addCustomElementEventListener(
     this: Element,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -254,7 +254,6 @@ export function addCustomElementEventListener(
             );
         }
     }
-
     if (isEventListenerOrEventListenerObject(listener)) {
         const managedListener = getManagedCustomElementListener(listener);
         attachDOMListener(this, type, managedListener);
@@ -264,7 +263,7 @@ export function addCustomElementEventListener(
 export function removeCustomElementEventListener(
     this: Element,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (isEventListenerOrEventListenerObject(listener)) {
@@ -276,7 +275,7 @@ export function removeCustomElementEventListener(
 export function addShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -298,10 +297,10 @@ export function addShadowRootEventListener(
 export function removeShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
-    if (isFunction(listener)) {
+    if (isEventListenerOrEventListenerObject(listener)) {
         const elm = getHost(sr);
         const managedListener = getManagedShadowRootListener(listener);
         detachDOMListener(elm, type, managedListener);
