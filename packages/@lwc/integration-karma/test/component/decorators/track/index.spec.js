@@ -43,7 +43,7 @@ describe('restrictions', () => {
         );
     });
 
-    it('throws a property error when a track field conflicts with a method', () => {
+    it('logs a property error when a track field conflicts with a method', () => {
         expect(() => {
             // The following class is wrapped by the compiler with registerDecorators. We check here
             // if the fields are validated properly.
@@ -53,12 +53,12 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
-        }).toThrowErrorDev(
-            'Invalid @track showFeatures field. Found a duplicate method with the same name.'
+        }).toLogErrorDev(
+            /Invalid @track showFeatures field\. Found a duplicate method with the same name\./
         );
     });
 
-    it('throws a property error when a track field conflicts with an accessor', () => {
+    it('logs a property error when a track field conflicts with an accessor', () => {
         expect(() => {
             // The following class is wrapped by the compiler with registerDecorators. We check here
             // if the fields are validated properly.
@@ -72,8 +72,8 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 set showFeatures(v) {}
             }
-        }).toThrowErrorDev(
-            'Invalid @track showFeatures field. Found a duplicate accessor with the same name.'
+        }).toLogErrorDev(
+            /Invalid @track showFeatures field\. Found a duplicate accessor with the same name\./
         );
     });
 });

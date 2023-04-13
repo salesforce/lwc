@@ -117,7 +117,7 @@ it('should not log an error when initializing api value to null', () => {
 });
 
 describe('restrictions', () => {
-    it('throws a property error when a public field conflicts with a method', () => {
+    it('logs a property error when a public field conflicts with a method', () => {
         expect(() => {
             // The following class is wrapped by the compiler with registerDecorators. We check
             // here if the fields are validated properly.
@@ -127,9 +127,43 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
-        }).toThrowErrorDev(
-            'Invalid @api showFeatures field. Found a duplicate method with the same name.'
+        }).toLogErrorDev(
+            /Invalid @api showFeatures field\. Found a duplicate method with the same name\./
         );
+    });
+
+    it('throws an error when an @api field has a setter but no getter', () => {
+        expect(() => {
+            expect(() => {
+                // The following class is wrapped by the compiler with registerDecorators. We check here
+                // if the fields are validated properly.
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                class Invalid extends LightningElement {
+                    @api
+                    set foo(val) {
+                        this._foo = val;
+                    }
+                }
+            }).toThrowError(
+                /Invalid public accessor foo decorated with @api\. The property is missing a getter\./
+            );
+        }).toLogErrorDev(
+            /Missing getter for property foo decorated with @api in (class|function) Invalid/
+        );
+    });
+
+    it('does not throw or log an error when an @api field has a getter but no setter', () => {
+        expect(() => {
+            // The following class is wrapped by the compiler with registerDecorators. We check here
+            // if the fields are validated properly.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            class Invalid extends LightningElement {
+                @api
+                get foo() {
+                    return this._foo;
+                }
+            }
+        }).not.toLogError(); // if it throws an error, that will also fail this test
     });
 });
 
