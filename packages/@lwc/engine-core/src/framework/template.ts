@@ -17,6 +17,7 @@ import {
     toString,
 } from '@lwc/shared';
 
+import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import api, { RenderAPI } from './api';
 import {
