@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { parseFragment, DocumentFragment } from 'parse5';
+import * as parse5 from 'parse5';
+import type { DocumentFragment } from 'parse5';
 
 function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
     if (node.childNodes.length !== 1) {
@@ -32,7 +33,7 @@ function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
 // See: https://github.com/salesforce/lwc/issues/3439
 export function validateStyleTextContents(contents: string): void {
     // If parse5 parses this as more than one `<style>` tag, then it is unsafe to be rendered as-is
-    const fragment = parseFragment(`<style>${contents}</style>`);
+    const fragment = parse5.parseFragment(`<style>${contents}</style>`);
 
     if (!isSingleStyleNodeContainingSingleTextNode(fragment)) {
         throw new Error(
