@@ -12,7 +12,7 @@
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const glob = promisify(require('glob'));
+const { glob } = require('glob');
 const globHash = require('glob-hash');
 
 const writeFile = promisify(fs.writeFile);
