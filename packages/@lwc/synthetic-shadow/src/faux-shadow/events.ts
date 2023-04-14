@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFindIndex,
     ArrayPush,
     ArraySlice,
-    ArraySome,
     ArraySplice,
     create,
     defineProperty,
@@ -144,14 +144,7 @@ function getManagedCustomElementListener(
 }
 
 function indexOfManagedListener(listeners: ManagedListener[], listener: ManagedListener): number {
-    let index = -1;
-    ArraySome.call(listeners, (_listener: ManagedListener, _index) => {
-        if (_listener.identity === listener.identity) {
-            index = _index;
-            return true;
-        }
-    });
-    return index;
+    return ArrayFindIndex.call(listeners, (l: ManagedListener) => l.identity === listener.identity);
 }
 
 function domListener(evt: Event) {
