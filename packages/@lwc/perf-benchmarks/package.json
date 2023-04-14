@@ -14,7 +14,7 @@
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
         "Also note we are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.",
         "Breaking change: https://github.com/google/tachometer/issues/244",
-        "Also note that we use rollup-plugin-node-resolve-v13 because Best uses an old version of Rollup."
+        "Also note that we use rollup-plugin-node-resolve-v13 and rollup-plugin-commonjs-v11 because Best uses an old version of Rollup."
     ],
     "dependencies": {
         "@lwc/engine-dom": "2.43.0",
@@ -27,6 +27,7 @@
         "@best/runner-headless": "^8.1.3",
         "@best/runner-remote": "^8.1.3",
         "@lwc/rollup-plugin-node-resolve-v13": "npm:@rollup/plugin-node-resolve@13.0.5",
+        "@lwc/rollup-plugin-commonjs-v11": "npm:@rollup/plugin-commonjs@11.1.0",
         "glob-hash": "^1.0.5",
         "markdown-table": "^3.0.3",
         "tachometer": "0.5.10"
