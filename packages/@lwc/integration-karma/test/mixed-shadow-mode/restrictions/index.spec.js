@@ -58,18 +58,13 @@ describe('restrictions', () => {
         it('get className', () => {
             expect(() => {
                 elm.getClassName();
-            }).toLogErrorDev(
-                'Error: [LWC error]: Accessing the global HTML property "className" is disabled.\n' +
-                    'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.\n'
-            );
+            }).not.toLogErrorDev();
         });
 
         it('set accessKeyLabel', () => {
             expect(() => {
                 elm.setAccessKeyLabel('foo');
-            }).toLogErrorDev(
-                'Error: [LWC error]: The global HTML property `accessKeyLabel` is read-only.\n'
-            );
+            }).not.toLogErrorDev();
         });
     });
 

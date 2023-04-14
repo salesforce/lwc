@@ -1,29 +1,21 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
 
-function offsetPropertyErrorMessage(name) {
-    return `Using the \`${name}\` property is an anti-pattern because it rounds the value to an integer. Instead, use the \`getBoundingClientRect\` method to obtain fractional values for the size of an element and its position relative to the viewport.`;
-}
-
-// See attributes.ts in @lwc/engine-core for the list this is taken from. It should be kept up-to-date with that list
+// Originally taken from @lwc/engine-core. This is used in testing to avoid regressing these HTML properties. Via:
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 const globalHtmlProperties = {
     accessKey: {
         attribute: 'accesskey',
     },
-    accessKeyLabel: {
-        readOnly: true,
-    },
+    accessKeyLabel: {},
     className: {
         attribute: 'class',
-        error: 'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.',
     },
     contentEditable: {
         attribute: 'contenteditable',
     },
-    dataset: {
-        readOnly: true,
-        error: "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
-    },
+    dataset: {},
     dir: {
         attribute: 'dir',
     },
@@ -32,7 +24,6 @@ const globalHtmlProperties = {
     },
     dropzone: {
         attribute: 'dropzone',
-        readOnly: true,
     },
     hidden: {
         attribute: 'hidden',
@@ -48,7 +39,6 @@ const globalHtmlProperties = {
     },
     slot: {
         attribute: 'slot',
-        error: 'Using the `slot` property is an anti-pattern.',
     },
     spellcheck: {
         attribute: 'spellcheck',
@@ -67,28 +57,12 @@ const globalHtmlProperties = {
     },
 
     // additional "global attributes" that are not present in the link above.
-    isContentEditable: {
-        readOnly: true,
-    },
-    offsetHeight: {
-        readOnly: true,
-        error: offsetPropertyErrorMessage('offsetHeight'),
-    },
-    offsetLeft: {
-        readOnly: true,
-        error: offsetPropertyErrorMessage('offsetLeft'),
-    },
-    offsetParent: {
-        readOnly: true,
-    },
-    offsetTop: {
-        readOnly: true,
-        error: offsetPropertyErrorMessage('offsetTop'),
-    },
-    offsetWidth: {
-        readOnly: true,
-        error: offsetPropertyErrorMessage('offsetWidth'),
-    },
+    isContentEditable: {},
+    offsetHeight: {},
+    offsetLeft: {},
+    offsetParent: {},
+    offsetTop: {},
+    offsetWidth: {},
     role: {
         attribute: 'role',
     },
@@ -118,45 +92,16 @@ describe('global html properties', () => {
     });
 
     for (const propName of Object.keys(globalHtmlProperties)) {
-        const { attribute, error, readOnly } = globalHtmlProperties[propName];
+        const { attribute } = globalHtmlProperties[propName];
 
         const isOriginalDescriptor = htmlElementOriginalDescriptors.includes(propName);
 
-        const getExpectedErrorMessage = () => {
-            const message = [];
-            message.push(`Accessing the global HTML property "${propName}" is disabled.`);
-            if (error) {
-                message.push(error);
-            } else if (attribute) {
-                message.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
-            }
-            return message.join('\n') + '\n';
-        };
-
         const getPropertyValue = () => {
-            let value;
-            // eslint-disable-next-line jest/valid-expect
-            let expected = expect(() => {
-                value = elm.getProperty(propName);
-            });
-            if (isOriginalDescriptor) {
-                expected = expected.not; // original descriptors do not log
-            }
-            expected.toLogErrorDev(`Error: [LWC error]: ${getExpectedErrorMessage()}`);
-            return value;
+            return elm.getProperty(propName);
         };
 
         const setPropertyValue = (value) => {
-            // eslint-disable-next-line jest/valid-expect
-            let expected = expect(() => {
-                elm.setProperty(propName, value);
-            });
-            if (!readOnly) {
-                expected = expected.not; // only read-only logs an error here
-            }
-            expected.toLogErrorDev(
-                `Error: [LWC error]: The global HTML property \`${propName}\` is read-only.\n`
-            );
+            elm.setProperty(propName, value);
         };
 
         // Return a reasonable property value given what type the property accepts (boolean, number, keyword, etc.)
@@ -223,12 +168,7 @@ describe('global html properties', () => {
                 setPropertyValue(valueToSet);
 
                 const retrievedPropValue = getPropertyValue();
-                // In the case of non-original descriptors, the property value is not set, in dev mode
-                const expectedPropValue =
-                    isOriginalDescriptor || process.env.NODE_ENV === 'production'
-                        ? valueToSet
-                        : undefined;
-                expect(retrievedPropValue).toEqual(expectedPropValue);
+                expect(retrievedPropValue).toEqual(valueToSet);
             });
 
             if (attribute) {
