@@ -91,7 +91,6 @@ function getManagedShadowRootListener(
     }
     let managedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(managedListener)) {
-        const handler = getEventHandler(listener);
         managedListener = {
             identity: listener,
             placement: EventListenerContext.SHADOW_ROOT_LISTENER,
@@ -105,7 +104,7 @@ function getManagedShadowRootListener(
                 }
                 const actualTarget = getActualTarget(event);
                 if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                    handler.call(currentTarget, event);
+                    getEventHandler(listener).call(currentTarget, event);
                 }
             },
         };
@@ -125,7 +124,6 @@ function getManagedCustomElementListener(
     }
     let managedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(managedListener)) {
-        const handler = getEventHandler(listener);
         managedListener = {
             identity: listener,
             placement: EventListenerContext.CUSTOM_ELEMENT_LISTENER,
@@ -134,7 +132,7 @@ function getManagedCustomElementListener(
                 const currentTarget = eventCurrentTargetGetter.call(event)!;
                 const actualTarget = getActualTarget(event);
                 if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                    handler.call(currentTarget, event);
+                    getEventHandler(listener).call(currentTarget, event);
                 }
             },
         };

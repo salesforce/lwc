@@ -2,35 +2,73 @@ import { createElement } from 'lwc';
 import Test from 'x/test';
 
 describe('add handleEvent support', () => {
-    function test(elm) {
-        let invoked = false;
-        const listenerObject = {
-            handleEvent() {
-                invoked = true;
-            },
-        };
-        elm.addEventListener('foo', listenerObject);
-        elm.dispatchEvent(new CustomEvent('foo'));
-        expect(invoked).toBe(true);
-    }
+    describe('basic', () => {
+        function test(elm) {
+            let invoked = false;
+            const listenerObject = {
+                handleEvent() {
+                    invoked = true;
+                },
+            };
+            elm.addEventListener('foo', listenerObject);
+            elm.dispatchEvent(new CustomEvent('foo'));
+            expect(invoked).toBe(true);
+        }
 
-    it('lwc host element', () => {
-        test(createElement('x-test', { is: Test }));
-    });
-
-    it('native element', () => {
-        test(document.createElement('div'));
-    });
-
-    it('lwc shadow root', () => {
-        test(createElement('x-test', { is: Test }).shadowRoot);
-    });
-
-    if (process.env.COMPAT !== true) {
-        it('native shadow root', () => {
-            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        it('lwc host element', () => {
+            test(createElement('x-test', { is: Test }));
         });
-    }
+
+        it('native element', () => {
+            test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
+    });
+
+    describe('listener object mutation', () => {
+        function test(elm) {
+            let value;
+            const listenerObject = {};
+
+            listenerObject.handleEvent = () => {
+                value = 'first';
+            };
+            elm.addEventListener('foo', listenerObject);
+            listenerObject.handleEvent = () => {
+                value = 'second';
+            };
+
+            elm.dispatchEvent(new CustomEvent('foo'));
+            expect(value).toBe('second');
+        }
+
+        it('lwc host element', () => {
+            test(createElement('x-test', { is: Test }));
+        });
+
+        it('native element', () => {
+            test(document.createElement('div'));
+        });
+
+        it('lwc shadow root', () => {
+            test(createElement('x-test', { is: Test }).shadowRoot);
+        });
+
+        if (process.env.COMPAT !== true) {
+            it('native shadow root', () => {
+                test(document.createElement('div').attachShadow({ mode: 'open' }));
+            });
+        }
+    });
 });
 
 describe('remove handleEvent support', () => {
