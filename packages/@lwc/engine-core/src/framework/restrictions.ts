@@ -188,8 +188,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
-                // TODO [#420]: this is triggered when the component author attempts to add a listener
-                // programmatically into its Component's shadow root
+                // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method on ShadowRoot does not support any options.',
@@ -247,8 +246,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
-                // TODO [#420]: this is triggered when the component author attempts to add a listener
-                // programmatically into a lighting element node
+                // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
