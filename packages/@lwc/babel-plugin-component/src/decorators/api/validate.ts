@@ -8,6 +8,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { NodePath } from '@babel/traverse';
 import { types } from '@babel/core';
 import { generateError } from '../../utils';
+import { LwcBabelPluginPass } from '../../types';
 import {
     AMBIGUOUS_PROP_SET,
     DECORATOR_TYPES,
@@ -19,7 +20,11 @@ import { isApiDecorator } from './shared';
 
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
-function validateConflict(path: NodePath<types.Node>, decorators: DecoratorMeta[]) {
+function validateConflict(
+    path: NodePath<types.Node>,
+    decorators: DecoratorMeta[],
+    state: LwcBabelPluginPass
+) {
     const isPublicFieldTracked = decorators.some(
         (decorator) =>
             decorator.name === TRACK_DECORATOR &&
@@ -27,9 +32,13 @@ function validateConflict(path: NodePath<types.Node>, decorators: DecoratorMeta[
     );
 
     if (isPublicFieldTracked) {
-        throw generateError(path, {
-            errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT,
-        });
+        throw generateError(
+            path,
+            {
+                errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT,
+            },
+            state
+        );
     }
 }
 
@@ -38,53 +47,84 @@ function isBooleanPropDefaultTrue(property: NodePath<types.Node>) {
     return propertyValue && propertyValue.type === 'BooleanLiteral' && propertyValue.value;
 }
 
-function validatePropertyValue(property: NodePath<types.ClassMethod>) {
+function validatePropertyValue(property: NodePath<types.ClassMethod>, state: LwcBabelPluginPass) {
     if (isBooleanPropDefaultTrue(property)) {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY,
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY,
+            },
+            state
+        );
     }
 }
 
-function validatePropertyName(property: NodePath<types.ClassMethod>) {
+function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcBabelPluginPass) {
     if (property.node.computed) {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED,
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED,
+            },
+            state
+        );
     }
 
     const propertyName = (property.get('key.name') as any).node;
 
     if (propertyName === 'part') {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
-            messageArgs: [propertyName],
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
+                messageArgs: [propertyName],
+            },
+            state
+        );
     } else if (propertyName.startsWith('on')) {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
-            messageArgs: [propertyName],
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
+                messageArgs: [propertyName],
+            },
+            state
+        );
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
-            messageArgs: [propertyName],
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
+                messageArgs: [propertyName],
+            },
+            state
+        );
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
-            messageArgs: [propertyName],
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
+                messageArgs: [propertyName],
+            },
+            state
+        );
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
-        throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
-            messageArgs: [propertyName, camelCased],
-        });
+        throw generateError(
+            property,
+            {
+                errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
+                messageArgs: [propertyName, camelCased],
+            },
+            state
+        );
     }
 }
 
-function validateSingleApiDecoratorOnSetterGetterPair(decorators: DecoratorMeta[]) {
+function validateSingleApiDecoratorOnSetterGetterPair(
+    decorators: DecoratorMeta[],
+    state: LwcBabelPluginPass
+) {
     // keep track of visited class methods
     const visitedMethods = new Set<String>();
 
@@ -101,10 +141,14 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators: DecoratorMeta[
             const methodName = (methodPath.get('key.name') as any).node as string;
 
             if (visitedMethods.has(methodName)) {
-                throw generateError(methodPath, {
-                    errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-                    messageArgs: [methodName],
-                });
+                throw generateError(
+                    methodPath,
+                    {
+                        errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                        messageArgs: [methodName],
+                    },
+                    state
+                );
             }
 
             visitedMethods.add(methodName);
@@ -112,7 +156,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators: DecoratorMeta[
     });
 }
 
-function validateUniqueness(decorators: DecoratorMeta[]) {
+function validateUniqueness(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     const apiDecorators = decorators.filter(isApiDecorator);
     for (let i = 0; i < apiDecorators.length; i++) {
         const { path: currentPath, type: currentType } = apiDecorators[i];
@@ -133,32 +177,36 @@ function validateUniqueness(decorators: DecoratorMeta[]) {
                 (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER);
 
             if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
-                throw generateError(comparePath, {
-                    errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
-                    messageArgs: [currentPropertyName],
-                });
+                throw generateError(
+                    comparePath,
+                    {
+                        errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
+                        messageArgs: [currentPropertyName],
+                    },
+                    state
+                );
             }
         }
     }
 }
 
-export default function validate(decorators: DecoratorMeta[]) {
+export default function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     const apiDecorators = decorators.filter(isApiDecorator);
     if (apiDecorators.length === 0) {
         return;
     }
 
     apiDecorators.forEach(({ path, decoratedNodeType }) => {
-        validateConflict(path, decorators);
+        validateConflict(path, decorators, state);
 
         if (decoratedNodeType !== DECORATOR_TYPES.METHOD) {
             const property = path.parentPath as NodePath<types.ClassMethod>;
 
-            validatePropertyName(property);
-            validatePropertyValue(property);
+            validatePropertyName(property, state);
+            validatePropertyValue(property, state);
         }
     });
 
-    validateSingleApiDecoratorOnSetterGetterPair(decorators);
-    validateUniqueness(decorators);
+    validateSingleApiDecoratorOnSetterGetterPair(decorators, state);
+    validateUniqueness(decorators, state);
 }

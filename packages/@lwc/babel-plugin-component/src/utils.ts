@@ -10,6 +10,7 @@ import { NodePath } from '@babel/traverse';
 import { generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
 import { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
+import { LwcBabelPluginPass } from './types';
 
 function isClassMethod(
     classMethod: NodePath<types.Node>,
@@ -73,17 +74,6 @@ function getEngineImportSpecifiers(path: NodePath): ImportSpecifier[] {
     );
 }
 
-function normalizeFilename(source: NodePath<types.Node>) {
-    return (
-        // TODO [#3444]: use `this.filename` to get the filename
-        (source.hub &&
-            (source.hub as any).file &&
-            (source.hub as any).file.opts &&
-            (source.hub as any).file.opts.filename) ||
-        null
-    );
-}
-
 function normalizeLocation(source: NodePath<types.Node>) {
     const location = (source.node && (source.node.loc || (source.node as any)._loc)) || null;
     if (!location) {
@@ -110,12 +100,13 @@ function normalizeLocation(source: NodePath<types.Node>) {
 
 function generateError(
     source: NodePath<types.Node>,
-    { errorInfo, messageArgs }: DecoratorErrorOptions
+    { errorInfo, messageArgs }: DecoratorErrorOptions,
+    state: LwcBabelPluginPass
 ) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
 
-    (error as any).filename = normalizeFilename(source);
+    (error as any).filename = state.filename;
     (error as any).loc = normalizeLocation(source);
     (error as any).lwcCode = errorInfo && errorInfo.code;
     return error;
