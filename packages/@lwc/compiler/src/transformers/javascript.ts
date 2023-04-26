@@ -50,6 +50,8 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
 
+            presets: ['@babel/preset-typescript'],
+
             plugins: [
                 [lwcClassTransformPlugin, lwcBabelPluginOptions],
                 [babelClassPropertiesPlugin, { loose: true }],
