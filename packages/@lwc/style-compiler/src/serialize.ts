@@ -109,8 +109,9 @@ export default function serialize(result: Result, config: Config): string {
             buffer += `${STYLESHEET_IDENTIFIER}.${KEY__SCOPED_CSS} = true;\n`;
         }
 
-        // register the stylesheet
-        buffer += `registerStylesheet(${STYLESHEET_IDENTIFIER});\n`;
+        // Register the stylesheet
+        // Check that the function exists first in case of an engine version mismatch
+        buffer += `registerStylesheet && registerStylesheet(${STYLESHEET_IDENTIFIER});\n`;
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
