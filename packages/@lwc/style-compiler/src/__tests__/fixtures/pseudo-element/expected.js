@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return shadowSelector + "::after {}h1" + shadowSelector + "::before {}*" + shadowSelector + ", *" + shadowSelector + "::before {}*" + shadowSelector + ", " + shadowSelector + "::before {}*" + shadowSelector + ", " + shadowSelector + ":before {}*" + shadowSelector + ", .ancestor" + shadowSelector + " " + shadowSelector + "::before {}*" + shadowSelector + "," + shadowSelector + "::before {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "@media screen and (max-width: 768px) {" + ((useActualHostSelector ? ":host {" : hostSelector + " {")) + "width: calc(50% - 1rem);}}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

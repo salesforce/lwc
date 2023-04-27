@@ -7,5 +7,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "div" + shadowSelector + " {--slds-c-button-neutral-shadow-focus: " + (varResolver("--slds-c-buttonstateful-shadow-focus",varResolver("--sds-g-color-brand-base-50","#0176d3") + " black")) + ";}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

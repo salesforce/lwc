@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ":checked" + shadowSelector + " {}ul" + shadowSelector + " li:first-child" + shadowSelector + " a" + shadowSelector + " {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

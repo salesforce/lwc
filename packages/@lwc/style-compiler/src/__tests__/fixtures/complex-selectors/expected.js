@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "h1" + shadowSelector + " > a" + shadowSelector + " {}h1" + shadowSelector + " + a" + shadowSelector + " {}div.active" + shadowSelector + " > p" + shadowSelector + " {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

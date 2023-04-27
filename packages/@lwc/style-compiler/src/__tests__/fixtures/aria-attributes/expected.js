@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "[aria-labelledby]" + shadowSelector + " {}[aria-labelledby=\"bar\"]" + shadowSelector + " {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

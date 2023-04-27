@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ":not(p)" + shadowSelector + " {}p:not(.foo, .bar)" + shadowSelector + " {}:matches(ol, li, span)" + shadowSelector + " {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

@@ -7,5 +7,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   /*LWC compiler vX.X.X*/
 }
 stylesheet.$scoped$ = true;
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

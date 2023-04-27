@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ((useActualHostSelector ? ":host(.foo) {" : hostSelector + ".foo {")) + "}" + ((useActualHostSelector ? ":host(.foo) span" : hostSelector + ".foo span")) + shadowSelector + " {}" + ((useActualHostSelector ? ":host(:hover) {" : hostSelector + ":hover {")) + "}" + ((useActualHostSelector ? ":host(.foo, .bar) {" : hostSelector + ".foo," + hostSelector + ".bar {")) + "}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

@@ -7,5 +7,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ".a" + shadowSelector + " {box-shadow: " + (varResolver("--lwc-c-active-button-box-shadow","0 0 2px " + varResolver("--lwc-brand-accessible","#0070d2"))) + ";}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ".red" + shadowSelector + " {color: red;}" + ((useActualHostSelector ? ":host {" : hostSelector + " {")) + "margin-left: 5px;}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

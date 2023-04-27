@@ -7,5 +7,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "div" + shadowSelector + " {background: " + (varResolver("--lwc-color",varResolver("--lwc-other","black"))) + ";}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];

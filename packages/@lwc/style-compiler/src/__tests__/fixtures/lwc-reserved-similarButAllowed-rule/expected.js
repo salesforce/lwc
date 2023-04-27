@@ -6,5 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return "[turkey='val']" + shadowSelector + " {}[keyboard='val']" + shadowSelector + " {}[notif\\:true='val']" + shadowSelector + " {}[notfor\\:item='val']" + shadowSelector + " {}[notfor\\:each='val']" + shadowSelector + " {}[notiterator\\:name='val']" + shadowSelector + " {}";
   /*LWC compiler vX.X.X*/
 }
-registerStylesheet(stylesheet);
+registerStylesheet && registerStylesheet(stylesheet);
 export default [stylesheet];
