@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "version": "2.44.0",
+    "version": "2.45.0",
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "typings": "types/index.d.ts",
@@ -25,8 +25,8 @@
     ],
     "dependencies": {
         "@babel/helper-module-imports": "~7.21.4",
-        "@lwc/errors": "2.44.0",
-        "@lwc/shared": "2.44.0",
+        "@lwc/errors": "2.45.0",
+        "@lwc/shared": "2.45.0",
         "line-column": "~1.0.2"
     },
     "devDependencies": {
