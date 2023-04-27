@@ -53,12 +53,19 @@ it('should object spread', async () => {
 });
 
 describe('should transform TypeScript file correctly', () => {
-    function verifyTransformedCode(code: string, map: unknown, excludeString: string) {
+    function transformTSCodeAndVerify(actual: string, verifyExcludeString: string): string {
+        const { code, map, warnings } = transformSync(actual, 'foo.ts', {
+            ...TRANSFORMATION_OPTIONS,
+            outputConfig: { sourcemap: true },
+        });
         expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
         expect(code).toContain('registerComponent');
         expect(code).toContain('registerDecorators');
-        expect(code).not.toContain(excludeString);
+        expect(code).not.toContain(verifyExcludeString);
         expect(map).not.toBeNull();
+        expect(warnings).toBeUndefined();
+
+        return code;
     }
 
     it('should work for simple TypeScript file', () => {
@@ -68,11 +75,7 @@ describe('should transform TypeScript file correctly', () => {
                 greeting?: string = 'hello world';
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, '?');
+        transformTSCodeAndVerify(actual, '?');
     });
 
     it('should work for Interfaces', () => {
@@ -86,11 +89,7 @@ describe('should transform TypeScript file correctly', () => {
                 width?: number;
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, 'interface');
+        transformTSCodeAndVerify(actual, 'interface');
     });
 
     it('should work for Enum', () => {
@@ -106,11 +105,7 @@ describe('should transform TypeScript file correctly', () => {
                 Right = "RIGHT",
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, 'enum');
+        transformTSCodeAndVerify(actual, 'enum');
     });
 
     it('should work for type assersion', () => {
@@ -128,11 +123,7 @@ describe('should transform TypeScript file correctly', () => {
                 bas: string;
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, 'Baz');
+        transformTSCodeAndVerify(actual, 'Baz');
     });
 
     it('should work for generic type', () => {
@@ -149,11 +140,7 @@ describe('should transform TypeScript file correctly', () => {
                 }
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, '<Type>');
+        transformTSCodeAndVerify(actual, '<Type>');
     });
 
     it('should work for decorators', () => {
@@ -164,26 +151,31 @@ describe('should transform TypeScript file correctly', () => {
                 @track baz?: { color: number };
             }
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, 'color');
+        const code = transformTSCodeAndVerify(actual, 'color');
         expect(code).toContain('publicProps');
     });
 
-    it('should work for type aliases', () => {
+    it('should still transform when a teyp error exist', () => {
         const actual = `
             import { LightningElement } from 'lwc';
             export default class Foo extends LightningElement {
-                carYear: CarYear = 2001;
+                carYear: number;
+                connectedCallback(): void {
+                    this.carYear = 'a string';
+                }
             }
-            type CarYear = number;
         `;
-        const { code, map } = transformSync(actual, 'foo.ts', {
-            ...TRANSFORMATION_OPTIONS,
-            outputConfig: { sourcemap: true },
-        });
-        verifyTransformedCode(code, map, 'CarYear');
+        transformTSCodeAndVerify(actual, 'number');
+    });
+
+    it('should work for type-only imports', () => {
+        const actual = `
+            import { LightningElement } from 'lwc';
+            import type { SomeThing } from "./some-module.js";
+            export default class Foo extends LightningElement {
+                someThing: SomeThing;
+            }
+        `;
+        transformTSCodeAndVerify(actual, 'import type');
     });
 });

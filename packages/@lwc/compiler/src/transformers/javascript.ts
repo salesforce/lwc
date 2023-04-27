@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as path from 'path';
 import * as babel from '@babel/core';
 
 import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
 import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
+import babelTypeScriptPlugin from '@babel/plugin-transform-typescript';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
 
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
@@ -36,6 +38,20 @@ export default function scriptTransform(
         name,
     };
 
+    const plugins = [
+        [lwcClassTransformPlugin, lwcBabelPluginOptions],
+        [babelClassPropertiesPlugin, { loose: true }],
+
+        // This plugin should be removed in a future version. The object-rest-spread is
+        // already a stage 4 feature. The LWC compile should leave this syntax untouched.
+        babelObjectRestSpreadPlugin,
+    ];
+
+    // add TypeScript plugin
+    if (path.extname(filename) === '.ts') {
+        plugins.push(babelTypeScriptPlugin);
+    }
+
     let result;
     try {
         result = babel.transformSync(code, {
@@ -50,16 +66,7 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
 
-            presets: ['@babel/preset-typescript'],
-
-            plugins: [
-                [lwcClassTransformPlugin, lwcBabelPluginOptions],
-                [babelClassPropertiesPlugin, { loose: true }],
-
-                // This plugin should be removed in a future version. The object-rest-spread is
-                // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-                babelObjectRestSpreadPlugin,
-            ],
+            plugins: plugins,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
