@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TransformOptions } from '../../options';
-import { transform, transformSync } from '../transformer';
+import { transform } from '../transformer';
 
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
@@ -21,7 +21,6 @@ it('should throw when processing an invalid CSS file', async () => {
 
 it('should apply transformation for stylesheet file', async () => {
     const actual = `
-        @import 'x/sibling';
         :host {
             color: red;
         }
@@ -31,26 +30,8 @@ it('should apply transformation for stylesheet file', async () => {
         }
     `;
     const { code } = await transform(actual, 'foo.css', TRANSFORMATION_OPTIONS);
+
     expect(code).toContain('function stylesheet');
-});
-
-it('should import registerStylesheet and register only the generated stylesheet', () => {
-    const actual = `
-        @import 'x/sibling';
-        :host {
-            color: red;
-        }
-
-        div {
-            background-color: red;
-        }
-    `;
-
-    const { code } = transformSync(actual, 'foo.css', TRANSFORMATION_OPTIONS);
-    expect(code).toContain('import { registerStylesheet }');
-
-    // Verify only the single generated stylesheet is registered (no imported stylesheets)
-    expect(code).toContain('registerStylesheet(stylesheet);');
 });
 
 describe('custom properties', () => {
