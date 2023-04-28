@@ -24,7 +24,6 @@ export {
     freezeTemplate,
     registerComponent,
     registerDecorators,
-    registerStylesheet,
     sanitizeAttribute,
     setHooks,
     getComponentDef,
