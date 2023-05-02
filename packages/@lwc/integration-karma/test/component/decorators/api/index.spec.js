@@ -12,6 +12,7 @@ import Inheritance from 'x/inheritance';
 import NullInitialValue from 'x/nullInitialValue';
 
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
+import NoSetter from 'x/noSetter';
 
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {
@@ -381,5 +382,17 @@ describe('regression [W-9927596]', () => {
                 expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
             });
         });
+    });
+
+    it('logs an error when attempting to set property when there is no setter', () => {
+        const elm = createElement('x-no-setter', { is: NoSetter });
+
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.foo = 'foo';
+        }).toLogErrorDev(
+            /Invalid attempt to set a new value for property "foo" that does not has a setter decorated with @api/
+        );
     });
 });
