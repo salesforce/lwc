@@ -481,7 +481,7 @@ function k(compilerKey: number, obj: any): string | void {
             return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
-                assert.fail(
+                logError(
                     `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }

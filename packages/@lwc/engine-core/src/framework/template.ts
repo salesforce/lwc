@@ -17,6 +17,7 @@ import {
     toString,
 } from '@lwc/shared';
 
+import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import api, { RenderAPI } from './api';
 import {
@@ -83,21 +84,26 @@ function validateSlots(vm: VM) {
 }
 
 function validateLightDomTemplate(template: Template, vm: VM) {
-    if (template === defaultEmptyTemplate) return;
+    assertNotProd(); // should never leak to prod mode
+    if (template === defaultEmptyTemplate) {
+        return;
+    }
     if (vm.renderMode === RenderMode.Light) {
-        assert.isTrue(
-            template.renderMode === 'light',
-            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                vm
-            )}.`
-        );
+        if (template.renderMode !== 'light') {
+            logError(
+                `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
+                    vm
+                )}.`
+            );
+        }
     } else {
-        assert.isTrue(
-            isUndefined(template.renderMode),
-            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                vm
-            )} or set it to 'lwc:render-mode="shadow"`
-        );
+        if (!isUndefined(template.renderMode)) {
+            logError(
+                `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
+                    vm
+                )} or set it to 'lwc:render-mode="shadow"`
+            );
+        }
     }
 }
 
@@ -283,10 +289,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `Compiler should produce html functions that always return an array.`
-        );
+        if (!isArray(vnodes)) {
+            logError(`Compiler should produce html functions that always return an array.`);
+        }
     }
     return vnodes;
 }

@@ -76,8 +76,9 @@ export function patchElementWithRestrictions(
             get(this: Element): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
-            set(this: Element, _value: string) {
-                throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
+            set(this: Element, value: string) {
+                logError(`Invalid attempt to set outerHTML on Element.`);
+                return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
     };
@@ -169,16 +170,18 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
             get(this: ShadowRoot): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
-            set(this: ShadowRoot, _value: string) {
-                throw new TypeError(`Invalid attempt to set innerHTML on ShadowRoot.`);
+            set(this: ShadowRoot, value: string) {
+                logError(`Invalid attempt to set innerHTML on ShadowRoot.`);
+                return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
         textContent: generateAccessorDescriptor({
             get(this: ShadowRoot): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
-            set(this: ShadowRoot, _value: string) {
-                throw new TypeError(`Invalid attempt to set textContent on ShadowRoot.`);
+            set(this: ShadowRoot, value: string) {
+                logError(`Invalid attempt to set textContent on ShadowRoot.`);
+                return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
         addEventListener: generateDataDescriptor({
@@ -219,24 +222,27 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
             get(this: HTMLElement): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, _value: string) {
-                throw new TypeError(`Invalid attempt to set innerHTML on HTMLElement.`);
+            set(this: HTMLElement, value: string) {
+                logError(`Invalid attempt to set innerHTML on HTMLElement.`);
+                return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
         outerHTML: generateAccessorDescriptor({
             get(this: HTMLElement): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, _value: string) {
-                throw new TypeError(`Invalid attempt to set outerHTML on HTMLElement.`);
+            set(this: HTMLElement, value: string) {
+                logError(`Invalid attempt to set outerHTML on HTMLElement.`);
+                return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
         textContent: generateAccessorDescriptor({
             get(this: HTMLElement): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, _value: string) {
-                throw new TypeError(`Invalid attempt to set textContent on HTMLElement.`);
+            set(this: HTMLElement, value: string) {
+                logError(`Invalid attempt to set textContent on HTMLElement.`);
+                return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
         addEventListener: generateDataDescriptor({
@@ -257,23 +263,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             },
-        }),
-    };
-}
-
-function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
-    assertNotProd(); // this method should never leak to prod
-    return {
-        tagName: generateAccessorDescriptor({
-            get(this: LightningElement) {
-                throw new Error(
-                    `Usage of property \`tagName\` is disallowed because the component itself does` +
-                        ` not know which tagName will be used to create the element, therefore writing` +
-                        ` code that check for that value is error prone.`
-                );
-            },
-            configurable: true,
-            enumerable: false, // no enumerable properties on component
         }),
     };
 }
@@ -323,10 +312,6 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
     const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
     const elmProto = getPrototypeOf(elm);
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
-}
-
-export function patchComponentWithRestrictions(cmp: LightningElement) {
-    defineProperties(cmp, getComponentRestrictionsDescriptors());
 }
 
 export function patchLightningElementPrototypeWithRestrictions(

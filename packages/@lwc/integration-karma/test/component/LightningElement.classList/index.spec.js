@@ -3,11 +3,10 @@ import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XAccessDuringConstruction from 'x/accessDuringConstruction';
 
-it('should throw when trying to access classList during construction', () => {
+it('should log an error when trying to access classList during construction', () => {
     expect(() => {
         createElement('x-access-during-construction', { is: XAccessDuringConstruction });
-    }).toThrowErrorDev(
-        Error,
+    }).toLogErrorDev(
         /The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback\(\) instead./
     );
 });

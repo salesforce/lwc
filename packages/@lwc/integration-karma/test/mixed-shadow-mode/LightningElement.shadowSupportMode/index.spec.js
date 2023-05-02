@@ -5,10 +5,10 @@ import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 
 describe('shadowSupportMode static property', () => {
-    it('should throw for invalid values', () => {
+    it('should log error for invalid values', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowErrorDev(/Invalid value for static property shadowSupportMode: 'true'/);
+        }).toLogErrorDev(/Invalid value for static property shadowSupportMode: 'true'/);
     });
 
     it('should not throw for valid values', () => {

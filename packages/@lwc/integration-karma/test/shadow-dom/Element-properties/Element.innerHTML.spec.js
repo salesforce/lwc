@@ -35,7 +35,7 @@ describe('Element.innerHTML - set', () => {
 
         expect(() => {
             elm.innerHTML = '<span>Hello World!</span>';
-        }).toThrowErrorDev(TypeError, /Invalid attempt to set innerHTML on HTMLElement/);
+        }).toLogErrorDev(/Invalid attempt to set innerHTML on HTMLElement/);
     });
 
     it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {
