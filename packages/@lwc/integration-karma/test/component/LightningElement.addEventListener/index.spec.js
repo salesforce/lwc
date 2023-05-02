@@ -45,7 +45,7 @@ describe('event handler is not a function', () => {
         consoleSpy.reset();
     });
 
-    it('should throw an error if event handler is not a function', () => {
+    it('should log an error if event handler is not a function', () => {
         const elm = createElement('x-event-handler', { is: EventHandler });
 
         expect(() => {
