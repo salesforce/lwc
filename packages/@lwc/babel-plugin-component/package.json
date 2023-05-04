@@ -43,7 +43,8 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "./dist",
+                    "./types"
                 ]
             }
         }
