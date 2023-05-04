@@ -12,8 +12,8 @@
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const glob = promisify(require('glob'));
-const globHash = require('glob-hash');
+const { glob } = promisify(require('glob'));
+const { hashElement } = require('folder-hash');
 
 const writeFile = promisify(fs.writeFile);
 
@@ -33,6 +33,7 @@ BENCHMARK_SAMPLE_SIZE = toInt(BENCHMARK_SAMPLE_SIZE);
 BENCHMARK_TIMEOUT = toInt(BENCHMARK_TIMEOUT);
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
+let benchmarkComponentsHash;
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
 const swappablePackages = [
@@ -63,9 +64,6 @@ function createHtml(benchmarkFile) {
 }
 
 async function createTachometerJson(htmlFilename, benchmarkName) {
-    const componentsHash = await globHash({
-        include: [path.join(benchmarkComponentsDir, 'dist/**/*')],
-    });
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
         sampleSize: BENCHMARK_SAMPLE_SIZE,
@@ -109,7 +107,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                                             'rm -fr ./packages/@lwc/perf-benchmarks-components',
                                             `cp -R ${benchmarkComponentsDir} ./packages/@lwc/perf-benchmarks-components`,
                                             // bust the Tachometer cache in case these files change locally
-                                            `echo '${componentsHash}'`,
+                                            `echo '${benchmarkComponentsHash}'`,
                                             'yarn build:performance:components',
                                         ],
                                     },
@@ -149,10 +147,20 @@ async function processBenchmarkFile(benchmarkFile) {
     await Promise.all([writeHtmlFile(), writeTachometerJsonFile()]);
 }
 
+async function initGlobals() {
+    // Setup hash of benchmark components directory for use in generating the Tachometer json files
+    benchmarkComponentsHash = await hashElement(path.join(benchmarkComponentsDir, 'dist'), {
+        algo: 'sha256',
+    });
+}
+
 async function main() {
+    await initGlobals();
+
     const benchmarkFiles = await glob(
         path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js')
     );
+
     await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file)));
 }
 
