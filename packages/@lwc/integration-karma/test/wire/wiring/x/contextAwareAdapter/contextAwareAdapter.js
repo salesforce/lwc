@@ -2,15 +2,15 @@ let adapterSpy;
 
 export class ContextAwareWireAdapter {
     callback;
-    sourceElement;
+    hostContext;
 
     static setSpy(spy) {
         adapterSpy = spy;
     }
 
-    constructor(callback, sourceElement) {
+    constructor(callback, hostContext) {
         this.callback = callback;
-        this.sourceElement = sourceElement;
+        this.hostContext = hostContext;
 
         this.log('constructor');
     }
@@ -29,7 +29,7 @@ export class ContextAwareWireAdapter {
 
     log(method, args) {
         if (adapterSpy) {
-            adapterSpy.push({ source: this.sourceElement, method, args });
+            adapterSpy.push({ hostContext: this.hostContext, method, args });
         }
     }
 }
