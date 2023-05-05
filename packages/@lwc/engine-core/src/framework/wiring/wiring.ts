@@ -140,7 +140,7 @@ function createConnector(
         noop,
         () => {
             // job
-            connector = new adapter(dataCallback, vm.tagName);
+            connector = new adapter(dataCallback, { tagName: vm.tagName });
         },
         noop
     );

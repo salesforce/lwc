@@ -21,7 +21,7 @@ export interface WireAdapter {
 
 export interface WireAdapterConstructor {
     new (callback: DataCallback): WireAdapter;
-    new (callback: DataCallback, tagName: string): WireAdapter;
+    new (callback: DataCallback, sourceContext: { tagName: string }): WireAdapter;
     configSchema?: Record<string, WireAdapterSchemaValue>;
     contextSchema?: Record<string, WireAdapterSchemaValue>;
 }
