@@ -149,9 +149,11 @@ async function processBenchmarkFile(benchmarkFile) {
 
 async function initGlobals() {
     // Setup hash of benchmark components directory for use in generating the Tachometer json files
-    benchmarkComponentsHash = await hashElement(path.join(benchmarkComponentsDir, 'dist'), {
+
+    const { hash } = await hashElement(path.join(benchmarkComponentsDir, 'dist'), {
         algo: 'sha256',
     });
+    benchmarkComponentsHash = hash;
 }
 
 async function main() {
