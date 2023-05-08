@@ -386,13 +386,13 @@ describe('context aware', () => {
         const spy = [];
         ContextLog.setSpy(spy);
 
-        const hostContextA = { tagName: 'x-context-aware-a' };
-        const hostContextB = { tagName: 'x-context-aware-a' };
+        const hostTagNameA = 'x-context-aware-a';
+        const hostTagNameB = 'x-context-aware-b';
 
-        createElement(hostContextA.tagName, { is: ContextAwareConsumer });
-        createElement(hostContextB.tagName, { is: ContextAwareConsumer });
+        createElement(hostTagNameA, { is: ContextAwareConsumer });
+        createElement(hostTagNameB, { is: ContextAwareConsumer });
 
-        expect(spy[0].hostContext).toMatchObject(hostContextA);
-        expect(spy[1].hostContext).toMatchObject(hostContextB);
+        expect(spy[0].hostContext.tagName).toBe(hostTagNameA);
+        expect(spy[1].hostContext.tagName).toBe(hostTagNameB);
     });
 });
