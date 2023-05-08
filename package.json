@@ -68,7 +68,7 @@
     "lint-staged": {
         "**/*.{js,mjs,ts}": "eslint",
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
-        "{packages}/**/package.json": "node ./scripts/tasks/check-and-rewrite-package-json.js"
+        "packages/**/package.json": "node ./scripts/tasks/check-and-rewrite-package-json.js"
     },
     "workspaces": [
         "packages/@lwc/*",
