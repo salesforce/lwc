@@ -56,15 +56,18 @@ var consoleCallCount = 0;
 
 // Patch console.log, console.error, etc. so if it's called, we throw
 function patchConsole() {
-    ['assert', 'error', 'info', 'log', 'warn'].forEach(function (method) {
-        // eslint-disable-next-line no-console
-        var originalMethod = console[method];
-        // eslint-disable-next-line no-console
-        console[method] = function () {
-            consoleCallCount++;
-            return originalMethod.apply(this, arguments);
-        };
-    });
+    // This fails in IE11 for some reason
+    if (process.env.COMPAT) {
+        ['assert', 'error', 'info', 'log', 'warn'].forEach(function (method) {
+            // eslint-disable-next-line no-console
+            var originalMethod = console[method];
+            // eslint-disable-next-line no-console
+            console[method] = function () {
+                consoleCallCount++;
+                return originalMethod.apply(this, arguments);
+            };
+        });
+    }
 }
 
 function throwIfConsoleCalled() {
