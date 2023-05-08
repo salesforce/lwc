@@ -70,7 +70,7 @@ function patchConsole() {
 function throwIfConsoleCalled() {
     if (consoleCallCount) {
         throw new Error(
-            'Expected console not to be called, but was called ' + consoleCallCount + 'time(s)'
+            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)'
         );
     }
 }
