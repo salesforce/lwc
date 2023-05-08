@@ -11,6 +11,9 @@
 // The goals are:
 // 1. to avoid having to manually keep package.json files in sync with each other
 // 2. to have a consistent format for all the package.jsons we publish to npm
+//
+// Use the flag `--test` if you want it to fail with a non-zero exit code if the package.json
+// files differ from what we expect.
 
 const fs = require('fs');
 const path = require('path');
@@ -121,5 +124,9 @@ if (differingPackageJsonFiles.length > 0) {
             'Files:',
         differingPackageJsonFiles
     );
-    process.exit(1);
+    // Only in "test" mode do we actually emit a non-zero exit code. This is designed for CI tests.
+    // In other cases (e.g. as a git precommit hook), we can just exit with a normal 0 exit code.
+    if (process.argv.includes('--test')) {
+        process.exit(1);
+    }
 }
