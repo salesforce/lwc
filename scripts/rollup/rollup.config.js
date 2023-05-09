@@ -119,7 +119,7 @@ function injectInlineRenderer() {
 //
 //     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
 //     require('@lwc/engine-server/dist/engine-server.js')
-//     require('@lwc/compiler/dist/commonjs/transformers/transformer)
+//     require('@lwc/compiler/dist/commonjs/transformers/transformer')
 //
 // Feel free to delete this entire plugin once we can safely release this breaking change.
 function backwardsCompatDistPlugin() {
