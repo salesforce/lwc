@@ -15,12 +15,16 @@ function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {
     return path.parentPath.get('arguments.0') as NodePath<types.Node>;
 }
 
-function validateImport(sourcePath: NodePath<types.Node>) {
+function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginPass) {
     if (!sourcePath.isStringLiteral()) {
-        throw generateError(sourcePath, {
-            errorInfo: LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
-            messageArgs: [String(sourcePath)],
-        });
+        throw generateError(
+            sourcePath,
+            {
+                errorInfo: LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
+                messageArgs: [String(sourcePath)],
+            },
+            state
+        );
     }
 }
 
@@ -62,7 +66,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
             const sourcePath = getImportSource(path);
 
             if (strictSpecifier) {
-                validateImport(sourcePath);
+                validateImport(sourcePath, state);
             }
 
             if (loader) {

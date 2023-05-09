@@ -45,25 +45,6 @@ const expectedEnumerableProps = [
     'title',
     'toString',
     ...ariaProperties,
-    ...(process.env.NODE_ENV !== 'production'
-        ? [
-              'accessKeyLabel',
-              'className',
-              'contentEditable',
-              'dataset',
-              'dropzone',
-              'inputMode',
-              'isContentEditable',
-              'offsetHeight',
-              'offsetLeft',
-              'offsetParent',
-              'offsetTop',
-              'offsetWidth',
-              'slot',
-              'style',
-              'translate',
-          ]
-        : []),
 ].sort();
 
 const expectedEnumerableAndWritableProps = [

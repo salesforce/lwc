@@ -2,7 +2,6 @@ import {
     createElement,
     LightningElement,
     registerTemplate,
-    registerStylesheet,
     registerComponent,
     __unstable__ReportingControl as reportingControl,
 } from 'lwc';
@@ -88,16 +87,16 @@ if (!process.env.COMPAT) {
             });
 
             it('stylesheet', () => {
-                function stylesheet() {
-                    return '';
-                    /*LWC compiler v123.456.789*/
-                }
                 function tmpl() {
                     return [];
                 }
                 tmpl.stylesheetToken = 'x-component_component';
-                tmpl.stylesheets = [stylesheet];
-                registerStylesheet(stylesheet);
+                tmpl.stylesheets = [
+                    function stylesheet() {
+                        return '';
+                        /*LWC compiler v123.456.789*/
+                    },
+                ];
                 registerTemplate(tmpl);
                 class CustomElement extends LightningElement {}
                 registerComponent(CustomElement, { tmpl });

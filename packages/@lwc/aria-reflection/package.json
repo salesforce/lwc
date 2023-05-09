@@ -1,6 +1,6 @@
 {
     "name": "@lwc/aria-reflection",
-    "version": "2.43.0",
+    "version": "2.45.1",
     "description": "ARIA element reflection polyfill for strings",
     "keywords": [
         "aom",
@@ -42,6 +42,6 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "2.43.0"
+        "@lwc/shared": "2.45.1"
     }
 }

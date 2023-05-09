@@ -4,7 +4,7 @@ import { adapter } from 'x/adapter';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 describe('restrictions', () => {
-    it('throws a property error when a wired field conflicts with a method', () => {
+    it('logs a property error when a wired field conflicts with a method', () => {
         expect(() => {
             // The following class is wrapped by the compiler with registerDecorators. We check here
             // if the fields are validated properly.
@@ -14,8 +14,8 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
-        }).toThrowErrorDev(
-            'Invalid @wire showFeatures field. Found a duplicate method with the same name.'
+        }).toLogErrorDev(
+            /Invalid @wire showFeatures field\. Found a duplicate method with the same name\./
         );
     });
 });

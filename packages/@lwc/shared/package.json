@@ -1,6 +1,6 @@
 {
     "name": "@lwc/shared",
-    "version": "2.43.0",
+    "version": "2.45.1",
     "description": "Utilities and methods that are shared across packages",
     "keywords": [
         "lwc"

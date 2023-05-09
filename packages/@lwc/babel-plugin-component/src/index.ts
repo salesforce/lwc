@@ -45,11 +45,11 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
             // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
             // first by running all its traversals from this Program visitor.
             Program: {
-                enter(path) {
+                enter(path, state) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
                     // Validate the usage of LWC decorators.
-                    validateImportedLwcDecoratorUsage(engineImportSpecifiers);
+                    validateImportedLwcDecoratorUsage(engineImportSpecifiers, state);
 
                     // Add ?scoped=true to *.scoped.css imports
                     scopeCssImports(api, path);

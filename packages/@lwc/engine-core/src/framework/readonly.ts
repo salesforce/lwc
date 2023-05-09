@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import { logError } from '../shared/logger';
 import { getReadOnlyProxy } from './membrane';
 
 /**
@@ -16,7 +16,7 @@ export function readonly(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
         // TODO [#1292]: Remove the readonly decorator
         if (arguments.length !== 1) {
-            assert.fail(
+            logError(
                 '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.'
             );
         }

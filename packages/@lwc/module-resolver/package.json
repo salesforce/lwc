@@ -1,6 +1,6 @@
 {
     "name": "@lwc/module-resolver",
-    "version": "2.43.0",
+    "version": "2.45.1",
     "description": "Resolves paths for LWC components",
     "keywords": [
         "lwc"
@@ -38,6 +38,6 @@
         }
     },
     "dependencies": {
-        "resolve": "~1.22.1"
+        "resolve": "~1.22.2"
     }
 }
