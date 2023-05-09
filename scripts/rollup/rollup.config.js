@@ -7,8 +7,8 @@
 
 /* eslint-env node */
 
-const fs = require('node:fs');
-const fsPromises = require('node:fs/promises');
+const { readFileSync } = require('node:fs');
+const { writeFile, mkdir } = require('node:fs/promises');
 const path = require('node:path');
 const MagicString = require('magic-string');
 const { rollup } = require('rollup');
@@ -16,7 +16,7 @@ const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
-const pkg = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8'));
+const pkg = JSON.parse(readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = pkg;
 const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
@@ -146,13 +146,13 @@ function backwardsCompatDistPlugin() {
         async writeBundle(options, bundle) {
             const extraDistFiles = packageNamesToExtraDistFiles[packageName];
             if (extraDistFiles) {
-                for (const [id, descriptor] of Object.entries(bundle)) {
-                    const extraDistFile = extraDistFiles[id];
-                    if (extraDistFile) {
+                for (const [id, extraDistFile] of Object.entries(extraDistFiles)) {
+                    const descriptor = bundle[id];
+                    if (descriptor) {
                         // Write additional dist/ file as a side effect
                         const fullFilename = path.join(process.cwd(), extraDistFile);
-                        await fsPromises.mkdir(path.dirname(fullFilename), { recursive: true });
-                        await fsPromises.writeFile(fullFilename, descriptor.code, 'utf-8');
+                        await mkdir(path.dirname(fullFilename), { recursive: true });
+                        await writeFile(fullFilename, descriptor.code, 'utf-8');
                     }
                 }
             }
