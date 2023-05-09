@@ -13,6 +13,7 @@ import {
     isArray,
     arrayEvery,
     ArrayFilter,
+    ArrayIncludes,
     isTrue,
     isString,
 } from '@lwc/shared';
@@ -151,7 +152,7 @@ function getValidationPredicate(optOutStaticProp: string[] | true | undefined) {
     // array will be "opted out". Attributes not specified in the array will still
     // be validated.
     if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
-        return (attrName: string) => !optOutStaticProp.includes(attrName);
+        return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
     }
     logWarn(
         'Validation opt out must be `true` or an array of attributes that should not be validated.'
