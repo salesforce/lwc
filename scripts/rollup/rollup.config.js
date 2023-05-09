@@ -125,13 +125,16 @@ function injectInlineRenderer() {
 function backwardsCompatDistPlugin() {
     const packageNamesToExtraDistFiles = {
         '@lwc/synthetic-shadow': {
-            'index.js': './dist/synthetic-shadow.js',
+            'index.js': 'dist/synthetic-shadow.js',
         },
         '@lwc/engine-server': {
-            'index.js': './dist/engine-server.js',
+            'index.js': 'dist/engine-server.js',
         },
         '@lwc/compiler': {
-            'index.js': './dist/commonjs/transformers/transformer.js',
+            'index.cjs.js': 'dist/commonjs/transformers/transformer.js',
+        },
+        '@lwc/wire-service': {
+            'index.js': 'dist/wire-service.js',
         },
     };
 
