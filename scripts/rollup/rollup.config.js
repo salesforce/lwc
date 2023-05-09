@@ -114,31 +114,71 @@ function injectInlineRenderer() {
     };
 }
 
-module.exports = {
-    input: path.resolve(process.cwd(), './src/index.ts'),
+const outputConfigs = formats.map((format) => {
+    return {
+        file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
+        sourcemap: true,
+        format,
+        banner,
+        footer,
+        exports: 'named',
+        esModule: true,
+    };
+});
 
-    output: formats.map((format) => {
-        return {
-            file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
-            sourcemap: true,
-            format,
-            banner,
-            footer,
-            exports: 'named',
-            esModule: true,
-        };
-    }),
+const rollupConfigs = [
+    {
+        input: path.resolve(process.cwd(), './src/index.ts'),
 
-    plugins: [
-        nodeResolve({
-            // These are the devDeps that may be inlined into the dist/ bundles
-            resolveOnly: [/^@lwc\//, 'observable-membrane'],
-        }),
-        ...sharedPlugins(),
-        injectInlineRenderer(),
-    ],
+        output: outputConfigs,
 
-    onwarn,
+        plugins: [
+            nodeResolve({
+                // These are the devDeps that may be inlined into the dist/ bundles
+                resolveOnly: [/^@lwc\//, 'observable-membrane'],
+            }),
+            ...sharedPlugins(),
+            injectInlineRenderer(),
+        ],
 
-    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
-};
+        onwarn,
+
+        external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
+    },
+];
+
+// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code that does this:
+//
+//     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
+//     require('@lwc/engine-server/dist/engine-server.js')
+//     require('@lwc/compiler/dist/commonjs/transformers/transformer)
+//
+// Feel free to delete this entire function once we can safely release this breaking change.
+function applyBackwardsCompat() {
+    if (packageName === '@lwc/synthetic-shadow') {
+        formats.push({
+            ...outputConfigs.find(({ format }) => format === 'es'),
+            file: 'dist/synthetic-shadow.js',
+        });
+    } else if (packageName === '@lwc/engine-server') {
+        formats.push({
+            ...outputConfigs.find(({ format }) => format === 'es'),
+            file: 'dist/engine-server.js',
+        });
+    } else if (packageName === '@lwc/compiler') {
+        rollupConfigs.push({
+            ...rollupConfigs[0],
+            input: path.resolve(process.cwd(), './src/transformers/transformer.ts'),
+            output: outputConfigs
+                .filter(({ format }) => format === 'cjs')
+                .map((outputConfig) => ({
+                    ...outputConfig,
+                    file: 'dist/commonjs/transformers/transformer.js',
+                })),
+        });
+    }
+}
+
+applyBackwardsCompat();
+
+module.exports = rollupConfigs;
