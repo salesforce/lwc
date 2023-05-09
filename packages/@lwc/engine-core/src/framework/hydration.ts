@@ -58,6 +58,9 @@ const enum EnvNodeTypes {
     COMMENT = 8,
 }
 
+// A function that indicates whether an attribute with the given name should be validated.
+type AttrValidationPredicate = (attrName: string) => boolean;
+
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
@@ -139,7 +142,9 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
 // The validationOptOut static property can be an array of attribute names.
 // Any attribute names specified in that array will not be validated, and the
 // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
-function getValidationPredicate(optOutStaticProp: string[] | true | undefined) {
+function getValidationPredicate(
+    optOutStaticProp: string[] | true | undefined
+): AttrValidationPredicate {
     if (isUndefined(optOutStaticProp)) {
         return (_attrName: string) => true;
     }
@@ -423,7 +428,7 @@ function isMatchingElement(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    shouldValidateAttr: (attrName: string) => boolean = () => true
+    shouldValidateAttr: AttrValidationPredicate = () => true
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
