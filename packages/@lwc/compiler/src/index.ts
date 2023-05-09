@@ -15,4 +15,4 @@ export {
     OutputConfig,
 } from './options';
 
-export const version = process.env.LWC_VERSION;
+export const version = process.env.LWC_VERSION as string;
