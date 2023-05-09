@@ -12,8 +12,8 @@
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const glob = promisify(require('glob'));
-const globHash = require('glob-hash');
+const { glob } = require('glob');
+const { hashElement } = require('folder-hash');
 
 const writeFile = promisify(fs.writeFile);
 
@@ -62,10 +62,7 @@ function createHtml(benchmarkFile) {
   `.trim();
 }
 
-async function createTachometerJson(htmlFilename, benchmarkName) {
-    const componentsHash = await globHash({
-        include: [path.join(benchmarkComponentsDir, 'dist/**/*')],
-    });
+async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) {
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
         sampleSize: BENCHMARK_SAMPLE_SIZE,
@@ -109,7 +106,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                                             'rm -fr ./packages/@lwc/perf-benchmarks-components',
                                             `cp -R ${benchmarkComponentsDir} ./packages/@lwc/perf-benchmarks-components`,
                                             // bust the Tachometer cache in case these files change locally
-                                            `echo '${componentsHash}'`,
+                                            `echo '${directoryHash}'`,
                                             'yarn build:performance:components',
                                         ],
                                     },
@@ -125,7 +122,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
 
 // Given a benchmark source file, create the necessary HTML file and Tachometer JSON
 // file for running it.
-async function processBenchmarkFile(benchmarkFile) {
+async function processBenchmarkFile(benchmarkFile, directoryHash) {
     const targetDir = path.dirname(benchmarkFile);
     const benchmarkFileBasename = path.basename(benchmarkFile);
     const htmlFilename = path.join(targetDir, benchmarkFileBasename.replace('.js', '.html'));
@@ -138,7 +135,11 @@ async function processBenchmarkFile(benchmarkFile) {
     async function writeTachometerJsonFile() {
         const engineType = benchmarkFile.includes('/engine-server/') ? 'server' : 'dom';
         const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
-        const tachometerJson = await createTachometerJson(htmlFilename, benchmarkName);
+        const tachometerJson = await createTachometerJson(
+            htmlFilename,
+            benchmarkName,
+            directoryHash
+        );
         const jsonFilename = path.join(
             targetDir,
             `${benchmarkFileBasename.split('.')[0]}.tachometer.json`
@@ -150,10 +151,15 @@ async function processBenchmarkFile(benchmarkFile) {
 }
 
 async function main() {
+    const { hash: directoryHash } = await hashElement(path.join(benchmarkComponentsDir, 'dist'), {
+        algo: 'sha256',
+    });
+
     const benchmarkFiles = await glob(
         path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js')
     );
-    await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file)));
+
+    await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file, directoryHash)));
 }
 
 main().catch((err) => {
