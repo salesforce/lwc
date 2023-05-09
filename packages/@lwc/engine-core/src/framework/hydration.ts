@@ -135,20 +135,32 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
     return false;
 }
 
-function getAttrsToNotValidate(optOutStaticProp: string[] | true | undefined) {
+// The validationOptOut static property can be an array of attribute names.
+// Any attribute names specified in that array will not be validated, and the
+// LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+//
+
+//
+
+function getValidationPredicate(optOutStaticProp: string[] | true | undefined) {
     if (isUndefined(optOutStaticProp)) {
-        return;
+        return (_attrName: string) => true;
     }
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
     if (isTrue(optOutStaticProp)) {
-        return;
+        return (_attrName: string) => false;
     }
-    if (!isArray(optOutStaticProp) || !arrayEvery<string>(optOutStaticProp, (el) => isString(el))) {
-        logWarn(
-            'Validation opt out must be `true` or an array of attributes that should not be validated.'
-        );
-        return;
+    // If validationOptOut is an array of strings, attributes specified in the
+    // array will be "opted out". Attributes not specified in the array will still
+    // be validated.
+    if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
+        return (attrName: string) => !optOutStaticProp.includes(attrName);
     }
-    return new Set(optOutStaticProp);
+    logWarn(
+        'Validation opt out must be `true` or an array of attributes that should not be validated.'
+    );
+    return (_attrName: string) => true;
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
@@ -271,7 +283,7 @@ function hydrateCustomElement(
     renderer: RendererAPI
 ): Node | null {
     const { validationOptOut } = vnode.ctor;
-    const attrsToNotValidate = getAttrsToNotValidate(validationOptOut);
+    const shouldValidateAttr = getValidationPredicate(validationOptOut);
 
     // The validationOptOut static property can be an array of attribute names.
     // Any attribute names specified in that array will not be validated, and the
@@ -282,13 +294,11 @@ function hydrateCustomElement(
     //
     // Therefore, if validationOptOut is falsey or an array of strings, we need to
     // examine some or all of the custom element's attributes.
-    if (!validationOptOut || attrsToNotValidate) {
-        if (
-            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-            !isMatchingElement(vnode, elm, renderer, attrsToNotValidate)
-        ) {
-            return handleMismatch(elm, vnode, renderer);
-        }
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+        !isMatchingElement(vnode, elm, renderer, shouldValidateAttr)
+    ) {
+        return handleMismatch(elm, vnode, renderer);
     }
 
     const { sel, mode, ctor, owner } = vnode;
@@ -416,7 +426,7 @@ function isMatchingElement(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    attrsToNotValidate?: Set<string>
+    shouldValidateAttr: (attrName: string) => boolean = () => true
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
@@ -433,13 +443,13 @@ function isMatchingElement(
         return false;
     }
 
-    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, attrsToNotValidate);
-    const hasCompatibleClass = attrsToNotValidate?.has?.('class')
-        ? true
-        : validateClassAttr(vnode, elm, renderer);
-    const hasCompatibleStyle = attrsToNotValidate?.has?.('style')
-        ? true
-        : validateStyleAttr(vnode, elm, renderer);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, shouldValidateAttr);
+    const hasCompatibleClass = shouldValidateAttr('class')
+        ? validateClassAttr(vnode, elm, renderer)
+        : true;
+    const hasCompatibleStyle = shouldValidateAttr('style')
+        ? validateStyleAttr(vnode, elm, renderer)
+        : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
 }
@@ -468,7 +478,7 @@ function validateAttrs(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    attrsToNotValidate?: Set<string>
+    shouldValidateAttr: (attrName: string) => boolean
 ): boolean {
     const {
         data: { attrs = {} },
@@ -479,7 +489,7 @@ function validateAttrs(
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
-        if (attrsToNotValidate?.has?.(attrName)) {
+        if (!shouldValidateAttr(attrName)) {
             continue;
         }
         const { owner } = vnode;

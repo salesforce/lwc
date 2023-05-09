@@ -6,7 +6,7 @@ export default {
     },
     test(target, snapshots, consoleCalls) {
         const hydratedSnapshot = this.snapshot(target);
-        expect(hydratedSnapshot.foo).not.toBe(snapshots.foo);
+        expect(hydratedSnapshot.foo).toBe(snapshots.foo);
         expect(consoleCalls.error).toHaveSize(0);
     },
 };
