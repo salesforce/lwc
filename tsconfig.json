@@ -16,7 +16,7 @@
     "types": ["node", "jest"],
 
     "outDir": "dist",
-    "declarationDir": "dist"
+    "declarationDir": "."
   },
 
   "exclude": [

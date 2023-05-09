@@ -8,6 +8,7 @@
 /* eslint-env node */
 
 const fs = require('node:fs');
+const fsPromises = require('node:fs/promises');
 const path = require('node:path');
 const MagicString = require('magic-string');
 const { rollup } = require('rollup');
@@ -114,8 +115,50 @@ function injectInlineRenderer() {
     };
 }
 
-const outputConfigs = formats.map((format) => {
+// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code that does this:
+//
+//     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
+//     require('@lwc/engine-server/dist/engine-server.js')
+//     require('@lwc/compiler/dist/commonjs/transformers/transformer)
+//
+// Feel free to delete this entire plugin once we can safely release this breaking change.
+function backwardsCompatDistPlugin() {
+    const packageNamesToExtraDistFiles = {
+        '@lwc/synthetic-shadow': {
+            'index.js': './dist/synthetic-shadow.js',
+        },
+        '@lwc/engine-server': {
+            'index.js': './dist/engine-server.js',
+        },
+        '@lwc/compiler': {
+            'index.js': './dist/commonjs/transformers/transformer.js',
+        },
+    };
+
     return {
+        id: 'backwards-compat-dist',
+        async writeBundle(options, bundle) {
+            const extraDistFiles = packageNamesToExtraDistFiles[packageName];
+            if (extraDistFiles) {
+                for (const [id, descriptor] of Object.entries(bundle)) {
+                    const extraDistFile = extraDistFiles[id];
+                    if (extraDistFile) {
+                        // Write additional dist/ file as a side effect
+                        const fullFilename = path.join(process.cwd(), extraDistFile);
+                        await fsPromises.mkdir(path.dirname(fullFilename), { recursive: true });
+                        await fsPromises.writeFile(fullFilename, descriptor.code, 'utf-8');
+                    }
+                }
+            }
+            return null;
+        },
+    };
+}
+
+module.exports = {
+    input: path.resolve(process.cwd(), './src/index.ts'),
+
+    output: formats.map((format) => ({
         file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
         sourcemap: true,
         format,
@@ -123,62 +166,19 @@ const outputConfigs = formats.map((format) => {
         footer,
         exports: 'named',
         esModule: true,
-    };
-});
+    })),
 
-const rollupConfigs = [
-    {
-        input: path.resolve(process.cwd(), './src/index.ts'),
+    plugins: [
+        nodeResolve({
+            // These are the devDeps that may be inlined into the dist/ bundles
+            resolveOnly: [/^@lwc\//, 'observable-membrane'],
+        }),
+        ...sharedPlugins(),
+        backwardsCompatDistPlugin(),
+        injectInlineRenderer(),
+    ],
 
-        output: outputConfigs,
+    onwarn,
 
-        plugins: [
-            nodeResolve({
-                // These are the devDeps that may be inlined into the dist/ bundles
-                resolveOnly: [/^@lwc\//, 'observable-membrane'],
-            }),
-            ...sharedPlugins(),
-            injectInlineRenderer(),
-        ],
-
-        onwarn,
-
-        external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
-    },
-];
-
-// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code that does this:
-//
-//     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
-//     require('@lwc/engine-server/dist/engine-server.js')
-//     require('@lwc/compiler/dist/commonjs/transformers/transformer)
-//
-// Feel free to delete this entire function once we can safely release this breaking change.
-function applyBackwardsCompat() {
-    if (packageName === '@lwc/synthetic-shadow') {
-        formats.push({
-            ...outputConfigs.find(({ format }) => format === 'es'),
-            file: 'dist/synthetic-shadow.js',
-        });
-    } else if (packageName === '@lwc/engine-server') {
-        formats.push({
-            ...outputConfigs.find(({ format }) => format === 'es'),
-            file: 'dist/engine-server.js',
-        });
-    } else if (packageName === '@lwc/compiler') {
-        rollupConfigs.push({
-            ...rollupConfigs[0],
-            input: path.resolve(process.cwd(), './src/transformers/transformer.ts'),
-            output: outputConfigs
-                .filter(({ format }) => format === 'cjs')
-                .map((outputConfig) => ({
-                    ...outputConfig,
-                    file: 'dist/commonjs/transformers/transformer.js',
-                })),
-        });
-    }
-}
-
-applyBackwardsCompat();
-
-module.exports = rollupConfigs;
+    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
+};
