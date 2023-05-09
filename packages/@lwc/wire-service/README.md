@@ -50,7 +50,7 @@ export class getBook {
         }
     }
 
-    providBookWithId(id) {
+    provideBookWithId(id) {
         if (this.connected && this.bookId !== undefined) {
             const book = bookEndpoint.getById(id);
 
