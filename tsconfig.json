@@ -12,7 +12,7 @@
     "target": "es2018",
     "lib": ["es2018"],
 
-    // Disable automatic inclusion of @types packages - this uselessly slows down TypeScript compilation
+    // Disable automatic inclusion of @types packages
     "types": ["node", "jest"],
 
     // @rollup/plugin-typescript is actually responsible for writing dist files. Using "." as the declarationDir
