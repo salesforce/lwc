@@ -10,6 +10,8 @@ import {
     assert,
     keys,
     isNull,
+    isArray,
+    arrayEvery,
     ArrayFilter,
     isTrue,
     isString,
@@ -140,7 +142,7 @@ function getAttrsToNotValidate(optOutStaticProp: string[] | true | undefined) {
     if (isTrue(optOutStaticProp)) {
         return;
     }
-    if (!Array.isArray(optOutStaticProp) || !optOutStaticProp.every((el) => isString(el))) {
+    if (!isArray(optOutStaticProp) || !arrayEvery<string>(optOutStaticProp, (el) => isString(el))) {
         logWarn(
             'Validation opt out must be `true` or an array of attributes that should not be validated.'
         );
