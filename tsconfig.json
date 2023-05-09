@@ -15,7 +15,7 @@
     // Disable automatic inclusion of @types packages - this uselessly slows down TypeScript compilation
     "types": ["node", "jest"],
 
-    // @rollup/plugin-typescript is actually responsible for writing dist files. Using "." as the declaration dir
+    // @rollup/plugin-typescript is actually responsible for writing dist files. Using "." as the declarationDir
     // ensures that .d.ts files are co-located with JS files, e.g. `dist/index.js` and `dist/index.d.ts`.
     "declarationDir": "."
   },
