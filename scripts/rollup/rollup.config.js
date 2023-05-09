@@ -115,7 +115,7 @@ function injectInlineRenderer() {
     };
 }
 
-// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code that does this:
+// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code like this:
 //
 //     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
 //     require('@lwc/engine-server/dist/engine-server.js')
@@ -124,14 +124,17 @@ function injectInlineRenderer() {
 // Feel free to delete this entire plugin once we can safely release this breaking change.
 function backwardsCompatDistPlugin() {
     const packageNamesToExtraDistFiles = {
-        '@lwc/synthetic-shadow': {
-            'index.js': 'dist/synthetic-shadow.js',
+        '@lwc/compiler': {
+            'index.cjs.js': 'dist/commonjs/transformers/transformer.js',
+        },
+        '@lwc/engine-dom': {
+            'index.js': 'dist/engine-dom.js',
         },
         '@lwc/engine-server': {
             'index.js': 'dist/engine-server.js',
         },
-        '@lwc/compiler': {
-            'index.cjs.js': 'dist/commonjs/transformers/transformer.js',
+        '@lwc/synthetic-shadow': {
+            'index.js': 'dist/synthetic-shadow.js',
         },
         '@lwc/wire-service': {
             'index.js': 'dist/wire-service.js',
