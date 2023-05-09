@@ -138,10 +138,6 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
 // The validationOptOut static property can be an array of attribute names.
 // Any attribute names specified in that array will not be validated, and the
 // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
-//
-
-//
-
 function getValidationPredicate(optOutStaticProp: string[] | true | undefined) {
     if (isUndefined(optOutStaticProp)) {
         return (_attrName: string) => true;
