@@ -4,7 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
+import {
+    isUndefined,
+    ArrayJoin,
+    assert,
+    keys,
+    isNull,
+    isArray,
+    arrayEvery,
+    ArrayFilter,
+    ArrayIncludes,
+    isTrue,
+    isString,
+} from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -45,6 +57,9 @@ const enum EnvNodeTypes {
     TEXT = 3,
     COMMENT = 8,
 }
+
+// A function that indicates whether an attribute with the given name should be validated.
+type AttrValidationPredicate = (attrName: string) => boolean;
 
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
@@ -122,6 +137,32 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
     }
 
     return false;
+}
+
+// The validationOptOut static property can be an array of attribute names.
+// Any attribute names specified in that array will not be validated, and the
+// LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+function getValidationPredicate(
+    optOutStaticProp: string[] | true | undefined
+): AttrValidationPredicate {
+    if (isUndefined(optOutStaticProp)) {
+        return (_attrName: string) => true;
+    }
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
+    if (isTrue(optOutStaticProp)) {
+        return (_attrName: string) => false;
+    }
+    // If validationOptOut is an array of strings, attributes specified in the
+    // array will be "opted out". Attributes not specified in the array will still
+    // be validated.
+    if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
+        return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
+    }
+    logWarn(
+        'Validation opt out must be `true` or an array of attributes that should not be validated.'
+    );
+    return (_attrName: string) => true;
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
@@ -243,9 +284,21 @@ function hydrateCustomElement(
     vnode: VCustomElement,
     renderer: RendererAPI
 ): Node | null {
+    const { validationOptOut } = vnode.ctor;
+    const shouldValidateAttr = getValidationPredicate(validationOptOut);
+
+    // The validationOptOut static property can be an array of attribute names.
+    // Any attribute names specified in that array will not be validated, and the
+    // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+    //
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
+    //
+    // Therefore, if validationOptOut is falsey or an array of strings, we need to
+    // examine some or all of the custom element's attributes.
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
+        !isMatchingElement(vnode, elm, renderer, shouldValidateAttr)
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
@@ -259,7 +312,7 @@ function hydrateCustomElement(
         hydrated: true,
     });
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
@@ -275,7 +328,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm);
     }
 
     hydrateVM(vm);
@@ -371,7 +424,12 @@ function hasCorrectNodeType<T extends Node>(
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
+function isMatchingElement(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    shouldValidateAttr: AttrValidationPredicate = () => true
+) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
@@ -387,11 +445,15 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm, renderer);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm, renderer);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, renderer);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, shouldValidateAttr);
+    const hasCompatibleClass = shouldValidateAttr('class')
+        ? validateClassAttr(vnode, elm, renderer)
+        : true;
+    const hasCompatibleStyle = shouldValidateAttr('style')
+        ? validateStyleAttr(vnode, elm, renderer)
+        : true;
 
-    return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
+    return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
 }
 
 function attributeValuesAreEqual(
@@ -414,7 +476,12 @@ function attributeValuesAreEqual(
     return false;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
+function validateAttrs(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    shouldValidateAttr: (attrName: string) => boolean
+): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -424,6 +491,9 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        if (!shouldValidateAttr(attrName)) {
+            continue;
+        }
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
