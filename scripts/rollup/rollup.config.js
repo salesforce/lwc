@@ -16,8 +16,10 @@ const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 
-const pkg = JSON.parse(readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8'));
-const { name: packageName, version, dependencies, peerDependencies } = pkg;
+// The assumption is that the build script for each sub-package runs in that sub-package's directory
+const packageRoot = process.cwd();
+const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
+const { name: packageName, version, dependencies, peerDependencies } = packageJson;
 const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
@@ -40,7 +42,7 @@ function sharedPlugins() {
     return [
         typescript({
             target: 'es2017',
-            tsconfig: path.join(process.cwd(), 'tsconfig.json'),
+            tsconfig: path.join(packageRoot, 'tsconfig.json'),
             noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
             ...(watchMode && {
                 incremental: true,
@@ -150,7 +152,7 @@ function backwardsCompatDistPlugin() {
                     const descriptor = bundle[id];
                     if (descriptor) {
                         // Write additional dist/ file as a side effect
-                        const fullFilename = path.join(process.cwd(), extraDistFile);
+                        const fullFilename = path.join(packageRoot, extraDistFile);
                         await mkdir(path.dirname(fullFilename), { recursive: true });
                         await writeFile(fullFilename, descriptor.code, 'utf-8');
                     }
@@ -162,7 +164,7 @@ function backwardsCompatDistPlugin() {
 }
 
 module.exports = {
-    input: path.resolve(process.cwd(), './src/index.ts'),
+    input: path.resolve(packageRoot, './src/index.ts'),
 
     output: formats.map((format) => ({
         file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
