@@ -12,7 +12,7 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-import compile from '@lwc/template-compiler';
+import { compile } from '@lwc/template-compiler';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';

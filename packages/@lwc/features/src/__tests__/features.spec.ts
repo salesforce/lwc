@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import features from '../flags';
+import features from '../index';
 
 describe('features', () => {
     it('known flags in the features map are null', () => {
