@@ -21,19 +21,26 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [
         api_static_fragment($fragment1(), 2),
-        api_element("p", stc1, [
-          api_text("London is the capital of "),
-          api_element(
-            "span",
-            {
-              styleDecls: stc2,
-              key: 4,
-              renderer: renderer,
-            },
-            [api_text("England.")]
-          ),
-        ]),
-      ]
+        api_element(
+          "p",
+          stc1,
+          [
+            api_text("London is the capital of "),
+            api_element(
+              "span",
+              {
+                styleDecls: stc2,
+                key: 4,
+                renderer: renderer,
+              },
+              [api_text("England.")],
+              16
+            ),
+          ],
+          0
+        ),
+      ],
+      4
     ),
     api_element(
       "div",
@@ -45,7 +52,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [
         api_static_fragment($fragment2(), 7),
         api_static_fragment($fragment3(), 9),
-      ]
+      ],
+      4
     ),
   ];
   /*LWC compiler vX.X.X*/

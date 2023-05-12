@@ -22,11 +22,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element("x-pert", _xPert, stc1, [
-        api_text(api_dynamic_text(stc2.toString())),
-      ]),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          stc1,
+          [api_text(api_dynamic_text(stc2.toString()))],
+          64
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

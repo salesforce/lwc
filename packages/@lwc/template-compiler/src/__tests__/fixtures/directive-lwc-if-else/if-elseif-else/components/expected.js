@@ -15,16 +15,36 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, fr: api_fragment } = $api;
   return [
     $cmp.visible
-      ? api_fragment(0, [api_custom_element("c-custom", _cCustom, stc0)], 0)
+      ? api_fragment(
+          0,
+          [api_custom_element("c-custom", _cCustom, stc0, undefined, 0)],
+          0
+        )
       : $cmp.elseif
       ? api_fragment(
           0,
-          [api_custom_element("c-custom-elseif", _cCustomElseif, stc1)],
+          [
+            api_custom_element(
+              "c-custom-elseif",
+              _cCustomElseif,
+              stc1,
+              undefined,
+              0
+            ),
+          ],
           0
         )
       : api_fragment(
           0,
-          [api_custom_element("c-custom-else", _cCustomElse, stc2)],
+          [
+            api_custom_element(
+              "c-custom-else",
+              _cCustomElse,
+              stc2,
+              undefined,
+              0
+            ),
+          ],
           0
         ),
   ];

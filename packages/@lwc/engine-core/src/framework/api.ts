@@ -21,6 +21,7 @@ import {
     isUndefined,
     StringReplace,
     toString,
+    PatchFlag,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -98,7 +99,12 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
+function h(
+    sel: string,
+    data: VElementData,
+    children: VNodes = EmptyArray, // children is undefined if there are no children
+    patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
+): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -146,6 +152,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         elm: undefined,
         key,
         owner: vmBeingRendered,
+        patchFlag: patchFlag,
     };
 
     if (!isUndefined(ref)) {
@@ -259,7 +266,8 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray
+    children: VNodes = EmptyArray, // children is undefined if there are no children
+    patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -314,6 +322,7 @@ function c(
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
         aChildren,
         vm,
+        patchFlag,
     };
     addVNodeToChildLWC(vnode);
 
@@ -569,7 +578,7 @@ function ddc(
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
 
-    return c(sel, Ctor, data, children);
+    return c(sel, Ctor, data, children, PatchFlag.BAIL);
 }
 
 /**
@@ -608,7 +617,7 @@ function dc(
         );
     }
 
-    return c(sel, Ctor, data, children);
+    return c(sel, Ctor, data, children, PatchFlag.BAIL);
 }
 
 /**

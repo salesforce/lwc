@@ -18,22 +18,38 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("KIX")]
+      [api_text("KIX")],
+      32
     ),
-    api_element("map", stc0, [
-      api_element("area", {
-        attrs: {
-          href: api_scoped_frag_id("#haneda"),
-        },
-        key: 2,
-      }),
-      api_element("area", {
-        attrs: {
-          href: api_scoped_frag_id("#chubu"),
-        },
-        key: 3,
-      }),
-    ]),
+    api_element(
+      "map",
+      stc0,
+      [
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#haneda"),
+            },
+            key: 2,
+          },
+          undefined,
+          32
+        ),
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#chubu"),
+            },
+            key: 3,
+          },
+          undefined,
+          32
+        ),
+      ],
+      0
+    ),
     api_element(
       "h1",
       {
@@ -42,7 +58,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 4,
       },
-      [api_text("Time to travel!")]
+      [api_text("Time to travel!")],
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

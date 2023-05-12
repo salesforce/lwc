@@ -13,9 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_custom_element("c-custom", _cCustom, stc0, [
-              api_text("Visible Header"),
-            ]),
+            api_custom_element(
+              "c-custom",
+              _cCustom,
+              stc0,
+              [api_text("Visible Header")],
+              0
+            ),
           ],
           0
         )
@@ -23,9 +27,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_custom_element("c-custom", _cCustom, stc1, [
-              api_text("First Alternative Header"),
-            ]),
+            api_custom_element(
+              "c-custom",
+              _cCustom,
+              stc1,
+              [api_text("First Alternative Header")],
+              0
+            ),
           ],
           0
         )

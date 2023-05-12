@@ -21,7 +21,7 @@ import {
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
-import { isLiteral } from '../shared/estree';
+import { isArrayExpression, isLiteral } from '../shared/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -292,4 +292,13 @@ export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
     });
 
     return staticNodes;
+}
+
+// As an optimization, we don't unnecessarily create a lot of empty `[]` objects
+// for empty children, we just emit `undefined` in that case.
+export function getChildrenOrUndefinedIfEmpty(children: t.Expression) {
+    if (!isArrayExpression(children) || children.elements.length > 0) {
+        return children; // only generate children if non-empty
+    }
+    return t.identifier('undefined');
 }

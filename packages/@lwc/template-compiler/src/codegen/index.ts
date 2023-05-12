@@ -6,7 +6,13 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
+import {
+    isBooleanAttribute,
+    SVG_NAMESPACE,
+    LWC_VERSION_COMMENT,
+    isUndefined,
+    PatchFlag,
+} from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -78,7 +84,7 @@ import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
-        const databag = elementDataBag(element, slotParentName);
+        const { expression: databag, patchFlag } = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
@@ -105,14 +111,15 @@ function transform(codeGen: CodeGen): t.Expression {
                 name,
                 identifierFromComponentName(name),
                 databag,
-                children
+                children,
+                patchFlag
             );
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
-            res = codeGen.genElement(name, databag, children);
+            res = codeGen.genElement(name, databag, children, patchFlag);
         }
 
         return res;
@@ -499,7 +506,11 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function elementDataBag(element: BaseElement, slotParentName?: string): t.ObjectExpression {
+    function elementDataBag(
+        element: BaseElement,
+        slotParentName?: string
+    ): { expression: t.ObjectExpression; patchFlag: number } {
+        let patchFlag = 0;
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
@@ -526,12 +537,14 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const classExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
+                        patchFlag |= PatchFlag.DYNAMIC_CLASS;
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
                             classNames.map((name) => t.property(t.literal(name), t.literal(true)))
                         );
                         data.push(t.property(t.identifier('classMap'), classMap));
+                        patchFlag |= PatchFlag.STATIC_CLASS;
                     }
                 } else if (name === 'style') {
                     // Handle style attribute:
@@ -541,10 +554,12 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const styleExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
+                        patchFlag |= PatchFlag.DYNAMIC_STYLE;
                     } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
+                        patchFlag |= PatchFlag.STATIC_STYLE;
                     }
                 } else {
                     rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
@@ -556,6 +571,8 @@ function transform(codeGen: CodeGen): t.Expression {
             if (Object.keys(rest).length) {
                 const attrsObj = objectToAST(rest, (key) => rest[key]);
                 data.push(t.property(t.identifier('attrs'), attrsObj));
+                // contains at least one dynamic attribute
+                patchFlag |= PatchFlag.ATTRIBUTES;
             }
         }
 
@@ -597,6 +614,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (propsObj.properties.length) {
             data.push(t.property(t.identifier('props'), propsObj));
+            patchFlag |= PatchFlag.PROPS;
         }
 
         // Context
@@ -612,6 +630,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
+            patchFlag |= PatchFlag.PROPS; // For spread, bail out and treat as fully dynamic
         }
 
         // Key property on VNode
@@ -647,6 +666,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 return memorizeHandler(codeGen, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), listenerObjAST));
+            patchFlag |= PatchFlag.EVENT_LISTENERS;
         }
 
         // SVG handling
@@ -672,7 +692,10 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier('external'), t.literal(true)));
         }
 
-        return t.objectExpression(data);
+        return {
+            expression: t.objectExpression(data),
+            patchFlag,
+        };
     }
 
     return transformChildren(codeGen.root);

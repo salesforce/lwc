@@ -43,11 +43,16 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, t: api_text } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("rect", stc1),
-      api_element("circle", stc2),
-      api_element("text", stc3, [api_text("SVG")]),
-    ]),
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element("rect", stc1, undefined, 32),
+        api_element("circle", stc2, undefined, 32),
+        api_element("text", stc3, [api_text("SVG")], 32),
+      ],
+      32
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

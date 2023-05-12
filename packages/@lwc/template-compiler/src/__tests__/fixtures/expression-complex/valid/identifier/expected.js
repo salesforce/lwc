@@ -11,52 +11,61 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo,
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo,
+            },
+            key: 1,
           },
-          key: 1,
-        },
-        [api_text(api_dynamic_text($cmp.foo))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo,
+          [api_text(api_dynamic_text($cmp.foo))],
+          64
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo,
+            },
+            key: 2,
           },
-          key: 2,
-        },
-        [api_text(api_dynamic_text($cmp.foo))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo,
+          [api_text(api_dynamic_text($cmp.foo))],
+          64
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo,
+            },
+            key: 3,
           },
-          key: 3,
-        },
-        [api_text(api_dynamic_text($cmp.foo))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo,
+          [api_text(api_dynamic_text($cmp.foo))],
+          64
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo,
+            },
+            key: 4,
           },
-          key: 4,
-        },
-        [api_text(api_dynamic_text($cmp.foo))]
-      ),
-    ]),
+          [api_text(api_dynamic_text($cmp.foo))],
+          64
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -90,29 +90,34 @@ const stc21 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("a", stc1),
-      api_element("circle", stc2),
-      api_element("defs", stc3),
-      api_element("desc", stc4),
-      api_element("ellipse", stc5),
-      api_element("filter", stc6),
-      api_element("g", stc7),
-      api_element("line", stc8),
-      api_element("marker", stc9),
-      api_element("mask", stc10),
-      api_element("path", stc11),
-      api_element("pattern", stc12),
-      api_element("polygon", stc13),
-      api_element("polyline", stc14),
-      api_element("rect", stc15),
-      api_element("stop", stc16),
-      api_element("symbol", stc17),
-      api_element("text", stc18),
-      api_element("title", stc19),
-      api_element("tspan", stc20),
-      api_element("use", stc21),
-    ]),
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element("a", stc1, undefined, 0),
+        api_element("circle", stc2, undefined, 0),
+        api_element("defs", stc3, undefined, 0),
+        api_element("desc", stc4, undefined, 0),
+        api_element("ellipse", stc5, undefined, 0),
+        api_element("filter", stc6, undefined, 0),
+        api_element("g", stc7, undefined, 0),
+        api_element("line", stc8, undefined, 0),
+        api_element("marker", stc9, undefined, 0),
+        api_element("mask", stc10, undefined, 0),
+        api_element("path", stc11, undefined, 0),
+        api_element("pattern", stc12, undefined, 0),
+        api_element("polygon", stc13, undefined, 0),
+        api_element("polyline", stc14, undefined, 0),
+        api_element("rect", stc15, undefined, 0),
+        api_element("stop", stc16, undefined, 0),
+        api_element("symbol", stc17, undefined, 0),
+        api_element("text", stc18, undefined, 0),
+        api_element("title", stc19, undefined, 0),
+        api_element("tspan", stc20, undefined, 0),
+        api_element("use", stc21, undefined, 0),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

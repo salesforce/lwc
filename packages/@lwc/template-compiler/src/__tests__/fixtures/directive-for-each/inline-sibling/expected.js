@@ -25,11 +25,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               className: item.x,
               key: api_key(1, item.id),
             },
-            [api_text(api_dynamic_text(item))]
+            [api_text(api_dynamic_text(item))],
+            1
           );
         }),
         api_static_fragment($fragment1(), 3),
-      ])
+      ]),
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

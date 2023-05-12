@@ -35,69 +35,107 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, fr: api_fragment, t: api_text } = $api;
   return [
     $cmp.visible
-      ? api_fragment(0, [api_custom_element("c-custom", _cCustom, stc0)], 0)
+      ? api_fragment(
+          0,
+          [api_custom_element("c-custom", _cCustom, stc0, undefined, 0)],
+          0
+        )
       : $cmp.elseif
       ? api_fragment(
           0,
           [
-            api_custom_element("c-custom-elseif", _cCustomElseif, stc1, [
-              api_text("If Text"),
-              $cmp.showNestedIf
-                ? api_fragment(
-                    3,
-                    [
-                      api_custom_element("c-nested", _cNested, stc2, [
-                        $cmp.doubleNestedIf
-                          ? api_fragment(
-                              5,
-                              [
-                                api_custom_element(
-                                  "c-double-nested",
-                                  _cDoubleNested,
-                                  stc3
+            api_custom_element(
+              "c-custom-elseif",
+              _cCustomElseif,
+              stc1,
+              [
+                api_text("If Text"),
+                $cmp.showNestedIf
+                  ? api_fragment(
+                      3,
+                      [
+                        api_custom_element(
+                          "c-nested",
+                          _cNested,
+                          stc2,
+                          [
+                            $cmp.doubleNestedIf
+                              ? api_fragment(
+                                  5,
+                                  [
+                                    api_custom_element(
+                                      "c-double-nested",
+                                      _cDoubleNested,
+                                      stc3,
+                                      undefined,
+                                      0
+                                    ),
+                                  ],
+                                  0
+                                )
+                              : api_fragment(
+                                  5,
+                                  [
+                                    api_custom_element(
+                                      "c-double-nested-else",
+                                      _cDoubleNestedElse,
+                                      stc4,
+                                      undefined,
+                                      0
+                                    ),
+                                  ],
+                                  0
                                 ),
-                              ],
-                              0
-                            )
-                          : api_fragment(
-                              5,
-                              [
-                                api_custom_element(
-                                  "c-double-nested-else",
-                                  _cDoubleNestedElse,
-                                  stc4
-                                ),
-                              ],
-                              0
-                            ),
-                      ]),
-                    ],
-                    0
-                  )
-                : $cmp.elseifNested
-                ? api_fragment(
-                    3,
-                    [
-                      api_custom_element(
-                        "c-nested-elseif",
-                        _cNestedElseif,
-                        stc5
-                      ),
-                    ],
-                    0
-                  )
-                : api_fragment(
-                    3,
-                    [api_custom_element("c-nested-else", _cNestedElse, stc6)],
-                    0
-                  ),
-            ]),
+                          ],
+                          0
+                        ),
+                      ],
+                      0
+                    )
+                  : $cmp.elseifNested
+                  ? api_fragment(
+                      3,
+                      [
+                        api_custom_element(
+                          "c-nested-elseif",
+                          _cNestedElseif,
+                          stc5,
+                          undefined,
+                          0
+                        ),
+                      ],
+                      0
+                    )
+                  : api_fragment(
+                      3,
+                      [
+                        api_custom_element(
+                          "c-nested-else",
+                          _cNestedElse,
+                          stc6,
+                          undefined,
+                          0
+                        ),
+                      ],
+                      0
+                    ),
+              ],
+              0
+            ),
           ],
           0
         )
       : api_fragment(
           0,
-          [api_custom_element("c-custom-else", _cCustomElse, stc7)],
+          [
+            api_custom_element(
+              "c-custom-else",
+              _cCustomElse,
+              stc7,
+              undefined,
+              0
+            ),
+          ],
           0
         ),
   ];

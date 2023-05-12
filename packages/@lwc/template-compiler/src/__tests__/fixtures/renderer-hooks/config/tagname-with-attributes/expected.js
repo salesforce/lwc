@@ -13,7 +13,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
         renderer: renderer,
       },
-      [api_text("Should get custom renderer")]
+      [api_text("Should get custom renderer")],
+      4
     ),
     api_static_fragment($fragment1(), 2),
   ];

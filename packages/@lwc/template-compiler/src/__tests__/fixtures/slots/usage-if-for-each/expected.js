@@ -27,10 +27,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.id),
               },
-              [api_text("X")]
+              [api_text("X")],
+              0
             );
           })
-        : stc1
+        : stc1,
+      4
     ),
   ];
   /*LWC compiler vX.X.X*/

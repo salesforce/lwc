@@ -5,12 +5,22 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("section", stc0, [
-      api_element("p", {
-        className: $cmp.bar,
-        key: 1,
-      }),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_element(
+          "p",
+          {
+            className: $cmp.bar,
+            key: 1,
+          },
+          undefined,
+          1
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

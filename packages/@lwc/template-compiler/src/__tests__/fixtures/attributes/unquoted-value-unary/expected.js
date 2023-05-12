@@ -2,12 +2,17 @@ import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("input", {
-      attrs: {
-        title: $cmp.myValue,
+    api_element(
+      "input",
+      {
+        attrs: {
+          title: $cmp.myValue,
+        },
+        key: 0,
       },
-      key: 0,
-    }),
+      undefined,
+      32
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

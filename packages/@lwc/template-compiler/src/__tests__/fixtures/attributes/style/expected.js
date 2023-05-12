@@ -38,13 +38,13 @@ const stc6 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("div", stc0),
-    api_element("div", stc1),
-    api_element("div", stc2),
-    api_element("div", stc3),
-    api_element("div", stc4),
-    api_element("div", stc5),
-    api_element("div", stc6),
+    api_element("div", stc0, undefined, 16),
+    api_element("div", stc1, undefined, 16),
+    api_element("div", stc2, undefined, 16),
+    api_element("div", stc3, undefined, 16),
+    api_element("div", stc4, undefined, 16),
+    api_element("div", stc5, undefined, 16),
+    api_element("div", stc6, undefined, 16),
   ];
   /*LWC compiler vX.X.X*/
 }

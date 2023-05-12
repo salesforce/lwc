@@ -6,14 +6,25 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, c: api_custom_element } = $api;
   return [
-    api_custom_element("ns-cmp", _nsCmp, stc0, [
-      api_element("p", {
-        attrs: {
-          slot: $cmp.mySlot,
-        },
-        key: 1,
-      }),
-    ]),
+    api_custom_element(
+      "ns-cmp",
+      _nsCmp,
+      stc0,
+      [
+        api_element(
+          "p",
+          {
+            attrs: {
+              slot: $cmp.mySlot,
+            },
+            key: 1,
+          },
+          undefined,
+          32
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

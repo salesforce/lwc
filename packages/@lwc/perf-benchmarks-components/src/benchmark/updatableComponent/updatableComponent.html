@@ -1,0 +1,46 @@
+<!--
+Copyright (c) 2023, salesforce.com, inc.
+All rights reserved.
+SPDX-License-Identifier: MIT
+For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+-->
+<!-- The lwc:ref directive ensures these vnodes aren't considered static. Note that custom elements are
+     never considered static, so they don't need to be specially marked. -->
+<template>
+    <!-- empty -->
+    <div lwc:ref="ref1"></div>
+    <!-- event listener -->
+    <div lwc:ref="ref1" onclick={onClick}></div>
+    <!-- static class -->
+    <div lwc:ref="ref2" class="foo"></div>
+    <!-- static style -->
+    <div lwc:ref="ref3" style="content: '';"></div>
+    <!-- static attr -->
+    <div lwc:ref="ref4" aria-label="baz"></div>
+    <!-- static text child node -->
+    <div lwc:ref="ref5">foo</div>
+    <!-- static prop on a component -->
+    <benchmark-updatable-sub-component prop="foo"></benchmark-updatable-sub-component>
+    <!-- static attr on a component -->
+    <benchmark-updatable-sub-component title="foo"></benchmark-updatable-sub-component>
+    <!-- static text child node on a component -->
+    <benchmark-updatable-sub-component>foo</benchmark-updatable-sub-component>
+    <!-- dynamic class -->
+    <div lwc:ref="ref6" class={data.label}></div>
+    <!-- dynamic style -->
+    <div lwc:ref="ref7" style={dynamicStyle}></div>
+    <!-- dynamic attr -->
+    <div lwc:ref="ref8" aria-label={data.label}></div>
+    <!-- dynamic text child node -->
+    <div lwc:ref="ref9">{data.label}</div>
+    <!-- mixed dynamic and static text child nodes -->
+    <div lwc:ref="ref10">{data.label} and {data.label}</div>
+    <!-- dynamic prop on a component -->
+    <benchmark-updatable-sub-component prop={data.label}></benchmark-updatable-sub-component>
+    <!-- dynamic attr on a component -->
+    <benchmark-updatable-sub-component title={data.label}></benchmark-updatable-sub-component>
+    <!-- dynamic text child node on a component -->
+    <benchmark-updatable-sub-component>{data.label}</benchmark-updatable-sub-component>
+    <!-- mixed dynamic and static text child nodes on a component -->
+    <benchmark-updatable-sub-component>{data.label} and {data.label}</benchmark-updatable-sub-component>
+</template>

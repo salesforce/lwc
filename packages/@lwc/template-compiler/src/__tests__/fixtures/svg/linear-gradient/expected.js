@@ -47,26 +47,40 @@ const stc4 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, h: api_element } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("defs", stc1, [
+    api_element(
+      "svg",
+      stc0,
+      [
         api_element(
-          "linearGradient",
-          {
-            attrs: {
-              id: api_scoped_id("grad1"),
-              x1: "0%",
-              y1: "0%",
-              x2: "100%",
-              y2: "0%",
-            },
-            key: 2,
-            svg: true,
-          },
-          [api_element("stop", stc2), api_element("stop", stc3)]
+          "defs",
+          stc1,
+          [
+            api_element(
+              "linearGradient",
+              {
+                attrs: {
+                  id: api_scoped_id("grad1"),
+                  x1: "0%",
+                  y1: "0%",
+                  x2: "100%",
+                  y2: "0%",
+                },
+                key: 2,
+                svg: true,
+              },
+              [
+                api_element("stop", stc2, undefined, 48),
+                api_element("stop", stc3, undefined, 48),
+              ],
+              32
+            ),
+          ],
+          0
         ),
-      ]),
-      api_element("ellipse", stc4),
-    ]),
+        api_element("ellipse", stc4, undefined, 32),
+      ],
+      32
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

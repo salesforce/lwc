@@ -6,14 +6,25 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, h: api_element } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element("x-pert", _xPert, {
-        props: {
-          attr: !$cmp.foo,
-        },
-        key: 1,
-      }),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: !$cmp.foo,
+            },
+            key: 1,
+          },
+          undefined,
+          64
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

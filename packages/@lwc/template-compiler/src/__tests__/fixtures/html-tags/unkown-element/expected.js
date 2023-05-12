@@ -13,7 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, c: api_custom_element } = $api;
   return [
     api_static_fragment($fragment1(), 1),
-    api_custom_element("x-custom-component", _xCustomComponent, stc0),
+    api_custom_element(
+      "x-custom-component",
+      _xCustomComponent,
+      stc0,
+      undefined,
+      64
+    ),
     api_static_fragment($fragment2(), 4),
     api_static_fragment($fragment3(), 6),
   ];

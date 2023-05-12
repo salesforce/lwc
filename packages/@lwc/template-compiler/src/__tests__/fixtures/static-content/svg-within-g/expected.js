@@ -24,14 +24,29 @@ const stc4 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("div", stc0, [
-      api_element("svg", stc1, [
-        api_element("g", stc2, [
-          api_element("path", stc3),
-          api_element("path", stc4),
-        ]),
-      ]),
-    ]),
+    api_element(
+      "div",
+      stc0,
+      [
+        api_element(
+          "svg",
+          stc1,
+          [
+            api_element(
+              "g",
+              stc2,
+              [
+                api_element("path", stc3, undefined, 0),
+                api_element("path", stc4, undefined, 0),
+              ],
+              0
+            ),
+          ],
+          32
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

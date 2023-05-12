@@ -24,21 +24,30 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_custom_element("x-child", _xChild, stc0, [
-      api_scoped_slot_factory("slotname1", function (slot1data, key) {
-        return api_fragment(
-          key,
-          [
-            api_element("p", stc1, [
-              api_text(api_dynamic_text(slot1data.name)),
-            ]),
-          ],
-          0
-        );
-      }),
-      api_element("span", stc2, [api_text("Willy Wonka")]),
-      api_static_fragment($fragment1(), 4),
-    ]),
+    api_custom_element(
+      "x-child",
+      _xChild,
+      stc0,
+      [
+        api_scoped_slot_factory("slotname1", function (slot1data, key) {
+          return api_fragment(
+            key,
+            [
+              api_element(
+                "p",
+                stc1,
+                [api_text(api_dynamic_text(slot1data.name))],
+                0
+              ),
+            ],
+            0
+          );
+        }),
+        api_element("span", stc2, [api_text("Willy Wonka")], 32),
+        api_static_fragment($fragment1(), 4),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -47,16 +47,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 6,
       },
-      [api_text("computed value, should be resolved in component")]
+      [api_text("computed value, should be resolved in component")],
+      32
     ),
     api_static_fragment($fragment4(), 8),
-    api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc1, [
-      api_text("empty string, should be true"),
-    ]),
-    api_custom_element("x-foo", _xFoo, stc2, [
-      api_text("string value, should be true"),
-    ]),
+    api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")], 64),
+    api_custom_element(
+      "x-foo",
+      _xFoo,
+      stc1,
+      [api_text("empty string, should be true")],
+      64
+    ),
+    api_custom_element(
+      "x-foo",
+      _xFoo,
+      stc2,
+      [api_text("string value, should be true")],
+      64
+    ),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -66,11 +75,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 12,
       },
-      [api_text("computed value, should be resolved in component")]
+      [api_text("computed value, should be resolved in component")],
+      64
     ),
-    api_custom_element("x-foo", _xFoo, stc3, [
-      api_text("integer value, should be true"),
-    ]),
+    api_custom_element(
+      "x-foo",
+      _xFoo,
+      stc3,
+      [api_text("integer value, should be true")],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

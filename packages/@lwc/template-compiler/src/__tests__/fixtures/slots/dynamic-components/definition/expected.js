@@ -22,9 +22,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         "",
         stc1,
         [
-          api_element("p", stc2, [
-            api_text(api_dynamic_text($cmp.defaultContent)),
-          ]),
+          api_element(
+            "p",
+            stc2,
+            [api_text(api_dynamic_text($cmp.defaultContent))],
+            0
+          ),
         ],
         $slotset
       ),

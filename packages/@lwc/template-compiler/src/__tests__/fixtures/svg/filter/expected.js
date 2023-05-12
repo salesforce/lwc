@@ -392,119 +392,184 @@ const stc42 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, h: api_element, t: api_text } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("defs", stc1, [
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element(
+          "defs",
+          stc1,
+          [
+            api_element(
+              "filter",
+              {
+                attrs: {
+                  id: api_scoped_id("flood"),
+                  x: "0",
+                  y: "0",
+                  width: "100%",
+                  height: "100%",
+                  primitiveUnits: "objectBoundingBox",
+                },
+                key: 2,
+                svg: true,
+              },
+              [api_element("feFlood", stc2, undefined, 32)],
+              32
+            ),
+            api_element(
+              "filter",
+              {
+                attrs: {
+                  id: api_scoped_id("blend"),
+                  primitiveUnits: "objectBoundingBox",
+                },
+                key: 4,
+                svg: true,
+              },
+              [api_element("feBlend", stc3, undefined, 32)],
+              32
+            ),
+            api_element(
+              "filter",
+              {
+                attrs: {
+                  id: api_scoped_id("merge"),
+                  primitiveUnits: "objectBoundingBox",
+                },
+                key: 6,
+                svg: true,
+              },
+              [
+                api_element(
+                  "feMerge",
+                  stc4,
+                  [
+                    api_element("feMergeNode", stc5, undefined, 32),
+                    api_element("feMergeNode", stc6, undefined, 32),
+                  ],
+                  32
+                ),
+              ],
+              32
+            ),
+          ],
+          0
+        ),
+        api_element(
+          "g",
+          stc7,
+          [
+            api_element("rect", stc8, undefined, 32),
+            api_element("line", stc9, undefined, 32),
+            api_element("line", stc10, undefined, 32),
+          ],
+          32
+        ),
+        api_element("circle", stc11, undefined, 32),
+        api_element(
+          "g",
+          stc12,
+          [
+            api_element(
+              "g",
+              stc13,
+              [
+                api_element("rect", stc14, undefined, 32),
+                api_element("line", stc15, undefined, 32),
+                api_element("line", stc16, undefined, 32),
+              ],
+              32
+            ),
+            api_element("circle", stc17, undefined, 32),
+          ],
+          32
+        ),
+        api_element(
+          "g",
+          stc18,
+          [
+            api_element(
+              "g",
+              stc19,
+              [
+                api_element("rect", stc20, undefined, 32),
+                api_element("line", stc21, undefined, 32),
+                api_element("line", stc22, undefined, 32),
+              ],
+              32
+            ),
+            api_element("circle", stc23, undefined, 32),
+          ],
+          32
+        ),
+      ],
+      32
+    ),
+    api_element(
+      "svg",
+      stc24,
+      [
+        api_element("rect", stc25, undefined, 32),
+        api_element(
+          "g",
+          stc26,
+          [
+            api_element("rect", stc27, undefined, 32),
+            api_element("rect", stc28, undefined, 32),
+            api_element("rect", stc29, undefined, 32),
+            api_element("rect", stc30, undefined, 32),
+            api_element("rect", stc31, undefined, 32),
+            api_element("rect", stc32, undefined, 32),
+          ],
+          0
+        ),
         api_element(
           "filter",
           {
             attrs: {
-              id: api_scoped_id("flood"),
+              id: api_scoped_id("MyFilter"),
+              filterUnits: "userSpaceOnUse",
               x: "0",
               y: "0",
-              width: "100%",
-              height: "100%",
-              primitiveUnits: "objectBoundingBox",
+              width: "200",
+              height: "120",
             },
-            key: 2,
-            svg: true,
-          },
-          [api_element("feFlood", stc2)]
-        ),
-        api_element(
-          "filter",
-          {
-            attrs: {
-              id: api_scoped_id("blend"),
-              primitiveUnits: "objectBoundingBox",
-            },
-            key: 4,
-            svg: true,
-          },
-          [api_element("feBlend", stc3)]
-        ),
-        api_element(
-          "filter",
-          {
-            attrs: {
-              id: api_scoped_id("merge"),
-              primitiveUnits: "objectBoundingBox",
-            },
-            key: 6,
+            key: 36,
             svg: true,
           },
           [
-            api_element("feMerge", stc4, [
-              api_element("feMergeNode", stc5),
-              api_element("feMergeNode", stc6),
-            ]),
-          ]
+            api_element(
+              "desc",
+              stc33,
+              [api_text("Produces a 3D lighting effect.")],
+              0
+            ),
+            api_element("feGaussianBlur", stc34, undefined, 32),
+            api_element("feOffset", stc35, undefined, 32),
+            api_element(
+              "feSpecularLighting",
+              stc36,
+              [api_element("fePointLight", stc37, undefined, 32)],
+              32
+            ),
+            api_element("feComposite", stc38, undefined, 32),
+            api_element("feComposite", stc39, undefined, 32),
+            api_element(
+              "feMerge",
+              stc40,
+              [
+                api_element("feMergeNode", stc41, undefined, 32),
+                api_element("feMergeNode", stc42, undefined, 32),
+              ],
+              0
+            ),
+          ],
+          32
         ),
-      ]),
-      api_element("g", stc7, [
-        api_element("rect", stc8),
-        api_element("line", stc9),
-        api_element("line", stc10),
-      ]),
-      api_element("circle", stc11),
-      api_element("g", stc12, [
-        api_element("g", stc13, [
-          api_element("rect", stc14),
-          api_element("line", stc15),
-          api_element("line", stc16),
-        ]),
-        api_element("circle", stc17),
-      ]),
-      api_element("g", stc18, [
-        api_element("g", stc19, [
-          api_element("rect", stc20),
-          api_element("line", stc21),
-          api_element("line", stc22),
-        ]),
-        api_element("circle", stc23),
-      ]),
-    ]),
-    api_element("svg", stc24, [
-      api_element("rect", stc25),
-      api_element("g", stc26, [
-        api_element("rect", stc27),
-        api_element("rect", stc28),
-        api_element("rect", stc29),
-        api_element("rect", stc30),
-        api_element("rect", stc31),
-        api_element("rect", stc32),
-      ]),
-      api_element(
-        "filter",
-        {
-          attrs: {
-            id: api_scoped_id("MyFilter"),
-            filterUnits: "userSpaceOnUse",
-            x: "0",
-            y: "0",
-            width: "200",
-            height: "120",
-          },
-          key: 36,
-          svg: true,
-        },
-        [
-          api_element("desc", stc33, [
-            api_text("Produces a 3D lighting effect."),
-          ]),
-          api_element("feGaussianBlur", stc34),
-          api_element("feOffset", stc35),
-          api_element("feSpecularLighting", stc36, [
-            api_element("fePointLight", stc37),
-          ]),
-          api_element("feComposite", stc38),
-          api_element("feComposite", stc39),
-          api_element("feMerge", stc40, [
-            api_element("feMergeNode", stc41),
-            api_element("feMergeNode", stc42),
-          ]),
-        ]
-      ),
-    ]),
+      ],
+      32
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

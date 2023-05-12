@@ -109,8 +109,7 @@ export default class Store {
     }
 
     run() {
-        this.data = this.buildData();
-        this.selected = undefined;
+        this.runWithSize(1000);
     }
 
     add() {
@@ -125,9 +124,13 @@ export default class Store {
         this.selected = id;
     }
 
-    runLots() {
-        this.data = this.buildData(10000);
+    runWithSize(n) {
+        this.data = this.buildData(n);
         this.selected = undefined;
+    }
+
+    runLots() {
+        this.runWithSize(10000);
     }
 
     clear() {

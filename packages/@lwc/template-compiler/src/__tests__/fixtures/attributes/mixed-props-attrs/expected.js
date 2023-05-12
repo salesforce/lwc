@@ -30,48 +30,75 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_custom_element("ns-foo", _nsFoo, {
-      props: {
-        d: $cmp.p.foo,
-        id: api_scoped_id("ns-foo"),
-      },
-      key: 0,
-    }),
-    api_static_fragment($fragment1(), 2),
-    api_custom_element("ns-bar", _nsBar, {
-      classMap: stc0,
-      attrs: stc1,
-      props: {
-        ariaDescribedBy: api_scoped_id("ns-foo"),
-        ariaHidden: "hidden",
-        fooBar: "x",
-        foo: "bar",
-        role: "xx",
-        tabIndex: "0",
-        bgColor: "blue",
-      },
-      key: 3,
-    }),
-    api_element("svg", stc2, [
-      api_element("use", {
-        attrs: {
-          "xlink:href": sanitizeAttribute(
-            "use",
-            "http://www.w3.org/2000/svg",
-            "xlink:href",
-            "xx"
-          ),
+    api_custom_element(
+      "ns-foo",
+      _nsFoo,
+      {
+        props: {
+          d: $cmp.p.foo,
+          id: api_scoped_id("ns-foo"),
         },
-        key: 5,
-        svg: true,
-      }),
-    ]),
+        key: 0,
+      },
+      undefined,
+      64
+    ),
+    api_static_fragment($fragment1(), 2),
+    api_custom_element(
+      "ns-bar",
+      _nsBar,
+      {
+        classMap: stc0,
+        attrs: stc1,
+        props: {
+          ariaDescribedBy: api_scoped_id("ns-foo"),
+          ariaHidden: "hidden",
+          fooBar: "x",
+          foo: "bar",
+          role: "xx",
+          tabIndex: "0",
+          bgColor: "blue",
+        },
+        key: 3,
+      },
+      undefined,
+      100
+    ),
+    api_element(
+      "svg",
+      stc2,
+      [
+        api_element(
+          "use",
+          {
+            attrs: {
+              "xlink:href": sanitizeAttribute(
+                "use",
+                "http://www.w3.org/2000/svg",
+                "xlink:href",
+                "xx"
+              ),
+            },
+            key: 5,
+            svg: true,
+          },
+          undefined,
+          32
+        ),
+      ],
+      36
+    ),
     api_static_fragment($fragment2(), 7),
-    api_element("div", {
-      className: $cmp.foo,
-      attrs: stc3,
-      key: 8,
-    }),
+    api_element(
+      "div",
+      {
+        className: $cmp.foo,
+        attrs: stc3,
+        key: 8,
+      },
+      undefined,
+      33
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

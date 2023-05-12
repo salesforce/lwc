@@ -11,10 +11,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, fr: api_fragment } = $api;
   return [
     $cmp.visible
-      ? api_fragment(0, [api_custom_element("c-custom", _cCustom, stc0)], 0)
+      ? api_fragment(
+          0,
+          [api_custom_element("c-custom", _cCustom, stc0, undefined, 0)],
+          0
+        )
       : api_fragment(
           0,
-          [api_custom_element("c-custom-alt", _cCustomAlt, stc1)],
+          [api_custom_element("c-custom-alt", _cCustomAlt, stc1, undefined, 0)],
           0
         ),
   ];

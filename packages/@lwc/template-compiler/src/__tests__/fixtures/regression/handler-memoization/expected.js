@@ -21,7 +21,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           click: _m0 || ($ctx._m0 = api_bind($cmp.create)),
         },
       },
-      [api_text("New")]
+      [api_text("New")],
+      128
     ),
     api_element(
       "ul",
@@ -42,11 +43,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   click: api_bind(task.delete),
                 },
               },
-              [api_text("[X]")]
+              [api_text("[X]")],
+              128
             ),
-          ]
+          ],
+          0
         );
-      })
+      }),
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

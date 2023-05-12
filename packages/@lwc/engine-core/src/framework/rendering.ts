@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPush,
     ArrayPop,
+    ArrayPush,
     ArraySome,
     assert,
     create,
@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
     keys,
+    PatchFlag,
     SVG_NAMESPACE,
 } from '@lwc/shared';
 
@@ -82,6 +83,15 @@ export function patchChildren(
     } else {
         updateStaticChildren(c1, c2, parent, renderer);
     }
+}
+
+function patchChildrenOfNodes(
+    vnode1: VBaseElement,
+    vnode2: VBaseElement,
+    parent: ParentNode,
+    renderer: RendererAPI
+): void {
+    patchChildren(vnode1.children, vnode2.children, parent, renderer);
 }
 
 function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {
@@ -267,7 +277,7 @@ function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
     patchElementPropsAndAttrs(n1, n2, renderer);
-    patchChildren(n1.children, n2.children, elm, renderer);
+    patchChildrenOfNodes(n1, n2, elm, renderer);
 }
 
 function mountStatic(
@@ -429,7 +439,7 @@ function patchCustomElement(
 
         // in fallback mode, the children will be always empty, so, nothing
         // will happen, but in native, it does allocate the light dom
-        patchChildren(n1.children, n2.children, elm, renderer);
+        patchChildrenOfNodes(n1, n2, elm, renderer);
 
         if (!isUndefined(vm)) {
             // this will probably update the shadowRoot, but only if the vm is in a dirty state
@@ -593,24 +603,40 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
+    const { patchFlag } = vnode;
     if (isNull(oldVnode)) {
-        applyEventListeners(vnode, renderer);
-        applyStaticClassAttribute(vnode, renderer);
-        applyStaticStyleAttribute(vnode, renderer);
+        // event listeners can never be dynamically updated - they are only applied initially
+        if (patchFlag & PatchFlag.EVENT_LISTENERS) {
+            applyEventListeners(vnode, renderer);
+        }
+        if (patchFlag & PatchFlag.STATIC_CLASS) {
+            applyStaticClassAttribute(vnode, renderer);
+        }
+        if (patchFlag & PatchFlag.STATIC_STYLE) {
+            applyStaticStyleAttribute(vnode, renderer);
+        }
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
-
-    if (vnode.data.external) {
-        patchAttrUnlessProp(oldVnode, vnode, renderer);
-    } else {
-        patchAttributes(oldVnode, vnode, renderer);
+    if (patchFlag & PatchFlag.DYNAMIC_CLASS) {
+        patchClassAttribute(oldVnode, vnode, renderer);
+    }
+    if (patchFlag & PatchFlag.DYNAMIC_STYLE) {
+        patchStyleAttribute(oldVnode, vnode, renderer);
     }
 
-    patchProps(oldVnode, vnode, renderer);
+    if (patchFlag & PatchFlag.ATTRIBUTES) {
+        if (vnode.data.external) {
+            patchAttrUnlessProp(oldVnode, vnode, renderer);
+        } else {
+            patchAttributes(oldVnode, vnode, renderer);
+        }
+    }
+
+    if (patchFlag & PatchFlag.PROPS) {
+        patchProps(oldVnode, vnode, renderer);
+    }
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

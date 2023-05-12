@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     dc: api_dynamic_component,
   } = $api;
   return [
-    api_custom_element("x-foo", _xFoo, stc0),
+    api_custom_element("x-foo", _xFoo, stc0, undefined, 0),
     api_deprecated_dynamic_component("x-foo", $cmp.dynamicCtor, stc1),
     api_dynamic_component($cmp.ctor, stc2),
   ];

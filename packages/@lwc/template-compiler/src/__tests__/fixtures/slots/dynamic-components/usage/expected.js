@@ -18,8 +18,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, dc: api_dynamic_component } = $api;
   return [
     api_dynamic_component($cmp.ctor, stc0, [
-      api_element("p", stc1, [api_text("Header Slot Content")]),
-      api_element("p", stc2, [api_text("Default Content")]),
+      api_element("p", stc1, [api_text("Header Slot Content")], 32),
+      api_element("p", stc2, [api_text("Default Content")], 32),
     ]),
   ];
   /*LWC compiler vX.X.X*/

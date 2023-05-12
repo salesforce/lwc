@@ -40,7 +40,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_text("X");
         }),
         api_static_fragment($fragment1(), 2),
-      ])
+      ]),
+      4
     ),
     api_element(
       "section",
@@ -55,19 +56,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     key: api_key(4, item.id),
                   },
-                  [api_text("X1")]
+                  [api_text("X1")],
+                  0
                 ),
                 api_element(
                   "p",
                   {
                     key: api_key(5, item.id),
                   },
-                  [api_text("X2")]
+                  [api_text("X2")],
+                  0
                 ),
               ];
             })
           : stc2,
-      ])
+      ]),
+      4
     ),
     api_element(
       "section",
@@ -75,11 +79,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_flatten([
         api_static_fragment($fragment2(), 8),
         api_iterator($cmp.items, function (item) {
-          return api_element("div", {
-            key: api_key(9, item.id),
-          });
+          return api_element(
+            "div",
+            {
+              key: api_key(9, item.id),
+            },
+            undefined,
+            0
+          );
         }),
-      ])
+      ]),
+      4
     ),
     api_static_fragment($fragment3(), 11),
   ];

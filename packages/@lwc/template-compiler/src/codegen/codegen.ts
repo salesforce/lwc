@@ -25,7 +25,7 @@ import {
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes } from './helpers';
+import { getChildrenOrUndefinedIfEmpty, getStaticNodes } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindComplexExpression } from './expression';
 
@@ -163,11 +163,15 @@ export default class CodeGen {
         return this.currentKey++;
     }
 
-    genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
+    genElement(
+        tagName: string,
+        data: t.ObjectExpression,
+        children: t.Expression,
+        patchFlag: number
+    ) {
         const args: t.Expression[] = [t.literal(tagName), data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
-        }
+        args.push(getChildrenOrUndefinedIfEmpty(children));
+        args.push(t.literal(patchFlag));
         return this._renderApiCall(RENDER_APIS.element, args);
     }
 
@@ -175,14 +179,14 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: t.Expression
+        children: t.Expression,
+        patchFlag: number
     ) {
         this.referencedComponents.add(tagName);
 
         const args: t.Expression[] = [t.literal(tagName), componentClass, data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
-        }
+        args.push(getChildrenOrUndefinedIfEmpty(children));
+        args.push(t.literal(patchFlag));
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
     }

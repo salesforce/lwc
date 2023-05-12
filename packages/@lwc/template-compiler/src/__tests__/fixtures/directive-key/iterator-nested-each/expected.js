@@ -28,7 +28,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 " " +
                 api_dynamic_text(feature.label)
             ),
-          ]
+          ],
+          0
         );
       }
     );

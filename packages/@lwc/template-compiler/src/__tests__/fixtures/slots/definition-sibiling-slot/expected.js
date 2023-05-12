@@ -16,15 +16,25 @@ const stc2 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, s: api_slot, h: api_element } = $api;
   return [
-    api_element("section", stc0, [
-      api_slot(
-        "other",
-        stc1,
-        [api_static_fragment($fragment1(), "@other:3")],
-        $slotset
-      ),
-      api_slot("", stc2, [api_static_fragment($fragment2(), "@:6")], $slotset),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_slot(
+          "other",
+          stc1,
+          [api_static_fragment($fragment1(), "@other:3")],
+          $slotset
+        ),
+        api_slot(
+          "",
+          stc2,
+          [api_static_fragment($fragment2(), "@:6")],
+          $slotset
+        ),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

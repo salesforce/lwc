@@ -27,34 +27,45 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_flatten([
         $cmp.isTrue
-          ? api_element("div", {
-              props: {
-                innerHTML:
-                  $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.ifRawHtml)
-                    ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
-                        $cmp.ifRawHtml
-                      ))
-                    : $ctx._sanitizedHtml$0,
+          ? api_element(
+              "div",
+              {
+                props: {
+                  innerHTML:
+                    $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.ifRawHtml)
+                      ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
+                          $cmp.ifRawHtml
+                        ))
+                      : $ctx._sanitizedHtml$0,
+                },
+                context: stc1,
+                key: 1,
               },
-              context: stc1,
-              key: 1,
-            })
+              undefined,
+              64
+            )
           : null,
         api_iterator($cmp.items, function (item) {
-          return api_element("div", {
-            props: {
-              innerHTML:
-                $ctx._rawHtml$1 !== ($ctx._rawHtml$1 = item.forRawHtml)
-                  ? ($ctx._sanitizedHtml$1 = api_sanitize_html_content(
-                      item.forRawHtml
-                    ))
-                  : $ctx._sanitizedHtml$1,
+          return api_element(
+            "div",
+            {
+              props: {
+                innerHTML:
+                  $ctx._rawHtml$1 !== ($ctx._rawHtml$1 = item.forRawHtml)
+                    ? ($ctx._sanitizedHtml$1 = api_sanitize_html_content(
+                        item.forRawHtml
+                      ))
+                    : $ctx._sanitizedHtml$1,
+              },
+              context: stc1,
+              key: api_key(2, item.id),
             },
-            context: stc1,
-            key: api_key(2, item.id),
-          });
+            undefined,
+            64
+          );
         }),
-      ])
+      ]),
+      4
     ),
   ];
   /*LWC compiler vX.X.X*/

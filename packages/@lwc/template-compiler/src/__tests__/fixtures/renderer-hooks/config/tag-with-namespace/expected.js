@@ -25,28 +25,48 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
   } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("use", {
-        attrs: stc1,
-        key: 1,
-        svg: true,
-        renderer: renderer,
-      }),
-    ]),
-    api_element("span", stc2, [
-      api_text("Should not get custom renderer!"),
-      api_element("circle", {
-        attrs: {
-          id: api_scoped_id("myCircle"),
-          cx: "5",
-          cy: "5",
-          r: "4",
-          stroke: "blue",
-        },
-        key: 3,
-      }),
-      api_static_fragment($fragment1(), 5),
-    ]),
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element(
+          "use",
+          {
+            attrs: stc1,
+            key: 1,
+            svg: true,
+            renderer: renderer,
+          },
+          undefined,
+          32
+        ),
+      ],
+      36
+    ),
+    api_element(
+      "span",
+      stc2,
+      [
+        api_text("Should not get custom renderer!"),
+        api_element(
+          "circle",
+          {
+            attrs: {
+              id: api_scoped_id("myCircle"),
+              cx: "5",
+              cy: "5",
+              r: "4",
+              stroke: "blue",
+            },
+            key: 3,
+          },
+          undefined,
+          32
+        ),
+        api_static_fragment($fragment1(), 5),
+      ],
+      0
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }
