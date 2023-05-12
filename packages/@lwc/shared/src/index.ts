@@ -16,5 +16,6 @@ export * from './html-escape';
 export * from './symbol';
 export * from './namespaces';
 export * from './meta';
+export * from './patch-flag';
 
 export { assert };

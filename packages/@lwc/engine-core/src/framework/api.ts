@@ -21,6 +21,7 @@ import {
     isUndefined,
     StringReplace,
     toString,
+    PatchFlag,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -98,7 +99,15 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
+function h(
+    sel: string,
+    data: VElementData,
+    children: VNodes | undefined,
+    patchFlag: number
+): VElement {
+    if (isUndefined(children)) {
+        children = EmptyArray;
+    }
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -146,6 +155,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         elm: undefined,
         key,
         owner: vmBeingRendered,
+        patchFlag: patchFlag,
     };
 
     if (!isUndefined(ref)) {
@@ -246,7 +256,7 @@ function s(
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    return h('slot', data, children);
+    return h('slot', data, children, PatchFlag.BAIL);
 }
 
 // [c]ustom element node
@@ -254,8 +264,12 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray
+    children: VNodes | undefined,
+    patchFlag: number
 ): VCustomElement {
+    if (isUndefined(children)) {
+        children = EmptyArray;
+    }
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
@@ -309,6 +323,7 @@ function c(
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
         aChildren,
         vm,
+        patchFlag,
     };
     addVNodeToChildLWC(vnode);
 
@@ -564,7 +579,7 @@ function ddc(
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
 
-    return c(sel, Ctor, data, children);
+    return c(sel, Ctor, data, children, PatchFlag.BAIL);
 }
 
 /**
@@ -603,7 +618,7 @@ function dc(
         );
     }
 
-    return c(sel, Ctor, data, children);
+    return c(sel, Ctor, data, children, PatchFlag.BAIL);
 }
 
 /**

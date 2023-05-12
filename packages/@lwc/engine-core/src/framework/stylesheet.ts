@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+import {
+    ArrayMap,
+    ArrayPush,
+    isArray,
+    isNull,
+    isUndefined,
+    KEY__SCOPED_CSS,
+    PatchFlag,
+} from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
@@ -46,7 +54,8 @@ function createInlineStyleVNode(content: string): VNode {
                 type: 'text/css',
             },
         },
-        [api.t(content)]
+        [api.t(content)],
+        PatchFlag.BAIL
     );
 }
 

@@ -19,6 +19,7 @@ import {
     KEY__SHADOW_STATIC,
     keys,
     SVG_NAMESPACE,
+    PatchFlag,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -593,7 +594,8 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    if (isNull(oldVnode)) {
+    const oldVnodeIsNull = isNull(oldVnode);
+    if (oldVnodeIsNull) {
         applyEventListeners(vnode, renderer);
         applyStaticClassAttribute(vnode, renderer);
         applyStaticStyleAttribute(vnode, renderer);
@@ -601,8 +603,18 @@ function patchElementPropsAndAttrs(
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
+    if (
+        vnode.patchFlag & PatchFlag.CLASS ||
+        (!oldVnodeIsNull && oldVnode.patchFlag & PatchFlag.CLASS)
+    ) {
+        patchClassAttribute(oldVnode, vnode, renderer);
+    }
+    if (
+        vnode.patchFlag & PatchFlag.STYLE ||
+        (!oldVnodeIsNull && oldVnode.patchFlag & PatchFlag.STYLE)
+    ) {
+        patchStyleAttribute(oldVnode, vnode, renderer);
+    }
 
     if (vnode.data.external) {
         patchAttrUnlessProp(oldVnode, vnode, renderer);

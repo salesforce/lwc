@@ -88,6 +88,7 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     data: VElementData;
     elm: Element | undefined;
     key: Key;
+    patchFlag: number;
 }
 
 export interface VElement extends VBaseElement {
