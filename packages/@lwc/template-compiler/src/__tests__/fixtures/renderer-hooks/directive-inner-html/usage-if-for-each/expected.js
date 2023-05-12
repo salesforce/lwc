@@ -26,26 +26,37 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_flatten([
         $cmp.isTrue
-          ? api_element("div", {
-              props: {
-                innerHTML: $cmp.ifRawHtml,
+          ? api_element(
+              "div",
+              {
+                props: {
+                  innerHTML: $cmp.ifRawHtml,
+                },
+                context: stc1,
+                key: 1,
+                renderer: renderer,
               },
-              context: stc1,
-              key: 1,
-              renderer: renderer,
-            })
+              undefined,
+              16
+            )
           : null,
         api_iterator($cmp.items, function (item) {
-          return api_element("div", {
-            props: {
-              innerHTML: item.forRawHtml,
+          return api_element(
+            "div",
+            {
+              props: {
+                innerHTML: item.forRawHtml,
+              },
+              context: stc1,
+              key: api_key(2, item.id),
+              renderer: renderer,
             },
-            context: stc1,
-            key: api_key(2, item.id),
-            renderer: renderer,
-          });
+            undefined,
+            16
+          );
         }),
-      ])
+      ]),
+      65
     ),
   ];
   /*LWC compiler vX.X.X*/

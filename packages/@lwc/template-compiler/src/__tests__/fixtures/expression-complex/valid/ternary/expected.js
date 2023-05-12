@@ -11,47 +11,55 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo ? $cmp.bar : $cmp.baz,
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo ? $cmp.bar : $cmp.baz,
+            },
+            key: 1,
           },
-          key: 1,
-        },
-        [api_text(api_dynamic_text($cmp.foo ? $cmp.bar : $cmp.baz))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo ? $cmp.bar : $cmp.baz,
+          [api_text(api_dynamic_text($cmp.foo ? $cmp.bar : $cmp.baz))],
+          80
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo ? $cmp.bar : $cmp.baz,
+            },
+            key: 2,
           },
-          key: 2,
-        },
-        [api_text(api_dynamic_text($cmp.foo ? $cmp.bar : $cmp.baz))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo ? $cmp.bar : $cmp.baz ? $cmp.biz : $cmp.buzz,
+          [api_text(api_dynamic_text($cmp.foo ? $cmp.bar : $cmp.baz))],
+          80
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo ? $cmp.bar : $cmp.baz ? $cmp.biz : $cmp.buzz,
+            },
+            key: 3,
           },
-          key: 3,
-        },
-        [
-          api_text(
-            api_dynamic_text(
-              $cmp.foo ? $cmp.bar : $cmp.baz ? $cmp.biz : $cmp.buzz
-            )
-          ),
-        ]
-      ),
-    ]),
+          [
+            api_text(
+              api_dynamic_text(
+                $cmp.foo ? $cmp.bar : $cmp.baz ? $cmp.biz : $cmp.buzz
+              )
+            ),
+          ],
+          80
+        ),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

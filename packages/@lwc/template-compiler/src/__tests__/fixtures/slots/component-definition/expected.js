@@ -10,9 +10,13 @@ const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot, c: api_custom_element } = $api;
   return [
-    api_custom_element("x-foo", _xFoo, stc0, [
-      api_slot("", stc1, stc2, $slotset),
-    ]),
+    api_custom_element(
+      "x-foo",
+      _xFoo,
+      stc0,
+      [api_slot("", stc1, stc2, $slotset)],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

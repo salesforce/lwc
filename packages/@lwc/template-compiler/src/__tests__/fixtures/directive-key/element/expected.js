@@ -20,9 +20,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             key: api_key(1, item.key),
           },
-          [api_text(api_dynamic_text(item.value))]
+          [api_text(api_dynamic_text(item.value))],
+          64
         );
-      })
+      }),
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

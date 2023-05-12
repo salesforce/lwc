@@ -16,14 +16,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("valid")]
+      [api_text("valid")],
+      72
     ),
-    api_custom_element("x-foo", _xFoo, {
-      props: {
-        tabIndex: api_tab_index($cmp.computed),
+    api_custom_element(
+      "x-foo",
+      _xFoo,
+      {
+        props: {
+          tabIndex: api_tab_index($cmp.computed),
+        },
+        key: 1,
       },
-      key: 1,
-    }),
+      undefined,
+      16
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

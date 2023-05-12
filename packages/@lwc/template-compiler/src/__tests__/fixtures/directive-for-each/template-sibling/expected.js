@@ -26,19 +26,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.id),
               },
-              [api_text("1" + api_dynamic_text(item))]
+              [api_text("1" + api_dynamic_text(item))],
+              64
             ),
             api_element(
               "p",
               {
                 key: api_key(2, item.secondId),
               },
-              [api_text("2" + api_dynamic_text(item))]
+              [api_text("2" + api_dynamic_text(item))],
+              64
             ),
           ];
         }),
-        api_element("p", stc1, [api_text("3" + api_dynamic_text($cmp.item))]),
-      ])
+        api_element(
+          "p",
+          stc1,
+          [api_text("3" + api_dynamic_text($cmp.item))],
+          64
+        ),
+      ]),
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

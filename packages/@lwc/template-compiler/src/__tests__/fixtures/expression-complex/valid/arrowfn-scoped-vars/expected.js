@@ -3,17 +3,23 @@ import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("x-pert", _xPert, {
-      props: {
-        foo: [
-          $cmp.foo,
-          (foo) => foo,
-          $cmp.foo,
-          [(foo) => [foo, (foo) => foo, foo], $cmp.foo],
-        ],
+    api_custom_element(
+      "x-pert",
+      _xPert,
+      {
+        props: {
+          foo: [
+            $cmp.foo,
+            (foo) => foo,
+            $cmp.foo,
+            [(foo) => [foo, (foo) => foo, foo], $cmp.foo],
+          ],
+        },
+        key: 0,
       },
-      key: 0,
-    }),
+      undefined,
+      16
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

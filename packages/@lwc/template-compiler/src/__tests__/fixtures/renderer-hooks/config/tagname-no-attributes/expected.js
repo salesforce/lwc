@@ -12,7 +12,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
         renderer: renderer,
       },
-      [api_text("Should get custom renderer")]
+      [api_text("Should get custom renderer")],
+      65
     ),
     api_element(
       "div",
@@ -20,7 +21,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1,
         renderer: renderer,
       },
-      [api_text("Should also get custom renderer")]
+      [api_text("Should also get custom renderer")],
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

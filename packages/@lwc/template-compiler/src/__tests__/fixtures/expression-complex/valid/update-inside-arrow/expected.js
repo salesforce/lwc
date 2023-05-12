@@ -6,14 +6,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, h: api_element } = $api;
   const { _m0 } = $ctx;
   return [
-    api_element("section", stc0, [
-      api_element("button", {
-        key: 1,
-        on: {
-          click: _m0 || ($ctx._m0 = api_bind(() => $cmp.foo++)),
-        },
-      }),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_element(
+          "button",
+          {
+            key: 1,
+            on: {
+              click: _m0 || ($ctx._m0 = api_bind(() => $cmp.foo++)),
+            },
+          },
+          undefined,
+          32
+        ),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

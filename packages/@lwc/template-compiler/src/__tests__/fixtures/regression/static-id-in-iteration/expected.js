@@ -15,22 +15,33 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           key: api_key(0, item.key),
         },
         [
-          api_element("span", {
-            attrs: {
-              id: api_scoped_id("a"),
+          api_element(
+            "span",
+            {
+              attrs: {
+                id: api_scoped_id("a"),
+              },
+              key: 1,
             },
-            key: 1,
-          }),
-        ]
+            undefined,
+            8
+          ),
+        ],
+        64
       );
     }),
     api_iterator($cmp.items, function (item) {
-      return api_element("span", {
-        attrs: {
-          id: api_scoped_id("b"),
+      return api_element(
+        "span",
+        {
+          attrs: {
+            id: api_scoped_id("b"),
+          },
+          key: api_key(2, item.key),
         },
-        key: api_key(2, item.key),
-      });
+        undefined,
+        8
+      );
     }),
     api_iterator(
       $cmp.items,
@@ -47,13 +58,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(3, item.key),
           },
           [
-            api_element("span", {
-              attrs: {
-                id: api_scoped_id("c"),
+            api_element(
+              "span",
+              {
+                attrs: {
+                  id: api_scoped_id("c"),
+                },
+                key: 4,
               },
-              key: 4,
-            }),
-          ]
+              undefined,
+              8
+            ),
+          ],
+          64
         );
       }
     ),
@@ -66,12 +83,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           first: itemFirst,
           last: itemLast,
         };
-        return api_element("span", {
-          attrs: {
-            id: api_scoped_id("d"),
+        return api_element(
+          "span",
+          {
+            attrs: {
+              id: api_scoped_id("d"),
+            },
+            key: api_key(5, item.key),
           },
-          key: api_key(5, item.key),
-        });
+          undefined,
+          8
+        );
       }
     ),
   ]);

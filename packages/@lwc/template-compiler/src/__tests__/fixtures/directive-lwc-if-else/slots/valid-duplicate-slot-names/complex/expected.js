@@ -78,17 +78,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                               ? api_fragment(
                                   5,
                                   [
-                                    api_element("div", stc3, [
-                                      api_element("div", stc4, [
-                                        api_text("Triple Nested Text"),
-                                        api_slot(
-                                          "nested-slot",
-                                          stc5,
-                                          stc1,
-                                          $slotset
+                                    api_element(
+                                      "div",
+                                      stc3,
+                                      [
+                                        api_element(
+                                          "div",
+                                          stc4,
+                                          [
+                                            api_text("Triple Nested Text"),
+                                            api_slot(
+                                              "nested-slot",
+                                              stc5,
+                                              stc1,
+                                              $slotset
+                                            ),
+                                          ],
+                                          64
                                         ),
-                                      ]),
-                                    ]),
+                                      ],
+                                      64
+                                    ),
                                   ],
                                   0
                                 )

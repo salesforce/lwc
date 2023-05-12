@@ -25,15 +25,26 @@ const stc5 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot, h: api_element, st: api_static_fragment } = $api;
   return [
-    api_element("div", stc0, [
-      api_element("div", stc1, [
-        api_slot("conditional-slot", stc2, stc3, $slotset),
-      ]),
-    ]),
+    api_element(
+      "div",
+      stc0,
+      [
+        api_element(
+          "div",
+          stc1,
+          [api_slot("conditional-slot", stc2, stc3, $slotset)],
+          64
+        ),
+      ],
+      64
+    ),
     api_static_fragment($fragment1(), 4),
-    api_element("div", stc4, [
-      api_slot("conditional-slot", stc5, stc3, $slotset),
-    ]),
+    api_element(
+      "div",
+      stc4,
+      [api_slot("conditional-slot", stc5, stc3, $slotset)],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

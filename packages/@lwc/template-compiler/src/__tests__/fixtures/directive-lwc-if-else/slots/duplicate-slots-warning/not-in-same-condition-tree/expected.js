@@ -33,9 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_element("div", stc0, [
-              api_slot("outside-slot", stc1, stc2, $slotset),
-            ]),
+            api_element(
+              "div",
+              stc0,
+              [api_slot("outside-slot", stc1, stc2, $slotset)],
+              64
+            ),
           ],
           0
         )
@@ -46,9 +49,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           4,
           [
-            api_element("div", stc4, [
-              api_slot("outside-slot", stc5, stc2, $slotset),
-            ]),
+            api_element(
+              "div",
+              stc4,
+              [api_slot("outside-slot", stc5, stc2, $slotset)],
+              64
+            ),
           ],
           0
         )

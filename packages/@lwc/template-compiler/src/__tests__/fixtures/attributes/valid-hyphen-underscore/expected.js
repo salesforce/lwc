@@ -21,9 +21,9 @@ const stc2 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("x-button", _xButton, stc0),
-    api_custom_element("x-button", _xButton, stc1),
-    api_custom_element("x-button", _xButton, stc2),
+    api_custom_element("x-button", _xButton, stc0, undefined, 16),
+    api_custom_element("x-button", _xButton, stc1, undefined, 16),
+    api_custom_element("x-button", _xButton, stc2, undefined, 16),
   ];
   /*LWC compiler vX.X.X*/
 }

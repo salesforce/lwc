@@ -11,52 +11,61 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo + $cmp.bar,
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo + $cmp.bar,
+            },
+            key: 1,
           },
-          key: 1,
-        },
-        [api_text(api_dynamic_text($cmp.foo + $cmp.bar))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo / $cmp.bar,
+          [api_text(api_dynamic_text($cmp.foo + $cmp.bar))],
+          80
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo / $cmp.bar,
+            },
+            key: 2,
           },
-          key: 2,
-        },
-        [api_text(api_dynamic_text($cmp.foo / $cmp.bar))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo ** $cmp.bar,
+          [api_text(api_dynamic_text($cmp.foo / $cmp.bar))],
+          80
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo ** $cmp.bar,
+            },
+            key: 3,
           },
-          key: 3,
-        },
-        [api_text(api_dynamic_text($cmp.foo ** $cmp.bar))]
-      ),
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo - $cmp.bar,
+          [api_text(api_dynamic_text($cmp.foo ** $cmp.bar))],
+          80
+        ),
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo - $cmp.bar,
+            },
+            key: 4,
           },
-          key: 4,
-        },
-        [api_text(api_dynamic_text($cmp.foo - $cmp.bar))]
-      ),
-    ]),
+          [api_text(api_dynamic_text($cmp.foo - $cmp.bar))],
+          80
+        ),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

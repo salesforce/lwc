@@ -14,7 +14,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
-  return [api_custom_element("x-button", _xButton, stc0)];
+  return [api_custom_element("x-button", _xButton, stc0, undefined, 16)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

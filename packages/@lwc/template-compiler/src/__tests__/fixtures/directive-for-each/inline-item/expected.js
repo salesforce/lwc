@@ -27,9 +27,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [api_element("p", stc2, [api_text(api_dynamic_text(item))])]
+          [api_element("p", stc2, [api_text(api_dynamic_text(item))], 64)],
+          65
         );
-      })
+      }),
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

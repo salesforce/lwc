@@ -29,21 +29,30 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_fragment(
             key,
             [
-              api_element("div", stc0, [
-                api_text(api_dynamic_text(parentItem)),
-              ]),
-              api_element("span", stc1, [
-                api_text(
-                  api_dynamic_text(item.id) +
-                    " - " +
-                    api_dynamic_text(item.name)
-                ),
-              ]),
+              api_element(
+                "div",
+                stc0,
+                [api_text(api_dynamic_text(parentItem))],
+                64
+              ),
+              api_element(
+                "span",
+                stc1,
+                [
+                  api_text(
+                    api_dynamic_text(item.id) +
+                      " - " +
+                      api_dynamic_text(item.name)
+                  ),
+                ],
+                64
+              ),
             ],
             0
           );
         }),
-      ]
+      ],
+      64
     );
   });
   /*LWC compiler vX.X.X*/

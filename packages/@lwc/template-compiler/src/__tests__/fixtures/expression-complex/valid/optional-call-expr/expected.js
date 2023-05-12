@@ -11,19 +11,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element(
-        "x-pert",
-        _xPert,
-        {
-          props: {
-            attr: $cmp.foo?.($cmp.bar),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "x-pert",
+          _xPert,
+          {
+            props: {
+              attr: $cmp.foo?.($cmp.bar),
+            },
+            key: 1,
           },
-          key: 1,
-        },
-        [api_text(api_dynamic_text($cmp.baz?.buzz?.(42)))]
-      ),
-    ]),
+          [api_text(api_dynamic_text($cmp.baz?.buzz?.(42)))],
+          80
+        ),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

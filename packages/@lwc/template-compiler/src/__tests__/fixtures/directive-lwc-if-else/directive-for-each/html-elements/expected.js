@@ -17,7 +17,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.key),
               },
-              [api_text("Conditional Iteration")]
+              [api_text("Conditional Iteration")],
+              64
             ),
           ],
           0
@@ -30,7 +31,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(2, item.key),
               },
-              [api_text("Else")]
+              [api_text("Else")],
+              64
             ),
           ],
           0

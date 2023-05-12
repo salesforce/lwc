@@ -9,11 +9,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       [
-        api_element("p", {
-          className: $cmp.bar.c,
-          key: 1,
-        }),
-      ]
+        api_element(
+          "p",
+          {
+            className: $cmp.bar.c,
+            key: 1,
+          },
+          undefined,
+          1
+        ),
+      ],
+      65
     ),
   ];
   /*LWC compiler vX.X.X*/

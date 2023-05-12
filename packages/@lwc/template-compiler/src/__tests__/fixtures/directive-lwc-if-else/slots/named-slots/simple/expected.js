@@ -26,14 +26,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ? api_fragment(
               1,
               [
-                api_element("div", stc1, [
-                  api_text("Named slot content from parent"),
-                ]),
+                api_element(
+                  "div",
+                  stc1,
+                  [api_text("Named slot content from parent")],
+                  72
+                ),
               ],
               0
             )
           : null,
-      ]
+      ],
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

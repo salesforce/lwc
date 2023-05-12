@@ -42,26 +42,33 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     return api_fragment(
                       key,
                       [
-                        api_element("span", stc0, [
-                          api_text(
-                            "Coordinates: " +
-                              api_dynamic_text(row.number) +
-                              " - " +
-                              api_dynamic_text(column.number) +
-                              " "
-                          ),
-                        ]),
+                        api_element(
+                          "span",
+                          stc0,
+                          [
+                            api_text(
+                              "Coordinates: " +
+                                api_dynamic_text(row.number) +
+                                " - " +
+                                api_dynamic_text(column.number) +
+                                " "
+                            ),
+                          ],
+                          64
+                        ),
                       ],
                       0
                     );
                   }),
-                ]
+                ],
+                80
               ),
             ],
             0
           );
         }),
-      ]
+      ],
+      80
     ),
   ];
   /*LWC compiler vX.X.X*/

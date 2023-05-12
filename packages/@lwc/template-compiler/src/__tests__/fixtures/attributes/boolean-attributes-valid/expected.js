@@ -29,15 +29,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1(), 1),
-    api_custom_element("x-foo", _xFoo, stc0),
-    api_element("input", {
-      attrs: {
-        readonly: $cmp.getReadOnly ? "" : null,
-        disabled: "",
-        title: "foo",
+    api_custom_element("x-foo", _xFoo, stc0, undefined, 16),
+    api_element(
+      "input",
+      {
+        attrs: {
+          readonly: $cmp.getReadOnly ? "" : null,
+          disabled: "",
+          title: "foo",
+        },
+        key: 3,
       },
-      key: 3,
-    }),
+      undefined,
+      8
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

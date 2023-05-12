@@ -10,29 +10,44 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, h: api_element, fid: api_scoped_frag_id } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("circle", {
-        attrs: {
-          id: api_scoped_id($cmp.id),
-          cx: "5",
-          cy: "5",
-          r: "4",
-          stroke: "black",
-        },
-        key: 1,
-        svg: true,
-      }),
-      api_element("use", {
-        attrs: {
-          href: api_scoped_frag_id($cmp.id),
-          x: "10",
-          fill: "blue",
-        },
-        key: 2,
-        svg: true,
-        renderer: renderer,
-      }),
-    ]),
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element(
+          "circle",
+          {
+            attrs: {
+              id: api_scoped_id($cmp.id),
+              cx: "5",
+              cy: "5",
+              r: "4",
+              stroke: "black",
+            },
+            key: 1,
+            svg: true,
+          },
+          undefined,
+          8
+        ),
+        api_element(
+          "use",
+          {
+            attrs: {
+              href: api_scoped_frag_id($cmp.id),
+              x: "10",
+              fill: "blue",
+            },
+            key: 2,
+            svg: true,
+            renderer: renderer,
+          },
+          undefined,
+          8
+        ),
+      ],
+      72
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -10,17 +10,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       stc0,
       api_iterator($cmp.lines, function (line) {
-        return api_element("line", {
-          attrs: {
-            x1: line.x1,
-            y1: line.y1,
-            x2: line.x2,
-            y2: line.y2,
+        return api_element(
+          "line",
+          {
+            attrs: {
+              x1: line.x1,
+              y1: line.y1,
+              x2: line.x2,
+              y2: line.y2,
+            },
+            key: api_key(1, line.key),
+            svg: true,
           },
-          key: api_key(1, line.key),
-          svg: true,
-        });
-      })
+          undefined,
+          8
+        );
+      }),
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

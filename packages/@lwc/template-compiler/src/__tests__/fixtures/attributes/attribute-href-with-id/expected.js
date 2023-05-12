@@ -18,22 +18,38 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("KIX")]
+      [api_text("KIX")],
+      72
     ),
-    api_element("map", stc0, [
-      api_element("area", {
-        attrs: {
-          href: api_scoped_frag_id("#eneos-gas"),
-        },
-        key: 2,
-      }),
-      api_element("area", {
-        attrs: {
-          href: api_scoped_frag_id("#kawaramachi"),
-        },
-        key: 3,
-      }),
-    ]),
+    api_element(
+      "map",
+      stc0,
+      [
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#eneos-gas"),
+            },
+            key: 2,
+          },
+          undefined,
+          8
+        ),
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#kawaramachi"),
+            },
+            key: 3,
+          },
+          undefined,
+          8
+        ),
+      ],
+      64
+    ),
     api_element(
       "h1",
       {
@@ -42,7 +58,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 4,
       },
-      [api_text("Don't forget your passport!")]
+      [api_text("Don't forget your passport!")],
+      72
     ),
   ];
   /*LWC compiler vX.X.X*/

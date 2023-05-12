@@ -33,68 +33,114 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ssf: api_scoped_slot_factory,
   } = $api;
   return [
-    api_custom_element("x-child", _xChild, stc0, [
-      api_scoped_slot_factory("", function (variations, key) {
-        return api_fragment(
-          key,
-          [
-            variations.variation1
-              ? api_fragment(
-                  1,
-                  [
-                    api_custom_element("x-counter", _xCounter, stc1, [
-                      api_text("Counter1"),
-                    ]),
-                  ],
-                  0
-                )
-              : variations.variation2
-              ? api_fragment(
-                  1,
-                  [api_custom_element("x-counter", _xCounter, stc2)],
-                  0
-                )
-              : variations.variation2
-              ? api_fragment(
-                  1,
-                  [api_custom_element("x-counter", _xCounter, stc3)],
-                  0
-                )
-              : null,
-          ],
-          0
-        );
-      }),
-      api_scoped_slot_factory("foo", function (variations, key) {
-        return api_fragment(
-          key,
-          [
-            variations.variation1
-              ? api_fragment(
-                  5,
-                  [
-                    api_custom_element("x-button1", _xButton1, stc4, [
-                      api_text("Button 1"),
-                    ]),
-                  ],
-                  0
-                )
-              : variations.variation2
-              ? api_fragment(
-                  5,
-                  [api_custom_element("x-button2", _xButton2, stc5)],
-                  0
-                )
-              : api_fragment(
-                  5,
-                  [api_custom_element("x-button3", _xButton3, stc6)],
-                  0
-                ),
-          ],
-          0
-        );
-      }),
-    ]),
+    api_custom_element(
+      "x-child",
+      _xChild,
+      stc0,
+      [
+        api_scoped_slot_factory("", function (variations, key) {
+          return api_fragment(
+            key,
+            [
+              variations.variation1
+                ? api_fragment(
+                    1,
+                    [
+                      api_custom_element(
+                        "x-counter",
+                        _xCounter,
+                        stc1,
+                        [api_text("Counter1")],
+                        64
+                      ),
+                    ],
+                    0
+                  )
+                : variations.variation2
+                ? api_fragment(
+                    1,
+                    [
+                      api_custom_element(
+                        "x-counter",
+                        _xCounter,
+                        stc2,
+                        undefined,
+                        0
+                      ),
+                    ],
+                    0
+                  )
+                : variations.variation2
+                ? api_fragment(
+                    1,
+                    [
+                      api_custom_element(
+                        "x-counter",
+                        _xCounter,
+                        stc3,
+                        undefined,
+                        0
+                      ),
+                    ],
+                    0
+                  )
+                : null,
+            ],
+            0
+          );
+        }),
+        api_scoped_slot_factory("foo", function (variations, key) {
+          return api_fragment(
+            key,
+            [
+              variations.variation1
+                ? api_fragment(
+                    5,
+                    [
+                      api_custom_element(
+                        "x-button1",
+                        _xButton1,
+                        stc4,
+                        [api_text("Button 1")],
+                        64
+                      ),
+                    ],
+                    0
+                  )
+                : variations.variation2
+                ? api_fragment(
+                    5,
+                    [
+                      api_custom_element(
+                        "x-button2",
+                        _xButton2,
+                        stc5,
+                        undefined,
+                        0
+                      ),
+                    ],
+                    0
+                  )
+                : api_fragment(
+                    5,
+                    [
+                      api_custom_element(
+                        "x-button3",
+                        _xButton3,
+                        stc6,
+                        undefined,
+                        0
+                      ),
+                    ],
+                    0
+                  ),
+            ],
+            0
+          );
+        }),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

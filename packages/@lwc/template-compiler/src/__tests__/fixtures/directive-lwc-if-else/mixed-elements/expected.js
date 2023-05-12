@@ -19,9 +19,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       : api_fragment(
           0,
           [
-            api_custom_element("c-default", _cDefault, stc0, [
-              api_text("Else!"),
-            ]),
+            api_custom_element(
+              "c-default",
+              _cDefault,
+              stc0,
+              [api_text("Else!")],
+              64
+            ),
           ],
           0
         ),

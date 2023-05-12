@@ -21,12 +21,23 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, c: api_custom_element } = $api;
   return [
-    api_element("section", stc0, [
-      api_custom_element("ns-cmp", _nsCmp, stc1, [
-        api_element("p", stc2, [api_text("Header Slot Content")]),
-        api_element("p", stc3, [api_text("Default Content")]),
-      ]),
-    ]),
+    api_element(
+      "section",
+      stc0,
+      [
+        api_custom_element(
+          "ns-cmp",
+          _nsCmp,
+          stc1,
+          [
+            api_element("p", stc2, [api_text("Header Slot Content")], 72),
+            api_element("p", stc3, [api_text("Default Content")], 72),
+          ],
+          64
+        ),
+      ],
+      64
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }

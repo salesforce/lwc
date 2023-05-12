@@ -13,16 +13,26 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { fid: api_scoped_frag_id, h: api_element } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("use", {
-        attrs: {
-          "xlink:href": api_scoped_frag_id($cmp.getXLink),
-        },
-        key: 1,
-        svg: true,
-        renderer: renderer,
-      }),
-    ]),
+    api_element(
+      "svg",
+      stc0,
+      [
+        api_element(
+          "use",
+          {
+            attrs: {
+              "xlink:href": api_scoped_frag_id($cmp.getXLink),
+            },
+            key: 1,
+            svg: true,
+            renderer: renderer,
+          },
+          undefined,
+          8
+        ),
+      ],
+      73
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }
