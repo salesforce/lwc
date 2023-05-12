@@ -18,6 +18,7 @@ export const enum PatchFlag {
     ATTRIBUTES = 1 << 3,
     PROPS = 1 << 4,
     CHILDREN = 1 << 5,
+    EVENT_LISTENER = 1 << 6,
 
     /**
      * Special value that tells the diffing algo to bail out of any optimizations and do a full diff.

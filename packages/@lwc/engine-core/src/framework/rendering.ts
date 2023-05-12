@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPush,
     ArrayPop,
+    ArrayPush,
     ArraySome,
     assert,
     create,
@@ -18,8 +18,8 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
     keys,
-    SVG_NAMESPACE,
     PatchFlag,
+    SVG_NAMESPACE,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -72,6 +72,10 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
+function hasPatchFlag(patchFlag: PatchFlag, vnode: VBaseElement) {
+    return vnode.patchFlag & patchFlag;
+}
+
 export function patchChildren(
     c1: VNodes,
     c2: VNodes,
@@ -82,6 +86,17 @@ export function patchChildren(
         updateDynamicChildren(c1, c2, parent, renderer);
     } else {
         updateStaticChildren(c1, c2, parent, renderer);
+    }
+}
+
+function patchChildrenOfNodes(
+    vnode1: VBaseElement,
+    vnode2: VBaseElement,
+    parent: ParentNode,
+    renderer: RendererAPI
+): void {
+    if (hasPatchFlag(PatchFlag.CHILDREN, vnode1) || hasPatchFlag(PatchFlag.CHILDREN, vnode2)) {
+        patchChildren(vnode1.children, vnode2.children, parent, renderer);
     }
 }
 
@@ -268,7 +283,7 @@ function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
     patchElementPropsAndAttrs(n1, n2, renderer);
-    patchChildren(n1.children, n2.children, elm, renderer);
+    patchChildrenOfNodes(n1, n2, elm, renderer);
 }
 
 function mountStatic(
@@ -430,7 +445,7 @@ function patchCustomElement(
 
         // in fallback mode, the children will be always empty, so, nothing
         // will happen, but in native, it does allocate the light dom
-        patchChildren(n1.children, n2.children, elm, renderer);
+        patchChildrenOfNodes(n1, n2, elm, renderer);
 
         if (!isUndefined(vm)) {
             // this will probably update the shadowRoot, but only if the vm is in a dirty state
@@ -594,35 +609,46 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    const oldVnodeIsNull = isNull(oldVnode);
-    if (oldVnodeIsNull) {
+    let hasClass = hasPatchFlag(PatchFlag.CLASS, vnode);
+    let hasStyle = hasPatchFlag(PatchFlag.STYLE, vnode);
+    let hasAttributes = hasPatchFlag(PatchFlag.ATTRIBUTES, vnode);
+    let hasProps = hasPatchFlag(PatchFlag.PROPS, vnode);
+
+    if (isNull(oldVnode)) {
         applyEventListeners(vnode, renderer);
-        applyStaticClassAttribute(vnode, renderer);
-        applyStaticStyleAttribute(vnode, renderer);
+        if (hasClass) {
+            applyStaticClassAttribute(vnode, renderer);
+        }
+        if (hasStyle) {
+            applyStaticStyleAttribute(vnode, renderer);
+        }
+    } else {
+        hasClass ||= hasPatchFlag(PatchFlag.CLASS, oldVnode);
+        hasStyle ||= hasPatchFlag(PatchFlag.STYLE, oldVnode);
+        hasAttributes ||= hasPatchFlag(PatchFlag.ATTRIBUTES, oldVnode);
+        hasProps ||= hasPatchFlag(PatchFlag.PROPS, oldVnode);
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    if (
-        vnode.patchFlag & PatchFlag.CLASS ||
-        (!oldVnodeIsNull && oldVnode.patchFlag & PatchFlag.CLASS)
-    ) {
+    if (hasClass) {
         patchClassAttribute(oldVnode, vnode, renderer);
     }
-    if (
-        vnode.patchFlag & PatchFlag.STYLE ||
-        (!oldVnodeIsNull && oldVnode.patchFlag & PatchFlag.STYLE)
-    ) {
+    if (hasStyle) {
         patchStyleAttribute(oldVnode, vnode, renderer);
     }
 
-    if (vnode.data.external) {
-        patchAttrUnlessProp(oldVnode, vnode, renderer);
-    } else {
-        patchAttributes(oldVnode, vnode, renderer);
+    if (hasAttributes) {
+        if (vnode.data.external) {
+            patchAttrUnlessProp(oldVnode, vnode, renderer);
+        } else {
+            patchAttributes(oldVnode, vnode, renderer);
+        }
     }
 
-    patchProps(oldVnode, vnode, renderer);
+    if (hasProps) {
+        patchProps(oldVnode, vnode, renderer);
+    }
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

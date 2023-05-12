@@ -102,12 +102,9 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 function h(
     sel: string,
     data: VElementData,
-    children: VNodes | undefined,
-    patchFlag: number
+    children: VNodes = EmptyArray, // children is undefined if there are no children
+    patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VElement {
-    if (isUndefined(children)) {
-        children = EmptyArray;
-    }
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -256,7 +253,7 @@ function s(
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    return h('slot', data, children, PatchFlag.BAIL);
+    return h('slot', data, children);
 }
 
 // [c]ustom element node
@@ -264,12 +261,9 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes | undefined,
-    patchFlag: number
+    children: VNodes = EmptyArray, // children is undefined if there are no children
+    patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VCustomElement {
-    if (isUndefined(children)) {
-        children = EmptyArray;
-    }
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);

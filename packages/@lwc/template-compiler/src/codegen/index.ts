@@ -96,7 +96,8 @@ function transform(codeGen: CodeGen): t.Expression {
 
         const children = transformChildren(element);
 
-        if (!(t.isArrayExpression(children) && children.elements.length === 0)) {
+        if (!t.isArrayExpression(children) || children.elements.length > 0) {
+            // children are non-empty, so apply the patch flag
             patchFlag |= PatchFlag.CHILDREN;
         }
 
@@ -635,6 +636,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
+            patchFlag |= PatchFlag.PROPS; // At runtime, spread is handled by `patchProps()`
         }
 
         // Key property on VNode
@@ -670,6 +672,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 return memorizeHandler(codeGen, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), listenerObjAST));
+            patchFlag |= PatchFlag.EVENT_LISTENER;
         }
 
         // SVG handling
