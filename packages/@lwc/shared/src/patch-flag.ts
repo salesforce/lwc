@@ -10,15 +10,38 @@
 // actually need to be diffed and which ones don't. The bitwise operator can be used to quickly tell if a
 // patch flag is enabled or not.
 // [1]: https://vuejs.org/guide/extras/rendering-mechanism.html#patch-flags
-// [2]: https://markojs.com/docs/why-is-marko-fast/#smart-compiler
+// [2]: https://markojs.com/docs/why-is-marko-fast/
 
 export const enum PatchFlag {
+    /**
+     * Indicates that the vnode has a class string or classMap (mapping of dynamic classes)
+     */
     CLASS = 1,
+
+    /**
+     * Indicates that the vnode either has a style string or styleDecls (list of dynamic style declarations)
+     */
     STYLE = 1 << 2,
+
+    /**
+     * Indicates that the vnode has non-class, non-style attributes to set
+     */
     ATTRIBUTES = 1 << 3,
+
+    /**
+     * Indicates that the vnode has properties to set
+     */
     PROPS = 1 << 4,
-    CHILDREN = 1 << 5,
-    EVENT_LISTENER = 1 << 6,
+
+    /**
+     * Indicates that the vnode has event listeners (e.g. `onclick`)
+     */
+    EVENT_LISTENER = 1 << 5,
+
+    /**
+     * Indicates that the vnode has children
+     */
+    CHILDREN = 1 << 6,
 
     /**
      * Special value that tells the diffing algo to bail out of any optimizations and do a full diff.

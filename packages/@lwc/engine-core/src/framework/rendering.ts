@@ -609,13 +609,16 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
+    const hasEventListeners = hasPatchFlag(PatchFlag.EVENT_LISTENER, vnode);
     let hasClass = hasPatchFlag(PatchFlag.CLASS, vnode);
     let hasStyle = hasPatchFlag(PatchFlag.STYLE, vnode);
     let hasAttributes = hasPatchFlag(PatchFlag.ATTRIBUTES, vnode);
     let hasProps = hasPatchFlag(PatchFlag.PROPS, vnode);
 
     if (isNull(oldVnode)) {
-        applyEventListeners(vnode, renderer);
+        if (hasEventListeners) {
+            applyEventListeners(vnode, renderer);
+        }
         if (hasClass) {
             applyStaticClassAttribute(vnode, renderer);
         }
@@ -623,6 +626,7 @@ function patchElementPropsAndAttrs(
             applyStaticStyleAttribute(vnode, renderer);
         }
     } else {
+        // If the old vnode has any of these patch flags, then we'll still need to update them
         hasClass ||= hasPatchFlag(PatchFlag.CLASS, oldVnode);
         hasStyle ||= hasPatchFlag(PatchFlag.STYLE, oldVnode);
         hasAttributes ||= hasPatchFlag(PatchFlag.ATTRIBUTES, oldVnode);
