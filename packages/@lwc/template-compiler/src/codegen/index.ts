@@ -544,15 +544,14 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const classExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
-                        patchFlag |= PatchFlag.CLASS;
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
                             classNames.map((name) => t.property(t.literal(name), t.literal(true)))
                         );
                         data.push(t.property(t.identifier('classMap'), classMap));
-                        patchFlag |= PatchFlag.CLASS;
                     }
+                    patchFlag |= PatchFlag.CLASS;
                 } else if (name === 'style') {
                     // Handle style attribute:
                     // - expression values are turned into a `style` property.
@@ -561,13 +560,12 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const styleExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
-                        patchFlag |= PatchFlag.STYLE;
                     } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
-                        patchFlag |= PatchFlag.STYLE;
                     }
+                    patchFlag |= PatchFlag.STYLE;
                 } else {
                     rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
                 }
