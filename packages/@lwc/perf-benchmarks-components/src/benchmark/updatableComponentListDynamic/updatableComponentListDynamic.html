@@ -1,0 +1,14 @@
+<!--
+Copyright (c) 2023, salesforce.com, inc.
+All rights reserved.
+SPDX-License-Identifier: MIT
+For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+-->
+<!--
+  The "dynamic" list uses `for:each`, which activates the `updateDynamicChildren` routine in `rendering.ts`.
+-->
+<template>
+    <template for:each={rows} for:item="row">
+        <benchmark-updatable-component key={row.id} data={row}></benchmark-updatable-component>
+    </template>
+</template>
