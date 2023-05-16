@@ -7,7 +7,6 @@
 import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 
-import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -35,7 +34,6 @@ export function patchAttributes(
         const old = oldAttrs[key];
 
         if (old !== cur) {
-            unlockAttribute(elm!, key);
             if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, key, cur as string, XML_NAMESPACE);
@@ -47,7 +45,6 @@ export function patchAttributes(
             } else {
                 setAttribute(elm, key, cur as string);
             }
-            lockAttribute(elm!, key);
         }
     }
 }
