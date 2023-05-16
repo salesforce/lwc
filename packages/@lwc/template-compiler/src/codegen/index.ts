@@ -581,9 +581,12 @@ function transform(codeGen: CodeGen): t.Expression {
             // Add all the remaining attributes to an `attrs` object where the key is the attribute
             // name and the value is the computed attribute value.
             if (Object.keys(rest).length) {
+                if (!Object.values(rest).every((attrValue) => t.isLiteral(attrValue))) {
+                    // contains at least one dynamic attribute
+                    patchFlag |= PatchFlag.ATTRIBUTES;
+                }
                 const attrsObj = objectToAST(rest, (key) => rest[key]);
                 data.push(t.property(t.identifier('attrs'), attrsObj));
-                patchFlag |= PatchFlag.ATTRIBUTES;
             }
         }
 
@@ -593,12 +596,12 @@ function transform(codeGen: CodeGen): t.Expression {
         // Properties
         if (properties.length) {
             for (const prop of properties) {
-                propsObj.properties.push(
-                    t.property(
-                        t.literal(prop.name),
-                        computeAttrValue(prop, element, !addSanitizationHook)
-                    )
-                );
+                const attrValue = computeAttrValue(prop, element, !addSanitizationHook);
+                if (!t.isLiteral(attrValue)) {
+                    // contains at least one dynamic prop
+                    patchFlag |= PatchFlag.PROPS;
+                }
+                propsObj.properties.push(t.property(t.literal(prop.name), attrValue));
             }
         }
 
@@ -641,7 +644,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
-            patchFlag |= PatchFlag.PROPS; // At runtime, spread is handled by `patchProps()`
+            patchFlag |= PatchFlag.PROPS; // For spread, bail out and treat as fully dynamic
         }
 
         // Key property on VNode

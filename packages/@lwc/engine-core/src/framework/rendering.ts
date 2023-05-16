@@ -604,7 +604,9 @@ function patchElementPropsAndAttrs(
     renderer: RendererAPI
 ) {
     const { patchFlag } = vnode;
-    if (isNull(oldVnode)) {
+    const oldVnodeIsNull = isNull(oldVnode);
+    if (oldVnodeIsNull) {
+        // event listeners can never be dynamically updated - they are only applied initially
         applyEventListeners(vnode, renderer);
         applyStaticClassAttribute(vnode, renderer);
         applyStaticStyleAttribute(vnode, renderer);
@@ -619,7 +621,7 @@ function patchElementPropsAndAttrs(
         patchStyleAttribute(oldVnode, vnode, renderer);
     }
 
-    if (patchFlag & PatchFlag.ATTRIBUTES) {
+    if (oldVnodeIsNull || patchFlag & PatchFlag.ATTRIBUTES) {
         if (vnode.data.external) {
             patchAttrUnlessProp(oldVnode, vnode, renderer);
         } else {
@@ -627,7 +629,7 @@ function patchElementPropsAndAttrs(
         }
     }
 
-    if (patchFlag & PatchFlag.PROPS) {
+    if (oldVnodeIsNull || patchFlag & PatchFlag.PROPS) {
         patchProps(oldVnode, vnode, renderer);
     }
 }
