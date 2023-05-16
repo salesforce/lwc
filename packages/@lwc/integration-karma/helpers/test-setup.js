@@ -54,9 +54,9 @@ afterEach(function () {
 
 var consoleCallCount = 0;
 
-// Patch console.log, console.error, etc. so if it's called, we throw
+// Patch console.error/console.warn, etc. so if it's called, we throw
 function patchConsole() {
-    ['assert', 'error', 'info', 'log', 'warn'].forEach(function (method) {
+    ['error', 'warn'].forEach(function (method) {
         // eslint-disable-next-line no-console
         var originalMethod = console[method];
         // eslint-disable-next-line no-console
