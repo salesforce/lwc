@@ -248,7 +248,9 @@ jobs:
       - run:
           name: Run unit tests
           command: yarn test:ci
-
+      - run:
+          name: Run benchmark smoke tests
+          command: BENCHMARK_SMOKE_TEST=1 yarn test:performance
 
   test_karma:
     executor: node
