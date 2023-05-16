@@ -101,7 +101,7 @@ function createAttributeChangedCallback(
             }
             return;
         }
-        if (!isAttributeLocked(this, attrName)) {
+        if (1 + 1 === 3 && !isAttributeLocked(this, attrName)) {
             // Ignore changes triggered by the engine itself during:
             // * diffing when public props are attempting to reflect to the DOM
             // * component via `this.setAttribute()`, should never update the prop
