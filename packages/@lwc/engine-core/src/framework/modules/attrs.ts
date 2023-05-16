@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
+import {
+    isNull,
+    isUndefined,
+    StringCharCodeAt,
+    XML_NAMESPACE,
+    XLINK_NAMESPACE,
+    kebabCaseToCamelCase,
+} from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
@@ -18,36 +25,47 @@ export function patchAttributes(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    const { attrs } = vnode.data;
+    const { attrs, external } = vnode.data;
     if (isUndefined(attrs)) {
         return;
     }
 
     const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
+
+    // Attrs may be the same due to the static content optimization, so we can skip diffing
     if (oldAttrs === attrs) {
         return;
     }
 
     const { elm } = vnode;
-    const { setAttribute, removeAttribute } = renderer;
+    const { setAttribute, removeAttribute, setProperty } = renderer;
     for (const key in attrs) {
         const cur = attrs[key];
         const old = oldAttrs[key];
 
         if (old !== cur) {
-            unlockAttribute(elm!, key);
-            if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
-                // Assume xml namespace
-                setAttribute(elm, key, cur as string, XML_NAMESPACE);
-            } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
-                // Assume xlink namespace
-                setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
-            } else if (isNull(cur) || isUndefined(cur)) {
-                removeAttribute(elm, key);
+            let propName: string;
+            // For external custom elements, sniff to see if the attr should be considered a prop.
+            // Use kebabCaseToCamelCase directly because we don't want to set props like `ariaLabel` or `tabIndex`
+            // on a custom element versus just using the more reliable attribute format.
+            if (external && (propName = kebabCaseToCamelCase(key)) in elm!) {
+                setProperty(elm, propName, cur);
             } else {
-                setAttribute(elm, key, cur as string);
+                // Only unlock/lock attributes if it's an attribute, not a prop
+                unlockAttribute(elm!, key);
+                if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+                    // Assume xml namespace
+                    setAttribute(elm, key, cur as string, XML_NAMESPACE);
+                } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
+                    // Assume xlink namespace
+                    setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
+                } else if (isNull(cur) || isUndefined(cur)) {
+                    removeAttribute(elm, key);
+                } else {
+                    setAttribute(elm, key, cur as string);
+                }
+                lockAttribute(elm!, key);
             }
-            lockAttribute(elm!, key);
         }
     }
 }
