@@ -242,8 +242,9 @@ jobs:
 
 
   test_unit:
-    executor: node
+    executor: node-browsers
     steps:
+      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
       - load_workspace
       - run:
           name: Run unit tests
