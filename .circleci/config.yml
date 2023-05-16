@@ -228,6 +228,9 @@ jobs:
           name: Check package.json integrity
           command: node ./scripts/tasks/check-and-rewrite-package-json.js --test
       - run:
+          name: Verify @lwc/shared is tree-shakable
+          command: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+      - run:
           name: Check formatting
           command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - run:
