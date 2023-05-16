@@ -84,9 +84,10 @@ import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
-        const dataBagResult = elementDataBag(element, slotParentName);
-        const { dataBag } = dataBagResult;
-        let { patchFlag } = dataBagResult;
+        const { expression: dataBag, patchFlag: dataBagPatchFlag } = elementDataBag(
+            element,
+            slotParentName
+        );
         let res: t.Expression;
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
@@ -94,12 +95,9 @@ function transform(codeGen: CodeGen): t.Expression {
             return codeGen.genHoistedElement(element, slotParentName);
         }
 
-        const children = transformChildren(element);
+        const { children, patchFlag: childrenPatchFlag } = transformChildren(element);
 
-        if (!t.isArrayExpression(children) || children.elements.length > 0) {
-            // children are non-empty, so apply the patch flag
-            patchFlag |= PatchFlag.CHILDREN;
-        }
+        const patchFlag = dataBagPatchFlag | childrenPatchFlag;
 
         const { name } = element;
         // lwc:dynamic directive
@@ -144,11 +142,13 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(parent: ParentNode): t.Expression {
+    function transformChildren(parent: ParentNode): { children: t.Expression; patchFlag: number } {
         const res: t.Expression[] = [];
         const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
+
+        let patchFlag = 0;
 
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
@@ -167,6 +167,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
                 // Early exit if a text node is the last child node.
                 if (current.done) {
+                    patchFlag |= PatchFlag.TEXT; // all child nodes are text nodes
                     break;
                 }
             }
@@ -188,15 +189,21 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
+        let expression;
         if (shouldFlatten(codeGen, children)) {
             if (children.length === 1) {
-                return res[0];
+                expression = res[0];
             } else {
-                return codeGen.genFlatten([t.arrayExpression(res)]);
+                expression = codeGen.genFlatten([t.arrayExpression(res)]);
             }
         } else {
-            return t.arrayExpression(res);
+            expression = t.arrayExpression(res);
         }
+
+        return {
+            patchFlag,
+            children: expression,
+        };
     }
 
     function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
@@ -212,7 +219,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const key = t.identifier('key');
         codeGen.declareIdentifier(key);
 
-        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
+        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment).children);
         codeGen.endScope();
 
         // The factory is invoked with two parameters:
@@ -233,7 +240,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
-        const expression = transformChildren(ifNode);
+        const { children: expression } = transformChildren(ifNode);
         let res: t.Expression | t.Expression[];
 
         if (t.isArrayExpression(expression)) {
@@ -276,7 +283,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         const childrenExpression = codeGen.genFragment(
             t.literal(ifBlockKey),
-            transformChildren(conditionalParentBlock)
+            transformChildren(conditionalParentBlock).children
         );
 
         let elseExpression: t.Expression = t.literal(null);
@@ -285,7 +292,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 ? transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey)
                 : codeGen.genFragment(
                       t.literal(ifBlockKey),
-                      transformChildren(conditionalParentBlock.else)
+                      transformChildren(conditionalParentBlock.else).children
                   );
         }
 
@@ -357,7 +364,7 @@ function transform(codeGen: CodeGen): t.Expression {
             codeGen.declareIdentifier(forBlock.iterator);
         }
 
-        const children = transformChildren(forBlock);
+        const { children } = transformChildren(forBlock);
         codeGen.endScope();
 
         return children;
@@ -516,7 +523,7 @@ function transform(codeGen: CodeGen): t.Expression {
     function elementDataBag(
         element: BaseElement,
         slotParentName?: string
-    ): { dataBag: t.ObjectExpression; patchFlag: number } {
+    ): { expression: t.ObjectExpression; patchFlag: number } {
         let patchFlag = 0;
         const data: t.Property[] = [];
 
@@ -544,6 +551,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const classExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
+                        patchFlag |= PatchFlag.CLASS;
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
@@ -551,7 +559,6 @@ function transform(codeGen: CodeGen): t.Expression {
                         );
                         data.push(t.property(t.identifier('classMap'), classMap));
                     }
-                    patchFlag |= PatchFlag.CLASS;
                 } else if (name === 'style') {
                     // Handle style attribute:
                     // - expression values are turned into a `style` property.
@@ -560,12 +567,12 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const styleExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
+                        patchFlag |= PatchFlag.STYLE;
                     } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
-                    patchFlag |= PatchFlag.STYLE;
                 } else {
                     rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
                 }
@@ -670,7 +677,6 @@ function transform(codeGen: CodeGen): t.Expression {
                 return memorizeHandler(codeGen, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), listenerObjAST));
-            patchFlag |= PatchFlag.EVENT_LISTENER;
         }
 
         // SVG handling
@@ -697,12 +703,12 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         return {
-            dataBag: t.objectExpression(data),
+            expression: t.objectExpression(data),
             patchFlag,
         };
     }
 
-    return transformChildren(codeGen.root);
+    return transformChildren(codeGen.root).children;
 }
 
 function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {

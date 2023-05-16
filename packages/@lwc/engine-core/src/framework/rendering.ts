@@ -72,10 +72,6 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
-function hasPatchFlag(patchFlag: PatchFlag, vnode: VBaseElement) {
-    return vnode.patchFlag & patchFlag;
-}
-
 export function patchChildren(
     c1: VNodes,
     c2: VNodes,
@@ -95,9 +91,7 @@ function patchChildrenOfNodes(
     parent: ParentNode,
     renderer: RendererAPI
 ): void {
-    if (hasPatchFlag(PatchFlag.CHILDREN, vnode1) || hasPatchFlag(PatchFlag.CHILDREN, vnode2)) {
-        patchChildren(vnode1.children, vnode2.children, parent, renderer);
-    }
+    patchChildren(vnode1.children, vnode2.children, parent, renderer);
 }
 
 function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {
@@ -609,40 +603,23 @@ function patchElementPropsAndAttrs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    const hasEventListeners = hasPatchFlag(PatchFlag.EVENT_LISTENER, vnode);
-    let hasClass = hasPatchFlag(PatchFlag.CLASS, vnode);
-    let hasStyle = hasPatchFlag(PatchFlag.STYLE, vnode);
-    let hasAttributes = hasPatchFlag(PatchFlag.ATTRIBUTES, vnode);
-    let hasProps = hasPatchFlag(PatchFlag.PROPS, vnode);
-
+    const { patchFlag } = vnode;
     if (isNull(oldVnode)) {
-        if (hasEventListeners) {
-            applyEventListeners(vnode, renderer);
-        }
-        if (hasClass) {
-            applyStaticClassAttribute(vnode, renderer);
-        }
-        if (hasStyle) {
-            applyStaticStyleAttribute(vnode, renderer);
-        }
-    } else {
-        // If the old vnode has any of these patch flags, then we'll still need to update them
-        hasClass ||= hasPatchFlag(PatchFlag.CLASS, oldVnode);
-        hasStyle ||= hasPatchFlag(PatchFlag.STYLE, oldVnode);
-        hasAttributes ||= hasPatchFlag(PatchFlag.ATTRIBUTES, oldVnode);
-        hasProps ||= hasPatchFlag(PatchFlag.PROPS, oldVnode);
+        applyEventListeners(vnode, renderer);
+        applyStaticClassAttribute(vnode, renderer);
+        applyStaticStyleAttribute(vnode, renderer);
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    if (hasClass) {
+    if (patchFlag & PatchFlag.CLASS) {
         patchClassAttribute(oldVnode, vnode, renderer);
     }
-    if (hasStyle) {
+    if (patchFlag & PatchFlag.STYLE) {
         patchStyleAttribute(oldVnode, vnode, renderer);
     }
 
-    if (hasAttributes) {
+    if (patchFlag & PatchFlag.ATTRIBUTES) {
         if (vnode.data.external) {
             patchAttrUnlessProp(oldVnode, vnode, renderer);
         } else {
@@ -650,7 +627,7 @@ function patchElementPropsAndAttrs(
         }
     }
 
-    if (hasProps) {
+    if (patchFlag & PatchFlag.PROPS) {
         patchProps(oldVnode, vnode, renderer);
     }
 }

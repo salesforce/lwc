@@ -18,6 +18,8 @@ For full license text, see the LICENSE file in the repo root or https://opensour
     <div onclick={onClick}>foo</div>
     <!-- static prop on a component -->
     <benchmark-updatable-sub-component onclick={onClick} prop="foo"></benchmark-updatable-sub-component>
+    <!-- static attr on a component -->
+    <benchmark-updatable-sub-component onclick={onClick} title="foo"></benchmark-updatable-sub-component>
     <!-- static text child node on a component -->
     <benchmark-updatable-sub-component onclick={onClick}>foo</benchmark-updatable-sub-component>
     <!-- dynamic class -->
@@ -32,6 +34,8 @@ For full license text, see the LICENSE file in the repo root or https://opensour
     <div onclick={onClick}>{data.label} and {data.label}</div>
     <!-- dynamic prop on a component -->
     <benchmark-updatable-sub-component onclick={onClick} prop={data.label}></benchmark-updatable-sub-component>
+    <!-- dynamic attr on a component -->
+    <benchmark-updatable-sub-component onclick={onClick} title={data.label}></benchmark-updatable-sub-component>
     <!-- dynamic text child node on a component -->
     <benchmark-updatable-sub-component onclick={onClick}>{data.label}</benchmark-updatable-sub-component>
     <!-- mixed dynamic and static text child nodes on a component -->
