@@ -31,10 +31,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _xPert,
           stc1,
           [api_text(api_dynamic_text(stc2.toString()))],
-          80
+          192
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

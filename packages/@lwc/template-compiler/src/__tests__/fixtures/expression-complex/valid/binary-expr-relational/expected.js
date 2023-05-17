@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           [api_text(api_dynamic_text($cmp.foo > $cmp.bar))],
-          80
+          192
         ),
         api_custom_element(
           "x-pert",
@@ -37,10 +37,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
           },
           [api_text(api_dynamic_text($cmp.foo < $cmp.bar))],
-          80
+          192
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

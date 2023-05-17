@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         $cmp.isTrue ? api_static_fragment($fragment2(), 4) : null,
         $cmp.isTrue ? api_static_fragment($fragment3(), 6) : null,
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

@@ -30,13 +30,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _nsCmp,
           stc1,
           [
-            $cmp.isTrue ? api_element("p", stc2, [api_text("S1")], 72) : null,
-            api_element("p", stc3, [api_text("S2")], 72),
+            $cmp.isTrue ? api_element("p", stc2, [api_text("S1")], 160) : null,
+            api_element("p", stc3, [api_text("S2")], 160),
           ],
-          64
+          0
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

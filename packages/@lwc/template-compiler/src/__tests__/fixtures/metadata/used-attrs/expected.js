@@ -11,8 +11,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       stc0,
-      [api_element("p", stc1, [api_text(api_dynamic_text($cmp.obj.sub))], 64)],
-      64
+      [api_element("p", stc1, [api_text(api_dynamic_text($cmp.obj.sub))], 128)],
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

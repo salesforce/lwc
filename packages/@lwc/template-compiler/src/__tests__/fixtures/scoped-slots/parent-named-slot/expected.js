@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "p",
                 stc1,
                 [api_text(api_dynamic_text(slot1data.name))],
-                64
+                128
               ),
             ],
             0
@@ -49,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "p",
                 stc2,
                 [api_text(api_dynamic_text(slot2data.title))],
-                64
+                128
               ),
             ],
             0
@@ -63,14 +63,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "p",
                 stc3,
                 [api_text(api_dynamic_text(defaultdata.title))],
-                64
+                128
               ),
             ],
             0
           );
         }),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

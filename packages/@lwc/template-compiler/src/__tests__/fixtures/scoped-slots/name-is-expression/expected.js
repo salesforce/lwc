@@ -35,14 +35,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_dynamic_text(item.name)
                   ),
                 ],
-                64
+                128
               ),
             ],
             0
           );
         }),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

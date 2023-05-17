@@ -25,11 +25,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           undefined,
-          16
+          64
         ),
         api_text(api_dynamic_text(["flop", $cmp.floo, 2].join(""))),
       ],
-      64
+      128
     ),
   ];
   /*LWC compiler vX.X.X*/

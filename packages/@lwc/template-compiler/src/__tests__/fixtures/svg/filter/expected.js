@@ -414,8 +414,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 2,
                 svg: true,
               },
-              [api_element("feFlood", stc2, undefined, 8)],
-              72
+              [api_element("feFlood", stc2, undefined, 32)],
+              32
             ),
             api_element(
               "filter",
@@ -427,8 +427,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 4,
                 svg: true,
               },
-              [api_element("feBlend", stc3, undefined, 8)],
-              72
+              [api_element("feBlend", stc3, undefined, 32)],
+              32
             ),
             api_element(
               "filter",
@@ -445,28 +445,28 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "feMerge",
                   stc4,
                   [
-                    api_element("feMergeNode", stc5, undefined, 8),
-                    api_element("feMergeNode", stc6, undefined, 8),
+                    api_element("feMergeNode", stc5, undefined, 32),
+                    api_element("feMergeNode", stc6, undefined, 32),
                   ],
-                  72
+                  32
                 ),
               ],
-              72
+              32
             ),
           ],
-          64
+          0
         ),
         api_element(
           "g",
           stc7,
           [
-            api_element("rect", stc8, undefined, 8),
-            api_element("line", stc9, undefined, 8),
-            api_element("line", stc10, undefined, 8),
+            api_element("rect", stc8, undefined, 32),
+            api_element("line", stc9, undefined, 32),
+            api_element("line", stc10, undefined, 32),
           ],
-          72
+          32
         ),
-        api_element("circle", stc11, undefined, 8),
+        api_element("circle", stc11, undefined, 32),
         api_element(
           "g",
           stc12,
@@ -475,15 +475,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "g",
               stc13,
               [
-                api_element("rect", stc14, undefined, 8),
-                api_element("line", stc15, undefined, 8),
-                api_element("line", stc16, undefined, 8),
+                api_element("rect", stc14, undefined, 32),
+                api_element("line", stc15, undefined, 32),
+                api_element("line", stc16, undefined, 32),
               ],
-              72
+              32
             ),
-            api_element("circle", stc17, undefined, 8),
+            api_element("circle", stc17, undefined, 32),
           ],
-          72
+          32
         ),
         api_element(
           "g",
@@ -493,36 +493,36 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "g",
               stc19,
               [
-                api_element("rect", stc20, undefined, 8),
-                api_element("line", stc21, undefined, 8),
-                api_element("line", stc22, undefined, 8),
+                api_element("rect", stc20, undefined, 32),
+                api_element("line", stc21, undefined, 32),
+                api_element("line", stc22, undefined, 32),
               ],
-              72
+              32
             ),
-            api_element("circle", stc23, undefined, 8),
+            api_element("circle", stc23, undefined, 32),
           ],
-          72
+          32
         ),
       ],
-      72
+      32
     ),
     api_element(
       "svg",
       stc24,
       [
-        api_element("rect", stc25, undefined, 8),
+        api_element("rect", stc25, undefined, 32),
         api_element(
           "g",
           stc26,
           [
-            api_element("rect", stc27, undefined, 8),
-            api_element("rect", stc28, undefined, 8),
-            api_element("rect", stc29, undefined, 8),
-            api_element("rect", stc30, undefined, 8),
-            api_element("rect", stc31, undefined, 8),
-            api_element("rect", stc32, undefined, 8),
+            api_element("rect", stc27, undefined, 32),
+            api_element("rect", stc28, undefined, 32),
+            api_element("rect", stc29, undefined, 32),
+            api_element("rect", stc30, undefined, 32),
+            api_element("rect", stc31, undefined, 32),
+            api_element("rect", stc32, undefined, 32),
           ],
-          64
+          0
         ),
         api_element(
           "filter",
@@ -543,32 +543,32 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "desc",
               stc33,
               [api_text("Produces a 3D lighting effect.")],
-              64
+              128
             ),
-            api_element("feGaussianBlur", stc34, undefined, 8),
-            api_element("feOffset", stc35, undefined, 8),
+            api_element("feGaussianBlur", stc34, undefined, 32),
+            api_element("feOffset", stc35, undefined, 32),
             api_element(
               "feSpecularLighting",
               stc36,
-              [api_element("fePointLight", stc37, undefined, 8)],
-              72
+              [api_element("fePointLight", stc37, undefined, 32)],
+              32
             ),
-            api_element("feComposite", stc38, undefined, 8),
-            api_element("feComposite", stc39, undefined, 8),
+            api_element("feComposite", stc38, undefined, 32),
+            api_element("feComposite", stc39, undefined, 32),
             api_element(
               "feMerge",
               stc40,
               [
-                api_element("feMergeNode", stc41, undefined, 8),
-                api_element("feMergeNode", stc42, undefined, 8),
+                api_element("feMergeNode", stc41, undefined, 32),
+                api_element("feMergeNode", stc42, undefined, 32),
               ],
-              64
+              0
             ),
           ],
-          72
+          32
         ),
       ],
-      72
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               key: api_key(0, item.id),
             },
             [api_text("Inner")],
-            64
+            128
           );
         }),
       ])

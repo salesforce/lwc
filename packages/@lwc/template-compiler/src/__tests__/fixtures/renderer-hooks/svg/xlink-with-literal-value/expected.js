@@ -29,10 +29,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             renderer: renderer,
           },
           undefined,
-          8
+          32
         ),
       ],
-      73
+      36
     ),
   ];
   /*LWC compiler vX.X.X*/

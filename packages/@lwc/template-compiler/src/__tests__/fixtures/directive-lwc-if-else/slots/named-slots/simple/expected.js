@@ -30,14 +30,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "div",
                   stc1,
                   [api_text("Named slot content from parent")],
-                  72
+                  160
                 ),
               ],
               0
             )
           : null,
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

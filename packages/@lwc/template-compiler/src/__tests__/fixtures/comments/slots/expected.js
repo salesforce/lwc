@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_comment(" HTML comment inside slot "),
         api_static_fragment($fragment1(), 2),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

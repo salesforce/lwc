@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [api_text("New")],
-      96
+      384
     ),
     api_element(
       "ul",
@@ -44,13 +44,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 },
               },
               [api_text("[X]")],
-              96
+              384
             ),
           ],
-          64
+          0
         );
       }),
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

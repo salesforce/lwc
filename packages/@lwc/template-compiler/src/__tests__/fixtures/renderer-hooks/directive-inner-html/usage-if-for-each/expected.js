@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 renderer: renderer,
               },
               undefined,
-              16
+              64
             )
           : null,
         api_iterator($cmp.items, function (item) {
@@ -52,11 +52,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               renderer: renderer,
             },
             undefined,
-            16
+            64
           );
         }),
       ]),
-      65
+      4
     ),
   ];
   /*LWC compiler vX.X.X*/

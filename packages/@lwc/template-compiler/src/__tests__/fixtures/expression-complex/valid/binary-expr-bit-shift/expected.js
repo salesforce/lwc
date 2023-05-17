@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           undefined,
-          16
+          64
         ),
         api_custom_element(
           "x-child",
@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
           },
           undefined,
-          16
+          64
         ),
         api_custom_element(
           "x-child",
@@ -44,10 +44,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 3,
           },
           undefined,
-          16
+          64
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

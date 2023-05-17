@@ -32,17 +32,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _xPert,
           stc1,
           [api_text(api_dynamic_text(true))],
-          80
+          192
         ),
         api_custom_element(
           "x-pert",
           _xPert,
           stc2,
           [api_text(api_dynamic_text(false))],
-          80
+          192
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

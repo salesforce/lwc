@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "div",
               stc2,
               [api_slot("nested-slot", stc3, stc1, $slotset)],
-              64
+              0
             ),
           ],
           0

@@ -38,10 +38,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             renderer: renderer,
           },
           undefined,
-          8
+          32
         ),
       ],
-      73
+      36
     ),
     api_element(
       "span",
@@ -61,11 +61,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 3,
           },
           undefined,
-          8
+          32
         ),
         api_static_fragment($fragment1(), 5),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

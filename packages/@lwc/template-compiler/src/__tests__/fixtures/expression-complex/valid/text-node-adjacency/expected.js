@@ -40,31 +40,31 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "div",
           stc1,
           [api_text(api_dynamic_text($cmp.noSpace))],
-          64
+          128
         ),
         api_element(
           "div",
           stc2,
           [api_text(api_dynamic_text($cmp.spaceRight) + " ")],
-          64
+          128
         ),
         api_element(
           "div",
           stc3,
           [api_text(api_dynamic_text($cmp.spaceLeft))],
-          64
+          128
         ),
         api_element(
           "div",
           stc4,
           [api_text(api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two))],
-          64
+          128
         ),
         api_element(
           "div",
           stc5,
           [api_text(api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two))],
-          64
+          128
         ),
         api_element(
           "div",
@@ -74,7 +74,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two) + " "
             ),
           ],
-          64
+          128
         ),
         api_element(
           "div",
@@ -84,7 +84,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)
             ),
           ],
-          64
+          128
         ),
         api_element(
           "div",
@@ -94,7 +94,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)
             ),
           ],
-          64
+          128
         ),
         api_element(
           "div",
@@ -107,10 +107,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 " "
             ),
           ],
-          64
+          128
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

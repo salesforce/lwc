@@ -57,19 +57,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       "foreignObject",
                       stc4,
                       [api_static_fragment($fragment1(), 6)],
-                      72
+                      32
                     ),
                   ],
-                  72
+                  32
                 ),
               ],
-              72
+              32
             ),
           ],
-          72
+          32
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

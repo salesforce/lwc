@@ -37,16 +37,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "p",
                 stc1,
                 [api_text(api_dynamic_text(slot1data.name))],
-                64
+                128
               ),
             ],
             0
           );
         }),
-        api_element("span", stc2, [api_text("Willy Wonka")], 72),
+        api_element("span", stc2, [api_text("Willy Wonka")], 160),
         api_static_fragment($fragment1(), 4),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

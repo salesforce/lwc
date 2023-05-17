@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xCustomComponent,
       stc0,
       undefined,
-      16
+      64
     ),
     api_static_fragment($fragment2(), 4),
     api_static_fragment($fragment3(), 6),

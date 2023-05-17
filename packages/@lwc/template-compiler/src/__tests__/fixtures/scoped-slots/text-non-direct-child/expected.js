@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_dynamic_text(item.name)
                   ),
                 ],
-                64
+                128
               ),
               api_static_fragment($fragment1(), 3),
             ],
@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           );
         }),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

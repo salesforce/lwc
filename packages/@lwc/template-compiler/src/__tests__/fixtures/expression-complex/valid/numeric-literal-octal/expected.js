@@ -15,8 +15,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       stc0,
-      [api_custom_element("x-pert", _xPert, stc1, undefined, 16)],
-      64
+      [api_custom_element("x-pert", _xPert, stc1, undefined, 64)],
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

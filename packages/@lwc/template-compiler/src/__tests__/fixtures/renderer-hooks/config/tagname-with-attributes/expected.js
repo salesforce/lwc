@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         renderer: renderer,
       },
       [api_text("Should get custom renderer")],
-      65
+      132
     ),
     api_static_fragment($fragment1(), 2),
   ];

@@ -583,12 +583,10 @@ function transform(codeGen: CodeGen): t.Expression {
             // Add all the remaining attributes to an `attrs` object where the key is the attribute
             // name and the value is the computed attribute value.
             if (Object.keys(rest).length) {
-                if (!Object.values(rest).every((attrValue) => t.isLiteral(attrValue))) {
-                    // contains at least one dynamic attribute
-                    patchFlag |= PatchFlag.ATTRIBUTES;
-                }
                 const attrsObj = objectToAST(rest, (key) => rest[key]);
                 data.push(t.property(t.identifier('attrs'), attrsObj));
+                // contains at least one dynamic attribute
+                patchFlag |= PatchFlag.ATTRIBUTES;
             }
         }
 
@@ -599,11 +597,9 @@ function transform(codeGen: CodeGen): t.Expression {
         if (properties.length) {
             for (const prop of properties) {
                 const attrValue = computeAttrValue(prop, element, !addSanitizationHook);
-                if (!t.isLiteral(attrValue)) {
-                    // contains at least one dynamic prop
-                    patchFlag |= PatchFlag.PROPS;
-                }
                 propsObj.properties.push(t.property(t.literal(prop.name), attrValue));
+                // contains at least one dynamic prop
+                patchFlag |= PatchFlag.PROPS;
             }
         }
 

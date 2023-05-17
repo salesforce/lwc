@@ -25,10 +25,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(1, item.id),
           },
           [api_static_fragment($fragment1(), 3)],
-          65
+          4
         );
       }),
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

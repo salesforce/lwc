@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               _cDefault,
               stc0,
               [api_text("Else!")],
-              64
+              128
             ),
           ],
           0

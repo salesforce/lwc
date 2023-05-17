@@ -87,7 +87,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                                   0
                                 ),
                           ],
-                          64
+                          0
                         ),
                       ],
                       0
@@ -120,7 +120,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       0
                     ),
               ],
-              64
+              0
             ),
           ],
           0

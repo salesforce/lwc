@@ -39,13 +39,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element("path", stc3, undefined, 0),
                 api_element("path", stc4, undefined, 0),
               ],
-              64
+              0
             ),
           ],
-          72
+          32
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

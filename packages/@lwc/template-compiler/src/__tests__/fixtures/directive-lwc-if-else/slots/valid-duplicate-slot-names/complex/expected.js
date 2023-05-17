@@ -94,10 +94,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                                               $slotset
                                             ),
                                           ],
-                                          64
+                                          0
                                         ),
                                       ],
-                                      64
+                                      0
                                     ),
                                   ],
                                   0

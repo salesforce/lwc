@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       [api_text("valid")],
-      72
+      160
     ),
     api_custom_element(
       "x-foo",
@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1,
       },
       undefined,
-      16
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

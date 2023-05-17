@@ -12,7 +12,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [api_text("Click")],
-      96
+      384
     ),
     api_element(
       "div",
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [api_text("Click")],
-      96
+      384
     ),
     api_element(
       "div",
@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [api_text("Click")],
-      96
+      384
     ),
     api_element(
       "div",
@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [api_text("Click")],
-      96
+      384
     ),
   ];
   /*LWC compiler vX.X.X*/

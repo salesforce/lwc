@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               _cCustom,
               stc0,
               [api_text("Visible Header")],
-              64
+              128
             ),
           ],
           0
@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               _cCustom,
               stc1,
               [api_text("First Alternative Header")],
-              64
+              128
             ),
           ],
           0

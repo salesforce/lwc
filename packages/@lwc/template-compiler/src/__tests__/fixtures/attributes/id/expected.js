@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       undefined,
-      16
+      64
     ),
     api_custom_element(
       "x-description",
@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1,
       },
       undefined,
-      16
+      64
     ),
     api_custom_element(
       "x-description",
@@ -47,7 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 2,
       },
       undefined,
-      16
+      64
     ),
     api_custom_element(
       "x-textarea",
@@ -60,7 +60,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 3,
       },
       undefined,
-      16
+      64
     ),
     api_element(
       "label",
@@ -71,7 +71,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 4,
       },
       [api_text("label text")],
-      72
+      160
     ),
     api_element(
       "input",
@@ -82,7 +82,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 5,
       },
       undefined,
-      8
+      32
     ),
     api_iterator($cmp.things, function (thing) {
       return [
@@ -95,7 +95,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(6, thing.key),
           },
           [api_text("description text")],
-          72
+          160
         ),
         api_element(
           "input",
@@ -106,7 +106,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(7, thing.key),
           },
           undefined,
-          8
+          32
         ),
       ];
     }),

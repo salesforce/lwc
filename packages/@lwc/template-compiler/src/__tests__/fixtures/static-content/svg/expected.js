@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element("path", stc1, undefined, 0),
         api_element("path", stc2, undefined, 0),
       ],
-      72
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

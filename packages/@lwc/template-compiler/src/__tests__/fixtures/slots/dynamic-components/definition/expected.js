@@ -26,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             stc2,
             [api_text(api_dynamic_text($cmp.defaultContent))],
-            64
+            128
           ),
         ],
         $slotset

@@ -32,10 +32,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: api_key(2, row.id),
               },
               [api_static_fragment($fragment1(), 4)],
-              64
+              0
             );
           }),
-          64
+          0
         ),
         api_element(
           "tbody",
@@ -47,13 +47,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: api_key(6, row.id),
               },
               [api_static_fragment($fragment2(), 8)],
-              64
+              0
             );
           }),
-          64
+          0
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

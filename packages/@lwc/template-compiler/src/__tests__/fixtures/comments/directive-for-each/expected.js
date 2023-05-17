@@ -24,11 +24,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               key: api_key(1, color),
             },
             [api_text(api_dynamic_text(color))],
-            64
+            128
           ),
         ];
       }),
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

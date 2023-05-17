@@ -39,11 +39,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "span",
                 stc1,
                 [api_text("Row: " + api_dynamic_text(x.index))],
-                64
+                128
               ),
               api_text(". Value: " + api_dynamic_text(x.value)),
             ],
-            72
+            160
           ),
           $cmp.isTrue
             ? api_element(
@@ -52,12 +52,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   key: api_key(3, x.value.key),
                 },
                 [api_text("Text")],
-                64
+                128
               )
             : null,
         ];
       }),
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

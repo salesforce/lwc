@@ -10,7 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc0,
       [$cmp.isTrue === true ? api_static_fragment($fragment1(), 2) : null],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

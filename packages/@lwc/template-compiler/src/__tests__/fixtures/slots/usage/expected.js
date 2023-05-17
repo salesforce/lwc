@@ -30,13 +30,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _nsCmp,
           stc1,
           [
-            api_element("p", stc2, [api_text("Header Slot Content")], 72),
-            api_element("p", stc3, [api_text("Default Content")], 72),
+            api_element("p", stc2, [api_text("Header Slot Content")], 160),
+            api_element("p", stc3, [api_text("Default Content")], 160),
           ],
-          64
+          0
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

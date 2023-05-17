@@ -20,10 +20,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           undefined,
-          16
+          64
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

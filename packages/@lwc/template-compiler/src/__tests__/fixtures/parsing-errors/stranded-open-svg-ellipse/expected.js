@@ -13,7 +13,7 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("svg", stc0, [api_element("ellipse", stc1, undefined, 0)], 72),
+    api_element("svg", stc0, [api_element("ellipse", stc1, undefined, 0)], 32),
   ];
   /*LWC compiler vX.X.X*/
 }

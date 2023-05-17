@@ -41,7 +41,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         }),
         api_static_fragment($fragment1(), 2),
       ]),
-      65
+      4
     ),
     api_element(
       "section",
@@ -57,7 +57,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     key: api_key(4, item.id),
                   },
                   [api_text("X1")],
-                  64
+                  128
                 ),
                 api_element(
                   "p",
@@ -65,13 +65,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     key: api_key(5, item.id),
                   },
                   [api_text("X2")],
-                  64
+                  128
                 ),
               ];
             })
           : stc2,
       ]),
-      65
+      4
     ),
     api_element(
       "section",
@@ -89,7 +89,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           );
         }),
       ]),
-      65
+      4
     ),
     api_static_fragment($fragment3(), 11),
   ];

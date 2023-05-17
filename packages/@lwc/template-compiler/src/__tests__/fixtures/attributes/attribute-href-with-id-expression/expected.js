@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       [api_text("KIX")],
-      72
+      160
     ),
     api_element(
       "map",
@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
           },
           undefined,
-          8
+          32
         ),
         api_element(
           "area",
@@ -45,10 +45,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 3,
           },
           undefined,
-          8
+          32
         ),
       ],
-      64
+      0
     ),
     api_element(
       "h1",
@@ -59,7 +59,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 4,
       },
       [api_text("Time to travel!")],
-      72
+      160
     ),
   ];
   /*LWC compiler vX.X.X*/

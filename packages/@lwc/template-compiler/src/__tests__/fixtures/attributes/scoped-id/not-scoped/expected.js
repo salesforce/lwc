@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _lightningCombobox,
       stc0,
       undefined,
-      16
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

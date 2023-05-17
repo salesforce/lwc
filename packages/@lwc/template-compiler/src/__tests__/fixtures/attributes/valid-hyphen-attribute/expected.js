@@ -57,15 +57,15 @@ const stc8 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("x-button", _xButton, stc0, undefined, 16),
-    api_custom_element("x-button", _xButton, stc1, undefined, 16),
-    api_custom_element("x-button", _xButton, stc2, undefined, 16),
-    api_custom_element("x-button", _xButton, stc3, undefined, 16),
-    api_custom_element("x-button", _xButton, stc4, undefined, 16),
-    api_custom_element("x-button", _xButton, stc5, undefined, 16),
-    api_custom_element("x-button", _xButton, stc6, undefined, 16),
-    api_custom_element("x-button", _xButton, stc7, undefined, 16),
-    api_custom_element("x-button", _xButton, stc8, undefined, 16),
+    api_custom_element("x-button", _xButton, stc0, undefined, 64),
+    api_custom_element("x-button", _xButton, stc1, undefined, 64),
+    api_custom_element("x-button", _xButton, stc2, undefined, 64),
+    api_custom_element("x-button", _xButton, stc3, undefined, 64),
+    api_custom_element("x-button", _xButton, stc4, undefined, 64),
+    api_custom_element("x-button", _xButton, stc5, undefined, 64),
+    api_custom_element("x-button", _xButton, stc6, undefined, 64),
+    api_custom_element("x-button", _xButton, stc7, undefined, 64),
+    api_custom_element("x-button", _xButton, stc8, undefined, 64),
   ];
   /*LWC compiler vX.X.X*/
 }

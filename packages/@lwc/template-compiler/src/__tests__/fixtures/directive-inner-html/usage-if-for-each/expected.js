@@ -42,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 1,
               },
               undefined,
-              16
+              64
             )
           : null,
         api_iterator($cmp.items, function (item) {
@@ -61,11 +61,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               key: api_key(2, item.id),
             },
             undefined,
-            16
+            64
           );
         }),
       ]),
-      65
+      4
     ),
   ];
   /*LWC compiler vX.X.X*/

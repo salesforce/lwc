@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       undefined,
-      16
+      64
     ),
     api_element(
       "div",
@@ -38,7 +38,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1,
       },
       undefined,
-      16
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

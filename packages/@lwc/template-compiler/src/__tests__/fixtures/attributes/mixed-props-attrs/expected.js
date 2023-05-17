@@ -41,7 +41,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       undefined,
-      16
+      64
     ),
     api_static_fragment($fragment1(), 2),
     api_custom_element(
@@ -62,7 +62,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 3,
       },
       undefined,
-      25
+      100
     ),
     api_element(
       "svg",
@@ -83,10 +83,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           undefined,
-          8
+          32
         ),
       ],
-      73
+      36
     ),
     api_static_fragment($fragment2(), 7),
     api_element(
@@ -97,7 +97,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 8,
       },
       undefined,
-      9
+      33
     ),
   ];
   /*LWC compiler vX.X.X*/

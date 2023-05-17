@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_text(api_dynamic_text($cmp.foo)),
         $cmp.isTrue ? api_static_fragment($fragment2(), 4) : null,
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

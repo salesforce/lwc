@@ -33,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "div",
                 stc1,
                 [api_text(api_dynamic_text($cmp.label))],
-                64
+                128
               ),
               api_element(
                 "span",
@@ -45,14 +45,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_dynamic_text(item.name)
                   ),
                 ],
-                64
+                128
               ),
             ],
             0
           );
         }),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

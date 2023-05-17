@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         renderer: renderer,
       },
       undefined,
-      16
+      64
     ),
     api_element(
       "div",
@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         renderer: renderer,
       },
       undefined,
-      16
+      64
     ),
   ];
   /*LWC compiler vX.X.X*/

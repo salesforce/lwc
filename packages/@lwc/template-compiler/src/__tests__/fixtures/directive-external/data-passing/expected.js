@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
       },
       undefined,
-      16
+      64
     ),
     api_element(
       "x-test",
@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         external: true,
       },
       undefined,
-      8
+      32
     ),
     api_element(
       "foo-bar",
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         external: true,
       },
       undefined,
-      8
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

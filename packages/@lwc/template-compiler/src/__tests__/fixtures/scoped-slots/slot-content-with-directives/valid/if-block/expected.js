@@ -51,7 +51,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         _xCounter,
                         stc1,
                         [api_text("Counter1")],
-                        64
+                        128
                       ),
                     ],
                     0
@@ -102,7 +102,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         _xButton1,
                         stc4,
                         [api_text("Button 1")],
-                        64
+                        128
                       ),
                     ],
                     0
@@ -139,7 +139,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           );
         }),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

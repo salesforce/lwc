@@ -116,7 +116,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element("tspan", stc20, undefined, 0),
         api_element("use", stc21, undefined, 0),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

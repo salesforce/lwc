@@ -32,10 +32,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           undefined,
-          8
+          32
         ),
       ],
-      73
+      36
     ),
   ];
   /*LWC compiler vX.X.X*/

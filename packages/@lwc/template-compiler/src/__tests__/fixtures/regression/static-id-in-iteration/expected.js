@@ -24,10 +24,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               key: 1,
             },
             undefined,
-            8
+            32
           ),
         ],
-        64
+        0
       );
     }),
     api_iterator($cmp.items, function (item) {
@@ -40,7 +40,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           key: api_key(2, item.key),
         },
         undefined,
-        8
+        32
       );
     }),
     api_iterator(
@@ -67,10 +67,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 4,
               },
               undefined,
-              8
+              32
             ),
           ],
-          64
+          0
         );
       }
     ),
@@ -92,7 +92,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(5, item.key),
           },
           undefined,
-          8
+          32
         );
       }
     ),

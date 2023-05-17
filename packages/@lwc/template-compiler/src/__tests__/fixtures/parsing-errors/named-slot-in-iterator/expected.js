@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: api_key(0, item),
       },
       [api_slot("james", stc0, stc1, $slotset)],
-      64
+      0
     );
   });
   /*LWC compiler vX.X.X*/

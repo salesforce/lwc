@@ -23,15 +23,15 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element } = $api;
   return [
-    api_element("a", stc0, [api_text("Yasaka Taxi")], 72),
+    api_element("a", stc0, [api_text("Yasaka Taxi")], 160),
     api_element(
       "map",
       stc1,
       [
-        api_element("area", stc2, undefined, 8),
-        api_element("area", stc3, undefined, 8),
+        api_element("area", stc2, undefined, 32),
+        api_element("area", stc3, undefined, 32),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

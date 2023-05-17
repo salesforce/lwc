@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1(), 1),
-    api_custom_element("x-foo", _xFoo, stc0, undefined, 16),
+    api_custom_element("x-foo", _xFoo, stc0, undefined, 64),
     api_element(
       "input",
       {
@@ -41,7 +41,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 3,
       },
       undefined,
-      8
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

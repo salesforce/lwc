@@ -16,8 +16,8 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("ns-baz-1", _nsBaz1, stc0, undefined, 16),
-    api_custom_element("ns-baz-2", _nsBaz2, stc1, undefined, 16),
+    api_custom_element("ns-baz-1", _nsBaz1, stc0, undefined, 64),
+    api_custom_element("ns-baz-2", _nsBaz2, stc1, undefined, 64),
   ];
   /*LWC compiler vX.X.X*/
 }

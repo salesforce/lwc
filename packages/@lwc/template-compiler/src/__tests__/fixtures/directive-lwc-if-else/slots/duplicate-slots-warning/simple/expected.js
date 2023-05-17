@@ -33,17 +33,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "div",
           stc1,
           [api_slot("conditional-slot", stc2, stc3, $slotset)],
-          64
+          0
         ),
       ],
-      64
+      0
     ),
     api_static_fragment($fragment1(), 4),
     api_element(
       "div",
       stc4,
       [api_slot("conditional-slot", stc5, stc3, $slotset)],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

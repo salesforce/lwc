@@ -47,11 +47,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       stc0,
       [
-        api_element("rect", stc1, undefined, 8),
-        api_element("circle", stc2, undefined, 8),
-        api_element("text", stc3, [api_text("SVG")], 72),
+        api_element("rect", stc1, undefined, 32),
+        api_element("circle", stc2, undefined, 32),
+        api_element("text", stc3, [api_text("SVG")], 160),
       ],
-      72
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

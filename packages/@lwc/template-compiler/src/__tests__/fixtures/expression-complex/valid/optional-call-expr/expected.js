@@ -25,10 +25,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           [api_text(api_dynamic_text($cmp.baz?.buzz?.(42)))],
-          80
+          192
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/

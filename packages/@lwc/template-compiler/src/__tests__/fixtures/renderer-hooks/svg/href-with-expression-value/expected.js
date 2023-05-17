@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           undefined,
-          8
+          32
         ),
         api_element(
           "use",
@@ -43,10 +43,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             renderer: renderer,
           },
           undefined,
-          8
+          32
         ),
       ],
-      72
+      32
     ),
   ];
   /*LWC compiler vX.X.X*/

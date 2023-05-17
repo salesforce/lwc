@@ -51,7 +51,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           $slotset
         ),
       ],
-      64
+      0
     ),
   ];
   /*LWC compiler vX.X.X*/
