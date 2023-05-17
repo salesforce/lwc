@@ -1,8 +1,9 @@
 import { registerTemplate } from "lwc";
+const stc0 = ["Conditional Iteration"];
+const stc1 = ["Else"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
-    t: api_text,
     h: api_element,
     fr: api_fragment,
     i: api_iterator,
@@ -17,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.key),
               },
-              [api_text("Conditional Iteration")],
+              stc0,
               128
             ),
           ],
@@ -31,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(2, item.key),
               },
-              [api_text("Else")],
+              stc1,
               128
             ),
           ],

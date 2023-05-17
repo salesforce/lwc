@@ -15,12 +15,7 @@ const stc2 = {
   obj: "literal",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    d: api_dynamic_text,
-    t: api_text,
-    c: api_custom_element,
-    h: api_element,
-  } = $api;
+  const { d: api_dynamic_text, c: api_custom_element, h: api_element } = $api;
   return [
     api_element(
       "section",
@@ -30,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "x-pert",
           _xPert,
           stc1,
-          [api_text(api_dynamic_text(stc2.toString()))],
+          [api_dynamic_text(stc2.toString())],
           192
         ),
       ],

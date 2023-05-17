@@ -12,14 +12,16 @@ const stc2 = {
   },
   key: 2,
 };
-const stc3 = {
+const stc3 = ["S1"];
+const stc4 = {
   attrs: {
     slot: "",
   },
   key: 3,
 };
+const stc5 = ["S2"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, c: api_custom_element } = $api;
+  const { h: api_element, c: api_custom_element } = $api;
   return [
     api_element(
       "section",
@@ -30,8 +32,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _nsCmp,
           stc1,
           [
-            $cmp.isTrue ? api_element("p", stc2, [api_text("S1")], 160) : null,
-            api_element("p", stc3, [api_text("S2")], 160),
+            $cmp.isTrue ? api_element("p", stc2, stc3, 160) : null,
+            api_element("p", stc4, stc5, 160),
           ],
           0
         ),

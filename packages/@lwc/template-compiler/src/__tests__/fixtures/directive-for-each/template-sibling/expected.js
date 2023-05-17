@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     i: api_iterator,
     f: api_flatten,
@@ -26,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.id),
               },
-              [api_text("1" + api_dynamic_text(item))],
+              ["1" + api_dynamic_text(item)],
               128
             ),
             api_element(
@@ -34,17 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(2, item.secondId),
               },
-              [api_text("2" + api_dynamic_text(item))],
+              ["2" + api_dynamic_text(item)],
               128
             ),
           ];
         }),
-        api_element(
-          "p",
-          stc1,
-          [api_text("3" + api_dynamic_text($cmp.item))],
-          128
-        ),
+        api_element("p", stc1, ["3" + api_dynamic_text($cmp.item)], 128),
       ]),
       0
     ),

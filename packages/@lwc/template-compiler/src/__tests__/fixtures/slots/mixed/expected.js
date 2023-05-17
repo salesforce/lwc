@@ -11,7 +11,6 @@ const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
-    t: api_text,
     i: api_iterator,
     f: api_flatten,
     c: api_custom_element,
@@ -30,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             $cmp.isLoading ? api_static_fragment($fragment1(), 3) : null,
             $cmp.haveLoadedItems
               ? api_iterator($cmp.menuItems, function (item) {
-                  return api_text("x");
+                  return "x";
                 })
               : stc2,
           ]),

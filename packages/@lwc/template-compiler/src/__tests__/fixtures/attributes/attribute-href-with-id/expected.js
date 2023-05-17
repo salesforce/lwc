@@ -1,14 +1,11 @@
 import { registerTemplate } from "lwc";
-const stc0 = {
+const stc0 = ["KIX"];
+const stc1 = {
   key: 1,
 };
+const stc2 = ["Don't forget your passport!"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    fid: api_scoped_frag_id,
-    t: api_text,
-    h: api_element,
-    gid: api_scoped_id,
-  } = $api;
+  const { fid: api_scoped_frag_id, h: api_element, gid: api_scoped_id } = $api;
   return [
     api_element(
       "a",
@@ -18,12 +15,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("KIX")],
+      stc0,
       160
     ),
     api_element(
       "map",
-      stc0,
+      stc1,
       [
         api_element(
           "area",
@@ -58,7 +55,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 4,
       },
-      [api_text("Don't forget your passport!")],
+      stc2,
       160
     ),
   ];

@@ -6,12 +6,12 @@ const stc1 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { d: api_dynamic_text, t: api_text, h: api_element } = $api;
+  const { d: api_dynamic_text, h: api_element } = $api;
   return [
     api_element(
       "section",
       stc0,
-      [api_element("p", stc1, [api_text(api_dynamic_text($cmp.obj.sub))], 128)],
+      [api_element("p", stc1, [api_dynamic_text($cmp.obj.sub)], 128)],
       0
     ),
   ];

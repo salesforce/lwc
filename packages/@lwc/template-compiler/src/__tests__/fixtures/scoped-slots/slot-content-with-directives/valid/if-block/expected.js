@@ -10,24 +10,25 @@ const stc0 = {
 const stc1 = {
   key: 2,
 };
-const stc2 = {
+const stc2 = ["Counter1"];
+const stc3 = {
   key: 3,
 };
-const stc3 = {
+const stc4 = {
   key: 4,
 };
-const stc4 = {
+const stc5 = {
   key: 6,
 };
-const stc5 = {
+const stc6 = ["Button 1"];
+const stc7 = {
   key: 7,
 };
-const stc6 = {
+const stc8 = {
   key: 8,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     c: api_custom_element,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
@@ -50,7 +51,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         "x-counter",
                         _xCounter,
                         stc1,
-                        [api_text("Counter1")],
+                        stc2,
                         128
                       ),
                     ],
@@ -63,7 +64,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_custom_element(
                         "x-counter",
                         _xCounter,
-                        stc2,
+                        stc3,
                         undefined,
                         0
                       ),
@@ -77,7 +78,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_custom_element(
                         "x-counter",
                         _xCounter,
-                        stc3,
+                        stc4,
                         undefined,
                         0
                       ),
@@ -100,8 +101,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_custom_element(
                         "x-button1",
                         _xButton1,
-                        stc4,
-                        [api_text("Button 1")],
+                        stc5,
+                        stc6,
                         128
                       ),
                     ],
@@ -114,7 +115,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_custom_element(
                         "x-button2",
                         _xButton2,
-                        stc5,
+                        stc7,
                         undefined,
                         0
                       ),
@@ -127,7 +128,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       api_custom_element(
                         "x-button3",
                         _xButton3,
-                        stc6,
+                        stc8,
                         undefined,
                         0
                       ),

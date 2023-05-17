@@ -9,8 +9,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
+    t: api_text,
     i: api_iterator,
   } = $api;
   return [
@@ -37,12 +37,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_element(
               "span",
               stc1,
-              [api_text("Row: " + api_dynamic_text(x.index))],
+              ["Row: " + api_dynamic_text(x.index)],
               128
             ),
             api_text(". Value: " + api_dynamic_text(x.value)),
           ],
-          160
+          32
         );
       }),
       0

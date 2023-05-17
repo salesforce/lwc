@@ -9,7 +9,6 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
@@ -29,11 +28,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "span",
                 stc1,
                 [
-                  api_text(
-                    api_dynamic_text(item.id) +
-                      " - " +
-                      api_dynamic_text(item.name)
-                  ),
+                  api_dynamic_text(item.id) +
+                    " - " +
+                    api_dynamic_text(item.name),
                 ],
                 128
               ),

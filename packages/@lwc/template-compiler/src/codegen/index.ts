@@ -130,12 +130,11 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformText(consecutiveText: Text[]): t.Expression {
-        return codeGen.genText(
-            consecutiveText.map(({ value }) => {
-                return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-            })
-        );
+    function transformText(consecutiveText: Text[], optimized: boolean): t.Expression {
+        const consecutiveTextExpression = consecutiveText.map(({ value }) => {
+            return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
+        })
+        return codeGen.genText(consecutiveTextExpression, optimized);
     }
 
     function transformComment(comment: Comment): t.Expression {
@@ -154,6 +153,7 @@ function transform(codeGen: CodeGen): t.Expression {
             let child = current.value;
 
             if (isText(child)) {
+                const resultEmptyAtStart = res.length === 0;
                 const continuousText: Text[] = [];
 
                 // Consume all the contiguous text nodes.
@@ -163,12 +163,20 @@ function transform(codeGen: CodeGen): t.Expression {
                     child = current.value;
                 } while (!current.done && isText(child));
 
-                res.push(transformText(continuousText));
-
-                // Early exit if a text node is the last child node.
-                if (current.done) {
-                    patchFlag |= PatchFlag.TEXT; // all child nodes are text nodes
-                    break;
+                if (current.done && resultEmptyAtStart) {
+                    // Result was empty at the start, and we have consumed all child nodes, so
+                    // all child nodes are text nodes, so generate a simple string concatenation output
+                    patchFlag |= PatchFlag.TEXT;
+                    return {
+                        children: transformText(continuousText, /* optimized */ true),
+                        patchFlag
+                    }
+                } else {
+                    res.push(transformText(continuousText, /* optimized */ false));
+                    // Early exit if a text node is the last child node.
+                    if (current.done) {
+                        break
+                    }
                 }
             }
 

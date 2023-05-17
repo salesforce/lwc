@@ -15,8 +15,9 @@ const stc3 = {
   },
   key: 3,
 };
+const stc4 = ["Alternative Text"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { s: api_slot, h: api_element, fr: api_fragment, t: api_text } = $api;
+  const { s: api_slot, h: api_element, fr: api_fragment } = $api;
   return [
     $cmp.condition
       ? api_fragment(
@@ -32,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ],
           0
         )
-      : api_fragment(0, [api_text("Alternative Text")], 0),
+      : api_fragment(0, stc4, 0),
   ];
   /*LWC compiler vX.X.X*/
 }

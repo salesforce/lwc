@@ -91,7 +91,22 @@ function patchChildrenOfNodes(
     parent: ParentNode,
     renderer: RendererAPI
 ): void {
-    patchChildren(vnode1.children, vnode2.children, parent, renderer);
+    const { patchFlag } = vnode2
+    if (patchFlag & PatchFlag.TEXT) { // fast path for text-only children
+        patchTextChildren(vnode1, vnode2, parent, renderer);
+    } else {
+        patchChildren(vnode1.children, vnode2.children, parent, renderer);
+    }
+}
+
+function patchTextChildren(    vnode1: VBaseElement,
+                               vnode2: VBaseElement,
+                               parent: ParentNode,
+                               renderer: RendererAPI) {
+    const { setText } = renderer;
+    if (vnode1.children !== vnode2.children) {
+        setText(vnode2.elm, vnode2.children as unknown as string)
+    }
 }
 
 function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {

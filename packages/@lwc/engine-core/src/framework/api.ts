@@ -102,14 +102,14 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 function h(
     sel: string,
     data: VElementData,
-    children: VNodes = EmptyArray, // children is undefined if there are no children
+    children: VNodes | string = EmptyArray, // children is undefined if there are no children
     patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
-        assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+        assert.isTrue(isArray(children) || isString(children), `h() 3rd argument children must be an array.`);
         assert.isTrue(
             'key' in data,
             ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`
@@ -261,7 +261,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray, // children is undefined if there are no children
+    children: VNodes | string = EmptyArray, // children is undefined if there are no children
     patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -270,8 +270,8 @@ function c(
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(children),
-            `c() 4nd argument data must be an array.`
+            arguments.length === 3 || isArray(children) || isString(children),
+            `c() 4nd argument data must be an array or a string.`
         );
         // checking reserved internal data properties
         assert.isFalse(

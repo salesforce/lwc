@@ -13,10 +13,10 @@ const stc2 = {
   },
   key: 2,
 };
+const stc3 = ["Willy Wonka"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
@@ -32,18 +32,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_scoped_slot_factory("slotname1", function (slot1data, key) {
           return api_fragment(
             key,
-            [
-              api_element(
-                "p",
-                stc1,
-                [api_text(api_dynamic_text(slot1data.name))],
-                128
-              ),
-            ],
+            [api_element("p", stc1, [api_dynamic_text(slot1data.name)], 128)],
             0
           );
         }),
-        api_element("span", stc2, [api_text("Willy Wonka")], 160),
+        api_element("span", stc2, stc3, 160),
         api_static_fragment($fragment1(), 4),
       ],
       0

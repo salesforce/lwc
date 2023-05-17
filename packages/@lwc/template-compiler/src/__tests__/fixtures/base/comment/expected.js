@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
+const stc0 = ["Hello world"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text } = $api;
-  return [api_text("Hello world")];
+  return stc0;
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

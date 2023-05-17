@@ -8,18 +8,20 @@ const stc1 = {
   },
   key: 1,
 };
-const stc2 = {
+const stc2 = ["Header Slot Content"];
+const stc3 = {
   attrs: {
     slot: "",
   },
   key: 2,
 };
+const stc4 = ["Default Content"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, dc: api_dynamic_component } = $api;
+  const { h: api_element, dc: api_dynamic_component } = $api;
   return [
     api_dynamic_component($cmp.ctor, stc0, [
-      api_element("p", stc1, [api_text("Header Slot Content")], 160),
-      api_element("p", stc2, [api_text("Default Content")], 160),
+      api_element("p", stc1, stc2, 160),
+      api_element("p", stc3, stc4, 160),
     ]),
   ];
   /*LWC compiler vX.X.X*/

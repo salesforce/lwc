@@ -4,12 +4,7 @@ const stc0 = {
   key: 0,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    d: api_dynamic_text,
-    t: api_text,
-    c: api_custom_element,
-    h: api_element,
-  } = $api;
+  const { d: api_dynamic_text, c: api_custom_element, h: api_element } = $api;
   return [
     api_element(
       "section",
@@ -24,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 1,
           },
-          [api_text(api_dynamic_text($cmp.foo))],
+          [api_dynamic_text($cmp.foo)],
           192
         ),
         api_custom_element(
@@ -36,7 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 2,
           },
-          [api_text(api_dynamic_text($cmp.foo))],
+          [api_dynamic_text($cmp.foo)],
           192
         ),
         api_custom_element(
@@ -48,7 +43,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 3,
           },
-          [api_text(api_dynamic_text($cmp.foo))],
+          [api_dynamic_text($cmp.foo)],
           192
         ),
         api_custom_element(
@@ -60,7 +55,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 4,
           },
-          [api_text(api_dynamic_text($cmp.foo))],
+          [api_dynamic_text($cmp.foo)],
           192
         ),
       ],

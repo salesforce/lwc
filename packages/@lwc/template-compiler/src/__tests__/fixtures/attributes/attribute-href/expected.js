@@ -5,31 +5,32 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = {
+const stc1 = ["Yasaka Taxi"];
+const stc2 = {
   key: 1,
 };
-const stc2 = {
+const stc3 = {
   attrs: {
     href: "#eneos-gas",
   },
   key: 2,
 };
-const stc3 = {
+const stc4 = {
   attrs: {
     href: "#kawaramachi",
   },
   key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
+  const { h: api_element } = $api;
   return [
-    api_element("a", stc0, [api_text("Yasaka Taxi")], 160),
+    api_element("a", stc0, stc1, 160),
     api_element(
       "map",
-      stc1,
+      stc2,
       [
-        api_element("area", stc2, undefined, 32),
         api_element("area", stc3, undefined, 32),
+        api_element("area", stc4, undefined, 32),
       ],
       0
     ),

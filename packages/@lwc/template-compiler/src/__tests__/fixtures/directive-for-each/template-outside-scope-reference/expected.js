@@ -6,7 +6,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     i: api_iterator,
   } = $api;
@@ -21,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(1, item.keyOne),
             },
-            [api_text("1" + api_dynamic_text(item))],
+            ["1" + api_dynamic_text(item)],
             128
           ),
           api_element(
@@ -29,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(2, item.keyTwo),
             },
-            [api_text("2" + api_dynamic_text(item.foo))],
+            ["2" + api_dynamic_text(item.foo)],
             128
           ),
           api_element(
@@ -37,7 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(3, item.keyThree),
             },
-            [api_text("3" + api_dynamic_text($cmp.other))],
+            ["3" + api_dynamic_text($cmp.other)],
             128
           ),
           api_element(
@@ -45,7 +44,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(4, item.keyFour),
             },
-            [api_text("4" + api_dynamic_text($cmp.other.foo))],
+            ["4" + api_dynamic_text($cmp.other.foo)],
             128
           ),
         ];

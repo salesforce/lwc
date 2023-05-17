@@ -16,12 +16,7 @@ const stc1 = {
   key: 21,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    st: api_static_fragment,
-    d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
-  } = $api;
+  const { st: api_static_fragment, d: api_dynamic_text, h: api_element } = $api;
   return [
     api_static_fragment($fragment1(), 1),
     api_static_fragment($fragment2(), 3),
@@ -31,20 +26,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment6(), 11),
     api_static_fragment($fragment7(), 13),
     api_static_fragment($fragment8(), 15),
-    api_element(
-      "div",
-      stc0,
-      [api_text("Escape $" + api_dynamic_text($cmp.me))],
-      128
-    ),
+    api_element("div", stc0, ["Escape $" + api_dynamic_text($cmp.me)], 128),
     api_static_fragment($fragment9(), 18),
     api_static_fragment($fragment10(), 20),
-    api_element(
-      "xmp",
-      stc1,
-      [api_text("Escape $" + api_dynamic_text($cmp.me))],
-      128
-    ),
+    api_element("xmp", stc1, ["Escape $" + api_dynamic_text($cmp.me)], 128),
   ];
   /*LWC compiler vX.X.X*/
 }

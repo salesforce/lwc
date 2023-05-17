@@ -6,7 +6,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     dc: api_dynamic_component,
     i: api_iterator,
@@ -17,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: api_key(0, item.id),
       },
-      [api_element("p", stc0, [api_text(api_dynamic_text(item))], 128)]
+      [api_element("p", stc0, [api_dynamic_text(item)], 128)]
     );
   });
   /*LWC compiler vX.X.X*/

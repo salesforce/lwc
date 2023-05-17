@@ -4,34 +4,38 @@ const $fragment1 = parseFragment`<p hidden${3}>boolean present</p>`;
 const $fragment2 = parseFragment`<p hidden=""${3}>empty string, should be true</p>`;
 const $fragment3 = parseFragment`<p hidden="other than true"${3}>string value, should be true</p>`;
 const $fragment4 = parseFragment`<p hidden="3"${3}>integer value, should be true</p>`;
-const stc0 = {
+const stc0 = ["computed value, should be resolved in component"];
+const stc1 = {
   props: {
     hidden: true,
   },
   key: 9,
 };
-const stc1 = {
+const stc2 = ["boolean present"];
+const stc3 = {
   props: {
     hidden: true,
   },
   key: 10,
 };
-const stc2 = {
+const stc4 = ["empty string, should be true"];
+const stc5 = {
   props: {
     hidden: true,
   },
   key: 11,
 };
-const stc3 = {
+const stc6 = ["string value, should be true"];
+const stc7 = {
   props: {
     hidden: true,
   },
   key: 13,
 };
+const stc8 = ["integer value, should be true"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
-    t: api_text,
     h: api_element,
     c: api_custom_element,
   } = $api;
@@ -47,31 +51,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 6,
       },
-      [api_text("computed value, should be resolved in component")],
+      stc0,
       160
     ),
     api_static_fragment($fragment4(), 8),
-    api_custom_element(
-      "x-foo",
-      _xFoo,
-      stc0,
-      [api_text("boolean present")],
-      192
-    ),
-    api_custom_element(
-      "x-foo",
-      _xFoo,
-      stc1,
-      [api_text("empty string, should be true")],
-      192
-    ),
-    api_custom_element(
-      "x-foo",
-      _xFoo,
-      stc2,
-      [api_text("string value, should be true")],
-      192
-    ),
+    api_custom_element("x-foo", _xFoo, stc1, stc2, 192),
+    api_custom_element("x-foo", _xFoo, stc3, stc4, 192),
+    api_custom_element("x-foo", _xFoo, stc5, stc6, 192),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -81,16 +67,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 12,
       },
-      [api_text("computed value, should be resolved in component")],
+      stc0,
       192
     ),
-    api_custom_element(
-      "x-foo",
-      _xFoo,
-      stc3,
-      [api_text("integer value, should be true")],
-      192
-    ),
+    api_custom_element("x-foo", _xFoo, stc7, stc8, 192),
   ];
   /*LWC compiler vX.X.X*/
 }

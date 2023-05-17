@@ -1,32 +1,25 @@
 import _cDefault from "c/default";
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}>Elseif!</div>`;
-const stc0 = {
+const stc0 = ["Conditional Text"];
+const stc1 = {
   key: 3,
 };
+const stc2 = ["Else!"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     fr: api_fragment,
     st: api_static_fragment,
     c: api_custom_element,
   } = $api;
   return [
     $cmp.visible
-      ? api_fragment(0, [api_text("Conditional Text")], 0)
+      ? api_fragment(0, stc0, 0)
       : $cmp.elseifCondition
       ? api_fragment(0, [api_static_fragment($fragment1(), 2)], 0)
       : api_fragment(
           0,
-          [
-            api_custom_element(
-              "c-default",
-              _cDefault,
-              stc0,
-              [api_text("Else!")],
-              128
-            ),
-          ],
+          [api_custom_element("c-default", _cDefault, stc1, stc2, 128)],
           0
         ),
   ];

@@ -10,7 +10,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
@@ -29,21 +28,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_fragment(
             key,
             [
-              api_element(
-                "div",
-                stc0,
-                [api_text(api_dynamic_text(parentItem))],
-                128
-              ),
+              api_element("div", stc0, [api_dynamic_text(parentItem)], 128),
               api_element(
                 "span",
                 stc1,
                 [
-                  api_text(
-                    api_dynamic_text(item.id) +
-                      " - " +
-                      api_dynamic_text(item.name)
-                  ),
+                  api_dynamic_text(item.id) +
+                    " - " +
+                    api_dynamic_text(item.name),
                 ],
                 128
               ),

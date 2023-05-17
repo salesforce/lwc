@@ -22,7 +22,7 @@ import {
     PARSE_SVG_FRAGMENT_METHOD_NAME,
     TEMPLATE_PARAMS,
 } from '../shared/constants';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import {isPreserveCommentsDirective, isRenderModeDirective, isStringLiteral} from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getChildrenOrUndefinedIfEmpty, getStaticNodes } from './helpers';
@@ -214,7 +214,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.deprecatedDynamicCtor, args);
     }
 
-    genText(value: Array<string | t.Expression>): t.Expression {
+    genText(value: Array<string | t.Expression>, optimized: boolean): t.Expression {
         const mappedValues = value.map((v) => {
             return typeof v === 'string'
                 ? t.literal(v)
@@ -225,6 +225,10 @@ export default class CodeGen {
 
         for (let i = 1, n = mappedValues.length; i < n; i++) {
             textConcatenation = t.binaryExpression('+', textConcatenation, mappedValues[i]);
+        }
+
+        if (optimized) {
+            return textConcatenation
         }
 
         return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);

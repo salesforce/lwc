@@ -3,7 +3,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     i: api_iterator,
   } = $api;
@@ -23,11 +22,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(0, feature.value.label),
           },
           [
-            api_text(
-              api_dynamic_text(feature.value.label) +
-                " " +
-                api_dynamic_text(feature.label)
-            ),
+            api_dynamic_text(feature.value.label) +
+              " " +
+              api_dynamic_text(feature.label),
           ],
           128
         );

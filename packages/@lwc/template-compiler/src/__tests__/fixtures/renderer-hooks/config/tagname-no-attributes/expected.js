@@ -2,8 +2,10 @@ import { registerTemplate, renderer } from "lwc";
 const stc0 = {
   city: true,
 };
+const stc1 = ["Should get custom renderer"];
+const stc2 = ["Should also get custom renderer"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
+  const { h: api_element } = $api;
   return [
     api_element(
       "div",
@@ -12,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
         renderer: renderer,
       },
-      [api_text("Should get custom renderer")],
+      stc1,
       132
     ),
     api_element(
@@ -21,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1,
         renderer: renderer,
       },
-      [api_text("Should also get custom renderer")],
+      stc2,
       128
     ),
   ];

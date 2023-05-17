@@ -11,7 +11,6 @@ const stc2 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     h: api_element,
     s: api_slot,
     dc: api_dynamic_component,
@@ -21,14 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot(
         "",
         stc1,
-        [
-          api_element(
-            "p",
-            stc2,
-            [api_text(api_dynamic_text($cmp.defaultContent))],
-            128
-          ),
-        ],
+        [api_element("p", stc2, [api_dynamic_text($cmp.defaultContent)], 128)],
         $slotset
       ),
     ]),

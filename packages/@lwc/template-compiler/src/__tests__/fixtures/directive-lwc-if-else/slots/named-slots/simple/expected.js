@@ -9,13 +9,9 @@ const stc1 = {
   },
   key: 2,
 };
+const stc2 = ["Named slot content from parent"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    t: api_text,
-    h: api_element,
-    fr: api_fragment,
-    c: api_custom_element,
-  } = $api;
+  const { h: api_element, fr: api_fragment, c: api_custom_element } = $api;
   return [
     api_custom_element(
       "x-child-with-named-slots",
@@ -23,18 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       [
         $cmp.condition
-          ? api_fragment(
-              1,
-              [
-                api_element(
-                  "div",
-                  stc1,
-                  [api_text("Named slot content from parent")],
-                  160
-                ),
-              ],
-              0
-            )
+          ? api_fragment(1, [api_element("div", stc1, stc2, 160)], 0)
           : null,
       ],
       0
