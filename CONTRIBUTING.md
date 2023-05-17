@@ -320,3 +320,21 @@ The footer should contain any information about **Breaking Changes** and is also
 [eslint-integrations]: http://eslint.org/docs/user-guide/integrations
 [integration-test-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-tests/README.md
 [integration-karma-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-karma/README.md
+
+## Getting your changes reviewed
+
+**Potential pitfalls:** When submitting changes to the LWC framework, there are several important considerations to keep in mind to ensure that your changes are reviewed & accepted.
+
+- The LWC framework makes strong guarantees about backwards compatibility to those that use our framework. Any changes that compromise these guarantees are unlikely to be accepted as-is.
+- If your change causes a test to fail in unit or integration tests, it is likely that your submission won't be accepted as-is.
+- Certain parts of the codebase are particularly susceptible to breaking changes. This includes the browser runtime (`engine-core` and `engine-dom`), as well as the compiler (`compiler`, `style-compiler`, `template-compiler`).
+- Some areas of the codebase are more less mature and undergoing active development. Areas related to SSR, including the server-side runtime (engine-server), fall under this category.
+
+**Definition of done:** Especially when making large changes to the codebase, certain complementary work must be undertaken for the desired changes to be considered.  When making a submission please adhere to the following:
+
+- All pre-existing unit- & integration- tests must pass.
+- If you modify a pre-existing test to accommodate your changes, a thorough reasoning must be proactively provided in the PR.
+- Test coverage should not decline – if you add code paths, add corresponding tests.
+- If your tests have the potential to negatively impact performance, provide a before & after comparison of performance using the test collateral provided in the repo.
+
+It's also worth noting that not all submissions will be accepted, even if all the above criteria are met. There may be constraints in the larger Salesforce ecosystem that prevent certain changes. If your submission is likely to change large parts of the codebase, please open an issue preemptively so that the design can be discussed.
