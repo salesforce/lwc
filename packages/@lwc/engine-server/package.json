@@ -41,13 +41,11 @@
             }
         }
     },
-    "dependencies": {
-        "parse5": "^6.0.1"
-    },
     "devDependencies": {
         "@lwc/engine-core": "2.45.2",
         "@lwc/rollup-plugin": "2.45.2",
         "@lwc/shared": "2.45.2",
-        "@rollup/plugin-virtual": "^3.0.1"
+        "@rollup/plugin-virtual": "^3.0.1",
+        "parse5": "^6.0.1"
     }
 }
