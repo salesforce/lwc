@@ -185,7 +185,8 @@ module.exports = {
             resolveOnly: [
                 /^@lwc\//,
                 'observable-membrane',
-                // Special case - parse5 is bundled only in @lwc/engine-server currently
+                // Special case - parse5 is bundled only in @lwc/engine-server currently, to avoid
+                // issues with Best/Tachometer and with shipping breaking ESM to consumers
                 packageName === '@lwc/engine-server' && 'parse5',
             ].filter(Boolean),
         }),
