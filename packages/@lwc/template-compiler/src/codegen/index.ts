@@ -551,13 +551,14 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const classExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
-                        patchFlag |= PatchFlag.CLASS;
+                        patchFlag |= PatchFlag.DYNAMIC_CLASS;
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
                             classNames.map((name) => t.property(t.literal(name), t.literal(true)))
                         );
                         data.push(t.property(t.identifier('classMap'), classMap));
+                        patchFlag |= PatchFlag.STATIC_CLASS;
                     }
                 } else if (name === 'style') {
                     // Handle style attribute:
@@ -567,11 +568,12 @@ function transform(codeGen: CodeGen): t.Expression {
                     if (isExpression(value)) {
                         const styleExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
-                        patchFlag |= PatchFlag.STYLE;
+                        patchFlag |= PatchFlag.DYNAMIC_STYLE;
                     } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
+                        patchFlag |= PatchFlag.STATIC_STYLE;
                     }
                 } else {
                     rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
@@ -680,6 +682,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 return memorizeHandler(codeGen, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), listenerObjAST));
+            patchFlag |= PatchFlag.EVENT_LISTENERS;
         }
 
         // SVG handling

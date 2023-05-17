@@ -16,27 +16,42 @@ export const enum PatchFlag {
     /**
      * Indicates that the vnode has a dynamic class attribute
      */
-    CLASS = 1,
+    DYNAMIC_CLASS = 1,
+
+    /**
+     * Indicates that the vnode has a static class attribute
+     */
+    STATIC_CLASS = 1 << 2,
 
     /**
      * Indicates that the vnode has a dynamic style attribute
      */
-    STYLE = 1 << 2,
+    DYNAMIC_STYLE = 1 << 3,
+
+    /**
+     * Indicates that the vnode has a static style attribute
+     */
+    STATIC_STYLE = 1 << 4,
 
     /**
      * Indicates that the vnode has dynamic non-class, non-style attributes to set
      */
-    ATTRIBUTES = 1 << 3,
+    ATTRIBUTES = 1 << 5,
 
     /**
      * Indicates that the vnode has dynamic properties to set
      */
-    PROPS = 1 << 4,
+    PROPS = 1 << 6,
 
     /**
-     * Indicates that the vnode has only text nodechildren
+     * Indicates that the vnode has only text node children
      */
-    TEXT = 1 << 6,
+    TEXT = 1 << 7,
+
+    /**
+     * Indicates that the vnode has event listeners
+     */
+    EVENT_LISTENERS = 1 << 8,
 
     /**
      * Special value that tells the diffing algo to bail out of any optimizations and do a full diff.

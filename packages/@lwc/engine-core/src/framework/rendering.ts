@@ -604,24 +604,29 @@ function patchElementPropsAndAttrs(
     renderer: RendererAPI
 ) {
     const { patchFlag } = vnode;
-    const oldVnodeIsNull = isNull(oldVnode);
-    if (oldVnodeIsNull) {
+    if (isNull(oldVnode)) {
         // event listeners can never be dynamically updated - they are only applied initially
-        applyEventListeners(vnode, renderer);
-        applyStaticClassAttribute(vnode, renderer);
-        applyStaticStyleAttribute(vnode, renderer);
+        if (patchFlag & PatchFlag.EVENT_LISTENERS) {
+            applyEventListeners(vnode, renderer);
+        }
+        if (patchFlag & PatchFlag.STATIC_CLASS) {
+            applyStaticClassAttribute(vnode, renderer);
+        }
+        if (patchFlag & PatchFlag.STATIC_STYLE) {
+            applyStaticStyleAttribute(vnode, renderer);
+        }
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    if (patchFlag & PatchFlag.CLASS) {
+    if (patchFlag & PatchFlag.DYNAMIC_CLASS) {
         patchClassAttribute(oldVnode, vnode, renderer);
     }
-    if (patchFlag & PatchFlag.STYLE) {
+    if (patchFlag & PatchFlag.DYNAMIC_STYLE) {
         patchStyleAttribute(oldVnode, vnode, renderer);
     }
 
-    if (oldVnodeIsNull || patchFlag & PatchFlag.ATTRIBUTES) {
+    if (patchFlag & PatchFlag.ATTRIBUTES) {
         if (vnode.data.external) {
             patchAttrUnlessProp(oldVnode, vnode, renderer);
         } else {
@@ -629,7 +634,7 @@ function patchElementPropsAndAttrs(
         }
     }
 
-    if (oldVnodeIsNull || patchFlag & PatchFlag.PROPS) {
+    if (patchFlag & PatchFlag.PROPS) {
         patchProps(oldVnode, vnode, renderer);
     }
 }
