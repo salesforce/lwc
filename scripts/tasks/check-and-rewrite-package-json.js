@@ -72,6 +72,7 @@ for (const dir of directories) {
         main: 'dist/index.cjs.js',
         module: 'dist/index.js',
         types: 'dist/index.d.ts',
+        // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
         files: ['dist'],
         scripts: {
             build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
@@ -80,7 +81,9 @@ for (const dir of directories) {
         nx: {
             targets: {
                 build: {
-                    outputs: ['dist'],
+                    // It's important to use the `./` here, otherwise NX does not restore the dist files
+                    // See https://github.com/salesforce/lwc/issues/3511
+                    outputs: ['./dist'],
                 },
             },
         },
