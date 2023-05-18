@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       stc0,
-      [api_element("p", stc1, [api_dynamic_text($cmp.obj.sub)], 128)],
+      [api_element("p", stc1, api_dynamic_text($cmp.obj.sub), 128)],
       0
     ),
   ];

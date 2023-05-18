@@ -6,8 +6,7 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = ["X"];
-const stc2 = [];
+const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -27,11 +26,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               {
                 key: api_key(1, item.id),
               },
-              stc1,
+              "X",
               128
             );
           })
-        : stc2,
+        : stc1,
       4
     ),
   ];

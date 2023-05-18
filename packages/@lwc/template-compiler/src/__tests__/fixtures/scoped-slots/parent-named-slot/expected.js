@@ -29,28 +29,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_scoped_slot_factory("slotname1", function (slot1data, key) {
           return api_fragment(
             key,
-            [api_element("p", stc1, [api_dynamic_text(slot1data.name)], 128)],
+            [api_element("p", stc1, api_dynamic_text(slot1data.name), 128)],
             0
           );
         }),
         api_scoped_slot_factory("slotname2", function (slot2data, key) {
           return api_fragment(
             key,
-            [api_element("p", stc2, [api_dynamic_text(slot2data.title)], 128)],
+            [api_element("p", stc2, api_dynamic_text(slot2data.title), 128)],
             0
           );
         }),
         api_scoped_slot_factory("", function (defaultdata, key) {
           return api_fragment(
             key,
-            [
-              api_element(
-                "p",
-                stc3,
-                [api_dynamic_text(defaultdata.title)],
-                128
-              ),
-            ],
+            [api_element("p", stc3, api_dynamic_text(defaultdata.title), 128)],
             0
           );
         }),

@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               className: item.x,
               key: api_key(1, item.id),
             },
-            [api_dynamic_text(item)],
+            api_dynamic_text(item),
             129
           );
         }),

@@ -21,11 +21,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             key: api_key(0, feature.value.label),
           },
-          [
-            api_dynamic_text(feature.value.label) +
-              " " +
-              api_dynamic_text(feature.label),
-          ],
+          api_dynamic_text(feature.value.label) +
+            " " +
+            api_dynamic_text(feature.label),
           128
         );
       }

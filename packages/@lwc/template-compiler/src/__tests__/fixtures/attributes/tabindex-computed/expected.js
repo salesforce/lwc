@@ -1,6 +1,5 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
-const stc0 = ["valid"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { ti: api_tab_index, h: api_element, c: api_custom_element } = $api;
   return [
@@ -12,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      stc0,
+      "valid",
       160
     ),
     api_custom_element(

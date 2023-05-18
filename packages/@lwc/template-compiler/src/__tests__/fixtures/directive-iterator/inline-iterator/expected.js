@@ -34,12 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(1, x.value.id),
           },
           [
-            api_element(
-              "span",
-              stc1,
-              ["Row: " + api_dynamic_text(x.index)],
-              128
-            ),
+            api_element("span", stc1, "Row: " + api_dynamic_text(x.index), 128),
             api_text(". Value: " + api_dynamic_text(x.value)),
           ],
           32

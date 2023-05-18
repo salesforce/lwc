@@ -36,48 +36,43 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc0,
       [
-        api_element("div", stc1, [api_dynamic_text($cmp.noSpace)], 128),
-        api_element(
-          "div",
-          stc2,
-          [api_dynamic_text($cmp.spaceRight) + " "],
-          128
-        ),
-        api_element("div", stc3, [api_dynamic_text($cmp.spaceLeft)], 128),
+        api_element("div", stc1, api_dynamic_text($cmp.noSpace), 128),
+        api_element("div", stc2, api_dynamic_text($cmp.spaceRight) + " ", 128),
+        api_element("div", stc3, api_dynamic_text($cmp.spaceLeft), 128),
         api_element(
           "div",
           stc4,
-          [api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two)],
+          api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two),
           128
         ),
         api_element(
           "div",
           stc5,
-          [api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two)],
+          api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two),
           128
         ),
         api_element(
           "div",
           stc6,
-          [api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two) + " "],
+          api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two) + " ",
           128
         ),
         api_element(
           "div",
           stc7,
-          [api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)],
+          api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two),
           128
         ),
         api_element(
           "div",
           stc8,
-          [api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)],
+          api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two),
           128
         ),
         api_element(
           "div",
           stc9,
-          [api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two) + " "],
+          api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two) + " ",
           128
         ),
       ],

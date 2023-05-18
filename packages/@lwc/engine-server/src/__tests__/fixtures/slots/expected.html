@@ -1,0 +1,31 @@
+<x-slots>
+  <template shadowroot="open">
+    <x-receiver>
+      <template shadowroot="open">
+        <div>
+          Default slot: 
+          <slot>
+          </slot>
+        </div>
+        <div>
+          Named slot: 
+          <slot name="my-slot">
+          </slot>
+        </div>
+      </template>
+      A
+      <div slot="my-slot">
+        B
+      </div>
+      C
+      <div>
+        D
+      </div>
+      E
+      <div slot="my-slot">
+        F
+      </div>
+      G
+    </x-receiver>
+  </template>
+</x-slots>

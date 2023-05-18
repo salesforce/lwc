@@ -12,14 +12,12 @@ const stc2 = {
   },
   key: 2,
 };
-const stc3 = ["Header Slot Content"];
-const stc4 = {
+const stc3 = {
   attrs: {
     slot: "",
   },
   key: 3,
 };
-const stc5 = ["Default Content"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, c: api_custom_element } = $api;
   return [
@@ -32,8 +30,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           _nsCmp,
           stc1,
           [
-            api_element("p", stc2, stc3, 160),
-            api_element("p", stc4, stc5, 160),
+            api_element("p", stc2, "Header Slot Content", 160),
+            api_element("p", stc3, "Default Content", 160),
           ],
           0
         ),

@@ -307,8 +307,7 @@ const stc33 = {
   key: 37,
   svg: true,
 };
-const stc34 = ["Produces a 3D lighting effect."];
-const stc35 = {
+const stc34 = {
   attrs: {
     in: "SourceAlpha",
     stdDeviation: "4",
@@ -317,7 +316,7 @@ const stc35 = {
   key: 38,
   svg: true,
 };
-const stc36 = {
+const stc35 = {
   attrs: {
     in: "blur",
     dx: "4",
@@ -327,7 +326,7 @@ const stc36 = {
   key: 39,
   svg: true,
 };
-const stc37 = {
+const stc36 = {
   attrs: {
     in: "blur",
     surfaceScale: "5",
@@ -339,7 +338,7 @@ const stc37 = {
   key: 40,
   svg: true,
 };
-const stc38 = {
+const stc37 = {
   attrs: {
     x: "-5000",
     y: "-10000",
@@ -348,7 +347,7 @@ const stc38 = {
   key: 41,
   svg: true,
 };
-const stc39 = {
+const stc38 = {
   attrs: {
     in: "specOut",
     in2: "SourceAlpha",
@@ -358,7 +357,7 @@ const stc39 = {
   key: 42,
   svg: true,
 };
-const stc40 = {
+const stc39 = {
   attrs: {
     in: "SourceGraphic",
     in2: "specOut",
@@ -372,18 +371,18 @@ const stc40 = {
   key: 43,
   svg: true,
 };
-const stc41 = {
+const stc40 = {
   key: 44,
   svg: true,
 };
-const stc42 = {
+const stc41 = {
   attrs: {
     in: "offsetBlur",
   },
   key: 45,
   svg: true,
 };
-const stc43 = {
+const stc42 = {
   attrs: {
     in: "litPaint",
   },
@@ -540,23 +539,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           [
-            api_element("desc", stc33, stc34, 128),
-            api_element("feGaussianBlur", stc35, undefined, 32),
-            api_element("feOffset", stc36, undefined, 32),
+            api_element("desc", stc33, "Produces a 3D lighting effect.", 128),
+            api_element("feGaussianBlur", stc34, undefined, 32),
+            api_element("feOffset", stc35, undefined, 32),
             api_element(
               "feSpecularLighting",
-              stc37,
-              [api_element("fePointLight", stc38, undefined, 32)],
+              stc36,
+              [api_element("fePointLight", stc37, undefined, 32)],
               32
             ),
+            api_element("feComposite", stc38, undefined, 32),
             api_element("feComposite", stc39, undefined, 32),
-            api_element("feComposite", stc40, undefined, 32),
             api_element(
               "feMerge",
-              stc41,
+              stc40,
               [
+                api_element("feMergeNode", stc41, undefined, 32),
                 api_element("feMergeNode", stc42, undefined, 32),
-                api_element("feMergeNode", stc43, undefined, 32),
               ],
               0
             ),

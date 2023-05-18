@@ -9,7 +9,6 @@ const stc1 = {
   key: 3,
 };
 const stc2 = [["color", "blue", false]];
-const stc3 = ["England."];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, t: api_text, h: api_element } = $api;
   return [
@@ -34,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 4,
                 renderer: renderer,
               },
-              stc3,
+              "England.",
               144
             ),
           ],

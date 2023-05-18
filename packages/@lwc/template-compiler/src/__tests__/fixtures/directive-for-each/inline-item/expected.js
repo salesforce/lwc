@@ -26,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [api_element("p", stc2, [api_dynamic_text(item)], 128)],
+          [api_element("p", stc2, api_dynamic_text(item), 128)],
           4
         );
       }),

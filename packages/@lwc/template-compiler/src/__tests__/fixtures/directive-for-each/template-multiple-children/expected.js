@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(1, item.keyOne),
             },
-            ["1" + api_dynamic_text(item)],
+            "1" + api_dynamic_text(item),
             128
           ),
           api_element(
@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(2, item.keyTwo),
             },
-            ["2" + api_dynamic_text(item)],
+            "2" + api_dynamic_text(item),
             128
           ),
         ];

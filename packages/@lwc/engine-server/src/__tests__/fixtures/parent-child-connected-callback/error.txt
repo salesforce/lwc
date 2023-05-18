@@ -1,1 +1,0 @@
-Cannot use 'in' operator to search for 'type' in connectedCallback called

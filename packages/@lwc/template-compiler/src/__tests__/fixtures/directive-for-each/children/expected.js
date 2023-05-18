@@ -14,10 +14,8 @@ const stc1 = {
   },
   key: 3,
 };
-const stc2 = ["X1"];
-const stc3 = ["X2"];
-const stc4 = [];
-const stc5 = {
+const stc2 = [];
+const stc3 = {
   classMap: {
     s3: true,
   },
@@ -39,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_flatten([
         api_text("Other Child"),
         api_iterator($cmp.items, function (item) {
-          return "X";
+          return api_text("X");
         }),
         api_static_fragment($fragment1(), 2),
       ]),
@@ -58,7 +56,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     key: api_key(4, item.id),
                   },
-                  stc2,
+                  "X1",
                   128
                 ),
                 api_element(
@@ -66,18 +64,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     key: api_key(5, item.id),
                   },
-                  stc3,
+                  "X2",
                   128
                 ),
               ];
             })
-          : stc4,
+          : stc2,
       ]),
       4
     ),
     api_element(
       "section",
-      stc5,
+      stc3,
       api_flatten([
         api_static_fragment($fragment2(), 8),
         api_iterator($cmp.items, function (item) {

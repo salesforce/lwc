@@ -1,19 +1,19 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { i: api_iterator, fr: api_fragment } = $api;
+  const { t: api_text, i: api_iterator, fr: api_fragment } = $api;
   return [
     $cmp.visible
       ? api_fragment(
           0,
           api_iterator($cmp.items, function (item) {
-            return "Conditional Iteration";
+            return api_text("Conditional Iteration");
           }),
           0
         )
       : api_fragment(
           0,
           api_iterator($cmp.altItems, function (item) {
-            return "Else Iteration";
+            return api_text("Else Iteration");
           }),
           0
         ),

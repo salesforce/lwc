@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(1, color),
             },
-            [api_dynamic_text(color)],
+            api_dynamic_text(color),
             128
           ),
         ];

@@ -3,7 +3,6 @@ const $fragment1 = parseFragment`<div${3}>Should not get custom renderer</div>`;
 const stc0 = {
   city: true,
 };
-const stc1 = ["Should get custom renderer"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, st: api_static_fragment } = $api;
   return [
@@ -14,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0,
         renderer: renderer,
       },
-      stc1,
+      "Should get custom renderer",
       132
     ),
     api_static_fragment($fragment1(), 2),

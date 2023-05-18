@@ -1,9 +1,7 @@
 import { registerTemplate } from "lwc";
-const stc0 = ["New"];
-const stc1 = {
+const stc0 = {
   key: 1,
 };
-const stc2 = ["[X]"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     b: api_bind,
@@ -23,12 +21,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           click: _m0 || ($ctx._m0 = api_bind($cmp.create)),
         },
       },
-      stc0,
+      "New",
       384
     ),
     api_element(
       "ul",
-      stc1,
+      stc0,
       api_iterator($cmp.list, function (task) {
         return api_element(
           "li",
@@ -45,7 +43,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   click: api_bind(task.delete),
                 },
               },
-              stc2,
+              "[X]",
               384
             ),
           ],

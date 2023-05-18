@@ -1,6 +1,5 @@
 import { registerTemplate } from "lwc";
-const stc0 = ["Inner"];
-const stc1 = [];
+const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -18,12 +17,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(0, item.id),
             },
-            stc0,
+            "Inner",
             128
           );
         }),
       ])
-    : stc1;
+    : stc0;
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

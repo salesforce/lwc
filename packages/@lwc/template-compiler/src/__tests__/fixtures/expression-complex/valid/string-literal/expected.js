@@ -9,14 +9,13 @@ const stc1 = {
   },
   key: 1,
 };
-const stc2 = ["foo foo"];
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element, h: api_element } = $api;
+  const { t: api_text, c: api_custom_element, h: api_element } = $api;
   return [
     api_element(
       "section",
       stc0,
-      [api_custom_element("x-pert", _xPert, stc1, stc2, 192)],
+      [api_custom_element("x-pert", _xPert, stc1, [api_text("foo foo")], 64)],
       0
     ),
   ];

@@ -10,7 +10,12 @@ const stc1 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { d: api_dynamic_text, c: api_custom_element, h: api_element } = $api;
+  const {
+    d: api_dynamic_text,
+    t: api_text,
+    c: api_custom_element,
+    h: api_element,
+  } = $api;
   return [
     api_element(
       "section",
@@ -20,8 +25,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "x-pert",
           _xPert,
           stc1,
-          [api_dynamic_text(null)],
-          192
+          [api_text(api_dynamic_text(null))],
+          64
         ),
       ],
       0

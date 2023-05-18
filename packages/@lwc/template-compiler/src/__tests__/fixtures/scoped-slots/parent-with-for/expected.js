@@ -28,15 +28,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_fragment(
             key,
             [
-              api_element("div", stc0, [api_dynamic_text(parentItem)], 128),
+              api_element("div", stc0, api_dynamic_text(parentItem), 128),
               api_element(
                 "span",
                 stc1,
-                [
-                  api_dynamic_text(item.id) +
-                    " - " +
-                    api_dynamic_text(item.name),
-                ],
+                api_dynamic_text(item.id) + " - " + api_dynamic_text(item.name),
                 128
               ),
             ],

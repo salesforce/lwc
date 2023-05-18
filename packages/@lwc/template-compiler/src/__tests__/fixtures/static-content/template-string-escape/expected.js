@@ -26,10 +26,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment6(), 11),
     api_static_fragment($fragment7(), 13),
     api_static_fragment($fragment8(), 15),
-    api_element("div", stc0, ["Escape $" + api_dynamic_text($cmp.me)], 128),
+    api_element("div", stc0, "Escape $" + api_dynamic_text($cmp.me), 128),
     api_static_fragment($fragment9(), 18),
     api_static_fragment($fragment10(), 20),
-    api_element("xmp", stc1, ["Escape $" + api_dynamic_text($cmp.me)], 128),
+    api_element("xmp", stc1, "Escape $" + api_dynamic_text($cmp.me), 128),
   ];
   /*LWC compiler vX.X.X*/
 }

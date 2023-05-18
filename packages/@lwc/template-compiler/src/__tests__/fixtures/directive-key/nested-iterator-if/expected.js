@@ -5,7 +5,6 @@ const stc0 = {
 const stc1 = {
   key: 2,
 };
-const stc2 = ["Text"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -39,7 +38,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_element(
                 "span",
                 stc1,
-                ["Row: " + api_dynamic_text(x.index)],
+                "Row: " + api_dynamic_text(x.index),
                 128
               ),
               api_text(". Value: " + api_dynamic_text(x.value)),
@@ -52,7 +51,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                   key: api_key(3, x.value.key),
                 },
-                stc2,
+                "Text",
                 128
               )
             : null,

@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-const stc0 = ["Click"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, h: api_element } = $api;
   const { _m0, _m1, _m2, _m3 } = $ctx;
@@ -12,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           a123: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
         },
       },
-      stc0,
+      "Click",
       384
     ),
     api_element(
@@ -23,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           foo_bar: _m1 || ($ctx._m1 = api_bind($cmp.handleClick)),
         },
       },
-      stc0,
+      "Click",
       384
     ),
     api_element(
@@ -34,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           foo_: _m2 || ($ctx._m2 = api_bind($cmp.handleClick)),
         },
       },
-      stc0,
+      "Click",
       384
     ),
     api_element(
@@ -45,7 +44,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           a123: _m3 || ($ctx._m3 = api_bind($cmp.handleClick)),
         },
       },
-      stc0,
+      "Click",
       384
     ),
   ];

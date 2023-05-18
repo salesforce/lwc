@@ -22,7 +22,7 @@ import {
     PARSE_SVG_FRAGMENT_METHOD_NAME,
     TEMPLATE_PARAMS,
 } from '../shared/constants';
-import {isPreserveCommentsDirective, isRenderModeDirective, isStringLiteral} from '../shared/ast';
+import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getChildrenOrUndefinedIfEmpty, getStaticNodes } from './helpers';
@@ -228,7 +228,7 @@ export default class CodeGen {
         }
 
         if (optimized) {
-            return textConcatenation
+            return textConcatenation;
         }
 
         return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);

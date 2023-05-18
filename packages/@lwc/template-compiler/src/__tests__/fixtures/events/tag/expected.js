@@ -2,7 +2,6 @@ import { registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
-const stc1 = ["x"];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, h: api_element } = $api;
   const { _m0, _m1 } = $ctx;
@@ -19,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
             },
           },
-          stc1,
+          "x",
           384
         ),
         api_element(
@@ -30,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress)),
             },
           },
-          stc1,
+          "x",
           384
         ),
       ],
