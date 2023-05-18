@@ -50,10 +50,15 @@
             {
                 "name": "@lwc/wire-service",
                 "path": "dist/index.js"
+            },
+            {
+                "name": "wire-service",
+                "path": "dist/index.js"
             }
         ],
         "expose": [
-            "@lwc/wire-service"
+            "@lwc/wire-service",
+            "wire-service"
         ]
     }
 }
