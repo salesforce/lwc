@@ -18,6 +18,7 @@ const { hashElement } = require('folder-hash');
 const writeFile = promisify(fs.writeFile);
 
 const {
+    BENCHMARK_SMOKE_TEST,
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
     BENCHMARK_AUTO_SAMPLE_CONDITIONS = '1%', // how much difference we want to determine between A and B
@@ -29,8 +30,10 @@ let {
 
 const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
 
-BENCHMARK_SAMPLE_SIZE = toInt(BENCHMARK_SAMPLE_SIZE);
-BENCHMARK_TIMEOUT = toInt(BENCHMARK_TIMEOUT);
+// 2 is the minimum sample size allowed by Tachometer
+BENCHMARK_SAMPLE_SIZE = BENCHMARK_SMOKE_TEST ? 2 : toInt(BENCHMARK_SAMPLE_SIZE);
+// Timeout of 0 means don't auto-sample at all
+BENCHMARK_TIMEOUT = BENCHMARK_SMOKE_TEST ? 0 : toInt(BENCHMARK_TIMEOUT);
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 
@@ -84,7 +87,8 @@ async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) 
                     {
                         name: `${benchmarkName}-this-change`,
                     },
-                    {
+                    // In the smoke test, don't bother pulling in a comparison branch and testing it
+                    !BENCHMARK_SMOKE_TEST && {
                         name: `${benchmarkName}-tip-of-tree`,
                         packageVersions: {
                             label: 'tip-of-tree',
@@ -114,7 +118,7 @@ async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) 
                             ),
                         },
                     },
-                ],
+                ].filter(Boolean),
             },
         ],
     };
