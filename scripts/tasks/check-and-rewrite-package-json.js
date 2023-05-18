@@ -31,7 +31,11 @@ const IGNORED_PACKAGES = [
 const LWC_EXPOSED_MODULES = {
     '@lwc/engine-dom': ['lwc'],
     '@lwc/synthetic-shadow': ['@lwc/synthetic-shadow'],
-    '@lwc/wire-service': ['@lwc/wire-service', 'wire-service'],
+    '@lwc/wire-service': [
+        '@lwc/wire-service',
+        // TODO [#3517]: remove support for deprecated 'wire-service' import
+        'wire-service',
+    ],
 };
 
 const directories = globSync('./packages/@lwc/*').filter(
