@@ -112,8 +112,17 @@
                                         "left": {
                                             "type": "MemberExpression",
                                             "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
+                                                "type": "MemberExpression",
+                                                "object": {
+                                                    "type": "Identifier",
+                                                    "name": "$cmp"
+                                                },
+                                                "property": {
+                                                    "type": "Identifier",
+                                                    "name": "$cmp"
+                                                },
+                                                "computed": false,
+                                                "optional": false
                                             },
                                             "property": {
                                                 "type": "Identifier",

@@ -293,6 +293,8 @@ function mountStatic(
     }
 
     insertNode(elm, parent, anchor, renderer);
+    // Event listeners are only applied once when mounting, so they are allowed for static vnodes
+    applyEventListeners(vnode, renderer);
 }
 
 function mountCustomElement(

@@ -68,7 +68,6 @@ import {
     identifierFromComponentName,
     objectToAST,
     shouldFlatten,
-    memorizeHandler,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -637,15 +636,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            const listenerObj = Object.fromEntries(
-                listeners.map((listener) => [listener.name, listener])
-            );
-            const listenerObjAST = objectToAST(listenerObj, (key) => {
-                const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
-                const handler = codeGen.genBind(componentHandler);
-
-                return memorizeHandler(codeGen, componentHandler, handler);
-            });
+            const listenerObjAST = codeGen.genEventListeners(listeners);
             data.push(t.property(t.identifier('on'), listenerObjAST));
         }
 

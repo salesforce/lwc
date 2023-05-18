@@ -46,6 +46,7 @@ import {
     VFragment,
     isVScopedSlotFragment,
     VScopedSlotFragment,
+    VStaticElementData,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -69,7 +70,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 }
 
 // [st]atic node
-function st(fragment: Element, key: Key): VStatic {
+function st(fragment: Element, key: Key, data?: VStaticElementData): VStatic {
     return {
         type: VNodeType.Static,
         sel: undefined,
@@ -77,6 +78,7 @@ function st(fragment: Element, key: Key): VStatic {
         elm: undefined,
         fragment,
         owner: getVMBeingRendered()!,
+        data,
     };
 }
 

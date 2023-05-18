@@ -8,6 +8,9 @@ import SvgPath from 'x/svgPath';
 import SvgPathInDiv from 'x/svgPathInDiv';
 import SvgPathInG from 'x/svgPathInG';
 import StaticUnsafeTopLevel from 'x/staticUnsafeTopLevel';
+import OnlyEventListener from 'x/onlyEventListener';
+import OnlyEventListenerChild from 'x/onlyEventListenerChild';
+import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
@@ -264,5 +267,50 @@ describe('template literal escaping', () => {
         expect(
             elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
         ).toBe('Escape \\${me}');
+    });
+});
+
+describe('static optimization with event listeners', () => {
+    // We test an event listener on the self, child, and grandchild, because we currently
+    // cannot optimize event listeners anywhere except at the top level of a static fragment.
+    // So we need to ensure that potentially-static parents/grandparents do not result in
+    // event listeners not being attached incorrectly.
+    const scenarios = [
+        {
+            name: 'self',
+            Component: OnlyEventListener,
+        },
+        {
+            name: 'child',
+            Component: OnlyEventListenerChild,
+        },
+        {
+            name: 'grandchild',
+            Component: OnlyEventListenerGrandchild,
+        },
+    ];
+
+    scenarios.forEach(({ name, Component }) => {
+        it(`works with element that is static except for event listener - ${name}`, async () => {
+            const elm = createElement('x-only-event-listener', { is: Component });
+            document.body.appendChild(elm);
+
+            // CustomEvent is not supported in IE11
+            const CE = typeof CustomEvent === 'function' ? CustomEvent : Event;
+            const button = elm.shadowRoot.querySelector('button');
+
+            button.dispatchEvent(new CE('foo'));
+            button.dispatchEvent(new CE('bar'));
+            expect(elm.counts).toEqual({ foo: 1, bar: 1 });
+
+            // trigger re-render
+            elm.dynamic = 'yolo';
+
+            await Promise.resolve();
+
+            button.dispatchEvent(new CE('foo'));
+            button.dispatchEvent(new CE('bar'));
+            expect(elm.counts).toEqual({ foo: 2, bar: 2 });
+        });
     });
 });
