@@ -29,9 +29,9 @@ const IGNORED_PACKAGES = [
 
 // This is the same list as in @lwc/rollup-plugin/src/index.ts
 const LWC_EXPOSED_MODULES = {
-    '@lwc/engine-dom': 'lwc',
-    '@lwc/synthetic-shadow': '@lwc/synthetic-shadow',
-    '@lwc/wire-service': '@lwc/wire-service',
+    '@lwc/engine-dom': ['lwc'],
+    '@lwc/synthetic-shadow': ['@lwc/synthetic-shadow'],
+    '@lwc/wire-service': ['@lwc/wire-service', 'wire-service'],
 };
 
 const directories = globSync('./packages/@lwc/*').filter(
@@ -92,19 +92,17 @@ for (const dir of directories) {
         peerDependencies,
     };
 
-    const exposedModule = LWC_EXPOSED_MODULES[name];
-    if (exposedModule) {
+    const exposedModules = LWC_EXPOSED_MODULES[name];
+    if (exposedModules) {
         // Special case - consumers can do `import { LightningElement } from 'lwc'` and have it resolve to
         // `@lwc/engine-dom`. As for @lwc/synthetic-shadow and @lwc/wire-service, we have historically included these in
         // the "default modules" defined in @lwc/rollup-plugin.
         expectedJson.lwc = {
-            modules: [
-                {
-                    name: exposedModule,
-                    path: 'dist/index.js',
-                },
-            ],
-            expose: [exposedModule],
+            modules: exposedModules.map((exposedModule) => ({
+                name: exposedModule,
+                path: 'dist/index.js',
+            })),
+            expose: exposedModules,
         };
     }
 
