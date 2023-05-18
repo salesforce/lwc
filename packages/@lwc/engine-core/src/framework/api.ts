@@ -269,7 +269,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes | string = EmptyArray, // children is undefined if there are no children
+    children: VNodes = EmptyArray, // children is undefined if there are no children
     patchFlag: number = PatchFlag.BAIL // patchFlags is undefined for the ACT compiler
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -278,8 +278,8 @@ function c(
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(children) || isString(children),
-            `c() 4nd argument data must be an array or a string.`
+            arguments.length === 3 || isArray(children),
+            `c() 4nd argument data must be an array.`
         );
         // checking reserved internal data properties
         assert.isFalse(
@@ -296,7 +296,7 @@ function c(
                 vmBeingRendered
             );
         }
-        if (arguments.length === 4 && isArray(children)) {
+        if (arguments.length === 4) {
             forEach.call(children, (childVnode: VNode | null | undefined) => {
                 if (childVnode != null) {
                     assert.isTrue(
@@ -310,16 +310,13 @@ function c(
             });
         }
     }
-    const actualChildren = isArray(children) ? children : EmptyArray;
-    const text = isString(children) ? children : undefined;
     const { key, ref } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
-        children: actualChildren,
-        text,
+        children,
         elm,
         key,
 

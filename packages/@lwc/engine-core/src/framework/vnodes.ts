@@ -89,11 +89,11 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     elm: Element | undefined;
     key: Key;
     patchFlag: number;
-    text: string | undefined;
 }
 
 export interface VElement extends VBaseElement {
     type: VNodeType.Element;
+    text: string | undefined;
 }
 
 export interface VCustomElement extends VBaseElement {

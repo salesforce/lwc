@@ -85,25 +85,7 @@ export function patchChildren(
     }
 }
 
-function patchChildrenOfNodes(
-    vnode1: VBaseElement,
-    vnode2: VBaseElement,
-    parent: ParentNode,
-    renderer: RendererAPI
-): void {
-    const { patchFlag } = vnode2;
-    if (patchFlag & PatchFlag.TEXT && patchFlag !== PatchFlag.BAIL) {
-        patchTextChildNodes(vnode1, vnode2, renderer);
-    } else {
-        patchChildren(vnode1.children, vnode2.children, parent, renderer);
-    }
-}
-
-function patchTextChildNodes(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
-    renderer: RendererAPI
-) {
+function patchChildTextNodes(oldVnode: VElement | null, vnode: VElement, renderer: RendererAPI) {
     const { setTextContent } = renderer;
     if (isNull(oldVnode) || oldVnode.text !== vnode.text) {
         setTextContent(vnode.elm, vnode.text!);
@@ -286,15 +268,11 @@ function mountElement(
     patchElementPropsAndAttrs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
-    mountVnodeChildren(vnode, elm, renderer);
-}
-
-function mountVnodeChildren(vnode: VBaseElement, parent: ParentNode, renderer: RendererAPI) {
     const { patchFlag } = vnode;
     if (patchFlag & PatchFlag.TEXT && patchFlag !== PatchFlag.BAIL) {
-        patchTextChildNodes(null, vnode, renderer);
+        patchChildTextNodes(null, vnode, renderer);
     } else {
-        mountVNodes(vnode.children, parent, renderer, null);
+        mountVNodes(vnode.children, elm, renderer, null);
     }
 }
 
@@ -302,7 +280,13 @@ function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
     patchElementPropsAndAttrs(n1, n2, renderer);
-    patchChildrenOfNodes(n1, n2, elm, renderer);
+    const { patchFlag } = n2;
+    if (patchFlag & PatchFlag.TEXT && patchFlag !== PatchFlag.BAIL) {
+        // fast path for text-ony child nodes
+        patchChildTextNodes(n1, n2, renderer);
+    } else {
+        patchChildren(n1.children, n2.children, elm, renderer);
+    }
 }
 
 function mountStatic(
@@ -405,7 +389,7 @@ function mountCustomElement(
         }
     }
 
-    mountVnodeChildren(vnode, elm, renderer);
+    mountVNodes(vnode.children, elm, renderer, null);
 
     if (vm) {
         appendVM(vm);
@@ -464,7 +448,7 @@ function patchCustomElement(
 
         // in fallback mode, the children will be always empty, so, nothing
         // will happen, but in native, it does allocate the light dom
-        patchChildrenOfNodes(n1, n2, elm, renderer);
+        patchChildren(n1.children, n2.children, elm, renderer);
 
         if (!isUndefined(vm)) {
             // this will probably update the shadowRoot, but only if the vm is in a dirty state
