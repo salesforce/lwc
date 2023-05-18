@@ -91,21 +91,22 @@ function patchChildrenOfNodes(
     parent: ParentNode,
     renderer: RendererAPI
 ): void {
-    const { patchFlag } = vnode2
-    if (patchFlag & PatchFlag.TEXT) { // fast path for text-only children
-        patchTextChildren(vnode1, vnode2, parent, renderer);
+    const { patchFlag } = vnode2;
+    if (patchFlag & PatchFlag.TEXT && patchFlag !== PatchFlag.BAIL) {
+        patchTextChildNodes(vnode1, vnode2, renderer);
     } else {
         patchChildren(vnode1.children, vnode2.children, parent, renderer);
     }
 }
 
-function patchTextChildren(    vnode1: VBaseElement,
-                               vnode2: VBaseElement,
-                               parent: ParentNode,
-                               renderer: RendererAPI) {
-    const { setText } = renderer;
-    if (vnode1.children !== vnode2.children) {
-        setText(vnode2.elm, vnode2.children as unknown as string)
+function patchTextChildNodes(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
+    const { setTextContent } = renderer;
+    if (isNull(oldVnode) || oldVnode.text !== vnode.text) {
+        setTextContent(vnode.elm, vnode.text!);
     }
 }
 
@@ -285,7 +286,16 @@ function mountElement(
     patchElementPropsAndAttrs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
-    mountVNodes(vnode.children, elm, renderer, null);
+    mountVnodeChildren(vnode, elm, renderer);
+}
+
+function mountVnodeChildren(vnode: VBaseElement, parent: ParentNode, renderer: RendererAPI) {
+    const { patchFlag } = vnode;
+    if (patchFlag & PatchFlag.TEXT && patchFlag !== PatchFlag.BAIL) {
+        patchTextChildNodes(null, vnode, renderer);
+    } else {
+        mountVNodes(vnode.children, parent, renderer, null);
+    }
 }
 
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
@@ -395,7 +405,7 @@ function mountCustomElement(
         }
     }
 
-    mountVNodes(vnode.children, elm, renderer, null);
+    mountVnodeChildren(vnode, elm, renderer);
 
     if (vm) {
         appendVM(vm);

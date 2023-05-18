@@ -115,6 +115,10 @@ function setText(node: Node, content: string): void {
     node.nodeValue = content;
 }
 
+function setTextContent(node: Node, content: string): void {
+    node.textContent = content;
+}
+
 function getProperty(node: Node, key: string): any {
     return (node as any)[key];
 }
@@ -260,6 +264,7 @@ export {
     getProperty,
     setProperty,
     setText,
+    setTextContent,
     getAttribute,
     setAttribute,
     removeAttribute,

@@ -109,7 +109,10 @@ function h(
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
-        assert.isTrue(isArray(children) || isString(children), `h() 3rd argument children must be an array.`);
+        assert.isTrue(
+            isArray(children) || isString(children),
+            `h() 3rd argument children must be an array.`
+        );
         assert.isTrue(
             'key' in data,
             ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`
@@ -129,26 +132,31 @@ function h(
                 vmBeingRendered
             );
         }
-        forEach.call(children, (childVnode: VNode | null | undefined) => {
-            if (childVnode != null) {
-                assert.isTrue(
-                    'type' in childVnode &&
-                        'sel' in childVnode &&
-                        'elm' in childVnode &&
-                        'key' in childVnode,
-                    `${childVnode} is not a vnode.`
-                );
-            }
-        });
+        if (isArray(children)) {
+            forEach.call(children, (childVnode: VNode | null | undefined) => {
+                if (childVnode != null) {
+                    assert.isTrue(
+                        'type' in childVnode &&
+                            'sel' in childVnode &&
+                            'elm' in childVnode &&
+                            'key' in childVnode,
+                        `${childVnode} is not a vnode.`
+                    );
+                }
+            });
+        }
     }
 
     const { key, ref } = data;
+    const actualChildren = isArray(children) ? children : EmptyArray;
+    const text = isString(children) ? children : undefined;
 
     const vnode: VElement = {
         type: VNodeType.Element,
         sel,
         data,
-        children,
+        children: actualChildren,
+        text,
         elm: undefined,
         key,
         owner: vmBeingRendered,
@@ -288,7 +296,7 @@ function c(
                 vmBeingRendered
             );
         }
-        if (arguments.length === 4) {
+        if (arguments.length === 4 && isArray(children)) {
             forEach.call(children, (childVnode: VNode | null | undefined) => {
                 if (childVnode != null) {
                     assert.isTrue(
@@ -302,13 +310,16 @@ function c(
             });
         }
     }
+    const actualChildren = isArray(children) ? children : EmptyArray;
+    const text = isString(children) ? children : undefined;
     const { key, ref } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
-        children,
+        children: actualChildren,
+        text,
         elm,
         key,
 

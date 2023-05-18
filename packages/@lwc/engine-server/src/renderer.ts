@@ -234,6 +234,18 @@ function setText(node: N, content: string) {
     }
 }
 
+function setTextContent(node: N, content: string) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
+        node[HostChildrenKey] = [
+            {
+                [HostTypeKey]: HostNodeType.Text,
+                [HostParentKey]: node,
+                [HostValueKey]: content,
+            },
+        ];
+    }
+}
+
 function getAttribute(element: E, name: string, namespace: string | null = null) {
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
@@ -429,6 +441,7 @@ export const renderer = {
     getProperty,
     setProperty,
     setText,
+    setTextContent,
     getAttribute,
     setAttribute,
     removeAttribute,

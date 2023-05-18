@@ -95,7 +95,10 @@ function transform(codeGen: CodeGen): t.Expression {
             return codeGen.genHoistedElement(element, slotParentName);
         }
 
-        const { children, patchFlag: childrenPatchFlag } = transformChildren(element);
+        const { children, patchFlag: childrenPatchFlag } = transformChildren(
+            element,
+            /* canOptimize */ !isComponent(element) && !isSlot(element)
+        );
 
         const patchFlag = dataBagPatchFlag | childrenPatchFlag;
 
@@ -133,7 +136,7 @@ function transform(codeGen: CodeGen): t.Expression {
     function transformText(consecutiveText: Text[], optimized: boolean): t.Expression {
         const consecutiveTextExpression = consecutiveText.map(({ value }) => {
             return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-        })
+        });
         return codeGen.genText(consecutiveTextExpression, optimized);
     }
 
@@ -141,7 +144,10 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(parent: ParentNode): { children: t.Expression; patchFlag: number } {
+    function transformChildren(
+        parent: ParentNode,
+        canOptimize: boolean = false
+    ): { children: t.Expression; patchFlag: number } {
         const res: t.Expression[] = [];
         const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
@@ -163,19 +169,19 @@ function transform(codeGen: CodeGen): t.Expression {
                     child = current.value;
                 } while (!current.done && isText(child));
 
-                if (current.done && resultEmptyAtStart) {
+                if (canOptimize && current.done && resultEmptyAtStart) {
                     // Result was empty at the start, and we have consumed all child nodes, so
                     // all child nodes are text nodes, so generate a simple string concatenation output
                     patchFlag |= PatchFlag.TEXT;
                     return {
                         children: transformText(continuousText, /* optimized */ true),
-                        patchFlag
-                    }
+                        patchFlag,
+                    };
                 } else {
                     res.push(transformText(continuousText, /* optimized */ false));
                     // Early exit if a text node is the last child node.
                     if (current.done) {
-                        break
+                        break;
                     }
                 }
             }

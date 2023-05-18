@@ -28,7 +28,7 @@ describe('LightningElement.childNodes', () => {
             expect(childResult[1].className).toBe('foo slotted2');
         });
 
-        fit('returns the right nodes', () => {
+        it('returns the right nodes', () => {
             const elm = createElement('x-parent-with-text-node', { is: ParentWithTextNode });
             document.body.appendChild(elm);
 
