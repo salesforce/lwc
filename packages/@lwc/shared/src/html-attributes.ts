@@ -145,6 +145,17 @@ export function htmlPropertyToAttribute(propName: string): string {
     return attributeName;
 }
 
+/**
+ * Map associating previously transformed kabab-case attributes into camel-case props.
+ */
+const CACHED_KEBAB_CAMEL_MAPPING = new Map<string, string>();
+
 export function kebabCaseToCamelCase(attrName: string): string {
-    return StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+    let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
+
+    if (isUndefined(result)) {
+        result = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+    }
+
+    return result;
 }
