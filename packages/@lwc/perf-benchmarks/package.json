@@ -29,7 +29,7 @@
         "@lwc/rollup-plugin-node-resolve-legacy": "npm:rollup-plugin-node-resolve@5.2.0",
         "folder-hash": "4.0.4",
         "markdown-table": "^3.0.3",
-        "tachometer": "0.5.10"
+        "tachometer": "0.7.0"
     },
     "nx": {
         "targets": {
