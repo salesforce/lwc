@@ -330,7 +330,7 @@ The footer should contain any information about **Breaking Changes** and is also
 - Certain parts of the codebase are particularly susceptible to breaking changes. This includes the browser runtime (`engine-core` and `engine-dom`), as well as the compiler (`compiler`, `style-compiler`, `template-compiler`).
 - Some areas of the codebase are more less mature and undergoing active development. Areas related to SSR, including the server-side runtime (`engine-server`), fall under this category.
 
-**Definition of done:** Especially when making large changes to the codebase, certain complementary work must be undertaken for the desired changes to be considered.  When making a submission please adhere to the following:
+**Definition of done:** Especially when making large changes to the codebase, certain complementary work must be undertaken for the desired changes to be considered. When making a submission please adhere to the following:
 
 - All pre-existing unit- & integration- tests must pass.
 - If you modify a pre-existing test to accommodate your changes, a thorough reasoning must be proactively provided in the PR.
