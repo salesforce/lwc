@@ -328,7 +328,7 @@ The footer should contain any information about **Breaking Changes** and is also
 - The LWC framework makes strong guarantees about backwards compatibility to those that use our framework. Any changes that compromise these guarantees are unlikely to be accepted as-is.
 - If your change causes a test to fail in unit or integration tests, it is likely that your submission won't be accepted as-is.
 - Certain parts of the codebase are particularly susceptible to breaking changes. This includes the browser runtime (`engine-core` and `engine-dom`), as well as the compiler (`compiler`, `style-compiler`, `template-compiler`).
-- Some areas of the codebase are more less mature and undergoing active development. Areas related to SSR, including the server-side runtime (engine-server), fall under this category.
+- Some areas of the codebase are more less mature and undergoing active development. Areas related to SSR, including the server-side runtime (`engine-server`), fall under this category.
 
 **Definition of done:** Especially when making large changes to the codebase, certain complementary work must be undertaken for the desired changes to be considered.  When making a submission please adhere to the following:
 
