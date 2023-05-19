@@ -29,9 +29,13 @@ const IGNORED_PACKAGES = [
 
 // This is the same list as in @lwc/rollup-plugin/src/index.ts
 const LWC_EXPOSED_MODULES = {
-    '@lwc/engine-dom': 'lwc',
-    '@lwc/synthetic-shadow': '@lwc/synthetic-shadow',
-    '@lwc/wire-service': '@lwc/wire-service',
+    '@lwc/engine-dom': ['lwc'],
+    '@lwc/synthetic-shadow': ['@lwc/synthetic-shadow'],
+    '@lwc/wire-service': [
+        '@lwc/wire-service',
+        // TODO [#3517]: remove support for deprecated 'wire-service' import
+        'wire-service',
+    ],
 };
 
 const directories = globSync('./packages/@lwc/*').filter(
@@ -72,6 +76,7 @@ for (const dir of directories) {
         main: 'dist/index.cjs.js',
         module: 'dist/index.js',
         types: 'dist/index.d.ts',
+        // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
         files: ['dist'],
         scripts: {
             build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
@@ -80,7 +85,9 @@ for (const dir of directories) {
         nx: {
             targets: {
                 build: {
-                    outputs: ['dist'],
+                    // It's important to use the `./` here, otherwise NX does not restore the dist files
+                    // See https://github.com/salesforce/lwc/issues/3511
+                    outputs: ['./dist'],
                 },
             },
         },
@@ -89,19 +96,17 @@ for (const dir of directories) {
         peerDependencies,
     };
 
-    const exposedModule = LWC_EXPOSED_MODULES[name];
-    if (exposedModule) {
+    const exposedModules = LWC_EXPOSED_MODULES[name];
+    if (exposedModules) {
         // Special case - consumers can do `import { LightningElement } from 'lwc'` and have it resolve to
         // `@lwc/engine-dom`. As for @lwc/synthetic-shadow and @lwc/wire-service, we have historically included these in
         // the "default modules" defined in @lwc/rollup-plugin.
         expectedJson.lwc = {
-            modules: [
-                {
-                    name: exposedModule,
-                    path: 'dist/index.js',
-                },
-            ],
-            expose: [exposedModule],
+            modules: exposedModules.map((exposedModule) => ({
+                name: exposedModule,
+                path: 'dist/index.js',
+            })),
+            expose: exposedModules,
         };
     }
 

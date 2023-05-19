@@ -343,7 +343,6 @@ function hydrateChildren(
 ) {
     let hasWarned = false;
     let nextNode: Node | null = node;
-    let anchor: Node | null = null;
     const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
@@ -351,7 +350,6 @@ function hydrateChildren(
         if (!isNull(childVnode)) {
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
-                anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
                 if (process.env.NODE_ENV !== 'production') {
@@ -363,8 +361,8 @@ function hydrateChildren(
                         );
                     }
                 }
-                mount(childVnode, parentNode, renderer, anchor);
-                anchor = childVnode.elm!;
+                mount(childVnode, parentNode, renderer, nextNode);
+                nextNode = renderer.nextSibling(childVnode.elm!);
             }
         }
     }

@@ -60,6 +60,12 @@ BENCHMARK_TIMEOUT=5
 
 See the [Tachometer documentation](https://github.com/Polymer/tachometer) for details on what these mean.
 
+You can run a smoke test (to confirm the benchmark tests are working) using:
+
+```shell
+BENCHMARK_SMOKE_TEST=1
+```
+
 If anything gets messed up when comparing to the other branch, add the `--force-clean-npm-install` flag when running `tach`.
 
 Also note that, due to how NX does caching, any environment variables you pass to `build:performance` should also

@@ -22,9 +22,6 @@ module.exports = {
     plugins: [
         // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
         '@lwc/rollup-plugin-node-resolve-legacy',
-        // CommonJS is currently required for transitive deps like parse5
-        // TODO [#3451]: when parse5 is upgraded to v7, we should be able to remove this
-        '@lwc/rollup-plugin-commonjs-legacy',
         [
             '@rollup/plugin-replace',
             {
