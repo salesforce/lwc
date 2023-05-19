@@ -14,7 +14,6 @@ import {
 } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 
-import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -50,21 +49,16 @@ export function patchAttributes(
             // on a custom element versus just using the more reliable attribute format.
             if (external && (propName = kebabCaseToCamelCase(key)) in elm!) {
                 setProperty(elm, propName, cur);
+            } else if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+                // Assume xml namespace
+                setAttribute(elm, key, cur as string, XML_NAMESPACE);
+            } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
+                // Assume xlink namespace
+                setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
+            } else if (isNull(cur) || isUndefined(cur)) {
+                removeAttribute(elm, key);
             } else {
-                // Only unlock/lock attributes if it's an attribute, not a prop
-                unlockAttribute(elm!, key);
-                if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
-                    // Assume xml namespace
-                    setAttribute(elm, key, cur as string, XML_NAMESPACE);
-                } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
-                    // Assume xlink namespace
-                    setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
-                } else if (isNull(cur) || isUndefined(cur)) {
-                    removeAttribute(elm, key);
-                } else {
-                    setAttribute(elm, key, cur as string);
-                }
-                lockAttribute(elm!, key);
+                setAttribute(elm, key, cur as string);
             }
         }
     }
