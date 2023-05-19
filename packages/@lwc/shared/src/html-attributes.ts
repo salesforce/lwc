@@ -155,6 +155,7 @@ export function kebabCaseToCamelCase(attrName: string): string {
 
     if (isUndefined(result)) {
         result = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+        CACHED_KEBAB_CAMEL_MAPPING.set(attrName, result);
     }
 
     return result;
