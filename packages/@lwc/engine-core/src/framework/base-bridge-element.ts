@@ -27,7 +27,6 @@ import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { isAttributeLocked } from './attributes';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -99,14 +98,6 @@ function createAttributeChangedCallback(
                 // @ts-ignore type-mismatch
                 superAttributeChangedCallback.apply(this, arguments);
             }
-            return;
-        }
-        if (!isAttributeLocked(this, attrName)) {
-            // Ignore changes triggered by the engine itself during:
-            // * diffing when public props are attempting to reflect to the DOM
-            // * component via `this.setAttribute()`, should never update the prop
-            // Both cases, the setAttribute call is always wrapped by the unlocking of the
-            // attribute to be changed
             return;
         }
         // Reflect attribute change to the corresponding property when changed from outside.
