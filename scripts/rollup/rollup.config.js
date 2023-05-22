@@ -21,7 +21,8 @@ const commonjs = require('@rollup/plugin-commonjs');
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+// proxy-compat-disable tells compat mode not to apply - framework files aren't designed for the compat transform
+const banner = `/* proxy-compat-disable */\n/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
