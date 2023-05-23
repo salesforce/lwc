@@ -69,7 +69,7 @@ export function hydrateRoot(vm: VM) {
     runConnectedCallback(vm);
     hydrateVM(vm);
 
-    if (hasMismatch) {
+    if (hasMismatch && process.env.NODE_ENV !== 'production') {
         logError('Hydration completed with errors.', vm);
     }
 }
@@ -159,9 +159,11 @@ function getValidationPredicate(
     if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
         return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
     }
-    logWarn(
-        'Validation opt out must be `true` or an array of attributes that should not be validated.'
-    );
+    if (process.env.NODE_ENV !== 'production') {
+        logWarn(
+            'Validation opt out must be `true` or an array of attributes that should not be validated.'
+        );
+    }
     return (_attrName: string) => true;
 }
 
@@ -697,16 +699,18 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 
     clientAttrsNames.forEach((attrName) => {
         if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
-            logError(
-                `Mismatch hydrating element <${getProperty(
-                    client,
-                    'tagName'
-                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
-                    client,
-                    attrName
-                )}" but found "${getAttribute(ssr, attrName)}"`,
-                vnode.owner
-            );
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `Mismatch hydrating element <${getProperty(
+                        client,
+                        'tagName'
+                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                        client,
+                        attrName
+                    )}" but found "${getAttribute(ssr, attrName)}"`,
+                    vnode.owner
+                );
+            }
             isCompatibleElements = false;
         }
     });
