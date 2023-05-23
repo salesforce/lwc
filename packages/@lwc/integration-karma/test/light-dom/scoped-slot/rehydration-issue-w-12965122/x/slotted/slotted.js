@@ -6,8 +6,4 @@ export default class Slotted extends LightningElement {
     renderedCallback() {
         window.timingBuffer.push('slotted:renderedCallback');
     }
-
-    connectedCallback() {
-        //window.timingBuffer.push('slotted:connectedCallback');
-    }
 }
