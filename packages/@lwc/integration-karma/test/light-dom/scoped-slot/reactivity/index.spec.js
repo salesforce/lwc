@@ -40,6 +40,8 @@ describe('reactivity in scoped slots', () => {
                 // reset timing buffer before next rerender
                 resetTimingBuffer();
                 elm.changeItemsRow();
+                // contents of items is being observed by x-child and not by x-parent.
+                // Adding a new row or changing an entire row will only trigger renderedCallback of x-child and not of the parent
             })
             .then(() => {
                 const spans = elm.shadowRoot.querySelectorAll('span');
