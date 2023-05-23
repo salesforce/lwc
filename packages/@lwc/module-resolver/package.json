@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/module-resolver",
-    "version": "2.45.2",
+    "version": "2.45.5",
     "description": "Resolves paths for LWC components",
     "keywords": [
         "lwc"

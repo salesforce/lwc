@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/features",
-    "version": "2.45.2",
+    "version": "2.45.5",
     "description": "LWC Features Flags",
     "keywords": [
         "lwc"
@@ -42,6 +42,6 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "2.45.2"
+        "@lwc/shared": "2.45.5"
     }
 }

@@ -3,6 +3,7 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
+import WithChildElms2 from 'x/withChildElms2'; // because we can't reuse the same constructor in customElements.define
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
 import AttrChanged from 'x/attrChanged';
@@ -22,6 +23,7 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     it('CustomElementConstructor should be a function', () => {
         class Test extends LightningElement {}
+
         const TestCustomElement = Test.CustomElementConstructor;
 
         expect(typeof TestCustomElement).toBe('function');
@@ -87,6 +89,21 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 );
             }
             expect(observedErrors).toContain('[LWC error]: Hydration completed with errors.\n');
+        });
+        it(`should occur when element exists before customElements.define and not throw errors if it's consistent`, () => {
+            const elm = document.createElement('test-custom-element-preexisting-consistent');
+            document.body.appendChild(elm);
+            elm.attachShadow({ mode: 'open' });
+            const expected = '<p>before</p><p>after</p>';
+            elm.shadowRoot.innerHTML = expected;
+            customElements.define(
+                'test-custom-element-preexisting-consistent',
+                WithChildElms2.CustomElementConstructor
+            );
+
+            const observedErrors = consoleSpy.calls.error.flat();
+            expect(observedErrors.length).toEqual(0);
+            expect(elm.shadowRoot.innerHTML).toEqual(expected);
         });
     });
 
