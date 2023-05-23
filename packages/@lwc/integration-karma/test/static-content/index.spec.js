@@ -291,26 +291,52 @@ describe('static optimization with event listeners', () => {
     ];
 
     scenarios.forEach(({ name, Component }) => {
-        it(`works with element that is static except for event listener - ${name}`, async () => {
-            const elm = createElement('x-only-event-listener', { is: Component });
-            document.body.appendChild(elm);
-
+        describe(name, () => {
             // CustomEvent is not supported in IE11
             const CE = typeof CustomEvent === 'function' ? CustomEvent : Event;
-            const button = elm.shadowRoot.querySelector('button');
 
-            button.dispatchEvent(new CE('foo'));
-            button.dispatchEvent(new CE('bar'));
-            expect(elm.counts).toEqual({ foo: 1, bar: 1 });
+            let elm;
+            let button;
 
-            // trigger re-render
-            elm.dynamic = 'yolo';
+            beforeEach(async () => {
+                elm = createElement('x-only-event-listener', { is: Component });
+                document.body.appendChild(elm);
 
-            await Promise.resolve();
+                await Promise.resolve();
 
-            button.dispatchEvent(new CE('foo'));
-            button.dispatchEvent(new CE('bar'));
-            expect(elm.counts).toEqual({ foo: 2, bar: 2 });
+                button = elm.shadowRoot.querySelector('button');
+            });
+
+            it('works with element that is static except for event listener', async () => {
+                button.dispatchEvent(new CE('foo'));
+                button.dispatchEvent(new CE('bar'));
+                expect(elm.counts).toEqual({ foo: 1, bar: 1 });
+
+                // trigger re-render
+                elm.dynamic = 'yolo';
+
+                await Promise.resolve();
+
+                button.dispatchEvent(new CE('foo'));
+                button.dispatchEvent(new CE('bar'));
+                expect(elm.counts).toEqual({ foo: 2, bar: 2 });
+            });
+
+            it('can have manual listeners too', async () => {
+                const dispatcher = jasmine.createSpy();
+
+                button.addEventListener('baz', dispatcher);
+                button.dispatchEvent(new CE('baz'));
+                expect(dispatcher.calls.count()).toBe(1);
+
+                // trigger re-render
+                elm.dynamic = 'yolo';
+
+                await Promise.resolve();
+
+                button.dispatchEvent(new CE('baz'));
+                expect(dispatcher.calls.count()).toBe(2);
+            });
         });
     });
 });
