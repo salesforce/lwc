@@ -33,21 +33,22 @@ describe('reactivity in scoped slots', () => {
                 expect(spans[0].innerHTML).toBe('38 - Audio');
                 expect(spans[1].innerHTML).toBe('40 - Video');
                 expect(window.timingBuffer).toEqual([
-                    'child:renderedCallback', // Only the child gets re-rendered
+                    'child:renderedCallback', // value(items) in child's template was changed, so call child's renderedCallback
+                    'parent:renderedCallback', // item.id is being observed in parent's template, so call its renderedCallback
                 ]);
 
                 // reset timing buffer before next rerender
                 resetTimingBuffer();
                 elm.changeItemsRow();
+                // contents of items is being observed by x-child and not by x-parent.
+                // Adding a new row or changing an entire row will only trigger renderedCallback of x-child and not of the parent
             })
             .then(() => {
                 const spans = elm.shadowRoot.querySelectorAll('span');
                 expect(spans).toHaveSize(2);
                 expect(spans[0].innerHTML).toBe('37 - Tape');
                 expect(spans[1].innerHTML).toBe('40 - Video');
-                expect(window.timingBuffer).toEqual([
-                    'child:renderedCallback', // Only the child gets re-rendered
-                ]);
+                expect(window.timingBuffer).toEqual(['child:renderedCallback']);
             });
     });
 
@@ -58,7 +59,6 @@ describe('reactivity in scoped slots', () => {
         resetTimingBuffer();
         const child = elm.shadowRoot.querySelector('x-list-child-tracked-data');
         child.changeItemsNestedKey();
-
         return Promise.resolve()
             .then(() => {
                 const spans = elm.shadowRoot.querySelectorAll('span');
@@ -66,7 +66,8 @@ describe('reactivity in scoped slots', () => {
                 expect(spans[0].innerHTML).toBe('38 - Audio');
                 expect(spans[1].innerHTML).toBe('40 - Video');
                 expect(window.timingBuffer).toEqual([
-                    'child:renderedCallback', // Only the child gets re-rendered
+                    'child:renderedCallback',
+                    'parent:renderedCallback',
                 ]);
 
                 // reset timing buffer before next rerender
@@ -79,7 +80,8 @@ describe('reactivity in scoped slots', () => {
                 expect(spans[0].innerHTML).toBe('37 - Tape');
                 expect(spans[1].innerHTML).toBe('40 - Video');
                 expect(window.timingBuffer).toEqual([
-                    'child:renderedCallback', // Only the child gets re-rendered
+                    'child:renderedCallback',
+                    // Since the parent observes changes to the contents of the individual rows and not the items itself the parent's renderedCallback isn't invoked
                 ]);
             });
     });
@@ -110,6 +112,8 @@ describe('reactivity in scoped slots', () => {
                         'child-38:connectedCallback', // Connect and render edited entry
                         'child-38:renderedCallback',
                         'child-39:disconnectedCallback', // Removed list entry is disconnected
+                        'childSlotTagWithKey:renderedCallback', // slot receiver has been rendered
+                        'parent:renderedCallback', // item.id is being observed in parent's template, so call its renderedCallback
                     ]
                 );
 
@@ -121,7 +125,11 @@ describe('reactivity in scoped slots', () => {
             .then(() => {
                 verifyContentAndCallbacks(
                     ['38 - Light', '40 - Video'],
-                    ['child-38:renderedCallback']
+                    [
+                        'child-38:renderedCallback',
+                        'childSlotTagWithKey:renderedCallback',
+                        'parent:renderedCallback',
+                    ]
                 );
 
                 // reset timing buffer before next rerender
@@ -137,6 +145,7 @@ describe('reactivity in scoped slots', () => {
                         'child-37:connectedCallback',
                         'child-37:renderedCallback',
                         'child-38:disconnectedCallback',
+                        'childSlotTagWithKey:renderedCallback',
                     ]
                 );
             });
@@ -158,7 +167,8 @@ describe('reactivity in scoped slots', () => {
                 expect(div).toHaveSize(1);
                 expect(div[0].innerHTML).toBe('2000 hits');
                 expect(window.timingBuffer).toEqual([
-                    'child:renderedCallback', // Only the child gets re-rendered
+                    'child:renderedCallback',
+                    'parent:renderedCallback', // label is part of parent's template, call its renderedCallback
                 ]);
             });
         });
