@@ -6,7 +6,7 @@
  */
 import * as BabelCoreNamespace from '@babel/core';
 import { PluginPass, types } from '@babel/core';
-import { CompilerInstrumentation } from '@lwc/errors';
+import { InstrumentationObject } from '@lwc/errors';
 
 export type BabelAPI = typeof BabelCoreNamespace;
 export type BabelTypes = typeof types;
@@ -19,7 +19,7 @@ export interface LwcBabelPluginOptions {
     };
     namespace?: string;
     name?: string;
-    instrumentation?: CompilerInstrumentation;
+    instrumentation?: InstrumentationObject;
 }
 
 export interface LwcBabelPluginPass extends PluginPass {

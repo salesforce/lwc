@@ -19,7 +19,16 @@ export const enum CompilerMetrics {
     DynamicImportTransform = 'dynamic-import-transform',
 }
 
-export class CompilerInstrumentation {
+export interface InstrumentationObject {
+    log: (errorInfo: LWCErrorInfo, config: ErrorConfig) => void;
+    incrementCounter: (metric: CompilerMetrics) => void;
+}
+
+/**
+ * Basic Compiler Instrumentation class to gather metrics and diagnostics
+ * as properties on itself.
+ */
+export class CompilerInstrumentation implements InstrumentationObject {
     diagnostics: CompilerDiagnostic[];
     metrics: {
         [key in CompilerMetrics]?: number;

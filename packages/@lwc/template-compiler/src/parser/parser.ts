@@ -7,7 +7,7 @@
 import {
     CompilerDiagnostic,
     CompilerError,
-    CompilerInstrumentation,
+    InstrumentationObject,
     generateCompilerDiagnostic,
     generateCompilerError,
     Location,
@@ -86,7 +86,7 @@ export default class ParserCtx {
      * Instrumentation object to handle gathering metrics and internal logs for everything happening
      * during this context.
      */
-    readonly instrumentation?: CompilerInstrumentation;
+    readonly instrumentation?: InstrumentationObject;
 
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();

@@ -8,7 +8,7 @@ import {
     TemplateErrors,
     invariant,
     generateCompilerError,
-    CompilerInstrumentation,
+    InstrumentationObject,
 } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
@@ -77,7 +77,7 @@ export interface Config {
     /**
      * Config to use to collect metrics and logs
      */
-    instrumentation?: CompilerInstrumentation;
+    instrumentation?: InstrumentationObject;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'instrumentation'>> &

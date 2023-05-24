@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CompilerInstrumentation, CompilerValidationErrors, invariant } from '@lwc/errors';
+import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, isObject } from '@lwc/shared';
 import { CustomRendererConfig } from '@lwc/template-compiler';
 
@@ -84,7 +84,7 @@ export interface TransformOptions {
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     disableSyntheticShadowSupport?: boolean;
-    instrumentation?: CompilerInstrumentation;
+    instrumentation?: InstrumentationObject;
 }
 
 type RequiredTransformOptions = Omit<
@@ -108,7 +108,7 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;
-    instrumentation?: CompilerInstrumentation;
+    instrumentation?: InstrumentationObject;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
