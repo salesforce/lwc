@@ -75,7 +75,7 @@ export interface Config {
     enableLwcSpread?: boolean;
 
     /**
-     *
+     * Config to use to collect metrics and logs
      */
     instrumentation?: CompilerInstrumentation;
 }
