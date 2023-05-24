@@ -44,9 +44,6 @@ export class CompilerInstrumentation implements InstrumentationObject {
     }
 
     incrementCounter(metric: CompilerMetrics) {
-        if (!this.metrics[metric]) {
-            this.metrics[metric] = 0;
-        }
-        this.metrics[metric]! += 1;
+        this.metrics[metric] = (this.metrics[metric] ?? 0) + 1;
     }
 }
