@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { CompilerInstrumentation, CompilerMetrics } from '@lwc/errors';
 import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';
 
@@ -186,6 +187,23 @@ describe('transformSync', () => {
             ).toThrowErrorMatchingInlineSnapshot(
                 '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."'
             );
+        });
+
+        it('gathers metrics around use of the deprecated dynamic components', () => {
+            const instrumentation = new CompilerInstrumentation();
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                    <x-dynamic-two lwc:dynamic={ctor2}></x-dynamic-two>
+                </template>
+            `;
+            transformSync(template, 'foo.html', {
+                instrumentation,
+                experimentalDynamicDirective: true,
+                ...TRANSFORMATION_OPTIONS,
+            });
+
+            expect(instrumentation.metrics[CompilerMetrics.LWCDynamicDirective]).toBe(2);
         });
     });
 });

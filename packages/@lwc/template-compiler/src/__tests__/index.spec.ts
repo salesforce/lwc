@@ -36,3 +36,5 @@ describe('parse', () => {
         expect(res.warnings).toHaveLength(1);
     });
 });
+
+describe('instrumentation', () => {});

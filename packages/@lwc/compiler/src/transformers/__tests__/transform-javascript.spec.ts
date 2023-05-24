@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { CompilerInstrumentation, CompilerMetrics } from '@lwc/errors';
 import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
@@ -50,4 +51,27 @@ it('should object spread', async () => {
 
     expect(code).toContain('b: 1');
     expect(code).not.toContain('...a');
+});
+
+describe('instrumentation', () => {
+    it('should gather metrics for transforming dynamic imports', async () => {
+        const instrumentation = new CompilerInstrumentation();
+        const actual = `
+            export async function test() {
+                const x = await import("foo");
+                const y = await import("bar");
+                const z = await import("baz");
+                return x + y + z + "yay";
+            }
+        `;
+        await transform(actual, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            experimentalDynamicComponent: {
+                loader: '@custom/loader',
+                strictSpecifier: true,
+            },
+            instrumentation,
+        });
+        expect(instrumentation.metrics[CompilerMetrics.DynamicImportTransform]).toBe(3);
+    });
 });

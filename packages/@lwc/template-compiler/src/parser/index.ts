@@ -14,7 +14,7 @@ import {
     isUndefined,
     isNull,
 } from '@lwc/shared';
-import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
+import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
 
 import * as t from '../shared/estree';
 import * as parse5Utils from '../shared/parse5';
@@ -815,6 +815,7 @@ function applyLwcRenderModeDirective(
     root.directives.push(
         ast.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location)
     );
+    ctx.instrumentation?.incrementCounter(CompilerMetrics.LWCRenderModeDirective);
 }
 
 function applyLwcPreserveCommentsDirective(
@@ -993,6 +994,7 @@ function applyLwcDynamicDirective(
 
     // lwc:dynamic will be deprecated in 246, issue a warning when usage is detected.
     ctx.warnOnNode(ParserDiagnostics.DEPRECATED_LWC_DYNAMIC_ATTRIBUTE, element);
+    ctx.instrumentation?.incrementCounter(CompilerMetrics.LWCDynamicDirective);
 
     element.directives.push(ast.dynamicDirective(lwcDynamicAttr, location));
 }

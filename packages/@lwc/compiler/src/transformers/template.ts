@@ -37,6 +37,7 @@ export default function templateTransform(
         enableLwcSpread,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
+        instrumentation,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -52,6 +53,7 @@ export default function templateTransform(
             customRendererConfig,
             enableLwcSpread,
             enableDynamicComponents,
+            instrumentation,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

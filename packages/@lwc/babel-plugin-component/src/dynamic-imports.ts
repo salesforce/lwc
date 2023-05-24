@@ -7,8 +7,8 @@
 import { NodePath } from '@babel/traverse';
 import { types, Visitor } from '@babel/core';
 import { addNamed } from '@babel/helper-module-imports';
-import { LWCClassErrors } from '@lwc/errors';
-import { generateError } from './utils';
+import { CompilerMetrics, LWCClassErrors } from '@lwc/errors';
+import { generateError, incrementMetricCounter } from './utils';
 import { LwcBabelPluginPass } from './types';
 
 function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {
@@ -72,6 +72,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
             if (loader) {
                 const loaderId = getLoaderRef(path, loader, state);
                 path.replaceWith(loaderId);
+                incrementMetricCounter(CompilerMetrics.DynamicImportTransform, state);
             }
 
             if (sourcePath.isStringLiteral()) {
