@@ -15,12 +15,14 @@ const { rollup } = require('rollup');
 const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const commonjs = require('@rollup/plugin-commonjs');
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+// proxy-compat-disable tells compat mode not to apply - framework files aren't designed for the compat transform
+const banner = `/* proxy-compat-disable */\n/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
@@ -179,7 +181,21 @@ module.exports = {
     plugins: [
         nodeResolve({
             // These are the devDeps that may be inlined into the dist/ bundles
-            resolveOnly: [/^@lwc\//, 'observable-membrane'],
+            // These include packages owned by us (LWC, observable-membrane), as well as parse5,
+            // which is bundled because it makes it simpler to distribute
+            resolveOnly: [
+                /^@lwc\//,
+                'observable-membrane',
+                // Special case - parse5 is bundled only in @lwc/engine-server currently, to avoid
+                // issues with Best/Tachometer.
+                // We can probably remove this special case when we upgrade parse5 to the ESM version, and bundle it
+                // into @lwc/template-compiler as well (to avoid shipping breaking ESM changes to consumers).
+                packageName === '@lwc/engine-server' && 'parse5',
+            ].filter(Boolean),
+        }),
+        // TODO [#3451]: remove this once we upgrade parse5 to its ESM version
+        commonjs({
+            include: [/\/parse5\//],
         }),
         ...sharedPlugins(),
         backwardsCompatDistPlugin(),

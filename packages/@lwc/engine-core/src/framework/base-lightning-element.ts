@@ -49,7 +49,6 @@ import {
     patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
-import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
@@ -376,9 +375,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = vm;
-        unlockAttribute(elm, name);
         removeAttribute(elm, name);
-        lockAttribute(elm, name);
     },
 
     removeAttributeNS(namespace: string | null, name: string): void {
@@ -386,9 +383,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = getAssociatedVM(this);
-        unlockAttribute(elm, name);
         removeAttribute(elm, name, namespace);
-        lockAttribute(elm, name);
     },
 
     getAttribute(name: string): string | null {
@@ -422,9 +417,7 @@ LightningElement.prototype = {
             }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value);
-        lockAttribute(elm, name);
     },
 
     setAttributeNS(namespace: string | null, name: string, value: string): void {
@@ -444,9 +437,7 @@ LightningElement.prototype = {
             }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value, namespace);
-        lockAttribute(elm, name);
     },
 
     getBoundingClientRect(): ClientRect {
