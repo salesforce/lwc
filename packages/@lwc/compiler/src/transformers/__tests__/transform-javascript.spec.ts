@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import { CompilerInstrumentation, CompilerMetrics } from '@lwc/errors';
+import { noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
@@ -55,7 +54,7 @@ it('should object spread', async () => {
 
 describe('instrumentation', () => {
     it('should gather metrics for transforming dynamic imports', async () => {
-        const instrumentation = new CompilerInstrumentation();
+        const incrementCounter = jest.fn();
         const actual = `
             export async function test() {
                 const x = await import("foo");
@@ -70,8 +69,16 @@ describe('instrumentation', () => {
                 loader: '@custom/loader',
                 strictSpecifier: true,
             },
-            instrumentation,
+            instrumentation: {
+                log: noop,
+                incrementCounter,
+            },
         });
-        expect(instrumentation.metrics[CompilerMetrics.DynamicImportTransform]).toBe(3);
+
+        const calls = incrementCounter.mock.calls;
+        expect(calls).toHaveLength(3);
+        expect(calls[0][0]).toBe('dynamic-import-transform');
+        expect(calls[1][0]).toBe('dynamic-import-transform');
+        expect(calls[2][0]).toBe('dynamic-import-transform');
     });
 });

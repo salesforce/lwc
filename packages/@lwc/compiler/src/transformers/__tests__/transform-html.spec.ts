@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CompilerInstrumentation, CompilerMetrics } from '@lwc/errors';
+import { noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';
 
@@ -190,7 +190,7 @@ describe('transformSync', () => {
         });
 
         it('gathers metrics around use of the deprecated dynamic components', () => {
-            const instrumentation = new CompilerInstrumentation();
+            const incrementCounter = jest.fn();
             const template = `
                 <template>
                     <x-dynamic lwc:dynamic={ctor}></x-dynamic>
@@ -198,12 +198,18 @@ describe('transformSync', () => {
                 </template>
             `;
             transformSync(template, 'foo.html', {
-                instrumentation,
+                instrumentation: {
+                    log: noop,
+                    incrementCounter,
+                },
                 experimentalDynamicDirective: true,
                 ...TRANSFORMATION_OPTIONS,
             });
 
-            expect(instrumentation.metrics[CompilerMetrics.LWCDynamicDirective]).toBe(2);
+            const calls = incrementCounter.mock.calls;
+            expect(calls).toHaveLength(2);
+            expect(calls[0][0]).toBe('lwc-dynamic-directive');
+            expect(calls[1][0]).toBe('lwc-dynamic-directive');
         });
     });
 });
