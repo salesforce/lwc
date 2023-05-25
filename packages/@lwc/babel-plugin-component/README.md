@@ -48,3 +48,4 @@ const { code } = babel.transformSync(source, {
 -   `dynamicImports` (type: `object`, optional) - see below:
     -   `loader` (type: `string`, optional) - loader to use at runtime.
     -   `strictSpecifier` (type: `boolean`, optional) - true if a strict specifier should be used.
+-   `instrumentation` (type: `InstrumentationObject`, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
