@@ -1,0 +1,4 @@
+/* clever attempt to break out of the style tag with an XSS */
+[data-foo="</style><script>alert('pwned')</script>"] {
+    color: red;
+}

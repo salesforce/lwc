@@ -11,7 +11,7 @@ yarn add --dev @lwc/template-compiler
 ## Usage
 
 ```js
-import compile from '@lwc/template-compiler';
+import { compile } from '@lwc/template-compiler';
 
 const options = {};
 const { code, warnings } = compile(
@@ -37,7 +37,7 @@ console.log(code);
 Compile a LWC template to javascript source code consumable by the engine.
 
 ```js
-import compile from '@lwc/template-compiler';
+import { compile } from '@lwc/template-compiler';
 const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`, {});
 ```
 

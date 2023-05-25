@@ -2,9 +2,8 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
-        "outDir": ".",
         "lib": ["dom", "es2018"]
     },
 
-    "include": ["src/", "typings/"]
+    "include": ["src/"]
 }

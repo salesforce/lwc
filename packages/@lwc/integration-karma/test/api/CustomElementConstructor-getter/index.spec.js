@@ -3,8 +3,11 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
+import WithChildElms2 from 'x/withChildElms2'; // because we can't reuse the same constructor in customElements.define
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
+import AttrChanged from 'x/attrChanged';
+import ReflectCamel from 'x/reflectCamel';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -20,6 +23,7 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     it('CustomElementConstructor should be a function', () => {
         class Test extends LightningElement {}
+
         const TestCustomElement = Test.CustomElementConstructor;
 
         expect(typeof TestCustomElement).toBe('function');
@@ -86,6 +90,21 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             }
             expect(observedErrors).toContain('[LWC error]: Hydration completed with errors.\n');
         });
+        it(`should occur when element exists before customElements.define and not throw errors if it's consistent`, () => {
+            const elm = document.createElement('test-custom-element-preexisting-consistent');
+            document.body.appendChild(elm);
+            elm.attachShadow({ mode: 'open' });
+            const expected = '<p>before</p><p>after</p>';
+            elm.shadowRoot.innerHTML = expected;
+            customElements.define(
+                'test-custom-element-preexisting-consistent',
+                WithChildElms2.CustomElementConstructor
+            );
+
+            const observedErrors = consoleSpy.calls.error.flat();
+            expect(observedErrors.length).toEqual(0);
+            expect(elm.shadowRoot.innerHTML).toEqual(expected);
+        });
     });
 
     describe('lifecycle', () => {
@@ -121,8 +140,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('attribute reflection', () => {
         beforeAll(() => {
-            const ReflectCustomElement = ReflectElement.CustomElementConstructor;
-            customElements.define('test-reflect', ReflectCustomElement);
+            customElements.define('test-reflect', ReflectElement.CustomElementConstructor);
+            customElements.define('test-reflect-camel', ReflectCamel.CustomElementConstructor);
+            customElements.define('test-attr-changed', AttrChanged.CustomElementConstructor);
         });
 
         it('should reflect attribute to properties before the first render', () => {
@@ -159,6 +179,69 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             expect(elm.title).toBe('foo');
             expect(elm.number).toBe(10);
+        });
+
+        it('reflects kebab-case attributes to camel-case props', () => {
+            const elm = document.createElement('test-reflect-camel');
+            document.body.appendChild(elm);
+
+            elm.setAttribute('my-prop', 'foo');
+
+            expect(elm.getAttribute('my-prop')).toBe('foo');
+            expect(elm.myProp).toBe('foo');
+        });
+
+        // TODO [#2972]: support attributeChangedCallback
+        it('never calls attributeChangedCallback', async () => {
+            const elm = document.createElement('test-attr-changed');
+            document.body.appendChild(elm);
+
+            elm.setAttribute('observed', 'foo');
+            elm.setAttribute('api', 'foo');
+            elm.setAttribute('track', 'foo');
+
+            await Promise.resolve(); // just in case attributeChangedCallback is called async
+
+            // attributeChangedCallback is not called for any of these
+            expect(elm.attributeChangedCallbackCalls).toEqual([]);
+        });
+
+        it('only reflects @api, not @track or observedAttributes', () => {
+            const elm = document.createElement('test-attr-changed');
+            document.body.appendChild(elm);
+
+            elm.setAttribute('observed', 'foo');
+            elm.setAttribute('api', 'foo');
+            elm.setAttribute('track', 'foo');
+
+            // attrs are all set
+            expect(elm.getAttribute('observed')).toBe('foo');
+            expect(elm.getAttribute('api')).toBe('foo');
+            expect(elm.getAttribute('track')).toBe('foo');
+
+            // for props, only @api props are set
+            expect(elm.observed).toBeUndefined();
+            expect(elm.api).toBe('foo');
+            expect(elm.track).toBeUndefined();
+        });
+
+        it('does not call setter more than once if unchanged', () => {
+            const elm = document.createElement('test-attr-changed');
+            document.body.appendChild(elm);
+
+            expect(elm.apiSetterCallCounts).toEqual(0);
+
+            elm.setAttribute('api', 'foo');
+            expect(elm.api).toBe('foo');
+            expect(elm.apiSetterCallCounts).toEqual(1);
+
+            elm.setAttribute('api', 'foo');
+            expect(elm.api).toBe('foo');
+            expect(elm.apiSetterCallCounts).toEqual(1);
+
+            elm.setAttribute('api', 'bar');
+            expect(elm.api).toBe('bar');
+            expect(elm.apiSetterCallCounts).toEqual(2);
         });
     });
 }

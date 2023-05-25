@@ -39,7 +39,10 @@ function getReferences(identifier: NodePath<types.Identifier>) {
 }
 
 /** Returns the type of decorator depdending on the property or method if get applied to */
-function getDecoratedNodeType(decoratorPath: NodePath<types.Decorator>): DecoratorType {
+function getDecoratedNodeType(
+    decoratorPath: NodePath<types.Decorator>,
+    state: LwcBabelPluginPass
+): DecoratorType {
     const propertyOrMethod = decoratorPath.parentPath;
     if (isClassMethod(propertyOrMethod)) {
         return DECORATOR_TYPES.METHOD;
@@ -50,13 +53,20 @@ function getDecoratedNodeType(decoratorPath: NodePath<types.Decorator>): Decorat
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw generateError(propertyOrMethod, {
-            errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
-        });
+        throw generateError(
+            propertyOrMethod,
+            {
+                errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
+            },
+            state
+        );
     }
 }
 
-function validateImportedLwcDecoratorUsage(engineImportSpecifiers: ImportSpecifier[]) {
+function validateImportedLwcDecoratorUsage(
+    engineImportSpecifiers: ImportSpecifier[],
+    state: LwcBabelPluginPass
+) {
     engineImportSpecifiers
         .filter(({ name }) => isLwcDecoratorName(name))
         .reduce((acc, { name, path }) => {
@@ -79,18 +89,26 @@ function validateImportedLwcDecoratorUsage(engineImportSpecifiers: ImportSpecifi
                 : reference.parentPath!.parentPath!;
 
             if (!decorator.isDecorator()) {
-                throw generateError(decorator, {
-                    errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
-                    messageArgs: [name],
-                });
+                throw generateError(
+                    decorator,
+                    {
+                        errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
+                        messageArgs: [name],
+                    },
+                    state
+                );
             }
 
             const propertyOrMethod = decorator.parentPath;
             if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-                throw generateError(propertyOrMethod, {
-                    errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
-                    messageArgs: [name],
-                });
+                throw generateError(
+                    propertyOrMethod,
+                    {
+                        errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
+                        messageArgs: [name],
+                    },
+                    state
+                );
             }
         });
 }
@@ -104,14 +122,14 @@ function isImportedFromLwcSource(decoratorBinding: Binding) {
 }
 
 /** Validate the usage of decorator by calling each validation function */
-function validate(decorators: DecoratorMeta[]) {
+function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
         if (binding === undefined || !isImportedFromLwcSource(binding)) {
-            throw generateInvalidDecoratorError(path);
+            throw generateInvalidDecoratorError(path, state);
         }
     }
-    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators));
+    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
 }
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
@@ -129,7 +147,7 @@ function removeImportedDecoratorSpecifiers(
         });
 }
 
-function generateInvalidDecoratorError(path: NodePath<types.Decorator>) {
+function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: LwcBabelPluginPass) {
     const expressionPath = path.get('expression');
     const { node } = path;
     const { expression } = node;
@@ -142,15 +160,23 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>) {
     }
 
     if (name) {
-        return generateError(path.parentPath, {
-            errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-            messageArgs: [name, AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
-        });
+        return generateError(
+            path.parentPath,
+            {
+                errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
+                messageArgs: [name, AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
+            },
+            state
+        );
     } else {
-        return generateError(path.parentPath, {
-            errorInfo: DecoratorErrors.INVALID_DECORATOR,
-            messageArgs: [AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
-        });
+        return generateError(
+            path.parentPath,
+            {
+                errorInfo: DecoratorErrors.INVALID_DECORATOR,
+                messageArgs: [AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
+            },
+            state
+        );
     }
 }
 
@@ -164,7 +190,10 @@ function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<type
     }, []);
 }
 
-function getDecoratorMetadata(decoratorPath: NodePath<types.Decorator>): DecoratorMeta {
+function getDecoratorMetadata(
+    decoratorPath: NodePath<types.Decorator>,
+    state: LwcBabelPluginPass
+): DecoratorMeta {
     const expressionPath = decoratorPath.get('expression') as NodePath<types.Node>;
 
     let name: LwcDecoratorName;
@@ -173,11 +202,11 @@ function getDecoratorMetadata(decoratorPath: NodePath<types.Decorator>): Decorat
     } else if (expressionPath.isCallExpression()) {
         name = (expressionPath.node.callee as types.V8IntrinsicIdentifier).name as LwcDecoratorName;
     } else {
-        throw generateInvalidDecoratorError(decoratorPath);
+        throw generateInvalidDecoratorError(decoratorPath, state);
     }
 
     const propertyName = ((decoratorPath.parent as types.ClassMethod).key as types.Identifier).name;
-    const decoratedNodeType = getDecoratedNodeType(decoratorPath);
+    const decoratedNodeType = getDecoratedNodeType(decoratorPath, state);
 
     return {
         name,
@@ -223,7 +252,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     const visitedClasses = new WeakSet();
 
     return {
-        Class(path) {
+        Class(path, state) {
             const { node } = path;
 
             if (visitedClasses.has(node)) {
@@ -239,9 +268,9 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             }
 
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
-            const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
+            const decoratorMetas = decoratorPaths.map((path) => getDecoratorMetadata(path, state));
 
-            validate(decoratorMetas);
+            validate(decoratorMetas, state);
 
             const metaPropertyList = getMetadataObjectPropertyList(
                 t,

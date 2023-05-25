@@ -47,7 +47,8 @@ function needsComponentRegistration(path: DeclarationPath) {
 
 function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     const { namespace, name } = state.opts;
-    const componentName = namespace && name ? `${namespace}-${name}` : '';
+    const kebabCasedName = name?.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const componentName = namespace && kebabCasedName ? `${namespace}-${kebabCasedName}` : '';
     return t.stringLiteral(componentName);
 }
 

@@ -85,6 +85,23 @@ function formatHTML(src: string): string {
         if (src.charAt(pos) === '<') {
             const tagNameMatch = src.slice(pos).match(/(\w+)/);
 
+            // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
+            // inside the text content. So we just serialize it as-is.
+            if (tagNameMatch![0] === 'style') {
+                const styleMatch = src.slice(pos).match(/<style([\s\S]*?)>([\s\S]*?)<\/style>/);
+                if (styleMatch) {
+                    // opening tag
+                    const [wholeMatch, attrs, textContent] = styleMatch!;
+                    res += getPadding() + `<style${attrs}>` + '\n';
+                    depth++;
+                    res += getPadding() + textContent + '\n';
+                    depth--;
+                    res += getPadding() + '</style>' + '\n';
+                    start = pos = pos + wholeMatch.length;
+                    continue;
+                }
+            }
+
             const isVoid = isVoidElement(tagNameMatch![0], HTML_NAMESPACE);
             const isClosing = src.charAt(pos + 1) === '/';
             const isComment =

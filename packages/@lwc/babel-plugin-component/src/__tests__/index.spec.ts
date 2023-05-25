@@ -29,9 +29,10 @@ const BASE_CONFIG = {
 function normalizeError(err: any) {
     if (err.code === 'BABEL_TRANSFORM_ERROR') {
         return {
-            // Filter out the filename and the stacktrace, just include the error message
+            // Filter out the stacktrace, just include the error message
             message: err.message.match(/^.*?\.js: ([^\n]+)/)[1],
             loc: err.loc,
+            filename: path.basename(err.filename),
         };
     } else {
         return {

@@ -95,7 +95,7 @@ export function isAriaAttribute(attrName: string): boolean {
 
 // These attributes take either an ID or a list of IDs as values.
 // This includes aria-* attributes as well as the special non-ARIA "for" attribute
-export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
+export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = /*@__PURE__*/ new Set([
     'aria-activedescendant',
     'aria-controls',
     'aria-describedby',

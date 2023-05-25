@@ -63,7 +63,6 @@ import {
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
-import { patchAttrUnlessProp } from './modules/attr-unless-prop';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -604,12 +603,7 @@ function patchElementPropsAndAttrs(
     patchClassAttribute(oldVnode, vnode, renderer);
     patchStyleAttribute(oldVnode, vnode, renderer);
 
-    if (vnode.data.external) {
-        patchAttrUnlessProp(oldVnode, vnode, renderer);
-    } else {
-        patchAttributes(oldVnode, vnode, renderer);
-    }
-
+    patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
 }
 

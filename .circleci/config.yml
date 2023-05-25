@@ -225,6 +225,12 @@ jobs:
           name: Check missing file headers
           command: node ./scripts/tasks/check-license-headers.js
       - run:
+          name: Check package.json integrity
+          command: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+      - run:
+          name: Verify @lwc/shared is tree-shakable
+          command: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+      - run:
           name: Check formatting
           command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - run:
@@ -246,6 +252,14 @@ jobs:
           name: Run unit tests
           command: yarn test:ci
 
+  test_benchmark_smoke:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      - load_workspace
+      - run:
+          name: Run benchmark smoke tests
+          command: BENCHMARK_SMOKE_TEST=1 yarn test:performance
 
   test_karma:
     executor: node
@@ -356,6 +370,12 @@ workflows:
             - test_unit
 
       - test_integration_compat:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_benchmark_smoke:
           filters:
             <<: *ignore_forks
           requires:

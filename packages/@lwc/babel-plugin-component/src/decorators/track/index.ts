@@ -7,8 +7,8 @@
 import { DecoratorErrors } from '@lwc/errors';
 import { LWC_COMPONENT_PROPERTIES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
+import { BabelTypes, LwcBabelPluginPass } from '../../types';
 import { DecoratorMeta } from '../index';
-import { BabelTypes } from '../../types';
 
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
@@ -18,12 +18,16 @@ function isTrackDecorator(decorator: DecoratorMeta) {
     return decorator.name === TRACK_DECORATOR;
 }
 
-function validate(decorators: DecoratorMeta[]) {
+function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     decorators.filter(isTrackDecorator).forEach(({ path }) => {
         if (!path.parentPath.isClassProperty()) {
-            throw generateError(path, {
-                errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
-            });
+            throw generateError(
+                path,
+                {
+                    errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
+                },
+                state
+            );
         }
     });
 }

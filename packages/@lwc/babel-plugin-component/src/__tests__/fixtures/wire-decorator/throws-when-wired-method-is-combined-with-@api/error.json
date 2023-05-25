@@ -5,5 +5,6 @@
         "column": 2,
         "start": 109,
         "length": 50
-    }
+    },
+    "filename": "test.js"
 }

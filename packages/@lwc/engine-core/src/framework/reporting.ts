@@ -12,7 +12,6 @@ export const enum ReportingEventId {
     NonStandardAriaReflection = 'NonStandardAriaReflection',
     TemplateMutation = 'TemplateMutation',
     StylesheetMutation = 'StylesheetMutation',
-    UnexpectedStylesheetContent = 'UnexpectedStylesheetContent',
 }
 
 export interface BasePayload {
@@ -48,7 +47,6 @@ export type ReportingPayloadMapping = {
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
-    [ReportingEventId.UnexpectedStylesheetContent]: BasePayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (

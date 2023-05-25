@@ -222,7 +222,12 @@ function s(
                     // undefined is for root components, but root components cannot accept slotted content
                     setVMBeingRendered(slotset.owner!);
                     try {
-                        ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
+                        // The factory function is a template snippet from the slot set owner's template,
+                        // hence switch over to the slot set owner's template reactive observer
+                        const { tro } = slotset.owner!;
+                        tro.observe(() => {
+                            ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
+                        });
                     } finally {
                         setVMBeingRendered(vmBeingRenderedInception);
                     }
@@ -481,7 +486,7 @@ function k(compilerKey: number, obj: any): string | void {
             return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
-                assert.fail(
+                logError(
                     `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
