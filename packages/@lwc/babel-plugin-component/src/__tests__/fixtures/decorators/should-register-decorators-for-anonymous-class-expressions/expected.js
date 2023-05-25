@@ -13,5 +13,5 @@ const foo = _registerDecorators(class extends LightningElement {
 export default _registerComponent(foo, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 58
+  v: 59
 });

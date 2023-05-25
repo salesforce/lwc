@@ -6,5 +6,5 @@ export default _registerComponent(class extends lwc.LightningElement {
 }, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 58
+  v: 59
 });

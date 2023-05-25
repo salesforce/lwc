@@ -6,5 +6,5 @@ class Test extends Component {
 export default _registerComponent(Test, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 58
+  v: 59
 });

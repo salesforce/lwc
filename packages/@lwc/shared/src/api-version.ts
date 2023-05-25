@@ -22,14 +22,15 @@ const allVersions = [APIVersion.V58_244_SUMMER_23, APIVersion.V59_246_WINTER_24]
 const allVersionsSet = new Set(allVersions);
 
 export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
-    if (!isNumber(version) || version < LOWEST_API_VERSION) {
-        return LOWEST_API_VERSION;
-    }
-    if (version > HIGHEST_API_VERSION) {
+    if (!isNumber(version)) {
+        // if version is unspecified, default to latest
         return HIGHEST_API_VERSION;
     }
     if (allVersionsSet.has(version)) {
         return version;
+    }
+    if (version < LOWEST_API_VERSION) {
+        return LOWEST_API_VERSION;
     }
     // If it's a number, and it's within the bounds of our known versions, then we should find the
     // highest version lower than the requested number.
@@ -39,9 +40,8 @@ export function getAPIVersionFromNumber(version: number | undefined): APIVersion
             return allVersions[i - 1];
         }
     }
-    // We should never hit this condition, but if we do, default to the lowest version to be safe
-    /* istanbul ignore next */
-    return LOWEST_API_VERSION;
+    // version > HIGHEST_API_VERSION, so fall back to highest
+    return HIGHEST_API_VERSION;
 }
 
 export const enum APIFeature {
