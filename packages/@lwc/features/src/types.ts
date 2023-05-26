@@ -66,6 +66,11 @@ export interface FeatureFlagMap {
      * and HTMLBridgeElement base classes, not on every Element.
      */
     DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
+
+    /**
+     * Flag to remove the upgradable constructor. When set to true, this flag will not use createUpgradableConstructor.
+     */
+    DISABLE_UPGRADABLE_CONSTRUCTOR: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

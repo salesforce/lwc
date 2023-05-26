@@ -7,6 +7,7 @@
 import { hasCustomElements } from './has-custom-elements';
 import { createCustomElementCompat } from './create-custom-element-compat';
 import { createCustomElementUsingUpgradableConstructor } from './create-custom-element-using-upgradable-constructor';
+import { createCustomElementUsingNativeConstructor } from './create-custom-element-native';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 /**
@@ -26,6 +27,9 @@ export let createCustomElement: (
 ) => HTMLElement;
 
 if (hasCustomElements) {
+    if (lwcRuntimeFlags.DISABLE_UPGRADABLE_CONSTRUCTOR) {
+        createCustomElement = createCustomElementUsingNativeConstructor;
+    }
     // use the global registry, with an upgradable constructor for the defined custom element
     createCustomElement = createCustomElementUsingUpgradableConstructor;
 } else {
