@@ -49,11 +49,16 @@ export const enum APIFeature {
      * This is just used as a placeholder.
      */
     DUMMY_FEATURE,
+    /**
+     * Lowercase all scope tokens, enable the SVG static optimization
+     */
+    LOWERCASE_SCOPE_TOKENS,
 }
 
 export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
     switch (apiVersionFeature) {
         case APIFeature.DUMMY_FEATURE:
+        case APIFeature.LOWERCASE_SCOPE_TOKENS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
     }
 }

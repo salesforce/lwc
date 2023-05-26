@@ -6,7 +6,13 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
+import {
+    isBooleanAttribute,
+    SVG_NAMESPACE,
+    LWC_VERSION_COMMENT,
+    isUndefined,
+    APIVersion,
+} from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -731,12 +737,13 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     );
 }
 
-export default function (root: Root, state: State): string {
+export default function (root: Root, state: State, apiVersion: APIVersion): string {
     const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,
         state,
         scopeFragmentId,
+        apiVersion,
     });
 
     const templateFunction = generateTemplateFunction(codeGen);

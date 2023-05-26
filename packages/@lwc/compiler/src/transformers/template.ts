@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-
+import { APIFeature, APIVersion, isAPIFeatureEnabled } from '@lwc/shared';
 import {
     CompilerError,
-    normalizeToCompilerError,
     DiagnosticLevel,
+    normalizeToCompilerError,
     TransformerErrors,
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
@@ -83,16 +83,46 @@ function escapeScopeToken(input: string) {
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
+// Via https://stackoverflow.com/a/7616484
+function generateHashCode(str: string) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+function generateScopeToken(
+    filename: string,
+    namespace: string | undefined,
+    name: string | undefined,
+    apiVersion: APIVersion
+) {
+    const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+
+    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
+        // Hash the string, the reversed string, and the string again for good measure. We want to avoid hash collisions
+        const stringToHash = uniqueToken + [...uniqueToken].reverse().join('') + uniqueToken;
+        const hash = generateHashCode(stringToHash);
+
+        // This scope token is all lowercase, and is deliberately designed to discourage people from relying on it
+        // by appearing somewhat random. (But not totally random, because that would break snapshot tests constantly.)
+        return `lwc-${hash.toString(16)}`;
+    } else {
+        // This scope token is based on the namespace and name, and contains a mix of uppercase/lowercase chars
+        return escapeScopeToken(uniqueToken);
+    }
+}
+
 function serialize(
     code: string,
     filename: string,
-    { namespace, name }: NormalizedTransformOptions
+    { namespace, name, apiVersion }: NormalizedTransformOptions
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
-    const scopeToken = escapeScopeToken(
-        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
-    );
+    const scopeToken = generateScopeToken(filename, namespace, name, apiVersion);
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;

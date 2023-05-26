@@ -38,6 +38,7 @@ This set of environment variables applies to the `start` and `test` commands:
 -   **`NODE_ENV_FOR_TEST`**: Set the `NODE_ENV` to be used for the tests (at runtime, in the browser).
 -   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
+-   **`API_VERSION=<version>`:** API version to use when compiling.
 
 ## Examples
 

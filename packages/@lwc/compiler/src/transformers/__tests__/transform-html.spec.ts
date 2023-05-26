@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { APIVersion } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';
 
@@ -30,6 +31,21 @@ describe('transformSync', () => {
         expect(code).toContain(`tmpl.stylesheets = [];`);
     });
 
+    it('should serialize the template with the correct scopeToken - API version 58', () => {
+        const template = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+        const { code } = transformSync(template, 'foo.html', {
+            namespace: 'ns',
+            name: 'foo',
+            apiVersion: APIVersion.V58_244_SUMMER_23,
+        });
+
+        expect(code).toContain(`tmpl.stylesheetToken = "ns-foo_foo";`);
+    });
+
     it('should serialize the template with the correct scopeToken', () => {
         const template = `
             <template>
@@ -41,7 +57,7 @@ describe('transformSync', () => {
             name: 'foo',
         });
 
-        expect(code).toContain(`tmpl.stylesheetToken = "ns-foo_foo";`);
+        expect(code).toContain(`tmpl.stylesheetToken = "lwc--56ad47db";`);
     });
 
     it('should hoist static vnodes when enableStaticContentOptimization is set to true', () => {

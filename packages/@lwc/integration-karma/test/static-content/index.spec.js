@@ -33,8 +33,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     .shadowRoot.querySelector('x-component')
                     .shadowRoot.querySelector('div');
 
-                expect(syntheticMode.hasAttribute('x-component_component')).toBe(true);
-                expect(nativeMode.hasAttribute('x-component_component')).toBe(false);
+                const token =
+                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc--70a67fda';
+                expect(syntheticMode.hasAttribute(token)).toBe(true);
+                expect(nativeMode.hasAttribute(token)).toBe(false);
             });
         });
     });
@@ -73,7 +75,10 @@ describe('static content when stylesheets change', () => {
         return Promise.resolve()
             .then(() => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-                expect(classList).toEqual(['foo', 'x-multipleStyles_b']);
+                expect(classList).toEqual([
+                    'foo',
+                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-5ce6346a',
+                ]);
 
                 expect(() => {
                     elm.updateTemplate({
