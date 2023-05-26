@@ -27,6 +27,7 @@ export default function scriptTransform(
         outputConfig: { sourcemap },
         namespace,
         name,
+        instrumentation,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -34,6 +35,7 @@ export default function scriptTransform(
         dynamicImports,
         namespace,
         name,
+        instrumentation,
     };
 
     let result;

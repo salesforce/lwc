@@ -7,7 +7,7 @@
 import lineColumn from 'line-column';
 import { types } from '@babel/core';
 import { NodePath } from '@babel/traverse';
-import { generateErrorMessage } from '@lwc/errors';
+import { CompilerMetrics, generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
 import { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
 import { LwcBabelPluginPass } from './types';
@@ -112,10 +112,15 @@ function generateError(
     return error;
 }
 
+function incrementMetricCounter(metric: CompilerMetrics, state: LwcBabelPluginPass) {
+    state.opts.instrumentation?.incrementCounter(metric);
+}
+
 export {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
     generateError,
     getEngineImportSpecifiers,
+    incrementMetricCounter,
 };

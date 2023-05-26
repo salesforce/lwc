@@ -7,7 +7,7 @@
 import * as astring from 'astring';
 
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
-import { generateCompilerError, TemplateErrors } from '@lwc/errors';
+import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
     isComment,
@@ -77,6 +77,7 @@ import {
 import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
+    const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
@@ -610,8 +611,10 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier('context'), contextObj));
         }
 
+        // Spread
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
+            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
         }
 
         // Key property on VNode
