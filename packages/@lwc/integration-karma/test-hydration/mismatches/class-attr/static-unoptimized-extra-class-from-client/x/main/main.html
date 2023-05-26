@@ -1,10 +1,10 @@
 <template>
     <template if:true={ssr}>
-        <!-- onclick disables static content optimization -->
-        <p class="c1 c3" onclick={onClick}>txt</p>
+        <!-- `spellcheck` disables static content optimization -->
+        <p class="c1 c3" spellcheck="true">txt</p>
     </template>
     <template if:false={ssr}>
-        <!-- onclick disables static content optimization -->
-        <p class="c1 c2 c3" onclick={onClick}>txt</p>
+        <!-- `spellcheck` disables static content optimization -->
+        <p class="c1 c2 c3" spellcheck="true">txt</p>
     </template>
 </template>

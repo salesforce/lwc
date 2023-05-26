@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class Main extends LightningElement {
-    onClick() {}
-}
+export default class Main extends LightningElement {}
