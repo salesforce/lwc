@@ -6,7 +6,7 @@
  */
 import path from 'path';
 import { rollup, RollupWarning } from 'rollup';
-
+import { APIVersion } from '@lwc/shared';
 import lwc from '../../index';
 
 function normalizeWarning(warning: RollupWarning) {
@@ -27,11 +27,15 @@ function normalizeWarning(warning: RollupWarning) {
 }
 
 describe('warnings', () => {
-    it('should emit a warning for double </template> tags', async () => {
+    it('should emit a warning for double </template> tags in older API versions', async () => {
         const warnings: RollupWarning[] = [];
         const bundle = await rollup({
             input: path.resolve(__dirname, 'fixtures/test/test.js'),
-            plugins: [lwc()],
+            plugins: [
+                lwc({
+                    apiVersion: APIVersion.V58_244_SUMMER_23,
+                }),
+            ],
             onwarn(warning) {
                 warnings.push(warning);
             },

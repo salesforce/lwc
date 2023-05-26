@@ -53,12 +53,18 @@ export const enum APIFeature {
      * Lowercase all scope tokens, enable the SVG static optimization
      */
     LOWERCASE_SCOPE_TOKENS,
+    /**
+     * If enabled, all parse5 errors will result in a compile-time error, rather than some being treated as warnings
+     * (for backwards compatibility).
+     */
+    TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
 }
 
 export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
     switch (apiVersionFeature) {
         case APIFeature.DUMMY_FEATURE:
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
+        case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
     }
 }

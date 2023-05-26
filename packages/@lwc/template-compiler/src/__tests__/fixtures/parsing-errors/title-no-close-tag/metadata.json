@@ -1,25 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1148,
-            "message": "LWC1148: Invalid HTML syntax: eof-in-element-that-can-contain-only-text. This will not be supported in future versions of LWC. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-eof-in-element-that-can-contain-only-text",
-            "level": 2,
+            "code": 1058,
+            "message": "LWC1058: Invalid HTML syntax: eof-in-element-that-can-contain-only-text. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-eof-in-element-that-can-contain-only-text",
+            "level": 1,
             "location": {
                 "line": 3,
                 "column": 1,
                 "start": 26,
                 "length": 0
-            }
-        },
-        {
-            "code": 1078,
-            "message": "LWC1078: <template> has no matching closing tag.",
-            "level": 1,
-            "location": {
-                "line": 1,
-                "column": 1,
-                "start": 0,
-                "length": 26
             }
         }
     ]
