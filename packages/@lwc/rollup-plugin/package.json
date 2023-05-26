@@ -43,9 +43,7 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "2.45.5",
-        "@rollup/pluginutils": "~5.0.2"
-    },
-    "devDependencies": {
+        "@rollup/pluginutils": "~5.0.2",
         "@lwc/compiler": "2.45.5",
         "@lwc/engine-dom": "2.45.5",
         "@lwc/errors": "2.45.5"
