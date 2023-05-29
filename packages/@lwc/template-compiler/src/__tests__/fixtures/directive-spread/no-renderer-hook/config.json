@@ -4,6 +4,5 @@
         "directives": ["lwc:dynamic", "lwc:spread"],
         "elements": []
     },
-    "enableLwcSpread": true,
     "enableDynamicComponents": true
 }
