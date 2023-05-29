@@ -82,7 +82,6 @@ export interface TransformOptions {
     scopedStyles?: boolean;
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
-    enableLwcSpread?: boolean;
     disableSyntheticShadowSupport?: boolean;
     instrumentation?: InstrumentationObject;
 }
@@ -93,7 +92,6 @@ type RequiredTransformOptions = Omit<
     | 'namespace'
     | 'scopedStyles'
     | 'customRendererConfig'
-    | 'enableLwcSpread'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
@@ -104,7 +102,6 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     namespace?: string;
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
-    enableLwcSpread?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;

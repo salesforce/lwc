@@ -70,11 +70,6 @@ export interface Config {
     enableStaticContentOptimization?: boolean;
 
     /**
-     * When true, enables `lwc:spread` directive.
-     */
-    enableLwcSpread?: boolean;
-
-    /**
      * Config to use to collect metrics and logs
      */
     instrumentation?: InstrumentationObject;
@@ -85,7 +80,6 @@ export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'i
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'customRendererConfig',
-    'enableLwcSpread',
     'enableStaticContentOptimization',
     // TODO [#3370]: remove experimental template expression flag
     'experimentalComplexExpressions',
@@ -157,7 +151,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
-        enableLwcSpread: false,
         ...config,
         ...{ customRendererConfig },
         ...{ instrumentation },
