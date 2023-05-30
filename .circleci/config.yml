@@ -57,7 +57,6 @@ commands:
         default: false
       api_version:
         type: integer
-        default: 999999999 # this effectively becomes latest
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
@@ -89,7 +88,9 @@ commands:
                  exit 1
                fi
             }
-            API_VERSION=<< parameters.api_version >> \
+            if [ "<< parameters.api_version >>" ]; then
+              export API_VERSION=<< parameters.api_version >>  
+            fi
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
@@ -182,7 +183,6 @@ commands:
         default: false
       api_version:
         type: integer
-        default: 999999999 # this effectively becomes latest
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
