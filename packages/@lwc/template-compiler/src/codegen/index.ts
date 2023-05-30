@@ -13,7 +13,7 @@ import {
     isUndefined,
     APIVersion,
 } from '@lwc/shared';
-import { generateCompilerError, TemplateErrors } from '@lwc/errors';
+import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
     isComment,
@@ -74,7 +74,6 @@ import {
     identifierFromComponentName,
     objectToAST,
     shouldFlatten,
-    memorizeHandler,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -83,6 +82,7 @@ import {
 import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
+    const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
@@ -616,8 +616,10 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier('context'), contextObj));
         }
 
+        // Spread
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
+            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
         }
 
         // Key property on VNode
@@ -643,15 +645,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            const listenerObj = Object.fromEntries(
-                listeners.map((listener) => [listener.name, listener])
-            );
-            const listenerObjAST = objectToAST(listenerObj, (key) => {
-                const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
-                const handler = codeGen.genBind(componentHandler);
-
-                return memorizeHandler(codeGen, componentHandler, handler);
-            });
+            const listenerObjAST = codeGen.genEventListeners(listeners);
             data.push(t.property(t.identifier('on'), listenerObjAST));
         }
 

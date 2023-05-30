@@ -37,6 +37,7 @@ export default function templateTransform(
         enableLwcSpread,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
+        instrumentation,
         apiVersion,
     } = options;
     const experimentalDynamicDirective =
@@ -53,6 +54,7 @@ export default function templateTransform(
             customRendererConfig,
             enableLwcSpread,
             enableDynamicComponents,
+            instrumentation,
             apiVersion,
         });
     } catch (e) {

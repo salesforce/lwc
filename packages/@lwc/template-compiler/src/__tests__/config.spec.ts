@@ -50,6 +50,7 @@ describe('customRendererConfig normalization', () => {
               "experimentalComplexExpressions": false,
               "experimentalComputedMemberExpression": false,
               "experimentalDynamicDirective": false,
+              "instrumentation": undefined,
               "preserveHtmlComments": false,
             }
         `);

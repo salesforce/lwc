@@ -27,6 +27,7 @@ export default function scriptTransform(
         outputConfig: { sourcemap },
         namespace,
         name,
+        instrumentation,
         apiVersion,
     } = options;
 
@@ -35,6 +36,7 @@ export default function scriptTransform(
         dynamicImports,
         namespace,
         name,
+        instrumentation,
         apiVersion,
     };
 

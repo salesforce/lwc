@@ -7,6 +7,7 @@
 import {
     CompilerDiagnostic,
     CompilerError,
+    InstrumentationObject,
     generateCompilerDiagnostic,
     generateCompilerError,
     Location,
@@ -81,6 +82,12 @@ export default class ParserCtx {
     readonly config: NormalizedConfig;
     readonly warnings: CompilerDiagnostic[] = [];
 
+    /**
+     * Instrumentation object to handle gathering metrics and internal logs for everything happening
+     * during this context.
+     */
+    readonly instrumentation?: InstrumentationObject;
+
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
     /**
@@ -134,6 +141,7 @@ export default class ParserCtx {
         this.ecmaVersion = config.experimentalComplexExpressions
             ? TMPL_EXPR_ECMASCRIPT_EDITION
             : 2020;
+        this.instrumentation = config.instrumentation;
         this.apiVersion = config.apiVersion;
     }
 

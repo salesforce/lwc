@@ -56,6 +56,7 @@ const { code } = transformSync(source, filename, options);
     -   `customRendererConfig` (type: `object`, optional) - custom renderer config to pass to `@lwc/template-compiler`. See that package's README for details.
     -   `enableLwcSpread` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
     -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
+    -   `instrumentation` (type: `InstrumentationObject`, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
     -   `apiVersion` (type: `number`, optional) - API version to associate with the compiled module.
 
 **Return**

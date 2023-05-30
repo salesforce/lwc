@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
+import {
+    TemplateErrors,
+    invariant,
+    generateCompilerError,
+    InstrumentationObject,
+} from '@lwc/errors';
 import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
@@ -70,13 +75,18 @@ export interface Config {
     enableLwcSpread?: boolean;
 
     /**
+     * Config to use to collect metrics and logs
+     */
+    instrumentation?: InstrumentationObject;
+
+    /**
      * The API version to associate with the compiled template
      */
     apiVersion?: number;
 }
 
-export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
-    Partial<Pick<Config, 'customRendererConfig'>>;
+export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'instrumentation'>> &
+    Partial<Pick<Config, 'customRendererConfig' | 'instrumentation'>>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
@@ -89,6 +99,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalDynamicDirective',
     'enableDynamicComponents',
     'preserveHtmlComments',
+    'instrumentation',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -134,6 +145,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         ? normalizeCustomRendererConfig(config.customRendererConfig)
         : undefined;
 
+    const instrumentation = config.instrumentation || undefined;
+
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
             throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
@@ -156,5 +169,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         apiVersion,
         ...config,
         ...{ customRendererConfig },
+        ...{ instrumentation },
     };
 }

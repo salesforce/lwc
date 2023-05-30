@@ -219,7 +219,7 @@ export function parseClassNames(classNames: string): string[] {
 
 function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     let result = true;
-    const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+    const { name: nodeName, namespace = '', attributes, directives, properties } = node;
 
     // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
     // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
@@ -252,7 +252,6 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     }); // all attrs are static
     result &&= directives.length === 0; // do not have any directive
     result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
-    result &&= listeners.length === 0; // do not have any event listener
 
     return result;
 }
@@ -275,7 +274,11 @@ function collectStaticNodes(
         node.children.forEach((childNode) => {
             collectStaticNodes(childNode, staticNodes, state, apiVersion);
 
-            childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+            childrenAreStatic &&= staticNodes.has(childNode);
+
+            // Bail out if any children have event listeners. Event listeners are only allowed at the top level of a
+            // static fragment, because the engine currently cannot attach listeners to nodes inside a static fragment.
+            childrenAreStatic &&= !isBaseElement(childNode) || childNode.listeners.length === 0;
         });
 
         // for IfBlock and ElseifBlock, traverse down the else branch
