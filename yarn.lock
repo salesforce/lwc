@@ -2078,10 +2078,10 @@
   resolved "https://registry.yarnpkg.com/@kwsites/promise-deferred/-/promise-deferred-1.1.1.tgz#8ace5259254426ccef57f3175bc64ed7095ed919"
   integrity sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==
 
-"@locker/babel-plugin-transform-unforgeables@0.19.6":
-  version "0.19.6"
-  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.6.tgz#8332ee02d995e8371ee527d41d12a390fc1765e0"
-  integrity sha512-Er+SsuPn0DmrjYJv/rE0ZMjQKUhn4n8Q5LlqA7Cd1pmt8ZBrOPfWsgLPO8LIlIuf7VkbXHLh8ZngEQCyYLcL1A==
+"@locker/babel-plugin-transform-unforgeables@0.19.7":
+  version "0.19.7"
+  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.7.tgz#046b408b3904cabeaf9bac557db6aa502bbe3b76"
+  integrity sha512-sxPCWfMUOIj+GWiHLMWDHYbauC2ifOpS52LhHKrhVZ7X/L1niEGCbSsW7hw7krve7WOLO4kgxdi8ToLz6020hQ==
   dependencies:
     "@babel/generator" "7.21.4"
     match-json "1.3.5"
