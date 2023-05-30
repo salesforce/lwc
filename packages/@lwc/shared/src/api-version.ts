@@ -19,7 +19,7 @@ export const enum APIVersion {
 export const LOWEST_API_VERSION = APIVersion.V58_244_SUMMER_23;
 export const HIGHEST_API_VERSION = APIVersion.V59_246_WINTER_24;
 const allVersions = [APIVersion.V58_244_SUMMER_23, APIVersion.V59_246_WINTER_24];
-const allVersionsSet = new Set(allVersions);
+const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 
 export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
     if (!isNumber(version)) {
