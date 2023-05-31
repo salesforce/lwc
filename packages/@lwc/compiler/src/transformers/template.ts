@@ -12,7 +12,7 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-import compile from '@lwc/template-compiler';
+import { compile } from '@lwc/template-compiler';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
@@ -29,23 +29,31 @@ export default function templateTransform(
 ): TransformResult {
     const {
         experimentalDynamicComponent,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
         enableLwcSpread,
-        enableScopedSlots,
+        enableDynamicComponents,
+        experimentalDynamicDirective: deprecatedDynamicDirective,
+        instrumentation,
     } = options;
-    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
+    const experimentalDynamicDirective =
+        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
             experimentalDynamicDirective,
+            // TODO [#3370]: remove experimental template expression flag
+            experimentalComplexExpressions,
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
             enableLwcSpread,
-            enableScopedSlots,
+            enableDynamicComponents,
+            instrumentation,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

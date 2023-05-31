@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayIndexOf,
     ArrayUnshift,
     assert,
     create,
@@ -30,7 +29,7 @@ import {
     TemplateCache,
     VM,
 } from './vm';
-import { assertNotProd, EmptyArray } from './utils';
+import { assertNotProd } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
@@ -68,11 +67,10 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-function validateSlots(vm: VM, html: Template) {
+function validateSlots(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
-    const { slots = EmptyArray } = html;
 
     for (const slotName in cmpSlots.slotAssignments) {
         // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
@@ -82,34 +80,30 @@ function validateSlots(vm: VM, html: Template) {
                 cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
-
-        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO [#1297]: this should never really happen because the compiler should always validate
-            // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
-            logError(
-                `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
-                vm
-            );
-        }
     }
 }
 
 function validateLightDomTemplate(template: Template, vm: VM) {
-    if (template === defaultEmptyTemplate) return;
+    assertNotProd(); // should never leak to prod mode
+    if (template === defaultEmptyTemplate) {
+        return;
+    }
     if (vm.renderMode === RenderMode.Light) {
-        assert.isTrue(
-            template.renderMode === 'light',
-            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                vm
-            )}.`
-        );
+        if (template.renderMode !== 'light') {
+            logError(
+                `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
+                    vm
+                )}.`
+            );
+        }
     } else {
-        assert.isTrue(
-            isUndefined(template.renderMode),
-            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                vm
-            )} or set it to 'lwc:render-mode="shadow"`
-        );
+        if (!isUndefined(template.renderMode)) {
+            logError(
+                `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
+                    vm
+                )} or set it to 'lwc:render-mode="shadow"`
+            );
+        }
     }
 }
 
@@ -264,7 +258,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                 if (process.env.NODE_ENV !== 'production') {
                     // validating slots in every rendering since the allocated content might change over time
-                    validateSlots(vm, html);
+                    validateSlots(vm);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
                 }
@@ -295,10 +289,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `Compiler should produce html functions that always return an array.`
-        );
+        if (!isArray(vnodes)) {
+            logError(`Compiler should produce html functions that always return an array.`);
+        }
     }
     return vnodes;
 }

@@ -1,0 +1,9 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "Unexpected compilation error: LWC1083: Error parsing template expression: expression must end with curly brace.",
+            "level": 1
+        }
+    ]
+}

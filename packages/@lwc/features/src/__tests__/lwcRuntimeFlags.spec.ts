@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { lwcRuntimeFlags } from '../flags';
+import { lwcRuntimeFlags } from '../index';
 
 describe('lwcRuntimeFlags', () => {
     it('known flags default to undefined', () => {

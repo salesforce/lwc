@@ -241,6 +241,12 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
 
+function ownerDocument(element: Element): Document {
+    return element.ownerDocument;
+}
+
+export { registerContextConsumer, registerContextProvider } from './context';
+
 export {
     insert,
     remove,
@@ -275,4 +281,5 @@ export {
     getLastElementChild,
     isConnected,
     assertInstanceOfHTMLElement,
+    ownerDocument,
 };

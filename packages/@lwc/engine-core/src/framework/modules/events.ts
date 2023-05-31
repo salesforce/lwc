@@ -6,13 +6,12 @@
  */
 import { isUndefined } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
-import { VBaseElement } from '../vnodes';
+import { VBaseElement, VStatic } from '../vnodes';
 
-export function applyEventListeners(vnode: VBaseElement, renderer: RendererAPI) {
-    const {
-        elm,
-        data: { on },
-    } = vnode;
+export function applyEventListeners(vnode: VBaseElement | VStatic, renderer: RendererAPI) {
+    const { elm } = vnode;
+
+    const on = vnode.data?.on;
 
     if (isUndefined(on)) {
         return;

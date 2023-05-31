@@ -3,12 +3,18 @@ const stc0 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { dc: api_dynamic_component, fr: api_fragment } = $api;
+  const { ddc: api_deprecated_dynamic_component, fr: api_fragment } = $api;
   return [
     $cmp.visible.if
       ? api_fragment(
           0,
-          [api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0)],
+          [
+            api_deprecated_dynamic_component(
+              "x-foo",
+              $cmp.trackedProp.foo,
+              stc0
+            ),
+          ],
           0
         )
       : null,

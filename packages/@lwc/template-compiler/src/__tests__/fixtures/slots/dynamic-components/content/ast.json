@@ -1,0 +1,156 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 115,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 104,
+                "end": 115
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 12,
+                    "start": 15,
+                    "end": 103,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 11,
+                        "start": 15,
+                        "end": 21
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 12,
+                        "start": 96,
+                        "end": 103
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Lwc",
+                        "name": "lwc:component",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 70,
+                            "start": 30,
+                            "end": 91,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 38,
+                                "start": 30,
+                                "end": 59
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 54,
+                                "endLine": 3,
+                                "endColumn": 70,
+                                "start": 75,
+                                "end": 91
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "Is",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 5,
+                                    "name": "ctor",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 24,
+                                        "endLine": 3,
+                                        "endColumn": 37,
+                                        "start": 45,
+                                        "end": 58
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 24,
+                                    "endLine": 3,
+                                    "endColumn": 37,
+                                    "start": 45,
+                                    "end": 58
+                                }
+                            }
+                        ],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{defaultContent}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 15,
+                                    "name": "defaultContent",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 38,
+                                        "endLine": 3,
+                                        "endColumn": 54,
+                                        "start": 59,
+                                        "end": 75
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 38,
+                                    "endLine": 3,
+                                    "endColumn": 54,
+                                    "start": 59,
+                                    "end": 75
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

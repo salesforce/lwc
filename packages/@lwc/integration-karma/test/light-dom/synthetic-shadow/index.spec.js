@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
@@ -39,11 +39,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         });
 
         it('getRootNode', () => {
-            const expectedRootNode = process.env.NATIVE_SHADOW
-                ? document // native, correct behavior
-                : nodes['consumer.shadowRoot']; // incorrect, existing behavior
-
-            expect(nodes.p.getRootNode()).toEqual(expectedRootNode);
+            expect(nodes.p.getRootNode()).toEqual(document);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
         // TODO [#2425]: Incorrect serialization
@@ -75,18 +71,14 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             );
         });
 
-        describe('light -> shadow with ENABLE_LIGHT_GET_ROOT_NODE_PATCH', () => {
+        describe('light -> shadow getRootNode()', () => {
             let elm, nodes;
             beforeEach(() => {
-                setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', true);
                 elm = createElement('x-light-container', {
                     is: LightContainer,
                 });
                 document.body.appendChild(elm);
                 nodes = extractDataIds(elm);
-            });
-            afterEach(() => {
-                setFeatureFlagForTest('ENABLE_LIGHT_GET_ROOT_NODE_PATCH', false);
             });
             it('with getRootNode', () => {
                 expect(nodes.p.getRootNode()).toEqual(document);

@@ -1,0 +1,9 @@
+<template>
+    <x-child>
+        <template lwc:slot-data="variations">
+            <lwc:component lwc:is={variations.variation1} slot="header"></lwc:component>
+            <lwc:component lwc:is={variations.variation2} slot="body"></lwc:component>
+            <lwc:component lwc:is={variations.variation3} slot="footer"></lwc:component>
+        </template>
+    </x-child>
+</template>

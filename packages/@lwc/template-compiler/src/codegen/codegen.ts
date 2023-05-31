@@ -12,9 +12,11 @@ import {
     ChildNode,
     Element,
     Expression,
+    ComplexExpression,
     Literal,
     LWCDirectiveRenderMode,
     Root,
+    EventListener,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -24,8 +26,9 @@ import {
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes } from './helpers';
+import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
+import { bindComplexExpression } from './expression';
 
 type RenderPrimitive =
     | 'iterator'
@@ -37,6 +40,7 @@ type RenderPrimitive =
     | 'text'
     | 'dynamicText'
     | 'dynamicCtor'
+    | 'deprecatedDynamicCtor'
     | 'key'
     | 'tabindex'
     | 'scopedId'
@@ -59,6 +63,8 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
@@ -181,7 +187,17 @@ export default class CodeGen {
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
     }
-    genDynamicElement(
+
+    genDynamicElement(ctor: t.Expression, data: t.ObjectExpression, children: t.Expression) {
+        const args: t.Expression[] = [ctor, data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+
+        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+    }
+
+    genDeprecatedDynamicElement(
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
@@ -192,7 +208,7 @@ export default class CodeGen {
             args.push(children); // only generate children if non-empty
         }
 
-        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+        return this._renderApiCall(RENDER_APIS.deprecatedDynamicCtor, args);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {
@@ -294,6 +310,18 @@ export default class CodeGen {
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
         return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
+    }
+
+    genEventListeners(listeners: EventListener[]) {
+        const listenerObj = Object.fromEntries(
+            listeners.map((listener) => [listener.name, listener])
+        );
+        return objectToAST(listenerObj, (key) => {
+            const componentHandler = this.bindExpression(listenerObj[key].handler);
+            const handler = this.genBind(componentHandler);
+
+            return memorizeHandler(this, componentHandler, handler);
+        });
     }
 
     /**
@@ -428,13 +456,18 @@ export default class CodeGen {
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
      */
-    bindExpression(expression: Expression | Literal): t.Expression {
+    bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
         if (t.isIdentifier(expression)) {
             if (!this.isLocalIdentifier(expression)) {
                 return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
             } else {
                 return expression;
             }
+        }
+
+        // TODO [#3370]: remove experimental template expression flag
+        if (this.state.config.experimentalComplexExpressions) {
+            return bindComplexExpression(expression as ComplexExpression, this);
         }
 
         const scope = this;
@@ -493,9 +526,13 @@ export default class CodeGen {
             expr,
         });
 
-        return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.callExpression(identifier, []),
-            t.literal(key),
-        ]);
+        const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
+
+        if (element.listeners.length) {
+            const listenerObjectAST = this.genEventListeners(element.listeners);
+            args.push(t.objectExpression([t.property(t.identifier('on'), listenerObjectAST)]));
+        }
+
+        return this._renderApiCall(RENDER_APIS.staticFragment, args);
     }
 }

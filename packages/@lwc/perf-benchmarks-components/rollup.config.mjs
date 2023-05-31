@@ -7,7 +7,7 @@
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import glob from 'glob';
+import { globSync } from 'glob';
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import { generateStyledComponents } from './scripts/generate-styled-components.mjs';
@@ -50,7 +50,7 @@ function createConfig(componentFile, engineType) {
     };
 }
 
-const components = [...glob.sync(path.join(__dirname, 'src/**/*.js')), ...styledComponents];
+const components = [...globSync(path.join(__dirname, 'src/**/*.js')), ...styledComponents];
 
 const config = ['server', 'dom']
     .map((engineType) => components.map((component) => createConfig(component, engineType)))

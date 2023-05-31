@@ -21,7 +21,7 @@ module.exports = {
     metrics: ['script'],
     plugins: [
         // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
-        '@lwc/rollup-plugin-node-resolve-v13',
+        '@lwc/rollup-plugin-node-resolve-legacy',
         [
             '@rollup/plugin-replace',
             {

@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
-export default class WithDynamic extends LightningElement {
+export default class extends LightningElement {
     show = false;
     showFourth = false;
 

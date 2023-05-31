@@ -35,7 +35,7 @@ describe('Element.outerHTML - set', () => {
 
         expect(() => {
             elm.outerHTML = '<span>Hello World!</span>';
-        }).toThrowErrorDev(TypeError, /Invalid attempt to set outerHTML on HTMLElement/);
+        }).toLogErrorDev(/Invalid attempt to set outerHTML on HTMLElement/);
     });
 
     it('should log an error when invoking setter for an element in the shadow', () => {
@@ -45,6 +45,6 @@ describe('Element.outerHTML - set', () => {
         expect(() => {
             const div = elm.shadowRoot.querySelector('div');
             div.outerHTML = '<span>Hello World!</span>';
-        }).toThrowErrorDev(TypeError, /Invalid attempt to set outerHTML on Element/);
+        }).toLogErrorDev(/Invalid attempt to set outerHTML on Element/);
     });
 });

@@ -10,5 +10,6 @@ export default _registerComponent(_registerDecorators(class extends LightningEle
     }
   }
 }), {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

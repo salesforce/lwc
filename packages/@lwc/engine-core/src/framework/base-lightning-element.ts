@@ -14,7 +14,6 @@
  */
 import {
     AccessibleElementProperties,
-    assert,
     create,
     defineProperties,
     defineProperty,
@@ -46,12 +45,10 @@ import {
 } from './vm';
 import { componentValueObserved } from './mutation-tracker';
 import {
-    patchComponentWithRestrictions,
     patchShadowRootWithRestrictions,
     patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
-import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
@@ -70,20 +67,14 @@ function createBridgeToElementDescriptor(
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
-            );
-        }
-        throw new TypeError();
+        throw new TypeError(
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
+        );
     }
     if (!isFunction(set)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
-            );
-        }
-        throw new TypeError();
+        throw new TypeError(
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
+        );
     }
     return {
         enumerable,
@@ -106,24 +97,28 @@ function createBridgeToElementDescriptor(
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
-                );
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `Failed to construct '${getComponentTag(
-                        vm
-                    )}': The result must not have attributes.`
-                );
-                assert.invariant(
-                    !isObject(newValue) || isNull(newValue),
-                    `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
-                );
+                if (isInvokingRender) {
+                    logError(
+                        `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
+                    );
+                }
+                if (isUpdatingTemplate) {
+                    logError(
+                        `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
+                    );
+                }
+                if (isBeingConstructed(vm)) {
+                    logError(
+                        `Failed to construct '${getComponentTag(
+                            vm
+                        )}': The result must not have attributes.`
+                    );
+                }
+                if (isObject(newValue) && !isNull(newValue)) {
+                    logError(
+                        `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
+                    );
+                }
             }
 
             updateComponentValue(vm, propName, newValue);
@@ -169,6 +164,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'lang'
         | 'lastChild'
         | 'lastElementChild'
+        | 'ownerDocument'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
@@ -253,7 +249,6 @@ export const LightningElement: LightningElementConstructor = function (
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
-        patchComponentWithRestrictions(component);
     }
 
     return this;
@@ -320,18 +315,21 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
-            assert.invariant(
-                !isInvokingRender,
-                `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
-            );
-            assert.invariant(
-                !isUpdatingTemplate,
-                `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
-            );
-            assert.invariant(
-                isFunction(listener),
-                `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
-            );
+            if (isInvokingRender) {
+                logError(
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                );
+            }
+            if (isUpdatingTemplate) {
+                logError(
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                );
+            }
+            if (!isFunction(listener)) {
+                logError(
+                    `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
+                );
+            }
         }
 
         const wrappedListener = getWrappedComponentsListener(vm, listener);
@@ -377,9 +375,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = vm;
-        unlockAttribute(elm, name);
         removeAttribute(elm, name);
-        lockAttribute(elm, name);
     },
 
     removeAttributeNS(namespace: string | null, name: string): void {
@@ -387,9 +383,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = getAssociatedVM(this);
-        unlockAttribute(elm, name);
         removeAttribute(elm, name, namespace);
-        lockAttribute(elm, name);
     },
 
     getAttribute(name: string): string | null {
@@ -414,15 +408,16 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct '${getComponentTag(
+                        vm
+                    )}': The result must not have attributes.`
+                );
+            }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value);
-        lockAttribute(elm, name);
     },
 
     setAttributeNS(namespace: string | null, name: string, value: string): void {
@@ -433,15 +428,16 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct '${getComponentTag(
+                        vm
+                    )}': The result must not have attributes.`
+                );
+            }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value, namespace);
-        lockAttribute(elm, name);
     },
 
     getBoundingClientRect(): ClientRect {
@@ -475,12 +471,11 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            // TODO [#1290]: this still fails in dev but works in production, eventually, we should
-            // just throw in all modes
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
+                );
+            }
         }
 
         return getClassList(elm);
@@ -636,6 +631,15 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'lastElementChild');
         }
         return renderer.getLastElementChild(vm.elm);
+    },
+
+    get ownerDocument() {
+        const vm = getAssociatedVM(this);
+        const renderer = vm.renderer;
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'ownerDocument');
+        }
+        return renderer.ownerDocument(vm.elm);
     },
 
     render(): Template {

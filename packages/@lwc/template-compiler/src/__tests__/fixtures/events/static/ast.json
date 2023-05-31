@@ -1,0 +1,128 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 91,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 80,
+                "end": 91
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 79,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 73,
+                        "end": 79
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "button",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 48,
+                            "start": 29,
+                            "end": 68,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 39,
+                                "start": 29,
+                                "end": 59
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 39,
+                                "endLine": 3,
+                                "endColumn": 48,
+                                "start": 59,
+                                "end": 68
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [
+                            {
+                                "type": "EventListener",
+                                "name": "click",
+                                "handler": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 12,
+                                    "name": "handleClick",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 38,
+                                        "start": 37,
+                                        "end": 58
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 38,
+                                    "start": 37,
+                                    "end": 58
+                                }
+                            }
+                        ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

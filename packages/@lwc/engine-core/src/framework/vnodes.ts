@@ -49,11 +49,14 @@ export interface VScopedSlotFragment extends BaseVNode {
     slotName: unknown;
 }
 
+export type VStaticElementData = Pick<VNodeData, 'on'>;
+
 export interface VStatic extends BaseVNode {
-    type: VNodeType.Static;
-    sel: undefined;
-    key: Key;
-    fragment: Element;
+    readonly type: VNodeType.Static;
+    readonly sel: undefined;
+    readonly key: Key;
+    readonly fragment: Element;
+    readonly data: VStaticElementData | undefined;
 }
 
 export interface VFragment extends BaseVNode, BaseVParent {
@@ -65,6 +68,8 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
     // which diffing strategy to use.
     stable: 0 | 1;
+    leading: VText;
+    trailing: VText;
 }
 
 export interface VText extends BaseVNode {
@@ -133,7 +138,7 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
     return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
-export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
+export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
 

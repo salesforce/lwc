@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1192,
+            "message": "Invalid expression {() => delete baz} - LWC1192: Use of the delete operator is prohibited within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 41,
+                "length": 26
+            }
+        }
+    ]
+}

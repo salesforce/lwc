@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import { noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
@@ -106,4 +106,35 @@ it('should not apply babel plugins when Lightning Web Security is off', async ()
     `;
     const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
     expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
+});
+
+describe('instrumentation', () => {
+    it('should gather metrics for transforming dynamic imports', async () => {
+        const incrementCounter = jest.fn();
+        const actual = `
+            export async function test() {
+                const x = await import("foo");
+                const y = await import("bar");
+                const z = await import("baz");
+                return x + y + z + "yay";
+            }
+        `;
+        await transform(actual, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            experimentalDynamicComponent: {
+                loader: '@custom/loader',
+                strictSpecifier: true,
+            },
+            instrumentation: {
+                log: noop,
+                incrementCounter,
+            },
+        });
+
+        const calls = incrementCounter.mock.calls;
+        expect(calls).toHaveLength(3);
+        expect(calls[0][0]).toBe('dynamic-import-transform');
+        expect(calls[1][0]).toBe('dynamic-import-transform');
+        expect(calls[2][0]).toBe('dynamic-import-transform');
+    });
 });
