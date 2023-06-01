@@ -28,9 +28,6 @@
     "files": [
         "dist"
     ],
-    "publishConfig": {
-        "access": "public"
-    }
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
         "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
@@ -50,7 +47,7 @@
         "@babel/plugin-proposal-object-rest-spread": "~7.20.2",
         "@babel/plugin-transform-async-to-generator": "~7.20.7",
         "@babel/plugin-proposal-async-generator-functions": "~7.20.7",
-        "@locker/babel-plugin-transform-unforgeables": "0.19.7",
+        "@locker/babel-plugin-transform-unforgeables": "0.19.8",
         "@lwc/babel-plugin-component": "2.45.5",
         "@lwc/errors": "2.45.5",
         "@lwc/shared": "2.45.5",
