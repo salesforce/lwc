@@ -31,8 +31,16 @@ export default function scriptTransform(
         instrumentation,
     } = options;
 
+    const lwcBabelPluginOptions: LwcBabelPluginOptions = {
+        isExplicitImport,
+        dynamicImports,
+        namespace,
+        name,
+        instrumentation,
+    };
+
     const plugins = [
-        [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+        [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
 
         // This plugin should be removed in a future version. The object-rest-spread is
@@ -47,14 +55,6 @@ export default function scriptTransform(
             '@babel/plugin-proposal-async-generator-functions'
         );
     }
-
-    const lwcBabelPluginOptions: LwcBabelPluginOptions = {
-        isExplicitImport,
-        dynamicImports,
-        namespace,
-        name,
-        instrumentation,
-    };
 
     let result;
     try {
