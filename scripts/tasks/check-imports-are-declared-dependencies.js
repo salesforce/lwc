@@ -11,9 +11,9 @@
 
 const path = require('node:path');
 const fs = require('node:fs');
+const { builtinModules } = require('node:module');
 const { globSync } = require('glob');
 const { init, parse } = require('es-module-lexer');
-const builtInModules = require('builtin-modules');
 
 async function main() {
     const errors = [];
@@ -44,7 +44,10 @@ async function main() {
                 .slice(0, imported.startsWith('@') ? 2 : 1)
                 .join('/');
 
-            if (builtInModules.includes(importedPackage) || importedPackage.startsWith('node:')) {
+            if (
+                builtinModules.includes(importedPackage) ||
+                builtinModules.includes(importedPackage.replace(/^node:/, ''))
+            ) {
                 // ignore node built-ins like 'fs', 'path', etc.
                 continue;
             }
