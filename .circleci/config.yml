@@ -241,6 +241,9 @@ jobs:
           name: Verify @lwc/shared is tree-shakable
           command: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
       - run:
+          name: Verify that dependencies are declared
+          command: node ./scripts/tasks/check-imports-are-declared-dependencies.js
+      - run:
           name: Check formatting
           command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - run:
