@@ -49,7 +49,7 @@ export interface VScopedSlotFragment extends BaseVNode {
     slotName: unknown;
 }
 
-export type VStaticElementData = Pick<VNodeData, 'on'>;
+export type VStaticElementData = Pick<VElementData, 'on' | 'ref'>;
 
 export interface VStatic extends BaseVNode {
     readonly type: VNodeType.Static;
@@ -57,6 +57,7 @@ export interface VStatic extends BaseVNode {
     readonly key: Key;
     readonly fragment: Element;
     readonly data: VStaticElementData | undefined;
+    elm: Element | undefined;
 }
 
 export interface VFragment extends BaseVNode, BaseVParent {

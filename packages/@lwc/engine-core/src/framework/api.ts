@@ -71,15 +71,24 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 
 // [st]atic node
 function st(fragment: Element, key: Key, data?: VStaticElementData): VStatic {
-    return {
+    const owner = getVMBeingRendered()!;
+    const vnode: VStatic = {
         type: VNodeType.Static,
         sel: undefined,
         key,
         elm: undefined,
         fragment,
-        owner: getVMBeingRendered()!,
+        owner,
         data,
     };
+
+    const ref = data?.ref;
+
+    if (!isUndefined(ref)) {
+        setRefVNode(owner, ref, vnode);
+    }
+
+    return vnode;
 }
 
 // [fr]agment node

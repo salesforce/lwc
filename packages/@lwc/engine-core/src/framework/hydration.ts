@@ -208,7 +208,10 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 }
 
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
-    if (!areCompatibleNodes(vnode.fragment, elm, vnode, renderer)) {
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+        !areCompatibleNodes(vnode.fragment, elm, vnode, renderer)
+    ) {
         return handleMismatch(elm, vnode, renderer);
     }
 

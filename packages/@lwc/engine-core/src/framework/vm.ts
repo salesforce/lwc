@@ -42,7 +42,15 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement, isVFragment } from './vnodes';
+import {
+    VNodes,
+    VCustomElement,
+    VNode,
+    VNodeType,
+    VBaseElement,
+    isVFragment,
+    VStatic,
+} from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -102,7 +110,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VBaseElement };
+export type RefVNodes = { [name: string]: VBaseElement | VStatic };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
