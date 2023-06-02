@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, setFeatureFlagForTest, buildCustomElementConstructor } from 'lwc';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
@@ -54,6 +54,34 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
         expect(elm.shadowRoot).not.toBe(null);
         expect(elm.shadowRoot.mode).toBe('open');
+    });
+
+    describe('DISABLE_CUSTOM_ELEMENT_CONSTRUCTOR flag', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('DISABLE_CUSTOM_ELEMENT_CONSTRUCTOR', true);
+        });
+
+        afterEach(() => {
+            setFeatureFlagForTest('DISABLE_CUSTOM_ELEMENT_CONSTRUCTOR', false);
+        });
+
+        it('should throw an error on Ctor.CustomElementConstructor', () => {
+            class Test extends LightningElement {}
+            expect(() => {
+                return Test.CustomElementConstructor;
+            }).toThrowError(/CustomElementConstructor is not supported in this environment/);
+        });
+
+        it('should throw an error on buildCustomElementConstructor', () => {
+            class Test extends LightningElement {}
+            expect(() => {
+                expect(() => {
+                    return buildCustomElementConstructor(Test);
+                }).toThrowError(/CustomElementConstructor is not supported in this environment/);
+            }).toLogWarningDev(
+                /"buildCustomElementConstructor" function is deprecated and it will be removed/
+            );
+        });
     });
 
     describe('implicit hydration', () => {

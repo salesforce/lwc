@@ -42,6 +42,9 @@ function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementCon
  */
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {
+        if (lwcRuntimeFlags.DISABLE_CUSTOM_ELEMENT_CONSTRUCTOR) {
+            throw new Error('CustomElementConstructor is not supported in this environment');
+        }
         return getCustomElementConstructor(this);
     },
 });

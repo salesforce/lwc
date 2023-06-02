@@ -66,6 +66,11 @@ export interface FeatureFlagMap {
      * and HTMLBridgeElement base classes, not on every Element.
      */
     DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
+
+    /**
+     * Flag to disable the CustomElementConstructor API.
+     */
+    DISABLE_CUSTOM_ELEMENT_CONSTRUCTOR: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
