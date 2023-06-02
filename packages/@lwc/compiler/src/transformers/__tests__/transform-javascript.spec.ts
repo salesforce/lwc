@@ -13,6 +13,10 @@ const TRANSFORMATION_OPTIONS: TransformOptions = {
     name: 'foo',
 };
 
+function stripWhitespace(string: string) {
+    return string.replace(/\s/g, '');
+}
+
 it('should throw when processing an invalid javascript file', async () => {
     await expect(transform(`const`, 'foo.js', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
@@ -50,6 +54,58 @@ it('should object spread', async () => {
 
     expect(code).toContain('b: 1');
     expect(code).not.toContain('...a');
+});
+
+it('should apply babel plugins when Lightning Web Security is on', async () => {
+    const actual = `
+        export const test = window.location.href;
+        export async function foo() {
+            await bar();
+        }
+        async function* baz() {
+            yield 1;
+            yield 2;
+        }
+        (async function() {
+            for await (const num of baz()) {
+                break;
+            }
+        })();
+    `;
+
+    const { code } = await transform(actual, 'foo.js', {
+        ...TRANSFORMATION_OPTIONS,
+        enableLightningWebSecurityTransforms: true,
+    });
+
+    expect(stripWhitespace(code)).toContain(
+        stripWhitespace(
+            '(window === globalThis || window === document ? location : window.location).href'
+        )
+    );
+    expect(code).toContain('_asyncToGenerator');
+    expect(code).toContain('_wrapAsyncGenerator');
+    expect(code).toContain('_asyncIterator');
+});
+
+it('should not apply babel plugins when Lightning Web Security is off', async () => {
+    const actual = `
+        export const test = window.location.href;
+        export async function foo() {
+            await bar();
+        }
+        async function* baz() {
+            yield 1;
+            yield 2;
+        }
+        (async function() {
+            for await (const num of baz()) {
+                break;
+            }
+        })();
+    `;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
 });
 
 describe('instrumentation', () => {

@@ -213,6 +213,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     }
 
     vnode.elm = elm;
+    applyEventListeners(vnode, renderer);
 
     return elm;
 }

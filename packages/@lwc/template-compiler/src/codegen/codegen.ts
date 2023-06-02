@@ -16,6 +16,7 @@ import {
     Literal,
     LWCDirectiveRenderMode,
     Root,
+    EventListener,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -25,7 +26,7 @@ import {
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes } from './helpers';
+import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindComplexExpression } from './expression';
 
@@ -311,6 +312,18 @@ export default class CodeGen {
         return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
     }
 
+    genEventListeners(listeners: EventListener[]) {
+        const listenerObj = Object.fromEntries(
+            listeners.map((listener) => [listener.name, listener])
+        );
+        return objectToAST(listenerObj, (key) => {
+            const componentHandler = this.bindExpression(listenerObj[key].handler);
+            const handler = this.genBind(componentHandler);
+
+            return memorizeHandler(this, componentHandler, handler);
+        });
+    }
+
     /**
      * This routine generates an expression that avoids
      * computing the sanitized html of a raw html if it does not change
@@ -513,9 +526,13 @@ export default class CodeGen {
             expr,
         });
 
-        return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.callExpression(identifier, []),
-            t.literal(key),
-        ]);
+        const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
+
+        if (element.listeners.length) {
+            const listenerObjectAST = this.genEventListeners(element.listeners);
+            args.push(t.objectExpression([t.property(t.identifier('on'), listenerObjectAST)]));
+        }
+
+        return this._renderApiCall(RENDER_APIS.staticFragment, args);
     }
 }

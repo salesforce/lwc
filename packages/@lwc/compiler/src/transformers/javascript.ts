@@ -25,6 +25,7 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
+        enableLightningWebSecurityTransforms,
         namespace,
         name,
         instrumentation,
@@ -37,6 +38,23 @@ export default function scriptTransform(
         name,
         instrumentation,
     };
+
+    const plugins = [
+        [lwcClassTransformPlugin, lwcBabelPluginOptions],
+        [babelClassPropertiesPlugin, { loose: true }],
+
+        // This plugin should be removed in a future version. The object-rest-spread is
+        // already a stage 4 feature. The LWC compile should leave this syntax untouched.
+        babelObjectRestSpreadPlugin,
+    ];
+
+    if (enableLightningWebSecurityTransforms) {
+        plugins.push(
+            '@locker/babel-plugin-transform-unforgeables',
+            '@babel/plugin-transform-async-to-generator',
+            '@babel/plugin-proposal-async-generator-functions'
+        );
+    }
 
     let result;
     try {
@@ -51,15 +69,7 @@ export default function scriptTransform(
             // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
-
-            plugins: [
-                [lwcClassTransformPlugin, lwcBabelPluginOptions],
-                [babelClassPropertiesPlugin, { loose: true }],
-
-                // This plugin should be removed in a future version. The object-rest-spread is
-                // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-                babelObjectRestSpreadPlugin,
-            ],
+            plugins,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
