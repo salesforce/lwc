@@ -6,6 +6,7 @@
  */
 import { isUndefined } from '@lwc/shared';
 import type { LifecycleCallback } from '@lwc/engine-core';
+let globalOwner: any;
 
 const createConstructor = (
     upgradeCallback: LifecycleCallback,
@@ -19,7 +20,8 @@ const createConstructor = (
     class Ctor extends HTMLElement {
         constructor() {
             super();
-            upgradeCallback(this);
+            // jtu-todo: Pass in options object to upgradeCallback
+            upgradeCallback({ elm: this, owner: globalOwner });
         }
     }
 
@@ -44,14 +46,20 @@ export const createCustomElementUsingNativeConstructor = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
     connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback
+    disconnectedCallback?: LifecycleCallback,
+    owner?: any
 ) => {
     if (!isUndefined(customElements.get(tagName))) {
-        throw new Error(
-            `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
-        );
+        // jtu-todo: check if the custom element that's passed here is a LightningElement constructor
+        // throw an error if it's not.
+        // Could do this by caching the results in a
+        const Ctor = createConstructor(upgradeCallback, connectedCallback, disconnectedCallback);
+        customElements.define(tagName, Ctor);
     }
-    const Ctor = createConstructor(upgradeCallback, connectedCallback, disconnectedCallback);
-    customElements.define(tagName, Ctor);
-    return new Ctor();
+    try {
+        globalOwner = owner;
+        return new Ctor();
+    } finally {
+        globalOwner = undefined;
+    }
 };
