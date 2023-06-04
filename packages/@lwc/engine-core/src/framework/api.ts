@@ -545,36 +545,6 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * [ddc] - create a (deprecated) dynamic component via `<x-foo lwc:dynamic={Ctor}>`
- *
- * TODO [#3331]: remove usage of lwc:dynamic in 246
- */
-function ddc(
-    sel: string,
-    Ctor: LightningElementConstructor | null | undefined,
-    data: VElementData,
-    children: VNodes = EmptyArray
-): VCustomElement | null {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
-        assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
-        assert.isTrue(
-            arguments.length === 3 || isArray(children),
-            `dc() 4nd argument data must be an array.`
-        );
-    }
-    // null or undefined values should produce a null value in the VNodes
-    if (isNull(Ctor) || isUndefined(Ctor)) {
-        return null;
-    }
-    if (!isComponentConstructor(Ctor)) {
-        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
-    }
-
-    return c(sel, Ctor, data, children);
-}
-
-/**
  * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
  */
 function dc(
@@ -681,7 +651,6 @@ const api = ObjectFreeze({
     fid,
     shc,
     ssf,
-    ddc,
 });
 
 export default api;
