@@ -71,8 +71,6 @@ export interface TransformOptions {
     // TODO [#3331]: deprecate / rename this compiler option in 246
     /* Config applied in usage of dynamic import statements in javascript */
     experimentalDynamicComponent?: DynamicImportConfig;
-    /* Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
-    experimentalDynamicDirective?: boolean;
     /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
     // TODO [#3370]: remove experimental template expression flag
@@ -98,7 +96,6 @@ type RequiredTransformOptions = Omit<
     | 'enableLwcSpread'
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
-    | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
     | 'instrumentation'
 >;
@@ -110,7 +107,6 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     enableLwcSpread?: boolean;
     enableLightningWebSecurityTransforms?: boolean;
     enableDynamicComponents?: boolean;
-    experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;
     instrumentation?: InstrumentationObject;
 }

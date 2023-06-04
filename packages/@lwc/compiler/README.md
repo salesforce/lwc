@@ -43,7 +43,6 @@ const { code } = transformSync(source, filename, options);
     -   `namespace` (type: `string`, required) - namespace of the component, e.g. `x` in `x/foo`.
     -   `stylesheetConfig` (type: `object`, default: `{}`) - The stylesheet compiler configuration to pass to the `@lwc/style-compiler`.
     -   `experimentalDynamicComponent` (type: `DynamicImportConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
-    -   `experimentalDynamicDirective` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable deprecated dynamic components.
     -   `enableDynamicComponents` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable dynamic components.
     -   `outputConfig` (type: `object`, optional) - see below:
         -   `sourcemap` (type: `boolean`, optional) - if `true`, a sourcemap is generated for the transformed file.
