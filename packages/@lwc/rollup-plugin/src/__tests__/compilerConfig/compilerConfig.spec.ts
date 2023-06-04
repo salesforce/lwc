@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'path';
-import { rollup, RollupWarning } from 'rollup';
+import { rollup } from 'rollup';
 
 import lwc from '../../index';
 
@@ -90,31 +90,6 @@ describe('templateConfig', () => {
         });
 
         expect(output[0].code).toContain('api_dynamic_component');
-    });
-
-    it('should accept experimentalDynamicDirective config flag', async () => {
-        const warnings: RollupWarning[] = [];
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/experimentalDynamic/experimentalDynamic.js'),
-            plugins: [
-                lwc({
-                    experimentalDynamicDirective: true,
-                }),
-            ],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
-        });
-
-        const { output } = await bundle.generate({
-            format: 'esm',
-        });
-
-        expect(warnings).toHaveLength(1);
-        expect(warnings?.[0]?.message).toContain(
-            'LWC1187: The lwc:dynamic directive is deprecated'
-        );
-        expect(output[0].code).toContain('api_deprecated_dynamic_component');
     });
 });
 
