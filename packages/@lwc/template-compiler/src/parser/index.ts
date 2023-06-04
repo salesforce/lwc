@@ -844,7 +844,6 @@ function applyLwcPreserveCommentsDirective(
 
 const LWC_DIRECTIVE_PROCESSORS = [
     applyLwcExternalDirective,
-    applyLwcDynamicDirective,
     applyLwcIsDirective,
     applyLwcDomDirective,
     applyLwcInnerHtmlDirective,
@@ -963,40 +962,6 @@ function applyLwcExternalDirective(
             `<${element.name}>`,
         ]);
     }
-}
-
-function applyLwcDynamicDirective(
-    ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
-    element: BaseElement
-): void {
-    const { name: tag } = element;
-
-    const lwcDynamicAttribute = parsedAttr.pick(ElementDirectiveName.Dynamic);
-    if (!lwcDynamicAttribute) {
-        return;
-    }
-
-    if (!ctx.config.experimentalDynamicDirective) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element);
-    }
-
-    if (!ast.isComponent(element)) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
-            `<${tag}>`,
-        ]);
-    }
-
-    const { value: lwcDynamicAttr, location } = lwcDynamicAttribute;
-    if (!ast.isExpression(lwcDynamicAttr)) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
-    }
-
-    // lwc:dynamic will be deprecated in 246, issue a warning when usage is detected.
-    ctx.warnOnNode(ParserDiagnostics.DEPRECATED_LWC_DYNAMIC_ATTRIBUTE, element);
-    ctx.instrumentation?.incrementCounter(CompilerMetrics.LWCDynamicDirective);
-
-    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, location));
 }
 
 function applyLwcIsDirective(

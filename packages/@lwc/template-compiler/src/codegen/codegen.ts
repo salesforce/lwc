@@ -40,7 +40,6 @@ type RenderPrimitive =
     | 'text'
     | 'dynamicText'
     | 'dynamicCtor'
-    | 'deprecatedDynamicCtor'
     | 'key'
     | 'tabindex'
     | 'scopedId'
@@ -63,8 +62,6 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
-    deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
@@ -195,20 +192,6 @@ export default class CodeGen {
         }
 
         return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
-    }
-
-    genDeprecatedDynamicElement(
-        tagName: string,
-        ctor: t.Expression,
-        data: t.ObjectExpression,
-        children: t.Expression
-    ) {
-        const args: t.Expression[] = [t.literal(tagName), ctor, data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
-        }
-
-        return this._renderApiCall(RENDER_APIS.deprecatedDynamicCtor, args);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {

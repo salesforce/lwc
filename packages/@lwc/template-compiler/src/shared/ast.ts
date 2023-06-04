@@ -24,7 +24,6 @@ import {
     Root,
     EventListener,
     KeyDirective,
-    DynamicDirective,
     DomDirective,
     PreserveCommentsDirective,
     RenderModeDirective,
@@ -328,15 +327,6 @@ export function keyDirective(value: Expression, location: SourceLocation): KeyDi
     };
 }
 
-export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
-    return {
-        type: 'Directive',
-        name: 'Dynamic',
-        value,
-        location,
-    };
-}
-
 export function lwcIsDirective(value: Expression, location: SourceLocation): IsDirective {
     return {
         type: 'Directive',
@@ -564,10 +554,6 @@ export function isElementDirective(
 
 export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
-}
-
-export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
-    return directive.name === 'Dynamic';
 }
 
 export function isLwcIsDirective(directive: ElementDirective): directive is IsDirective {
