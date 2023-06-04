@@ -23,7 +23,7 @@ export default function scriptTransform(
 ): TransformResult {
     const {
         isExplicitImport,
-        experimentalDynamicComponent: dynamicImports,
+        dynamicImportConfig,
         outputConfig: { sourcemap },
         enableLightningWebSecurityTransforms,
         namespace,
@@ -33,7 +33,7 @@ export default function scriptTransform(
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
         isExplicitImport,
-        dynamicImports,
+        dynamicImportConfig,
         namespace,
         name,
         instrumentation,

@@ -30,7 +30,7 @@ export interface RollupLwcOptions {
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
     /** The configuration to pass to `@lwc/compiler`. */
-    experimentalDynamicComponent?: DynamicImportConfig;
+    dynamicImportConfig?: DynamicImportConfig;
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalDynamicDirective?: boolean;
     /** The configuration to pass to `@lwc/template-compiler`. */
@@ -145,7 +145,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         stylesheetConfig,
         sourcemap = false,
         preserveHtmlComments,
-        experimentalDynamicComponent,
+        dynamicImportConfig,
         experimentalDynamicDirective,
         enableDynamicComponents,
         // TODO [#3370]: remove experimental template expression flag
@@ -307,7 +307,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 namespace,
                 outputConfig: { sourcemap },
                 stylesheetConfig,
-                experimentalDynamicComponent,
+                dynamicImportConfig,
                 experimentalDynamicDirective,
                 enableDynamicComponents,
                 // TODO [#3370]: remove experimental template expression flag

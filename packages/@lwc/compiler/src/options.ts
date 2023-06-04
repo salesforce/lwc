@@ -68,9 +68,8 @@ export interface TransformOptions {
     name?: string;
     namespace?: string;
     stylesheetConfig?: StylesheetConfig;
-    // TODO [#3331]: deprecate / rename this compiler option in 246
     /* Config applied in usage of dynamic import statements in javascript */
-    experimentalDynamicComponent?: DynamicImportConfig;
+    dynamicImportConfig?: DynamicImportConfig;
     /* Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
     experimentalDynamicDirective?: boolean;
     /* Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
@@ -99,7 +98,7 @@ type RequiredTransformOptions = Omit<
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
-    | 'experimentalDynamicComponent'
+    | 'dynamicImportConfig'
     | 'instrumentation'
 >;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
@@ -111,7 +110,7 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     enableLightningWebSecurityTransforms?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
-    experimentalDynamicComponent?: DynamicImportConfig;
+    dynamicImportConfig?: DynamicImportConfig;
     instrumentation?: InstrumentationObject;
 }
 
@@ -185,9 +184,9 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         },
     };
 
-    const experimentalDynamicComponent: Required<DynamicImportConfig> = {
+    const dynamicImportConfig: Required<DynamicImportConfig> = {
         ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
-        ...options.experimentalDynamicComponent,
+        ...options.dynamicImportConfig,
     };
 
     return {
@@ -195,6 +194,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options,
         stylesheetConfig,
         outputConfig,
-        experimentalDynamicComponent,
+        dynamicImportConfig,
     };
 }

@@ -45,7 +45,7 @@ const { code } = babel.transformSync(source, {
 -   `name` (type: `string`, optional) - name of the component, e.g. `foo` in `x/foo`.
 -   `namespace` (type: `string`, optional) - namepace of the component, e.g. `x` in `x/foo`.
 -   `isExplicitImport` (type: `boolean`, optional) - true if this is an explicit import.
--   `dynamicImports` (type: `object`, optional) - see below:
+-   `dynamicImportConfig` (type: `object`, optional) - see below:
     -   `loader` (type: `string`, optional) - loader to use at runtime.
     -   `strictSpecifier` (type: `boolean`, optional) - true if a strict specifier should be used.
 -   `instrumentation` (type: `InstrumentationObject`, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
