@@ -1,15 +1,10 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { ddc: api_deprecated_dynamic_component, dc: api_dynamic_component } =
-    $api;
+  const { dc: api_dynamic_component } = $api;
   return [
-    api_deprecated_dynamic_component("x-foo", $cmp.dynamicCtor, {
-      spread: $cmp.dynamicProps,
-      key: 0,
-    }),
     api_dynamic_component($cmp.dynamicCtor, {
       spread: $cmp.dynamicProps,
-      key: 1,
+      key: 0,
     }),
   ];
   /*LWC compiler vX.X.X*/

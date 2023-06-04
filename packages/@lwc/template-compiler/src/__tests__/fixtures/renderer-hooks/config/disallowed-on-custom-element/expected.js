@@ -6,19 +6,11 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-const stc2 = {
-  key: 2,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    c: api_custom_element,
-    ddc: api_deprecated_dynamic_component,
-    dc: api_dynamic_component,
-  } = $api;
+  const { c: api_custom_element, dc: api_dynamic_component } = $api;
   return [
     api_custom_element("x-foo", _xFoo, stc0),
-    api_deprecated_dynamic_component("x-foo", $cmp.dynamicCtor, stc1),
-    api_dynamic_component($cmp.ctor, stc2),
+    api_dynamic_component($cmp.ctor, stc1),
   ];
   /*LWC compiler vX.X.X*/
 }

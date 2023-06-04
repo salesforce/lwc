@@ -7,10 +7,6 @@
         <span>{item.id} - {item.name}</span>
     </lwc:component>
 
-    <x-lazy lwc:dynamic={ctor} lwc:slot-data="item">
-        <span>{item.id} - {item.name}</span>
-    </x-lazy>
-
     <span lwc:slot-data="item">
         <span>{item.id} - {item.name}</span>
     </span>

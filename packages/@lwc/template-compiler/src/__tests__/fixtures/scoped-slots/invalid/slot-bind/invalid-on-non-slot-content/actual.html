@@ -4,6 +4,5 @@
     <template lwc:slot-bind={item}>
         <span>{item.id}</span>
     </template>
-    <x-lazy lwc:dynamic={ctor} lwc:slot-bind={item}></x-lazy>
     <lwc:component lwc:is={ctor} lwc:slot-bind={item}></lwc:component>
 </template>

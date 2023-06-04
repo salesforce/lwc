@@ -1,7 +1,6 @@
 {
-    "experimentalDynamicDirective": true,
     "customRendererConfig": {
-        "directives": ["lwc:dynamic", "lwc:spread"],
+        "directives": ["lwc:spread"],
         "elements": []
     },
     "enableLwcSpread": true,

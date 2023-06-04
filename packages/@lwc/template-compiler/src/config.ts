@@ -81,7 +81,6 @@ const AVAILABLE_OPTION_NAMES = new Set([
     // TODO [#3370]: remove experimental template expression flag
     'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
-    'experimentalDynamicDirective',
     'enableDynamicComponents',
     'preserveHtmlComments',
     'instrumentation',
