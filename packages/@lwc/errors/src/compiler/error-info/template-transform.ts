@@ -468,30 +468,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_OPTS_LWC_DYNAMIC: {
-        code: 1128,
-        message:
-            'Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT: {
-        code: 1129,
-        message:
-            'Invalid lwc:dynamic usage on element "{0}". This directive can only be used in a custom element.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_LWC_DYNAMIC_LITERAL_PROP: {
-        code: 1130,
-        message:
-            'Invalid lwc:dynamic usage on element "{0}". The directive binding must be an expression.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     LWC_RENDER_MODE_INVALID_VALUE: {
         code: 1133,
         message:
@@ -858,13 +834,6 @@ export const ParserDiagnostics = {
         message:
             'Invalid lwc:is usage for element {0}. The directive can only be used with <lwc:component>',
         level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    DEPRECATED_LWC_DYNAMIC_ATTRIBUTE: {
-        code: 1187,
-        message: `The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.`,
-        level: DiagnosticLevel.Warning,
         url: '',
     },
 
