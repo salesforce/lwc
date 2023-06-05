@@ -63,6 +63,7 @@ const { code } = transformSync(source, filename, options);
 -   `code` (string) - the compiled source code.
 -   `map` (object) - the generated source map.
 -   `warnings` (array, optional) - the array of diagnostic warnings, if any.
+-   `cssScopeTokens` (array, optional) - String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css` (as either attributes or classes), if any.
 
 ### `transform` (deprecated)
 

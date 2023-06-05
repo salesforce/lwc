@@ -125,6 +125,17 @@ describe('transformSync', () => {
         expect(code).not.toMatch('renderer: renderer');
     });
 
+    it('should return scope tokens', () => {
+        const template = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+        const { cssScopeTokens } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+
+        expect(cssScopeTokens).toEqual(['x-foo_foo', 'x-foo_foo-host']);
+    });
+
     describe('dynamic components', () => {
         it('should allow dynamic components when enableDynamicComponents is set to true', () => {
             const template = `

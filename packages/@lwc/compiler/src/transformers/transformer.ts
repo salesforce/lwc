@@ -23,6 +23,7 @@ export interface TransformResult {
     code: string;
     map: unknown;
     warnings?: CompilerDiagnostic[];
+    cssScopeTokens?: string[];
 }
 
 /**
