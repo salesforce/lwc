@@ -106,6 +106,16 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
+"@babel/generator@7.21.4":
+  version "7.21.4"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.21.4.tgz#64a94b7448989f421f919d5239ef553b37bb26bc"
+  integrity sha512-NieM3pVIYW2SwGzKoqfPrQsf4xGs9M9AIG3ThppsSRmO+m7eQhmI6amajKMUeIO37wFfsvnvcxQFx6x6iqxDnA==
+  dependencies:
+    "@babel/types" "^7.21.4"
+    "@jridgewell/gen-mapping" "^0.3.2"
+    "@jridgewell/trace-mapping" "^0.3.17"
+    jsesc "^2.5.1"
+
 "@babel/generator@^7.16.8", "@babel/generator@^7.21.3", "@babel/generator@^7.4.4", "@babel/generator@^7.7.2":
   version "7.21.3"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.21.3.tgz#232359d0874b392df04045d72ce2fd9bb5045fce"
@@ -451,7 +461,7 @@
     "@babel/helper-skip-transparent-expression-wrappers" "^7.20.0"
     "@babel/plugin-proposal-optional-chaining" "^7.20.7"
 
-"@babel/plugin-proposal-async-generator-functions@^7.20.7":
+"@babel/plugin-proposal-async-generator-functions@^7.20.7", "@babel/plugin-proposal-async-generator-functions@~7.20.7":
   version "7.20.7"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-async-generator-functions/-/plugin-proposal-async-generator-functions-7.20.7.tgz#bfb7276d2d573cb67ba379984a2334e262ba5326"
   integrity sha512-xMbiLsn/8RK7Wq7VeVytytS2L6qE69bXPB10YCmMdDZbKF4okCqY74pI/jJQ/8U0b/F6NrT2+14b8/P9/3AMGA==
@@ -755,7 +765,7 @@
     "@babel/helper-plugin-utils" "^7.14.5"
     "@babel/helper-remap-async-to-generator" "^7.14.5"
 
-"@babel/plugin-transform-async-to-generator@^7.20.7":
+"@babel/plugin-transform-async-to-generator@^7.20.7", "@babel/plugin-transform-async-to-generator@~7.20.7":
   version "7.20.7"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-async-to-generator/-/plugin-transform-async-to-generator-7.20.7.tgz#dfee18623c8cb31deb796aa3ca84dda9cea94354"
   integrity sha512-Uo5gwHPT9vgnSXQxqGtpdufUiWp96gk7yiP4Mp5bm1QMkEmLXBO7PAGYbKoJ6DhAwiNkcHFBol/x5zZZkL/t0Q==
@@ -2117,11 +2127,21 @@
   resolved "https://registry.yarnpkg.com/@kwsites/promise-deferred/-/promise-deferred-1.1.1.tgz#8ace5259254426ccef57f3175bc64ed7095ed919"
   integrity sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==
 
+"@locker/babel-plugin-transform-unforgeables@0.19.8":
+  version "0.19.8"
+  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.8.tgz#246942d5e1b8c549534e2d230b8c92287cbcf88d"
+  integrity sha512-E5cSM/qYTL0TdscEXaYiI8sPqpZW/ry1ltzILKtm0D6MBmtR6/z83+rgm65RGCtlJB1lIGQeXuOwoMVVfTRezA==
+  dependencies:
+    "@babel/generator" "7.21.4"
+    match-json "1.3.5"
+
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/jest-utils-lwc-internals@link:./scripts/jest/utils":
   version "0.0.0"
+  uid ""
 
 "@lwc/rollup-plugin-node-resolve-legacy@npm:rollup-plugin-node-resolve@5.2.0":
   version "5.2.0"
@@ -6043,6 +6063,11 @@ es-get-iterator@^1.1.2:
     isarray "^2.0.5"
     stop-iteration-iterator "^1.0.0"
 
+es-module-lexer@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-1.2.1.tgz#ba303831f63e6a394983fde2f97ad77b22324527"
+  integrity sha512-9978wrXM50Y4rTMmW5kXIC09ZdXQZqkE4mxhwkd8VbzsGkXGPgV4zWuqQJgCEzYngdo2dYDa0l8xhX4fkSwJSg==
+
 es-set-tostringtag@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/es-set-tostringtag/-/es-set-tostringtag-2.0.1.tgz#338d502f6f674301d710b80c8592de8a15f09cd8"
@@ -9858,6 +9883,11 @@ marky@^1.2.2:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/marky/-/marky-1.2.5.tgz#55796b688cbd72390d2d399eaaf1832c9413e3c0"
   integrity sha512-q9JtQJKjpsVxCRVgQ+WapguSbKC3SQ5HEzFGPAJMStgh3QjCawp00UKv3MTTAArTmGmmPUvllHZoNbZ3gs0I+Q==
+
+match-json@1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/match-json/-/match-json-1.3.5.tgz#3b2de7093f2b0136bdccf7768ca0e41f581a96ea"
+  integrity sha512-V5Jw1rIdjt37vfQRqvKtXW4dKbSTpvgwyEPKOBikY90xQ5Wr5yOmfpjcTm12d0Kqq+TfMqlXJkETf4yOF9JhUw==
 
 matcher@^3.0.0:
   version "3.0.0"

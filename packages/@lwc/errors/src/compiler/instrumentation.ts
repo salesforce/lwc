@@ -10,7 +10,7 @@ import { ErrorConfig } from './errors';
 /**
  * Pattern modeled after @lwc/engine-core's reporting.ts system
  */
-export const enum CompilerMetrics {
+export enum CompilerMetrics {
     LWCDynamicDirective = 'lwc-dynamic-directive',
     LWCRenderModeDirective = 'lwc-render-mode-directive',
     LWCSpreadDirective = 'lwc-spread-directive',

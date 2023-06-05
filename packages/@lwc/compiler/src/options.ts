@@ -19,6 +19,7 @@ const DEFAULT_OPTIONS = {
     // TODO [#3370]: remove experimental template expression flag
     experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
+    enableLightningWebSecurityTransforms: false,
 };
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -83,6 +84,7 @@ export interface TransformOptions {
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
     disableSyntheticShadowSupport?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
 }
 
@@ -92,6 +94,8 @@ type RequiredTransformOptions = Omit<
     | 'namespace'
     | 'scopedStyles'
     | 'customRendererConfig'
+    | 'enableLwcSpread'
+    | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
@@ -102,6 +106,8 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     namespace?: string;
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
+    enableLwcSpread?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;
