@@ -83,6 +83,7 @@ export interface TransformOptions {
     scopedStyles?: boolean;
     enableStaticContentOptimization?: boolean;
     customRendererConfig?: CustomRendererConfig;
+    enableLwcSpread?: boolean;
     disableSyntheticShadowSupport?: boolean;
     enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
