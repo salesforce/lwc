@@ -70,7 +70,7 @@ export interface Config {
     enableStaticContentOptimization?: boolean;
 
     /**
-     * Deprecated. Always set to true.
+     * @deprecated Spread operator is now always enabled.
      */
     enableLwcSpread?: boolean;
 
