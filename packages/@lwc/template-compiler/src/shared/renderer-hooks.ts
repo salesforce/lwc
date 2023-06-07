@@ -46,7 +46,12 @@ export interface CustomRendererConfig {
 }
 
 function checkElement(element: BaseElement, state: State): boolean {
-    // Custom elements are not allowed to have a custom renderer hook.
+    // Elements of type `ExternalComponent` may have custom renderer hooks.
+    if (state.crDirectives.has('lwc:external') && element.type === 'ExternalComponent') {
+        return true;
+    }
+
+    // Elements of type `Component` are not allowed to have custom renderer hooks.
     // The renderer is cascaded down from the owner(custom element) to all its child nodes who
     // do not have a renderer specified.
     // lwc:component will resolve to a custom element at runtime.
