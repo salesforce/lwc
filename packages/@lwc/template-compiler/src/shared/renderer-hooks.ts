@@ -45,8 +45,8 @@ export interface CustomRendererConfig {
     directives: string[];
 }
 
-function checkElement(element: BaseElement, state: State): boolean {
-    // Elements of type `ExternalComponent` may have custom renderer hooks.
+function shouldAddCustomRenderer(element: BaseElement, state: State): boolean {
+    // Elements of type `ExternalComponent` (e.g., elements with the lwc:external directive)
     if (state.crDirectives.has('lwc:external') && element.type === 'ExternalComponent') {
         return true;
     }
@@ -96,7 +96,7 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
         if (cachedResult !== undefined) {
             return cachedResult;
         } else {
-            addCustomRenderer = checkElement(element, state);
+            addCustomRenderer = shouldAddCustomRenderer(element, state);
             state.crCheckedElements.set(element, addCustomRenderer);
         }
     }
