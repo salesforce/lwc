@@ -45,7 +45,7 @@
         "@lwc/errors": "2.48.0",
         "@lwc/shared": "2.48.0",
         "acorn": "~8.8.2",
-        "astring": "~1.8.3",
+        "astring": "~1.8.6",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0",
         "parse5": "~6.0.1"

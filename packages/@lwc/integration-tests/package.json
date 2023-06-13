@@ -33,7 +33,7 @@
         "@wdio/spec-reporter": "^7.26.0",
         "@wdio/static-server-service": "^7.26.0",
         "deepmerge": "^4.3.0",
-        "dotenv": "^16.0.3",
+        "dotenv": "^16.1.4",
         "lwc": "2.48.0",
         "minimist": "^1.2.8",
         "webdriverio": "^7.26.0"
