@@ -34,7 +34,6 @@ export default function templateTransform(
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
-        enableLwcSpread,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
         instrumentation,
@@ -53,7 +52,6 @@ export default function templateTransform(
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
-            enableLwcSpread,
             enableDynamicComponents,
             instrumentation,
         });

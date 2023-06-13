@@ -930,10 +930,6 @@ function applyLwcSpreadDirective(
         return;
     }
 
-    if (!ctx.config.enableLwcSpread) {
-        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_SPREAD, element);
-    }
-
     const { value: lwcSpreadAttr } = lwcSpread;
     if (!ast.isExpression(lwcSpreadAttr)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_SPREAD_LITERAL_PROP, element, [`<${tag}>`]);
