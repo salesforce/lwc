@@ -17,6 +17,7 @@ import {
     LWCDirectiveRenderMode,
     Root,
     EventListener,
+    RefDirective,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -316,12 +317,19 @@ export default class CodeGen {
         const listenerObj = Object.fromEntries(
             listeners.map((listener) => [listener.name, listener])
         );
-        return objectToAST(listenerObj, (key) => {
+        const listenerObjectAST = objectToAST(listenerObj, (key) => {
             const componentHandler = this.bindExpression(listenerObj[key].handler);
             const handler = this.genBind(componentHandler);
 
             return memorizeHandler(this, componentHandler, handler);
         });
+
+        return t.property(t.identifier('on'), listenerObjectAST);
+    }
+
+    genRef(ref: RefDirective) {
+        this.hasRefs = true;
+        return t.property(t.identifier('ref'), ref.value);
     }
 
     /**
@@ -488,7 +496,7 @@ export default class CodeGen {
         return expression as t.Expression;
     }
 
-    genHoistedElement(element: Element, slotParentName?: string): t.Expression {
+    genStaticElement(element: Element, slotParentName?: string): t.Expression {
         const key =
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
@@ -528,9 +536,23 @@ export default class CodeGen {
 
         const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
 
-        if (element.listeners.length) {
-            const listenerObjectAST = this.genEventListeners(element.listeners);
-            args.push(t.objectExpression([t.property(t.identifier('on'), listenerObjectAST)]));
+        // Only add the third argument (databag) if this element needs it
+        if (element.listeners.length || element.directives.length) {
+            const databagProperties: t.Property[] = [];
+
+            // has event listeners
+            if (element.listeners.length) {
+                databagProperties.push(this.genEventListeners(element.listeners));
+            }
+
+            // see STATIC_SAFE_DIRECTIVES for what's allowed here
+            for (const directive of element.directives) {
+                if (directive.name === 'Ref') {
+                    databagProperties.push(this.genRef(directive));
+                }
+            }
+
+            args.push(t.objectExpression(databagProperties));
         }
 
         return this._renderApiCall(RENDER_APIS.staticFragment, args);
