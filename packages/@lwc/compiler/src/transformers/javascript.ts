@@ -9,6 +9,9 @@ import * as babel from '@babel/core';
 import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
 import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
+import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
+import babelAsyncToGenPlugin from '@babel/plugin-transform-async-to-generator';
+import babelAsyncGeneratorFunctionsPlugin from '@babel/plugin-proposal-async-generator-functions';
 
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
@@ -50,9 +53,9 @@ export default function scriptTransform(
 
     if (enableLightningWebSecurityTransforms) {
         plugins.push(
-            '@locker/babel-plugin-transform-unforgeables',
-            '@babel/plugin-transform-async-to-generator',
-            '@babel/plugin-proposal-async-generator-functions'
+            lockerBabelPluginTransformUnforgeables,
+            babelAsyncToGenPlugin,
+            babelAsyncGeneratorFunctionsPlugin
         );
     }
 
