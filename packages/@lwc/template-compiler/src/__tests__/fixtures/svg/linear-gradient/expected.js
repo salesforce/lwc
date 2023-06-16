@@ -1,4 +1,7 @@
-import { registerTemplate } from "lwc";
+import { parseSVGFragment, registerTemplate } from "lwc";
+const $fragment1 = parseSVGFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/>`;
+const $fragment2 = parseSVGFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/>`;
+const $fragment3 = parseSVGFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/>`;
 const stc0 = {
   attrs: {
     height: "150",
@@ -11,41 +14,8 @@ const stc1 = {
   key: 1,
   svg: true,
 };
-const stc2 = {
-  styleDecls: [
-    ["stop-color", "rgb(255,255,0)", false],
-    ["stop-opacity", "1", false],
-  ],
-  attrs: {
-    offset: "0%",
-  },
-  key: 3,
-  svg: true,
-};
-const stc3 = {
-  styleDecls: [
-    ["stop-color", "rgb(255,0,0)", false],
-    ["stop-opacity", "1", false],
-  ],
-  attrs: {
-    offset: "100%",
-  },
-  key: 4,
-  svg: true,
-};
-const stc4 = {
-  attrs: {
-    cx: "200",
-    cy: "70",
-    rx: "85",
-    ry: "55",
-    fill: "url(#grad1)",
-  },
-  key: 5,
-  svg: true,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, h: api_element } = $api;
+  const { gid: api_scoped_id, st: api_static_fragment, h: api_element } = $api;
   return [
     api_element("svg", stc0, [
       api_element("defs", stc1, [
@@ -62,10 +32,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [api_element("stop", stc2), api_element("stop", stc3)]
+          [
+            api_static_fragment($fragment1(), 4),
+            api_static_fragment($fragment2(), 6),
+          ]
         ),
       ]),
-      api_element("ellipse", stc4),
+      api_static_fragment($fragment3(), 8),
     ]),
   ];
   /*LWC compiler vX.X.X*/

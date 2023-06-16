@@ -26,6 +26,7 @@ export default function styleTransform(
         },
         scoped: config.scopedStyles,
         disableSyntheticShadowSupport: config.disableSyntheticShadowSupport,
+        apiVersion: config.apiVersion,
     };
 
     let res;

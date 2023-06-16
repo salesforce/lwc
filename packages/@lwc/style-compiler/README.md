@@ -48,6 +48,7 @@ const { code } = compile(source, 'example.css');
         -   `resolverModule` (boolean, optional) - module name for the custom properties resolve
     -   `scoped` (boolean, optional) - true if the styles are scoped (via Light DOM style scoping)
     -   `disableSyntheticShadowSupport` (boolean, optional) - true if synthetic shadow DOM support is not needed, which can result in smaller output
+    -   `apiVersion` (number, optional) - API version to associate with the compiled stylesheet.
 
 **Return:**
 

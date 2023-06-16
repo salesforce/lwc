@@ -10,7 +10,7 @@ import {
     generateCompilerError,
     InstrumentationObject,
 } from '@lwc/errors';
-import { hasOwnProperty } from '@lwc/shared';
+import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
 
@@ -78,12 +78,18 @@ export interface Config {
      * Config to use to collect metrics and logs
      */
     instrumentation?: InstrumentationObject;
+
+    /**
+     * The API version to associate with the compiled template
+     */
+    apiVersion?: number;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'instrumentation'>> &
     Partial<Pick<Config, 'customRendererConfig' | 'instrumentation'>>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
+    'apiVersion',
     'customRendererConfig',
     'enableLwcSpread',
     'enableStaticContentOptimization',
@@ -149,6 +155,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         }
     }
 
+    const apiVersion = getAPIVersionFromNumber(config.apiVersion);
+
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
@@ -158,6 +166,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: true,
+        apiVersion,
         ...config,
         ...{ customRendererConfig },
         ...{ instrumentation },

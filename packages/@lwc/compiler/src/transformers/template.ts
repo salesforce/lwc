@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-
+import { APIFeature, APIVersion, isAPIFeatureEnabled } from '@lwc/shared';
 import {
     CompilerError,
     normalizeToCompilerError,
@@ -39,6 +39,7 @@ export default function templateTransform(
         instrumentation,
         namespace,
         name,
+        apiVersion,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -54,6 +55,7 @@ export default function templateTransform(
             customRendererConfig,
             enableDynamicComponents,
             instrumentation,
+            apiVersion,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
@@ -68,9 +70,7 @@ export default function templateTransform(
     // thrown above. As for "Log" and "Fatal", they are currently unused.
     const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
-    const scopeToken = escapeScopeToken(
-        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
-    );
+    const scopeToken = generateScopeToken(filename, namespace, name, apiVersion);
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
@@ -85,10 +85,57 @@ export default function templateTransform(
     };
 }
 
+// The reason this hash code implementation [1] is chosen is because:
+// 1. It has a very low hash collision rate - testing a list of 466,551 English words [2], it generates no collisions
+// 2. It is fast - it can hash those 466k words in 70ms (Node 16, 2020 MacBook Pro)
+// 3. The output size is reasonable (32-bit - this can be base-32 encoded at 10-11 characters)
+//
+// [1]: https://stackoverflow.com/a/52171480
+// [2]: https://github.com/dwyl/english-words/blob/a77cb15f4f5beb59c15b945f2415328a6b33c3b0/words.txt
+function generateHashCode(str: string) {
+    const seed = 0;
+    let h1 = 0xdeadbeef ^ seed;
+    let h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+
 function escapeScopeToken(input: string) {
     // Minimal escape for strings containing the "@" and "#" characters, which are disallowed
     // in certain cases in attribute names
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
+}
+
+function generateScopeToken(
+    filename: string,
+    namespace: string | undefined,
+    name: string | undefined,
+    apiVersion: APIVersion
+) {
+    const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+
+    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
+        const hashCode = generateHashCode(uniqueToken);
+
+        // This scope token is all lowercase so that it works correctly in case-sensitive namespaces (e.g. SVG).
+        // It is deliberately designed to discourage people from relying on it by appearing somewhat random.
+        // (But not totally random, because it's nice to have stable scope tokens for our own tests.)
+        // Base-32 is chosen because it is not case-sensitive (0-v), and generates short strings with the given hash
+        // code implementation (10-11 characters).
+        return `lwc-${hashCode.toString(32)}`;
+    } else {
+        // This scope token is based on the namespace and name, and contains a mix of uppercase/lowercase chars
+        return escapeScopeToken(uniqueToken);
+    }
 }
 
 function serialize(code: string, filename: string, scopeToken: string): string {

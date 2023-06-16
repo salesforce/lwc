@@ -49,7 +49,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         );
 
         if (!hasParsingError && parsingResults.root) {
-            code = generate(parsingResults.root, state);
+            code = generate(parsingResults.root, state, options.apiVersion);
             root = parsingResults.root;
         }
     } catch (error) {

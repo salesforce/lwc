@@ -59,7 +59,7 @@ export const errorCodesToErrorOn = new Set([
 ]);
 
 // These were added between parse5-with-errors v4.0.4 and parse5 v6.0.1
-export const errorCodesToWarnOn = new Set([
+export const errorCodesToWarnOnInOlderAPIVersions = new Set([
     'non-conforming-doctype',
     'missing-doctype',
     'misplaced-doctype',
