@@ -57,7 +57,7 @@ describe('transformSync', () => {
             name: 'foo',
         });
 
-        expect(code).toContain(`tmpl.stylesheetToken = "lwc--56ad47db";`);
+        expect(code).toContain(`tmpl.stylesheetToken = "lwc-143n22jptum";`);
     });
 
     it('should hoist static vnodes when enableStaticContentOptimization is set to true', () => {
@@ -148,7 +148,7 @@ describe('transformSync', () => {
         `;
         const { cssScopeTokens } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
-        expect(cssScopeTokens).toEqual(['x-foo_foo', 'x-foo_foo-host']);
+        expect(cssScopeTokens).toEqual(['lwc-1hl7358i549', 'lwc-1hl7358i549-host']);
     });
 
     describe('dynamic components', () => {
