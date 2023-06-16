@@ -182,16 +182,8 @@ module.exports = {
         nodeResolve({
             // These are the devDeps that may be inlined into the dist/ bundles
             // These include packages owned by us (LWC, observable-membrane), as well as parse5,
-            // which is bundled because it makes it simpler to distribute
-            resolveOnly: [
-                /^@lwc\//,
-                'observable-membrane',
-                // Special case - parse5 is bundled only in @lwc/engine-server currently, to avoid
-                // issues with Best/Tachometer.
-                // We can probably remove this special case when we upgrade parse5 to the ESM version, and bundle it
-                // into @lwc/template-compiler as well (to avoid shipping breaking ESM changes to consumers).
-                packageName === '@lwc/engine-server' && 'parse5',
-            ].filter(Boolean),
+            // which is bundled to avoid breaking downstream consumers due to ES Module format.
+            resolveOnly: [/^@lwc\//, 'observable-membrane', 'parse5'].filter(Boolean),
         }),
         // TODO [#3451]: remove this once we upgrade parse5 to its ESM version
         commonjs({
