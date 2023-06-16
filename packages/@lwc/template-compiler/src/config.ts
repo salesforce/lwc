@@ -61,7 +61,7 @@ export interface Config {
     enableStaticContentOptimization?: boolean;
 
     /**
-     * When true, enables `lwc:spread` directive.
+     * @deprecated Spread operator is now always enabled.
      */
     enableLwcSpread?: boolean;
 
@@ -146,7 +146,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalComplexExpressions: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
-        enableLwcSpread: false,
+        enableLwcSpread: true,
         ...config,
         ...{ customRendererConfig },
         ...{ instrumentation },

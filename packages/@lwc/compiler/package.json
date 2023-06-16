@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "2.47.0",
+    "version": "2.49.1",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
@@ -42,16 +42,16 @@
         }
     },
     "dependencies": {
-        "@babel/core": "~7.21.8",
-        "@babel/plugin-proposal-class-properties": "~7.18.6",
-        "@babel/plugin-proposal-object-rest-spread": "~7.20.2",
-        "@babel/plugin-transform-async-to-generator": "~7.20.7",
-        "@babel/plugin-proposal-async-generator-functions": "~7.20.7",
+        "@babel/core": "7.21.8",
+        "@babel/plugin-proposal-async-generator-functions": "7.20.7",
+        "@babel/plugin-proposal-class-properties": "7.18.6",
+        "@babel/plugin-proposal-object-rest-spread": "7.20.2",
+        "@babel/plugin-transform-async-to-generator": "7.20.7",
         "@locker/babel-plugin-transform-unforgeables": "0.19.8",
-        "@lwc/babel-plugin-component": "2.47.0",
-        "@lwc/errors": "2.47.0",
-        "@lwc/shared": "2.47.0",
-        "@lwc/style-compiler": "2.47.0",
-        "@lwc/template-compiler": "2.47.0"
+        "@lwc/babel-plugin-component": "2.49.1",
+        "@lwc/errors": "2.49.1",
+        "@lwc/shared": "2.49.1",
+        "@lwc/style-compiler": "2.49.1",
+        "@lwc/template-compiler": "2.49.1"
     }
 }

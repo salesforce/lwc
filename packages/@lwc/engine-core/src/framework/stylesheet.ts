@@ -34,6 +34,7 @@ export type StylesheetFactory = (
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 
 function makeHostToken(token: string) {
+    // Note: if this ever changes, update the `cssScopeTokens` returned by `@lwc/compiler`
     return `${token}-host`;
 }
 

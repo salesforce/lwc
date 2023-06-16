@@ -119,6 +119,13 @@ export function validateTransformOptions(options: TransformOptions): NormalizedT
 function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
 
+    if (!isUndefined(options.enableLwcSpread)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
+    }
+
     if (!isUndefined(options.stylesheetConfig)) {
         validateStylesheetConfig(options.stylesheetConfig);
     }

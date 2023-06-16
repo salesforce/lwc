@@ -33,9 +33,10 @@ export default function templateTransform(
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
-        enableLwcSpread,
         enableDynamicComponents,
         instrumentation,
+        namespace,
+        name,
     } = options;
 
     let result;
@@ -46,7 +47,6 @@ export default function templateTransform(
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
-            enableLwcSpread,
             enableDynamicComponents,
             instrumentation,
         });
@@ -63,12 +63,20 @@ export default function templateTransform(
     // thrown above. As for "Log" and "Fatal", they are currently unused.
     const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
+    const scopeToken = escapeScopeToken(
+        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
+    );
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, options),
+        code: serialize(result.code, filename, scopeToken),
         map: { mappings: '' },
         warnings,
+        cssScopeTokens: [
+            scopeToken,
+            `${scopeToken}-host`, // implicit scope token created by `makeHostToken()` in `@lwc/engine-core`
+        ],
     };
 }
 
@@ -78,16 +86,10 @@ function escapeScopeToken(input: string) {
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
-function serialize(
-    code: string,
-    filename: string,
-    { namespace, name }: NormalizedTransformOptions
-): string {
+function serialize(code: string, filename: string, scopeToken: string): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
-    const scopeToken = escapeScopeToken(
-        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
-    );
+
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;

@@ -45,8 +45,13 @@ export interface CustomRendererConfig {
     directives: string[];
 }
 
-function checkElement(element: BaseElement, state: State): boolean {
-    // Custom elements are not allowed to have a custom renderer hook.
+function shouldAddCustomRenderer(element: BaseElement, state: State): boolean {
+    // Elements of type `ExternalComponent` (e.g., elements with the lwc:external directive)
+    if (state.crDirectives.has('lwc:external') && element.type === 'ExternalComponent') {
+        return true;
+    }
+
+    // Elements of type `Component` are not allowed to have custom renderer hooks.
     // The renderer is cascaded down from the owner(custom element) to all its child nodes who
     // do not have a renderer specified.
     // lwc:component will resolve to a custom element at runtime.
@@ -91,7 +96,7 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
         if (cachedResult !== undefined) {
             return cachedResult;
         } else {
-            addCustomRenderer = checkElement(element, state);
+            addCustomRenderer = shouldAddCustomRenderer(element, state);
             state.crCheckedElements.set(element, addCustomRenderer);
         }
     }

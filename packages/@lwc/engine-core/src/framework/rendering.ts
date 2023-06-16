@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPush,
     ArrayPop,
+    ArrayPush,
     ArraySome,
     assert,
     create,
@@ -118,7 +118,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
             break;
 
         case VNodeType.Static:
-            n2.elm = n1.elm;
+            n2.elm = (n1 as VStatic).elm;
             break;
 
         case VNodeType.Fragment:
