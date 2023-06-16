@@ -40,7 +40,7 @@ export function bindComplexExpression(
     codeGen: CodeGen
 ): t.Expression {
     const expressionScopes = new ExpressionScopes();
-    walk(expression, {
+    walk(expression as t.Node, {
         enter(node, _parent) {
             // Function and class expressions are not permitted in template expressions,
             // only arrow function expressions.

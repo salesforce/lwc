@@ -4,22 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5';
+import * as parse5Type from '../parser/parse5Types';
 
-export function isElementNode(node: parse5.Node): node is parse5.Element {
+export function isElementNode(node: parse5Type.Node): node is parse5Type.Element {
     return 'tagName' in node;
 }
 
-export function isCommentNode(node: parse5.Node): node is parse5.CommentNode {
+export function isCommentNode(node: parse5Type.Node): node is parse5Type.CommentNode {
     return node.nodeName === '#comment';
 }
 
-export function isTextNode(node: parse5.Node): node is parse5.TextNode {
+export function isTextNode(node: parse5Type.Node): node is parse5Type.TextNode {
     return node.nodeName === '#text';
 }
 
 export function getTemplateContent(
-    templateElement: parse5.Element
-): parse5.DocumentFragment | undefined {
+    templateElement: parse5Type.Element
+): parse5Type.DocumentFragment | undefined {
     return (templateElement as any).content;
 }

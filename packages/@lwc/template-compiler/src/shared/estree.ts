@@ -461,3 +461,4 @@ export type ImportSpecifier = t.ImportSpecifier;
 export type ExportDefaultDeclaration = t.ExportDefaultDeclaration;
 export type Statement = t.Statement;
 export type Program = t.Program;
+export type Node = t.Node;

@@ -6,10 +6,9 @@
  */
 
 import { parseExpressionAt } from 'acorn';
-import { Document, DocumentFragment, TextNode, ParsingError, ParserOptions } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import Parser from 'parse5/lib/parser';
-import Tokenizer from 'parse5/lib/tokenizer';
+import { Parser, Tokenizer } from 'parse5';
+import { Document, DocumentFragment, TextNode, ParserError, ParserOptions } from '../parse5Types';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap } from './types';
@@ -243,7 +242,7 @@ class TemplateHtmlParser extends Parser {
 interface ParseFragmentConfig {
     ctx: ParserCtx;
     sourceCodeLocationInfo: boolean;
-    onParseError: (error: ParsingError) => void;
+    onParseError: (error: ParserError) => void;
 }
 
 /**

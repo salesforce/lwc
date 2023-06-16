@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5';
 import { ParserDiagnostics } from '@lwc/errors';
 import {
     isAriaAttribute,
@@ -20,6 +19,7 @@ import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
+import * as parse5Type from './parse5Types';
 import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
@@ -82,7 +82,7 @@ export function normalizeAttributeValue(
     ctx: ParserCtx,
     raw: string,
     tag: string,
-    attr: parse5.Attribute,
+    attr: parse5Type.Attribute,
     location: SourceLocation
 ): {
     value: string;
@@ -161,7 +161,7 @@ export function normalizeAttributeValue(
     return { value, escapedExpression: false };
 }
 
-export function attributeName(attr: parse5.Attribute): string {
+export function attributeName(attr: parse5Type.Attribute): string {
     const { prefix, name } = attr;
     return prefix ? `${prefix}:${name}` : name;
 }

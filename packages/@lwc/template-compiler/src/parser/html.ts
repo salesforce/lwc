@@ -11,6 +11,7 @@ import { ParserDiagnostics } from '@lwc/errors';
 
 import { sourceLocation } from '../shared/ast';
 
+import * as parse5Type from './parse5Types';
 import ParserCtx from './parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
 import { parseFragment } from './expression-complex';
@@ -31,8 +32,8 @@ function getLwcErrorFromParse5Error(code: string) {
     }
 }
 
-export function parseHTML(ctx: ParserCtx, source: string) {
-    const onParseError = (err: parse5.ParsingError) => {
+export function parseHTML(ctx: ParserCtx, source: string): parse5Type.DocumentFragment {
+    const onParseError = (err: parse5Type.ParserError) => {
         const { code, ...location } = err;
 
         const lwcError = getLwcErrorFromParse5Error(code);

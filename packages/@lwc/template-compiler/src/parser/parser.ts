@@ -31,7 +31,7 @@ import { TMPL_EXPR_ECMASCRIPT_EDITION } from './constants';
 import type { ecmaVersion as EcmaVersion } from 'acorn';
 import type { PreparsedExpressionMap } from './expression-complex';
 
-function normalizeLocation(location?: SourceLocation): Location {
+function normalizeLocation(location?: SourceLocation | null): Location {
     let line = 0;
     let column = 0;
     let length = 0;
@@ -395,7 +395,7 @@ export default class ParserCtx {
     /**
      * This method throws a diagnostic error and will immediately exit the current routine.
      */
-    throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
+    throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation | null): never {
         throw generateCompilerError(errorInfo, {
             messageArgs,
             origin: {

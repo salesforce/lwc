@@ -58,6 +58,8 @@ export interface MemberExpression extends BaseNode {
     type: 'MemberExpression';
     object: Expression;
     property: Identifier;
+    computed: boolean;
+    optional: boolean;
 }
 
 export type Expression = Identifier | MemberExpression;
