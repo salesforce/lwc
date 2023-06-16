@@ -11,7 +11,7 @@ if (!process.env.NATIVE_SHADOW) {
 
             // shadow grandparent
             expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-container_container' : 'lwc-3f64ed2e'
+                process.env.API_VERSION <= 58 ? 'x-container_container' : 'lwc-7c9hba002d8'
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
                 'rgb(0, 128, 0)'
@@ -27,7 +27,7 @@ if (!process.env.NATIVE_SHADOW) {
             // shadow grandchild
             const grandchild = child.querySelector('x-grandchild');
             expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-grandchild_grandchild' : 'lwc--1f1cce76'
+                process.env.API_VERSION <= 58 ? 'x-grandchild_grandchild' : 'lwc-42b236sbaik'
             );
             expect(
                 getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor

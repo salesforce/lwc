@@ -37,7 +37,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     .shadowRoot.querySelector('div');
 
                 const token =
-                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc--70a67fda';
+                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc-6a8uqob2ku4';
                 expect(syntheticMode.hasAttribute(token)).toBe(true);
                 expect(nativeMode.hasAttribute(token)).toBe(false);
             });
@@ -80,7 +80,7 @@ describe('static content when stylesheets change', () => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
                 expect(classList).toEqual([
                     'foo',
-                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-5ce6346a',
+                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-6fpm08fjoch',
                 ]);
 
                 expect(() => {
