@@ -7,9 +7,10 @@
 
 import fs from 'fs';
 import path from 'path';
-import { globSync } from 'glob';
+import * as glob from 'glob';
 import MatcherUtils = jest.MatcherUtils;
 import CustomMatcherResult = jest.CustomMatcherResult;
+const { globSync } = glob;
 
 /**
  * @typedef {Object} TestFixtureConfig

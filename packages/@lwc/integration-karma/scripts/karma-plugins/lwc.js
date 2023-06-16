@@ -55,7 +55,6 @@ function createPreprocessor(config, emitter, logger) {
                     loader: 'test-utils',
                     strict: true,
                 },
-                enableLwcSpread: true,
                 enableDynamicComponents: true,
                 experimentalComplexExpressions,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,

@@ -16,12 +16,12 @@
         "dev": {
             "dependsOn": ["^build"]
         },
-        "//": "Build @lwc/perf-benchmarks dependencies and build target when invoking the test:performance script on the root package.json.",
         "test": {
+            "//": "Build @lwc/perf-benchmarks dependencies and build target when invoking the test:performance script on the root package.json.",
             "dependsOn": ["build"]
         },
-        "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
         "sauce": {
+            "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
             "dependsOn": ["^build"]
         }
     },

@@ -8,8 +8,8 @@ import * as path from 'path';
 import { APIFeature, APIVersion, isAPIFeatureEnabled } from '@lwc/shared';
 import {
     CompilerError,
-    DiagnosticLevel,
     normalizeToCompilerError,
+    DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
@@ -34,10 +34,11 @@ export default function templateTransform(
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
-        enableLwcSpread,
         enableDynamicComponents,
         experimentalDynamicDirective: deprecatedDynamicDirective,
         instrumentation,
+        namespace,
+        name,
         apiVersion,
     } = options;
     const experimentalDynamicDirective =
@@ -52,7 +53,6 @@ export default function templateTransform(
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
-            enableLwcSpread,
             enableDynamicComponents,
             instrumentation,
             apiVersion,
@@ -70,19 +70,19 @@ export default function templateTransform(
     // thrown above. As for "Log" and "Fatal", they are currently unused.
     const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
+    const scopeToken = generateScopeToken(filename, namespace, name, apiVersion);
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, options),
+        code: serialize(result.code, filename, scopeToken),
         map: { mappings: '' },
         warnings,
+        cssScopeTokens: [
+            scopeToken,
+            `${scopeToken}-host`, // implicit scope token created by `makeHostToken()` in `@lwc/engine-core`
+        ],
     };
-}
-
-function escapeScopeToken(input: string) {
-    // Minimal escape for strings containing the "@" and "#" characters, which are disallowed
-    // in certain cases in attribute names
-    return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
 // Via https://stackoverflow.com/a/7616484
@@ -93,6 +93,12 @@ function generateHashCode(str: string) {
         hash |= 0; // Convert to 32bit integer
     }
     return hash;
+}
+
+function escapeScopeToken(input: string) {
+    // Minimal escape for strings containing the "@" and "#" characters, which are disallowed
+    // in certain cases in attribute names
+    return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
 function generateScopeToken(
@@ -117,14 +123,10 @@ function generateScopeToken(
     }
 }
 
-function serialize(
-    code: string,
-    filename: string,
-    { namespace, name, apiVersion }: NormalizedTransformOptions
-): string {
+function serialize(code: string, filename: string, scopeToken: string): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
-    const scopeToken = generateScopeToken(filename, namespace, name, apiVersion);
+
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;

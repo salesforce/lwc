@@ -19,6 +19,7 @@ const DEFAULT_OPTIONS = {
     // TODO [#3370]: remove experimental template expression flag
     experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
+    enableLightningWebSecurityTransforms: false,
 };
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -84,6 +85,7 @@ export interface TransformOptions {
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
     disableSyntheticShadowSupport?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
 }
@@ -95,6 +97,7 @@ type RequiredTransformOptions = Omit<
     | 'scopedStyles'
     | 'customRendererConfig'
     | 'enableLwcSpread'
+    | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
@@ -106,6 +109,7 @@ export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTr
     scopedStyles?: boolean;
     customRendererConfig?: CustomRendererConfig;
     enableLwcSpread?: boolean;
+    enableLightningWebSecurityTransforms?: boolean;
     enableDynamicComponents?: boolean;
     experimentalDynamicDirective?: boolean;
     experimentalDynamicComponent?: DynamicImportConfig;
@@ -119,6 +123,13 @@ export function validateTransformOptions(options: TransformOptions): NormalizedT
 
 function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
+
+    if (!isUndefined(options.enableLwcSpread)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
+    }
 
     if (!isUndefined(options.stylesheetConfig)) {
         validateStylesheetConfig(options.stylesheetConfig);

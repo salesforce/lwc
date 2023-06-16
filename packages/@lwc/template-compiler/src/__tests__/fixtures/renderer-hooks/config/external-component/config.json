@@ -1,0 +1,6 @@
+{
+    "customRendererConfig": {
+        "directives": ["lwc:external"],
+        "elements": []
+    }
+}

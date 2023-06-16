@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
+import BasicDynamic from 'x/basicDynamic';
 import None from 'x/none';
 import NoneActive from 'x/noneActive';
 import Multi from 'x/multi';
@@ -23,14 +24,31 @@ import Slotter from 'x/slotter';
 import AccessDuringRender from 'x/accessDuringRender';
 
 describe('refs', () => {
-    it('basic refs example', () => {
-        const elm = createElement('x-basic', { is: Basic });
-        document.body.appendChild(elm);
+    describe('basic refs example', () => {
+        const scenarios = [
+            {
+                name: 'static',
+                Ctor: Basic,
+                tagName: 'x-basic',
+            },
+            {
+                name: 'dynamic',
+                Ctor: BasicDynamic,
+                tagName: 'x-basic-dynamic',
+            },
+        ];
 
-        expect(elm.getRefTextContent('first')).toEqual('first');
-        expect(elm.getRefTextContent('second')).toEqual('second');
-        expect(elm.getRefTextContent('inner')).toEqual('inner');
-        expect(elm.getRefTextContent('deepInner')).toEqual('deepInner');
+        scenarios.forEach(({ name, Ctor, tagName }) => {
+            it(name, () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+
+                expect(elm.getRefTextContent('first')).toEqual('first');
+                expect(elm.getRefTextContent('second')).toEqual('second');
+                expect(elm.getRefTextContent('inner')).toEqual('inner');
+                expect(elm.getRefTextContent('deepInner')).toEqual('deepInner');
+            });
+        });
     });
 
     it('refs object shape', () => {
