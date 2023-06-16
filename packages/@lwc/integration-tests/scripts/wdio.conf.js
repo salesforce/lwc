@@ -47,7 +47,7 @@ const wdSuites = suites.reduce((seed, suite) => {
 exports.config = {
     logLevel: 'warn',
 
-    specs: ['./src/**/*.spec.js'],
+    specs: ['../src/**/*.spec.js'],
     suites: wdSuites,
 
     baseUrl: `http://localhost:${port}`,
