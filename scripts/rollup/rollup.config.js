@@ -15,7 +15,6 @@ const { rollup } = require('rollup');
 const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
@@ -184,10 +183,6 @@ module.exports = {
             // These include packages owned by us (LWC, observable-membrane), as well as parse5,
             // which is bundled to avoid breaking downstream consumers due to ES Module format.
             resolveOnly: [/^@lwc\//, 'observable-membrane', 'parse5'].filter(Boolean),
-        }),
-        // TODO [#3451]: remove this once we upgrade parse5 to its ESM version
-        commonjs({
-            include: [/\/parse5\//],
         }),
         ...sharedPlugins(),
         backwardsCompatDistPlugin(),
