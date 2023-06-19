@@ -53,7 +53,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_edge_compat',
         browserName: 'MicrosoftEdge',
-        version: '15',
+        version: '18',
         compat: true,
         nativeShadowCompatible: false,
     },
@@ -74,7 +74,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        version: '11',
+        version: '13',
         compat: true,
         nativeShadowCompatible: true,
     },
