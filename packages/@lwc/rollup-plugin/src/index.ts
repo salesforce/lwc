@@ -35,6 +35,8 @@ export interface RollupLwcOptions {
     experimentalDynamicDirective?: boolean;
     /** The configuration to pass to `@lwc/template-compiler`. */
     enableDynamicComponents?: boolean;
+    /** The configuration to pass to `@lwc/compiler`. */
+    enableLightningWebSecurityTransforms?: boolean;
     // TODO [#3370]: remove experimental template expression flag
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalComplexExpressions?: boolean;
@@ -148,6 +150,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicComponent,
         experimentalDynamicDirective,
         enableDynamicComponents,
+        enableLightningWebSecurityTransforms,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
@@ -309,6 +312,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 experimentalDynamicComponent,
                 experimentalDynamicDirective,
                 enableDynamicComponents,
+                enableLightningWebSecurityTransforms,
                 // TODO [#3370]: remove experimental template expression flag
                 experimentalComplexExpressions,
                 preserveHtmlComments,
