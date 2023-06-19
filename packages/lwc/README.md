@@ -44,12 +44,7 @@ export default class Counter extends LightningElement {
 
 ## Supported Browsers
 
-| Browser           | Version           |
-| ----------------- | ----------------- |
-| Microsoft® Edge   | Latest            |
-| Google Chrome™    | Latest            |
-| Mozilla® Firefox® | Latest ESR        |
-| Apple® Safari®    | Latest 2 releases |
+LWC supports [all browsers supported in Salesforce Lightning Experience](https://help.salesforce.com/s/articleView?id=sf.getstart_browsers_sfx.htm&type=5).
 
 As of LWC v3.0.0, Microsoft® Internet Explorer® 11 is no longer supported.
 
