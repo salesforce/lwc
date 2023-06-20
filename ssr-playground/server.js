@@ -1,5 +1,4 @@
 import { fileURLToPath } from 'url';
-import { createRequire } from 'node:module';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
@@ -11,7 +10,6 @@ import engineServer from '@lwc/engine-server';
 import rollupConfig from './rollup-server.config.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const require = createRequire(import.meta.url);
 const PORT = 3000;
 const app = express();
 app.use(express.static('dist'));
@@ -73,8 +71,7 @@ const compiledComponentPath = path.resolve(__dirname, './dist/app.js');
 async function buildResponse(props) {
   globalThis.lwc = engineServer;
 
-  delete require.cache[require.resolve(compiledComponentPath)];
-  const cmp = (await import(compiledComponentPath)).default;
+  const cmp = (await import(`${compiledComponentPath}?cacheBust=${Date.now()}`)).default;
   const renderedMarkup = engineServer.renderComponent('x-parent', cmp, props);
 
   return htmlTemplate({
