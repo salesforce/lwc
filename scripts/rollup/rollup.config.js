@@ -185,6 +185,7 @@ module.exports = {
             // which is bundled because it makes it simpler to distribute
             resolveOnly: [
                 /^@lwc\//,
+                'crc',
                 'observable-membrane',
                 // Special case - parse5 is bundled only in @lwc/engine-server currently, to avoid
                 // issues with Best/Tachometer.
