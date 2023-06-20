@@ -65,13 +65,6 @@ const SAUCE_BROWSERS = [
         nativeShadowCompatible: true,
     },
     {
-        label: 'sl_firefox_compat',
-        browserName: 'firefox',
-        version: 'latest-2',
-        compat: true,
-        nativeShadowCompatible: true,
-    },
-    {
         label: 'sl_safari_compat',
         browserName: 'safari',
         version: '13',
