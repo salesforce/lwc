@@ -43,7 +43,9 @@ function visitVNode(vnode: VNode | null, check: Check): void {
         case VNodeType.Static:
         case VNodeType.Fragment:
         case VNodeType.ScopedSlotFragment:
-            return;
+            // The contents of these nodes are unimportant. However, we do care
+            // about the number of nodes & their position, so we account for that.
+            return check();
 
         case VNodeType.Element:
         case VNodeType.CustomElement:
