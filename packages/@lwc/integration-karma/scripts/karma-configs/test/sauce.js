@@ -66,8 +66,8 @@ const SAUCE_BROWSERS = [
     },
     {
         label: 'sl_firefox_compat',
-        browserName: 'FirefoxESR',
-        version: 'latest',
+        browserName: 'firefox',
+        version: '102', // current ESR version, see https://whattrainisitnow.com/calendar/
         compat: true,
         nativeShadowCompatible: true,
     },
