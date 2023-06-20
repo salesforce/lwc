@@ -11,8 +11,7 @@ const path = require('path');
 
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
-const karmaPluginNodeEnv = require('../../karma-plugins/node-env');
-const karmaPluginEsmToIife = require('../../karma-plugins/esm-to-iife');
+const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const { SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
@@ -66,9 +65,9 @@ module.exports = (config) => {
         preprocessors: {
             // Transform all the spec files with the lwc karma plugin.
             '**/*.spec.js': ['lwc'],
-            // Transform all framework files with the node-env plugin
+            // Transform all framework files
             ...Object.fromEntries(
-                ALL_FRAMEWORK_FILES.map((file) => [file, ['esm-to-iife', 'node-env']])
+                ALL_FRAMEWORK_FILES.map((file) => [file, ['transform-framework']])
             ),
         },
 
@@ -77,13 +76,7 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: [
-            'karma-jasmine',
-            karmaPluginLwc,
-            karmaPluginEnv,
-            karmaPluginNodeEnv,
-            karmaPluginEsmToIife,
-        ],
+        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv, karmaPluginTransformFramework],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.
