@@ -18,13 +18,13 @@ function getVersion() {
 }
 
 const MODULES = new Set(['engine-dom', 'engine-server', 'synthetic-shadow', 'wire-service']);
-const FORMATS = new Set(['iife', 'umd', 'esm']);
-const TARGETS = new Set(['es5', 'es2017']);
-const MODES = new Set(['dev', 'prod', 'prod_debug']);
+const FORMATS = new Set(['esm']);
+const TARGETS = new Set(['es2017']);
+const MODES = new Set(['prod']);
 
 const DEFAULT_FORMAT = 'esm';
 const DEFAULT_TARGET = 'es2017';
-const DEFAULT_MODE = 'dev';
+const DEFAULT_MODE = 'prod';
 
 function validateArgs(name, format, target, mode) {
     if (!MODULES.has(name)) {
