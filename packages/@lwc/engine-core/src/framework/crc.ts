@@ -68,6 +68,7 @@ export function generateCRC(vnodes: VNodes): string {
     const check = (str?: string) => {
         if (!str) {
             toVerify.push(EMPTY);
+            length += 1;
             return;
         }
         const uint8arr = encode(str);
@@ -94,7 +95,13 @@ export function attachCRC(orig: VNodes, vm: VM): VNodes {
         type: VNodeType.Element,
         sel: 'script',
         elm: undefined,
-        data: { key: 'crc' },
+        data: {
+            key: 'crc',
+            className: 'lwc-ssr-crc',
+            attrs: {
+                type: 'text/plain',
+            },
+        },
         children: [scriptContent],
         owner: vm,
         key: 'crc',
