@@ -245,9 +245,12 @@ function ownerDocument(element: Element): Document {
     return element.ownerDocument;
 }
 
+const isServer = false;
+
 export { registerContextConsumer, registerContextProvider } from './context';
 
 export {
+    isServer,
     insert,
     remove,
     cloneNode,

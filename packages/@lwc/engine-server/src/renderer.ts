@@ -412,10 +412,12 @@ function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback
 }
 
 const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
+const isServer = true;
 
 export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
+    isServer,
     insert,
     remove,
     cloneNode,

@@ -14,6 +14,7 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { attachCRC } from './crc';
 
 type ComponentConstructorMetadata = {
     tmpl: Template;
@@ -71,9 +72,13 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     vm.tro.reset();
-    const vnodes = invokeComponentRenderMethod(vm);
+    let vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;
+
+    if (vm.renderer.isServer) {
+        vnodes = attachCRC(vnodes, vm);
+    }
 
     return vnodes;
 }

@@ -15,6 +15,7 @@ type E = HostElement;
 export type LifecycleCallback = (elm: E) => void;
 
 export interface RendererAPI {
+    isServer: boolean;
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
     insert: (node: N, parent: E, anchor: N | null) => void;

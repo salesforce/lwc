@@ -44,7 +44,8 @@
     "dependencies": {
         "@lwc/aria-reflection": "2.50.0",
         "@lwc/features": "2.50.0",
-        "@lwc/shared": "2.50.0"
+        "@lwc/shared": "2.50.0",
+        "crc": "^4.3.2"
     },
     "devDependencies": {
         "observable-membrane": "2.0.0"
