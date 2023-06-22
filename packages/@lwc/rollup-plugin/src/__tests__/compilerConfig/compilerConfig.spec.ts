@@ -138,3 +138,38 @@ describe('javaScriptConfig', () => {
         expect(output[0].imports).toContain(CUSTOM_LOADER);
     });
 });
+
+describe('lwsConfig', () => {
+    it('should accept enableLightningWebSecurityTransforms config flag', async () => {
+        function stripWhitespace(string: string) {
+            return string.replace(/\s/g, '');
+        }
+
+        const bundle = await rollup({
+            input: path.resolve(
+                __dirname,
+                'fixtures/lightningWebSecurityTransforms/lightningWebSecurityTransforms.js'
+            ),
+            plugins: [
+                lwc({
+                    enableLightningWebSecurityTransforms: true,
+                }),
+            ],
+        });
+
+        const { output } = await bundle.generate({
+            format: 'esm',
+        });
+
+        const { code } = output[0];
+
+        expect(stripWhitespace(code)).toContain(
+            stripWhitespace(
+                '(window === globalThis || window === document ? location : window.location).href'
+            )
+        );
+        expect(code).toContain('_asyncToGenerator');
+        expect(code).toContain('_wrapAsyncGenerator');
+        expect(code).toContain('_asyncIterator');
+    });
+});
