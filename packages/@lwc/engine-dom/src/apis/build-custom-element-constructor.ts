@@ -12,8 +12,8 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
+import { assert, isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
-import { hydrateComponent } from './hydrate-component';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
@@ -47,10 +47,6 @@ export function deprecatedBuildCustomElementConstructor(
     return Ctor.CustomElementConstructor;
 }
 
-// Note: WeakSet is not supported in IE11, and the polyfill is not performant enough.
-//       This WeakSet usage is valid because this functionality is not meant to run in IE11.
-const hydratedCustomElements = new WeakSet<Element>();
-
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
     const { observedAttributes } = HtmlPrototype as any;
@@ -59,26 +55,19 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     return class extends HTMLElement {
         constructor() {
             super();
-
-            if (this.isConnected) {
-                // this if block is hit when there's already an un-upgraded element in the DOM with the same tag name.
-                hydrateComponent(this, Ctor, {});
-                hydratedCustomElements.add(this);
-            } else {
-                createVM(this, Ctor, renderer, {
-                    mode: 'open',
-                    owner: null,
-                    tagName: this.tagName,
-                });
-            }
+            assert.isTrue(
+                isNull(this.shadowRoot),
+                `Found an existing shadow root for the custom element ${Ctor.name}. Call \`hydrateComponent\` instead.`
+            );
+            assert.isTrue(this.childNodes.length == 0, `Top level elements cannot have children.`);
+            createVM(this, Ctor, renderer, {
+                mode: 'open',
+                owner: null,
+                tagName: this.tagName,
+            });
         }
         connectedCallback() {
-            if (hydratedCustomElements.has(this)) {
-                // This is an un-upgraded element that was hydrated in the constructor.
-                hydratedCustomElements.delete(this);
-            } else {
-                connectRootElement(this);
-            }
+            connectRootElement(this);
         }
         disconnectedCallback() {
             disconnectRootElement(this);

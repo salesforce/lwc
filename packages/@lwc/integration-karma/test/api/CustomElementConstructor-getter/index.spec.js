@@ -3,7 +3,7 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
-import WithChildElms2 from 'x/withChildElms2'; // because we can't reuse the same constructor in customElements.define
+import WithChildElms2 from 'x/withChildElms2';
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
 import AttrChanged from 'x/attrChanged';
@@ -56,54 +56,41 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
-    describe('implicit hydration', () => {
-        let consoleSpy;
-        beforeEach(() => {
-            // eslint-disable-next-line no-undef
-            consoleSpy = TestUtils.spyConsole();
-        });
-        afterEach(() => {
-            consoleSpy.reset();
+    it('should create custom element if it exists before customElements.define', () => {
+        const elm = document.createElement('test-custom-element-preexisting');
+        document.body.appendChild(elm);
+
+        customElements.define(
+            'test-custom-element-preexisting',
+            WithChildElms.CustomElementConstructor
+        );
+        expect(elm.shadowRoot).not.toBe(null);
+    });
+
+    it('should throw if custom element has shadow root or children before customElements.define', () => {
+        const rejected = Promise.reject(new Error('nope'));
+        rejected.catch(function () {
+            /* do nothing */
         });
 
-        it('should occur when element exists before customElements.define', () => {
-            const elm = document.createElement('test-custom-element-preexisting');
-            document.body.appendChild(elm);
+        const elm = document.createElement('div');
+        elm.innerHTML =
+            '<test-custom-element-preexisting2>Slotted</test-custom-element-preexisting2>';
+        document.body.appendChild(elm);
 
-            expect(elm.shadowRoot).toBe(null);
-            customElements.define(
-                'test-custom-element-preexisting',
-                WithChildElms.CustomElementConstructor
-            );
-            expect(elm.shadowRoot).not.toBe(null);
+        let error;
+        function listener(e) {
+            error = e;
+        }
 
-            const observedErrors = consoleSpy.calls.error
-                .flat()
-                .map((err) => (err instanceof Error ? err.message : err));
-            if (process.env.NODE_ENV === 'production') {
-                expect(observedErrors).toEqual([]);
-            } else {
-                expect(observedErrors).toEqual([
-                    '[LWC error]: Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.\n',
-                    '[LWC error]: Hydration completed with errors.\n',
-                ]);
-            }
-        });
-        it(`should occur when element exists before customElements.define and not throw errors if it's consistent`, () => {
-            const elm = document.createElement('test-custom-element-preexisting-consistent');
-            document.body.appendChild(elm);
-            elm.attachShadow({ mode: 'open' });
-            const expected = '<p>before</p><p>after</p>';
-            elm.shadowRoot.innerHTML = expected;
-            customElements.define(
-                'test-custom-element-preexisting-consistent',
-                WithChildElms2.CustomElementConstructor
-            );
-
-            const observedErrors = consoleSpy.calls.error.flat();
-            expect(observedErrors.length).toEqual(0);
-            expect(elm.shadowRoot.innerHTML).toEqual(expected);
-        });
+        window.onerror = listener;
+        // throws error asynchronously
+        customElements.define(
+            'test-custom-element-preexisting2',
+            WithChildElms2.CustomElementConstructor
+        );
+        window.onerror = undefined;
+        expect(error).not.toBeUndefined();
     });
 
     describe('lifecycle', () => {
