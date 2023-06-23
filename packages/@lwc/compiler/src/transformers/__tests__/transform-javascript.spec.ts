@@ -46,14 +46,25 @@ it('should transform class fields', async () => {
     expect(code).not.toContain('foo;');
 });
 
-it('should object spread', async () => {
-    const actual = `
-        export const test = { ...a, b: 1 }
-    `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+describe('object rest spread', () => {
+    [58, 59].forEach((apiVersion) => {
+        it(`apiVersion=${apiVersion}`, async () => {
+            const actual = `
+                export const test = { ...a, b: 1 }
+            `;
+            const { code } = await transform(actual, 'foo.js', {
+                ...TRANSFORMATION_OPTIONS,
+                apiVersion,
+            });
 
-    expect(code).toContain('b: 1');
-    expect(code).not.toContain('...a');
+            expect(code).toContain('b: 1');
+            if (apiVersion === 58) {
+                expect(code).not.toContain('...a');
+            } else {
+                expect(code).toContain('...a');
+            }
+        });
+    });
 });
 
 it('should apply babel plugins when Lightning Web Security is on', async () => {
