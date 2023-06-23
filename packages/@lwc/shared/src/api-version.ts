@@ -54,12 +54,17 @@ export const enum APIFeature {
      * (for backwards compatibility).
      */
     TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
+    /**
+     * If enabled, Babel object rest spread polyfills are not applied, and the native format is used instead.
+     */
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
 }
 
 export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
     switch (apiVersionFeature) {
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
     }
 }

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as babel from '@babel/core';
-
+import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
 import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
@@ -44,14 +44,14 @@ export default function scriptTransform(
         apiVersion,
     };
 
-    const plugins = [
+    const plugins: babel.PluginItem[] = [
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
-
-        // This plugin should be removed in a future version. The object-rest-spread is
-        // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-        babelObjectRestSpreadPlugin,
     ];
+
+    if (!isAPIFeatureEnabled(APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, apiVersion)) {
+        plugins.push(babelObjectRestSpreadPlugin);
+    }
 
     if (enableLightningWebSecurityTransforms) {
         plugins.push(
