@@ -405,7 +405,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         register = {};
     }
 
-    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
+    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
     // filters this node.
     function getHostChildNodes(host) {
         return Array.prototype.slice.call(host.childNodes).filter(function (n) {
