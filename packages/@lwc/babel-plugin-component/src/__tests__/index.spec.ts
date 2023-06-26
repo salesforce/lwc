@@ -5,14 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import fs from 'node:fs';
-
 import path from 'node:path';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import plugin from '../index';
-
-const API_VERSION_KEY = 'apiVersion';
 
 const BASE_OPTS = {
     namespace: 'lwc',
@@ -57,8 +54,8 @@ function transform(source: string, opts = {}) {
 
     // Replace the latest API version as well
     code = code.replace(
-        new RegExp(`${API_VERSION_KEY}: ${HIGHEST_API_VERSION}`, 'g'),
-        `${API_VERSION_KEY}: 9999999`
+        new RegExp(`apiVersion: ${HIGHEST_API_VERSION}`, 'g'),
+        `apiVersion: 9999999`
     );
 
     return code;
