@@ -66,7 +66,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
                     console.warn(
-                        `Found an existing shadow root for the custom element ${Ctor.name}. Call \`hydrateComponent\` instead.`
+                        `Found an existing shadow root for the custom element "${Ctor.name}". Call \`hydrateComponent\` instead.`
                     );
                 }
                 clearNode(this.shadowRoot);
@@ -74,7 +74,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             if (this.childNodes.length > 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
-                    console.warn(`Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`);
+                    console.warn(
+                        `Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`
+                    );
                 }
                 clearNode(this);
             }

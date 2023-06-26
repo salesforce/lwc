@@ -90,7 +90,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             if (process.env.NODE_ENV === 'production') {
                 expect(observedErrors).toEqual([]);
             } else {
-                expect(observedErrors).toEqual(['Top level elements cannot have children.']);
+                expect(observedErrors).toEqual([
+                    'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+                ]);
             }
             expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
         });
@@ -112,7 +114,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(observedErrors).toEqual([]);
             } else {
                 expect(observedErrors).toEqual([
-                    'Found an existing shadow root for the custom element Child. Call `hydrateComponent` instead.',
+                    'Found an existing shadow root for the custom element "Child". Call `hydrateComponent` instead.',
                 ]);
             }
             expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
@@ -134,7 +136,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             if (process.env.NODE_ENV === 'production') {
                 expect(observedErrors).toEqual([]);
             } else {
-                expect(observedErrors).toEqual(['Top level elements cannot have children.']);
+                expect(observedErrors).toEqual([
+                    'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+                ]);
             }
             expect(elm.children[0].shadowRoot.innerHTML).toBe('<div></div>');
         });
