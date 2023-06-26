@@ -12,7 +12,7 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
-import { assert, isNull } from '@lwc/shared';
+import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
 
 type ComponentConstructor = typeof LightningElement;
@@ -47,6 +47,13 @@ export function deprecatedBuildCustomElementConstructor(
     return Ctor.CustomElementConstructor;
 }
 
+function clearNode(node: Node) {
+    const childNodes = renderer.getChildNodes(node);
+    for (let i = 0; i < childNodes.length; i++) {
+        renderer.remove(childNodes[i], node);
+    }
+}
+
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
     const { observedAttributes } = HtmlPrototype as any;
@@ -55,11 +62,22 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     return class extends HTMLElement {
         constructor() {
             super();
-            assert.isTrue(
-                isNull(this.shadowRoot),
-                `Found an existing shadow root for the custom element ${Ctor.name}. Call \`hydrateComponent\` instead.`
-            );
-            assert.isTrue(this.childNodes.length == 0, `Top level elements cannot have children.`);
+            if (!isNull(this.shadowRoot)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `Found an existing shadow root for the custom element ${Ctor.name}. Call \`hydrateComponent\` instead.`
+                    );
+                }
+                clearNode(this.shadowRoot);
+            }
+            if (this.childNodes.length > 0) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // eslint-disable-next-line no-console
+                    console.warn(`Top level elements cannot have children.`);
+                }
+                clearNode(this);
+            }
             createVM(this, Ctor, renderer, {
                 mode: 'open',
                 owner: null,
