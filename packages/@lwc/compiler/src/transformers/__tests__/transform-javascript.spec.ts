@@ -121,7 +121,7 @@ describe('instrumentation', () => {
         `;
         await transform(actual, 'foo.js', {
             ...TRANSFORMATION_OPTIONS,
-            experimentalDynamicComponent: {
+            dynamicImportConfig: {
                 loader: '@custom/loader',
                 strictSpecifier: true,
             },

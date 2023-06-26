@@ -30,7 +30,7 @@ function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginP
 
 /*
  * Expected API for this plugin:
- * { dynamicImports: { loader: string, strictSpecifier: boolean } }
+ * { dynamicImportConfig: { loader: string, strictSpecifier: boolean } }
  */
 export default function (): Visitor<LwcBabelPluginPass> {
     function getLoaderRef(
@@ -45,24 +45,24 @@ export default function (): Visitor<LwcBabelPluginPass> {
     }
 
     function addDynamicImportDependency(dependency: string, state: LwcBabelPluginPass) {
-        // TODO [#3444]: state.dynamicImports seems unused and can probably be deleted
-        if (!state.dynamicImports) {
-            state.dynamicImports = [];
+        // TODO [#3444]: state.dynamicImportConfigs seems unused and can probably be deleted
+        if (!state.dynamicImportConfigs) {
+            state.dynamicImportConfigs = [];
         }
 
-        if (!state.dynamicImports.includes(dependency)) {
-            state.dynamicImports!.push(dependency);
+        if (!state.dynamicImportConfigs.includes(dependency)) {
+            state.dynamicImportConfigs!.push(dependency);
         }
     }
 
     return {
         Import(path, state) {
-            const { dynamicImports } = state.opts;
-            if (!dynamicImports) {
+            const { dynamicImportConfig } = state.opts;
+            if (!dynamicImportConfig) {
                 return;
             }
 
-            const { loader, strictSpecifier } = dynamicImports;
+            const { loader, strictSpecifier } = dynamicImportConfig;
             const sourcePath = getImportSource(path);
 
             if (strictSpecifier) {

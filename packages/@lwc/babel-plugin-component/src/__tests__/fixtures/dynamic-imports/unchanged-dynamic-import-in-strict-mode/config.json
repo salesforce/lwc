@@ -1,5 +1,5 @@
 {
-    "dynamicImports": {
+    "dynamicImportConfig": {
         "loader": null,
         "strictSpecifier": true
     }

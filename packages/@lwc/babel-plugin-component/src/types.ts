@@ -13,7 +13,7 @@ export type BabelTypes = typeof types;
 
 export interface LwcBabelPluginOptions {
     isExplicitImport?: boolean;
-    dynamicImports?: {
+    dynamicImportConfig?: {
         loader?: string;
         strictSpecifier?: boolean;
     };
@@ -24,6 +24,6 @@ export interface LwcBabelPluginOptions {
 
 export interface LwcBabelPluginPass extends PluginPass {
     opts: LwcBabelPluginOptions;
-    dynamicImports?: string[];
+    dynamicImportConfigs?: string[];
     loaderRef?: types.Identifier;
 }
