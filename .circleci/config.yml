@@ -281,11 +281,9 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run_karma:
-          api_version: [58, 59]
+      - run_karma
       - run_karma:
           disable_synthetic: true
-          api_version: [58, 59]
       - run_karma:
           compat: true
       - run_karma:
@@ -295,6 +293,11 @@ jobs:
       - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
+      - run_karma:
+          api_version: 58
+      - run_karma:
+          disable_synthetic: true
+          api_version: 58
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true
