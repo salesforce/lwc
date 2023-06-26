@@ -90,6 +90,9 @@ export default function templateTransform(
 // 2. It is fast - it can hash those 466k words in 70ms (Node 16, 2020 MacBook Pro)
 // 3. The output size is reasonable (32-bit - this can be base-32 encoded at 10-11 characters)
 //
+// Also note that the reason we're hashing rather than generating a random number is because
+// we want the output to be predictable given the input, which helps with caching.
+//
 // [1]: https://stackoverflow.com/a/52171480
 // [2]: https://github.com/dwyl/english-words/blob/a77cb15f4f5beb59c15b945f2415328a6b33c3b0/words.txt
 function generateHashCode(str: string) {
