@@ -19,10 +19,13 @@ const Watcher = require('./Watcher');
 function getIifeName(filename) {
     if (filename.includes('@lwc/engine-dom')) {
         return 'LWC';
-    }
-    if (filename.includes('@lwc/wire-service')) {
+    } else if (filename.includes('@lwc/wire-service')) {
         return 'WireService';
+    } else if (filename.includes('@lwc/synthetic-shadow')) {
+        // synthetic shadow does not need an IIFE name
+        return undefined;
     }
+    throw new Error(`Unknown framework filename, not sure which IIFE name to use: ${filename}`);
 }
 
 function createPreprocessor(config, emitter, logger) {
