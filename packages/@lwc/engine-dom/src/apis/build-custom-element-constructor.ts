@@ -6,8 +6,8 @@
  */
 
 import {
-    createVM,
     connectRootElement,
+    createVM,
     disconnectRootElement,
     getComponentHtmlPrototype,
     LightningElement,
@@ -86,15 +86,19 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 tagName: this.tagName,
             });
         }
+
         connectedCallback() {
             connectRootElement(this);
         }
+
         disconnectedCallback() {
             disconnectRootElement(this);
         }
+
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {
             attributeChangedCallback.call(this, name, oldValue, newValue);
         }
+
         static observedAttributes = observedAttributes;
     };
 }
