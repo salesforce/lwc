@@ -59,3 +59,19 @@ When filing a bug, it's useful to use [playground.lwc.dev](https://playground.lw
 ## Release Notes
 
 Changes are documented at [github.com/salesforce/lwc/releases](https://github.com/salesforce/lwc/releases).
+
+## The `lwc` package
+
+This package (`lwc`) is a convenience package that re-exports all packages that might be used for LWC component development. Installing it also installs the core `@lwc/*` packages.
+
+For example, to use `@lwc/engine-server` from this package, you can do:
+
+```js
+import { renderComponent } from 'lwc/engine-server';
+```
+
+This is equivalent to:
+
+```js
+import { renderComponent } from '@lwc/engine-server';
+```

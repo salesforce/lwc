@@ -110,6 +110,14 @@
     "overrides": [
         {
             "files": [
+                "**/packages/lwc/**"
+            ],
+            "rules": {
+                "no-restricted-imports": "off"
+            }
+        },
+        {
+            "files": [
                 "**/@lwc/engine-core/**",
                 "**/@lwc/engine-dom/**",
                 "**/@lwc/synthetic-shadow/**"

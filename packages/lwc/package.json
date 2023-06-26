@@ -12,49 +12,68 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "main": "index.js",
-    "module": "dist/engine-dom/esm/es2017/engine-dom.js",
-    "typings": "types.d.ts",
+    "type": "module",
     "license": "MIT",
-    "scripts": {
-        "build": "node scripts/build.js",
-        "dev": "node scripts/build.js --watch"
-    },
     "files": [
-        "dist/",
-        "index.js",
-        "types.d.ts"
+        "*.js"
     ],
+    "dependencies": {
+        "@lwc/aria-reflection": "2.49.1",
+        "@lwc/babel-plugin-component": "2.49.1",
+        "@lwc/compiler": "2.49.1",
+        "@lwc/engine-core": "2.49.1",
+        "@lwc/engine-dom": "2.49.1",
+        "@lwc/engine-server": "2.49.1",
+        "@lwc/errors": "2.49.1",
+        "@lwc/features": "2.49.1",
+        "@lwc/integration-karma": "2.49.1",
+        "@lwc/integration-tests": "2.49.1",
+        "@lwc/module-resolver": "2.49.1",
+        "@lwc/perf-benchmarks": "2.49.1",
+        "@lwc/perf-benchmarks-components": "2.49.1",
+        "@lwc/rollup-plugin": "2.49.1",
+        "@lwc/shared": "2.49.1",
+        "@lwc/style-compiler": "2.49.1",
+        "@lwc/synthetic-shadow": "2.49.1",
+        "@lwc/template-compiler": "2.49.1",
+        "@lwc/wire-service": "2.49.1"
+    },
     "lwc": {
         "modules": [
             {
                 "name": "lwc",
-                "path": "dist/engine-dom/esm/es2017/engine-dom.js"
+                "path": "engine-dom.js"
             },
             {
                 "name": "@lwc/synthetic-shadow",
-                "path": "dist/synthetic-shadow/esm/es2017/synthetic-shadow.js"
+                "path": "synthetic-shadow.js"
             },
             {
                 "name": "@lwc/wire-service",
-                "path": "dist/synthetic-shadow/esm/es2017/wire-service.js"
+                "path": "wire-service.js"
             }
         ]
     },
-    "dependencies": {
-        "@lwc/compiler": "2.50.0",
-        "@lwc/engine-dom": "2.50.0",
-        "@lwc/engine-server": "2.50.0",
-        "@lwc/features": "2.50.0",
-        "@lwc/synthetic-shadow": "2.50.0",
-        "@lwc/wire-service": "2.50.0"
-    },
-    "nx": {
-        "targets": {
-            "build": {
-                "outputs": [
-                    "./dist"
-                ]
-            }
-        }
+    "exports": {
+        ".": "./index.js",
+        "./aria-reflection": "./aria-reflection.js",
+        "./babel-plugin-component": "./babel-plugin-component.js",
+        "./compiler": "./compiler.js",
+        "./engine-core": "./engine-core.js",
+        "./engine-dom": "./engine-dom.js",
+        "./engine-server": "./engine-server.js",
+        "./errors": "./errors.js",
+        "./features": "./features.js",
+        "./integration-karma": "./integration-karma.js",
+        "./integration-tests": "./integration-tests.js",
+        "./module-resolver": "./module-resolver.js",
+        "./perf-benchmarks": "./perf-benchmarks.js",
+        "./perf-benchmarks-components": "./perf-benchmarks-components.js",
+        "./rollup-plugin": "./rollup-plugin.js",
+        "./shared": "./shared.js",
+        "./style-compiler": "./style-compiler.js",
+        "./synthetic-shadow": "./synthetic-shadow.js",
+        "./template-compiler": "./template-compiler.js",
+        "./wire-service": "./wire-service.js"
     }
 }
