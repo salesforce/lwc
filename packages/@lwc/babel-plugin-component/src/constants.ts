@@ -52,7 +52,7 @@ const REGISTER_COMPONENT_ID = 'registerComponent';
 const REGISTER_DECORATORS_ID = 'registerDecorators';
 const TEMPLATE_KEY = 'tmpl';
 const COMPONENT_NAME_KEY = 'sel';
-const API_VERSION_KEY = 'v';
+const API_VERSION_KEY = 'apiVersion';
 
 export {
     AMBIGUOUS_PROP_SET,

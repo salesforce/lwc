@@ -9,5 +9,5 @@ class Test2 extends LightningElement {
 export default _registerComponent(Test2, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 59
+  apiVersion: 9999999
 });

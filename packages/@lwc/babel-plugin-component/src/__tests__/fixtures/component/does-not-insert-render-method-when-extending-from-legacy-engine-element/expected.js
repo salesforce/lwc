@@ -7,5 +7,5 @@ class Test extends Element {
 export default _registerComponent(Test, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 59
+  apiVersion: 9999999
 });

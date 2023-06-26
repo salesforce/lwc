@@ -25,7 +25,7 @@ import { checkVersionMismatch } from './check-version-mismatch';
 type ComponentConstructorMetadata = {
     tmpl: Template;
     sel: string;
-    v: APIVersion;
+    apiVersion: APIVersion;
 };
 const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
     new Map();
@@ -65,7 +65,7 @@ export function getComponentRegisteredName(Ctor: LightningElementConstructor): s
 
 export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVersion {
     const metadata = registeredComponentMap.get(Ctor);
-    const apiVersion: APIVersion | undefined = metadata?.v;
+    const apiVersion: APIVersion | undefined = metadata?.apiVersion;
 
     if (isUndefined(apiVersion)) {
         // This should only occur in our Karma tests; in practice every component

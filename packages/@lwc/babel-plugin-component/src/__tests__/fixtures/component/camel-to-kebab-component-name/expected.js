@@ -5,5 +5,5 @@ export default _registerComponent(class extends LightningElement {
 }, {
   tmpl: _tmpl,
   sel: "x-camel-case",
-  v: 59
+  apiVersion: 9999999
 });

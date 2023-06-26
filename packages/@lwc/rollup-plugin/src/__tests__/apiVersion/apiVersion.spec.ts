@@ -10,6 +10,8 @@ import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared
 
 import lwc, { RollupLwcOptions } from '../../index';
 
+const API_VERSION_KEY = 'apiVersion';
+
 describe('API versioning', () => {
     async function runRollup(
         pathname: string,
@@ -36,7 +38,7 @@ describe('API versioning', () => {
 
     it('uses highest API version by default', async () => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', {});
-        expect(code).toContain(`v: ${HIGHEST_API_VERSION}`);
+        expect(code).toContain(`${API_VERSION_KEY}: ${HIGHEST_API_VERSION}`);
         expect(warnings).toEqual([]);
     });
 
@@ -44,7 +46,7 @@ describe('API versioning', () => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
             apiVersion: APIVersion.V58_244_SUMMER_23,
         });
-        expect(code).toContain('v: 58');
+        expect(code).toContain(`${API_VERSION_KEY}: ${LOWEST_API_VERSION}`);
         expect(warnings).toEqual([]);
     });
 
@@ -53,7 +55,7 @@ describe('API versioning', () => {
             // @ts-ignore
             apiVersion: 0,
         });
-        expect(code).toContain(`v: ${LOWEST_API_VERSION}`);
+        expect(code).toContain(`${API_VERSION_KEY}: ${LOWEST_API_VERSION}`);
         expect(warnings).toHaveLength(0);
     });
 
@@ -62,7 +64,7 @@ describe('API versioning', () => {
             // @ts-ignore
             apiVersion: Number.MAX_SAFE_INTEGER,
         });
-        expect(code).toContain(`v: ${HIGHEST_API_VERSION}`);
+        expect(code).toContain(`${API_VERSION_KEY}: ${HIGHEST_API_VERSION}`);
         expect(warnings).toHaveLength(0);
     });
 
@@ -71,7 +73,7 @@ describe('API versioning', () => {
             // @ts-ignore`
             apiVersion: 58.5,
         });
-        expect(code).toContain(`v: 58`);
+        expect(code).toContain(`${API_VERSION_KEY}: 58`);
         expect(warnings).toHaveLength(0);
     });
 });

@@ -81,7 +81,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         //     registerComponent(cmp, {
         //       tmpl: template,
         //       sel: 'x-foo',
-        //       v: '58'
+        //       apiVersion: '58'
         //     })
         return t.callExpression(registerComponentId, [
             node as types.Expression,

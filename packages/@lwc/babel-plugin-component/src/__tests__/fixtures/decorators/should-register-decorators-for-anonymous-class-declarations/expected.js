@@ -12,5 +12,5 @@ export default _registerComponent(_registerDecorators(class extends LightningEle
 }), {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 59
+  apiVersion: 9999999
 });

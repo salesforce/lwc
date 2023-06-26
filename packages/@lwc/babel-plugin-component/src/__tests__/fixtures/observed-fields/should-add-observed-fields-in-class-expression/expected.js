@@ -35,5 +35,5 @@ const foo = Test;
 export default _registerComponent(foo, {
   tmpl: _tmpl,
   sel: "lwc-test",
-  v: 59
+  apiVersion: 9999999
 });
