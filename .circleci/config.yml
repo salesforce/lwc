@@ -341,19 +341,6 @@ jobs:
           working_directory: packages/@lwc/integration-tests
 
 
-  test_integration_compat:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
-    steps:
-      - load_workspace
-      - start_sauce_connect
-      - retry_command:
-          command_name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/@lwc/integration-tests
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -382,12 +369,6 @@ workflows:
             - test_unit
 
       - test_integration_dev:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - test_unit
-
-      - test_integration_compat:
           filters:
             <<: *ignore_forks
           requires:
@@ -437,14 +418,6 @@ workflows:
 
       - test_integration_dev:
           # lwc-sauce-labs context not needed due to using local chrome
-          filters:
-            <<: *only_forks
-          requires:
-            - test_unit
-            - test_karma
-
-      - test_integration_compat:
-          context: lwc-sauce-labs
           filters:
             <<: *only_forks
           requires:

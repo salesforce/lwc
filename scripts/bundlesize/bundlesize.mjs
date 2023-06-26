@@ -12,6 +12,7 @@ import { gzip as gzipCallback } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import bytes from 'bytes';
+import * as terser from 'terser';
 
 const gzip = promisify(gzipCallback);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,7 +23,14 @@ let failed = false;
 
 for (const { path: filePath, maxSize } of files) {
     const absoluteFile = path.join(__dirname, '../..', filePath);
-    const minifiedSource = await fs.readFile(absoluteFile, 'utf-8'); // file is assume to be pre-minified
+    const unminifiedSource = await fs.readFile(absoluteFile, 'utf-8');
+    const prodSource = unminifiedSource.replaceAll('process.env.NODE_ENV', '"production"');
+    const { code: minifiedSource } = await terser.minify(prodSource, {
+        mangle: true,
+        compress: true,
+        toplevel: true,
+    });
+
     const bufferGzipped = await gzip(Buffer.from(minifiedSource, 'utf-8'), { level: 9 });
 
     if (bufferGzipped.length > bytes.parse(maxSize)) {

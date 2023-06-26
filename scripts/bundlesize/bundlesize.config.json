@@ -1,15 +1,15 @@
 {
     "files": [
         {
-            "path": "packages/lwc/dist/engine-dom/umd/es2017/engine-dom.min.js",
+            "path": "packages/@lwc/engine-dom/dist/index.js",
             "maxSize": "21KB"
         },
         {
-            "path": "packages/lwc/dist/synthetic-shadow/umd/es2017/synthetic-shadow.min.js",
+            "path": "packages/@lwc/synthetic-shadow/dist/index.js",
             "maxSize": "12.53KB"
         },
         {
-            "path": "packages/lwc/dist/wire-service/umd/es2017/wire-service.min.js",
+            "path": "packages/@lwc/wire-service/dist/index.js",
             "maxSize": "1.07KB"
         }
     ]

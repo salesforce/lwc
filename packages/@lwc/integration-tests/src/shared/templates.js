@@ -11,34 +11,22 @@ exports.app = function (cmpName) {
     `;
 };
 
-const COMPAT = `
-    <script src="../../shared/downgrade.js"></script>
-    <script src="../../shared/polyfills.js"></script>
-`;
-const SHADOW_POLYFILL = `
-    <script>
-    var fallback = location.search.indexOf('nativeShadow=true') === -1;
-    if (fallback) {
-        /** shadow dom polyfill is needed, this hack evaluate it before engine */
-        document.write('<s' + 'cript src="../../shared/shadow.js"></scr' + 'ipt>');
-    }
-    </script>
-`;
-
-exports.html = function (cmpName, isCompat) {
+exports.html = function (cmpName) {
     return `
         <html>
             <head>
                 <title>${cmpName}</title>
             </head>
             <body>
-                <script>
+                <script type="module">
                     window.process = { env: { NODE_ENV: "development" } };
                 </script>
-                ${isCompat ? COMPAT : ''}
-                ${SHADOW_POLYFILL}
-                <script src="../../shared/engine.js"></script>
-                <script src="./${cmpName}.js"></script>
+                <script type="module" src="../../shared/shadow.js"></script>
+                <script type="module">
+                  import * as LWC from '../../shared/engine.js';
+                  window.LWC = LWC;
+                </script>
+                <script type="module" src="./${cmpName}.js"></script>
             </body>
         </html>
     `;

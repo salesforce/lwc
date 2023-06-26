@@ -6,33 +6,8 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const babel = require('@babel/core');
 const terser = require('terser');
 const { generateTargetName } = require('./helpers');
-
-function babelCompatPlugin() {
-    return {
-        name: 'rollup-plugin-babel-compat',
-        transform(source) {
-            const { code, map } = babel.transformSync(source, {
-                babelrc: false,
-                configFile: false,
-                presets: [
-                    [
-                        '@babel/preset-env',
-                        {
-                            targets: {
-                                ie: '11',
-                            },
-                            modules: false,
-                        },
-                    ],
-                ],
-            });
-            return { code, map };
-        },
-    };
-}
 
 function rollupTerserPlugin() {
     return {
@@ -57,7 +32,6 @@ function rollupConfig(config) {
         debug = false,
         sourcemap = true,
     } = config;
-    const compatMode = target === 'es5';
     return {
         inputOptions: {
             input,
@@ -67,7 +41,6 @@ function rollupConfig(config) {
                         'process.env.NODE_ENV': JSON.stringify('production'),
                         preventAssignment: true,
                     }),
-                compatMode && babelCompatPlugin(),
             ],
         },
         outputOptions: {
