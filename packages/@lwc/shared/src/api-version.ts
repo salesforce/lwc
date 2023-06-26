@@ -56,7 +56,7 @@ export const enum APIFeature {
     TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
 }
 
-export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion) {
+export function isAPIFeatureEnabled(apiVersionFeature: APIFeature, apiVersion: APIVersion): boolean {
     switch (apiVersionFeature) {
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
