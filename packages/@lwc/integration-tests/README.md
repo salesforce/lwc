@@ -7,7 +7,13 @@ End-to-end tests run in the browser across different modes with the option to ru
 
 ## Commands
 
-Builds artifacts in `dev` mode:
+Build artifacts in `prod` mode:
+
+```
+yarn build
+```
+
+Build artifacts in `dev` mode:
 
 ```
 MODE=dev yarn build
