@@ -80,7 +80,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm);
             customElements.define(
                 'test-custom-element-preexisting2',
-                // "creating" a new component so we can register under a different tag
+                // "creating" a new component, so we can register under a different tag
                 class extends WithChildElms.CustomElementConstructor {}
             );
             const observedErrors = consoleSpy.calls.warn
@@ -100,7 +100,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm);
             customElements.define(
                 'test-custom-element-preexisting3',
-                // "creating" a new component so we can register under a different tag
+                // "creating" a new component, so we can register under a different tag
                 class extends WithChildElms.CustomElementConstructor {}
             );
             const observedErrors = consoleSpy.calls.warn
@@ -115,6 +115,27 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 ]);
             }
             expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
+        });
+        it('should be handled if created after registration', () => {
+            customElements.define(
+                'test-custom-element-preexisting4',
+                // "creating" a new component, so we can register under a different tag
+                class extends WithChildElms.CustomElementConstructor {}
+            );
+            const elm = document.createElement('div');
+            elm.innerHTML =
+                '<test-custom-element-preexisting4>Slotted</test-custom-element-preexisting4>';
+            document.body.appendChild(elm);
+            const observedErrors = consoleSpy.calls.warn
+                .flat()
+                .map((err) => (err instanceof Error ? err.message : err));
+
+            if (process.env.NODE_ENV === 'production') {
+                expect(observedErrors).toEqual([]);
+            } else {
+                expect(observedErrors).toEqual(['Top level elements cannot have children.']);
+            }
+            expect(elm.children[0].shadowRoot.innerHTML).toBe('<div></div>');
         });
     });
 
