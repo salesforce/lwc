@@ -57,11 +57,7 @@ window.HydrateTest = (function (lwc, testUtils) {
             const props = testConfig.props || {};
             const clientProps = testConfig.clientProps || props;
 
-            if (testConfig.useCustomElementRegistry) {
-                customElements.define(selector, Component.CustomElementConstructor);
-            } else {
-                lwc.hydrateComponent(target, Component, clientProps);
-            }
+            lwc.hydrateComponent(target, Component, clientProps);
 
             // let's select again the target, it should be the same elements as in the snapshot
             target = container.querySelector(selector);
