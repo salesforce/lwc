@@ -74,7 +74,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             if (this.childNodes.length > 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
-                    console.warn(`Top level elements cannot have children.`);
+                    console.warn(`Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`);
                 }
                 clearNode(this);
             }
