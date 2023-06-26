@@ -275,12 +275,7 @@ function isSafeStaticChild(childNode: ChildNode) {
     return childNode.listeners.length === 0 && childNode.directives.length === 0;
 }
 
-function collectStaticNodes(
-    node: ChildNode,
-    staticNodes: Set<ChildNode>,
-    state: State,
-    apiVersion: APIVersion
-) {
+function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
     let childrenAreStatic = true;
     let nodeIsStatic;
 
@@ -291,7 +286,7 @@ function collectStaticNodes(
     } else {
         // it is ElseBlock | ForBlock | If | BaseElement
         node.children.forEach((childNode) => {
-            collectStaticNodes(childNode, staticNodes, state, apiVersion);
+            collectStaticNodes(childNode, staticNodes, state);
 
             childrenAreStatic &&= staticNodes.has(childNode);
 
@@ -300,13 +295,13 @@ function collectStaticNodes(
 
         // for IfBlock and ElseifBlock, traverse down the else branch
         if (isConditionalParentBlock(node) && node.else) {
-            collectStaticNodes(node.else, staticNodes, state, apiVersion);
+            collectStaticNodes(node.else, staticNodes, state);
         }
 
         nodeIsStatic =
             isBaseElement(node) &&
             !isCustomRendererHookRequired(node, state) &&
-            isStaticNode(node, apiVersion);
+            isStaticNode(node, state.config.apiVersion);
     }
 
     if (nodeIsStatic && childrenAreStatic) {
@@ -314,11 +309,11 @@ function collectStaticNodes(
     }
 }
 
-export function getStaticNodes(root: Root, state: State, apiVersion: APIVersion): Set<ChildNode> {
+export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
     const staticNodes = new Set<ChildNode>();
 
     root.children.forEach((childNode) => {
-        collectStaticNodes(childNode, staticNodes, state, apiVersion);
+        collectStaticNodes(childNode, staticNodes, state);
     });
 
     return staticNodes;
