@@ -64,11 +64,7 @@ describe('lwc:spread', () => {
         await Promise.resolve();
         expect(elm.shadowRoot.querySelector('span').className).toEqual('');
     });
-    it('should assign props to dynamic elements using lwc:dynamic', () => {
-        expect(
-            elm.shadowRoot.querySelector('x-cmp').shadowRoot.querySelector('span').textContent
-        ).toEqual('Name: Dynamic');
-    });
+
     it('should assign props to dynamic elements', () => {
         expect(
             elm.shadowRoot

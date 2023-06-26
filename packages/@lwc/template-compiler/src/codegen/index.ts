@@ -23,7 +23,6 @@ import {
     isProperty,
     isComponent,
     isInnerHTMLDirective,
-    isDynamicDirective,
     isKeyDirective,
     isDomDirective,
     isRefDirective,
@@ -87,18 +86,11 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         const children = transformChildren(element);
-
         const { name } = element;
-        // lwc:dynamic directive
-        const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
-        // lwc:is directive
-        const dynamicDirective = element.directives.find(isLwcIsDirective);
+        const lwcIsDirective = element.directives.find(isLwcIsDirective);
 
-        if (deprecatedDynamicDirective) {
-            const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
-            res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);
-        } else if (dynamicDirective) {
-            const expression = codeGen.bindExpression(dynamicDirective.value);
+        if (lwcIsDirective) {
+            const expression = codeGen.bindExpression(lwcIsDirective.value);
             res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(

@@ -44,15 +44,6 @@ export interface Config {
     experimentalComplexExpressions?: boolean;
 
     /**
-     * TODO [#3331]: remove usage of lwc:dynamic in 246
-     *
-     * Enable lwc:dynamic directive - Deprecated
-     *
-     * <x-foo lwc:dynamic={expr}>
-     */
-    experimentalDynamicDirective?: boolean;
-
-    /**
      * When true, enables `lwc:is` directive.
      *
      * <lwc:component lwc:is={expr}>
@@ -90,7 +81,6 @@ const AVAILABLE_OPTION_NAMES = new Set([
     // TODO [#3370]: remove experimental template expression flag
     'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
-    'experimentalDynamicDirective',
     'enableDynamicComponents',
     'preserveHtmlComments',
     'instrumentation',
@@ -154,7 +144,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalComputedMemberExpression: false,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions: false,
-        experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: true,

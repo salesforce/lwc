@@ -28,25 +28,20 @@ export default function templateTransform(
     options: NormalizedTransformOptions
 ): TransformResult {
     const {
-        experimentalDynamicComponent,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
         enableDynamicComponents,
-        experimentalDynamicDirective: deprecatedDynamicDirective,
         instrumentation,
         namespace,
         name,
     } = options;
-    const experimentalDynamicDirective =
-        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
-            experimentalDynamicDirective,
             // TODO [#3370]: remove experimental template expression flag
             experimentalComplexExpressions,
             preserveHtmlComments,

@@ -384,7 +384,6 @@ function patchCustomElement(
     parent: ParentNode,
     renderer: RendererAPI
 ) {
-    // TODO [#3331]: This if branch should be removed in 246 with lwc:dynamic
     if (n1.ctor !== n2.ctor) {
         // If the constructor differs, unmount the current component and mount a new one using the new
         // constructor.

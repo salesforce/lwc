@@ -99,10 +99,6 @@ export interface KeyDirective extends Directive<'Key'> {
     value: Expression;
 }
 
-export interface DynamicDirective extends Directive<'Dynamic'> {
-    value: Expression;
-}
-
 export interface IsDirective extends Directive<'Is'> {
     value: Expression;
 }
@@ -141,7 +137,6 @@ export interface SlotDataDirective extends Directive<'SlotData'> {
 
 export type ElementDirective =
     | KeyDirective
-    | DynamicDirective
     | IsDirective
     | DomDirective
     | InnerHTMLDirective
@@ -323,8 +318,6 @@ export type Node =
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
-    // TODO [#3331]: remove usage of lwc:dynamic in 246
-    Dynamic = 'lwc:dynamic',
     Is = 'lwc:is',
     External = 'lwc:external',
     InnerHTML = 'lwc:inner-html',
