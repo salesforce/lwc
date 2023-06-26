@@ -49,7 +49,7 @@ export function deprecatedBuildCustomElementConstructor(
 
 function clearNode(node: Node) {
     const childNodes = renderer.getChildNodes(node);
-    for (let i = 0; i < childNodes.length; i++) {
+    for (let i = childNodes.length - 1; i >= 0; i--) {
         renderer.remove(childNodes[i], node);
     }
 }

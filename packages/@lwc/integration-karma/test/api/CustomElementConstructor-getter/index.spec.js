@@ -74,9 +74,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         afterEach(() => {
             consoleSpy.reset();
         });
-        it('should throw if custom element has children', () => {
+        it('should log error if custom element has children', () => {
             const elm = document.createElement('test-custom-element-preexisting2');
-            elm.innerText = 'Slotted';
+            elm.innerHTML = '<div>child1</div><div>child2</div>';
             document.body.appendChild(elm);
             customElements.define(
                 'test-custom-element-preexisting2',
@@ -94,9 +94,10 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             }
             expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
         });
-        it('should throw if custom element has shadow root', () => {
+        it('should log error if custom element has shadow root', () => {
             const elm = document.createElement('test-custom-element-preexisting3');
             elm.attachShadow({ mode: 'open' });
+            elm.shadowRoot.innerHTML = '<div>child1</div><div>child2</div>';
             document.body.appendChild(elm);
             customElements.define(
                 'test-custom-element-preexisting3',
