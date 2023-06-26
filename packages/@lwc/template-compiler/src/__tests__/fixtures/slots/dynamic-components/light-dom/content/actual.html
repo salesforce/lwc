@@ -1,0 +1,11 @@
+<template lwc:render-mode="light">
+    <slot name="head">
+        <lwc:component lwc:is={ctor}></lwc:component>
+    </slot>
+    <slot name="body">
+        <lwc:component lwc:is={ctor}></lwc:component>
+    </slot>
+    <slot name="footer">
+        <lwc:component lwc:is={ctor}></lwc:component>
+    </slot>
+</template>

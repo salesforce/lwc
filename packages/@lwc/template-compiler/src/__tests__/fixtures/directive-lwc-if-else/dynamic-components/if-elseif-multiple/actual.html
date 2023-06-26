@@ -1,0 +1,14 @@
+<template>
+    <template lwc:if={visible.if}>
+        <h1>if condition</h1>
+    </template>
+    <template lwc:elseif={visible.elseif}>
+        <h1>elseif condition</h1>
+    </template>
+    <template lwc:elseif={visible.elseif2}>
+        <lwc:component lwc:is={trackedProp.foo}></lwc:component>
+    </template>
+    <template lwc:else>
+        <h1>else condition</h1>
+    </template>
+</template>

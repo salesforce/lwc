@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { CompilerDiagnostic } from '@lwc/errors';
+import type { Node as AcornNode } from 'acorn';
 
 export interface TemplateParseResult {
     root?: Root;
@@ -61,6 +62,12 @@ export interface MemberExpression extends BaseNode {
 
 export type Expression = Identifier | MemberExpression;
 
+// TODO [#3370]: when the template expression flag is removed, the
+// ComplexExpression type should be redefined as an ESTree Node. Doing
+// so when the flag is still in place results in a cascade of required
+// type changes across the codebase.
+export type ComplexExpression = AcornNode & { value?: any };
+
 export interface Attribute extends BaseNode {
     type: 'Attribute';
     name: string;
@@ -93,6 +100,10 @@ export interface KeyDirective extends Directive<'Key'> {
 }
 
 export interface DynamicDirective extends Directive<'Dynamic'> {
+    value: Expression;
+}
+
+export interface IsDirective extends Directive<'Is'> {
     value: Expression;
 }
 
@@ -131,6 +142,7 @@ export interface SlotDataDirective extends Directive<'SlotData'> {
 export type ElementDirective =
     | KeyDirective
     | DynamicDirective
+    | IsDirective
     | DomDirective
     | InnerHTMLDirective
     | RefDirective
@@ -142,7 +154,8 @@ export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
     type: 'Text';
-    value: Literal | Expression;
+    // TODO [#3370]: remove experimental template expression flag
+    value: Literal | Expression | ComplexExpression;
     raw: string;
 }
 
@@ -184,7 +197,25 @@ export interface Slot extends AbstractBaseElement {
     slotName: string;
 }
 
-export type BaseElement = Element | ExternalComponent | Component | Slot;
+// Special LWC tag names denoted with lwc:*
+export interface BaseLwcElement<T extends `${LwcTagName}`> extends AbstractBaseElement {
+    type: 'Lwc';
+    name: T;
+}
+
+/**
+ * Node representing the lwc:component element
+ */
+export interface LwcComponent extends BaseLwcElement<'lwc:component'> {}
+
+/**
+ * All supported special LWC tags, they should all begin with lwc:*
+ */
+export enum LwcTagName {
+    Component = 'lwc:component',
+}
+
+export type BaseElement = Element | ExternalComponent | Component | Slot | LwcComponent;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
@@ -292,7 +323,9 @@ export type Node =
 
 export enum ElementDirectiveName {
     Dom = 'lwc:dom',
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
     Dynamic = 'lwc:dynamic',
+    Is = 'lwc:is',
     External = 'lwc:external',
     InnerHTML = 'lwc:inner-html',
     Ref = 'lwc:ref',

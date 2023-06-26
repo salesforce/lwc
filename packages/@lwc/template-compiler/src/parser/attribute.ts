@@ -15,7 +15,7 @@ import {
     ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
 
-import { isComponent, isExternalComponent } from '../shared/ast';
+import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
@@ -193,7 +193,8 @@ function isFrameworkAttribute(attrName: string): boolean {
 }
 
 export function isAttribute(element: BaseElement, attrName: string): boolean {
-    if (isComponent(element)) {
+    // lwc:component will resolve to an LWC custom element at runtime
+    if (isComponent(element) || isLwcComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
@@ -266,12 +267,24 @@ export class ParsedAttribute {
         }
     }
 
+    getAll(pattern: RegExp): Attribute[] {
+        return this.getKeys(pattern).map((key) => this.attributes.get(key)!);
+    }
+
     pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
         }
         return attr;
+    }
+
+    pickAll(pattern: RegExp): Attribute[] {
+        const attrs = this.getAll(pattern);
+        for (const attr of attrs) {
+            this.attributes.delete(attr.name);
+        }
+        return attrs;
     }
 
     private getKey(pattern: string | RegExp): string | undefined {
@@ -282,6 +295,10 @@ export class ParsedAttribute {
             match = Array.from(this.attributes.keys()).find((name) => !!name.match(pattern));
         }
         return match;
+    }
+
+    private getKeys(pattern: RegExp): string[] {
+        return Array.from(this.attributes.keys()).filter((name) => !!name.match(pattern));
     }
 
     getAttributes(): Attribute[] {

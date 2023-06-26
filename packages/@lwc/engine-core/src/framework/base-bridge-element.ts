@@ -22,14 +22,11 @@ import {
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { applyAriaReflection } from '@lwc/aria-reflection';
-
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { isAttributeLocked } from './attributes';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -101,14 +98,6 @@ function createAttributeChangedCallback(
                 // @ts-ignore type-mismatch
                 superAttributeChangedCallback.apply(this, arguments);
             }
-            return;
-        }
-        if (!isAttributeLocked(this, attrName)) {
-            // Ignore changes triggered by the engine itself during:
-            // * diffing when public props are attempting to reflect to the DOM
-            // * component via `this.setAttribute()`, should never update the prop
-            // Both cases, the setAttribute call is always wrapped by the unlocking of the
-            // attribute to be changed
             return;
         }
         // Reflect attribute change to the corresponding property when changed from outside.
@@ -208,7 +197,7 @@ if (process.env.IS_BROWSER) {
     // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
     // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
     // ARIA props outside the LightningElement
-    if (features.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    if (lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
         // If ARIA reflection is not applied globally to Element.prototype, apply it to HTMLBridgeElement.prototype.
         // This allows `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*` attrs.
         // This is especially important because the template compiler compiles aria-* attrs on components to aria* props

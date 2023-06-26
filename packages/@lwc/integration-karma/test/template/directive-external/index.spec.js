@@ -6,12 +6,14 @@ import XWithDelayedUpgrade from 'x/withDelayedUpgrade';
 import XWithDifferentViews from 'x/withDifferentViews';
 import XWithImperativeEvent from 'x/withImperativeEvent';
 import XWithProperty from 'x/withProperty';
+import XWithCamelCaseProperty from 'x/withCamelCaseProperty';
 import XWithUnregisteredWC from 'x/withUnregisteredWC';
 
 import './custom-elements/ce-without-children';
 import './custom-elements/ce-with-children';
 import './custom-elements/ce-with-event';
 import './custom-elements/ce-with-property';
+import './custom-elements/ce-with-camel-case-property';
 
 const unknownPropTokyo =
     /Error: \[LWC warn]: Unknown public property "tokyo" of element <ce-with-property>\. This is either a typo on the corresponding attribute "tokyo", or the attribute does not exist in this browser or DOM implementation\./;
@@ -148,6 +150,25 @@ if (!process.env.COMPAT) {
                 expect(ce.osaka).toBe('yodogawa river');
                 expect(ce.tokyo).toBe('tamagawa');
             });
+        });
+
+        it('should work with camel case properties', async () => {
+            const elm = createElement('x-with-camel-case-property', { is: XWithCamelCaseProperty });
+            const propValue = '-1';
+            elm.prop = propValue;
+            document.body.appendChild(elm);
+            await Promise.resolve();
+            const ce = elm.shadowRoot.querySelector('ce-with-camel-case-property');
+            expect(ce.camelCaseProp).toBe(propValue);
+            expect(ce.hasAttribute('camel-case-prop')).toBe(false);
+            expect(ce.getAttribute('not-a-prop')).toBe(propValue);
+            expect(ce.getAttribute('aria-label')).toBe(propValue);
+            if (process.env.NATIVE_SHADOW) {
+                expect(ce.getAttribute('aria-labelledby')).toBe(propValue);
+            } else {
+                expect(ce.getAttribute('aria-labelledby')).toMatch(new RegExp(`^${propValue}`));
+            }
+            expect(ce.getAttribute('tabindex')).toBe(propValue);
         });
 
         describe('when custom element not upgraded', () => {

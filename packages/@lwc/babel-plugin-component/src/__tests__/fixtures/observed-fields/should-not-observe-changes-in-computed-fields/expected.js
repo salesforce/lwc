@@ -10,5 +10,6 @@ _registerDecorators(Test, {
   fields: ["interface"]
 });
 export default _registerComponent(Test, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

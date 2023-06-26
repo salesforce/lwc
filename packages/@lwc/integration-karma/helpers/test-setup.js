@@ -52,6 +52,29 @@ afterEach(function () {
     window.__lwcResetAlreadyLoggedMessages();
 });
 
+var consoleCallCount = 0;
+
+// Patch console.error/console.warn, etc. so if it's called, we throw
+function patchConsole() {
+    ['error', 'warn'].forEach(function (method) {
+        // eslint-disable-next-line no-console
+        var originalMethod = console[method];
+        // eslint-disable-next-line no-console
+        console[method] = function () {
+            consoleCallCount++;
+            return originalMethod.apply(this, arguments);
+        };
+    });
+}
+
+function throwIfConsoleCalled() {
+    if (consoleCallCount) {
+        throw new Error(
+            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)'
+        );
+    }
+}
+
 // Run some logic before all tests have run and after all tests have run to ensure that
 // no test dirtied the DOM with leftover elements
 var originalHeadChildren;
@@ -61,6 +84,7 @@ beforeAll(function () {
     originalHeadChildren = getHeadChildren();
     originalBodyChildren = getBodyChildren();
     originalAdoptedStyleSheets = getAdoptedStyleSheets();
+    patchConsole();
 });
 
 // Throwing an Error in afterAll will cause a non-zero exit code
@@ -88,4 +112,6 @@ afterAll(function () {
             );
         }
     });
+
+    throwIfConsoleCalled();
 });

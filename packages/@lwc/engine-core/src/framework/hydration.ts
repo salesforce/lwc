@@ -4,7 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, ArrayFilter } from '@lwc/shared';
+import {
+    isUndefined,
+    ArrayJoin,
+    assert,
+    keys,
+    isNull,
+    isArray,
+    arrayEvery,
+    ArrayFilter,
+    ArrayIncludes,
+    isTrue,
+    isString,
+} from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
@@ -46,6 +58,9 @@ const enum EnvNodeTypes {
     COMMENT = 8,
 }
 
+// A function that indicates whether an attribute with the given name should be validated.
+type AttrValidationPredicate = (attrName: string) => boolean;
+
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
@@ -54,7 +69,7 @@ export function hydrateRoot(vm: VM) {
     runConnectedCallback(vm);
     hydrateVM(vm);
 
-    if (hasMismatch) {
+    if (hasMismatch && process.env.NODE_ENV !== 'production') {
         logError('Hydration completed with errors.', vm);
     }
 }
@@ -106,15 +121,58 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
 }
 
 const NODE_VALUE_PROP = 'nodeValue';
+
+function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAPI): boolean {
+    const { getProperty } = renderer;
+    const nodeValue = getProperty(node, NODE_VALUE_PROP);
+
+    if (nodeValue === vnode.text) {
+        return true;
+    }
+
+    // Special case for empty text nodes – these are serialized differently on the server
+    // See https://github.com/salesforce/lwc/pull/2656
+    if (nodeValue === '\u200D' && vnode.text === '') {
+        return true;
+    }
+
+    return false;
+}
+
+// The validationOptOut static property can be an array of attribute names.
+// Any attribute names specified in that array will not be validated, and the
+// LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+function getValidationPredicate(
+    optOutStaticProp: string[] | true | undefined
+): AttrValidationPredicate {
+    if (isUndefined(optOutStaticProp)) {
+        return (_attrName: string) => true;
+    }
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
+    if (isTrue(optOutStaticProp)) {
+        return (_attrName: string) => false;
+    }
+    // If validationOptOut is an array of strings, attributes specified in the
+    // array will be "opted out". Attributes not specified in the array will still
+    // be validated.
+    if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
+        return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        logWarn(
+            'Validation opt out must be `true` or an array of attributes that should not be validated.'
+        );
+    }
+    return (_attrName: string) => true;
+}
+
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
     if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, renderer)) {
         return handleMismatch(node, vnode, renderer);
     }
     if (process.env.NODE_ENV !== 'production') {
-        const { getProperty } = renderer;
-        const nodeValue = getProperty(node, NODE_VALUE_PROP);
-
-        if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
+        if (!textNodeContentsAreEqual(node, vnode, renderer)) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
                 vnode.owner
@@ -152,11 +210,15 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 }
 
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
-    if (!areCompatibleNodes(vnode.fragment, elm, vnode, renderer)) {
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+        !areCompatibleNodes(vnode.fragment, elm, vnode, renderer)
+    ) {
         return handleMismatch(elm, vnode, renderer);
     }
 
     vnode.elm = elm;
+    applyEventListeners(vnode, renderer);
 
     return elm;
 }
@@ -228,9 +290,21 @@ function hydrateCustomElement(
     vnode: VCustomElement,
     renderer: RendererAPI
 ): Node | null {
+    const { validationOptOut } = vnode.ctor;
+    const shouldValidateAttr = getValidationPredicate(validationOptOut);
+
+    // The validationOptOut static property can be an array of attribute names.
+    // Any attribute names specified in that array will not be validated, and the
+    // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
+    //
+    // If validationOptOut is true, no attributes will be checked for correctness
+    // and the runtime will assume VDOM attrs and DOM attrs are in sync.
+    //
+    // Therefore, if validationOptOut is falsey or an array of strings, we need to
+    // examine some or all of the custom element's attributes.
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
+        !isMatchingElement(vnode, elm, renderer, shouldValidateAttr)
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
@@ -244,7 +318,7 @@ function hydrateCustomElement(
         hydrated: true,
     });
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
@@ -260,7 +334,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm);
     }
 
     hydrateVM(vm);
@@ -275,7 +349,6 @@ function hydrateChildren(
 ) {
     let hasWarned = false;
     let nextNode: Node | null = node;
-    let anchor: Node | null = null;
     const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
@@ -283,7 +356,6 @@ function hydrateChildren(
         if (!isNull(childVnode)) {
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
-                anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
                 if (process.env.NODE_ENV !== 'production') {
@@ -295,8 +367,8 @@ function hydrateChildren(
                         );
                     }
                 }
-                mount(childVnode, parentNode, renderer, anchor);
-                anchor = childVnode.elm!;
+                mount(childVnode, parentNode, renderer, nextNode);
+                nextNode = renderer.nextSibling(childVnode.elm!);
             }
         }
     }
@@ -356,7 +428,12 @@ function hasCorrectNodeType<T extends Node>(
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
+function isMatchingElement(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    shouldValidateAttr: AttrValidationPredicate = () => true
+) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
@@ -372,14 +449,43 @@ function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: Renderer
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm, renderer);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm, renderer);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, renderer);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, shouldValidateAttr);
+    const hasCompatibleClass = shouldValidateAttr('class')
+        ? validateClassAttr(vnode, elm, renderer)
+        : true;
+    const hasCompatibleStyle = shouldValidateAttr('style')
+        ? validateStyleAttr(vnode, elm, renderer)
+        : true;
 
-    return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
+    return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
+function attributeValuesAreEqual(
+    vnodeValue: string | number | boolean | null | undefined,
+    value: string | null
+) {
+    const vnodeValueAsString = String(vnodeValue);
+
+    if (vnodeValueAsString === value) {
+        return true;
+    }
+
+    // If the expected value is null, this means that the attribute does not exist. In that case,
+    // we accept any nullish value (undefined or null).
+    if (isNull(value) && (isUndefined(vnodeValue) || isNull(vnodeValue))) {
+        return true;
+    }
+
+    // In all other cases, the two values are not considered equal
+    return false;
+}
+
+function validateAttrs(
+    vnode: VBaseElement,
+    elm: Element,
+    renderer: RendererAPI,
+    shouldValidateAttr: (attrName: string) => boolean
+): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -389,17 +495,22 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        if (!shouldValidateAttr(attrName)) {
+            continue;
+        }
         const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
-        if (String(attrValue) !== elmAttrValue) {
+        if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
             if (process.env.NODE_ENV !== 'production') {
                 const { getProperty } = renderer;
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         elm,
                         'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
+                        isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
+                    }`,
                     owner
                 );
             }
@@ -413,7 +524,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
 function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const { data, owner } = vnode;
     let { className, classMap } = data;
-    const { getProperty, getClassList } = renderer;
+    const { getProperty, getClassList, getAttribute } = renderer;
     const scopedToken = getScopeTokenClass(owner);
     const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
 
@@ -448,11 +559,13 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     let nodesAreCompatible = true;
     let readableVnodeClassname;
 
-    const elmClassName = getProperty(elm, 'className');
+    const elmClassName = getAttribute(elm, 'class');
+
     if (!isUndefined(className) && String(className) !== elmClassName) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
-        readableVnodeClassname = className;
+        // stringify for pretty-printing
+        readableVnodeClassname = JSON.stringify(className);
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
         const classList = getClassList(elm);
@@ -466,15 +579,16 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             }
         }
 
-        readableVnodeClassname = computedClassName.trim();
+        // stringify for pretty-printing
+        readableVnodeClassname = JSON.stringify(computedClassName.trim());
 
         if (classList.length > keys(classMap).length) {
             nodesAreCompatible = false;
         }
-    } else if (isUndefined(className) && elmClassName !== '') {
+    } else if (isUndefined(className) && !isNull(elmClassName)) {
         // SSR contains a className but client-side VDOM does not
         nodesAreCompatible = false;
-        readableVnodeClassname = '';
+        readableVnodeClassname = '""';
     }
 
     if (!nodesAreCompatible) {
@@ -483,7 +597,9 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected "${readableVnodeClassname}" but found "${elmClassName}"`,
+                ).toLowerCase()}>: attribute "class" has different values, expected ${readableVnodeClassname} but found ${JSON.stringify(
+                    elmClassName
+                )}`,
                 vnode.owner
             );
         }
@@ -587,16 +703,18 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 
     clientAttrsNames.forEach((attrName) => {
         if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
-            logError(
-                `Mismatch hydrating element <${getProperty(
-                    client,
-                    'tagName'
-                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
-                    client,
-                    attrName
-                )}" but found "${getAttribute(ssr, attrName)}"`,
-                vnode.owner
-            );
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    `Mismatch hydrating element <${getProperty(
+                        client,
+                        'tagName'
+                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                        client,
+                        attrName
+                    )}" but found "${getAttribute(ssr, attrName)}"`,
+                    vnode.owner
+                );
+            }
             isCompatibleElements = false;
         }
     });

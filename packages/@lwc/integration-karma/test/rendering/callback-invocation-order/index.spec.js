@@ -5,6 +5,7 @@ import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
 import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
+import MultiTemplateConditionals from 'x/multiTemplateConditionals';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -227,4 +228,72 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
                   ]
         );
     });
+});
+
+it('should invoke callbacks on the right order when multiple templates are used with lwc:if', () => {
+    const elm = createElement('x-multi-template-conditionals', { is: MultiTemplateConditionals });
+    elm.show = true;
+    document.body.appendChild(elm);
+
+    // initial load is x-shadow-parent
+    expect(window.timingBuffer).toEqual([
+        'leaf:T1-1:connectedCallback',
+        'leaf:T1-2:connectedCallback',
+        'leaf:T1-3:connectedCallback',
+        'leaf:T1-4:connectedCallback',
+        'leaf:T1-5:connectedCallback',
+        'leaf:T1-6:connectedCallback',
+    ]);
+
+    resetTimingBuffer();
+    elm.next();
+
+    return Promise.resolve()
+        .then(() => {
+            // disconnect x-shadow-parent +
+            // connect x-shadow-container with 2 parents, 'a' and 'b'
+            expect(window.timingBuffer).toEqual(
+                window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          'leaf:T1-1:disconnectedCallback',
+                          'leaf:T1-2:disconnectedCallback',
+                          'leaf:T1-3:disconnectedCallback',
+                          'leaf:T1-4:disconnectedCallback',
+                          'leaf:T1-5:disconnectedCallback',
+                          'leaf:T1-6:disconnectedCallback',
+                          'leaf:T2-1:connectedCallback',
+                          'leaf:T2-2:connectedCallback',
+                          'leaf:T2-3:connectedCallback',
+                          'leaf:T2-4:connectedCallback',
+                          'leaf:T2-5:connectedCallback',
+                          'leaf:T2-6:connectedCallback',
+                      ]
+                    : [
+                          'leaf:T1-6:disconnectedCallback',
+                          'leaf:T1-5:disconnectedCallback',
+                          'leaf:T1-4:disconnectedCallback',
+                          'leaf:T1-3:disconnectedCallback',
+                          'leaf:T1-2:disconnectedCallback',
+                          'leaf:T1-1:disconnectedCallback',
+                          'leaf:T2-1:connectedCallback',
+                          'leaf:T2-2:connectedCallback',
+                          'leaf:T2-3:connectedCallback',
+                          'leaf:T2-4:connectedCallback',
+                          'leaf:T2-5:connectedCallback',
+                          'leaf:T2-6:connectedCallback',
+                      ]
+            );
+            resetTimingBuffer();
+            elm.show = false;
+        })
+        .then(() => {
+            expect(window.timingBuffer).toEqual([
+                'leaf:T2-1:disconnectedCallback',
+                'leaf:T2-2:disconnectedCallback',
+                'leaf:T2-3:disconnectedCallback',
+                'leaf:T2-4:disconnectedCallback',
+                'leaf:T2-5:disconnectedCallback',
+                'leaf:T2-6:disconnectedCallback',
+            ]);
+        });
 });

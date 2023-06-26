@@ -32,6 +32,7 @@ export function patchProps(
     if (!isNull(oldVnode)) {
         oldProps = oldVnode.data.props;
         const oldSpread = oldVnode.data.spread;
+        // Props may be the same due to the static content optimization, so we can skip diffing
         if (oldProps === props && oldSpread === spread) {
             return;
         }

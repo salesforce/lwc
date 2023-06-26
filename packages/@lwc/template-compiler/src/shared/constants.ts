@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { ElementDirectiveName } from './types';
+
 export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
 export const PARSE_FRAGMENT_METHOD_NAME = 'parseFragment';
 export const PARSE_SVG_FRAGMENT_METHOD_NAME = 'parseSVGFragment';
@@ -30,3 +32,6 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
     'font-face-name',
     'missing-glyph',
 ]);
+
+// Subset of LWC template directives that can safely be statically optimized
+export const STATIC_SAFE_DIRECTIVES: Set<keyof typeof ElementDirectiveName> = new Set(['Ref']);

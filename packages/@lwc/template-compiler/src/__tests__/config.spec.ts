@@ -43,11 +43,13 @@ describe('customRendererConfig normalization', () => {
                   },
                 ],
               },
-              "enableLwcSpread": false,
-              "enableScopedSlots": false,
+              "enableDynamicComponents": false,
+              "enableLwcSpread": true,
               "enableStaticContentOptimization": true,
+              "experimentalComplexExpressions": false,
               "experimentalComputedMemberExpression": false,
               "experimentalDynamicDirective": false,
+              "instrumentation": undefined,
               "preserveHtmlComments": false,
             }
         `);

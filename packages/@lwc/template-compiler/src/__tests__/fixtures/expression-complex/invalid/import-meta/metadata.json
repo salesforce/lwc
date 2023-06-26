@@ -1,0 +1,13 @@
+{
+    "warnings": [
+        {
+            "code": 1052,
+            "message": "Unexpected compilation error: LWC1052: Error parsing attribute: Cannot use 'import.meta' outside a module (3:39)",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 39
+            }
+        }
+    ]
+}

@@ -7,11 +7,11 @@
 import { noop } from '@lwc/shared';
 
 export const enum ReportingEventId {
-    CrossRootAriaInSyntheticShadow = 0,
-    CompilerRuntimeVersionMismatch = 1,
-    NonStandardAriaReflection = 2,
-    TemplateMutation = 3,
-    StylesheetMutation = 4,
+    CrossRootAriaInSyntheticShadow = 'CrossRootAriaInSyntheticShadow',
+    CompilerRuntimeVersionMismatch = 'CompilerRuntimeVersionMismatch',
+    NonStandardAriaReflection = 'NonStandardAriaReflection',
+    TemplateMutation = 'TemplateMutation',
+    StylesheetMutation = 'StylesheetMutation',
 }
 
 export interface BasePayload {
@@ -29,6 +29,8 @@ export interface CompilerRuntimeVersionMismatchPayload extends BasePayload {
 
 export interface NonStandardAriaReflectionPayload extends BasePayload {
     propertyName: string;
+    isSetter: boolean;
+    setValueType: string | undefined;
 }
 
 export interface TemplateMutationPayload extends BasePayload {

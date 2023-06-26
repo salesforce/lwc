@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
-import features from '@lwc/features';
 
 import { logError } from '../shared/logger';
 
@@ -35,6 +34,7 @@ export type StylesheetFactory = (
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 
 function makeHostToken(token: string) {
+    // Note: if this ever changes, update the `cssScopeTokens` returned by `@lwc/compiler`
     return `${token}-host`;
 }
 
@@ -135,13 +135,15 @@ function evaluateStylesheetsContent(
             }
             const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
 
-            if (features.DISABLE_LIGHT_DOM_UNSCOPED_CSS) {
-                if (!isScopedCss && vm.renderMode === RenderMode.Light) {
-                    logError(
-                        'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
-                    );
-                    continue;
-                }
+            if (
+                lwcRuntimeFlags.DISABLE_LIGHT_DOM_UNSCOPED_CSS &&
+                !isScopedCss &&
+                vm.renderMode === RenderMode.Light
+            ) {
+                logError(
+                    'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
+                );
+                continue;
             }
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =

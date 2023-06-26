@@ -1,3 +1,6 @@
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
+
 # Shared config
 ignore_forks: &ignore_forks
   branches:
@@ -18,7 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.14.0
+      - image: cimg/node:16.19.0
+  node-browsers:
+    working_directory: ~/lwc
+    docker:
+      - image: cimg/node:16.19.0-browsers
 
 
 # Custom commands definition
@@ -49,9 +56,6 @@ commands:
         type: boolean
         default: false
       enable_native_custom_element_lifecycle:
-        type: boolean
-        default: false
-      enable_scoped_custom_element_registry:
         type: boolean
         default: false
       disable_aria_reflection_polyfill:
@@ -85,7 +89,6 @@ commands:
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
-            <<# parameters.enable_scoped_custom_element_registry >> ENABLE_SCOPED_CUSTOM_ELEMENT_REGISTRY=1 <</ parameters.enable_scoped_custom_element_registry >> \
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
             <<# parameters.disable_synthetic_shadow_support_in_compiler >> DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 <</ parameters.disable_synthetic_shadow_support_in_compiler >> \
@@ -176,9 +179,6 @@ commands:
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
-      enable_scoped_custom_element_registry:
-        type: boolean
-        default: false
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
@@ -201,7 +201,6 @@ commands:
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
           enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
-          enable_scoped_custom_element_registry: << parameters.enable_scoped_custom_element_registry >>
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           node_env_production: << parameters.node_env_production >>
           disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
@@ -226,6 +225,15 @@ jobs:
           name: Check missing file headers
           command: node ./scripts/tasks/check-license-headers.js
       - run:
+          name: Check package.json integrity
+          command: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+      - run:
+          name: Verify @lwc/shared is tree-shakable
+          command: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+      - run:
+          name: Verify that dependencies are declared
+          command: node ./scripts/tasks/check-imports-are-declared-dependencies.js
+      - run:
           name: Check formatting
           command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - run:
@@ -247,6 +255,14 @@ jobs:
           name: Run unit tests
           command: yarn test:ci
 
+  test_benchmark_smoke:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      - load_workspace
+      - run:
+          name: Run benchmark smoke tests
+          command: BENCHMARK_SMOKE_TEST=1 yarn test:performance
 
   test_karma:
     executor: node
@@ -265,20 +281,8 @@ jobs:
       - run_karma:
           enable_native_custom_element_lifecycle: true
       - run_karma:
-          enable_scoped_custom_element_registry: true
-      - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
-      - run_karma:
-          disable_synthetic: true
-          enable_scoped_custom_element_registry: true
-      - run_karma:
-          enable_native_custom_element_lifecycle: true
-          enable_scoped_custom_element_registry: true
-      - run_karma:
-          disable_synthetic: true
-          enable_native_custom_element_lifecycle: true
-          enable_scoped_custom_element_registry: true
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true
@@ -302,15 +306,23 @@ jobs:
 
 
   test_integration:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+    executor: node-browsers
     steps:
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
-      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - Chrome SauceLabs
-          command: yarn sauce:prod --browsers chrome
+          command_name: Run integration test - local Chrome - prod mode
+          command: yarn local:prod
+          working_directory: packages/@lwc/integration-tests
+
+  test_integration_dev:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
+      - load_workspace
+      - retry_command:
+          command_name: Run integration test - local Chrome - dev mode
+          command: yarn local:dev
           working_directory: packages/@lwc/integration-tests
 
 
@@ -354,7 +366,19 @@ workflows:
           requires:
             - test_unit
 
+      - test_integration_dev:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
       - test_integration_compat:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_benchmark_smoke:
           filters:
             <<: *ignore_forks
           requires:
@@ -389,7 +413,15 @@ workflows:
             - hold
 
       - test_integration:
-          context: lwc-sauce-labs
+          # lwc-sauce-labs context not needed due to using local chrome
+          filters:
+            <<: *only_forks
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_dev:
+          # lwc-sauce-labs context not needed due to using local chrome
           filters:
             <<: *only_forks
           requires:

@@ -6,5 +6,6 @@ export default _registerComponent(class extends LightningElement {
   static stylesheets = [notScoped, scoped];
   /*LWC compiler vX.X.X*/
 }, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test"
 });

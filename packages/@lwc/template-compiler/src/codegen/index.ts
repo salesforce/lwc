@@ -7,7 +7,7 @@
 import * as astring from 'astring';
 
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
-import { generateCompilerError, TemplateErrors } from '@lwc/errors';
+import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
     isComment,
@@ -33,6 +33,7 @@ import {
     isExternalComponent,
     isScopedSlotFragment,
     isSlotBindDirective,
+    isLwcIsDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -67,7 +68,6 @@ import {
     identifierFromComponentName,
     objectToAST,
     shouldFlatten,
-    memorizeHandler,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -76,24 +76,30 @@ import {
 import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
+    const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
-            return codeGen.genHoistedElement(element, slotParentName);
+            return codeGen.genStaticElement(element, slotParentName);
         }
 
         const children = transformChildren(element);
 
-        // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = element.directives.find(isDynamicDirective);
+        // lwc:dynamic directive
+        const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
+        // lwc:is directive
+        const dynamicDirective = element.directives.find(isLwcIsDirective);
 
-        if (dynamic) {
-            const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
+        if (deprecatedDynamicDirective) {
+            const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
+            res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);
+        } else if (dynamicDirective) {
+            const expression = codeGen.bindExpression(dynamicDirective.value);
+            res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(
                 name,
@@ -585,8 +591,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Properties: lwc:ref directive
         if (ref) {
-            data.push(t.property(t.identifier('ref'), ref.value));
-            codeGen.hasRefs = true;
+            data.push(codeGen.genRef(ref));
         }
 
         if (propsObj.properties.length) {
@@ -604,8 +609,10 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier('context'), contextObj));
         }
 
+        // Spread
         if (spread) {
             data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
+            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
         }
 
         // Key property on VNode
@@ -631,16 +638,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            const listenerObj = Object.fromEntries(
-                listeners.map((listener) => [listener.name, listener])
-            );
-            const listenerObjAST = objectToAST(listenerObj, (key) => {
-                const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
-                const handler = codeGen.genBind(componentHandler);
-
-                return memorizeHandler(codeGen, componentHandler, handler);
-            });
-            data.push(t.property(t.identifier('on'), listenerObjAST));
+            data.push(codeGen.genEventListeners(listeners));
         }
 
         // SVG handling

@@ -1,16 +1,15 @@
 import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
-import { ReportingEventId } from 'test-utils';
 import AriaContainer from 'x/ariaContainer';
 import Valid from 'x/valid';
 
 const expectedMessageForCrossRoot =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates\n<x-aria-source>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';
 const expectedMessageForCrossRootWithTargetAsVM =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates\n<x-aria-target>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-target>';
 const expectedMessageForCrossRootForSecondTarget =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <div>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates\n<x-aria-source>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <div>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';
 const expectedMessageForNonStandardAria =
-    'Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties';
+    'Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria';
 
 // These tests are designed to detect non-standard cross-root ARIA usage in synthetic shadow DOM
 // As for COMPAT, this detection logic is only enabled for modern browsers
@@ -45,20 +44,22 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     expectedMessageForCrossRoot,
                 ];
 
-                const expectedDispatcherCalls = [
+                const getExpectedDispatcherCalls = (isSetter) => [
                     ...(usePropertyAccess
                         ? [
                               [
-                                  ReportingEventId.NonStandardAriaReflection,
+                                  'NonStandardAriaReflection',
                                   {
                                       tagName: 'x-aria-source',
                                       propertyName: 'ariaLabelledBy',
+                                      isSetter,
+                                      setValueType: isSetter ? 'string' : undefined,
                                   },
                               ],
                           ]
                         : []),
                     [
-                        ReportingEventId.CrossRootAriaInSyntheticShadow,
+                        'CrossRootAriaInSyntheticShadow',
                         {
                             tagName: 'x-aria-source',
                             attributeName: 'aria-labelledby',
@@ -73,7 +74,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expected = expected.not;
                     }
                     expected.toLogWarningDev(
-                        `Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`
+                        `Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
                     );
                 }
 
@@ -87,14 +88,18 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expect(() => {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('setting id', () => {
                         expect(() => {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(false)
+                        );
                     });
 
                     it('linking to an element in global light DOM', () => {
@@ -104,7 +109,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expect(() => {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('linking from an element in global light DOM', () => {
@@ -117,7 +124,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         }).toLogWarningDev(expectedMessageForCrossRootWithTargetAsVM);
                         expect(dispatcher.calls.allArgs()).toEqual([
                             [
-                                ReportingEventId.CrossRootAriaInSyntheticShadow,
+                                'CrossRootAriaInSyntheticShadow',
                                 {
                                     tagName: 'x-aria-target',
                                     attributeName: 'aria-labelledby',
@@ -140,10 +147,13 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                 ...(usePropertyAccess
                                     ? [
                                           [
-                                              ReportingEventId.NonStandardAriaReflection,
+                                              'NonStandardAriaReflection',
                                               {
                                                   tagName: 'x-aria-source',
                                                   propertyName: 'ariaLabelledBy',
+                                                  isSetter: true,
+                                                  setValueType:
+                                                      value === null ? 'null' : typeof value,
                                               },
                                           ],
                                       ]
@@ -160,10 +170,12 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             ...(usePropertyAccess
                                 ? [
                                       [
-                                          ReportingEventId.NonStandardAriaReflection,
+                                          'NonStandardAriaReflection',
                                           {
                                               tagName: 'x-aria-source',
                                               propertyName: 'ariaLabelledBy',
+                                              isSetter: true,
+                                              setValueType: 'string',
                                           },
                                       ],
                                   ]
@@ -184,7 +196,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                 expect(() => {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessages);
-                                expect(dispatcher.calls.allArgs()).toEqual(expectedDispatcherCalls);
+                                expect(dispatcher.calls.allArgs()).toEqual(
+                                    getExpectedDispatcherCalls(true)
+                                );
                             });
 
                             it('linking multiple targets', () => {
@@ -195,9 +209,9 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     expectedMessageForCrossRootForSecondTarget,
                                 ]);
                                 expect(dispatcher.calls.allArgs()).toEqual([
-                                    ...expectedDispatcherCalls,
+                                    ...getExpectedDispatcherCalls(true),
                                     [
-                                        ReportingEventId.CrossRootAriaInSyntheticShadow,
+                                        'CrossRootAriaInSyntheticShadow',
                                         {
                                             tagName: 'x-aria-source',
                                             attributeName: 'aria-labelledby',
@@ -226,14 +240,14 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
             // dispatcher is still called twice
             expect(dispatcher.calls.allArgs()).toEqual([
                 [
-                    ReportingEventId.CrossRootAriaInSyntheticShadow,
+                    'CrossRootAriaInSyntheticShadow',
                     {
                         tagName: 'x-aria-source',
                         attributeName: 'aria-labelledby',
                     },
                 ],
                 [
-                    ReportingEventId.CrossRootAriaInSyntheticShadow,
+                    'CrossRootAriaInSyntheticShadow',
                     {
                         tagName: 'x-aria-source',
                         attributeName: 'aria-labelledby',

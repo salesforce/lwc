@@ -1,0 +1,11 @@
+<template>
+    <h1 lwc:if={showHeader}>TEMPLATE 2</h1>
+    <template lwc:if={showHeader}>
+        <template lwc:if={showHeader}>
+            <div>T2 nested 1</div>
+            <template lwc:if={showHeader}>
+                <div>T2 nested 2</div>
+            </template>
+        </template>
+    </template>
+</template>

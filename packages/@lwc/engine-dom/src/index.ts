@@ -5,21 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Globals -----------------------------------------------------------------------------------------
+import '@lwc/features';
+
 // Polyfills ---------------------------------------------------------------------------------------
 import './aria-reflection-polyfill';
-
-// Tests -------------------------------------------------------------------------------------------
-import './testFeatureFlag.ts';
-
-// Tests -------------------------------------------------------------------------------------------
-import './testFeatureFlag.ts';
 
 // DevTools Formatters
 import './formatters';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
-    createContextProvider,
     register,
     api,
     track,
@@ -54,3 +50,4 @@ export { isNodeFromTemplate } from './apis/is-node-from-template';
 export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
 export { rendererFactory } from './renderer-factory';
+export { createContextProvider } from './renderer/context';

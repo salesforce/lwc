@@ -25,9 +25,12 @@ const { isArray } = Array;
 const {
     concat: ArrayConcat,
     copyWithin: ArrayCopyWithin,
+    every: ArrayEvery,
     fill: ArrayFill,
     filter: ArrayFilter,
     find: ArrayFind,
+    findIndex: ArrayFindIndex,
+    includes: ArrayIncludes,
     indexOf: ArrayIndexOf,
     join: ArrayJoin,
     map: ArrayMap,
@@ -44,6 +47,19 @@ const {
     forEach,
 } = Array.prototype;
 
+// The type of the return value of Array.prototype.every is `this is T[]`. However, once this
+// Array method is pulled out of the prototype, the function is now referencing `this` where
+// `this` is meaningless, resulting in a TypeScript compilation error.
+//
+// Exposing this helper function is the closest we can get to preserving the usage patterns
+// of Array.prototype methods used elsewhere in the codebase.
+function arrayEvery<T>(
+    arr: any[],
+    predicate: (value: any, index: number, array: typeof arr) => value is T
+): arr is T[] {
+    return ArrayEvery.call(arr, predicate);
+}
+
 const { fromCharCode: StringFromCharCode } = String;
 
 const {
@@ -58,7 +74,9 @@ export {
     ArrayConcat,
     ArrayFilter,
     ArrayFind,
+    ArrayFindIndex,
     ArrayFill,
+    ArrayIncludes,
     ArrayIndexOf,
     ArrayCopyWithin,
     ArrayJoin,
@@ -73,6 +91,7 @@ export {
     ArraySort,
     ArraySplice,
     ArrayUnshift,
+    arrayEvery,
     assign,
     create,
     defineProperties,

@@ -1,0 +1,878 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 271,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 260,
+                "end": 271
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 259,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 15,
+                        "start": 249,
+                        "end": 259
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 66,
+                            "start": 33,
+                            "end": 90,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 40,
+                                "start": 33,
+                                "end": 64
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 57,
+                                "endLine": 3,
+                                "endColumn": 66,
+                                "start": 81,
+                                "end": 90
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 1,
+                                    "end": 16,
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 7,
+                                            "end": 10,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 13,
+                                            "end": 16,
+                                            "name": "baz"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 39,
+                                        "start": 41,
+                                        "end": 63
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 39,
+                                    "start": 41,
+                                    "end": 63
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{foo ? bar : baz}",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 65,
+                                    "end": 80,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 40
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 55
+                                        }
+                                    },
+                                    "range": [
+                                        65,
+                                        80
+                                    ],
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 65,
+                                            "end": 68,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 40
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 43
+                                                }
+                                            },
+                                            "range": [
+                                                65,
+                                                68
+                                            ],
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 71,
+                                            "end": 74,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 46
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 49
+                                                }
+                                            },
+                                            "range": [
+                                                71,
+                                                74
+                                            ],
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 77,
+                                            "end": 80,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 52
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 55
+                                                }
+                                            },
+                                            "range": [
+                                                77,
+                                                80
+                                            ],
+                                            "name": "baz"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 40,
+                                        "endLine": 3,
+                                        "endColumn": 57,
+                                        "start": 64,
+                                        "end": 81
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 40,
+                                    "endLine": 3,
+                                    "endColumn": 57,
+                                    "start": 64,
+                                    "end": 81
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 58,
+                            "start": 99,
+                            "end": 148,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 36,
+                                "start": 99,
+                                "end": 126
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 49,
+                                "endLine": 4,
+                                "endColumn": 58,
+                                "start": 139,
+                                "end": 148
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 1,
+                                    "end": 12,
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 5,
+                                            "end": 8,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 9,
+                                            "end": 12,
+                                            "name": "baz"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 17,
+                                        "endLine": 4,
+                                        "endColumn": 35,
+                                        "start": 107,
+                                        "end": 125
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 35,
+                                    "start": 107,
+                                    "end": 125
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{foo?bar:baz}",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 127,
+                                    "end": 138,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 36
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 47
+                                        }
+                                    },
+                                    "range": [
+                                        127,
+                                        138
+                                    ],
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 127,
+                                            "end": 130,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 36
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 39
+                                                }
+                                            },
+                                            "range": [
+                                                127,
+                                                130
+                                            ],
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 131,
+                                            "end": 134,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 40
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 43
+                                                }
+                                            },
+                                            "range": [
+                                                131,
+                                                134
+                                            ],
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 135,
+                                            "end": 138,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 44
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 47
+                                                }
+                                            },
+                                            "range": [
+                                                135,
+                                                138
+                                            ],
+                                            "name": "baz"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 36,
+                                        "endLine": 4,
+                                        "endColumn": 49,
+                                        "start": 126,
+                                        "end": 139
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 36,
+                                    "endLine": 4,
+                                    "endColumn": 49,
+                                    "start": 126,
+                                    "end": 139
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 96,
+                            "start": 157,
+                            "end": 244,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 55,
+                                "start": 157,
+                                "end": 203
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 87,
+                                "endLine": 5,
+                                "endColumn": 96,
+                                "start": 235,
+                                "end": 244
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 2,
+                                    "end": 30,
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 2,
+                                            "end": 5,
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 8,
+                                            "end": 11,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "ConditionalExpression",
+                                        "start": 14,
+                                        "end": 30,
+                                        "test": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 14,
+                                                "end": 17,
+                                                "name": "baz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        "consequent": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 20,
+                                                "end": 23,
+                                                "name": "biz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        "alternate": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 26,
+                                                "end": 30,
+                                                "name": "buzz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 17,
+                                        "endLine": 5,
+                                        "endColumn": 54,
+                                        "start": 165,
+                                        "end": 202
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 17,
+                                    "endLine": 5,
+                                    "endColumn": 54,
+                                    "start": 165,
+                                    "end": 202
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{ foo ? bar : baz ? biz : buzz }",
+                                "value": {
+                                    "type": "ConditionalExpression",
+                                    "start": 205,
+                                    "end": 233,
+                                    "loc": {
+                                        "start": {
+                                            "line": 5,
+                                            "column": 56
+                                        },
+                                        "end": {
+                                            "line": 5,
+                                            "column": 84
+                                        }
+                                    },
+                                    "range": [
+                                        205,
+                                        233
+                                    ],
+                                    "test": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 205,
+                                            "end": 208,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 5,
+                                                    "column": 56
+                                                },
+                                                "end": {
+                                                    "line": 5,
+                                                    "column": 59
+                                                }
+                                            },
+                                            "range": [
+                                                205,
+                                                208
+                                            ],
+                                            "name": "foo"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "consequent": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 211,
+                                            "end": 214,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 5,
+                                                    "column": 62
+                                                },
+                                                "end": {
+                                                    "line": 5,
+                                                    "column": 65
+                                                }
+                                            },
+                                            "range": [
+                                                211,
+                                                214
+                                            ],
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "alternate": {
+                                        "type": "ConditionalExpression",
+                                        "start": 217,
+                                        "end": 233,
+                                        "loc": {
+                                            "start": {
+                                                "line": 5,
+                                                "column": 68
+                                            },
+                                            "end": {
+                                                "line": 5,
+                                                "column": 84
+                                            }
+                                        },
+                                        "range": [
+                                            217,
+                                            233
+                                        ],
+                                        "test": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 217,
+                                                "end": 220,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 5,
+                                                        "column": 68
+                                                    },
+                                                    "end": {
+                                                        "line": 5,
+                                                        "column": 71
+                                                    }
+                                                },
+                                                "range": [
+                                                    217,
+                                                    220
+                                                ],
+                                                "name": "baz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        "consequent": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 223,
+                                                "end": 226,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 5,
+                                                        "column": 74
+                                                    },
+                                                    "end": {
+                                                        "line": 5,
+                                                        "column": 77
+                                                    }
+                                                },
+                                                "range": [
+                                                    223,
+                                                    226
+                                                ],
+                                                "name": "biz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        "alternate": {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 229,
+                                                "end": 233,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 5,
+                                                        "column": 80
+                                                    },
+                                                    "end": {
+                                                        "line": 5,
+                                                        "column": 84
+                                                    }
+                                                },
+                                                "range": [
+                                                    229,
+                                                    233
+                                                ],
+                                                "name": "buzz"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 55,
+                                        "endLine": 5,
+                                        "endColumn": 87,
+                                        "start": 203,
+                                        "end": 235
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 55,
+                                    "endLine": 5,
+                                    "endColumn": 87,
+                                    "start": 203,
+                                    "end": 235
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

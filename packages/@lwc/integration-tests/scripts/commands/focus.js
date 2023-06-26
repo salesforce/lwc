@@ -17,7 +17,7 @@ module.exports = function (browser) {
     browser.addCommand(
         'focus',
         function () {
-            return this.execute(function (target) {
+            return browser.execute(function (target) {
                 target.focus();
             }, this);
         },

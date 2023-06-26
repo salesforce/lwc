@@ -405,7 +405,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         register = {};
     }
 
-    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
+    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
     // filters this node.
     function getHostChildNodes(host) {
         return Array.prototype.slice.call(host.childNodes).filter(function (n) {
@@ -515,14 +515,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
     }
 
-    // Should be kept in sync with the enum ReportingEventId in reporting.ts
-    var ReportingEventId = {
-        CrossRootAriaInSyntheticShadow: 0,
-        CompilerRuntimeVersionMismatch: 1,
-        NonStandardAriaReflection: 2,
-        TemplateMutation: 3,
-        StylesheetMutation: 4,
-    };
+    // Keep traversing up the prototype chain until a property descriptor is found
+    function getPropertyDescriptor(object, prop) {
+        do {
+            var descriptor = Object.getOwnPropertyDescriptor(object, prop);
+            if (descriptor) {
+                return descriptor;
+            }
+            object = Object.getPrototypeOf(object);
+        } while (object);
+    }
 
     return {
         clearRegister: clearRegister,
@@ -541,6 +543,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
         nonStandardAriaProperties: nonStandardAriaProperties,
-        ReportingEventId: ReportingEventId,
+        getPropertyDescriptor: getPropertyDescriptor,
     };
 })(LWC, jasmine, beforeAll);

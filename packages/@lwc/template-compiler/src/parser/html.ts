@@ -13,6 +13,7 @@ import { sourceLocation } from '../shared/ast';
 
 import ParserCtx from './parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
+import { parseFragment } from './expression-complex';
 
 function getLwcErrorFromParse5Error(code: string) {
     /* istanbul ignore else */
@@ -37,6 +38,15 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         const lwcError = getLwcErrorFromParse5Error(code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
+
+    // TODO [#3370]: remove experimental template expression flag
+    if (ctx.config.experimentalComplexExpressions) {
+        return parseFragment(source, {
+            ctx,
+            sourceCodeLocationInfo: true,
+            onParseError,
+        });
+    }
 
     return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,

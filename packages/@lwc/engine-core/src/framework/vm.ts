@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
 import {
     ArrayPush,
     ArraySlice,
@@ -43,8 +42,15 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
+import {
+    VNodes,
+    VCustomElement,
+    VNode,
+    VNodeType,
+    VBaseElement,
+    isVFragment,
+    VStatic,
+} from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -104,7 +110,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VBaseElement };
+export type RefVNodes = { [name: string]: VBaseElement | VStatic };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
@@ -248,10 +254,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
         runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
     }
-
-    if (process.env.NODE_ENV !== 'production') {
-        removeActiveVM(vm);
-    }
 }
 
 // this method is triggered by the diffing algo only when a vnode from the
@@ -349,7 +351,7 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        if (features.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
+        if (lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             vm.shadowMode = ShadowMode.Native;
         }
     }
@@ -390,20 +392,18 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
 
 // Validate and flatten any stylesheets defined as `static stylesheets`
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
-    if (features.ENABLE_PROGRAMMATIC_STYLESHEETS) {
-        warnOnStylesheetsMutation(ctor);
-        const { stylesheets } = ctor;
-        if (!isUndefined(stylesheets)) {
-            const valid = validateComponentStylesheets(vm, stylesheets);
+    warnOnStylesheetsMutation(ctor);
+    const { stylesheets } = ctor;
+    if (!isUndefined(stylesheets)) {
+        const valid = validateComponentStylesheets(vm, stylesheets);
 
-            if (valid) {
-                return flattenStylesheets(stylesheets);
-            } else if (process.env.NODE_ENV !== 'production') {
-                logError(
-                    `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
-                    vm
-                );
-            }
+        if (valid) {
+            return flattenStylesheets(stylesheets);
+        } else if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                vm
+            );
         }
     }
     return null;
@@ -442,7 +442,7 @@ function computeShadowMode(vm: VM, renderer: RendererAPI) {
         } else if (isNativeShadowDefined) {
             // Not combined with above condition because @lwc/features only supports identifiers in
             // the if-condition.
-            if (features.ENABLE_MIXED_SHADOW_MODE) {
+            if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
@@ -733,23 +733,35 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const {
-        children,
-        renderRoot,
-        renderer: { remove },
-    } = vm;
-
-    for (let i = 0, len = children.length; i < len; i++) {
-        const child = children[i];
-
-        if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, renderRoot);
-        }
-    }
+    recursivelyRemoveChildren(vm.children, vm);
     vm.children = EmptyArray;
 
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
+}
+
+// Helper function to remove all children of the root node.
+// If the set of children includes VFragment nodes, we need to remove the children of those nodes too.
+// Since VFragments can contain other VFragments, we need to traverse the entire of tree of VFragments.
+// If the set contains no VFragment nodes, no traversal is needed.
+function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
+    const {
+        renderRoot,
+        renderer: { remove },
+    } = vm;
+
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode = vnodes[i];
+
+        if (!isNull(vnode)) {
+            // VFragments are special; their .elm property does not point to the root element since they have no single root.
+            if (isVFragment(vnode)) {
+                recursivelyRemoveChildren(vnode.children, vm);
+            } else if (!isUndefined(vnode.elm)) {
+                remove(vnode.elm, renderRoot);
+            }
+        }
+    }
 }
 
 export function scheduleRehydration(vm: VM) {

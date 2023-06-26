@@ -20,7 +20,6 @@ import {
     isArray,
     isUndefined,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
@@ -96,7 +95,7 @@ function reportViolation(
         logWarnOnce(
             `Mutating the "${prop}" property on a ${type} ` +
                 `is deprecated and will be removed in a future version of LWC. ` +
-                `See: https://lwc.dev/guide/css#deprecated-template-mutation`
+                `See: https://sfdc.co/template-mutation`
         );
     }
     report(eventId, { propertyName: prop });
@@ -244,7 +243,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
 
 export function freezeTemplate(tmpl: Template) {
     // TODO [#2782]: remove this flag and delete the legacy behavior
-    if (features.ENABLE_FROZEN_TEMPLATE) {
+    if (lwcRuntimeFlags.ENABLE_FROZEN_TEMPLATE) {
         // Deep freeze the template
         freeze(tmpl);
         if (!isUndefined(tmpl.stylesheets)) {

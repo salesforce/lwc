@@ -471,7 +471,7 @@ export const ParserDiagnostics = {
     INVALID_OPTS_LWC_DYNAMIC: {
         code: 1128,
         message:
-            'Invalid lwc:dynamic usage. The LWC dynamic Directive must be enabled in order to use this feature.',
+            'Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -548,7 +548,7 @@ export const ParserDiagnostics = {
     LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT: {
         code: 1140,
         message:
-            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on a custom element.',
+            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on a custom element or special LWC managed elements denoted with lwc:*.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -589,7 +589,7 @@ export const ParserDiagnostics = {
         code: 1145,
         message:
             'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
-            'please visit https://lwc.dev/guide/reference#html-template-directives',
+            'please visit https://sfdc.co/template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
     },
@@ -630,16 +630,8 @@ export const ParserDiagnostics = {
         code: 1153,
         message:
             'Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. ' +
-            'For more information please visit https://lwc.dev/guide/reference#html-template-directives',
+            'For more information please visit https://sfdc.co/template-directives',
         level: DiagnosticLevel.Warning,
-        url: '',
-    },
-
-    INVALID_OPTS_LWC_SPREAD: {
-        code: 1154,
-        message:
-            'Invalid lwc:spread usage. The `lwc:spread` directive must be enabled in order to use this feature.',
-        level: DiagnosticLevel.Error,
         url: '',
     },
 
@@ -732,22 +724,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_OPTS_LWC_SLOT_BIND: {
-        code: 1167,
-        message:
-            'Invalid lwc:slot-bind usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_OPTS_LWC_SLOT_DATA: {
-        code: 1168,
-        message:
-            'Invalid lwc:slot-data usage. The "Scoped Slots" feature must be enabled in order to use this directive.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY: {
         code: 1169,
         message:
@@ -836,6 +812,130 @@ export const ParserDiagnostics = {
         code: 1181,
         message:
             'Invalid lwc:external directive usage: {0}. This directive is a boolean attribute and should not have a value.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    SINGLE_IF_DIRECTIVE_ALLOWED: {
+        code: 1182,
+        message: `Multiple if: directives found on '{0}'. Only one if: directive is allowed; the rest are ignored.Only one If directive is allowed. The rest are ignored.`,
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE: {
+        code: 1183,
+        message: `<lwc:component> must have an 'lwc:is' attribute.`,
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    UNSUPPORTED_LWC_TAG_NAME: {
+        code: 1184,
+        message: '{0} is not a special LWC tag name and will be treated as an HTML element.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    INVALID_LWC_IS_DIRECTIVE_VALUE: {
+        code: 1185,
+        message:
+            'Invalid lwc:is usage for value {0}. The value assigned to lwc:is must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    LWC_IS_INVALID_ELEMENT: {
+        code: 1186,
+        message:
+            'Invalid lwc:is usage for element {0}. The directive can only be used with <lwc:component>',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    DEPRECATED_LWC_DYNAMIC_ATTRIBUTE: {
+        code: 1187,
+        message: `The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.`,
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
+    INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS: {
+        code: 1188,
+        message:
+            'Invalid dynamic components usage, lwc:component and lwc:is can only be used when dynamic components have been enabled.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_PARAM: {
+        code: 1189,
+        message: "Template expression doesn't allow {0} in arrow function params.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_STATEMENTS_PROHIBITED: {
+        code: 1190,
+        message: 'Statements are disallowed in template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_MUTATION_OUTSIDE_ARROW: {
+        code: 1191,
+        message: 'Field mutations are only permitted within arrow functions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_DELETE_OP: {
+        code: 1192,
+        message: 'Use of the delete operator is prohibited within template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_BODY: {
+        code: 1193,
+        message: 'The body of arrow functions in template expressions must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_ARROW_FN_KIND: {
+        code: 1194,
+        message: 'Arrow functions in template expressions cannot be {0}.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_EARLY_STAGE_FEATURE: {
+        code: 1195,
+        message: 'Early-stage JS features are disallowed in template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_PROHIBITED_NODE_TYPE: {
+        code: 1196,
+        message: 'Use of {0} is disallowed within template expressions.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    // TODO [#3370]: remove this error if template expressions is removed
+    INVALID_EXPR_COMMENTS_DISALLOWED: {
+        code: 1197,
+        message: 'Use of comments is disallowed within template expressions.',
         level: DiagnosticLevel.Error,
         url: '',
     },

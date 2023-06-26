@@ -98,7 +98,7 @@ describe('global HTML Properties', () => {
                 propertyAndValueToSetInConstructor(prop, value);
                 expect(() => {
                     createElement('x-foo', { is: AttributeSetInConstructor });
-                }).toThrowErrorDev(Error, /The result must not have attributes./);
+                }).toLogErrorDev(/The result must not have attributes./);
             });
             describe('attribute custom getter/setter', () => {
                 beforeEach(() => {
@@ -189,13 +189,13 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInRender });
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowConnectedErrorDev(Error, /render\(\) method has side effects on the state of/);
+        }).toLogErrorDev(/render\(\) method has side effects on the state of/);
     });
 
     it('should throw if setting tabIndex during construction', function () {
         expect(() => {
             createElement('x-foo', { is: TabIndexSetInConstructor });
-        }).toThrowErrorDev(Error, /The result must not have attributes./);
+        }).toLogErrorDev(/The result must not have attributes./);
     });
 
     it('should not throw when tabIndex is not reflected to element', () => {

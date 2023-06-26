@@ -30,7 +30,7 @@ import { logWarnOnce } from '../shared/logger';
 // The goal of this code is to detect invalid cross-root ARIA references in synthetic shadow DOM.
 // These invalid references should be fixed before the offending components can be migrated to native shadow DOM.
 // When invalid usage is detected, we warn in dev mode and call the reporting API if enabled.
-// See: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates
+// See: https://sfdc.co/synthetic-aria
 //
 
 // Use the unpatched native getElementById/querySelectorAll rather than the synthetic one
@@ -39,6 +39,11 @@ const getElementById = globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID] as typeof docum
 const querySelectorAll = globalThis[
     KEY__NATIVE_QUERY_SELECTOR_ALL
 ] as typeof document.querySelectorAll;
+
+// This is a "handoff" from synthetic-shadow to engine-core – we want to clean up after ourselves
+// so nobody else can misuse these global APIs.
+delete globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID];
+delete globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL];
 
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
     return rootNode !== document && isTrue((rootNode as any).synthetic);
@@ -64,7 +69,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
         logWarnOnce(
             `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
                 `<${target.tagName.toLowerCase()}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
-                `For details, see: https://lwc.dev/guide/accessibility#link-ids-and-aria-attributes-from-different-templates`,
+                `For details, see: https://sfdc.co/synthetic-aria`,
             vm
         );
     }

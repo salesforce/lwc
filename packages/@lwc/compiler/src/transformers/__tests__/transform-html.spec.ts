@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';
 
@@ -122,5 +123,104 @@ describe('transformSync', () => {
         const { code, warnings } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
         expect(warnings).toHaveLength(0);
         expect(code).not.toMatch('renderer: renderer');
+    });
+
+    it('should return scope tokens', () => {
+        const template = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+        const { cssScopeTokens } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+
+        expect(cssScopeTokens).toEqual(['x-foo_foo', 'x-foo_foo-host']);
+    });
+
+    describe('dynamic components', () => {
+        it('should allow dynamic components when enableDynamicComponents is set to true', () => {
+            const template = `
+                <template>
+                    <lwc:component lwc:is={ctor}></lwc:component>
+                </template>
+            `;
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                enableDynamicComponents: true,
+                ...TRANSFORMATION_OPTIONS,
+            });
+
+            expect(warnings).toHaveLength(0);
+            expect(code).toContain('api_dynamic_component');
+        });
+
+        it('should not allow dynamic components when enableDynamicComponents is set to false', () => {
+            const template = `
+                <template>
+                    <lwc:component lwc:is={ctor}></lwc:component>
+                </template>
+            `;
+            expect(() =>
+                transformSync(template, 'foo.html', {
+                    enableDynamicComponents: false,
+                    ...TRANSFORMATION_OPTIONS,
+                })
+            ).toThrow('LWC1188: Invalid dynamic components usage');
+        });
+
+        it('should allow deprecated dynamic components when experimentalDynamicDirective is set to true', () => {
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                </template>
+            `;
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                experimentalDynamicDirective: true,
+                ...TRANSFORMATION_OPTIONS,
+            });
+
+            expect(warnings).toHaveLength(1);
+            expect(warnings?.[0]).toMatchObject({
+                message: expect.stringContaining('lwc:dynamic directive is deprecated'),
+            });
+            expect(code).toContain('api_deprecated_dynamic_component');
+        });
+
+        it('should not allow dynamic components when experimentalDynamicDirective is set to false', () => {
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                </template>
+            `;
+            expect(() =>
+                transformSync(template, 'foo.html', {
+                    experimentalDynamicDirective: false,
+                    ...TRANSFORMATION_OPTIONS,
+                })
+            ).toThrowErrorMatchingInlineSnapshot(
+                '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."'
+            );
+        });
+
+        it('gathers metrics around use of the deprecated dynamic components', () => {
+            const incrementCounter = jest.fn();
+            const template = `
+                <template>
+                    <x-dynamic lwc:dynamic={ctor}></x-dynamic>
+                    <x-dynamic-two lwc:dynamic={ctor2}></x-dynamic-two>
+                </template>
+            `;
+            transformSync(template, 'foo.html', {
+                instrumentation: {
+                    log: noop,
+                    incrementCounter,
+                },
+                experimentalDynamicDirective: true,
+                ...TRANSFORMATION_OPTIONS,
+            });
+
+            const calls = incrementCounter.mock.calls;
+            expect(calls).toHaveLength(2);
+            expect(calls[0][0]).toBe('lwc-dynamic-directive');
+            expect(calls[1][0]).toBe('lwc-dynamic-directive');
+        });
     });
 });

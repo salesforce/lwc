@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayIndexOf,
+    ArrayFindIndex,
     ArrayPush,
     ArraySlice,
     ArraySplice,
@@ -34,13 +34,30 @@ export const enum EventListenerContext {
 
 export const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakMap();
 
-interface WrappedListener extends EventListener {
+type ManagedListener = {
+    handleEvent: EventListener;
+    // Browsers use the listener reference or the listener object reference when deduping event
+    // bindings so we also track those references to simulate native behavior.
+    identity: EventListenerOrEventListenerObject;
     placement: EventListenerContext;
-    original: EventListener;
-}
+};
 
 interface ListenerMap {
-    [key: string]: WrappedListener[];
+    [key: string]: ManagedListener[];
+}
+
+function getEventHandler(listener: EventListenerOrEventListenerObject): EventListener {
+    if (isFunction(listener)) {
+        return listener;
+    } else {
+        return listener.handleEvent;
+    }
+}
+
+function isEventListenerOrEventListenerObject(
+    listener: any
+): listener is EventListenerOrEventListenerObject {
+    return isFunction(listener) || isFunction(listener?.handleEvent);
 }
 
 const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
@@ -63,54 +80,69 @@ export function getActualTarget(event: Event): EventTarget {
     return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
 }
 
-const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
+const shadowRootEventListenerMap: WeakMap<EventListenerOrEventListenerObject, ManagedListener> =
+    new WeakMap();
 
-function getWrappedShadowRootListener(listener: EventListener): WrappedListener {
-    if (!isFunction(listener)) {
+function getManagedShadowRootListener(
+    listener: EventListenerOrEventListenerObject
+): ManagedListener {
+    if (!isEventListenerOrEventListenerObject(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
-    let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
-    if (isUndefined(shadowRootWrappedListener)) {
-        shadowRootWrappedListener = function (event: Event) {
-            // currentTarget is always defined inside an event listener
-            let currentTarget = eventCurrentTargetGetter.call(event)!;
-            // If currentTarget is not an instance of a native shadow root then we're dealing with a
-            // host element whose synthetic shadow root must be accessed via getShadowRoot().
-            if (!isInstanceOfNativeShadowRoot(currentTarget)) {
-                currentTarget = getShadowRoot(currentTarget as Element);
-            }
-
-            const actualTarget = getActualTarget(event);
-            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                listener.call(currentTarget, event);
-            }
-        } as WrappedListener;
-        shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
-        shadowRootEventListenerMap.set(listener, shadowRootWrappedListener);
+    let managedListener = shadowRootEventListenerMap.get(listener);
+    if (isUndefined(managedListener)) {
+        managedListener = {
+            identity: listener,
+            placement: EventListenerContext.SHADOW_ROOT_LISTENER,
+            handleEvent(event: Event) {
+                // currentTarget is always defined inside an event listener
+                let currentTarget = eventCurrentTargetGetter.call(event)!;
+                // If currentTarget is not an instance of a native shadow root then we're dealing with a
+                // host element whose synthetic shadow root must be accessed via getShadowRoot().
+                if (!isInstanceOfNativeShadowRoot(currentTarget)) {
+                    currentTarget = getShadowRoot(currentTarget as Element);
+                }
+                const actualTarget = getActualTarget(event);
+                if (shouldInvokeListener(event, actualTarget, currentTarget)) {
+                    getEventHandler(listener).call(currentTarget, event);
+                }
+            },
+        };
+        shadowRootEventListenerMap.set(listener, managedListener);
     }
-    return shadowRootWrappedListener;
+    return managedListener;
 }
 
-const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
+const customElementEventListenerMap: WeakMap<EventListenerOrEventListenerObject, ManagedListener> =
+    new WeakMap();
 
-function getWrappedCustomElementListener(listener: EventListener): WrappedListener {
-    if (!isFunction(listener)) {
+function getManagedCustomElementListener(
+    listener: EventListenerOrEventListenerObject
+): ManagedListener {
+    if (!isEventListenerOrEventListenerObject(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
-    let customElementWrappedListener = customElementEventListenerMap.get(listener);
-    if (isUndefined(customElementWrappedListener)) {
-        customElementWrappedListener = function (event: Event) {
-            // currentTarget is always defined inside an event listener
-            const currentTarget = eventCurrentTargetGetter.call(event)!;
-            const actualTarget = getActualTarget(event);
-            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
-                listener.call(currentTarget, event);
-            }
-        } as WrappedListener;
-        customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
-        customElementEventListenerMap.set(listener, customElementWrappedListener);
+    let managedListener = customElementEventListenerMap.get(listener);
+    if (isUndefined(managedListener)) {
+        managedListener = {
+            identity: listener,
+            placement: EventListenerContext.CUSTOM_ELEMENT_LISTENER,
+            handleEvent(event: Event) {
+                // currentTarget is always defined inside an event listener
+                const currentTarget = eventCurrentTargetGetter.call(event)!;
+                const actualTarget = getActualTarget(event);
+                if (shouldInvokeListener(event, actualTarget, currentTarget)) {
+                    getEventHandler(listener).call(currentTarget, event);
+                }
+            },
+        };
+        customElementEventListenerMap.set(listener, managedListener);
     }
-    return customElementWrappedListener;
+    return managedListener;
+}
+
+function indexOfManagedListener(listeners: ManagedListener[], listener: ManagedListener): number {
+    return ArrayFindIndex.call(listeners, (l: ManagedListener) => l.identity === listener.identity);
 }
 
 function domListener(evt: Event) {
@@ -140,15 +172,15 @@ function domListener(evt: Event) {
         configurable: true,
     });
     // in case a listener adds or removes other listeners during invocation
-    const bookkeeping: WrappedListener[] = ArraySlice.call(listeners);
+    const bookkeeping: ManagedListener[] = ArraySlice.call(listeners);
 
     function invokeListenersByPlacement(placement: EventListenerContext) {
-        forEach.call(bookkeeping, (listener: WrappedListener) => {
+        forEach.call(bookkeeping, (listener: ManagedListener) => {
             if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
                 // making sure that the listener was not removed from the original listener queue
-                if (ArrayIndexOf.call(listeners, listener) !== -1) {
+                if (indexOfManagedListener(listeners, listener) !== -1) {
                     // all handlers on the custom element should be called with undefined 'this'
-                    listener.call(undefined, evt);
+                    listener.handleEvent.call(undefined, evt);
                 }
             }
         });
@@ -164,34 +196,33 @@ function domListener(evt: Event) {
     eventToContextMap.set(evt, EventListenerContext.UNKNOWN_LISTENER);
 }
 
-function attachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {
+function attachDOMListener(elm: Element, type: string, managedListener: ManagedListener) {
     const listenerMap = getEventMap(elm);
-    let cmpEventHandlers = listenerMap[type];
-    if (isUndefined(cmpEventHandlers)) {
-        cmpEventHandlers = listenerMap[type] = [];
+    let listeners = listenerMap[type];
+    if (isUndefined(listeners)) {
+        listeners = listenerMap[type] = [];
     }
     // Prevent identical listeners from subscribing to the same event type.
-    // TODO [#1824]: Options will also play a factor when we introduce support for them (#1824).
-    if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
+    // TODO [#1824]: Options will also play a factor in deduping if we introduce options support
+    if (indexOfManagedListener(listeners, managedListener) !== -1) {
         return;
     }
     // only add to DOM if there is no other listener on the same placement yet
-    if (cmpEventHandlers.length === 0) {
-        // super.addEventListener() - this will not work on
+    if (listeners.length === 0) {
         addEventListener.call(elm, type, domListener);
     }
-    ArrayPush.call(cmpEventHandlers, wrappedListener);
+    ArrayPush.call(listeners, managedListener);
 }
 
-function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {
+function detachDOMListener(elm: Element, type: string, managedListener: ManagedListener) {
     const listenerMap = getEventMap(elm);
-    let p: number;
-    let listeners: EventListener[] | undefined;
+    let index: number;
+    let listeners: ManagedListener[] | undefined;
     if (
         !isUndefined((listeners = listenerMap[type])) &&
-        (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1
+        (index = indexOfManagedListener(listeners, managedListener)) !== -1
     ) {
-        ArraySplice.call(listeners, p, 1);
+        ArraySplice.call(listeners, index, 1);
         // only remove from DOM if there is no other listener on the same placement
         if (listeners.length === 0) {
             removeEventListener.call(elm, type, domListener);
@@ -202,71 +233,67 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
 export function addCustomElementEventListener(
     this: Element,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        if (!isFunction(listener)) {
+        if (!isEventListenerOrEventListenerObject(listener)) {
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
                     this
-                )} for event "${type}". Expected an EventListener but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
             );
         }
     }
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(listener);
-        attachDOMListener(this, type, wrappedListener);
+    if (isEventListenerOrEventListenerObject(listener)) {
+        const managedListener = getManagedCustomElementListener(listener);
+        attachDOMListener(this, type, managedListener);
     }
 }
 
 export function removeCustomElementEventListener(
     this: Element,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(listener);
-        detachDOMListener(this, type, wrappedListener);
+    if (isEventListenerOrEventListenerObject(listener)) {
+        const managedListener = getManagedCustomElementListener(listener);
+        detachDOMListener(this, type, managedListener);
     }
 }
 
 export function addShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        if (!isFunction(listener)) {
+        if (!isEventListenerOrEventListenerObject(listener)) {
             throw new TypeError(
                 `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
                     sr
-                )} for event "${type}". Expected an EventListener but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
             );
         }
     }
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
+    if (isEventListenerOrEventListenerObject(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(listener);
-        attachDOMListener(elm, type, wrappedListener);
+        const managedListener = getManagedShadowRootListener(listener);
+        attachDOMListener(elm, type, managedListener);
     }
 }
 
 export function removeShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    listener: unknown,
     _options?: boolean | AddEventListenerOptions
 ) {
-    // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
+    if (isEventListenerOrEventListenerObject(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(listener);
-        detachDOMListener(elm, type, wrappedListener);
+        const managedListener = getManagedShadowRootListener(listener);
+        detachDOMListener(elm, type, managedListener);
     }
 }

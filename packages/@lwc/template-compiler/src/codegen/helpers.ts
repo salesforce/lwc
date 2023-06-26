@@ -4,22 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { HTML_NAMESPACE } from '@lwc/shared';
 import * as t from '../shared/estree';
+import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
-    isParentNode,
-    isForBlock,
     isBaseElement,
-    isIf,
-    isElement,
-    isText,
     isComment,
     isConditionalParentBlock,
+    isElement,
+    isForBlock,
+    isIf,
+    isParentNode,
+    isText,
 } from '../shared/ast';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
-
-import { isLiteral } from '../shared/estree';
+import {
+    TEMPLATE_FUNCTION_NAME,
+    TEMPLATE_PARAMS,
+    STATIC_SAFE_DIRECTIVES,
+} from '../shared/constants';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -216,11 +220,17 @@ export function parseClassNames(classNames: string): string[] {
 
 function isStaticNode(node: BaseElement): boolean {
     let result = true;
-    const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+    const { name: nodeName, namespace = '', attributes, directives, properties } = node;
 
+    if (namespace !== HTML_NAMESPACE) {
+        // TODO [#3313]: re-enable static optimization for SVGs once scope token is always lowercase
+        return false;
+    }
+
+    // it is an element
     result &&= isElement(node);
 
-    // it is an element.
+    // all attrs are static-safe
     result &&= attributes.every(({ name, value }) => {
         return (
             isLiteral(value) &&
@@ -237,12 +247,25 @@ function isStaticNode(node: BaseElement): boolean {
                 isFragmentOnlyUrl(value.value as string)
             )
         );
-    }); // all attrs are static
-    result &&= directives.length === 0; // do not have any directive
-    result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
-    result &&= listeners.length === 0; // do not have any event listener
+    });
+
+    // all directives are static-safe
+    result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
+
+    // all properties are static
+    result &&= properties.every((prop) => isLiteral(prop.value));
 
     return result;
+}
+
+function isSafeStaticChild(childNode: ChildNode) {
+    if (!isBaseElement(childNode)) {
+        // don't need to check non-base-element nodes, because they don't have listeners/directives
+        return true;
+    }
+    // Bail out if any children have event listeners or directives. These are only allowed at the top level of a
+    // static fragment, because the engine currently cannot set listeners/refs/etc. on nodes inside a static fragment.
+    return childNode.listeners.length === 0 && childNode.directives.length === 0;
 }
 
 function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
@@ -258,7 +281,9 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
         node.children.forEach((childNode) => {
             collectStaticNodes(childNode, staticNodes, state);
 
-            childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+            childrenAreStatic &&= staticNodes.has(childNode);
+
+            childrenAreStatic &&= isSafeStaticChild(childNode);
         });
 
         // for IfBlock and ElseifBlock, traverse down the else branch

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, assert, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
-import features from '@lwc/features';
+import { ArrayReduce, ArrayPush, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
 
 import { arrayFromCollection } from '../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
@@ -39,18 +38,20 @@ function foldSlotElement(slot: HTMLElement) {
 
 function isNodeSlotted(host: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            host instanceof HTMLElement,
-            `isNodeSlotted() should be called with a host as the first argument instead of ${host}`
-        );
-        assert.invariant(
-            node instanceof Node,
-            `isNodeSlotted() should be called with a node as the second argument instead of ${node}`
-        );
-        assert.invariant(
-            compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS,
-            `isNodeSlotted() should never be called with a node that is not a child node of ${host}`
-        );
+        if (!(host instanceof HTMLElement)) {
+            // eslint-disable-next-line no-console
+            console.error(`isNodeSlotted() should be called with a host as the first argument`);
+        }
+        if (!(node instanceof Node)) {
+            // eslint-disable-next-line no-console
+            console.error(`isNodeSlotted() should be called with a node as the second argument`);
+        }
+        if (!(compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS)) {
+            // eslint-disable-next-line no-console
+            console.error(
+                `isNodeSlotted() should never be called with a node that is not a child node of the given host`
+            );
+        }
     }
     const hostKey = getNodeKey(host);
     // this routine assumes that the node is coming from a different shadow (it is not owned by the host)
@@ -135,28 +136,28 @@ export function isSlotElement(node: Node): node is HTMLSlotElement {
 
 export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            owner instanceof HTMLElement,
-            `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`
-        );
-        assert.invariant(
-            node instanceof Node,
-            `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`
-        );
-        assert.invariant(
-            compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS,
-            `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`
-        );
+        if (!(owner instanceof HTMLElement)) {
+            // eslint-disable-next-line no-console
+            console.error(`isNodeOwnedBy() should be called with an element as the first argument`);
+        }
+        if (!(node instanceof Node)) {
+            // eslint-disable-next-line no-console
+            console.error(`isNodeOwnedBy() should be called with a node as the second argument`);
+        }
+        if (!(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS)) {
+            // eslint-disable-next-line no-console
+            console.error(
+                `isNodeOwnedBy() should never be called with a node that is not a child node of of the given owner`
+            );
+        }
     }
     const ownerKey = getNodeNearestOwnerKey(node);
 
     if (isUndefined(ownerKey)) {
-        if (features.ENABLE_LIGHT_GET_ROOT_NODE_PATCH) {
-            // in case of root level light DOM element slotting into a synthetic shadow
-            const host = parentNodeGetter.call(node);
-            if (!isNull(host) && isSyntheticSlotElement(host)) {
-                return false;
-            }
+        // in case of root level light DOM element slotting into a synthetic shadow
+        const host = parentNodeGetter.call(node);
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
+            return false;
         }
 
         // in case of manually inserted elements

@@ -1,5 +1,5 @@
 import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
-import { ReportingEventId, nonStandardAriaProperties } from 'test-utils';
+import { nonStandardAriaProperties } from 'test-utils';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 
@@ -25,8 +25,8 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                 ];
 
                 scenarios.forEach(({ name, Ctor, tagName }) => {
-                    const inComponentWarning = `Error: [LWC warn]: Element <div> owned by <${tagName}> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`;
-                    const outsideComponentWarning = `Error: [LWC warn]: Element <span> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://lwc.dev/guide/accessibility#deprecated-aria-reflected-properties`;
+                    const inComponentWarning = `Error: [LWC warn]: Element <div> owned by <${tagName}> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`;
+                    const outsideComponentWarning = `Error: [LWC warn]: Element <span> uses non-standard property "${prop}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`;
 
                     describe(name, () => {
                         let elm;
@@ -64,17 +64,21 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                             expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName,
                                         propertyName: prop,
+                                        isSetter: true,
+                                        setValueType: 'string',
                                     },
                                 ],
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName,
                                         propertyName: prop,
+                                        isSetter: false,
+                                        setValueType: undefined,
                                     },
                                 ],
                             ]);
@@ -92,17 +96,21 @@ if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
                             expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName: undefined,
                                         propertyName: prop,
+                                        isSetter: true,
+                                        setValueType: 'string',
                                     },
                                 ],
                                 [
-                                    ReportingEventId.NonStandardAriaReflection,
+                                    'NonStandardAriaReflection',
                                     {
                                         tagName: undefined,
                                         propertyName: prop,
+                                        isSetter: false,
+                                        setValueType: undefined,
                                     },
                                 ],
                             ]);

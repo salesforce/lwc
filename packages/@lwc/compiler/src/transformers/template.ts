@@ -12,7 +12,7 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-import compile from '@lwc/template-compiler';
+import { compile } from '@lwc/template-compiler';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
@@ -29,23 +29,31 @@ export default function templateTransform(
 ): TransformResult {
     const {
         experimentalDynamicComponent,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
         preserveHtmlComments,
         enableStaticContentOptimization,
         customRendererConfig,
-        enableLwcSpread,
-        enableScopedSlots,
+        enableDynamicComponents,
+        experimentalDynamicDirective: deprecatedDynamicDirective,
+        instrumentation,
+        namespace,
+        name,
     } = options;
-    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
+    const experimentalDynamicDirective =
+        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
 
     let result;
     try {
         result = compile(src, {
             experimentalDynamicDirective,
+            // TODO [#3370]: remove experimental template expression flag
+            experimentalComplexExpressions,
             preserveHtmlComments,
             enableStaticContentOptimization,
             customRendererConfig,
-            enableLwcSpread,
-            enableScopedSlots,
+            enableDynamicComponents,
+            instrumentation,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
@@ -60,12 +68,20 @@ export default function templateTransform(
     // thrown above. As for "Log" and "Fatal", they are currently unused.
     const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
+    const scopeToken = escapeScopeToken(
+        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
+    );
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, options),
+        code: serialize(result.code, filename, scopeToken),
         map: { mappings: '' },
         warnings,
+        cssScopeTokens: [
+            scopeToken,
+            `${scopeToken}-host`, // implicit scope token created by `makeHostToken()` in `@lwc/engine-core`
+        ],
     };
 }
 
@@ -75,16 +91,10 @@ function escapeScopeToken(input: string) {
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
-function serialize(
-    code: string,
-    filename: string,
-    { namespace, name }: NormalizedTransformOptions
-): string {
+function serialize(code: string, filename: string, scopeToken: string): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
-    const scopeToken = escapeScopeToken(
-        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
-    );
+
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;

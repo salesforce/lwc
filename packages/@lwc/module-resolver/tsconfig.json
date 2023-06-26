@@ -1,11 +1,5 @@
 {
     "extends": "../../../tsconfig.json",
 
-    "compilerOptions": {
-        "outDir": "dist/commonjs",
-        "declarationDir": "dist/types"
-    },
-
-    "include": ["src/"],
-    "exclude": ["**/__tests__"]
+    "include": ["src/"]
 }

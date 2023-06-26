@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlAttributeToProperty, htmlPropertyToAttribute } from '../html-attributes';
+import { htmlPropertyToAttribute, kebabCaseToCamelCase } from '../html-attributes';
 
-const propToAttr = [
-    // Standard attribute mapping
+type StringPair = [prop: string, attr: string];
+
+const customAttributeMapping = [
     ['foo', 'foo'],
     ['fooBar', 'foo-bar'],
     ['fooBarBaz', 'foo-bar-baz'],
     ['FooBar', '-foo-bar'],
+] as StringPair[];
 
-    // Aria attribute mapping
-    ['ariaActiveDescendant', 'aria-activedescendant'],
+const ariaAttributeMapping = [
     ['ariaAtomic', 'aria-atomic'],
     ['ariaAutoComplete', 'aria-autocomplete'],
     ['ariaBusy', 'aria-busy'],
@@ -22,27 +23,20 @@ const propToAttr = [
     ['ariaColCount', 'aria-colcount'],
     ['ariaColIndex', 'aria-colindex'],
     ['ariaColSpan', 'aria-colspan'],
-    ['ariaControls', 'aria-controls'],
     ['ariaCurrent', 'aria-current'],
-    ['ariaDescribedBy', 'aria-describedby'],
-    ['ariaDetails', 'aria-details'],
     ['ariaDisabled', 'aria-disabled'],
-    ['ariaErrorMessage', 'aria-errormessage'],
     ['ariaExpanded', 'aria-expanded'],
-    ['ariaFlowTo', 'aria-flowto'],
     ['ariaHasPopup', 'aria-haspopup'],
     ['ariaHidden', 'aria-hidden'],
     ['ariaInvalid', 'aria-invalid'],
     ['ariaKeyShortcuts', 'aria-keyshortcuts'],
     ['ariaLabel', 'aria-label'],
-    ['ariaLabelledBy', 'aria-labelledby'],
     ['ariaLevel', 'aria-level'],
     ['ariaLive', 'aria-live'],
     ['ariaModal', 'aria-modal'],
     ['ariaMultiLine', 'aria-multiline'],
     ['ariaMultiSelectable', 'aria-multiselectable'],
     ['ariaOrientation', 'aria-orientation'],
-    ['ariaOwns', 'aria-owns'],
     ['ariaPlaceholder', 'aria-placeholder'],
     ['ariaPosInSet', 'aria-posinset'],
     ['ariaPressed', 'aria-pressed'],
@@ -61,8 +55,21 @@ const propToAttr = [
     ['ariaValueNow', 'aria-valuenow'],
     ['ariaValueText', 'aria-valuetext'],
     ['role', 'role'],
+] as StringPair[];
 
-    // Special attribute mapping
+// TODO [#2733]: remove non-standard ARIA reflection
+const nonStandardAriaMapping = [
+    ['ariaActiveDescendant', 'aria-activedescendant'],
+    ['ariaControls', 'aria-controls'],
+    ['ariaDescribedBy', 'aria-describedby'],
+    ['ariaDetails', 'aria-details'],
+    ['ariaErrorMessage', 'aria-errormessage'],
+    ['ariaFlowTo', 'aria-flowto'],
+    ['ariaLabelledBy', 'aria-labelledby'],
+    ['ariaOwns', 'aria-owns'],
+] as StringPair[];
+
+const specialHtmlMapping = [
     ['accessKey', 'accesskey'],
     ['readOnly', 'readonly'],
     ['tabIndex', 'tabindex'],
@@ -79,18 +86,26 @@ const propToAttr = [
     ['noValidate', 'novalidate'],
     ['useMap', 'usemap'],
     ['htmlFor', 'for'],
-];
+] as StringPair[];
 
-const attrToProp = propToAttr.map(([prop, attr]) => [attr, prop]);
+const attrToProp = ([prop, attr]: StringPair) => [attr, prop];
 
 describe('htmlPropertyToAttribute', () => {
-    test.each(propToAttr)('htmlPropertyToAttribute("%s") returns "%s"', (prop, attr) => {
+    test.each([
+        ...customAttributeMapping,
+        ...ariaAttributeMapping,
+        ...nonStandardAriaMapping,
+        ...specialHtmlMapping,
+    ])('htmlPropertyToAttribute("%s") returns "%s"', (prop, attr) => {
         expect(htmlPropertyToAttribute(prop)).toEqual(attr);
     });
 });
 
-describe('htmlAttributeToProperty', () => {
-    test.each(attrToProp)('htmlAttributeToProperty("%s") returns "%s"', (attr, prop) => {
-        expect(htmlAttributeToProperty(attr)).toEqual(prop);
-    });
+describe('kebabCaseToCamelCase', () => {
+    test.each(customAttributeMapping.map(attrToProp))(
+        'kebabCaseToCamelCase("%s") returns "%s"',
+        (attr, prop) => {
+            expect(kebabCaseToCamelCase(attr)).toEqual(prop);
+        }
+    );
 });

@@ -49,11 +49,15 @@ export interface VScopedSlotFragment extends BaseVNode {
     slotName: unknown;
 }
 
+export type VStaticElementData = Pick<VElementData, 'on' | 'ref'>;
+
 export interface VStatic extends BaseVNode {
-    type: VNodeType.Static;
-    sel: undefined;
-    key: Key;
-    fragment: Element;
+    readonly type: VNodeType.Static;
+    readonly sel: undefined;
+    readonly key: Key;
+    readonly fragment: Element;
+    readonly data: VStaticElementData | undefined;
+    elm: Element | undefined;
 }
 
 export interface VFragment extends BaseVNode, BaseVParent {
@@ -65,6 +69,8 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
     // which diffing strategy to use.
     stable: 0 | 1;
+    leading: VText;
+    trailing: VText;
 }
 
 export interface VText extends BaseVNode {
@@ -104,7 +110,7 @@ export interface VNodeData {
     // All props are readonly because VElementData may be shared across VNodes
     // due to hoisting optimizations
     readonly props?: Readonly<Record<string, any>>;
-    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean | null | undefined>>;
     readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
@@ -133,7 +139,7 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
     return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
-export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
+export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
 }
 

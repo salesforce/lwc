@@ -29,6 +29,7 @@ const ATTRIBUTE_NAME_CHAR = [
     '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
 ].join('');
 
+// eslint-disable-next-line no-misleading-character-class
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
 export const SUPPORTED_SVG_TAGS = new Set([
@@ -162,3 +163,6 @@ export const ATTR_NAME = {
     XLINK_HREF: 'xlink:href',
 };
 export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
+
+// TODO [#3370]: remove experimental template expression flag
+export const TMPL_EXPR_ECMASCRIPT_EDITION = 2022;
