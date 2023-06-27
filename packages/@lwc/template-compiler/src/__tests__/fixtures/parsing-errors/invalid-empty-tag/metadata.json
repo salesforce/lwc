@@ -12,9 +12,9 @@
             }
         },
         {
-            "code": 1148,
-            "message": "LWC1148: Invalid HTML syntax: closing-of-element-with-open-child-elements. This will not be supported in future versions of LWC. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-closing-of-element-with-open-child-elements",
-            "level": 2,
+            "code": 1058,
+            "message": "LWC1058: Invalid HTML syntax: closing-of-element-with-open-child-elements. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-closing-of-element-with-open-child-elements",
+            "level": 1,
             "location": {
                 "line": 3,
                 "column": 1,

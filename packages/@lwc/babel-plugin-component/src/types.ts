@@ -20,6 +20,7 @@ export interface LwcBabelPluginOptions {
     namespace?: string;
     name?: string;
     instrumentation?: InstrumentationObject;
+    apiVersion?: number;
 }
 
 export interface LwcBabelPluginPass extends PluginPass {

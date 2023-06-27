@@ -4,28 +4,32 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { HIGHEST_API_VERSION } from '@lwc/shared';
 import { normalizeConfig } from '../config';
 
 describe('customRendererConfig normalization', () => {
     it('should lower case all tag names and attributes', () => {
-        expect(
-            normalizeConfig({
-                customRendererConfig: {
-                    directives: [],
-                    elements: [
-                        {
-                            tagName: 'DIV',
-                        },
+        const normalizedConfig = normalizeConfig({
+            customRendererConfig: {
+                directives: [],
+                elements: [
+                    {
+                        tagName: 'DIV',
+                    },
 
-                        {
-                            tagName: 'SPAN',
-                            attributes: ['STYLE'],
-                        },
-                    ],
-                },
-            })
-        ).toMatchInlineSnapshot(`
+                    {
+                        tagName: 'SPAN',
+                        attributes: ['STYLE'],
+                    },
+                ],
+            },
+        });
+        expect(normalizedConfig.apiVersion).toBe(HIGHEST_API_VERSION);
+        normalizedConfig.apiVersion = -1; // avoid testing in inline snapshot so that Jest can easily update it
+
+        expect(normalizedConfig).toMatchInlineSnapshot(`
             {
+              "apiVersion": -1,
               "customRendererConfig": {
                 "directives": [],
                 "elements": [

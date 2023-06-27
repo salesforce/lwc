@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import {
+    assert,
+    isFalse,
+    isFunction,
+    isUndefined,
+    APIVersion,
+    LOWEST_API_VERSION,
+} from '@lwc/shared';
 
 import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 
@@ -18,6 +25,7 @@ import { checkVersionMismatch } from './check-version-mismatch';
 type ComponentConstructorMetadata = {
     tmpl: Template;
     sel: string;
+    apiVersion: APIVersion;
 };
 const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
     new Map();
@@ -53,6 +61,19 @@ export function getComponentRegisteredTemplate(
 
 export function getComponentRegisteredName(Ctor: LightningElementConstructor): string | undefined {
     return registeredComponentMap.get(Ctor)?.sel;
+}
+
+export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVersion {
+    const metadata = registeredComponentMap.get(Ctor);
+    const apiVersion: APIVersion | undefined = metadata?.apiVersion;
+
+    if (isUndefined(apiVersion)) {
+        // This should only occur in our Karma tests; in practice every component
+        // is registered, and so this code path should not get hit. But to be safe,
+        // return the lowest possible version.
+        return LOWEST_API_VERSION;
+    }
+    return apiVersion;
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {

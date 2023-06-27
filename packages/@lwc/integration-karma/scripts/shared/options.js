@@ -23,6 +23,7 @@ const DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER = Boolean(
     process.env.DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER
 );
 const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
+const API_VERSION = process.env.API_VERSION && parseInt(process.env.API_VERSION, 10);
 
 module.exports = {
     // Test configuration
@@ -33,6 +34,7 @@ module.exports = {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
+    API_VERSION,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
 

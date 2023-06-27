@@ -8,19 +8,24 @@ import * as parse5 from 'parse5';
 import * as he from 'he';
 
 import { ParserDiagnostics } from '@lwc/errors';
-
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { sourceLocation } from '../shared/ast';
 
 import ParserCtx from './parser';
-import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
+import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
 import { parseFragment } from './expression-complex';
 
-function getLwcErrorFromParse5Error(code: string) {
+function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
     /* istanbul ignore else */
     if (errorCodesToErrorOn.has(code)) {
         return ParserDiagnostics.INVALID_HTML_SYNTAX;
-    } else if (errorCodesToWarnOn.has(code)) {
-        return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
+    } else if (errorCodesToWarnOnInOlderAPIVersions.has(code)) {
+        // In newer API versions, all parse 5 errors are errors, not warnings
+        if (isAPIFeatureEnabled(APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS, ctx.apiVersion)) {
+            return ParserDiagnostics.INVALID_HTML_SYNTAX;
+        } else {
+            return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
+        }
     } else {
         // It should be impossible to reach here; we have a test in parser.spec.ts to ensure
         // all error codes are accounted for. But just to be safe, make it a warning.
@@ -35,7 +40,7 @@ export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
 
-        const lwcError = getLwcErrorFromParse5Error(code);
+        const lwcError = getLwcErrorFromParse5Error(ctx, code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
 

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
-import { isUndefined, isBoolean, isObject } from '@lwc/shared';
+import { isUndefined, isBoolean, isObject, getAPIVersionFromNumber } from '@lwc/shared';
 import { CustomRendererConfig } from '@lwc/template-compiler';
 
 type RecursiveRequired<T> = {
@@ -87,6 +87,7 @@ export interface TransformOptions {
     disableSyntheticShadowSupport?: boolean;
     enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
+    apiVersion?: number;
 }
 
 type RequiredTransformOptions = Omit<
@@ -197,11 +198,14 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options.experimentalDynamicComponent,
     };
 
+    const apiVersion = getAPIVersionFromNumber(options.apiVersion);
+
     return {
         ...DEFAULT_OPTIONS,
         ...options,
         stylesheetConfig,
         outputConfig,
         experimentalDynamicComponent,
+        apiVersion,
     };
 }

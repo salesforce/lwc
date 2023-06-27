@@ -32,6 +32,7 @@ export default function scriptTransform(
         namespace,
         name,
         instrumentation,
+        apiVersion,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -40,6 +41,7 @@ export default function scriptTransform(
         namespace,
         name,
         instrumentation,
+        apiVersion,
     };
 
     const plugins = [

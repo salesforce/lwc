@@ -55,6 +55,9 @@ commands:
       force_native_shadow_mode:
         type: boolean
         default: false
+      api_version:
+        type: integer
+        default: -1 # treated as "latest" in this config
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
@@ -86,6 +89,9 @@ commands:
                  exit 1
                fi
             }
+            if [ "<< parameters.api_version >>" -ne "-1" ]; then
+              export API_VERSION=<< parameters.api_version >>
+            fi
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
@@ -176,6 +182,9 @@ commands:
       force_native_shadow_mode:
         type: boolean
         default: false
+      api_version:
+        type: integer
+        default: -1 # treated as "latest" in this config
       enable_native_custom_element_lifecycle:
         type: boolean
         default: false
@@ -204,6 +213,7 @@ commands:
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           node_env_production: << parameters.node_env_production >>
           disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
+          api_version: << parameters.api_version >>
           compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
@@ -283,6 +293,11 @@ jobs:
       - run_karma:
           disable_synthetic: true
           enable_native_custom_element_lifecycle: true
+      - run_karma:
+          api_version: 58
+      - run_karma:
+          disable_synthetic: true
+          api_version: 58
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true

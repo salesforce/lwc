@@ -15,6 +15,7 @@ const {
     DISABLE_ARIA_REFLECTION_POLYFILL,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     NODE_ENV_FOR_TEST,
+    API_VERSION,
 } = require('../../shared/options');
 
 // These are used to decide the directory that coverage is written to
@@ -26,6 +27,7 @@ const TAGS = [
     DISABLE_ARIA_REFLECTION_POLYFILL && 'disable-aria-polyfill',
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER && 'disable-synthetic-in-compiler',
     `NODE_ENV-${NODE_ENV_FOR_TEST}`,
+    API_VERSION && `api-version-${API_VERSION}`,
 ].filter(Boolean);
 
 module.exports = TAGS;

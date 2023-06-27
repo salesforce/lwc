@@ -9,11 +9,13 @@ import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import { Visitor } from '@babel/core';
+import { getAPIVersionFromNumber } from '@lwc/shared';
 import {
     COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,
     REGISTER_COMPONENT_ID,
     TEMPLATE_KEY,
+    API_VERSION_KEY,
 } from './constants';
 import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
@@ -73,11 +75,22 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             }
         }
 
+        const apiVersion = getAPIVersionFromNumber(state.opts.apiVersion);
+
+        // Example:
+        //     registerComponent(cmp, {
+        //       tmpl: template,
+        //       sel: 'x-foo',
+        //       apiVersion: '58'
+        //     })
         return t.callExpression(registerComponentId, [
             node as types.Expression,
             t.objectExpression([
                 t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
                 t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
+                // It's important that, at this point, we have an APIVersion rather than just a number.
+                // The client needs to trust the server that it's providing an actual known API version
+                t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
             ]),
         ]);
     }

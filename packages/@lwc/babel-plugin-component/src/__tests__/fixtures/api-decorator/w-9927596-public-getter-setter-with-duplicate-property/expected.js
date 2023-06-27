@@ -15,5 +15,6 @@ _registerDecorators(Text, {
 });
 export default _registerComponent(Text, {
   tmpl: _tmpl,
-  sel: "lwc-test"
+  sel: "lwc-test",
+  apiVersion: 9999999
 });

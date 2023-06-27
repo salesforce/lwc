@@ -12,6 +12,7 @@ import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
 import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
+import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {
@@ -44,6 +45,8 @@ export interface RollupLwcOptions {
     enableLwcSpread?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
+    /** The API version to associate with the compiled module */
+    apiVersion?: APIVersion;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -154,6 +157,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
+        apiVersion,
     } = pluginOptions;
 
     return {
@@ -304,6 +308,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             const [namespace, name] =
                 specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
+            const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
+
             const { code, map, warnings } = transformSync(src, filename, {
                 name,
                 namespace,
@@ -318,6 +324,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 preserveHtmlComments,
                 scopedStyles: scoped,
                 disableSyntheticShadowSupport,
+                apiVersion: apiVersionToUse,
             });
 
             if (warnings) {

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { HTML_NAMESPACE } from '@lwc/shared';
+import { APIVersion, HTML_NAMESPACE, APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
@@ -221,12 +221,16 @@ export function parseClassNames(classNames: string): string[] {
         .filter((className) => className.length);
 }
 
-function isStaticNode(node: BaseElement): boolean {
+function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     let result = true;
     const { name: nodeName, namespace = '', attributes, directives, properties } = node;
 
-    if (namespace !== HTML_NAMESPACE) {
-        // TODO [#3313]: re-enable static optimization for SVGs once scope token is always lowercase
+    // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
+    // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
+    if (
+        !isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion) &&
+        namespace !== HTML_NAMESPACE
+    ) {
         return false;
     }
 
@@ -295,7 +299,9 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
         }
 
         nodeIsStatic =
-            isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);
+            isBaseElement(node) &&
+            !isCustomRendererHookRequired(node, state) &&
+            isStaticNode(node, state.config.apiVersion);
     }
 
     if (nodeIsStatic && childrenAreStatic) {

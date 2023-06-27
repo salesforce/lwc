@@ -11,7 +11,7 @@ import {
     registerTemplate,
     registerDecorators,
 } from '@lwc/engine-dom';
-import { globalThis } from '@lwc/shared';
+import { globalThis, LOWEST_API_VERSION } from '@lwc/shared';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
 const LightningElementFormatter = globalThis['devtoolsFormatters'].find((f: any) => {
@@ -62,7 +62,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), sel: 'x-foo' }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', apiVersion: LOWEST_API_VERSION }
         );
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
@@ -90,7 +90,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), sel: 'x-foo' }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', apiVersion: LOWEST_API_VERSION }
         );
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
@@ -111,7 +111,7 @@ describe('Lightning Element formatter', () => {
                     componentInstance = this;
                 }
             },
-            { tmpl: registerTemplate(() => []), sel: 'x-foo' }
+            { tmpl: registerTemplate(() => []), sel: 'x-foo', apiVersion: LOWEST_API_VERSION }
         );
 
         registerDecorators(Component, {

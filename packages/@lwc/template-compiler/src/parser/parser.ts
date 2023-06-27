@@ -14,7 +14,7 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-
+import { APIVersion } from '@lwc/shared';
 import { NormalizedConfig } from '../config';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import {
@@ -127,6 +127,7 @@ export default class ParserCtx {
 
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
+    apiVersion: APIVersion;
 
     constructor(source: String, config: NormalizedConfig) {
         this.source = source;
@@ -141,6 +142,7 @@ export default class ParserCtx {
             ? TMPL_EXPR_ECMASCRIPT_EDITION
             : 2020;
         this.instrumentation = config.instrumentation;
+        this.apiVersion = config.apiVersion;
     }
 
     getSource(start: number, end: number): string {

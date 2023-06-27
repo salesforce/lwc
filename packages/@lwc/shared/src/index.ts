@@ -6,6 +6,7 @@
  */
 import * as assert from './assert';
 
+export * from './api-version';
 export * from './aria';
 export * from './language';
 export * from './global-this';

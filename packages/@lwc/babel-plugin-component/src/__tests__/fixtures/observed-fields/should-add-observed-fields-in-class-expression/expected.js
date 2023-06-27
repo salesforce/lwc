@@ -34,5 +34,6 @@ const Test = _registerDecorators(class {
 const foo = Test;
 export default _registerComponent(foo, {
   tmpl: _tmpl,
-  sel: "lwc-test"
+  sel: "lwc-test",
+  apiVersion: 9999999
 });

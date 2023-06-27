@@ -22,5 +22,6 @@ _registerDecorators(Outer, {
 });
 export default _registerComponent(Outer, {
   tmpl: _tmpl,
-  sel: "lwc-test"
+  sel: "lwc-test",
+  apiVersion: 9999999
 });

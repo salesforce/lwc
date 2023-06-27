@@ -5,10 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import fs from 'node:fs';
-
 import path from 'node:path';
 import { transformSync } from '@babel/core';
-import { LWC_VERSION } from '@lwc/shared';
+import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import plugin from '../index';
 
@@ -52,6 +51,12 @@ function transform(source: string, opts = {}) {
 
     // Replace LWC's version with X.X.X so the snapshots don't frequently change
     code = code!.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
+
+    // Replace the latest API version as well
+    code = code.replace(
+        new RegExp(`apiVersion: ${HIGHEST_API_VERSION}`, 'g'),
+        `apiVersion: 9999999`
+    );
 
     return code;
 }
