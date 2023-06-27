@@ -15,9 +15,8 @@ const path = require('path');
 
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const compatRollupPlugin = require('rollup-plugin-compat');
 
-const { COMPAT, DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER } = require('../shared/options');
+const { DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER } = require('../shared/options');
 const Watcher = require('./Watcher');
 
 function createPreprocessor(config, emitter, logger) {
@@ -56,16 +55,6 @@ function createPreprocessor(config, emitter, logger) {
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             }),
         ];
-
-        if (COMPAT) {
-            plugins.push(
-                compatRollupPlugin({
-                    // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
-                    // suites.
-                    polyfills: false,
-                })
-            );
-        }
 
         try {
             const bundle = await rollup({

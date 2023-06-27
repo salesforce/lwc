@@ -51,26 +51,25 @@ const SAUCE_BROWSERS = [
 
     // Compat browsers
     {
-        label: 'sl_ie11',
-        browserName: 'internet explorer',
-        version: '11',
+        label: 'sl_edge_compat',
+        browserName: 'MicrosoftEdge',
+        version: '18',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_chrome_compat',
         browserName: 'chrome',
-        version: '59',
+        version: 'latest-2',
         compat: true,
-        nativeShadowCompatible: false,
+        nativeShadowCompatible: true,
     },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        version: '10',
-        platform: 'OS X 10.11',
+        version: '13',
         compat: true,
-        nativeShadowCompatible: false,
+        nativeShadowCompatible: true,
     },
 ].filter((browser) => {
     return (
