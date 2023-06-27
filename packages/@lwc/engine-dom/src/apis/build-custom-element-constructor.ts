@@ -6,14 +6,14 @@
  */
 
 import {
-    createVM,
     connectRootElement,
+    createVM,
     disconnectRootElement,
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
+import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
-import { hydrateComponent } from './hydrate-component';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
@@ -47,9 +47,12 @@ export function deprecatedBuildCustomElementConstructor(
     return Ctor.CustomElementConstructor;
 }
 
-// Note: WeakSet is not supported in IE11, and the polyfill is not performant enough.
-//       This WeakSet usage is valid because this functionality is not meant to run in IE11.
-const hydratedCustomElements = new WeakSet<Element>();
+function clearNode(node: Node) {
+    const childNodes = renderer.getChildNodes(node);
+    for (let i = childNodes.length - 1; i >= 0; i--) {
+        renderer.remove(childNodes[i], node);
+    }
+}
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
@@ -59,33 +62,43 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     return class extends HTMLElement {
         constructor() {
             super();
+            if (!isNull(this.shadowRoot)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `Found an existing shadow root for the custom element "${Ctor.name}". Call \`hydrateComponent\` instead.`
+                    );
+                }
+                clearNode(this.shadowRoot);
+            }
+            if (this.childNodes.length > 0) {
+                if (process.env.NODE_ENV !== 'production') {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`
+                    );
+                }
+                clearNode(this);
+            }
+            createVM(this, Ctor, renderer, {
+                mode: 'open',
+                owner: null,
+                tagName: this.tagName,
+            });
+        }
 
-            if (this.isConnected) {
-                // this if block is hit when there's already an un-upgraded element in the DOM with the same tag name.
-                hydrateComponent(this, Ctor, {});
-                hydratedCustomElements.add(this);
-            } else {
-                createVM(this, Ctor, renderer, {
-                    mode: 'open',
-                    owner: null,
-                    tagName: this.tagName,
-                });
-            }
-        }
         connectedCallback() {
-            if (hydratedCustomElements.has(this)) {
-                // This is an un-upgraded element that was hydrated in the constructor.
-                hydratedCustomElements.delete(this);
-            } else {
-                connectRootElement(this);
-            }
+            connectRootElement(this);
         }
+
         disconnectedCallback() {
             disconnectRootElement(this);
         }
+
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {
             attributeChangedCallback.call(this, name, oldValue, newValue);
         }
+
         static observedAttributes = observedAttributes;
     };
 }
