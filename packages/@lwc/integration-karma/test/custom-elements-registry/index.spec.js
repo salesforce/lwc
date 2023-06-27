@@ -3,9 +3,7 @@ const tagAlreadyUsedErrorMessage =
     /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element|This name is a registered custom element, preventing LWC to upgrade the element)/;
 
 function getCode(src) {
-    return fetch(src)
-        .then((resp) => resp.text())
-        .then((engineCode) => engineCode.replace(/process\.env\.NODE_ENV/g, '"production"'));
+    return fetch(src).then((resp) => resp.text());
 }
 
 function getEngineCode() {
@@ -16,6 +14,7 @@ function getEngineCode() {
         getCode(document.querySelector('script[src*="synthetic-shadow"]').src);
 
     const scripts = [
+        `window.process = { env: { NODE_ENV: "production" } };`,
         `window.lwcRuntimeFlags = ${JSON.stringify(window.lwcRuntimeFlags)};`, // copy runtime flags to iframe
         syntheticShadowSrc,
         getCode(engineDomSrc),

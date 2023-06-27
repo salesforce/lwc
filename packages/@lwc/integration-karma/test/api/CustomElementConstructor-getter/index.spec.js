@@ -3,7 +3,6 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
-import WithChildElms2 from 'x/withChildElms2'; // because we can't reuse the same constructor in customElements.define
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
 import AttrChanged from 'x/attrChanged';
@@ -56,7 +55,17 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
-    describe('implicit hydration', () => {
+    it('should create custom element if it exists before customElements.define', () => {
+        const elm = document.createElement('test-custom-element-preexisting');
+        document.body.appendChild(elm);
+
+        customElements.define(
+            'test-custom-element-preexisting',
+            WithChildElms.CustomElementConstructor
+        );
+        expect(elm.shadowRoot).not.toBe(null);
+    });
+    describe('non-empty custom element', () => {
         let consoleSpy;
         beforeEach(() => {
             // eslint-disable-next-line no-undef
@@ -65,44 +74,73 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         afterEach(() => {
             consoleSpy.reset();
         });
-
-        it('should occur when element exists before customElements.define', () => {
-            const elm = document.createElement('test-custom-element-preexisting');
+        it('should log error if custom element has children', () => {
+            const elm = document.createElement('test-custom-element-preexisting2');
+            elm.innerHTML = '<div>child1</div><div>child2</div>';
             document.body.appendChild(elm);
-
-            expect(elm.shadowRoot).toBe(null);
             customElements.define(
-                'test-custom-element-preexisting',
-                WithChildElms.CustomElementConstructor
+                'test-custom-element-preexisting2',
+                // "creating" a new component, so we can register under a different tag
+                class extends WithChildElms.CustomElementConstructor {}
             );
-            expect(elm.shadowRoot).not.toBe(null);
-
-            const observedErrors = consoleSpy.calls.error
+            const observedErrors = consoleSpy.calls.warn
                 .flat()
                 .map((err) => (err instanceof Error ? err.message : err));
+
             if (process.env.NODE_ENV === 'production') {
                 expect(observedErrors).toEqual([]);
             } else {
                 expect(observedErrors).toEqual([
-                    '[LWC error]: Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.\n',
-                    '[LWC error]: Hydration completed with errors.\n',
+                    'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
                 ]);
             }
+            expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
         });
-        it(`should occur when element exists before customElements.define and not throw errors if it's consistent`, () => {
-            const elm = document.createElement('test-custom-element-preexisting-consistent');
-            document.body.appendChild(elm);
+        it('should log error if custom element has shadow root', () => {
+            const elm = document.createElement('test-custom-element-preexisting3');
             elm.attachShadow({ mode: 'open' });
-            const expected = '<p>before</p><p>after</p>';
-            elm.shadowRoot.innerHTML = expected;
+            elm.shadowRoot.innerHTML = '<div>child1</div><div>child2</div>';
+            document.body.appendChild(elm);
             customElements.define(
-                'test-custom-element-preexisting-consistent',
-                WithChildElms2.CustomElementConstructor
+                'test-custom-element-preexisting3',
+                // "creating" a new component, so we can register under a different tag
+                class extends WithChildElms.CustomElementConstructor {}
             );
+            const observedErrors = consoleSpy.calls.warn
+                .flat()
+                .map((err) => (err instanceof Error ? err.message : err));
 
-            const observedErrors = consoleSpy.calls.error.flat();
-            expect(observedErrors.length).toEqual(0);
-            expect(elm.shadowRoot.innerHTML).toEqual(expected);
+            if (process.env.NODE_ENV === 'production') {
+                expect(observedErrors).toEqual([]);
+            } else {
+                expect(observedErrors).toEqual([
+                    'Found an existing shadow root for the custom element "Child". Call `hydrateComponent` instead.',
+                ]);
+            }
+            expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
+        });
+        it('should be handled if created after registration', () => {
+            customElements.define(
+                'test-custom-element-preexisting4',
+                // "creating" a new component, so we can register under a different tag
+                class extends WithChildElms.CustomElementConstructor {}
+            );
+            const elm = document.createElement('div');
+            elm.innerHTML =
+                '<test-custom-element-preexisting4>Slotted</test-custom-element-preexisting4>';
+            document.body.appendChild(elm);
+            const observedErrors = consoleSpy.calls.warn
+                .flat()
+                .map((err) => (err instanceof Error ? err.message : err));
+
+            if (process.env.NODE_ENV === 'production') {
+                expect(observedErrors).toEqual([]);
+            } else {
+                expect(observedErrors).toEqual([
+                    'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+                ]);
+            }
+            expect(elm.children[0].shadowRoot.innerHTML).toBe('<div></div>');
         });
     });
 

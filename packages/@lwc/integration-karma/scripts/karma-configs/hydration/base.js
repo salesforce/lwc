@@ -8,18 +8,17 @@
 'use strict';
 
 const path = require('path');
-const { getModulePath } = require('lwc');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
-const karmaPluginNodeEnv = require('../../karma-plugins/node-env');
+const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const { GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
-const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
+const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
@@ -53,8 +52,8 @@ module.exports = (config) => {
         // Transform all the spec files with the hydration-tests karma plugin.
         preprocessors: {
             '**/*.spec.js': ['hydration-tests'],
-            // Transform all framework files with the node-env plugin
-            [LWC_ENGINE]: ['node-env'],
+            // Transform all framework files with the transform-framework plugin
+            [LWC_ENGINE]: ['transform-framework'],
         },
 
         // Use the env plugin to inject the right environment variables into the app
@@ -62,7 +61,12 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginHydrationTests, karmaPluginEnv, karmaPluginNodeEnv],
+        plugins: [
+            'karma-jasmine',
+            karmaPluginHydrationTests,
+            karmaPluginEnv,
+            karmaPluginTransformFramework,
+        ],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.

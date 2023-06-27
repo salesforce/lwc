@@ -8,7 +8,6 @@
 /* eslint-env node */
 
 const { readFileSync } = require('node:fs');
-const { writeFile, mkdir } = require('node:fs/promises');
 const path = require('node:path');
 const MagicString = require('magic-string');
 const { rollup } = require('rollup');
@@ -21,8 +20,7 @@ const commonjs = require('@rollup/plugin-commonjs');
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-// proxy-compat-disable tells compat mode not to apply - framework files aren't designed for the compat transform
-const banner = `/* proxy-compat-disable */\n/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
@@ -119,52 +117,6 @@ function injectInlineRenderer() {
     };
 }
 
-// TODO [#3445]: this purely exists for backwards compatibility, to avoid breaking code like this:
-//
-//     require('@lwc/synthetic-shadow/dist/synthetic-shadow.js')
-//     require('@lwc/engine-server/dist/engine-server.js')
-//     require('@lwc/compiler/dist/commonjs/transformers/transformer')
-//
-// Feel free to delete this entire plugin once we can safely release this breaking change.
-function backwardsCompatDistPlugin() {
-    const packageNamesToExtraDistFiles = {
-        '@lwc/compiler': {
-            'index.cjs.js': 'dist/commonjs/transformers/transformer.js',
-        },
-        '@lwc/engine-dom': {
-            'index.js': 'dist/engine-dom.js',
-        },
-        '@lwc/engine-server': {
-            'index.js': 'dist/engine-server.js',
-        },
-        '@lwc/synthetic-shadow': {
-            'index.js': 'dist/synthetic-shadow.js',
-        },
-        '@lwc/wire-service': {
-            'index.js': 'dist/wire-service.js',
-        },
-    };
-
-    return {
-        id: 'backwards-compat-dist',
-        async writeBundle(options, bundle) {
-            const extraDistFiles = packageNamesToExtraDistFiles[packageName];
-            if (extraDistFiles) {
-                for (const [id, extraDistFile] of Object.entries(extraDistFiles)) {
-                    const descriptor = bundle[id];
-                    if (descriptor) {
-                        // Write additional dist/ file as a side effect
-                        const fullFilename = path.join(packageRoot, extraDistFile);
-                        await mkdir(path.dirname(fullFilename), { recursive: true });
-                        await writeFile(fullFilename, descriptor.code, 'utf-8');
-                    }
-                }
-            }
-            return null;
-        },
-    };
-}
-
 module.exports = {
     input: path.resolve(packageRoot, './src/index.ts'),
 
@@ -198,7 +150,6 @@ module.exports = {
             include: [/\/parse5\//],
         }),
         ...sharedPlugins(),
-        backwardsCompatDistPlugin(),
         injectInlineRenderer(),
     ],
 

@@ -20,7 +20,6 @@ branches:
         - communities/webruntime
         - lwc/lwc-platform
         - nrkruk/lwc-dev-core
-        - omnistudio/ui-omniscript-components
         - ris-gpta/core_via_components
         - salesforce/builder-framework
         - salesforce-experience-platform-emu/luvio
