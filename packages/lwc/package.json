@@ -13,9 +13,11 @@
     },
     "main": "index.js",
     "type": "module",
+    "typings": "index.d.ts",
     "license": "MIT",
     "files": [
-        "*.js"
+        "*.js",
+        "*.d.ts"
     ],
     "dependencies": {
         "@lwc/aria-reflection": "2.50.0",
