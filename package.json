@@ -24,7 +24,8 @@
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
-        "release:version": "./scripts/release/version.js"
+        "release:version": "./scripts/release/version.js",
+        "playground:ssr": "cd ssr-playground && yarn run dev"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.6.5",
