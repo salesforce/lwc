@@ -8,7 +8,7 @@
         "dev": "node ./server.js",
         "csr-dev": "rollup -c --watch",
         "build": "NODE_ENV=production rollup -c",
-        "preinstall": "rm -f ../package.json"
+        "preinstall": "rm -f ../package.json ../yarn.lock"
     },
     "dependencies": {
         "@lwc/engine-server": "^3.0.0",
