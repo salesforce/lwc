@@ -1,3 +1,3 @@
-# lwc-ssr-template
+# LWC playground
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/salesforce-lwc-yh8fqt)
+A simple LWC setup for experiments and bug reproductions involving SSR & hydration.
