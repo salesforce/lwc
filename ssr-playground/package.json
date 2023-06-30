@@ -6,9 +6,7 @@
     "description": "Playground project to experiment with LWC.",
     "scripts": {
         "dev": "node ./server.js",
-        "csr-dev": "rollup -c --watch",
-        "build": "NODE_ENV=production rollup -c",
-        "playground:ssr": "yarn run build && yarn run dev"
+        "csr-dev": "rollup -c --watch"
     },
     "dependencies": {
         "@lwc/engine-server": "^3.0.0",
