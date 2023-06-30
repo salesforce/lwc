@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "node ./server.js",
         "csr-dev": "rollup -c --watch",
-        "build": "NODE_ENV=production rollup -c",
+        "build": "NODE_ENV=production rollup -c"
     },
     "dependencies": {
         "@lwc/engine-server": "^3.0.0",
