@@ -27,7 +27,7 @@
         "istanbul-reports": "^3.1.5",
         "karma": "^6.4.2",
         "karma-chrome-launcher": "^3.2.0",
-        "karma-coverage": "^2.2.0",
+        "karma-coverage": "^2.2.1",
         "karma-jasmine": "^4.0.2",
         "karma-sauce-launcher": "^4.3.6",
         "magic-string": "^0.30.0"
