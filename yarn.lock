@@ -10775,6 +10775,13 @@ rollup@^3.26.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
+rollup@^3.25.3:
+  version "3.25.3"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.25.3.tgz#f9a8986f0f244bcfde2208da91ba46b8fd252551"
+  integrity sha512-ZT279hx8gszBj9uy5FfhoG4bZx8c+0A1sbqtr7Q3KNWIizpTdDEPZbV2xcbvHsnFp4MavCQYZyzApJ+virB8Yw==
+  optionalDependencies:
+    fsevents "~2.3.2"
+
 rollup@~1.26.0:
   version "1.26.5"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.26.5.tgz#c492c8bb88b661e7952a864e40bdec209aa1aa03"

@@ -24,7 +24,10 @@ function createConfig(componentFile, engineType) {
     return {
         input: componentFile,
         plugins: [
-            lwc({ rootDir }),
+            lwc({
+                rootDir,
+                experimentalComplexExpressions: true,
+            }),
             replace({
                 preventAssignment: true,
                 // always run perf tests in prod mode
