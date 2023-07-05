@@ -7,25 +7,25 @@
 
 import { createElement } from '@lwc/engine-dom';
 
-import Table from '@lwc/perf-benchmarks-components/dist/dom/benchmark/expression/expression.js';
+import Expression from '@lwc/perf-benchmarks-components/dist/dom/benchmark/expression/expression.js';
 import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/store.js';
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
-benchmark(`dom/expressions`, () => {
-    let tableElement;
+benchmark.only(`dom/expressions`, () => {
+    let expressionElement;
 
     before(() => {
-        tableElement = createElement('benchmark-table', { is: Table });
-        return insertComponent(tableElement);
+        expressionElement = createElement('benchmark-expression', { is: Expression });
+        return insertComponent(expressionElement);
     });
 
     run(() => {
         const store = new Store();
         store.runLots();
-        tableElement.rows = store.data;
+        expressionElement.rows = store.data;
     });
 
     after(() => {
-        destroyComponent(tableElement);
+        destroyComponent(expressionElement);
     });
 });
