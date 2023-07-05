@@ -11,7 +11,7 @@ import Expression from '@lwc/perf-benchmarks-components/dist/dom/benchmark/expre
 import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/store.js';
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
-benchmark.only(`dom/expressions`, () => {
+benchmark(`dom/expressions`, () => {
     let expressionElement;
 
     before(() => {
