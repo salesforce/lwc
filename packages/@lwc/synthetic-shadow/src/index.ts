@@ -19,17 +19,14 @@ import './env/mutation-observer';
 import './env/shadow-root';
 
 // Initialization Routines
-import './polyfills/HTMLSlotElement/main';
 import './polyfills/document-shadow/main';
 import './polyfills/shadow-root/main';
 import './polyfills/click-event-composed/main'; // must come before event-composed
 import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
 import './polyfills/clipboard-event-composed/main';
-import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
 import './polyfills/event-target/main';
-import './polyfills/window-event-target/main';
 import './polyfills/event/main';
 import './polyfills/focus-event/main';
 import './polyfills/mouse-event/main';

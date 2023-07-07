@@ -4,47 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isArray, isFunction, isUndefined, keys, seal } from '@lwc/shared';
+import { create, isArray, isUndefined, keys, seal } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { RefVNodes, VM } from './vm';
 import { VBaseElement, VStatic } from './vnodes';
 
-type Callback = () => void;
-
-let nextTickCallbackQueue: Callback[] = [];
 export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
 
-function flushCallbackQueue() {
-    if (process.env.NODE_ENV !== 'production') {
-        if (nextTickCallbackQueue.length === 0) {
-            throw new Error(
-                `Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`
-            );
-        }
-    }
-    const callbacks: Callback[] = nextTickCallbackQueue;
-    nextTickCallbackQueue = []; // reset to a new queue
-    for (let i = 0, len = callbacks.length; i < len; i += 1) {
-        callbacks[i]();
-    }
-}
-
-export function addCallbackToNextTick(callback: Callback) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isFunction(callback)) {
-            throw new Error(
-                `Internal Error: addCallbackToNextTick() can only accept a function callback`
-            );
-        }
-    }
-    if (nextTickCallbackQueue.length === 0) {
-        Promise.resolve().then(flushCallbackQueue);
-    }
-    ArrayPush.call(nextTickCallbackQueue, callback);
-}
+// For browser support, see: https://caniuse.com/mdn-api_queuemicrotask
+export const addCallbackToNextTick =
+    typeof queueMicrotask === 'function'
+        ? queueMicrotask
+        : (callback: VoidFunction) => Promise.resolve().then(callback);
 
 export function guid(): string {
     function s4() {

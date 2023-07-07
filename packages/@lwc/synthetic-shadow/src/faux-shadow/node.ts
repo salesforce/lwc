@@ -5,13 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayUnshift,
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
-    hasNativeSymbolSupport,
     hasOwnProperty,
-    isFalse,
     isNull,
     isTrue,
     isUndefined,
@@ -42,11 +39,7 @@ import { isGlobalPatchingSkipped } from '../shared/utils';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 
-import {
-    getShadowRoot,
-    getIE11FakeShadowRootPlaceholder,
-    isSyntheticShadowHost,
-} from './shadow-root';
+import { getShadowRoot, isSyntheticShadowHost } from './shadow-root';
 import {
     getNodeOwner,
     isSlotElement,
@@ -180,17 +173,6 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
         const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-        if (
-            process.env.NODE_ENV !== 'production' &&
-            isFalse(hasNativeSymbolSupport) &&
-            isExternalChildNodeAccessorFlagOn()
-        ) {
-            // inserting a comment node as the first childNode to trick the IE11
-            // DevTool to show the content of the shadowRoot, this should only happen
-            // in dev-mode and in IE11 (which we detect by looking at the symbol).
-            // Plus it should only be in place if we know it is an external invoker.
-            ArrayUnshift.call(childNodes, getIE11FakeShadowRootPlaceholder(this));
-        }
         return createStaticNodeList(childNodes);
     }
     // nothing to do here since this does not have a synthetic shadow attached to it
@@ -427,40 +409,9 @@ defineProperties(Node.prototype, {
     },
 });
 
-let internalChildNodeAccessorFlag = false;
-
-/**
- * These 2 methods are providing a machinery to understand who is accessing the
- * .childNodes member property of a node. If it is used from inside the synthetic shadow
- * or from an external invoker. This helps to produce the right output in one very peculiar
- * case, the IE11 debugging comment for shadowRoot representation on the devtool.
- */
-export function isExternalChildNodeAccessorFlagOn(): boolean {
-    return !internalChildNodeAccessorFlag;
-}
-export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
-    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolSupport)
-        ? function (node) {
-              internalChildNodeAccessorFlag = true;
-              let childNodes;
-              let error = null;
-              try {
-                  childNodes = node.childNodes;
-              } catch (e) {
-                  // childNodes accessor should never throw, but just in case!
-                  error = e;
-              } finally {
-                  internalChildNodeAccessorFlag = false;
-                  if (!isNull(error)) {
-                      // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
-                      throw error; // eslint-disable-line no-unsafe-finally
-                  }
-              }
-              return childNodes as NodeListOf<ChildNode>;
-          }
-        : function (node) {
-              return node.childNodes;
-          };
+export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> = function (node) {
+    return node.childNodes;
+};
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
