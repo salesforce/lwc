@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-tests",
     "private": true,
-    "version": "3.0.0",
+    "version": "3.0.1",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
@@ -14,7 +14,7 @@
         "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "3.0.0",
+        "@lwc/rollup-plugin": "3.0.1",
         "@wdio/cli": "^8.11.3",
         "@wdio/devtools-service": "^8.11.3",
         "@wdio/local-runner": "^8.11.3",
@@ -25,7 +25,7 @@
         "@wdio/static-server-service": "^8.11.0",
         "deepmerge": "^4.3.0",
         "dotenv": "^16.3.1",
-        "lwc": "3.0.0",
+        "lwc": "3.0.1",
         "minimist": "^1.2.8",
         "webdriverio": "^8.11.2"
     }
