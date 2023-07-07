@@ -99,10 +99,17 @@ export class ReactiveObserver {
         const { listeners } = this;
         const len = listeners.length;
         if (len > 0) {
-            for (let i = 0; i < len; i += 1) {
+            for (let i = 0; i < len; i++) {
                 const set = listeners[i];
-                const pos = ArrayIndexOf.call(listeners[i], this);
-                ArraySplice.call(set, pos, 1);
+                if (set.length === 1) {
+                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+splice.
+                    // If the length is 1, we can also be sure that `this` is the first item in the array.
+                    set.length = 0;
+                } else {
+                    // Slow case
+                    const pos = ArrayIndexOf.call(set, this);
+                    ArraySplice.call(set, pos, 1);
+                }
             }
             listeners.length = 0;
         }
