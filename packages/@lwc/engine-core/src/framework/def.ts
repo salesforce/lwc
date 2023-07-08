@@ -33,6 +33,7 @@ import {
 } from '../shared/circular-module-dependencies';
 
 import { logError } from '../shared/logger';
+import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -190,6 +191,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         errorCallback,
         render,
     };
+
+    // This is a no-op unless Lightning DevTools are enabled.
+    instrumentDef(def);
 
     if (process.env.NODE_ENV !== 'production') {
         freeze(Ctor.prototype);

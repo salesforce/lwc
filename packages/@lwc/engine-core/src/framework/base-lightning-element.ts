@@ -54,6 +54,7 @@ import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 import { TemplateStylesheetFactories } from './stylesheet';
+import { instrumentInstance } from './runtime-instrumentation';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -205,6 +206,9 @@ export const LightningElement: LightningElementConstructor = function (
         // `class Foo extends LightningElement {}; new Foo()`
         throw new TypeError('Illegal constructor');
     }
+
+    // This is a no-op unless Lightning DevTools are enabled.
+    instrumentInstance(this, vmBeingConstructed);
 
     const vm = vmBeingConstructed;
     const { def, elm } = vm;
