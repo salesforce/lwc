@@ -48,12 +48,11 @@
         "astring": "~1.8.6",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0",
-        "parse5": "~6.0.1"
+        "parse5": "~7.1.2"
     },
     "devDependencies": {
         "@types/estree": "1.0.1",
         "@types/he": "^1.2.0",
-        "@types/parse5": "^6.0.2",
         "@types/source-map": "0.5.7"
     }
 }
