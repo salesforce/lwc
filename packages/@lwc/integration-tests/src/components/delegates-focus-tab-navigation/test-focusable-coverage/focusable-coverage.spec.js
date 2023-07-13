@@ -9,13 +9,6 @@ const assert = require('assert');
 const URL = '/focusable-coverage';
 
 describe('sequential focus navigation coverage', () => {
-    before(async function () {
-        // This test suite fails in ie11 for some unknown reason
-        if (browser.capabilities.browserName === 'internet explorer') {
-            this.skip();
-        }
-    });
-
     beforeEach(async () => {
         await browser.url(URL);
     });

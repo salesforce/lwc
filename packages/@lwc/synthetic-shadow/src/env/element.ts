@@ -62,16 +62,12 @@ const outerTextSetter: ((this: Element, s: string) => void) | null = outerTextDe
     ? outerTextDescriptor.set!
     : null;
 
-const innerHTMLDescriptor = hasOwnProperty.call(Element.prototype, 'innerHTML')
-    ? getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML'); // IE11
+const innerHTMLDescriptor = getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
 
 const innerHTMLGetter: (this: Element) => string = innerHTMLDescriptor!.get!;
 const innerHTMLSetter: (this: Element, s: string) => void = innerHTMLDescriptor!.set!;
 
-const outerHTMLDescriptor = hasOwnProperty.call(Element.prototype, 'outerHTML')
-    ? getOwnPropertyDescriptor(Element.prototype, 'outerHTML')
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'outerHTML'); // IE11
+const outerHTMLDescriptor = getOwnPropertyDescriptor(Element.prototype, 'outerHTML');
 
 const outerHTMLGetter: (this: Element) => string = outerHTMLDescriptor!.get!;
 const outerHTMLSetter: (this: Element, s: string) => void = outerHTMLDescriptor!.set!;
@@ -85,19 +81,12 @@ const tabIndexDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabI
 const tabIndexGetter: (this: HTMLElement) => number = tabIndexDescriptor!.get!;
 const tabIndexSetter: (this: HTMLElement, v: any) => void = tabIndexDescriptor!.set!;
 
-const matches: (this: Element, selector: string) => boolean = hasOwnProperty.call(
-    Element.prototype,
-    'matches'
-)
-    ? Element.prototype.matches
-    : (Element.prototype as any).msMatchesSelector; // IE11
+const matches: (this: Element, selector: string) => boolean = Element.prototype.matches;
 
-const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = hasOwnProperty.call(
+const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = getOwnPropertyDescriptor(
     Element.prototype,
     'children'
-)
-    ? getOwnPropertyDescriptor(Element.prototype, 'children')!.get!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'children')!.get!; // IE11
+)!.get!;
 
 // for IE11, access from HTMLElement
 // for all other browsers access the method from the parent Element interface

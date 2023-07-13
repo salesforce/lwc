@@ -15,10 +15,8 @@ import {
     defineProperty,
     freeze,
     getOwnPropertyNames,
-    isFunction,
     isUndefined,
     seal,
-    setPrototypeOf,
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
@@ -115,33 +113,7 @@ export function HTMLBridgeElementFactory(
     props: string[],
     methods: string[]
 ): HTMLElementConstructor {
-    let HTMLBridgeElement;
-    /**
-     * Modern browsers will have all Native Constructors as regular Classes
-     * and must be instantiated with the new keyword. In older browsers,
-     * specifically IE11, those are objects with a prototype property defined,
-     * since they are not supposed to be extended or instantiated with the
-     * new keyword. This forking logic supports both cases, specifically because
-     * wc.ts relies on the construction path of the bridges to create new
-     * fully qualifying web components.
-     */
-    if (isFunction(SuperClass)) {
-        HTMLBridgeElement = class extends SuperClass {};
-    } else {
-        HTMLBridgeElement = function () {
-            // Bridge classes are not supposed to be instantiated directly in
-            // browsers that do not support web components.
-            throw new TypeError('Illegal constructor');
-        };
-        // prototype inheritance dance
-        setPrototypeOf(HTMLBridgeElement, SuperClass as any);
-        setPrototypeOf(HTMLBridgeElement.prototype, (SuperClass as any).prototype);
-        defineProperty(HTMLBridgeElement.prototype, 'constructor', {
-            writable: true,
-            configurable: true,
-            value: HTMLBridgeElement,
-        });
-    }
+    const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
     // and false positives in case of inheritance.
     const attributeToPropMap: Record<string, string> = create(null);
