@@ -30,13 +30,13 @@ branches:
     pull-request:
       <<: *branch-definition
       merge-method: force-push # release branch should always be in sync with master branch (linear history)
+  spring23:
+    pull-request:
+      <<: *branch-definition
   summer23:
     pull-request:
       <<: *branch-definition
-  winter23:
-    pull-request:
-      <<: *branch-definition
-  spring23:
+  winter24:
     pull-request:
       <<: *branch-definition
 steps:
