@@ -8,6 +8,12 @@ import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc
 import { isUndefined, isBoolean, isObject, getAPIVersionFromNumber } from '@lwc/shared';
 import { CustomRendererConfig } from '@lwc/template-compiler';
 
+/**
+ * Flag indicating that a warning about still using the deprecated `enableLwcSpread`
+ * compiler option has already been logged to the `console`.
+ */
+let alreadyWarnedAboutLwcSpread = false;
+
 type RecursiveRequired<T> = {
     [P in keyof T]-?: RecursiveRequired<T[P]>;
 };
@@ -124,7 +130,9 @@ export function validateTransformOptions(options: TransformOptions): NormalizedT
 function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
 
-    if (!isUndefined(options.enableLwcSpread)) {
+    if (!isUndefined(options.enableLwcSpread) && !alreadyWarnedAboutLwcSpread) {
+        alreadyWarnedAboutLwcSpread = true;
+
         // eslint-disable-next-line no-console
         console.warn(
             `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
