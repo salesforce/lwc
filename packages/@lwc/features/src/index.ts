@@ -7,6 +7,8 @@
 import { create, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
+// When deprecating a feature flag, ensure that it is also no longer set in the application. For
+// example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
 const features: FeatureFlagMap = {
     DUMMY_TEST_FLAG: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
