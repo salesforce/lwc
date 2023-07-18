@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, keys, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
+import { create, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
+// When deprecating a feature flag, ensure that it is also no longer set in the application. For
+// example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
 const features: FeatureFlagMap = {
     DUMMY_TEST_FLAG: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
@@ -42,12 +44,9 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         }
     }
     if (isUndefined(features[name])) {
-        const availableFlags = keys(features)
-            .map((name) => `"${name}"`)
-            .join(', ');
         // eslint-disable-next-line no-console
-        console.warn(
-            `Failed to set the value "${value}" for the runtime feature flag "${name}" because it is undefined. Available flags: ${availableFlags}.`
+        console.info(
+            `Attempt to set a value on an unknown feature flag "${name}" resulted in a NOOP.`
         );
         return;
     }

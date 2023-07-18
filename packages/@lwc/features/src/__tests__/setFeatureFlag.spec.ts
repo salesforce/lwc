@@ -11,20 +11,20 @@ describe('setFeatureFlag', () => {
     ['development', 'production'].forEach((env) => {
         describe(`${env} mode`, () => {
             let originalNodeEnv: any;
-            let warn: jest.SpyInstance;
+            let info: jest.SpyInstance;
             let error: jest.SpyInstance;
 
             beforeEach(() => {
                 originalNodeEnv = process.env.NODE_ENV;
                 process.env.NODE_ENV = env;
-                warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+                info = jest.spyOn(console, 'info').mockImplementation(() => {});
                 error = jest.spyOn(console, 'error').mockImplementation(() => {});
             });
 
             afterEach(() => {
                 process.env.NODE_ENV = originalNodeEnv;
                 lwcRuntimeFlags.DUMMY_TEST_FLAG = undefined; // reset
-                warn.mockReset();
+                info.mockReset();
                 error.mockReset();
             });
 
@@ -49,10 +49,8 @@ describe('setFeatureFlag', () => {
             it('logs and does nothing when the flag is unknown', () => {
                 // @ts-ignore
                 setFeatureFlag('DOES_NOT_EXIST', true);
-                expect(warn).toHaveBeenCalledWith(
-                    expect.stringMatching(
-                        /Failed to set the value "true" for the runtime feature flag "DOES_NOT_EXIST" because it is undefined\./
-                    )
+                expect(info).toHaveBeenCalledWith(
+                    expect.stringMatching(/Attempt to set a value on an unknown feature flag/)
                 );
 
                 // value is not changed
