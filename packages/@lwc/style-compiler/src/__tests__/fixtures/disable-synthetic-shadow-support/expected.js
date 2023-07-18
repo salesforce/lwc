@@ -1,3 +1,4 @@
+import { registerStylesheet } from 'lwc';
 function stylesheet() {
   var token;
   var useActualHostSelector = true;
@@ -8,4 +9,5 @@ function stylesheet() {
   return ((useActualHostSelector ? (useNativeDirPseudoclass ? '' : '[dir="rtl"]') + " :host(.foo) " : (useNativeDirPseudoclass ? '' : '[dir="rtl"]') + " " + hostSelector + ".foo ")) + (useNativeDirPseudoclass ? ':dir(rtl)' : '') + " {}";
   /*LWC compiler vX.X.X*/
 }
+registerStylesheet(stylesheet);
 export default [stylesheet];

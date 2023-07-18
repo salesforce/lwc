@@ -1,3 +1,4 @@
+import { registerStylesheet } from 'lwc';
 function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
@@ -5,4 +6,5 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   return ((useActualHostSelector ? ":host(.foo, .bar) .baz" : hostSelector + ".foo .baz" + shadowSelector + " .quux" + shadowSelector + "," + hostSelector + ".bar .baz")) + shadowSelector + " .quux" + shadowSelector + " {color: black;}";
   /*LWC compiler vX.X.X*/
 }
+registerStylesheet(stylesheet);
 export default [stylesheet];

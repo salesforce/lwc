@@ -1,3 +1,4 @@
+import { registerStylesheet } from 'lwc';
 function stylesheet() {
   var token;
   var useActualHostSelector = true;
@@ -8,4 +9,5 @@ function stylesheet() {
   return ".foo" + shadowSelector + " {animation-name: fadeIn" + suffixToken + ";}@keyframes fadeIn" + suffixToken + " {0% {opacity: 0;}100% {opacity: 1;}}";
   /*LWC compiler vX.X.X*/
 }
+registerStylesheet(stylesheet);
 export default [stylesheet];
