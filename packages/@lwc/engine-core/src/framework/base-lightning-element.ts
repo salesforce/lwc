@@ -175,6 +175,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'setAttributeNS'
         | 'spellcheck'
         | 'tabIndex'
+        | 'tagName'
         | 'title'
     >;
 
@@ -644,6 +645,11 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'ownerDocument');
         }
         return renderer.ownerDocument(vm.elm);
+    },
+
+    get tagName() {
+        const { elm, renderer } = getAssociatedVM(this);
+        return renderer.getTagName(elm);
     },
 
     render(): Template {

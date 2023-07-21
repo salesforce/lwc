@@ -189,6 +189,10 @@ function ownerDocument(element: Element): Document {
     return element.ownerDocument;
 }
 
+function getTagName(elm: Element): string {
+    return elm.tagName;
+}
+
 export { registerContextConsumer, registerContextProvider } from './context';
 
 export {
@@ -223,6 +227,7 @@ export {
     getFirstElementChild,
     getLastChild,
     getLastElementChild,
+    getTagName,
     isConnected,
     assertInstanceOfHTMLElement,
     ownerDocument,

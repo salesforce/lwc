@@ -41,6 +41,7 @@ const expectedEnumerableProps = [
     'shadowRoot',
     'spellcheck',
     'tabIndex',
+    'tagName',
     'template',
     'title',
     'toString',
