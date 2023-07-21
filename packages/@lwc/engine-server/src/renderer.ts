@@ -379,7 +379,7 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 ) => HostElement | null;
 
 function getTagName(elm: HostElement): string {
-    // tagName is lowercased on the server
+    // tagName is lowercased on the server, but to align with DOM APIs, we always return uppercase
     return elm.tagName.toUpperCase();
 }
 
