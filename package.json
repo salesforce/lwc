@@ -83,9 +83,9 @@
     "resolutions": {
         "//": [
             "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
-            "semver: Pinned to 7.5.3 to address security vulnerability"
+            "semver: Pinned to 7.5.4 to address security vulnerability"
         ],
         "jasmine-core": "3.10.1",
-        "semver": "7.5.3"
+        "semver": "7.5.4"
     }
 }
