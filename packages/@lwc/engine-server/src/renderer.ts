@@ -378,6 +378,11 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
 
+function getTagName(elm: HostElement): string {
+    // tagName is lowercased on the server, but to align with DOM APIs, we always return uppercase
+    return elm.tagName.toUpperCase();
+}
+
 /* noop */
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
@@ -448,6 +453,7 @@ export const renderer = {
     getFirstElementChild,
     getLastChild,
     getLastElementChild,
+    getTagName,
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
