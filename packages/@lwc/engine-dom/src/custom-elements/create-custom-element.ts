@@ -6,17 +6,16 @@
  */
 import { hasCustomElements } from './has-custom-elements';
 import { createCustomElementCompat } from './create-custom-element-compat';
-import { createCustomElementUsingUpgradableConstructor } from './create-custom-element-using-upgradable-constructor';
+import { createNativeCustomElement } from './create-native-custom-element';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 /**
  * We have two modes for creating custom elements:
  *
  * 1. Compat (legacy) browser support (e.g. IE11). Totally custom, doesn't rely on native browser APIs.
- * 2. "Upgradable constructor" custom element. This allows us to have two LWC components with the same tag name,
+ * 2. Native custom element. Note that this allows us to have two LWC components with the same tag name,
  *    via a trick: every custom element constructor we define in the registry is basically the same. It's essentially
- *    a dummy `class extends HTMLElement` that accepts an `upgradeCallback` in its constructor ("upgradable
- *    constructor"), which allows us to have completely customized functionality for different components.
+ *    a dummy `class extends HTMLElement`. This allows us to have completely customized functionality for different components.
  */
 export let createCustomElement: (
     tagName: string,
@@ -26,8 +25,8 @@ export let createCustomElement: (
 ) => HTMLElement;
 
 if (hasCustomElements) {
-    // use the global registry, with an upgradable constructor for the defined custom element
-    createCustomElement = createCustomElementUsingUpgradableConstructor;
+    // use the global registry (native)
+    createCustomElement = createNativeCustomElement;
 } else {
     // no registry available here
     createCustomElement = createCustomElementCompat;
