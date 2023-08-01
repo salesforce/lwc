@@ -6,7 +6,7 @@ import Container from 'x/container';
 // synthetic shadow behavior, which is not necessarily consistent with native shadow behavior.
 // If you're wondering why so many of the tests are doing toMatch() on a regex, it's because of
 // differences in how browsers serialize text using innerText/outerText.
-if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
+if (!process.env.NATIVE_SHADOW) {
     describe('innerText', () => {
         let elm;
         beforeEach(() => {
@@ -88,14 +88,11 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             expect(testCase.innerText).toBe(`Tell us your story:`);
         });
 
-        // datalist is supported on safari >= 12
-        if (!process.env.COMPAT) {
-            it('should not collect text from datalist', () => {
-                const testCase = elm.shadowRoot.querySelector('.datalist-case');
+        it('should not collect text from datalist', () => {
+            const testCase = elm.shadowRoot.querySelector('.datalist-case');
 
-                expect(testCase.innerText).toMatch(/Choose a flavor:\n*/);
-            });
-        }
+            expect(testCase.innerText).toMatch(/Choose a flavor:\n*/);
+        });
 
         it('should go inside custom element shadow', () => {
             const testElement = elm.shadowRoot.querySelector('.without-slotted-content');

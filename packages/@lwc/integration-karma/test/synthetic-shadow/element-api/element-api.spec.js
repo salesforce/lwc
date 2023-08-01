@@ -336,13 +336,9 @@ if (!process.env.NATIVE_SHADOW) {
             it('should preserve childNodes behavior', () => {
                 expect(elementOutsideLWC.childNodes.length).toBe(1);
 
-                if (process.env.COMPAT !== true) {
-                    // Only IE11 in dev mode adds a comment inside the shadow for debug purposes.
-
-                    expect(rootLwcElement.childNodes.length).toBe(0);
-                    expect(lwcElementInsideShadow.childNodes.length).toBe(0);
-                    expect(slottedComponent.childNodes.length).toBe(1);
-                }
+                expect(rootLwcElement.childNodes.length).toBe(0);
+                expect(lwcElementInsideShadow.childNodes.length).toBe(0);
+                expect(slottedComponent.childNodes.length).toBe(1);
 
                 expect(divManuallyApendedToShadow.childNodes.length).toBe(1);
 
@@ -404,24 +400,22 @@ if (!process.env.NATIVE_SHADOW) {
     });
 }
 
-if (!process.env.COMPAT) {
-    describe('synthetic shadow for mixed mode', () => {
-        describe('Element.prototype API', () => {
-            it('should preseve assignedSlot behavior', () => {
-                const div = document.createElement('div');
-                document.body.appendChild(div);
+describe('synthetic shadow for mixed mode', () => {
+    describe('Element.prototype API', () => {
+        it('should preseve assignedSlot behavior', () => {
+            const div = document.createElement('div');
+            document.body.appendChild(div);
 
-                div.attachShadow({ mode: 'open' }).innerHTML = `
+            div.attachShadow({ mode: 'open' }).innerHTML = `
                     <slot></slot>
                 `;
 
-                const slotted = document.createElement('div');
-                slotted.textContent = 'slotted';
-                div.appendChild(slotted);
+            const slotted = document.createElement('div');
+            slotted.textContent = 'slotted';
+            div.appendChild(slotted);
 
-                const assignedSlot = div.shadowRoot.querySelector('slot');
-                expect(slotted.assignedSlot).toBe(assignedSlot);
-            });
+            const assignedSlot = div.shadowRoot.querySelector('slot');
+            expect(slotted.assignedSlot).toBe(assignedSlot);
         });
     });
-}
+});

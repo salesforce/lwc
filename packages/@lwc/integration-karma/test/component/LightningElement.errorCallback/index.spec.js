@@ -290,7 +290,7 @@ describe('errorCallback error caught by another errorCallback', () => {
 });
 
 // "unhandledrejection" event is not available in older browsers
-if (!process.env.COMPAT) {
+if ('onunhandledrejection' in window) {
     // These tests are important because certain code paths are only hit when errorCallback throws an error
     // after a value mutation. this causes flushRehydrationQueue to be called, which has a try/catch for this error.
     describe('errorCallback throws after value mutation', () => {
