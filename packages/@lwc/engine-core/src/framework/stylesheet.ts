@@ -141,7 +141,8 @@ function evaluateStylesheetsContent(
                 vm.renderMode === RenderMode.Light
             ) {
                 logError(
-                    'Unscoped CSS is not supported in Light DOM. Please use scoped CSS (*.scoped.css) instead of unscoped CSS (*.css).'
+                    'Unscoped CSS is not supported in Light DOM in this environment. Please use scoped CSS ' +
+                        '(*.scoped.css) instead of unscoped CSS (*.css). See also: https://sfdc.co/scoped-styles-light-dom'
                 );
                 continue;
             }
