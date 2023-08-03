@@ -30,6 +30,6 @@
         "karma-coverage": "^2.2.1",
         "karma-jasmine": "^4.0.2",
         "karma-sauce-launcher": "^4.3.6",
-        "magic-string": "^0.30.1"
+        "magic-string": "^0.30.2"
     }
 }
