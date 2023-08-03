@@ -289,109 +289,106 @@ describe('errorCallback error caught by another errorCallback', () => {
     );
 });
 
-// "unhandledrejection" event is not available in older browsers
-if ('onunhandledrejection' in window) {
-    // These tests are important because certain code paths are only hit when errorCallback throws an error
-    // after a value mutation. this causes flushRehydrationQueue to be called, which has a try/catch for this error.
-    describe('errorCallback throws after value mutation', () => {
-        let originalOnError;
-        let caughtError;
+// These tests are important because certain code paths are only hit when errorCallback throws an error
+// after a value mutation. this causes flushRehydrationQueue to be called, which has a try/catch for this error.
+describe('errorCallback throws after value mutation', () => {
+    let originalOnError;
+    let caughtError;
 
-        // Depending on whether ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE is set or not,
-        // this may be an unhandled error or an unhandled rejection
-        const onError = (e) => {
-            e.preventDefault(); // Avoids logging to the console
-            caughtError = e;
-        };
+    // Depending on whether ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE is set or not,
+    // this may be an unhandled error or an unhandled rejection
+    const onError = (e) => {
+        e.preventDefault(); // Avoids logging to the console
+        caughtError = e;
+    };
 
-        const onRejection = (e) => {
-            // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
-            e.preventDefault();
-            caughtError = e.reason;
-        };
+    const onRejection = (e) => {
+        // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
+        e.preventDefault();
+        caughtError = e.reason;
+    };
 
-        beforeEach(() => {
-            // Overriding window.onerror disables Jasmine's global error handler, so we can listen for errors
-            // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
-            // https://github.com/jasmine/jasmine/pull/1860
-            originalOnError = window.onerror;
-            // Dummy onError because Jasmine tries to call it in case of a rejection:
-            // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
-            window.onerror = () => {};
-            caughtError = undefined;
-            window.addEventListener('error', onError);
-            window.addEventListener('unhandledrejection', onRejection);
-        });
-
-        afterEach(() => {
-            window.removeEventListener('error', onError);
-            window.removeEventListener('unhandledrejection', onRejection);
-            window.onerror = originalOnError;
-        });
-
-        function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
-            it(`parent errorCallback throws after value mutation ${testcase}`, () => {
-                const throwElm = createElement(hostSelector, { is: hostClass });
-                const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
-                document.body.appendChild(throwElm);
-                document.body.appendChild(noThrowElm);
-                return (
-                    Promise.resolve()
-                        .then(() => {
-                            throwElm.show = true;
-                            noThrowElm.show = true;
-                        })
-                        // Need to wait a few ticks so flushRehydrationQueue can finish
-                        .then(() => new Promise((resolve) => setTimeout(resolve)))
-                        .then(() => new Promise((resolve) => setTimeout(resolve)))
-                        .then(() => {
-                            // error is thrown by parent's errorCallback
-                            expect(caughtError).not.toBeUndefined();
-                            expect(caughtError.message).toMatch(
-                                /error in the parent error callback after value mutation/
-                            );
-                            // child after the throwing child is not rendered
-                            // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
-                            const afterThrowingChild =
-                                throwElm.shadowRoot.querySelector('x-after-throwing-child');
-                            if (expectAfterThrowingChildToExist) {
-                                expect(afterThrowingChild).not.toBeNull();
-                            } else {
-                                expect(afterThrowingChild).toBeNull();
-                            }
-                            // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
-                            // give up rendering entirely just because one element threw in errorCallback.
-                            expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
-                                'shown'
-                            );
-                        })
-                );
-            });
-        }
-
-        testStub(
-            'when child throws in connectedCallback',
-            'x-parent-throws-on-mutate-child-connected-throws',
-            XParentThrowsOnMutateChildConnectedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-        );
-        testStub(
-            'when child throws in constructor',
-            'x-parent-throws-on-mutate-child-constructor-throws',
-            XParentThrowsOnMutateChildConstructorThrows,
-            false
-        );
-        testStub(
-            'when child throws in render',
-            'x-parent-throws-on-mutate-child-render-throws',
-            XParentThrowsOnMutateChildRenderThrows,
-            false
-        );
-        testStub(
-            'when child throws in renderedCallback',
-            'x-parent-throws-on-mutate-child-rendered-throws',
-            XParentThrowsOnMutateChildRenderedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-        );
+    beforeEach(() => {
+        // Overriding window.onerror disables Jasmine's global error handler, so we can listen for errors
+        // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
+        // https://github.com/jasmine/jasmine/pull/1860
+        originalOnError = window.onerror;
+        // Dummy onError because Jasmine tries to call it in case of a rejection:
+        // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
+        window.onerror = () => {};
+        caughtError = undefined;
+        window.addEventListener('error', onError);
+        window.addEventListener('unhandledrejection', onRejection);
     });
-}
+
+    afterEach(() => {
+        window.removeEventListener('error', onError);
+        window.removeEventListener('unhandledrejection', onRejection);
+        window.onerror = originalOnError;
+    });
+
+    function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
+        it(`parent errorCallback throws after value mutation ${testcase}`, () => {
+            const throwElm = createElement(hostSelector, { is: hostClass });
+            const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
+            document.body.appendChild(throwElm);
+            document.body.appendChild(noThrowElm);
+            return (
+                Promise.resolve()
+                    .then(() => {
+                        throwElm.show = true;
+                        noThrowElm.show = true;
+                    })
+                    // Need to wait a few ticks so flushRehydrationQueue can finish
+                    .then(() => new Promise((resolve) => setTimeout(resolve)))
+                    .then(() => new Promise((resolve) => setTimeout(resolve)))
+                    .then(() => {
+                        // error is thrown by parent's errorCallback
+                        expect(caughtError).not.toBeUndefined();
+                        expect(caughtError.message).toMatch(
+                            /error in the parent error callback after value mutation/
+                        );
+                        // child after the throwing child is not rendered
+                        // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
+                        const afterThrowingChild =
+                            throwElm.shadowRoot.querySelector('x-after-throwing-child');
+                        if (expectAfterThrowingChildToExist) {
+                            expect(afterThrowingChild).not.toBeNull();
+                        } else {
+                            expect(afterThrowingChild).toBeNull();
+                        }
+                        // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
+                        // give up rendering entirely just because one element threw in errorCallback.
+                        expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
+                            'shown'
+                        );
+                    })
+            );
+        });
+    }
+
+    testStub(
+        'when child throws in connectedCallback',
+        'x-parent-throws-on-mutate-child-connected-throws',
+        XParentThrowsOnMutateChildConnectedThrows,
+        window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+    );
+    testStub(
+        'when child throws in constructor',
+        'x-parent-throws-on-mutate-child-constructor-throws',
+        XParentThrowsOnMutateChildConstructorThrows,
+        false
+    );
+    testStub(
+        'when child throws in render',
+        'x-parent-throws-on-mutate-child-render-throws',
+        XParentThrowsOnMutateChildRenderThrows,
+        false
+    );
+    testStub(
+        'when child throws in renderedCallback',
+        'x-parent-throws-on-mutate-child-rendered-throws',
+        XParentThrowsOnMutateChildRenderedThrows,
+        window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+    );
+});
