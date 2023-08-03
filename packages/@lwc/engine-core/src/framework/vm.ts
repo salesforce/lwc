@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    APIVersion,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -25,7 +26,12 @@ import { addErrorComponentStack } from '../shared/error';
 import { logError, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
-import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
+import {
+    renderComponent,
+    markComponentAsDirty,
+    getTemplateReactiveObserver,
+    getComponentAPIVersion,
+} from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
@@ -185,6 +191,10 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Any stylesheets associated with the component */
     stylesheets: TemplateStylesheetFactories | null;
+    /**
+     * API version associated with this VM
+     */
+    apiVersion: APIVersion;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -289,6 +299,7 @@ export function createVM<HostNode, HostElement>(
 ): VM {
     const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
+    const apiVersion = getComponentAPIVersion(ctor);
 
     const vm: VM = {
         elm,
@@ -337,6 +348,7 @@ export function createVM<HostNode, HostElement>(
         getHook,
 
         renderer,
+        apiVersion,
     };
 
     if (process.env.NODE_ENV !== 'production') {

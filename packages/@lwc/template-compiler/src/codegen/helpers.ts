@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIVersion, HTML_NAMESPACE, APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, APIVersion, HTML_NAMESPACE, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
@@ -17,12 +17,13 @@ import {
     isForBlock,
     isIf,
     isParentNode,
+    isSlot,
     isText,
 } from '../shared/ast';
 import {
+    STATIC_SAFE_DIRECTIVES,
     TEMPLATE_FUNCTION_NAME,
     TEMPLATE_PARAMS,
-    STATIC_SAFE_DIRECTIVES,
 } from '../shared/constants';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -68,6 +69,13 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
         return (
             // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
+            // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+            (!isAPIFeatureEnabled(
+                APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+                codeGen.apiVersion
+            ) &&
+                isSlot(child) &&
+                codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.
             // Search children to determine if it should be flattened.
             (isIf(child) && shouldFlatten(codeGen, child.children))

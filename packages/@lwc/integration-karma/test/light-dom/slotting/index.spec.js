@@ -116,4 +116,19 @@ describe('Slotting', () => {
             '<x-forwarded-slot><x-light-container><p data-id="container-upper-slot-default">Upper slot default</p>Default slot not yet forwarded<p data-id="container-lower-slot-default">Lower slot default</p></x-light-container></x-forwarded-slot>'
         );
     });
+
+    it('should only generate empty text nodes for APIVersion >=60', async () => {
+        const elm = createElement('x-default-slot', { is: BasicSlot });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+        const container = elm.querySelector('x-light-container');
+        const emptyTextNodes = [...container.childNodes].filter(
+            (_) => _.nodeType === Node.TEXT_NODE && _.data === ''
+        );
+        if (process.env.API_VERSION <= 59) {
+            expect(emptyTextNodes.length).toBe(0); // old implementation does not use fragments, just flattening
+        } else {
+            expect(emptyTextNodes.length).toBe(6); // 3 slots, so 3*2=6 empty text nodes
+        }
+    });
 });
