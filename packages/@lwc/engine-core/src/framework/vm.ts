@@ -268,8 +268,8 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
-function getNearestShadowAncestor(vm: VM): VM | null {
-    let ancestor = vm.owner;
+function getNearestShadowAncestor(owner: VM | null): VM | null {
+    let ancestor = owner;
     while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
         ancestor = ancestor.owner;
     }
@@ -344,7 +344,7 @@ export function createVM<HostNode, HostElement>(
     }
 
     vm.stylesheets = computeStylesheets(vm, def.ctor);
-    vm.shadowMode = computeShadowMode(vm, renderer);
+    vm.shadowMode = computeShadowMode(def, vm.owner, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -429,8 +429,21 @@ function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
     }
 }
 
-function computeShadowMode(vm: VM, renderer: RendererAPI) {
-    const { def } = vm;
+// Compute the shadowMode/renderMode without creating a VM. This is used in some scenarios like hydration.
+export function computeShadowAndRenderMode(
+    Ctor: LightningElementConstructor,
+    renderer: RendererAPI
+) {
+    const def = getComponentInternalDef(Ctor);
+    const { renderMode } = def;
+
+    // Assume null `owner` - this is what happens in hydration cases anyway
+    const shadowMode = computeShadowMode(def, /* owner */ null, renderer);
+
+    return { renderMode, shadowMode };
+}
+
+function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: RendererAPI) {
     const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
 
     let shadowMode;
@@ -446,7 +459,7 @@ function computeShadowMode(vm: VM, renderer: RendererAPI) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
-                    const shadowAncestor = getNearestShadowAncestor(vm);
+                    const shadowAncestor = getNearestShadowAncestor(owner);
                     if (
                         !isNull(shadowAncestor) &&
                         shadowAncestor.shadowMode === ShadowMode.Native
