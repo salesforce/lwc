@@ -13,6 +13,11 @@ import { CustomRendererConfig } from '@lwc/template-compiler';
  * compiler option has already been logged to the `console`.
  */
 let alreadyWarnedAboutLwcSpread = false;
+/**
+ * Flag indicating that a warning about still using the deprecated `stylesheetConfig`
+ * compiler option has already been logged to the `console`.
+ */
+let alreadyWarnedOnStylesheetConfig = false;
 
 type RecursiveRequired<T> = {
     [P in keyof T]-?: RecursiveRequired<T[P]>;
@@ -46,6 +51,10 @@ const DEFAULT_OUTPUT_CONFIG: Required<OutputConfig> = {
 
 export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; name: string };
 
+/**
+ * @deprecated - Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
+ */
+// TODO [#3266]: Remove StylesheetConfig as part of breaking change wishlist
 export interface StylesheetConfig {
     customProperties?: {
         resolution?: CustomPropertiesResolution;
@@ -136,6 +145,15 @@ function validateOptions(options: TransformOptions) {
         // eslint-disable-next-line no-console
         console.warn(
             `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
+    }
+
+    if (!isUndefined(options.stylesheetConfig) && !alreadyWarnedOnStylesheetConfig) {
+        alreadyWarnedOnStylesheetConfig = true;
+
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"stylesheetConfig" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
         );
     }
 
