@@ -6,14 +6,14 @@
  */
 
 import {
-    connectRootElement,
-    createVM,
-    disconnectRootElement,
-    getComponentHtmlPrototype,
     LightningElement,
     RenderMode,
     ShadowMode,
     computeShadowAndRenderMode,
+    connectRootElement,
+    createVM,
+    disconnectRootElement,
+    getComponentHtmlPrototype,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
