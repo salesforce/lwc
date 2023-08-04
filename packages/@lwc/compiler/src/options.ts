@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
-import { isUndefined, isBoolean, isObject, getAPIVersionFromNumber } from '@lwc/shared';
+import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
 import { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
@@ -13,6 +13,11 @@ import { CustomRendererConfig } from '@lwc/template-compiler';
  * compiler option has already been logged to the `console`.
  */
 let alreadyWarnedAboutLwcSpread = false;
+/**
+ * Flag indicating that a warning about still using the deprecated `stylesheetConfig`
+ * compiler option has already been logged to the `console`.
+ */
+let alreadyWarnedOnStylesheetConfig = false;
 
 type RecursiveRequired<T> = {
     [P in keyof T]-?: RecursiveRequired<T[P]>;
@@ -46,6 +51,10 @@ const DEFAULT_OUTPUT_CONFIG: Required<OutputConfig> = {
 
 export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; name: string };
 
+/**
+ * @deprecated - Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
+ */
+// TODO [#3266]: Remove StylesheetConfig as part of breaking change wishlist
 export interface StylesheetConfig {
     customProperties?: {
         resolution?: CustomPropertiesResolution;
@@ -139,33 +148,17 @@ function validateOptions(options: TransformOptions) {
         );
     }
 
-    if (!isUndefined(options.stylesheetConfig)) {
-        validateStylesheetConfig(options.stylesheetConfig);
+    if (!isUndefined(options.stylesheetConfig) && !alreadyWarnedOnStylesheetConfig) {
+        alreadyWarnedOnStylesheetConfig = true;
+
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"stylesheetConfig" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
     }
 
     if (!isUndefined(options.outputConfig)) {
         validateOutputConfig(options.outputConfig);
-    }
-}
-
-function validateStylesheetConfig(config: StylesheetConfig) {
-    const { customProperties } = config;
-
-    if (!isUndefined(customProperties)) {
-        const { resolution } = customProperties;
-
-        if (!isUndefined(resolution)) {
-            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
-                resolution,
-            ]);
-
-            const { type } = resolution;
-            invariant(
-                type === 'native' || type === 'module',
-                CompilerValidationErrors.INVALID_TYPE_PROPERTY,
-                [type]
-            );
-        }
     }
 }
 

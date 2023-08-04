@@ -60,25 +60,9 @@ export const CompilerValidationErrors = {
         url: '',
     },
 
-    INVALID_RESOLUTION_PROPERTY: {
-        code: 1020,
-        message:
-            'Expected an object for stylesheetConfig.customProperties.resolution, received "{0}".',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     INVALID_SOURCEMAP_PROPERTY: {
         code: 1021,
         message: 'Expected a boolean value for outputConfig.sourcemap, received "{0}".',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_TYPE_PROPERTY: {
-        code: 1022,
-        message:
-            'Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "{0}".',
         level: DiagnosticLevel.Error,
         url: '',
     },
