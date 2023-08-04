@@ -351,9 +351,6 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        if (lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
-            vm.shadowMode = ShadowMode.Native;
-        }
     }
 
     // Create component instance associated to the vm and the element.
@@ -444,6 +441,15 @@ export function computeShadowAndRenderMode(
 }
 
 function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: RendererAPI) {
+    // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
+    // on, but components running in actual native shadow mode
+    if (
+        process.env.NODE_ENV !== 'production' &&
+        lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST
+    ) {
+        return ShadowMode.Native;
+    }
+
     const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
 
     let shadowMode;
