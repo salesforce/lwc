@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
-import { isUndefined, isBoolean, isObject, getAPIVersionFromNumber } from '@lwc/shared';
+import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
 import { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
@@ -157,33 +157,8 @@ function validateOptions(options: TransformOptions) {
         );
     }
 
-    if (!isUndefined(options.stylesheetConfig)) {
-        validateStylesheetConfig(options.stylesheetConfig);
-    }
-
     if (!isUndefined(options.outputConfig)) {
         validateOutputConfig(options.outputConfig);
-    }
-}
-
-function validateStylesheetConfig(config: StylesheetConfig) {
-    const { customProperties } = config;
-
-    if (!isUndefined(customProperties)) {
-        const { resolution } = customProperties;
-
-        if (!isUndefined(resolution)) {
-            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
-                resolution,
-            ]);
-
-            const { type } = resolution;
-            invariant(
-                type === 'native' || type === 'module',
-                CompilerValidationErrors.INVALID_TYPE_PROPERTY,
-                [type]
-            );
-        }
     }
 }
 
