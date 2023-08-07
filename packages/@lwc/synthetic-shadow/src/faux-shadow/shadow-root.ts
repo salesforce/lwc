@@ -160,7 +160,7 @@ let uid = 0;
 export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot {
     if (InternalSlot.has(elm)) {
         throw new Error(
-            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`,
+            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
         );
     }
     const { mode, delegatesFocus } = options;
@@ -347,7 +347,7 @@ const NodePatchDescriptors = {
             this: ShadowRoot,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             addShadowRootEventListener(this, type, listener, options);
         },
@@ -371,7 +371,7 @@ const NodePatchDescriptors = {
             this: ShadowRoot,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             removeShadowRootEventListener(this, type, listener, options);
         },
@@ -593,8 +593,8 @@ const ParentNodePatchDescriptors = {
             return createStaticHTMLCollection(
                 ArrayFilter.call(
                     shadowRootChildNodes(this),
-                    (elm: Node | Element) => elm instanceof Element,
-                ),
+                    (elm: Node | Element) => elm instanceof Element
+                )
             );
         },
     },
@@ -644,7 +644,7 @@ assign(
     NodePatchDescriptors,
     ParentNodePatchDescriptors,
     ElementPatchDescriptors,
-    ShadowRootDescriptors,
+    ShadowRootDescriptors
 );
 
 export function SyntheticShadowRoot() {

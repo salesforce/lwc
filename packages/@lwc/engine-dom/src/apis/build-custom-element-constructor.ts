@@ -34,13 +34,13 @@ type HTMLElementConstructor = typeof HTMLElement;
  * ```
  */
 export function deprecatedBuildCustomElementConstructor(
-    Ctor: ComponentConstructor,
+    Ctor: ComponentConstructor
 ): HTMLElementConstructor {
     if (process.env.NODE_ENV !== 'production') {
         /* eslint-disable-next-line no-console */
         console.warn(
             'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed.' +
-                `Use "${Ctor.name}.CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.`,
+                `Use "${Ctor.name}.CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.`
         );
     }
 
@@ -66,7 +66,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
                     console.warn(
-                        `Found an existing shadow root for the custom element "${Ctor.name}". Call \`hydrateComponent\` instead.`,
+                        `Found an existing shadow root for the custom element "${Ctor.name}". Call \`hydrateComponent\` instead.`
                     );
                 }
                 clearNode(this.shadowRoot);
@@ -75,7 +75,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
                     console.warn(
-                        `Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`,
+                        `Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`
                     );
                 }
                 clearNode(this);

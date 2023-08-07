@@ -18,7 +18,7 @@ function invalidAttribute(value) {
         elm.tabIndexValue = value;
 
         expect(() => document.body.appendChild(elm)).toLogErrorDev(
-            /\[LWC error\]: Invalid tabindex value `.+` in template/,
+            /\[LWC error\]: Invalid tabindex value `.+` in template/
         );
 
         // Check if the value is normalized

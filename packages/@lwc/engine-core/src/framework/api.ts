@@ -117,21 +117,21 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
         assert.isTrue(
             'key' in data,
-            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`,
+            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`
         );
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
-            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
             data.styleDecls && data.style,
-            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`,
+            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered,
+                vmBeingRendered
             );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
@@ -141,7 +141,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
                         'sel' in childVnode &&
                         'elm' in childVnode &&
                         'key' in childVnode,
-                    `${childVnode} is not a vnode.`,
+                    `${childVnode} is not a vnode.`
                 );
             }
         });
@@ -177,9 +177,9 @@ function ti(value: any): number {
         if (shouldNormalize) {
             logError(
                 `Invalid tabindex value \`${toString(
-                    value,
+                    value
                 )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
-                vmBeingRendered!,
+                vmBeingRendered!
             );
         }
     }
@@ -191,7 +191,7 @@ function s(
     slotName: string,
     data: VElementData,
     children: VNodes,
-    slotset: SlotSet | undefined,
+    slotset: SlotSet | undefined
 ): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
@@ -219,7 +219,7 @@ function s(
                             `Mismatched slot types for ${
                                 slotName === '' ? '(default)' : slotName
                             } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
-                            slotset.owner,
+                            slotset.owner
                         );
                     }
                     // Ignore slot content from parent
@@ -270,7 +270,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray,
+    children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -279,21 +279,21 @@ function c(
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
-            `c() 4nd argument data must be an array.`,
+            `c() 4nd argument data must be an array.`
         );
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
-            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
             data.styleDecls && data.style,
-            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`,
+            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered,
+                vmBeingRendered
             );
         }
         if (arguments.length === 4) {
@@ -304,7 +304,7 @@ function c(
                             'sel' in childVnode &&
                             'elm' in childVnode &&
                             'key' in childVnode,
-                        `${childVnode} is not a vnode.`,
+                        `${childVnode} is not a vnode.`
                     );
                 }
             });
@@ -338,7 +338,7 @@ function c(
 // [i]terable node
 function i(
     iterable: Iterable<any>,
-    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode,
+    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
     const list: VNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
@@ -348,9 +348,9 @@ function i(
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Invalid template iteration for value "${toString(
-                    iterable,
+                    iterable
                 )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
-                vmBeingRendered!,
+                vmBeingRendered!
             );
         }
         return list;
@@ -360,8 +360,8 @@ function i(
         assert.isFalse(
             isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
-                iterable,
-            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`,
+                iterable
+            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -369,7 +369,7 @@ function i(
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             iterator && isFunction(iterator.next),
-            `Invalid iterator function for "${toString(iterable)}" in ${vmBeingRendered}.`,
+            `Invalid iterator function for "${toString(iterable)}" in ${vmBeingRendered}.`
         );
     }
 
@@ -498,7 +498,7 @@ function k(compilerKey: number, obj: any): string | void {
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
                 logError(
-                    `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`,
+                    `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
     }
@@ -511,7 +511,7 @@ function gid(id: string | undefined | null): string | null | undefined {
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
-                vmBeingRendered,
+                vmBeingRendered
             );
         }
         return id;
@@ -535,7 +535,7 @@ function fid(url: string | undefined | null): string | null | undefined {
             if (isUndefined(url)) {
                 logError(
                     `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
-                    vmBeingRendered,
+                    vmBeingRendered
                 );
             }
         }
@@ -562,14 +562,14 @@ function ddc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    children: VNodes = EmptyArray,
+    children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
-            `dc() 4nd argument data must be an array.`,
+            `dc() 4nd argument data must be an array.`
         );
     }
     // null or undefined values should produce a null value in the VNodes
@@ -589,13 +589,13 @@ function ddc(
 function dc(
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    children: VNodes = EmptyArray,
+    children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isObject(data), `dc() 2nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
-            `dc() 3rd argument data must be an array.`,
+            `dc() 3rd argument data must be an array.`
         );
     }
     // Null or undefined values should produce a null value in the VNodes.
@@ -606,7 +606,7 @@ function dc(
 
     if (!isComponentConstructor(Ctor)) {
         throw new Error(
-            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`,
+            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
         );
     }
 
@@ -615,7 +615,7 @@ function dc(
     const sel = getComponentRegisteredName(Ctor);
     if (isUndefined(sel) || sel === '') {
         throw new Error(
-            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`,
+            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
         );
     }
 

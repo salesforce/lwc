@@ -105,7 +105,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 name,
                 identifierFromComponentName(name),
                 databag,
-                children,
+                children
             );
         } else if (isSlot(element)) {
             const defaultSlot = children;
@@ -122,7 +122,7 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genText(
             consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-            }),
+            })
         );
     }
 
@@ -207,7 +207,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const slotFragmentFactory = t.functionExpression(
             null,
             [dataIdentifier, key],
-            t.blockStatement([t.returnStatement(fragment)]),
+            t.blockStatement([t.returnStatement(fragment)])
         );
         let slotNameTransformed: t.Expression | t.SimpleLiteral;
         if (t.isLiteral(slotName)) {
@@ -230,8 +230,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 expression.elements.map((element) =>
                     element !== null
                         ? applyInlineIf(ifNode, element as t.Expression, testExpression)
-                        : null,
-                ),
+                        : null
+                )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
@@ -256,13 +256,13 @@ function transform(codeGen: CodeGen): t.Expression {
      */
     function transformConditionalParentBlock(
         conditionalParentBlock: IfBlock | ElseifBlock,
-        key?: number,
+        key?: number
     ): t.Expression {
         const ifBlockKey = key ?? codeGen.generateKey();
 
         const childrenExpression = codeGen.genFragment(
             t.literal(ifBlockKey),
-            transformChildren(conditionalParentBlock),
+            transformChildren(conditionalParentBlock)
         );
 
         let elseExpression: t.Expression = t.literal(null);
@@ -271,14 +271,14 @@ function transform(codeGen: CodeGen): t.Expression {
                 ? transformConditionalParentBlock(conditionalParentBlock.else, ifBlockKey)
                 : codeGen.genFragment(
                       t.literal(ifBlockKey),
-                      transformChildren(conditionalParentBlock.else),
+                      transformChildren(conditionalParentBlock.else)
                   );
         }
 
         return t.conditionalExpression(
             codeGen.bindExpression(conditionalParentBlock.condition),
             childrenExpression,
-            elseExpression,
+            elseExpression
         );
     }
 
@@ -286,7 +286,7 @@ function transform(codeGen: CodeGen): t.Expression {
         ifNode: If,
         node: t.Expression,
         testExpression?: t.Expression,
-        falseValue?: t.Expression,
+        falseValue?: t.Expression
     ): t.Expression {
         if (!testExpression) {
             testExpression = codeGen.bindExpression(ifNode.condition);
@@ -360,7 +360,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const iterationFunction = t.functionExpression(
             null,
             params,
-            t.blockStatement([t.returnStatement(node)]),
+            t.blockStatement([t.returnStatement(node)])
         );
 
         return codeGen.genIterator(iterable, iterationFunction);
@@ -380,8 +380,8 @@ function transform(codeGen: CodeGen): t.Expression {
         const iteratorArgs = Object.values(argsMapping).map((arg) => t.identifier(arg));
         const iteratorObject = t.objectExpression(
             Object.entries(argsMapping).map(([prop, arg]) =>
-                t.property(t.identifier(prop), t.identifier(arg)),
-            ),
+                t.property(t.identifier(prop), t.identifier(arg))
+            )
         );
 
         const iterable = codeGen.bindExpression(expression);
@@ -393,7 +393,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     t.variableDeclarator(t.identifier(iteratorName), iteratorObject),
                 ]),
                 t.returnStatement(node),
-            ]),
+            ])
         );
 
         return codeGen.genIterator(iterable, iterationFunction);
@@ -402,7 +402,7 @@ function transform(codeGen: CodeGen): t.Expression {
     function computeAttrValue(
         attr: Attribute | Property,
         element: BaseElement,
-        addLegacySanitizationHook: boolean,
+        addLegacySanitizationHook: boolean
     ): t.Expression {
         const { name: elmName, namespace = '' } = element;
         const { value: attrValue } = attr;
@@ -529,7 +529,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
-                            classNames.map((name) => t.property(t.literal(name), t.literal(true))),
+                            classNames.map((name) => t.property(t.literal(name), t.literal(true)))
                         );
                         data.push(t.property(t.identifier('classMap'), classMap));
                     }
@@ -568,8 +568,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 propsObj.properties.push(
                     t.property(
                         t.literal(prop.name),
-                        computeAttrValue(prop, element, !addSanitizationHook),
-                    ),
+                        computeAttrValue(prop, element, !addSanitizationHook)
+                    )
                 );
             }
         }
@@ -584,8 +584,8 @@ function transform(codeGen: CodeGen): t.Expression {
                     t.identifier('innerHTML'),
                     // If lwc:inner-html is added as a directive requiring custom renderer, no need
                     // to add the legacy sanitizeHtmlContent hook
-                    addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr),
-                ),
+                    addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr)
+                )
             );
         }
 
@@ -603,7 +603,7 @@ function transform(codeGen: CodeGen): t.Expression {
             const contextObj = t.objectExpression([
                 t.property(
                     t.identifier('lwc'),
-                    t.objectExpression([t.property(t.identifier('dom'), t.literal('manual'))]),
+                    t.objectExpression([t.property(t.identifier('dom'), t.literal('manual'))])
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
@@ -655,8 +655,8 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(
                 t.property(
                     t.identifier('slotData'),
-                    codeGen.bindExpression(slotBindDirective.value),
-                ),
+                    codeGen.bindExpression(slotBindDirective.value)
+                )
             );
         }
 
@@ -689,10 +689,10 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
                       t.variableDeclarator(
                           t.objectPattern(
                               usedApis.map((name) =>
-                                  t.assignmentProperty(t.identifier(name), codeGen.usedApis[name]),
-                              ),
+                                  t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                              )
                           ),
-                          t.identifier(TEMPLATE_PARAMS.API),
+                          t.identifier(TEMPLATE_PARAMS.API)
                       ),
                   ]),
               ];
@@ -703,12 +703,12 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
                 t.variableDeclarator(
                     t.objectPattern(
                         codeGen.memorizedIds.map((id) =>
-                            t.assignmentProperty(id, id, { shorthand: true }),
-                        ),
+                            t.assignmentProperty(id, id, { shorthand: true })
+                        )
                     ),
-                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT)
                 ),
-            ]),
+            ])
         );
     }
 
@@ -719,7 +719,7 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
         args,
         t.blockStatement(body, {
             trailingComments: [t.comment(LWC_VERSION_COMMENT)],
-        }),
+        })
     );
 }
 

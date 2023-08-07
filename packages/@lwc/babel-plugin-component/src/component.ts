@@ -57,7 +57,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         const registerComponentId = addNamed(
             declarationPath,
             REGISTER_COMPONENT_ID,
-            LWC_PACKAGE_ALIAS,
+            LWC_PACKAGE_ALIAS
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         const statementPath = declarationPath.getStatementParent();

@@ -22,7 +22,7 @@ describe('Composed focusout event', () => {
 
         const focusInComposed = await browser.shadowDeep$(
             'integration-focusout-composed-true',
-            '.focus-out-composed',
+            '.focus-out-composed'
         );
         assert.strictEqual(await focusInComposed.getText(), 'Focus Out Composed');
     });
@@ -32,11 +32,11 @@ describe('Composed focusout event', () => {
 
         const customFocusInNotComposed = await browser.shadowDeep$(
             'integration-focusout-composed-true',
-            '.custom-focus-out-not-composed',
+            '.custom-focus-out-not-composed'
         );
         assert.strictEqual(
             await customFocusInNotComposed.getText(),
-            'Custom Focus Out Not Composed',
+            'Custom Focus Out Not Composed'
         );
     });
 });

@@ -16,11 +16,11 @@ import { hasCustomElements } from './has-custom-elements';
 
 export type CreateScopedConstructor = (
     tagName: string,
-    UserCtor: CustomElementConstructor,
+    UserCtor: CustomElementConstructor
 ) => CustomElementConstructor;
 
 type WhenDefinedCallback = (
-    ctor: CustomElementConstructor | PromiseLike<CustomElementConstructor>,
+    ctor: CustomElementConstructor | PromiseLike<CustomElementConstructor>
 ) => void;
 
 interface Definition {
@@ -106,7 +106,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
     // constructor is invoked with another constructor.
     function createPivotingClass(
         tagName: string,
-        registeredDefinition: Definition,
+        registeredDefinition: Definition
     ): CustomElementConstructor {
         class PivotCtor extends NativeHTMLElement {
             constructor(UserCtor?: CustomElementConstructor) {
@@ -125,12 +125,12 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 if (userCtorIsDefined) {
                     if (!isConstructor(UserCtor)) {
                         throw new TypeError(
-                            `Failed to create custom element: the provided constructor is not a constructor.`,
+                            `Failed to create custom element: the provided constructor is not a constructor.`
                         );
                     }
                     if (!registeredUserCtors.has(UserCtor)) {
                         throw new Error(
-                            `Failed to create custom element: the provided constructor is unregistered: ${UserCtor.name}.`,
+                            `Failed to create custom element: the provided constructor is unregistered: ${UserCtor.name}.`
                         );
                     }
                 }
@@ -198,7 +198,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
             formStateRestoreCallback(
                 this: HTMLElement,
                 state: string | File | FormData | undefined,
-                mode: string,
+                mode: string
             ) {
                 const definition = definitionForElement.get(this);
                 definition?.formStateRestoreCallback?.call(this, state, mode);
@@ -213,7 +213,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
                 this: HTMLElement,
                 name: string,
                 oldValue: any,
-                newValue: any,
+                newValue: any
             ) {
                 const definition = definitionForElement.get(this);
                 // if both definitions are the same, then the observedAttributes is the same,
@@ -239,7 +239,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
 
     function getNewObservedAttributes(
         registeredDefinition: Definition,
-        pivotDefinition: Definition,
+        pivotDefinition: Definition
     ): Set<string> {
         const { observedAttributes, attributeChangedCallback } = pivotDefinition;
         if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
@@ -252,8 +252,8 @@ export function createScopedRegistry(): CreateScopedConstructor {
         // care by the patched version.
         return new Set(
             [...pivotDefinition.observedAttributes].filter(
-                (x) => !registeredDefinition.observedAttributes.has(x),
-            ),
+                (x) => !registeredDefinition.observedAttributes.has(x)
+            )
         );
     }
 
@@ -277,11 +277,11 @@ export function createScopedRegistry(): CreateScopedConstructor {
     function patchAttributes(
         instance: HTMLElement,
         registeredDefinition: Definition,
-        pivotDefinition: Definition,
+        pivotDefinition: Definition
     ) {
         const newObservedAttributes = getNewObservedAttributes(
             registeredDefinition,
-            pivotDefinition,
+            pivotDefinition
         );
         if (newObservedAttributes.size === 0) {
             return;
@@ -336,13 +336,13 @@ export function createScopedRegistry(): CreateScopedConstructor {
     function patchAttributesDuringUpgrade(
         instance: HTMLElement,
         registeredDefinition: Definition,
-        pivotDefinition: Definition,
+        pivotDefinition: Definition
     ) {
         // The below case patches observed attributes for the case where the HTML element is upgraded
         // from a pre-existing one in the DOM.
         const newObservedAttributes = getNewObservedAttributes(
             registeredDefinition,
-            pivotDefinition,
+            pivotDefinition
         );
         if (getNewObservedAttributes(registeredDefinition, pivotDefinition).size === 0) {
             return;
@@ -364,7 +364,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
     function internalUpgrade(
         instance: HTMLElement,
         registeredDefinition: Definition,
-        pivotDefinition: Definition,
+        pivotDefinition: Definition
     ) {
         setPrototypeOf(instance, pivotDefinition.UserCtor.prototype);
         definitionForElement.set(instance, pivotDefinition);
@@ -390,7 +390,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
     }
 
     function getOrCreateDefinitionForConstructor(
-        constructor: CustomElementConstructor,
+        constructor: CustomElementConstructor
     ): Definition {
         if (!isConstructor(constructor)) {
             throw new TypeError('The referenced constructor is not a constructor.');
@@ -417,7 +417,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
     // Call any pending `whenDefined()` callbacks
     function flushPendingWhenDefinedCallbacks(
         tagName: string,
-        ctor: CustomElementConstructor,
+        ctor: CustomElementConstructor
     ): void {
         const resolvers = pendingWhenDefinedCallbacks.get(tagName);
         if (!isUndefined(resolvers)) {
@@ -436,22 +436,22 @@ export function createScopedRegistry(): CreateScopedConstructor {
         this: CustomElementRegistry,
         tagName: string,
         constructor: CustomElementConstructor,
-        options?: ElementDefinitionOptions,
+        options?: ElementDefinitionOptions
     ): void {
         if (options && options.extends) {
             // TODO [#2983]: should we support `extends`?
             throw new DOMException(
-                'NotSupportedError: "extends" key in customElements.define() options is not supported.',
+                'NotSupportedError: "extends" key in customElements.define() options is not supported.'
             );
         }
         if (globalDefinitionsByTag.has(tagName)) {
             throw new DOMException(
-                `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`,
+                `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
             );
         }
         if (!isUndefined(globalDefinitionsByClass.get(constructor))) {
             throw new DOMException(
-                `Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry`,
+                `Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry`
             );
         }
         const definition = getOrCreateDefinitionForConstructor(constructor);
@@ -500,7 +500,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
 
     CustomElementRegistry.prototype.get = function get(
         this: CustomElementRegistry,
-        tagName: string,
+        tagName: string
     ): CustomElementConstructor | undefined {
         const NativeCtor = nativeGet.call(nativeRegistry, tagName);
         if (!isUndefined(NativeCtor)) {
@@ -517,7 +517,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
 
     CustomElementRegistry.prototype.whenDefined = function whenDefined(
         this: CustomElementRegistry,
-        tagName: string,
+        tagName: string
     ): Promise<CustomElementConstructor> {
         return nativeWhenDefined.call(nativeRegistry, tagName).then((NativeCtor) => {
             const definition = globalDefinitionsByTag.get(tagName);
@@ -584,7 +584,7 @@ export function createScopedRegistry(): CreateScopedConstructor {
      */
     return function createPivotConstructor(
         tagName: string,
-        UserCtor: CustomElementConstructor,
+        UserCtor: CustomElementConstructor
     ): CustomElementConstructor {
         tagName = StringToLowerCase.call(tagName);
         let PivotCtor = pivotCtorByTag.get(tagName);

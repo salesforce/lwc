@@ -83,7 +83,7 @@ describe('templateConfig', () => {
 
         expect(warnings).toHaveLength(1);
         expect(warnings?.[0]?.message).toContain(
-            'LWC1187: The lwc:dynamic directive is deprecated',
+            'LWC1187: The lwc:dynamic directive is deprecated'
         );
         expect(output[0].code).toContain('api_deprecated_dynamic_component');
     });
@@ -119,7 +119,7 @@ describe('lwsConfig', () => {
         const bundle = await rollup({
             input: path.resolve(
                 __dirname,
-                'fixtures/lightningWebSecurityTransforms/lightningWebSecurityTransforms.js',
+                'fixtures/lightningWebSecurityTransforms/lightningWebSecurityTransforms.js'
             ),
             plugins: [
                 lwc({
@@ -136,8 +136,8 @@ describe('lwsConfig', () => {
 
         expect(stripWhitespace(code)).toContain(
             stripWhitespace(
-                '(window === globalThis || window === document ? location : window.location).href',
-            ),
+                '(window === globalThis || window === document ? location : window.location).href'
+            )
         );
         expect(code).toContain('_asyncToGenerator');
         expect(code).toContain('_wrapAsyncGenerator');

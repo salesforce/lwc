@@ -32,7 +32,7 @@ describe('should not provide access to elements inside shadow tree', () => {
     it('document.getElementsByTagNameNS', () => {
         expect(
             document.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'x-unique-tag-name')
-                .length,
+                .length
         ).toBe(0);
     });
 });
@@ -106,8 +106,8 @@ describe('should provide access to elements outside shadow tree', () => {
         expect(
             document.getElementsByTagNameNS(
                 'http://www.w3.org/1999/xhtml',
-                `x-unique-tag-name-${random}`,
-            ).length,
+                `x-unique-tag-name-${random}`
+            ).length
         ).toBe(1);
     });
 });

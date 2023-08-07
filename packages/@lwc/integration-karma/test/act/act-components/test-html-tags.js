@@ -24,7 +24,7 @@ export default function (define) {
                                 },
                                 key: 2,
                             },
-                            [],
+                            []
                         ),
                         api_element(
                             'div',
@@ -40,9 +40,9 @@ export default function (define) {
                                     {
                                         key: 4,
                                     },
-                                    [],
+                                    []
                                 ),
-                            ],
+                            ]
                         ),
                         api_element(
                             'img',
@@ -54,10 +54,10 @@ export default function (define) {
                                 },
                                 key: 5,
                             },
-                            [],
+                            []
                         ),
                         api_text('</img>'),
-                    ],
+                    ]
                 ),
             ];
         }

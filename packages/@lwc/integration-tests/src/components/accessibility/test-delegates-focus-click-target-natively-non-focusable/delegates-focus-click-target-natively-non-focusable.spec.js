@@ -16,7 +16,7 @@ describe('when the click target is natively non-focusable', () => {
     it('should apply focus to natively focusable parent (button) when click target is custom element', async () => {
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-click-target-natively-non-focusable',
-            '.head',
+            '.head'
         );
         await input.click();
 
@@ -24,7 +24,7 @@ describe('when the click target is natively non-focusable', () => {
         const child = await browser.shadowDeep$(
             'integration-delegates-focus-click-target-natively-non-focusable',
             'integration-parent',
-            'button > integration-child',
+            'button > integration-child'
         );
         await child.click();
 
@@ -36,7 +36,7 @@ describe('when the click target is natively non-focusable', () => {
     it('should apply focus to natively focusable parent (button) when click target is span element', async () => {
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-click-target-natively-non-focusable',
-            '.head',
+            '.head'
         );
         await input.click();
 
@@ -44,7 +44,7 @@ describe('when the click target is natively non-focusable', () => {
         const span = await browser.shadowDeep$(
             'integration-delegates-focus-click-target-natively-non-focusable',
             'integration-parent',
-            'button > span',
+            'button > span'
         );
         await span.click();
 

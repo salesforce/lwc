@@ -22,7 +22,7 @@ export let createCustomElement: (
     tagName: string,
     upgradeCallback: LifecycleCallback,
     connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => HTMLElement;
 
 if (hasCustomElements) {

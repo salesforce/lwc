@@ -48,7 +48,7 @@ export default function process(root: Root) {
                     .trim()
                     .split(/\s+/g)
                     .map((token) =>
-                        knownNames.has(token) ? `${token}-${SHADOW_ATTRIBUTE}` : token,
+                        knownNames.has(token) ? `${token}-${SHADOW_ATTRIBUTE}` : token
                     );
                 decl.value = tokens.join(' ');
             } else if (ANIMATION_NAME.has(decl.prop)) {

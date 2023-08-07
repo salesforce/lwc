@@ -39,7 +39,7 @@ const LWC_EXPOSED_MODULES = {
 };
 
 const directories = globSync('./packages/@lwc/*').filter(
-    (filename) => !IGNORED_PACKAGES.includes(filename.replace(/^packages\//, '')),
+    (filename) => !IGNORED_PACKAGES.includes(filename.replace(/^packages\//, ''))
 );
 
 const expectedPkgJsons = [];
@@ -134,7 +134,7 @@ if (differingPackageJsonFiles.length > 0) {
         'Found package.json files with unexpected content. Content has been overwritten.\n' +
             'Please run `git commit` and `node ./scripts/tasks/check-and-rewrite-package-json.js` again.\n' +
             'Files:',
-        differingPackageJsonFiles,
+        differingPackageJsonFiles
     );
     // Only in "test" mode do we actually emit a non-zero exit code. This is designed for CI tests.
     // In other cases (e.g. as a git precommit hook), we can just exit with a normal 0 exit code.

@@ -33,9 +33,9 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                 if (process.env.NODE_ENV !== 'production') {
                     logError(
                         `Can’t read the value of property \`${toString(
-                            key,
+                            key
                         )}\` from the constructor because the owner component hasn’t set the value yet. Instead, use the constructor to set a default value for the property.`,
-                        vm,
+                        vm
                     );
                 }
                 return;
@@ -50,17 +50,17 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                 if (isInvokingRender) {
                     logError(
                         `render() method has side effects on the state of property "${toString(
-                            key,
+                            key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
                     );
                 }
                 if (isUpdatingTemplate) {
                     logError(
                         `Updating the template has side effects on the state of property "${toString(
-                            key,
+                            key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
                     );
                 }
             }
@@ -75,14 +75,14 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
 
 export function createPublicAccessorDescriptor(
     key: PropertyKey,
-    descriptor: PropertyDescriptor,
+    descriptor: PropertyDescriptor
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     assert.invariant(
         isFunction(get),
         `Invalid public accessor ${toString(
-            key,
-        )} decorated with @api. The property is missing a getter.`,
+            key
+        )} decorated with @api. The property is missing a getter.`
     );
     return {
         get(this: LightningElement): any {
@@ -99,17 +99,17 @@ export function createPublicAccessorDescriptor(
                 if (isInvokingRender) {
                     logError(
                         `render() method has side effects on the state of property "${toString(
-                            key,
+                            key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
                     );
                 }
                 if (isUpdatingTemplate) {
                     logError(
                         `Updating the template has side effects on the state of property "${toString(
-                            key,
+                            key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
                     );
                 }
             }
@@ -118,9 +118,9 @@ export function createPublicAccessorDescriptor(
             } else if (process.env.NODE_ENV !== 'production') {
                 logError(
                     `Invalid attempt to set a new value for property "${toString(
-                        key,
+                        key
                     )}" that does not has a setter decorated with @api.`,
-                    vm,
+                    vm
                 );
             }
         },

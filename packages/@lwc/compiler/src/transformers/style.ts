@@ -13,7 +13,7 @@ import { TransformResult } from './transformer';
 export default function styleTransform(
     src: string,
     filename: string,
-    config: NormalizedTransformOptions,
+    config: NormalizedTransformOptions
 ): TransformResult {
     const { customProperties } = config.stylesheetConfig;
 

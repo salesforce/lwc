@@ -18,7 +18,7 @@ const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
     const [id, config] = path.get('expression.arguments') as [
         NodePath | undefined,
-        NodePath<types.ObjectExpression> | undefined,
+        NodePath<types.ObjectExpression> | undefined
     ];
 
     if (!id) {
@@ -27,7 +27,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER,
             },
-            state,
+            state
         );
     }
 
@@ -40,7 +40,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
             },
-            state,
+            state
         );
     }
 
@@ -50,7 +50,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
             },
-            state,
+            state
         );
     }
 
@@ -62,7 +62,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
             },
-            state,
+            state
         );
     }
 
@@ -77,7 +77,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
                 errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
                 messageArgs: [id.node.name],
             },
-            state,
+            state
         );
     }
 
@@ -92,7 +92,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
             },
-            state,
+            state
         );
     }
 
@@ -102,7 +102,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             {
                 errorInfo: DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER,
             },
-            state,
+            state
         );
     }
 }
@@ -110,7 +110,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
 function validateUsageWithOtherDecorators(
     path: NodePath<types.Decorator>,
     decorators: DecoratorMeta[],
-    state: LwcBabelPluginPass,
+    state: LwcBabelPluginPass
 ) {
     decorators.forEach((decorator) => {
         if (
@@ -123,7 +123,7 @@ function validateUsageWithOtherDecorators(
                 {
                     errorInfo: DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED,
                 },
-                state,
+                state
             );
         }
         if (
@@ -136,7 +136,7 @@ function validateUsageWithOtherDecorators(
                     errorInfo: DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR,
                     messageArgs: [decorator.name],
                 },
-                state,
+                state
             );
         }
     });

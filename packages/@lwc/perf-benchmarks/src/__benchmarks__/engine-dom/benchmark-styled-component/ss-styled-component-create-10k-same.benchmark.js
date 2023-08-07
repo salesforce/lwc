@@ -15,5 +15,5 @@ styledComponentBenchmark(
     `dom/styled-component/synthetic-shadow/create-same/10k`,
     NUM_COMPONENTS,
     StyledComponent,
-    { after, before, benchmark, run },
+    { after, before, benchmark, run }
 );

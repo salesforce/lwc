@@ -26,7 +26,7 @@ describe('side effects', () => {
         } else {
             expect(consoleSpy.calls.error.length).toEqual(1);
             expect(consoleSpy.calls.error[0][0].message).toContain(
-                'render() method has side effects on the state of property "foo"',
+                'render() method has side effects on the state of property "foo"'
             );
         }
     });
@@ -44,7 +44,7 @@ describe('side effects', () => {
         } else {
             expect(consoleSpy.calls.error.length).toEqual(1);
             expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Updating the template has side effects on the state of property "foo"',
+                'Updating the template has side effects on the state of property "foo"'
             );
         }
     });
@@ -68,7 +68,7 @@ describe('side effects', () => {
         } else {
             expect(consoleSpy.calls.error.length).toEqual(1);
             expect(consoleSpy.calls.error[0][0].message).toContain(
-                'render() method has side effects on the state of property "baz"',
+                'render() method has side effects on the state of property "baz"'
             );
         }
     });
@@ -92,7 +92,7 @@ describe('side effects', () => {
         } else {
             expect(consoleSpy.calls.error.length).toEqual(1);
             expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Updating the template has side effects on the state of property "baz"',
+                'Updating the template has side effects on the state of property "baz"'
             );
         }
     });

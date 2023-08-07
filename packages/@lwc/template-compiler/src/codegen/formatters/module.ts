@@ -22,7 +22,7 @@ function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
 
         return t.importDeclaration(
             [t.importDefaultSpecifier(localIdentifier)],
-            t.literal(kebabcaseToCamelcase(name)),
+            t.literal(kebabcaseToCamelcase(name))
         );
     });
 }
@@ -77,7 +77,7 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
         t.exportDefaultDeclaration(
             t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
                 t.identifier(TEMPLATE_FUNCTION_NAME),
-            ]),
+            ])
         ),
     ];
 

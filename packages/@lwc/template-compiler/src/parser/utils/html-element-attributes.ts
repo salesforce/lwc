@@ -411,9 +411,9 @@ export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_
 
         return accumulator;
     },
-    {} as Record<string, string[]>,
+    {} as Record<string, string[]>
 );
 
 Object.values(HTML_ELEMENT_ATTRIBUTE_MAP['*']).forEach(
-    (globalAttribute) => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = []),
+    (globalAttribute) => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])
 );

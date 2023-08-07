@@ -42,7 +42,7 @@ if (process.env.COMPAT !== true) {
             });
 
             nativeChild.shadowRoot.dispatchEvent(
-                new CustomEvent('test', { composed: true, bubbles: true }),
+                new CustomEvent('test', { composed: true, bubbles: true })
             );
         });
 
@@ -62,7 +62,7 @@ if (process.env.COMPAT !== true) {
             });
 
             nativeChild.shadowRoot.dispatchEvent(
-                new CustomEvent('test', { composed: true, bubbles: true }),
+                new CustomEvent('test', { composed: true, bubbles: true })
             );
         });
 
@@ -132,7 +132,7 @@ if (process.env.COMPAT !== true) {
             });
 
             div.shadowRoot.dispatchEvent(
-                new CustomEvent('test', { bubbles: true, composed: true }),
+                new CustomEvent('test', { bubbles: true, composed: true })
             );
         });
 
@@ -159,7 +159,7 @@ if (process.env.COMPAT !== true) {
             });
 
             synthetic.shadowRoot.dispatchEvent(
-                new CustomEvent('test', { bubbles: true, composed: true }),
+                new CustomEvent('test', { bubbles: true, composed: true })
             );
         });
     });
@@ -184,7 +184,7 @@ if (process.env.COMPAT !== true) {
                 });
 
                 native.shadowRoot.dispatchEvent(
-                    new CustomEvent('test', { bubbles: true, composed: true }),
+                    new CustomEvent('test', { bubbles: true, composed: true })
                 );
             });
         });

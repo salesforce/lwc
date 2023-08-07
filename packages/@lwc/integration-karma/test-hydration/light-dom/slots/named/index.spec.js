@@ -23,7 +23,7 @@ export default {
         expect(snapshotAfterHydration.mainText).toBe(snapshots.mainText);
         expect(snapshotAfterHydration.secondText).toBe(snapshots.secondText);
         expect(snapshotAfterHydration.cmpWithSlotParagraphs).toEqual(
-            snapshots.cmpWithSlotParagraphs,
+            snapshots.cmpWithSlotParagraphs
         );
 
         expect(snapshotAfterHydration.mainText.textContent).toBe('initial');

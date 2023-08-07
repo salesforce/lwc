@@ -197,7 +197,7 @@ const ViewModelReflection = new WeakMap<any, VM>();
 function callHook(
     cmp: LightningElement | undefined,
     fn: (...args: any[]) => any,
-    args: any[] = [],
+    args: any[] = []
 ): any {
     return fn.apply(cmp, args);
 }
@@ -262,7 +262,7 @@ export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             vm.state === VMState.connected || vm.state === VMState.disconnected,
-            `${vm} must have been connected.`,
+            `${vm} must have been connected.`
         );
     }
     resetComponentStateWhenRemoved(vm);
@@ -285,7 +285,7 @@ export function createVM<HostNode, HostElement>(
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
         hydrated?: boolean;
-    },
+    }
 ): VM {
     const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
@@ -402,7 +402,7 @@ function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
         } else if (process.env.NODE_ENV !== 'production') {
             logError(
                 `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
-                vm,
+                vm
             );
         }
     }
@@ -421,7 +421,7 @@ function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
             set(newValue) {
                 logWarnOnce(
                     `Dynamically setting the "stylesheets" static property on ${ctor.name} ` +
-                        'will not affect the stylesheets injected.',
+                        'will not affect the stylesheets injected.'
                 );
                 stylesheets = newValue;
             },
@@ -538,7 +538,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 () => {
                     // post
                     logOperationEnd(OperationId.Patch, vm);
-                },
+                }
             );
         }
     }
@@ -581,7 +581,7 @@ function flushRehydrationQueue() {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             rehydrateQueue.length,
-            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`,
+            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
     const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
@@ -794,7 +794,7 @@ export function runWithBoundaryProtection(
     owner: VM | null,
     pre: () => void,
     job: () => void,
-    post: () => void,
+    post: () => void
 ) {
     let error;
 

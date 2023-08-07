@@ -14,13 +14,13 @@ if (!process.env.COMPAT) {
         describe('stamped with version number', () => {
             it('component', () => {
                 expect(Component.toString()).toContain(
-                    `/*LWC compiler v${process.env.LWC_VERSION}*/`,
+                    `/*LWC compiler v${process.env.LWC_VERSION}*/`
                 );
             });
 
             it('component with prop', () => {
                 expect(ComponentWithProp.toString()).toContain(
-                    `/*LWC compiler v${process.env.LWC_VERSION}*/`,
+                    `/*LWC compiler v${process.env.LWC_VERSION}*/`
                 );
             });
 
@@ -30,7 +30,7 @@ if (!process.env.COMPAT) {
                 });
 
                 expect(elm.template.toString()).toContain(
-                    `/*LWC compiler v${process.env.LWC_VERSION}*/`,
+                    `/*LWC compiler v${process.env.LWC_VERSION}*/`
                 );
             });
 
@@ -40,7 +40,7 @@ if (!process.env.COMPAT) {
                 });
 
                 expect(elm.template.stylesheets[0].toString()).toContain(
-                    `/*LWC compiler v${process.env.LWC_VERSION}*/`,
+                    `/*LWC compiler v${process.env.LWC_VERSION}*/`
                 );
             });
         });
@@ -68,8 +68,8 @@ if (!process.env.COMPAT) {
                     registerTemplate(tmpl);
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v123.456.789`,
-                    ),
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v123.456.789`
+                    )
                 );
                 if (process.env.NODE_ENV === 'production') {
                     expect(dispatcher).not.toHaveBeenCalled();
@@ -107,8 +107,8 @@ if (!process.env.COMPAT) {
                     document.body.appendChild(elm);
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`,
-                    ),
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`
+                    )
                 );
                 if (process.env.NODE_ENV === 'production') {
                     expect(dispatcher).not.toHaveBeenCalled();
@@ -145,8 +145,8 @@ if (!process.env.COMPAT) {
                     });
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but component CustomElement was compiled with v123.456.789`,
-                    ),
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but component CustomElement was compiled with v123.456.789`
+                    )
                 );
                 if (process.env.NODE_ENV === 'production') {
                     expect(dispatcher).not.toHaveBeenCalled();

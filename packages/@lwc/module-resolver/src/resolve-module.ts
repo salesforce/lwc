@@ -40,7 +40,7 @@ import {
 function resolveModuleFromAlias(
     specifier: string,
     moduleRecord: AliasModuleRecord,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { name, path: modulePath } = moduleRecord;
 
@@ -52,9 +52,9 @@ function resolveModuleFromAlias(
     if (!fs.existsSync(entry)) {
         throw new LwcConfigError(
             `Invalid alias module record "${JSON.stringify(
-                moduleRecord,
+                moduleRecord
             )}", file "${entry}" does not exist`,
-            { scope: opts.rootDir },
+            { scope: opts.rootDir }
         );
     }
 
@@ -64,7 +64,7 @@ function resolveModuleFromAlias(
 function resolveModuleFromDir(
     specifier: string,
     moduleRecord: DirModuleRecord,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { dir } = moduleRecord;
 
@@ -73,9 +73,9 @@ function resolveModuleFromDir(
     if (!fs.existsSync(absModuleDir)) {
         throw new LwcConfigError(
             `Invalid dir module record "${JSON.stringify(
-                moduleRecord,
+                moduleRecord
             )}", directory ${absModuleDir} doesn't exists`,
-            { scope: opts.rootDir },
+            { scope: opts.rootDir }
         );
     }
 
@@ -101,7 +101,7 @@ function resolveModuleFromDir(
 function resolveModuleFromNpm(
     specifier: string,
     npmModuleRecord: NpmModuleRecord,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { npm, map: aliasMapping } = npmModuleRecord;
 
@@ -117,9 +117,9 @@ function resolveModuleFromNpm(
         if (error.code === 'MODULE_NOT_FOUND') {
             throw new LwcConfigError(
                 `Invalid npm module record "${JSON.stringify(
-                    npmModuleRecord,
+                    npmModuleRecord
                 )}", "${npm}" npm module can't be resolved`,
-                { scope: opts.rootDir },
+                { scope: opts.rootDir }
             );
         }
 
@@ -147,7 +147,7 @@ function resolveModuleFromNpm(
                 moduleRecord,
                 {
                     rootDir: packageDir,
-                },
+                }
             );
 
             if (registryEntry) {
@@ -161,7 +161,7 @@ function resolveModuleFromNpm(
 
         throw new LwcConfigError(
             `Unable to find "${specifier}" under npm package "${npmModuleRecord.npm}"`,
-            { scope: packageDir },
+            { scope: packageDir }
         );
     }
 }
@@ -169,7 +169,7 @@ function resolveModuleFromNpm(
 function resolveModuleRecordType(
     specifier: string,
     moduleRecord: ModuleRecord,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { rootDir } = opts;
 
@@ -189,23 +189,23 @@ function resolveModuleRecordType(
 export function resolveModule(
     importee: string,
     dirname: string,
-    config?: Partial<ModuleResolverConfig>,
+    config?: Partial<ModuleResolverConfig>
 ): RegistryEntry {
     if (typeof importee !== 'string') {
         throw new TypeError(
-            `The importee argument must be a string. Received type ${typeof importee}`,
+            `The importee argument must be a string. Received type ${typeof importee}`
         );
     }
 
     if (typeof dirname !== 'string') {
         throw new TypeError(
-            `The dirname argument must be a string. Received type ${typeof dirname}`,
+            `The dirname argument must be a string. Received type ${typeof dirname}`
         );
     }
 
     if (importee.startsWith('.') || importee.startsWith('/')) {
         throw new TypeError(
-            `The importee argument must be a valid LWC module name. Received "${importee}"`,
+            `The importee argument must be a valid LWC module name. Received "${importee}"`
         );
     }
 

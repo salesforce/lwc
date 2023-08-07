@@ -12,7 +12,7 @@ export function toThrowErrorWithType(
     this: MatcherUtils,
     received: any,
     ctor: any,
-    message?: string,
+    message?: string
 ) {
     let error: Error | undefined;
 

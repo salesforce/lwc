@@ -50,7 +50,7 @@ describe('setFeatureFlag', () => {
                 // @ts-ignore
                 setFeatureFlag('DOES_NOT_EXIST', true);
                 expect(info).toHaveBeenCalledWith(
-                    expect.stringMatching(/Attempt to set a value on an unknown feature flag/),
+                    expect.stringMatching(/Attempt to set a value on an unknown feature flag/)
                 );
 
                 // value is not changed
@@ -64,7 +64,7 @@ describe('setFeatureFlag', () => {
                 setFeatureFlag('DUMMY_TEST_FLAG', false);
                 if (env === 'production') {
                     expect(error).toHaveBeenCalledWith(
-                        'Failed to set the value "false" for the runtime feature flag "DUMMY_TEST_FLAG". "DUMMY_TEST_FLAG" has already been set with the value "true".',
+                        'Failed to set the value "false" for the runtime feature flag "DUMMY_TEST_FLAG". "DUMMY_TEST_FLAG" has already been set with the value "true".'
                     );
                     expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toEqual(true);
                 } else {

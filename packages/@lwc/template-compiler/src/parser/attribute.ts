@@ -55,7 +55,7 @@ export function isIdReferencingAttribute(attrName: string): boolean {
 export function isAllowedFragOnlyUrlsXHTML(
     tagName: string,
     attrName: string,
-    namespaceURI: string,
+    namespaceURI: string
 ): boolean {
     const allowed = [HTML_TAG.A, HTML_TAG.AREA];
     return (
@@ -83,7 +83,7 @@ export function normalizeAttributeValue(
     raw: string,
     tag: string,
     attr: parse5.Attribute,
-    location: SourceLocation,
+    location: SourceLocation
 ): {
     value: string;
     escapedExpression: boolean;

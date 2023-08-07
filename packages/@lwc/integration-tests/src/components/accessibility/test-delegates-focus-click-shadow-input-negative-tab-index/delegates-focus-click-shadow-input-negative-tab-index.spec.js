@@ -14,13 +14,13 @@ describe('Tabbing into custom element with delegates focus', () => {
     it('should apply focus to input in shadow', async () => {
         const div = await browser.shadowDeep$(
             'integration-delegates-focus-click-shadow-input-negative-tab-index',
-            '.selectable-div',
+            '.selectable-div'
         );
         await div.click();
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-click-shadow-input-negative-tab-index',
             'integration-child',
-            '.negative-tab-index-input',
+            '.negative-tab-index-input'
         );
         await input.click();
         // browser.click('.selectable-div');
@@ -32,7 +32,7 @@ describe('Tabbing into custom element with delegates focus', () => {
             },
             {
                 timeoutMsg: 'expected input to be focused',
-            },
+            }
         );
     });
 });

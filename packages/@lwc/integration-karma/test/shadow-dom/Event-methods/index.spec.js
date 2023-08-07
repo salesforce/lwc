@@ -10,7 +10,7 @@ function dispatchEventWithLog(target, nodes, event) {
             node.addEventListener(event.type, () => {
                 log.push(node);
             });
-        },
+        }
     );
     target.dispatchEvent(event);
     return log;

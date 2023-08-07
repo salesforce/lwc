@@ -111,7 +111,7 @@ if (!process.env.NATIVE_SHADOW) {
                 expect(lwcElementInsideShadow.firstElementChild).toBe(null);
 
                 expect(divManuallyApendedToShadow.firstElementChild.tagName).toBe(
-                    'X-MANUALLY-INSERTED',
+                    'X-MANUALLY-INSERTED'
                 );
 
                 expect(cmpShadow.firstElementChild.tagName).toBe('P');
@@ -126,7 +126,7 @@ if (!process.env.NATIVE_SHADOW) {
                 expect(lwcElementInsideShadow.lastElementChild).toBe(null);
 
                 expect(divManuallyApendedToShadow.lastElementChild.tagName).toBe(
-                    'X-MANUALLY-INSERTED',
+                    'X-MANUALLY-INSERTED'
                 );
 
                 expect(cmpShadow.lastElementChild.tagName).toBe('X-WITH-SLOT');
@@ -139,10 +139,10 @@ if (!process.env.NATIVE_SHADOW) {
                 it('should preserve element outside lwc boundary behavior', () => {
                     expect(elementOutsideLWC.querySelector('p').innerText).toBe('ctx first text');
                     expect(elementOutsideLWC.querySelector('x-with-slot p').innerText).toBe(
-                        'with-slot text',
+                        'with-slot text'
                     );
                     expect(
-                        elementOutsideLWC.querySelector('.manual-ctx x-with-slot p').innerText,
+                        elementOutsideLWC.querySelector('.manual-ctx x-with-slot p').innerText
                     ).toBe('with-slot text');
                     expect(elementOutsideLWC.querySelector('div.slotted')).not.toBe(null);
                 });
@@ -167,10 +167,10 @@ if (!process.env.NATIVE_SHADOW) {
 
                 it('should preserve behavior for manually inserted element in shadow and with lwc components', () => {
                     expect(divManuallyApendedToShadow.querySelector('p').innerText).toBe(
-                        'slot-container text',
+                        'slot-container text'
                     );
                     expect(
-                        divManuallyApendedToShadow.querySelector('x-with-slot p').innerText,
+                        divManuallyApendedToShadow.querySelector('x-with-slot p').innerText
                     ).toBe('with-slot text');
                     expect(divManuallyApendedToShadow.querySelector('div.slotted')).not.toBe(null);
                 });
@@ -367,26 +367,26 @@ if (!process.env.NATIVE_SHADOW) {
             it('should preserve compareDocumentPosition behavior', () => {
                 expect(
                     elementOutsideLWC.compareDocumentPosition(lwcElementInsideShadow) &
-                        Node.DOCUMENT_POSITION_CONTAINED_BY,
+                        Node.DOCUMENT_POSITION_CONTAINED_BY
                 ).toBeGreaterThan(0);
 
                 expect(
                     rootLwcElement.compareDocumentPosition(elementOutsideLWC) &
-                        Node.DOCUMENT_POSITION_CONTAINS,
+                        Node.DOCUMENT_POSITION_CONTAINS
                 ).toBeGreaterThan(0);
                 expect(
                     lwcElementInsideShadow.compareDocumentPosition(divManuallyApendedToShadow) &
-                        Node.DOCUMENT_POSITION_FOLLOWING,
+                        Node.DOCUMENT_POSITION_FOLLOWING
                 ).toBeGreaterThan(0);
 
                 expect(
                     divManuallyApendedToShadow.compareDocumentPosition(elementOutsideLWC) &
-                        Node.DOCUMENT_POSITION_CONTAINS,
+                        Node.DOCUMENT_POSITION_CONTAINS
                 ).toBeGreaterThan(0);
 
                 expect(
                     cmpShadow.compareDocumentPosition(slottedNode) &
-                        Node.DOCUMENT_POSITION_CONTAINED_BY,
+                        Node.DOCUMENT_POSITION_CONTAINED_BY
                 ).toBeGreaterThan(0);
             });
 

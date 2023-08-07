@@ -73,7 +73,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
     let proto: LightningElementConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
         throw new ReferenceError(
-            `Invalid prototype chain for ${Ctor.name}, you must extend LightningElement.`,
+            `Invalid prototype chain for ${Ctor.name}, you must extend LightningElement.`
         );
     }
     // covering the cases where the ref is circular in AMD
@@ -82,7 +82,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
                 throw new ReferenceError(
-                    `Circular module dependency for ${Ctor.name}, must resolve to a constructor that extends LightningElement.`,
+                    `Circular module dependency for ${Ctor.name}, must resolve to a constructor that extends LightningElement.`
                 );
             }
         }
@@ -107,7 +107,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             // This error seems impossible to hit, due to an earlier check in `isComponentConstructor()`.
             // But we keep it here just in case.
             logError(
-                `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`,
+                `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
             );
         }
 
@@ -117,7 +117,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             ctorShadowSupportMode !== ShadowSupportMode.Default
         ) {
             logError(
-                `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`,
+                `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
 
@@ -127,7 +127,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             ctorRenderMode !== 'shadow'
         ) {
             logError(
-                `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`,
+                `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }
     }
@@ -150,7 +150,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         create(null),
         superDef.wire,
         wiredFields,
-        wiredMethods,
+        wiredMethods
     );
     connectedCallback = connectedCallback || superDef.connectedCallback;
     disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
@@ -259,7 +259,7 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
 
         if (!isComponentConstructor(Ctor)) {
             throw new TypeError(
-                `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`,
+                `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
             );
         }
 

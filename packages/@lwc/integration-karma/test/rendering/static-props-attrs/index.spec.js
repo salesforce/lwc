@@ -12,7 +12,7 @@ if (!process.env.COMPAT) {
                     constructor() {
                         super();
                     }
-                },
+                }
             );
         });
 

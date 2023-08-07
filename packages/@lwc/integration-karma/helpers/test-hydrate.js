@@ -12,7 +12,7 @@ window.HydrateTest = (function (lwc, testUtils) {
 
     const browserSupportsDeclarativeShadowDOM = Object.prototype.hasOwnProperty.call(
         HTMLTemplateElement.prototype,
-        'shadowRoot',
+        'shadowRoot'
     );
 
     function polyfillDeclarativeShadowDom(root) {

@@ -28,7 +28,7 @@ describe('clean DOM', () => {
             expect(document.querySelector(`.head-${1 - i}`)).toBeNull();
             if (document.adoptedStyleSheets) {
                 expect(
-                    [...document.adoptedStyleSheets].find((_) => _[`__lwc_${1 - i}__`]),
+                    [...document.adoptedStyleSheets].find((_) => _[`__lwc_${1 - i}__`])
                 ).toBeUndefined();
             }
         });

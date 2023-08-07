@@ -14,7 +14,7 @@ import { LwcBabelPluginPass } from './types';
 
 function isClassMethod(
     classMethod: NodePath<types.Node>,
-    properties: { kind?: string; name?: string; static?: boolean } = {},
+    properties: { kind?: string; name?: string; static?: boolean } = {}
 ): classMethod is NodePath<types.ClassMethod> {
     const { kind = 'method', name } = properties;
     return (
@@ -26,7 +26,7 @@ function isClassMethod(
 
 function isGetterClassMethod(
     classMethod: NodePath<types.Node>,
-    properties: { kind?: string; name?: string; static?: boolean } = {},
+    properties: { kind?: string; name?: string; static?: boolean } = {}
 ) {
     return isClassMethod(classMethod, {
         kind: 'get',
@@ -37,7 +37,7 @@ function isGetterClassMethod(
 
 function isSetterClassMethod(
     classMethod: NodePath<types.Node>,
-    properties: { kind?: string; name?: string; static?: boolean } = {},
+    properties: { kind?: string; name?: string; static?: boolean } = {}
 ) {
     return isClassMethod(classMethod, {
         kind: 'set',
@@ -101,7 +101,7 @@ function normalizeLocation(source: NodePath<types.Node>) {
 function generateError(
     source: NodePath<types.Node>,
     { errorInfo, messageArgs }: DecoratorErrorOptions,
-    state: LwcBabelPluginPass,
+    state: LwcBabelPluginPass
 ) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);

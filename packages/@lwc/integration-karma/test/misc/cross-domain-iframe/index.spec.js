@@ -37,7 +37,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     }
 
     testContentWindowProperty('postMessage', (contentWindow) =>
-        contentWindow.postMessage('foo', '*'),
+        contentWindow.postMessage('foo', '*')
     );
     testContentWindowProperty('focus', (contentWindow) => contentWindow.focus());
     testContentWindowProperty('blur', (contentWindow) => contentWindow.blur());
@@ -56,7 +56,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     testContentWindowProperty('window', (contentWindow) => contentWindow.window);
 
     testSameOriginContentWindowProperty('addEventListener', (contentWindow) =>
-        contentWindow.addEventListener('resize', () => {}),
+        contentWindow.addEventListener('resize', () => {})
     );
     testSameOriginContentWindowProperty('removeEventListener', (contentWindow) => {
         contentWindow.removeEventListener('resize', () => {});

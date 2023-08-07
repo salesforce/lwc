@@ -108,7 +108,7 @@ if (process.env.NATIVE_SHADOW) {
                     return xSimple.shadowRoot.adoptedStyleSheets
                         ? [...xSimple.shadowRoot.adoptedStyleSheets]
                         : xSimple.shadowRoot.querySelector('style');
-                },
+                }
             );
 
             expect(styles[0]).toBeTruthy();

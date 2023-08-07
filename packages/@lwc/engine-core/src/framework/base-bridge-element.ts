@@ -71,18 +71,18 @@ type AttributeChangedCallback = (
     this: HTMLElement,
     attrName: string,
     oldValue: string,
-    newValue: string,
+    newValue: string
 ) => void;
 
 function createAttributeChangedCallback(
     attributeToPropMap: Record<string, string>,
-    superAttributeChangedCallback?: AttributeChangedCallback,
+    superAttributeChangedCallback?: AttributeChangedCallback
 ): AttributeChangedCallback {
     return function attributeChangedCallback(
         this: HTMLElement,
         attrName: string,
         oldValue: string,
-        newValue: string,
+        newValue: string
     ) {
         if (oldValue === newValue) {
             // Ignore same values.
@@ -111,7 +111,7 @@ export interface HTMLElementConstructor {
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     props: string[],
-    methods: string[],
+    methods: string[]
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
@@ -162,7 +162,7 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    [],
+    []
 );
 
 if (process.env.IS_BROWSER) {

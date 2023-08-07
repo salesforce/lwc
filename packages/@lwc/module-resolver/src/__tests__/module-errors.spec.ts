@@ -15,7 +15,7 @@ describe('resolution errors', () => {
 
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${importer}". Unable to find any LWC configuration file`,
+            `Invalid LWC configuration in "${importer}". Unable to find any LWC configuration file`
         );
     });
 
@@ -26,8 +26,8 @@ describe('resolution errors', () => {
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/invalid-lwc-config',
-            )}". "lwc.config.json" must be at the package root level along with the "package.json"`,
+                'errors/invalid-lwc-config'
+            )}". "lwc.config.json" must be at the package root level along with the "package.json"`
         );
     });
 
@@ -38,8 +38,8 @@ describe('resolution errors', () => {
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/invalid-record',
-            )}". Unknown module record "{}"`,
+                'errors/invalid-record'
+            )}". Unknown module record "{}"`
         );
     });
 
@@ -50,8 +50,8 @@ describe('resolution errors', () => {
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/invalid-alias',
-            )}". Unknown module record "{"name":"something"}"`,
+                'errors/invalid-alias'
+            )}". Unknown module record "{"name":"something"}"`
         );
     });
 
@@ -61,7 +61,7 @@ describe('resolution errors', () => {
 
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             NO_LWC_MODULE_FOUND_CODE,
-            `Unable to resolve "${specifier}" from "${importer}"`,
+            `Unable to resolve "${specifier}" from "${importer}"`
         );
     });
 });

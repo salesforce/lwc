@@ -138,14 +138,14 @@ describe('slotted content using lwc:dynamic', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot,
+                elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot
             ).toBeDefined();
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
 
             if (process.env.NATIVE_SHADOW) {
                 // `slot-foo` is not rendered in synthetic shadow
                 expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
-                    null,
+                    null
                 );
             }
             expect(consoleSpy.calls.error.length).toEqual(0);
@@ -266,14 +266,14 @@ describe('slotted content', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot,
+                elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot
             ).toBeDefined();
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
 
             if (process.env.NATIVE_SHADOW) {
                 // `slot-foo` is not rendered in synthetic shadow
                 expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
-                    null,
+                    null
                 );
             }
             expect(consoleSpy.calls.error.length).toEqual(0);

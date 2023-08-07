@@ -8,12 +8,12 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,
-    'target',
+    'target'
 )!.get!;
 
 const eventCurrentTargetGetter: (this: Event) => EventTarget | null = getOwnPropertyDescriptor(
     Event.prototype,
-    'currentTarget',
+    'currentTarget'
 )!.get!;
 
 const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null =

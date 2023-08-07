@@ -11,7 +11,7 @@ describe('stylesheet caching', () => {
         document.body.appendChild(shadow);
         return new Promise((resolve) => requestAnimationFrame(resolve)).then(() => {
             expect(getComputedStyle(shadow.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(255, 0, 255)',
+                'rgb(255, 0, 255)'
             );
             expect(getComputedStyle(light.querySelector('h1')).color).toEqual('rgb(255, 0, 255)');
         });

@@ -56,7 +56,7 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
     invariant(
         numLeadingParens === numTrailingParens,
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-        ['expression must have balanced parentheses.'],
+        ['expression must have balanced parentheses.']
     );
 }
 
@@ -123,13 +123,13 @@ class TemplateHtmlTokenizer extends Tokenizer {
         // Capture text content between the outer curly braces, inclusive.
         const expressionTextNodeValue = html.slice(
             expressionStart,
-            idxOfClosingBracket + CLOSING_CURLY_LEN,
+            idxOfClosingBracket + CLOSING_CURLY_LEN
         );
 
         invariant(
             html.codePointAt(idxOfClosingBracket) === CLOSING_CURLY_BRACKET,
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            ['expression must end with curly brace.'],
+            ['expression must end with curly brace.']
         );
 
         this.advanceBy(expressionTextNodeValue.length);

@@ -12,7 +12,7 @@ import { VBaseElement } from '../vnodes';
 export function patchStyleAttribute(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
-    renderer: RendererAPI,
+    renderer: RendererAPI
 ) {
     const {
         elm,

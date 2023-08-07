@@ -114,7 +114,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         })
                     ) {
                         throw new Error(
-                            'Expected a string or a RegExp to compare the thrown error against, or an array of such.',
+                            'Expected a string or a RegExp to compare the thrown error against, or an array of such.'
                         );
                     }
 
@@ -142,7 +142,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                     callsArgs.length +
                                     ' with ' +
                                     formattedCalls +
-                                    '.',
+                                    '.'
                             );
                         } else {
                             return pass();
@@ -154,7 +154,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                     methodName +
                                     ' to called with ' +
                                     JSON.stringify(expectedMessages) +
-                                    ', but was never called.',
+                                    ', but was never called.'
                             );
                         } else {
                             if (callsArgs.length !== expectedMessages.length) {
@@ -165,7 +165,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                         expectedMessages.length +
                                         ' time(s), but was called ' +
                                         callsArgs.length +
-                                        ' time(s).',
+                                        ' time(s).'
                                 );
                             }
                             for (var i = 0; i < callsArgs.length; i++) {
@@ -180,7 +180,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                             expectedMessage +
                                             '", but was called with "' +
                                             actualMessage +
-                                            '".',
+                                            '".'
                                     );
                                 }
                             }
@@ -239,7 +239,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         !(expectedMessage instanceof RegExp)
                     ) {
                         throw new Error(
-                            'Expected a string or a RegExp to compare the thrown error against.',
+                            'Expected a string or a RegExp to compare the thrown error against.'
                         );
                     }
 
@@ -250,7 +250,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                             return fail(
                                 'Expected function not to throw an error in production mode, but it threw ' +
                                     throwDescription(thrown) +
-                                    '.',
+                                    '.'
                             );
                         } else {
                             return pass();
@@ -262,7 +262,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                     expectedErrorCtor.name +
                                     ' error in development mode"' +
                                     (expectedMessage ? 'with message ' + expectedMessage : '') +
-                                    '".',
+                                    '".'
                             );
                         } else if (!matchError(thrown)) {
                             return fail(
@@ -272,7 +272,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                     (expectedMessage ? 'with message ' + expectedMessage : '') +
                                     '", but it threw ' +
                                     throwDescription(thrown) +
-                                    '.',
+                                    '.'
                             );
                         } else {
                             return pass();

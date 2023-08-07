@@ -46,7 +46,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
     if (isUndefined(features[name])) {
         // eslint-disable-next-line no-console
         console.info(
-            `Attempt to set a value on an unknown feature flag "${name}" resulted in a NOOP.`,
+            `Attempt to set a value on an unknown feature flag "${name}" resulted in a NOOP.`
         );
         return;
     }
@@ -60,7 +60,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         if (!isUndefined(runtimeValue)) {
             // eslint-disable-next-line no-console
             console.error(
-                `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${runtimeValue}".`,
+                `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${runtimeValue}".`
             );
             return;
         }

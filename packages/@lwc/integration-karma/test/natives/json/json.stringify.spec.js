@@ -5,7 +5,7 @@ describe('JSON.stringify on proxies', () => {
                 x: 'x',
                 y: 'y',
             },
-            {},
+            {}
         );
 
         const actual = JSON.stringify(arr);
@@ -30,12 +30,12 @@ describe('JSON.stringify on proxies', () => {
                 object: { x: 'x' },
                 [Symbol('symbol')]: true,
             },
-            {},
+            {}
         );
 
         const actual = JSON.stringify(obj);
         expect(actual).toBe(
-            '{"string":"x","number":1,"boolean":true,"null":null,"object":{"x":"x"}}',
+            '{"string":"x","number":1,"boolean":true,"null":null,"object":{"x":"x"}}'
         );
     });
 
@@ -45,7 +45,7 @@ describe('JSON.stringify on proxies', () => {
                 x: new Proxy({ y: true }, {}),
                 z: new Proxy([false], {}),
             },
-            {},
+            {}
         );
 
         const actual = JSON.stringify(nested);

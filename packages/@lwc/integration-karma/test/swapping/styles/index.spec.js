@@ -11,19 +11,19 @@ if (process.env.NODE_ENV !== 'production') {
             document.body.appendChild(elm);
             expect(getComputedStyle(elm.shadowRoot.querySelector('.simple')).display).toBe(
                 'block',
-                'the default display should be block',
+                'the default display should be block'
             );
             swapStyle(blockStyle[0], inlineStyle[0]);
             return Promise.resolve()
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('.simple')).display).toBe(
-                        'inline',
+                        'inline'
                     );
                     swapStyle(inlineStyle[0], noneStyle[0]);
                 })
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('.simple')).display).toBe(
-                        'none',
+                        'none'
                     );
                 });
         });

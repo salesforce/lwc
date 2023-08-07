@@ -32,7 +32,7 @@ function getHeaderForCustomElement(ce: HTMLElement, componentInstance: Lightning
 
 function getHeaderForComponentInstance(
     componentInstance: LightningElement,
-    debugInfo: Record<symbol, any>,
+    debugInfo: Record<symbol, any>
 ) {
     if (keys(debugInfo).length === 0) {
         // there is no debug information, no need to customize this component instance

@@ -19,7 +19,7 @@ if (process.env.NATIVE_SHADOW && document.adoptedStyleSheets) {
             expect(elm1.shadowRoot.adoptedStyleSheets.length).toEqual(1);
             expect(elm2.shadowRoot.adoptedStyleSheets.length).toEqual(1);
             expect(elm1.shadowRoot.adoptedStyleSheets[0]).toBe(
-                elm2.shadowRoot.adoptedStyleSheets[0],
+                elm2.shadowRoot.adoptedStyleSheets[0]
             );
         });
 
@@ -33,7 +33,7 @@ if (process.env.NATIVE_SHADOW && document.adoptedStyleSheets) {
             expect(elm1.shadowRoot.adoptedStyleSheets.length).toEqual(1);
             expect(elm2.shadowRoot.adoptedStyleSheets.length).toEqual(1);
             expect(elm1.shadowRoot.adoptedStyleSheets[0]).toBe(
-                elm2.shadowRoot.adoptedStyleSheets[0],
+                elm2.shadowRoot.adoptedStyleSheets[0]
             );
         });
 
@@ -48,10 +48,10 @@ if (process.env.NATIVE_SHADOW && document.adoptedStyleSheets) {
             expect(elm1.shadowRoot.adoptedStyleSheets.length).toEqual(2);
             expect(elm2.shadowRoot.adoptedStyleSheets.length).toEqual(2);
             expect(elm1.shadowRoot.adoptedStyleSheets[0]).toBe(
-                elm2.shadowRoot.adoptedStyleSheets[0],
+                elm2.shadowRoot.adoptedStyleSheets[0]
             );
             expect(elm1.shadowRoot.adoptedStyleSheets[1]).not.toBe(
-                elm2.shadowRoot.adoptedStyleSheets[1],
+                elm2.shadowRoot.adoptedStyleSheets[1]
             );
         });
     });

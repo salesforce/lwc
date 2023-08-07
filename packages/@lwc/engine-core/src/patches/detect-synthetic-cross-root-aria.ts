@@ -70,7 +70,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
             `Element <${source.tagName.toLowerCase()}> uses attribute "${attrName}" to reference element ` +
                 `<${target.tagName.toLowerCase()}>, which is not in the same shadow root. This will break in native shadow DOM. ` +
                 `For details, see: https://sfdc.co/synthetic-aria`,
-            vm,
+            vm
         );
     }
 }

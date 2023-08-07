@@ -20,7 +20,7 @@ const ComponentConstructorToCustomElementConstructorMap = new Map<
 function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     if (Ctor === LightningElement) {
         throw new TypeError(
-            `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`,
+            `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
         );
     }
     let ce = ComponentConstructorToCustomElementConstructorMap.get(Ctor);

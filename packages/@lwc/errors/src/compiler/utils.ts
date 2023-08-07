@@ -69,7 +69,7 @@ export function getCodeFromError(error: any): number | undefined {
 
 export function getFilename(
     origin: CompilerDiagnosticOrigin | undefined,
-    obj?: any,
+    obj?: any
 ): string | undefined {
     // Give priority to explicit origin
     if (origin && origin.filename) {
@@ -82,7 +82,7 @@ export function getFilename(
 
 export function getLocation(
     origin: CompilerDiagnosticOrigin | undefined,
-    obj?: any,
+    obj?: any
 ): Location | undefined {
     // Give priority to explicit origin
     if (origin && origin.location) {

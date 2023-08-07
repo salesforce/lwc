@@ -20,27 +20,27 @@ const {
 
 const attachShadow: (init: ShadowRootInit) => ShadowRoot = hasOwnProperty.call(
     Element.prototype,
-    'attachShadow',
+    'attachShadow'
 )
     ? Element.prototype.attachShadow
     : () => {
           throw new TypeError(
-              'attachShadow() is not supported in current browser. Load the @lwc/synthetic-shadow polyfill and use Lightning Web Components',
+              'attachShadow() is not supported in current browser. Load the @lwc/synthetic-shadow polyfill and use Lightning Web Components'
           );
       };
 const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
-    'childElementCount',
+    'childElementCount'
 )!.get!;
 
 const firstElementChildGetter: (this: ParentNode) => Element | null = getOwnPropertyDescriptor(
     Element.prototype,
-    'firstElementChild',
+    'firstElementChild'
 )!.get!;
 
 const lastElementChildGetter: (this: ParentNode) => Element | null = getOwnPropertyDescriptor(
     Element.prototype,
-    'lastElementChild',
+    'lastElementChild'
 )!.get!;
 
 const innerTextDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
@@ -74,7 +74,7 @@ const outerHTMLSetter: (this: Element, s: string) => void = outerHTMLDescriptor!
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
     Element.prototype,
-    'tagName',
+    'tagName'
 )!.get!;
 
 const tabIndexDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex');
@@ -85,7 +85,7 @@ const matches: (this: Element, selector: string) => boolean = Element.prototype.
 
 const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = getOwnPropertyDescriptor(
     Element.prototype,
-    'children',
+    'children'
 )!.get!;
 
 // for IE11, access from HTMLElement
@@ -94,14 +94,14 @@ const { getElementsByClassName } = HTMLElement.prototype;
 
 const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.call(
     Element.prototype,
-    'shadowRoot',
+    'shadowRoot'
 )
     ? getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')!.get!
     : () => null;
 
 const assignedSlotGetter: (this: Element) => HTMLSlotElement | null = hasOwnProperty.call(
     Element.prototype,
-    'assignedSlot',
+    'assignedSlot'
 )
     ? getOwnPropertyDescriptor(Element.prototype, 'assignedSlot')!.get!
     : () => null;

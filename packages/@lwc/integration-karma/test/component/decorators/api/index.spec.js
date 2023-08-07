@@ -129,7 +129,7 @@ describe('restrictions', () => {
                 showFeatures() {}
             }
         }).toLogErrorDev(
-            /Invalid @api showFeatures field\. Found a duplicate method with the same name\./,
+            /Invalid @api showFeatures field\. Found a duplicate method with the same name\./
         );
     });
 
@@ -146,10 +146,10 @@ describe('restrictions', () => {
                     }
                 }
             }).toThrowError(
-                /Invalid public accessor foo decorated with @api\. The property is missing a getter\./,
+                /Invalid public accessor foo decorated with @api\. The property is missing a getter\./
             );
         }).toLogErrorDev(
-            /Missing getter for property foo decorated with @api in (class|function) Invalid/,
+            /Missing getter for property foo decorated with @api in (class|function) Invalid/
         );
     });
 
@@ -245,7 +245,7 @@ describe('regression [W-9927596]', () => {
 
                 Ctor = DuplicateProperty;
             }).toLogErrorDev(
-                /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
+                /Invalid observed foo field\. Found a duplicate accessor with the same name\./
             );
 
             const elm = createElement('x-duplicate-property', { is: Ctor });
@@ -287,7 +287,7 @@ describe('regression [W-9927596]', () => {
 
                 Ctor = DuplicateProperty;
             }).toLogErrorDev(
-                /Invalid @api foo field\. Found a duplicate accessor with the same name\./,
+                /Invalid @api foo field\. Found a duplicate accessor with the same name\./
             );
 
             const elm = createElement('x-duplicate-property', { is: Ctor });
@@ -329,7 +329,7 @@ describe('regression [W-9927596]', () => {
 
                     Ctor = DuplicateAccessor;
                 }).toLogErrorDev(
-                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
                 );
 
                 const elm = createElement('x-duplicate-accessor', { is: Ctor });
@@ -370,7 +370,7 @@ describe('regression [W-9927596]', () => {
 
                     Ctor = DuplicateAccessor;
                 }).toLogErrorDev(
-                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
                 );
 
                 const elm = createElement('x-duplicate-accessor', { is: Ctor });
@@ -392,7 +392,7 @@ describe('regression [W-9927596]', () => {
         expect(() => {
             elm.foo = 'foo';
         }).toLogErrorDev(
-            /Invalid attempt to set a new value for property "foo" that does not has a setter decorated with @api/,
+            /Invalid attempt to set a new value for property "foo" that does not has a setter decorated with @api/
         );
     });
 });

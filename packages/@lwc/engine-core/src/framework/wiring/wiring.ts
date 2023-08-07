@@ -46,7 +46,7 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
                 // job
                 method.call(vm.component, value);
             },
-            noop,
+            noop
         );
     };
 }
@@ -54,7 +54,7 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
 function createConfigWatcher(
     component: LightningElement,
     configCallback: ConfigCallback,
-    callbackWhenConfigIsReady: (newConfig: ConfigValue) => void,
+    callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
 ): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
     let hasPendingConfig: boolean = false;
     // creating the reactive observer for reactive params when needed
@@ -88,7 +88,7 @@ function createConfigWatcher(
 function createConnector(
     vm: VM,
     name: string,
-    wireDef: WireDef,
+    wireDef: WireDef
 ): {
     connector: WireAdapter;
     computeConfigAndUpdate: () => void;
@@ -142,7 +142,7 @@ function createConnector(
             // job
             connector = new adapter(dataCallback, { tagName: vm.tagName });
         },
-        noop,
+        noop
     );
     const updateConnectorConfig = (config: ConfigValue) => {
         // every time the config is recomputed due to tracking,
@@ -161,7 +161,7 @@ function createConnector(
 
                 connector.update(config, context);
             },
-            noop,
+            noop
         );
     };
 
@@ -170,7 +170,7 @@ function createConnector(
     const { computeConfigAndUpdate, ro } = createConfigWatcher(
         vm.component,
         configCallback,
-        updateConnectorConfig,
+        updateConnectorConfig
     );
 
     // if the adapter needs contextualization, we need to watch for new context and push it alongside the config
@@ -201,7 +201,7 @@ export function storeWiredMethodMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    dynamic: string[],
+    dynamic: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -221,7 +221,7 @@ export function storeWiredFieldMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    dynamic: string[],
+    dynamic: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -258,7 +258,7 @@ export function installWireAdapters(vm: VM) {
             const { connector, computeConfigAndUpdate, resetConfigWatcher } = createConnector(
                 vm,
                 fieldNameOrMethod,
-                wireDef,
+                wireDef
             );
             const hasDynamicParams = wireDef.dynamic.length > 0;
             ArrayPush.call(wiredConnecting, () => {
@@ -301,6 +301,6 @@ export function disconnectWireAdapters(vm: VM) {
                 wiredDisconnecting[i]();
             }
         },
-        noop,
+        noop
     );
 }

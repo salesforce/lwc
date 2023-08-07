@@ -23,7 +23,7 @@ import { getComponentInternalDef } from './def';
 export type StylesheetFactory = (
     stylesheetToken: string | undefined,
     useActualHostSelector: boolean,
-    useNativeDirPseudoclass: boolean,
+    useNativeDirPseudoclass: boolean
 ) => string;
 
 /**
@@ -47,7 +47,7 @@ function createInlineStyleVNode(content: string): VNode {
                 type: 'text/css',
             },
         },
-        [api.t(content)],
+        [api.t(content)]
     );
 }
 
@@ -113,7 +113,7 @@ export function updateStylesheetToken(vm: VM, template: Template) {
 function evaluateStylesheetsContent(
     stylesheets: TemplateStylesheetFactories,
     stylesheetToken: string | undefined,
-    vm: VM,
+    vm: VM
 ): string[] {
     const content: string[] = [];
 
@@ -142,7 +142,7 @@ function evaluateStylesheetsContent(
             ) {
                 logError(
                     'Unscoped CSS is not supported in Light DOM in this environment. Please use scoped CSS ' +
-                        '(*.scoped.css) instead of unscoped CSS (*.css). See also: https://sfdc.co/scoped-styles-light-dom',
+                        '(*.scoped.css) instead of unscoped CSS (*.css). See also: https://sfdc.co/scoped-styles-light-dom'
                 );
                 continue;
             }
@@ -174,7 +174,7 @@ function evaluateStylesheetsContent(
             }
             ArrayPush.call(
                 content,
-                stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass),
+                stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass)
             );
         }
     }

@@ -22,6 +22,6 @@ if (!process.env.COMPAT) {
             get osaka() {
                 return this._osaka;
             }
-        },
+        }
     );
 }

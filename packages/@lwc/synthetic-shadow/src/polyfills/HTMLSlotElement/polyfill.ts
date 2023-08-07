@@ -29,11 +29,11 @@ export default function apply() {
         value: function <K extends keyof HTMLElementTagNameMap>(
             this: Document,
             tagName: K,
-            _options?: ElementCreationOptions,
+            _options?: ElementCreationOptions
         ): HTMLElementTagNameMap[K] | HTMLElement {
             const elm = createElement.apply(
                 this,
-                ArraySlice.call(arguments) as [string, ElementCreationOptions?],
+                ArraySlice.call(arguments) as [string, ElementCreationOptions?]
             );
             if (
                 tagName.length === 4 &&

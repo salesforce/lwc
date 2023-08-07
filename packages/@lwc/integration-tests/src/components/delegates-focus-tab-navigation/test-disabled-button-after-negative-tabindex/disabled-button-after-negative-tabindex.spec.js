@@ -15,7 +15,7 @@ describe('when disabled button comes after a component that is delegating focus 
     it('should transfer focus to the body', async () => {
         const first = await browser.shadowDeep$(
             'integration-disabled-button-after-negative-tabindex',
-            '.first',
+            '.first'
         );
         await first.click();
 

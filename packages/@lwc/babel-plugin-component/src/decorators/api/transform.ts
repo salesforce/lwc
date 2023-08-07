@@ -36,7 +36,7 @@ function getPropertyBitmask(type: string) {
 function getSiblingGetSetPairType(
     propertyName: string,
     type: string,
-    classBodyItems: NodePath<ClassBodyItem>[],
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     const siblingKind = type === DECORATOR_TYPES.GETTER ? 'set' : 'get';
     const siblingNode = classBodyItems.find((classBodyItem) => {
@@ -53,61 +53,58 @@ function getSiblingGetSetPairType(
 
 function computePublicPropsConfig(
     publicPropertyMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[],
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
-    return publicPropertyMetas.reduce(
-        (acc, { propertyName, decoratedNodeType }) => {
-            if (!(propertyName in acc)) {
-                acc[propertyName] = {};
-            }
-            acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
+    return publicPropertyMetas.reduce((acc, { propertyName, decoratedNodeType }) => {
+        if (!(propertyName in acc)) {
+            acc[propertyName] = {};
+        }
+        acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
 
-            if (
-                decoratedNodeType === DECORATOR_TYPES.GETTER ||
-                decoratedNodeType === DECORATOR_TYPES.SETTER
-            ) {
-                // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
-                // We need to add the proper bitmask for the sibling getter/setter if it exists.
-                const pairType = getSiblingGetSetPairType(
-                    propertyName,
-                    decoratedNodeType,
-                    classBodyItems,
-                );
-                if (pairType) {
-                    acc[propertyName].config |= getPropertyBitmask(pairType);
-                }
+        if (
+            decoratedNodeType === DECORATOR_TYPES.GETTER ||
+            decoratedNodeType === DECORATOR_TYPES.SETTER
+        ) {
+            // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
+            // We need to add the proper bitmask for the sibling getter/setter if it exists.
+            const pairType = getSiblingGetSetPairType(
+                propertyName,
+                decoratedNodeType,
+                classBodyItems
+            );
+            if (pairType) {
+                acc[propertyName].config |= getPropertyBitmask(pairType);
             }
+        }
 
-            return acc;
-        },
-        {} as { [key: string]: { [key: string]: number } },
-    );
+        return acc;
+    }, {} as { [key: string]: { [key: string]: number } });
 }
 
 export default function transform(
     t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[],
+    classBodyItems: NodePath<ClassBodyItem>[]
 ) {
     const objectProperties = [];
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
     const publicPropertyMetas = apiDecoratorMetas.filter(
-        ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD,
+        ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
     );
     if (publicPropertyMetas.length) {
         const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
         objectProperties.push(
-            t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig)),
+            t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
         );
     }
 
     const publicMethodMetas = apiDecoratorMetas.filter(
-        ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD,
+        ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD
     );
     if (publicMethodMetas.length) {
         const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
         objectProperties.push(
-            t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames)),
+            t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames))
         );
     }
     return objectProperties;

@@ -81,7 +81,7 @@ function getCapabilities() {
 
         if (filtered.length === 0) {
             throw new Error(
-                'No target browsers after filtering for the following browsers: ' + userBrowsers,
+                'No target browsers after filtering for the following browsers: ' + userBrowsers
             );
         }
     }

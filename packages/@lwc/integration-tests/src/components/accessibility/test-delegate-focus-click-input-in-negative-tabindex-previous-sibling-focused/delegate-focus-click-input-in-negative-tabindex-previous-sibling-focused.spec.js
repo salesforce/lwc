@@ -22,7 +22,7 @@ describe('Delegates focus', () => {
         const input = await browser.shadowDeep$(
             'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused',
             'integration-child',
-            'input',
+            'input'
         );
 
         await input.click();

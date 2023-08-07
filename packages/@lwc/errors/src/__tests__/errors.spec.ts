@@ -52,7 +52,7 @@ expect.extend({
 function traverseErrorInfo(
     object: any,
     fn: (errorInfo: LWCErrorInfo, path: string) => void,
-    path: string,
+    path: string
 ) {
     Object.keys(object).forEach((key) => {
         const property = object[key];
@@ -70,7 +70,7 @@ describe('error validation', () => {
             expect(errorInfo.code).toBeInRange(
                 ERROR_CODE_RANGES.compiler.min,
                 ERROR_CODE_RANGES.compiler.max,
-                key,
+                key
             );
         }
 
@@ -94,12 +94,12 @@ describe('error validation', () => {
             (error) => {
                 lastErrorCode = Math.max(lastErrorCode, error.code);
             },
-            'compiler',
+            'compiler'
         );
         const expectedNextErrorCode = 1 + lastErrorCode;
         const errorInfo = fs.readFileSync(
             path.join(__dirname, '../compiler/error-info/index.ts'),
-            'utf-8',
+            'utf-8'
         );
         const actualNextErrorCode = parseInt(errorInfo.match(/Next error code: (\d+)/)![1], 10);
         expect(actualNextErrorCode).toEqual(expectedNextErrorCode);

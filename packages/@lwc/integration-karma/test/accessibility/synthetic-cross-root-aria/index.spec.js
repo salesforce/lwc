@@ -74,7 +74,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         expected = expected.not;
                     }
                     expected.toLogWarningDev(
-                        `Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`,
+                        `Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
                     );
                 }
 
@@ -89,7 +89,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessages);
                         expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(true),
+                            getExpectedDispatcherCalls(true)
                         );
                     });
 
@@ -98,7 +98,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessages);
                         expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(false),
+                            getExpectedDispatcherCalls(false)
                         );
                     });
 
@@ -110,7 +110,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessages);
                         expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(true),
+                            getExpectedDispatcherCalls(true)
                         );
                     });
 
@@ -197,7 +197,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessages);
                                 expect(dispatcher.calls.allArgs()).toEqual(
-                                    getExpectedDispatcherCalls(true),
+                                    getExpectedDispatcherCalls(true)
                                 );
                             });
 

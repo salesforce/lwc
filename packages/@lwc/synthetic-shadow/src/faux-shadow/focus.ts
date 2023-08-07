@@ -133,7 +133,7 @@ export function hostElementFocus(this: HTMLElement) {
     }
 
     const focusables = arrayFromCollection(
-        querySelectorAll.call(this, FocusableSelector),
+        querySelectorAll.call(this, FocusableSelector)
     ) as HTMLElement[];
 
     let didFocus = false;
@@ -150,15 +150,15 @@ export function hostElementFocus(this: HTMLElement) {
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
     const all = filterSequentiallyFocusableElements(
-        arrayFromCollection(documentQuerySelectorAll.call(doc, FocusableSelector)),
+        arrayFromCollection(documentQuerySelectorAll.call(doc, FocusableSelector))
     );
     const inner = filterSequentiallyFocusableElements(
-        arrayFromCollection(querySelectorAll.call(host, FocusableSelector)),
+        arrayFromCollection(querySelectorAll.call(host, FocusableSelector))
     ) as HTMLElement[];
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             getAttribute.call(host, 'tabindex') === '-1' || isDelegatingFocus(host),
-            `The focusin event is only relevant when the tabIndex property is -1 on the host.`,
+            `The focusin event is only relevant when the tabIndex property is -1 on the host.`
         );
     }
     const firstChild = inner[0];
@@ -226,7 +226,7 @@ function muteFocusEventsDuringExecution(win: Window, func: Function) {
 function focusOnNextOrBlur(
     segment: HTMLElement[],
     target: EventTarget,
-    relatedTarget: EventTarget,
+    relatedTarget: EventTarget
 ) {
     const win = getOwnerWindow(relatedTarget as Node);
     const next = getNextTabbable(segment, relatedTarget);
@@ -376,8 +376,8 @@ export function handleFocus(elm: HTMLElement) {
         assert.invariant(
             isDelegatingFocus(elm),
             `Invalid attempt to handle focus event for ${toString(elm)}. ${toString(
-                elm,
-            )} should have delegates focus true, but is not delegating focus`,
+                elm
+            )} should have delegates focus true, but is not delegating focus`
         );
     }
 
@@ -401,7 +401,7 @@ function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
             ownerDocument,
             'mousedown',
             disableKeyboardFocusNavigationRoutines,
-            true,
+            true
         );
 
         addEventListener.call(
@@ -421,7 +421,7 @@ function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
                 // mouseup-setTimeout   | mouseup-setTimeout
                 setTimeout(enableKeyboardFocusNavigationRoutines);
             },
-            true,
+            true
         );
 
         // [W-7824445] If the element is draggable, the mousedown event is dispatched before the
@@ -434,7 +434,7 @@ function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
             ownerDocument,
             'dragstart',
             enableKeyboardFocusNavigationRoutines,
-            true,
+            true
         );
     }
 }
@@ -445,8 +445,8 @@ export function handleFocusIn(elm: HTMLElement) {
         assert.invariant(
             tabIndexGetter.call(elm) === -1,
             `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(
-                elm,
-            )} should have tabIndex -1, but has tabIndex ${tabIndexGetter.call(elm)}`,
+                elm
+            )} should have tabIndex -1, but has tabIndex ${tabIndexGetter.call(elm)}`
         );
     }
 

@@ -15,7 +15,7 @@ function defaultImport(
         | types.ImportDefaultSpecifier
         | types.ImportNamespaceSpecifier
         | types.ImportSpecifier
-    )[],
+    )[]
 ) {
     const defaultImport = specifiers.find((s) => t.isImportDefaultSpecifier(s));
     return defaultImport && defaultImport.local.name;
@@ -25,7 +25,7 @@ export default function ({ types: t }: BabelAPI): (path: NodePath<types.Program>
     return function (path) {
         const body = path.get('body');
         const importStatements = body.filter((s) =>
-            s.isImportDeclaration(),
+            s.isImportDeclaration()
         ) as NodePath<types.ImportDeclaration>[];
         const visited = new Map<string, NodePath<types.ImportDeclaration>>();
 

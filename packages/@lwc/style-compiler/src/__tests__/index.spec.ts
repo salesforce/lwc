@@ -62,6 +62,6 @@ describe('fixtures', () => {
                 'expected.js': code,
                 'error.json': error,
             };
-        },
+        }
     );
 });

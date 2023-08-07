@@ -48,7 +48,7 @@ class CustomError extends Error {
         line?: number,
         column?: number,
         start?: number,
-        length?: number,
+        length?: number
     ) {
         super(message);
 
@@ -97,7 +97,7 @@ describe('error handling', () => {
                         filename: 'test.js',
                         location: DEFAULT_LOCATION,
                     },
-                }),
+                })
             ).toEqual(target);
         });
     });
@@ -116,7 +116,7 @@ describe('error handling', () => {
                 generateCompilerError(ERROR_INFO, {
                     messageArgs: args,
                 }),
-                target,
+                target
             );
         });
 
@@ -168,7 +168,7 @@ describe('error handling', () => {
                 100,
                 'LWC100: test error',
                 'test.js',
-                DEFAULT_LOCATION,
+                DEFAULT_LOCATION
             );
 
             checkErrorEquality(
@@ -176,7 +176,7 @@ describe('error handling', () => {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
                 }),
-                target,
+                target
             );
         });
 
@@ -186,7 +186,7 @@ describe('error handling', () => {
                 100,
                 'CustomError: LWC100: Unexpected error: test error',
                 'test.js',
-                { line: 3, column: 5, start: 16, length: 10 },
+                { line: 3, column: 5, start: 16, length: 10 }
             );
 
             const normalized = normalizeToCompilerError(GENERIC_ERROR, error);
@@ -199,7 +199,7 @@ describe('error handling', () => {
                 100,
                 'CustomError: LWC100: Unexpected error: test error',
                 'test.js',
-                DEFAULT_LOCATION,
+                DEFAULT_LOCATION
             );
 
             checkErrorEquality(
@@ -207,7 +207,7 @@ describe('error handling', () => {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
                 }),
-                target,
+                target
             );
         });
 
@@ -230,7 +230,7 @@ describe('error handling', () => {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
                 }),
-                target,
+                target
             );
         });
     });
@@ -248,7 +248,7 @@ describe('error handling', () => {
                 target.code,
                 target.message,
                 target.filename,
-                target.location,
+                target.location
             );
 
             expect(normalizeToDiagnostic(GENERIC_ERROR, error)).toEqual(target);
@@ -266,14 +266,14 @@ describe('error handling', () => {
                 target.code,
                 target.message,
                 'old.js',
-                DEFAULT_LOCATION,
+                DEFAULT_LOCATION
             );
 
             expect(
                 normalizeToDiagnostic(GENERIC_ERROR, error, {
                     filename: target.filename,
                     location: target.location,
-                }),
+                })
             ).toEqual(target);
         });
 
@@ -309,7 +309,7 @@ describe('error handling', () => {
                 normalizeToDiagnostic(GENERIC_ERROR, error, {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
-                }),
+                })
             ).toEqual(target);
         });
     });

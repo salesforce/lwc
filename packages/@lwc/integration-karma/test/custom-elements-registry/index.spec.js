@@ -45,7 +45,7 @@ function createLWC({
         class MyLightningElement extends LWC.LightningElement {},
         {
             tmpl,
-        },
+        }
     );
 
     let elm;
@@ -70,7 +70,7 @@ function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
                 super();
                 this.attachShadow({ mode: 'open' }).innerHTML = '<h1>Not LWC!</h1>';
             }
-        },
+        }
     );
     if (!skipInject) {
         document.body.appendChild(document.createElement(tagName));
@@ -124,7 +124,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(`(${createLWC})()`);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Hello LWC');
             });
         });
@@ -141,7 +141,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     evaluate(`(${createLWC})({ customElement: ${customElement} })`);
                     expect(
                         iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                            .textContent,
+                            .textContent
                     ).toEqual('Hello LWC');
                 });
 
@@ -150,11 +150,11 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     evaluate('window.oldLWC = window.LWC');
                     evaluate(engineScripts);
                     evaluate(
-                        `(${createLWC})({ globalLWC: 'oldLWC', customElement: ${customElement} })`,
+                        `(${createLWC})({ globalLWC: 'oldLWC', customElement: ${customElement} })`
                     );
                     expect(
                         iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                            .textContent,
+                            .textContent
                     ).toEqual('Hello LWC');
                 });
             });
@@ -165,13 +165,13 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(`(${createVanilla})()`);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Not LWC!');
                 evaluate(engineScripts);
                 evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
                 expect(
                     iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Hello LWC');
             });
 
@@ -179,7 +179,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(`(${createVanilla})()`);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Not LWC!');
                 evaluate(engineScripts);
                 expect(() => {
@@ -187,7 +187,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 }).toThrowError(tagAlreadyUsedErrorMessage);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Not LWC!');
             });
 
@@ -204,7 +204,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(`(${createVanilla})({ skipInject: true })`);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent,
+                        .textContent
                 ).toEqual('Not LWC!');
             });
 
@@ -218,8 +218,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 evaluate(`(${createVanilla})({ skipInject: true })`);
                 expect(
                     [...iframe.contentDocument.querySelectorAll('x-foo')].map(
-                        (_) => _.shadowRoot.querySelector('h1').textContent,
-                    ),
+                        (_) => _.shadowRoot.querySelector('h1').textContent
+                    )
                 ).toEqual(['Not LWC!', 'Not LWC!']);
             });
 
@@ -257,7 +257,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                             adoptedCallback() {
                                 this._adopted = true;
                             }
-                        },
+                        }
                     );
                     document.body.appendChild(document.createElement('x-adopted'));
                 }
@@ -279,7 +279,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                             evaluate(script);
                         }
                         expect(
-                            evaluate(() => document.querySelector('x-adopted')._adopted),
+                            evaluate(() => document.querySelector('x-adopted')._adopted)
                         ).toEqual(false);
                         const elm = iframe.contentDocument.querySelector('x-adopted');
                         elm.parentElement.removeChild(elm);

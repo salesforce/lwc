@@ -10,7 +10,7 @@ export default {
             .then(() => {
                 expect(getComputedStyle(target).marginLeft).toEqual('20px');
                 expect(getComputedStyle(target.querySelector('div')).color).toEqual(
-                    'rgb(255, 0, 0)',
+                    'rgb(255, 0, 0)'
                 );
                 target.next();
                 return rafPromise();
@@ -24,7 +24,7 @@ export default {
             .then(() => {
                 expect(getComputedStyle(target).marginLeft).toEqual('30px');
                 expect(getComputedStyle(target.querySelector('div')).color).toEqual(
-                    'rgb(0, 0, 255)',
+                    'rgb(0, 0, 255)'
                 );
             });
     },

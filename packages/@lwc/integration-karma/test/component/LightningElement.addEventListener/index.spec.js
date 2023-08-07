@@ -32,7 +32,7 @@ it('should warn when passing a 3rd parameter to the event handler', () => {
     expect(() => {
         document.body.appendChild(elm);
     }).toLogErrorDev(
-        /\[LWC error\]: The `addEventListener` method in `LightningElement` does not support any options./,
+        /\[LWC error\]: The `addEventListener` method in `LightningElement` does not support any options./
     );
 });
 
@@ -57,7 +57,7 @@ describe('event handler is not a function', () => {
         } else {
             expect(consoleSpy.calls.error.length).toEqual(1);
             expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Invalid second argument for this.addEventListener()',
+                'Invalid second argument for this.addEventListener()'
             );
         }
     });

@@ -265,12 +265,12 @@ describe('template literal escaping', () => {
 
         // "${"
         expect(elm.shadowRoot.querySelector('.dollar-attr').getAttribute('data-message')).toBe(
-            'Escape ${me}',
+            'Escape ${me}'
         );
 
         // "\${"
         expect(
-            elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message'),
+            elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
         ).toBe('Escape \\${me}');
     });
 });

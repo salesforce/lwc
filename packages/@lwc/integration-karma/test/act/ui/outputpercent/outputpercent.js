@@ -11,7 +11,7 @@ export default class extends LightningElement {
             new CustomEvent('togglesectioncollapsed', {
                 bubbles: true,
                 composed: true,
-            }),
+            })
         );
     }
 }

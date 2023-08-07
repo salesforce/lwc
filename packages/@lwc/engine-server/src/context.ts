@@ -31,7 +31,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
 function registerContextProvider(
     elm: HostElement | LightningElement,
     adapterContextToken: string,
-    onContextSubscription: WireContextSubscriptionCallback,
+    onContextSubscription: WireContextSubscriptionCallback
 ) {
     const vm = getAssociatedVMIfPresent(elm);
     if (!isUndefined(vm)) {
@@ -48,7 +48,7 @@ function registerContextProvider(
 export function registerContextConsumer(
     elm: HostElement,
     adapterContextToken: string,
-    subscriptionPayload: WireContextSubscriptionPayload,
+    subscriptionPayload: WireContextSubscriptionPayload
 ) {
     // Traverse element ancestors, looking for an element that can provide context
     // for the adapter identified by `adapterContextToken`. If found, register

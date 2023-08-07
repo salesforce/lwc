@@ -38,42 +38,42 @@ const { contains } = HTMLElement.prototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
     nodePrototype,
-    'firstChild',
+    'firstChild'
 )!.get!;
 
 const lastChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
     nodePrototype,
-    'lastChild',
+    'lastChild'
 )!.get!;
 
 const textContentGetter: (this: Node) => string = getOwnPropertyDescriptor(
     nodePrototype,
-    'textContent',
+    'textContent'
 )!.get!;
 
 const parentNodeGetter: (this: Node) => (Node & ParentNode) | null = getOwnPropertyDescriptor(
     nodePrototype,
-    'parentNode',
+    'parentNode'
 )!.get!;
 
 const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
     nodePrototype,
-    'ownerDocument',
+    'ownerDocument'
 )!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     nodePrototype,
-    'parentElement',
+    'parentElement'
 )!.get!;
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
     nodePrototype,
-    'textContent',
+    'textContent'
 )!.set!;
 
 const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = getOwnPropertyDescriptor(
     nodePrototype,
-    'childNodes',
+    'childNodes'
 )!.get!;
 
 const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')

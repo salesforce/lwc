@@ -37,7 +37,7 @@ describe('dynamic style attribute', () => {
         testRenderStyleAttribute(
             'css custom property',
             '--custom-property:blue;',
-            '--custom-property:blue;',
+            '--custom-property:blue;'
         );
     }
 
@@ -48,13 +48,13 @@ describe('dynamic style attribute', () => {
             document.body.appendChild(elm);
 
             expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
-                'position: relative;',
+                'position: relative;'
             );
 
             elm.dynamicStyle = value;
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
-                    expectedValue,
+                    expectedValue
                 );
             });
         });
@@ -68,7 +68,7 @@ describe('dynamic style attribute', () => {
         testUpdateStyleAttribute(
             'css custom property',
             '--custom-property:blue;',
-            '--custom-property:blue;',
+            '--custom-property:blue;'
         );
     }
 });

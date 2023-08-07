@@ -65,7 +65,7 @@ describe('custom properties', () => {
 
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('attrs-underscore-child').under_score).toEqual(
-                'underscore property',
+                'underscore property'
             );
         });
     });
@@ -78,7 +78,7 @@ describe('custom properties', () => {
 
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('attrs-uppercase-child').Upper).toEqual(
-                'uppercase value from parent component',
+                'uppercase value from parent component'
             );
         });
     });

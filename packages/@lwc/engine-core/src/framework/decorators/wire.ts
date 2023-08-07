@@ -18,7 +18,7 @@ import { updateComponentValue } from '../update-component-value';
  */
 export default function wire(
     _adapter: WireAdapterConstructor,
-    _config?: Record<string, any>,
+    _config?: Record<string, any>
 ): PropertyDecorator | MethodDecorator {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');

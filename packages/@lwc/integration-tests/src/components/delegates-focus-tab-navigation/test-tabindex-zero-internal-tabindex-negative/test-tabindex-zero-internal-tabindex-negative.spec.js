@@ -15,7 +15,7 @@ describe('Tab navigation when tabindex 0', () => {
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', async () => {
         const firstInput = await browser.shadowDeep$(
             'integration-tabindex-zero-internal-tabindex-negative',
-            '.first',
+            '.first'
         );
         await firstInput.click();
 
@@ -28,7 +28,7 @@ describe('Tab navigation when tabindex 0', () => {
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', async () => {
         const lastInput = await browser.shadowDeep$(
             'integration-tabindex-zero-internal-tabindex-negative',
-            '.last',
+            '.last'
         );
         await lastInput.click();
 

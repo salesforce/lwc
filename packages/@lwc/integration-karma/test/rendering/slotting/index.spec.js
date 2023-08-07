@@ -50,7 +50,7 @@ xit('should not render if the slotted content changes', () => {
 
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe(
-                '<div>Default slotted</div><div slot="foo">Named slotted</div>',
+                '<div>Default slotted</div><div slot="foo">Named slotted</div>'
             );
         });
     });
@@ -101,7 +101,7 @@ describe('does not log an error/warning on unknown slot name', () => {
             elm.shadowRoot
                 .querySelector('x-unknown-slot-shadow-child')
                 .shadowRoot.querySelector('slot')
-                .assignedNodes().length,
+                .assignedNodes().length
         ).toEqual(0);
 
         expect(consoleSpy.calls.error.length).toEqual(0);

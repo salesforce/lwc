@@ -21,7 +21,7 @@ export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
 
     constructor(
         adapterToken: string,
-        { setNewContext, setDisconnectedCallback }: WireContextSubscriptionPayload,
+        { setNewContext, setDisconnectedCallback }: WireContextSubscriptionPayload
     ) {
         super(adapterToken, {
             bubbles: true,
@@ -40,7 +40,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
 export function registerContextConsumer(
     elm: Node,
     adapterContextToken: string,
-    subscriptionPayload: WireContextSubscriptionPayload,
+    subscriptionPayload: WireContextSubscriptionPayload
 ) {
     dispatchEvent(elm, new WireContextSubscriptionEvent(adapterContextToken, subscriptionPayload));
 }
@@ -48,7 +48,7 @@ export function registerContextConsumer(
 export function registerContextProvider(
     elm: Node,
     adapterContextToken: string,
-    onContextSubscription: WireContextSubscriptionCallback,
+    onContextSubscription: WireContextSubscriptionCallback
 ) {
     addEventListener(elm, adapterContextToken, ((evt: WireContextSubscriptionEvent) => {
         evt.stopImmediatePropagation();

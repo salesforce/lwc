@@ -24,7 +24,7 @@ interface CircularModuleDependency<M extends Object> {
 }
 
 export function resolveCircularModuleDependency<M extends MaybeModule>(
-    fn: CircularModuleDependency<M>,
+    fn: CircularModuleDependency<M>
 ): M {
     const module = fn();
 

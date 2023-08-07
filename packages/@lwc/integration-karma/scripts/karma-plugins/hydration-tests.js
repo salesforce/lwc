@@ -96,7 +96,7 @@ function getSsrCode(moduleCode, testConfig) {
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`,
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
     );
 
     vm.createContext(context);
@@ -141,10 +141,10 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
 
         try {
             const { code: testCode, watchFiles: testWatchFiles } = await getTestModuleCode(
-                filePath,
+                filePath
             );
             const { code: componentDef, watchFiles: componentWatchFiles } = await getCompiledModule(
-                suiteDir,
+                suiteDir
             );
 
             const ssrOutput = getSsrCode(componentDef, testCode);
@@ -155,7 +155,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                 JSON.stringify(ssrOutput),
                 componentDef,
                 testCode,
-                JSON.stringify(describeTitle),
+                JSON.stringify(describeTitle)
             );
             done(null, newContent);
         } catch (error) {

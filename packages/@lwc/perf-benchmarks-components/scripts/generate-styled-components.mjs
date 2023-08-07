@@ -28,8 +28,8 @@ export function generateStyledComponents() {
             .map((_, i) =>
                 path.join(
                     tmpDir,
-                    `src/benchmark/${flavor}/styledComponent${i}/styledComponent${i}.js`,
-                ),
+                    `src/benchmark/${flavor}/styledComponent${i}/styledComponent${i}.js`
+                )
             );
 
         components.forEach((jsFilename, i) => {
@@ -58,14 +58,14 @@ export function generateStyledComponents() {
 
         const oneComponentFilename = path.join(
             tmpDir,
-            `src/benchmark/${flavor}/styledComponent.js`,
+            `src/benchmark/${flavor}/styledComponent.js`
         );
         const oneComponent = `export { default } from ${JSON.stringify(components[0])};`;
         fs.writeFileSync(oneComponentFilename, oneComponent, 'utf-8');
 
         const allComponentsFilename = path.join(
             tmpDir,
-            `src/benchmark/${flavor}/styledComponents.js`,
+            `src/benchmark/${flavor}/styledComponents.js`
         );
         const allComponents = `
             ${components.map((mod, i) => `import cmp${i} from ${JSON.stringify(mod)}`).join(';')};

@@ -21,7 +21,7 @@ const { globSync } = glob;
 function toMatchFile(
     this: MatcherUtils,
     receivedContent: string,
-    filename: string,
+    filename: string
 ): CustomMatcherResult {
     const { snapshotState, expand, utils } = this;
 
@@ -141,7 +141,7 @@ expect.extend({ toMatchFile });
  */
 export function testFixtureDir(
     config: { pattern: string; root: string },
-    testFn: (options: { src: string; filename: string; dirname: string }) => object,
+    testFn: (options: { src: string; filename: string; dirname: string }) => object
 ) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
@@ -176,7 +176,7 @@ export function testFixtureDir(
 
             if (typeof outputs !== 'object' || outputs === null) {
                 throw new TypeError(
-                    'Expected test function to returns a object with fixtures outputs',
+                    'Expected test function to returns a object with fixtures outputs'
                 );
             }
 

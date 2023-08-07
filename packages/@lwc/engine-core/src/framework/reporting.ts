@@ -51,7 +51,7 @@ export type ReportingPayloadMapping = {
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
     reportingEventId: T,
-    payload: ReportingPayloadMapping[T],
+    payload: ReportingPayloadMapping[T]
 ) => void;
 
 /** Callbacks to invoke when reporting is enabled **/
@@ -121,7 +121,7 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
  */
 export function report<T extends ReportingEventId>(
     reportingEventId: T,
-    payload: ReportingPayloadMapping[T],
+    payload: ReportingPayloadMapping[T]
 ) {
     if (enabled) {
         currentDispatcher(reportingEventId, payload);

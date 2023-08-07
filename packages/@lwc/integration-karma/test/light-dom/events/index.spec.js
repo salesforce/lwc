@@ -50,7 +50,7 @@ describe('single light child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: false }),
+            new CustomEvent('test', { bubbles: true, composed: false })
         );
 
         const composedPath = [
@@ -76,7 +76,7 @@ describe('single light child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: false, composed: false }),
+            new CustomEvent('test', { bubbles: false, composed: false })
         );
 
         const composedPath = [
@@ -102,7 +102,7 @@ describe('shadow container, light child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: true }),
+            new CustomEvent('test', { bubbles: true, composed: true })
         );
 
         const composedPath = [
@@ -132,7 +132,7 @@ describe('shadow container, light child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: false }),
+            new CustomEvent('test', { bubbles: true, composed: false })
         );
 
         const composedPath = [
@@ -159,7 +159,7 @@ describe('light container, shadow child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: true }),
+            new CustomEvent('test', { bubbles: true, composed: true })
         );
 
         const composedPath = [
@@ -189,7 +189,7 @@ describe('light container, shadow child', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: false }),
+            new CustomEvent('test', { bubbles: true, composed: false })
         );
 
         const composedPath = [nodes.button, nodes['x-shadow-child'].shadowRoot];

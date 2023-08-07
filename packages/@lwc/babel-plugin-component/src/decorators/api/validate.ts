@@ -23,12 +23,12 @@ const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 function validateConflict(
     path: NodePath<types.Node>,
     decorators: DecoratorMeta[],
-    state: LwcBabelPluginPass,
+    state: LwcBabelPluginPass
 ) {
     const isPublicFieldTracked = decorators.some(
         (decorator) =>
             decorator.name === TRACK_DECORATOR &&
-            decorator.path.parentPath.node === path.parentPath!.node,
+            decorator.path.parentPath.node === path.parentPath!.node
     );
 
     if (isPublicFieldTracked) {
@@ -37,7 +37,7 @@ function validateConflict(
             {
                 errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT,
             },
-            state,
+            state
         );
     }
 }
@@ -54,7 +54,7 @@ function validatePropertyValue(property: NodePath<types.ClassMethod>, state: Lwc
             {
                 errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY,
             },
-            state,
+            state
         );
     }
 }
@@ -66,7 +66,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
             {
                 errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED,
             },
-            state,
+            state
         );
     }
 
@@ -79,7 +79,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
                 errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
                 messageArgs: [propertyName],
             },
-            state,
+            state
         );
     } else if (propertyName.startsWith('on')) {
         throw generateError(
@@ -88,7 +88,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
                 errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
                 messageArgs: [propertyName],
             },
-            state,
+            state
         );
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
         throw generateError(
@@ -97,7 +97,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
                 errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
                 messageArgs: [propertyName],
             },
-            state,
+            state
         );
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
         throw generateError(
@@ -106,7 +106,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
                 errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
                 messageArgs: [propertyName],
             },
-            state,
+            state
         );
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
@@ -116,14 +116,14 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
                 errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
                 messageArgs: [propertyName, camelCased],
             },
-            state,
+            state
         );
     }
 }
 
 function validateSingleApiDecoratorOnSetterGetterPair(
     decorators: DecoratorMeta[],
-    state: LwcBabelPluginPass,
+    state: LwcBabelPluginPass
 ) {
     // keep track of visited class methods
     const visitedMethods = new Set<String>();
@@ -147,7 +147,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(
                         errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
                         messageArgs: [methodName],
                     },
-                    state,
+                    state
                 );
             }
 
@@ -183,7 +183,7 @@ function validateUniqueness(decorators: DecoratorMeta[], state: LwcBabelPluginPa
                         errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
                         messageArgs: [currentPropertyName],
                     },
-                    state,
+                    state
                 );
             }
         }

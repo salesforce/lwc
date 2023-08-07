@@ -18,9 +18,7 @@ describe('Light DOM styling at the global level', () => {
         // synthetic shadow can't do this kind of style encapsulation
         if (process.env.NATIVE_SHADOW) {
             expect(
-                getColor(
-                    elm.querySelector('x-shadow').shadowRoot.querySelector('.globally-styled'),
-                ),
+                getColor(elm.querySelector('x-shadow').shadowRoot.querySelector('.globally-styled'))
             ).toEqual('rgb(0, 0, 0)');
         }
 
@@ -35,7 +33,7 @@ describe('Light DOM styling at the global level', () => {
         // synthetic shadow can't do this kind of style encapsulation
         if (process.env.NATIVE_SHADOW) {
             expect(getColor(shadow.shadowRoot.querySelector('.globally-styled'))).toEqual(
-                'rgb(0, 0, 0)',
+                'rgb(0, 0, 0)'
             );
         }
     });
@@ -54,7 +52,7 @@ describe('Light DOM styling at the global level', () => {
                 document.body.appendChild(elm);
             }).toLogError(/Unscoped CSS is not supported in Light DOM/);
             expect(getComputedStyle(elm.querySelector('x-one .globally-styled')).color).toEqual(
-                'rgb(0, 0, 0)',
+                'rgb(0, 0, 0)'
             );
         });
     });

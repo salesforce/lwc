@@ -80,7 +80,7 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
     // Synthetic creation of all AOM property descriptors for Custom Elements
     forEach.call(AriaPropertyNames, (propName) => {
         const attrName = StringToLowerCase.call(
-            StringReplace.call(propName, /^aria/, () => 'aria-'),
+            StringReplace.call(propName, /^aria/, () => 'aria-')
         );
         AriaAttrNameToPropNameMap[attrName] = propName;
         AriaPropNameToAttrNameMap[propName] = attrName;

@@ -21,7 +21,7 @@ async function main() {
 
     for (const pkgJsonFile of pkgJsonFiles) {
         const { dependencies, peerDependencies, private } = JSON.parse(
-            fs.readFileSync(pkgJsonFile, 'utf-8'),
+            fs.readFileSync(pkgJsonFile, 'utf-8')
         );
 
         if (private) {
@@ -58,7 +58,7 @@ async function main() {
                         .split(path.sep)
                         .slice(-3, -1)
                         .join(path.sep)} imports "${imported}", but it is not declared ` +
-                        'as a dependency/peerDependency in package.json.',
+                        'as a dependency/peerDependency in package.json.'
                 );
             }
         }
@@ -70,7 +70,7 @@ async function main() {
     if (errors.length) {
         console.error(
             '\nAll external imports must be declared as a dependency or peerDependency (NOT devDependency).' +
-                '\nPlease check the relevant package.json files.\n',
+                '\nPlease check the relevant package.json files.\n'
         );
         process.exit(1);
     }

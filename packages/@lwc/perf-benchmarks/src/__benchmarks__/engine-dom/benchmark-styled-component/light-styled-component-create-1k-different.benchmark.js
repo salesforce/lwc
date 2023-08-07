@@ -16,5 +16,5 @@ styledComponentBenchmark(
     `dom/styled-component/light/create-different/1k`,
     NUM_COMPONENTS,
     components,
-    { after, before, benchmark, run },
+    { after, before, benchmark, run }
 );

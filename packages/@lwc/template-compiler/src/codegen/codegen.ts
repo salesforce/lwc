@@ -177,7 +177,7 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: t.Expression,
+        children: t.Expression
     ) {
         this.referencedComponents.add(tagName);
 
@@ -202,7 +202,7 @@ export default class CodeGen {
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
-        children: t.Expression,
+        children: t.Expression
     ) {
         const args: t.Expression[] = [t.literal(tagName), ctor, data];
         if (!isArrayExpression(children) || children.elements.length > 0) {
@@ -239,7 +239,7 @@ export default class CodeGen {
     genFragment(
         key: t.Expression | t.SimpleLiteral,
         children: t.Expression,
-        stable: boolean = false,
+        stable: boolean = false
     ): t.Expression {
         const isStable = stable ? t.literal(1) : t.literal(0);
         return this._renderApiCall(RENDER_APIS.fragment, [key, children, isStable]);
@@ -315,7 +315,7 @@ export default class CodeGen {
 
     genEventListeners(listeners: EventListener[]) {
         const listenerObj = Object.fromEntries(
-            listeners.map((listener) => [listener.name, listener]),
+            listeners.map((listener) => [listener.name, listener])
         );
         const listenerObjectAST = objectToAST(listenerObj, (key) => {
             const componentHandler = this.bindExpression(listenerObj[key].handler);
@@ -351,16 +351,16 @@ export default class CodeGen {
                 '||',
                 t.memberExpression(
                     t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                    t.identifier(`_sanitizedHtml$${instance}`),
+                    t.identifier(`_sanitizedHtml$${instance}`)
                 ),
                 t.assignmentExpression(
                     '=',
                     t.memberExpression(
                         t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                        t.identifier(`_sanitizedHtml$${instance}`),
+                        t.identifier(`_sanitizedHtml$${instance}`)
                     ),
-                    this.genSanitizeHtmlContent(expr),
-                ),
+                    this.genSanitizeHtmlContent(expr)
+                )
             );
         }
 
@@ -378,35 +378,35 @@ export default class CodeGen {
                 '!==',
                 t.memberExpression(
                     t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                    t.identifier(`_rawHtml$${instance}`),
+                    t.identifier(`_rawHtml$${instance}`)
                 ),
                 t.assignmentExpression(
                     '=',
                     t.memberExpression(
                         t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                        t.identifier(`_rawHtml$${instance}`),
+                        t.identifier(`_rawHtml$${instance}`)
                     ),
-                    expr,
-                ),
+                    expr
+                )
             ),
             t.assignmentExpression(
                 '=',
                 t.memberExpression(
                     t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                    t.identifier(`_sanitizedHtml$${instance}`),
+                    t.identifier(`_sanitizedHtml$${instance}`)
                 ),
-                this.genSanitizeHtmlContent(expr),
+                this.genSanitizeHtmlContent(expr)
             ),
             t.memberExpression(
                 t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                t.identifier(`_sanitizedHtml$${instance}`),
-            ),
+                t.identifier(`_sanitizedHtml$${instance}`)
+            )
         );
     }
 
     private _renderApiCall(
         primitive: RenderPrimitiveDefinition,
-        params: t.Expression[],
+        params: t.Expression[]
     ): t.CallExpression {
         const { name, alias } = primitive;
 
@@ -524,8 +524,8 @@ export default class CodeGen {
                         },
                     },
                 ],
-                [],
-            ),
+                []
+            )
         );
 
         const identifier = t.identifier(`$fragment${this.hoistedNodes.length + 1}`);

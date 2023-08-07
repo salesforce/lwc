@@ -22,7 +22,7 @@ const ColonCharCode = 58;
 export function patchAttributes(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
-    renderer: RendererAPI,
+    renderer: RendererAPI
 ) {
     const { attrs, external } = vnode.data;
     if (isUndefined(attrs)) {

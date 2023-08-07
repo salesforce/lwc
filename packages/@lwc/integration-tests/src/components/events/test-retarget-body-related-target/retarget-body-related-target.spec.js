@@ -23,7 +23,7 @@ describe('Retarget relatedTarget', () => {
 
         const indicator = await browser.shadowDeep$(
             'integration-retarget-body-related-target',
-            '.related-target-tagname',
+            '.related-target-tagname'
         );
         assert.strictEqual(await indicator.getText(), 'body');
     });

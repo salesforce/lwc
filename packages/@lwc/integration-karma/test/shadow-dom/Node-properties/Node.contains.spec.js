@@ -42,7 +42,7 @@ describe('Node.contains', () => {
         expect(shadowRoot.querySelector('.outer').contains(shadowRoot)).toBe(false);
         expect(shadowRoot.querySelector('.outer').contains(container)).toBe(true);
         expect(
-            shadowRoot.querySelector('.outer').contains(shadowRoot.querySelector('.slotted')),
+            shadowRoot.querySelector('.outer').contains(shadowRoot.querySelector('.slotted'))
         ).toBe(true);
     });
 
@@ -59,12 +59,12 @@ describe('Node.contains', () => {
         expect(
             container.shadowRoot
                 .querySelector('.container')
-                .contains(shadowRoot.querySelector('.slotted')),
+                .contains(shadowRoot.querySelector('.slotted'))
         ).toBe(false);
         expect(
             container.shadowRoot
                 .querySelector('slot')
-                .contains(shadowRoot.querySelector('.slotted')),
+                .contains(shadowRoot.querySelector('.slotted'))
         ).toBe(false);
     });
 

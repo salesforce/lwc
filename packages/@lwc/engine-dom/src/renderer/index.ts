@@ -77,7 +77,7 @@ function setAttribute(
     element: Element,
     name: string,
     value: string,
-    namespace?: string | null,
+    namespace?: string | null
 ): void {
     return isUndefined(namespace)
         ? element.setAttribute(name, value)
@@ -96,7 +96,7 @@ function addEventListener(
     target: Node,
     type: string,
     callback: EventListener,
-    options?: AddEventListenerOptions | boolean,
+    options?: AddEventListenerOptions | boolean
 ): void {
     target.addEventListener(type, callback, options);
 }
@@ -105,7 +105,7 @@ function removeEventListener(
     target: Node,
     type: string,
     callback: EventListener,
-    options?: EventListenerOptions | boolean,
+    options?: EventListenerOptions | boolean
 ): void {
     target.removeEventListener(type, callback, options);
 }
@@ -122,14 +122,14 @@ function setCSSStyleProperty(
     element: Element,
     name: string,
     value: string,
-    important: boolean,
+    important: boolean
 ): void {
     // TODO [#0]: How to avoid this type casting? Shall we use a different type interface to
     // represent elements in the engine?
     (element as HTMLElement | SVGElement).style.setProperty(
         name,
         value,
-        important ? 'important' : '',
+        important ? 'important' : ''
     );
 }
 

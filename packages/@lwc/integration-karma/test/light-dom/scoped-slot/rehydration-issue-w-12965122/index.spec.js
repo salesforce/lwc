@@ -17,8 +17,8 @@ describe('Should clean up content between rehydration', () => {
     function verifySlotContent(elm, expectedContent) {
         expect(
             [...elm.shadowRoot.querySelectorAll('x-slotted')].map((_) =>
-                _.shadowRoot.innerHTML.trim(),
-            ),
+                _.shadowRoot.innerHTML.trim()
+            )
         ).toEqual(expectedContent);
     }
 

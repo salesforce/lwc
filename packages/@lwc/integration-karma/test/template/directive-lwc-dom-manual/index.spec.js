@@ -27,8 +27,8 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
             }
             expected.toLogErrorDev(
                 new RegExp(
-                    `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`,
-                ),
+                    `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
+                )
             );
         });
     }

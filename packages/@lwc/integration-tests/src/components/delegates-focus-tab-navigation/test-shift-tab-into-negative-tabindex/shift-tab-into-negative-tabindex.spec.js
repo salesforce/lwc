@@ -15,7 +15,7 @@ describe('Delegates focus', () => {
     it('should focus the input when clicked', async () => {
         const bottom = await browser.shadowDeep$(
             'integration-shift-tab-into-negative-tabindex',
-            '.bottom',
+            '.bottom'
         );
         await bottom.click();
 

@@ -16,7 +16,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-negative-tabindex-focusin-handler',
             'integration-child',
-            '.focusable-input',
+            '.focusable-input'
         );
         await input.click();
 
@@ -24,13 +24,13 @@ describe('Tabbing into custom element with delegates focus', () => {
             async () => {
                 const div = await browser.shadowDeep$(
                     'integration-delegates-focus-negative-tabindex-focusin-handler',
-                    '.focus-in-called',
+                    '.focus-in-called'
                 );
                 return (await div.getText()) === 'Focus in called';
             },
             {
                 timeoutMsg: 'expected focusin to have been triggered',
-            },
+            }
         );
     });
 });

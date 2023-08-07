@@ -13,7 +13,7 @@ describe('Set Prototype Of', () => {
                 setPrototypeOf(target) {
                     return Object.setPrototypeOf(target, document);
                 },
-            },
+            }
         );
         Object.setPrototypeOf(proxy, []);
         const actual = proxy instanceof Document;
@@ -27,7 +27,7 @@ describe('Set Prototype Of', () => {
                 setPrototypeOf(target) {
                     return Object.setPrototypeOf(target, document);
                 },
-            },
+            }
         );
         Object.setPrototypeOf(proxy, []);
         const actual = proxy instanceof Array;

@@ -43,7 +43,7 @@ function getEntry(moduleDir: string, moduleName: string, ext: string): string {
 export function getModuleEntry(
     moduleDir: string,
     moduleName: string,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): string {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
@@ -63,13 +63,13 @@ export function getModuleEntry(
 
     throw new LwcConfigError(
         `Unable to find a valid entry point for "${moduleDir}/${moduleName}"`,
-        { scope: opts.rootDir },
+        { scope: opts.rootDir }
     );
 }
 
 export function normalizeConfig(
     config: Partial<ModuleResolverConfig>,
-    scope: string,
+    scope: string
 ): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
@@ -77,9 +77,9 @@ export function normalizeConfig(
         if (!isObject(m)) {
             throw new LwcConfigError(
                 `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
-                    m,
+                    m
                 )}.`,
-                { scope },
+                { scope }
             );
         }
         return isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m;
@@ -98,7 +98,7 @@ function normalizeDirName(dirName: string): string {
 // User defined modules will have precedence over the ones defined elsewhere (ex. npm)
 export function mergeModules(
     userModules: ModuleRecord[],
-    configModules: ModuleRecord[] = [],
+    configModules: ModuleRecord[] = []
 ): ModuleRecord[] {
     const visitedAlias = new Set();
     const visitedDirs = new Set();
@@ -143,7 +143,7 @@ export function findFirstUpwardConfigPath(dirname: string): string {
         if (dirHasLwcConfig && !dirHasPkgJson) {
             throw new LwcConfigError(
                 `"lwc.config.json" must be at the package root level along with the "package.json"`,
-                { scope: upwardsPath },
+                { scope: upwardsPath }
             );
         }
 
@@ -159,7 +159,7 @@ export function findFirstUpwardConfigPath(dirname: string): string {
 
 export function validateNpmConfig(
     config: LwcConfig,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): asserts config is Required<LwcConfig> {
     if (!config.modules) {
         throw new LwcConfigError('Missing "modules" property for a npm config', {
@@ -170,7 +170,7 @@ export function validateNpmConfig(
     if (!config.expose) {
         throw new LwcConfigError(
             'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains',
-            { scope: opts.rootDir },
+            { scope: opts.rootDir }
         );
     }
 }
@@ -178,13 +178,13 @@ export function validateNpmConfig(
 export function validateNpmAlias(
     exposed: string[],
     map: { [key: string]: string },
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ) {
     Object.keys(map).forEach((specifier) => {
         if (!exposed.includes(specifier)) {
             throw new LwcConfigError(
                 `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`,
-                { scope: opts.rootDir },
+                { scope: opts.rootDir }
             );
         }
     });
@@ -205,7 +205,7 @@ export function createRegistryEntry(
     entry: string,
     specifier: string,
     type: RegistryType,
-    opts: InnerResolverOptions,
+    opts: InnerResolverOptions
 ): RegistryEntry {
     return {
         entry,
@@ -225,6 +225,6 @@ export function remapList(exposed: string[], map: { [key: string]: string }): st
 export function transposeObject(map: { [key: string]: string }): { [key: string]: string } {
     return Object.entries(map).reduce(
         (r: { [key: string]: string }, [key, value]) => ((r[value] = key), r),
-        {},
+        {}
     );
 }

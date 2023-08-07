@@ -32,7 +32,7 @@ export function isPotentialExpression(source: string): boolean {
 
 function validateExpression(
     node: t.BaseNode,
-    config: NormalizedConfig,
+    config: NormalizedConfig
 ): asserts node is Expression {
     // TODO [#3370]: remove experimental template expression flag
     if (config.experimentalComplexExpressions) {
@@ -45,7 +45,7 @@ function validateExpression(
     if (t.isMemberExpression(node)) {
         invariant(
             config.experimentalComputedMemberExpression || !node.computed,
-            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
+            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
         );
 
         const { object, property } = node;
@@ -88,7 +88,7 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
             invariant(
                 WHITESPACES_RE.test(character),
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-                ['Unexpected end of expression'],
+                ['Unexpected end of expression']
             );
         }
     }
@@ -101,7 +101,7 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 export function parseExpression(
     ctx: ParserCtx,
     source: string,
-    location: SourceLocation,
+    location: SourceLocation
 ): Expression {
     const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
@@ -119,14 +119,14 @@ export function parseExpression(
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         location,
-        (err) => `Invalid expression ${source} - ${err.message}`,
+        (err) => `Invalid expression ${source} - ${err.message}`
     );
 }
 
 export function parseIdentifier(
     ctx: ParserCtx,
     source: string,
-    location: SourceLocation,
+    location: SourceLocation
 ): Identifier {
     let isValid = true;
 

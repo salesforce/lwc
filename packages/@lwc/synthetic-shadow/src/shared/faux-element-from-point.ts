@@ -13,7 +13,7 @@ export function fauxElementFromPoint(
     context: Node,
     doc: Document,
     left: number,
-    top: number,
+    top: number
 ): Element | null {
     const element: Element | null = elementFromPoint.call(doc, left, top);
     if (isNull(element)) {

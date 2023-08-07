@@ -11,7 +11,7 @@ import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
         expect(() => getComponentDef(ctor)).toThrowError(
-            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 }
@@ -30,7 +30,7 @@ beforeAll(function () {
 
                         const normalizedExpected = Object.assign({}, expected[currentKey], {
                             config: getNormalizedFunctionAsString(
-                                expected[currentKey].config || function () {},
+                                expected[currentKey].config || function () {}
                             ),
                         });
 
@@ -91,7 +91,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'bar',
                 },
-            }),
+            })
         );
     });
 
@@ -109,7 +109,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'getter-and-setter',
                 },
-            }),
+            })
         );
     });
 
@@ -140,7 +140,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'overridden-in-child',
                 },
-            }),
+            })
         );
     });
 
@@ -169,7 +169,7 @@ describe('circular dependencies', () => {
         const Circular = circularDependency(
             class extends LightningElement {
                 @api foo;
-            },
+            }
         );
         class Component extends Circular {
             @api bar;
@@ -188,7 +188,7 @@ describe('circular dependencies', () => {
                     type: 'any',
                     attr: 'bar',
                 },
-            }),
+            })
         );
     });
 
@@ -197,7 +197,7 @@ describe('circular dependencies', () => {
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 
@@ -206,7 +206,7 @@ describe('circular dependencies', () => {
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 
@@ -227,7 +227,7 @@ describe('circular dependencies', () => {
                         type: 'any',
                         attr: 'bar',
                     },
-                }),
+                })
             );
         });
     });

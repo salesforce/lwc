@@ -16,12 +16,12 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
             'integration-child',
-            '.second-inside',
+            '.second-inside'
         );
         await secondInside.click();
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
-            '.second-outside',
+            '.second-outside'
         );
         await secondOutside.click();
 
@@ -35,12 +35,12 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
             'integration-child',
-            '.second-inside',
+            '.second-inside'
         );
         await secondInside.click();
         const thirdOutside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
-            '.third-outside',
+            '.third-outside'
         );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);

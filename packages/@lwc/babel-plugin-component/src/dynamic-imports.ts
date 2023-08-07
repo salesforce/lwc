@@ -23,7 +23,7 @@ function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginP
                 errorInfo: LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
                 messageArgs: [String(sourcePath)],
             },
-            state,
+            state
         );
     }
 }
@@ -36,7 +36,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
     function getLoaderRef(
         path: NodePath<types.Import>,
         loaderName: string,
-        state: LwcBabelPluginPass,
+        state: LwcBabelPluginPass
     ): types.Identifier {
         if (!state.loaderRef) {
             state.loaderRef = addNamed(path, 'load', loaderName);

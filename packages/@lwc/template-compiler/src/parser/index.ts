@@ -104,7 +104,7 @@ function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: Fo
 
 function attributeExpressionReferencesForEachIndex(
     attribute: Attribute,
-    forEach: ForEach,
+    forEach: ForEach
 ): boolean {
     const { index } = forEach;
     const { value } = attribute;
@@ -142,7 +142,7 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for the root template.
         throw new Error(
-            'An internal parsing error occurred during node creation; the root template node does not have a sourceCodeLocation.',
+            'An internal parsing error occurred during node creation; the root template node does not have a sourceCodeLocation.'
         );
     }
 
@@ -150,7 +150,7 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
         ctx.throw(
             ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE,
             [parse5Elm.tagName],
-            ast.sourceLocation(rootLocation),
+            ast.sourceLocation(rootLocation)
         );
     }
 
@@ -184,7 +184,7 @@ function parseElement(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     parentNode: ParentNode,
-    parse5ParentLocation: parse5.ElementLocation,
+    parse5ParentLocation: parse5.ElementLocation
 ): void {
     const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
@@ -194,7 +194,7 @@ function parseElement(
         parse5Elm,
         parse5ElmLocation,
         parentNode,
-        parsedAttr,
+        parsedAttr
     );
     // Create an AST node for the HTML element (excluding template tag elements) and add as child to parent
     const element = parseBaseElement(
@@ -202,7 +202,7 @@ function parseElement(
         parsedAttr,
         parse5Elm,
         directive ?? parentNode,
-        parse5ElmLocation,
+        parse5ElmLocation
     );
 
     if (element) {
@@ -228,7 +228,7 @@ function parseElement(
         // For example, <template class='slds-hello-world'>, these template elements and their children will not be rendered.
         ctx.warnAtLocation(
             ParserDiagnostics.INVALID_TEMPLATE_WARNING,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 }
@@ -236,7 +236,7 @@ function parseElement(
 function parseElementLocation(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
-    parse5ParentLocation: parse5.ElementLocation,
+    parse5ParentLocation: parse5.ElementLocation
 ): parse5.ElementLocation {
     let location = parse5Elm.sourceCodeLocation;
 
@@ -280,7 +280,7 @@ function parseElementDirectives(
     parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
@@ -299,7 +299,7 @@ function parseBaseElement(
     parsedAttr: ParsedAttribute,
     parse5Elm: parse5.Element,
     parent: ParentNode,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): BaseElement | undefined {
     const { tagName: tag, namespaceURI } = parse5Elm;
 
@@ -337,7 +337,7 @@ function parseLwcElement(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ) {
     let lwcElementParser;
 
@@ -356,12 +356,12 @@ function parseLwcComponent(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): LwcComponent {
     if (!ctx.config.enableDynamicComponents) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_OPTS_LWC_ENABLE_DYNAMIC_COMPONENTS,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
@@ -369,7 +369,7 @@ function parseLwcComponent(
     if (!parsedAttr.get(ElementDirectiveName.Is)) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_COMPONENT_TAG_WITHOUT_IS_DIRECTIVE,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
@@ -380,7 +380,7 @@ function parseLwcElementAsBuiltIn(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     _parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): Element {
     const { tagName: tag, namespaceURI } = parse5Elm;
     // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
@@ -389,7 +389,7 @@ function parseLwcElementAsBuiltIn(
     ctx.warnAtLocation(
         ParserDiagnostics.UNSUPPORTED_LWC_TAG_NAME,
         ast.sourceLocation(parse5ElmLocation),
-        [tag],
+        [tag]
     );
 
     return ast.element(tag, namespaceURI, parse5ElmLocation);
@@ -399,7 +399,7 @@ function parseChildren(
     ctx: ParserCtx,
     parse5Parent: parse5.Element,
     parent: ParentNode,
-    parse5ParentLocation: parse5.ElementLocation,
+    parse5ParentLocation: parse5.ElementLocation
 ): void {
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
@@ -452,7 +452,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for TextNode.
         throw new Error(
-            'An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.',
+            'An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.'
         );
     }
 
@@ -511,7 +511,7 @@ function parseComment(parse5Comment: parse5.CommentNode): Comment {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for CommentNode.
         throw new Error(
-            'An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.',
+            'An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.'
         );
     }
 
@@ -520,13 +520,13 @@ function parseComment(parse5Comment: parse5.CommentNode): Comment {
 
 function getTemplateRoot(
     ctx: ParserCtx,
-    documentFragment: parse5.DocumentFragment,
+    documentFragment: parse5.DocumentFragment
 ): parse5.Element {
     // Filter all the empty text nodes
     const validRoots = documentFragment.childNodes.filter(
         (child) =>
             parse5Utils.isElementNode(child) ||
-            (parse5Utils.isTextNode(child) && child.value.trim().length),
+            (parse5Utils.isTextNode(child) && child.value.trim().length)
     );
 
     if (validRoots.length > 1) {
@@ -534,7 +534,7 @@ function getTemplateRoot(
         ctx.throw(
             ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
             [],
-            duplicateRoot ? ast.sourceLocation(duplicateRoot) : duplicateRoot,
+            duplicateRoot ? ast.sourceLocation(duplicateRoot) : duplicateRoot
         );
     }
 
@@ -555,7 +555,7 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
         if (!ast.isExpression(eventHandlerAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
-                eventHandlerAttribute,
+                eventHandlerAttribute
             );
         }
 
@@ -568,7 +568,7 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
         const listener = ast.eventListener(
             eventName,
             eventHandlerAttribute.value,
-            eventHandlerAttribute.location,
+            eventHandlerAttribute.location
         );
 
         element.listeners.push(listener);
@@ -580,7 +580,7 @@ function parseIf(
     parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): If | undefined {
     const ifAttributes = parsedAttr.pickAll(IF_RE);
     if (ifAttributes.length === 0) {
@@ -591,7 +591,7 @@ function parseIf(
         ctx.warnAtLocation(
             ParserDiagnostics.SINGLE_IF_DIRECTIVE_ALLOWED,
             ast.sourceLocation(parse5ElmLocation),
-            [parse5Elm.tagName],
+            [parse5Elm.tagName]
         );
     }
 
@@ -603,7 +603,7 @@ function parseIf(
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE,
             ast.sourceLocation(parse5ElmLocation),
-            [ifAttribute.name],
+            [ifAttribute.name]
         );
     }
 
@@ -620,7 +620,7 @@ function parseIf(
         modifier,
         ifAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
-        ifAttribute.location,
+        ifAttribute.location
     );
 
     ctx.addNodeCurrentElementScope(node);
@@ -634,7 +634,7 @@ function parseIfBlock(
     _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): IfBlock | undefined {
     const ifBlockAttribute = parsedAttr.pick('lwc:if');
     if (!ifBlockAttribute) {
@@ -644,7 +644,7 @@ function parseIfBlock(
     if (!ast.isExpression(ifBlockAttribute.value)) {
         ctx.throwOnNode(
             ParserDiagnostics.IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION,
-            ifBlockAttribute,
+            ifBlockAttribute
         );
     }
 
@@ -656,7 +656,7 @@ function parseIfBlock(
     const ifNode = ast.ifBlockNode(
         ifBlockAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
-        ifBlockAttribute.location,
+        ifBlockAttribute.location
     );
 
     ctx.addNodeCurrentElementScope(ifNode);
@@ -671,7 +671,7 @@ function parseElseifBlock(
     _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     _parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ElseifBlock | undefined {
     const elseifBlockAttribute = parsedAttr.pick('lwc:elseif');
     if (!elseifBlockAttribute) {
@@ -683,14 +683,14 @@ function parseElseifBlock(
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
             ast.sourceLocation(parse5ElmLocation),
-            [elseifBlockAttribute.name],
+            [elseifBlockAttribute.name]
         );
     }
 
     if (!ast.isExpression(elseifBlockAttribute.value)) {
         ctx.throwOnNode(
             ParserDiagnostics.ELSEIF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION,
-            elseifBlockAttribute,
+            elseifBlockAttribute
         );
     }
 
@@ -699,14 +699,14 @@ function parseElseifBlock(
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
             ast.sourceLocation(parse5ElmLocation),
-            [elseifBlockAttribute.name],
+            [elseifBlockAttribute.name]
         );
     }
 
     const elseifNode = ast.elseifBlockNode(
         elseifBlockAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
-        elseifBlockAttribute.location,
+        elseifBlockAttribute.location
     );
 
     // Attach the node as a child of the preceding IfBlock
@@ -722,7 +722,7 @@ function parseElseBlock(
     _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     _parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ElseBlock | undefined {
     const elseBlockAttribute = parsedAttr.pick('lwc:else');
     if (!elseBlockAttribute) {
@@ -735,7 +735,7 @@ function parseElseBlock(
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
             ast.sourceLocation(parse5ElmLocation),
-            [elseBlockAttribute.name],
+            [elseBlockAttribute.name]
         );
     }
 
@@ -745,7 +745,7 @@ function parseElseBlock(
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
             ast.sourceLocation(parse5ElmLocation),
-            [elseBlockAttribute.name],
+            [elseBlockAttribute.name]
         );
     }
 
@@ -755,7 +755,7 @@ function parseElseBlock(
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
             ast.sourceLocation(parse5ElmLocation),
-            [elseBlockAttribute.name],
+            [elseBlockAttribute.name]
         );
     }
 
@@ -763,13 +763,13 @@ function parseElseBlock(
     if (!ast.isBooleanLiteral(elseBlockAttribute.value)) {
         ctx.throwAtLocation(
             ParserDiagnostics.ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
     const elseNode = ast.elseBlockNode(
         ast.sourceLocation(parse5ElmLocation),
-        elseBlockAttribute.location,
+        elseBlockAttribute.location
     );
 
     // Attach the node as a child of the preceding IfBlock
@@ -795,7 +795,7 @@ function applyRootLwcDirectives(ctx: ParserCtx, parsedAttr: ParsedAttribute, roo
 function applyLwcRenderModeDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    root: Root,
+    root: Root
 ): void {
     const lwcRenderModeAttribute = parsedAttr.pick(RootDirectiveName.RenderMode);
     if (!lwcRenderModeAttribute) {
@@ -813,7 +813,7 @@ function applyLwcRenderModeDirective(
     }
 
     root.directives.push(
-        ast.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location),
+        ast.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location)
     );
     ctx.instrumentation?.incrementCounter(CompilerMetrics.LWCRenderModeDirective);
 }
@@ -821,7 +821,7 @@ function applyLwcRenderModeDirective(
 function applyLwcPreserveCommentsDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    root: Root,
+    root: Root
 ): void {
     const lwcPreserveCommentAttribute = parsedAttr.pick(RootDirectiveName.PreserveComments);
     if (!lwcPreserveCommentAttribute) {
@@ -837,8 +837,8 @@ function applyLwcPreserveCommentsDirective(
     root.directives.push(
         ast.preserveCommentsDirective(
             lwcPreserveCommentsAttr.value,
-            lwcPreserveCommentAttribute.location,
-        ),
+            lwcPreserveCommentAttribute.location
+        )
     );
 }
 
@@ -856,7 +856,7 @@ const LWC_DIRECTIVE_PROCESSORS = [
 function applyLwcDirectives(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const lwcAttribute = parsedAttr.get(LWC_RE);
     if (!lwcAttribute) {
@@ -894,7 +894,7 @@ function applyLwcDirectives(
 function applyLwcSlotBindDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
     const slotBindAttribute = parsedAttr.pick(ElementDirectiveName.SlotBind);
@@ -921,7 +921,7 @@ function applyLwcSlotBindDirective(
 function applyLwcSpreadDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
 
@@ -941,7 +941,7 @@ function applyLwcSpreadDirective(
 function applyLwcExternalDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ) {
     const lwcExternalAttribute = parsedAttr.pick(ElementDirectiveName.External);
     if (!lwcExternalAttribute) {
@@ -964,7 +964,7 @@ function applyLwcExternalDirective(
 function applyLwcDynamicDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
 
@@ -998,7 +998,7 @@ function applyLwcDynamicDirective(
 function applyLwcIsDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
 
@@ -1024,7 +1024,7 @@ function applyLwcIsDirective(
 function applyLwcDomDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
 
@@ -1060,7 +1060,7 @@ function applyLwcDomDirective(
 function applyLwcInnerHtmlDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const lwcInnerHtmlDirective = parsedAttr.pick(ElementDirectiveName.InnerHTML);
 
@@ -1094,7 +1094,7 @@ function applyLwcInnerHtmlDirective(
 function applyRefDirective(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const lwcRefDirective = parsedAttr.pick(ElementDirectiveName.Ref);
 
@@ -1126,7 +1126,7 @@ function parseForEach(
     _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ForEach | undefined {
     const forEachAttribute = parsedAttr.pick('for:each');
     const forItemAttribute = parsedAttr.pick('for:item');
@@ -1136,7 +1136,7 @@ function parseForEach(
         if (!ast.isExpression(forEachAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
-                forEachAttribute,
+                forEachAttribute
             );
         }
 
@@ -1144,7 +1144,7 @@ function parseForEach(
         if (!ast.isStringLiteral(forItemValue)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
-                forItemAttribute,
+                forItemAttribute
             );
         }
 
@@ -1165,7 +1165,7 @@ function parseForEach(
             ast.sourceLocation(parse5ElmLocation),
             forEachAttribute.location,
             item,
-            index,
+            index
         );
 
         ctx.addNodeCurrentElementScope(node);
@@ -1175,7 +1175,7 @@ function parseForEach(
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 }
@@ -1185,7 +1185,7 @@ function parseForOf(
     _parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ForOf | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
@@ -1197,7 +1197,7 @@ function parseForOf(
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
             ast.sourceLocation(parse5ElmLocation),
-            [iteratorExpression.name],
+            [iteratorExpression.name]
         );
     }
 
@@ -1216,7 +1216,7 @@ function parseForOf(
         iteratorExpression.value,
         iterator,
         ast.sourceLocation(parse5ElmLocation),
-        iteratorExpression.location,
+        iteratorExpression.location
     );
 
     ctx.addNodeCurrentElementScope(node);
@@ -1230,7 +1230,7 @@ function parseScopedSlotFragment(
     parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation,
     parent: ParentNode,
-    parsedAttr: ParsedAttribute,
+    parsedAttr: ParsedAttribute
 ): ScopedSlotFragment | undefined {
     const slotDataAttr = parsedAttr.pick(ElementDirectiveName.SlotData);
     if (!slotDataAttr) {
@@ -1245,7 +1245,7 @@ function parseScopedSlotFragment(
     if (ctx.findInCurrentElementScope(ast.isElementDirective)) {
         ctx.throwAtLocation(
             ParserDiagnostics.SCOPED_SLOTDATA_CANNOT_BE_COMBINED_WITH_OTHER_DIRECTIVE,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
@@ -1253,13 +1253,13 @@ function parseScopedSlotFragment(
     // The only exception is, a conditional block as parent
     const parentCmp = ctx.findAncestor(
         ast.isComponent,
-        ({ current }) => current && ast.isConditionalBlock(current),
+        ({ current }) => current && ast.isConditionalBlock(current)
     );
 
     if (!parentCmp) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_PARENT_OF_LWC_SLOT_DATA,
-            ast.sourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
@@ -1280,7 +1280,7 @@ function parseScopedSlotFragment(
         identifier,
         ast.sourceLocation(parse5ElmLocation),
         slotDataAttr.location,
-        slotName ?? ast.literal(''),
+        slotName ?? ast.literal('')
     );
     ctx.addNodeCurrentElementScope(node);
     parent.children.push(node);
@@ -1304,7 +1304,7 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
                 ctx.throwOnNode(
                     ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX,
                     keyAttribute,
-                    [tag],
+                    [tag]
                 );
             }
         } else if (forEachParent) {
@@ -1313,7 +1313,7 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
                 ctx.throwOnNode(
                     ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX,
                     keyAttribute,
-                    [tag, name],
+                    [tag, name]
                 );
             }
         }
@@ -1339,7 +1339,7 @@ const ALLOWED_SLOT_ATTRIBUTES_SET = new Set<string>(ALLOWED_SLOT_ATTRIBUTES);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
@@ -1370,7 +1370,7 @@ function parseSlot(
                 ctx.throwAtLocation(
                     ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER,
                     location,
-                    [eventHandler],
+                    [eventHandler]
                 );
             }
 
@@ -1446,7 +1446,7 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER,
                 attr,
-                [name, tag],
+                [name, tag]
             );
         }
 
@@ -1572,7 +1572,7 @@ function validateTemplate(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     template: TemplateElement,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): void {
     const location = ast.sourceLocation(parse5ElmLocation);
 
@@ -1585,7 +1585,7 @@ function validateTemplate(
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_LWC_EXTERNAL_ON_NON_CUSTOM_ELEMENT,
             location,
-            ['<template>'],
+            ['<template>']
         );
     }
 
@@ -1619,7 +1619,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
         const slotFragment = ctx.findAncestor(
             ast.isScopedSlotFragment,
             ({ current }) => current && ast.isComponent,
-            directive,
+            directive
         );
 
         // If the current directive is a slotFragment or the descendent of a slotFragment, additional
@@ -1664,7 +1664,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
 function validateAttributes(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: BaseElement,
+    element: BaseElement
 ): void {
     const { name: tag } = element;
     const attributes = parsedAttr.getAttributes();
@@ -1713,7 +1713,7 @@ function validateProperties(ctx: ParserCtx, element: BaseElement): void {
 function parseAttributes(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
-    parse5ElmLocation: parse5.ElementLocation,
+    parse5ElmLocation: parse5.ElementLocation
 ): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
     const { attrs: attributes, tagName } = parse5Elm;
@@ -1724,7 +1724,7 @@ function parseAttributes(
         /* istanbul ignore if */
         if (!attrLocation) {
             throw new Error(
-                'An internal parsing error occurred while parsing attributes; attributes were found without a location.',
+                'An internal parsing error occurred while parsing attributes; attributes were found without a location.'
             );
         }
 
@@ -1738,7 +1738,7 @@ function getTemplateAttribute(
     ctx: ParserCtx,
     tag: string,
     attribute: parse5.Attribute,
-    attributeLocation: parse5.Location,
+    attributeLocation: parse5.Location
 ): Attribute {
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
@@ -1761,7 +1761,7 @@ function getTemplateAttribute(
         rawAttribute,
         tag,
         attribute,
-        location,
+        location
     );
 
     let attrValue: Literal | Expression;

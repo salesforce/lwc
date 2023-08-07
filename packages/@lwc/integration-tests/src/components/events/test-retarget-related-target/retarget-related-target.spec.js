@@ -17,16 +17,16 @@ describe('Retarget relatedTarget', () => {
         const first = await browser.shadowDeep$(
             'integration-retarget-related-target',
             'integration-child.first',
-            'input',
+            'input'
         );
         const second = await browser.shadowDeep$(
             'integration-retarget-related-target',
             'integration-child.second',
-            'input',
+            'input'
         );
         const indicator = await browser.shadowDeep$(
             'integration-retarget-related-target',
-            '.related-target-class-name',
+            '.related-target-class-name'
         );
 
         await first.moveTo();

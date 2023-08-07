@@ -9,7 +9,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             CustomElementConstructor: () => {
                 customElements.define(
                     'x-observes-as-custom-element',
-                    Observes.CustomElementConstructor,
+                    Observes.CustomElementConstructor
                 );
                 const elm = document.createElement('x-observes-as-custom-element');
                 document.body.appendChild(elm);

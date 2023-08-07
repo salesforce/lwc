@@ -39,7 +39,7 @@ import testStyleAttr from './act-components/test-style-attr';
 describe('ACTCompiler', () => {
     function createComponentFromTemplate(
         template,
-        { props = {}, propsToTrack = [], methods = {} } = {},
+        { props = {}, propsToTrack = [], methods = {} } = {}
     ) {
         const publicProps = {};
         for (const prop of Object.keys(props)) {
@@ -258,7 +258,7 @@ describe('ACTCompiler', () => {
             expect(div.children.length).toEqual(1);
             expect(div.children[0].tagName.toLowerCase()).toEqual('h1');
             expect(img.src).toEqual(
-                'data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
+                'data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
             );
             expect(img.alt).toEqual('Smiley face');
             expect(img.getAttribute('height')).toEqual('42');
@@ -273,12 +273,12 @@ describe('ACTCompiler', () => {
         expect(
             component.shadowRoot
                 .querySelectorAll('ui-something')[0]
-                .shadowRoot.querySelector('[data-id="text"]').textContent,
+                .shadowRoot.querySelector('[data-id="text"]').textContent
         ).toEqual('Hello 1');
         expect(
             component.shadowRoot
                 .querySelectorAll('ui-something')[1]
-                .shadowRoot.querySelector('[data-id="text"]').textContent,
+                .shadowRoot.querySelector('[data-id="text"]').textContent
         ).toEqual('Hello 2');
     });
 
@@ -311,10 +311,10 @@ describe('ACTCompiler', () => {
         expect(nestedHtmlTags.children[0].children[0].className).toEqual('inner');
         expect(nestedHtmlTags.children[0].children[0].children.length).toEqual(2);
         expect(nestedHtmlTags.children[0].children[0].children[0].tagName.toLowerCase()).toEqual(
-            'div',
+            'div'
         );
         expect(nestedHtmlTags.children[0].children[0].children[1].tagName.toLowerCase()).toEqual(
-            'h2',
+            'h2'
         );
     });
 
@@ -383,7 +383,7 @@ describe('ACTCompiler', () => {
 
     it('slot element creation with duplicate slot names', () => {
         const component = createAndInsertActComponent(
-            testSlotElementCreationWithDuplicateSlotNames,
+            testSlotElementCreationWithDuplicateSlotNames
         );
         const forceFoo = component.shadowRoot.querySelector('force-foo');
         const defaultSlot = forceFoo.shadowRoot.querySelector('slot');
@@ -393,10 +393,10 @@ describe('ACTCompiler', () => {
         expect(defaultSlot.assignedNodes()[0].children.length).toEqual(1);
         expect(defaultSlot.assignedNodes()[1].children.length).toEqual(1);
         expect(defaultSlot.assignedNodes()[0].children[0].tagName.toLowerCase()).toEqual(
-            'ui-something',
+            'ui-something'
         );
         expect(defaultSlot.assignedNodes()[1].children[0].tagName.toLowerCase()).toEqual(
-            'ui-something-else',
+            'ui-something-else'
         );
     });
 

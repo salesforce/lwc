@@ -37,7 +37,7 @@ type VariableNames = Set<string>;
  */
 export function bindComplexExpression(
     expression: ComplexExpression,
-    codeGen: CodeGen,
+    codeGen: CodeGen
 ): t.Expression {
     const expressionScopes = new ExpressionScopes();
     walk(expression, {
@@ -87,7 +87,7 @@ class ExpressionScopes {
         for (const varName of variableNamesIntroduced) {
             this.variableShadowingCount.set(
                 varName,
-                (this.variableShadowingCount.get(varName) ?? 0) + 1,
+                (this.variableShadowingCount.get(varName) ?? 0) + 1
             );
         }
         this.arrowFnVariables.set(node, variableNamesIntroduced);
@@ -99,7 +99,7 @@ class ExpressionScopes {
             for (const varName of varNames) {
                 this.variableShadowingCount.set(
                     varName,
-                    this.variableShadowingCount.get(varName)! - 1,
+                    this.variableShadowingCount.get(varName)! - 1
                 );
             }
         }

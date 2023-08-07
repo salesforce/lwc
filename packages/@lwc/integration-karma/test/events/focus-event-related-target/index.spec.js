@@ -14,7 +14,7 @@ it('should retarget relatedTarget', function () {
 
     expect(elm.relatedTargetClassName)
         .withContext(
-            'This test may "flap" during local development if your browser window isn\'t focused',
+            'This test may "flap" during local development if your browser window isn\'t focused'
         )
         .toBe('first');
 });

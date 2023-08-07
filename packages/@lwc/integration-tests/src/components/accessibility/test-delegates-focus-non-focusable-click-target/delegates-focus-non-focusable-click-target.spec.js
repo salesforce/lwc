@@ -17,7 +17,7 @@ describe('focus delegation when clicking on form element label', () => {
         const label = await browser.shadowDeep$(
             'integration-delegates-focus-non-focusable-click-target',
             'integration-input',
-            'label',
+            'label'
         );
         await label.click();
 
@@ -28,7 +28,7 @@ describe('focus delegation when clicking on form element label', () => {
     it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
         const headInput = await browser.shadowDeep$(
             'integration-delegates-focus-non-focusable-click-target',
-            '.head',
+            '.head'
         );
         // Focus on input so that relatedTarget will be non-null
         await headInput.click();
@@ -36,7 +36,7 @@ describe('focus delegation when clicking on form element label', () => {
         const label = await browser.shadowDeep$(
             'integration-delegates-focus-non-focusable-click-target',
             'integration-input',
-            'label',
+            'label'
         );
         await label.click();
 

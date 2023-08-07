@@ -36,13 +36,13 @@ export interface RendererAPI {
         target: N,
         type: string,
         callback: (event: Event) => any,
-        options?: AddEventListenerOptions | boolean,
+        options?: AddEventListenerOptions | boolean
     ) => void;
     removeEventListener: (
         target: N,
         type: string,
         callback: (event: Event) => any,
-        options?: EventListenerOptions | boolean,
+        options?: EventListenerOptions | boolean
     ) => void;
     dispatchEvent: (target: N, event: Event) => boolean;
     getClassList: (element: E) => DOMTokenList;
@@ -66,12 +66,12 @@ export interface RendererAPI {
         tagName: string,
         upgradeCallback: LifecycleCallback,
         connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback
     ) => E;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,
         adapterContextToken: string,
-        subscriptionPayload: WireContextSubscriptionPayload,
+        subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
 }

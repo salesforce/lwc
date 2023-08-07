@@ -17,7 +17,7 @@ export function readonly(obj: any): any {
         // TODO [#1292]: Remove the readonly decorator
         if (arguments.length !== 1) {
             logError(
-                '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.',
+                '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.'
             );
         }
     }

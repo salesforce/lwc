@@ -19,7 +19,7 @@ export default {
         expect(snapshotAfterHydration.withSlot).toBe(snapshots.withSlot);
         expect(snapshotAfterHydration.cmpWithSlotParagraphs).toHaveSize(3);
         expect(snapshotAfterHydration.cmpWithSlotParagraphs).toEqual(
-            snapshots.cmpWithSlotParagraphs,
+            snapshots.cmpWithSlotParagraphs
         );
 
         // let's verify handlers

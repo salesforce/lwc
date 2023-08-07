@@ -114,7 +114,7 @@ async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) 
                                             'yarn build:performance:components',
                                         ],
                                     },
-                                ]),
+                                ])
                             ),
                         },
                     },
@@ -142,11 +142,11 @@ async function processBenchmarkFile(benchmarkFile, directoryHash) {
         const tachometerJson = await createTachometerJson(
             htmlFilename,
             benchmarkName,
-            directoryHash,
+            directoryHash
         );
         const jsonFilename = path.join(
             targetDir,
-            `${benchmarkFileBasename.split('.')[0]}.tachometer.json`,
+            `${benchmarkFileBasename.split('.')[0]}.tachometer.json`
         );
         await writeFile(jsonFilename, JSON.stringify(tachometerJson, null, 2), 'utf8');
     }
@@ -160,7 +160,7 @@ async function main() {
     });
 
     const benchmarkFiles = await glob(
-        path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js'),
+        path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js')
     );
 
     await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file, directoryHash)));

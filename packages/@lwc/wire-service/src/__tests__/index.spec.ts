@@ -157,7 +157,7 @@ describe('WireEventTarget from register', () => {
 
             expect(wiredElementMock.dispatchEvent).toHaveBeenCalledTimes(1);
             expect(wiredElementMock.dispatchEvent.mock.calls[0][0]).toBe(
-                wireContextEventInLowercase,
+                wireContextEventInLowercase
             );
         });
 
@@ -271,7 +271,7 @@ describe('register', () => {
     it('throws when adapter id is not truthy', () => {
         function adapterFactory() {}
         expect(() => register(undefined, adapterFactory)).toThrowError(
-            'adapter id must be extensible',
+            'adapter id must be extensible'
         );
     });
 
@@ -282,7 +282,7 @@ describe('register', () => {
     it('should throw when adapter id is already associated to an adapter factory', () => {
         const adapterId = { adapter: {} };
         expect(() => register(adapterId, () => {})).toThrowError(
-            'adapter id is already associated to an adapter factory',
+            'adapter id is already associated to an adapter factory'
         );
     });
 

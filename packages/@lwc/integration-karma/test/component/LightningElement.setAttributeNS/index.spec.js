@@ -9,7 +9,7 @@ it('should log an error when invoking setAttributeNS in constructor', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
     }).toLogErrorDev(
-        /Failed to construct '<x-constructor-invocation>': The result must not have attributes\./,
+        /Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
     );
 });
 

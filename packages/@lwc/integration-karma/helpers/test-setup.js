@@ -70,7 +70,7 @@ function patchConsole() {
 function throwIfConsoleCalled() {
     if (consoleCallCount) {
         throw new Error(
-            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)',
+            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)'
         );
     }
 }
@@ -108,7 +108,7 @@ afterAll(function () {
     adoptedStyleSheets.forEach(function (sheet, i) {
         if (originalAdoptedStyleSheets[i] !== sheet) {
             throw new Error(
-                'Unexpected adopted style sheet left in the document by a test: ' + sheet,
+                'Unexpected adopted style sheet left in the document by a test: ' + sheet
             );
         }
     });

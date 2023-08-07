@@ -37,7 +37,7 @@ describe('Event.target', () => {
         }
         dispatchEventWithAssertions(
             container.shadowRoot.querySelector('x-child'),
-            new CustomEvent('test', { bubbles: true, composed: true }),
+            new CustomEvent('test', { bubbles: true, composed: true })
         );
 
         expect(hasOwnProperty.call(Event.prototype, 'target')).toBeTrue();

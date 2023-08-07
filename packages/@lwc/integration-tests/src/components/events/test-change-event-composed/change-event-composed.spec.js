@@ -24,7 +24,7 @@ describe('Composed change event', () => {
 
         const div = await browser.shadowDeep$(
             'integration-change-event-composed',
-            '.verify-not-composed',
+            '.verify-not-composed'
         );
         assert.strictEqual(await div.getText(), 'Not Composed');
     });

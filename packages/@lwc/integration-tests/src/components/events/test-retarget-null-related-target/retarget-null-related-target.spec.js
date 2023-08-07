@@ -17,13 +17,13 @@ describe('Retarget relatedTarget', () => {
             async () => {
                 const target = await browser.shadowDeep$(
                     'integration-retarget-null-related-target',
-                    '.related-target-tabname',
+                    '.related-target-tabname'
                 );
                 return (await target.getText()) === 'Related target is null';
             },
             {
                 timeoutMsg: 'Expected correct message',
-            },
+            }
         );
     });
 });

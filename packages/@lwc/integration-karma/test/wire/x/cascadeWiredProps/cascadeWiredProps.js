@@ -16,7 +16,7 @@ export default class CascadeWiredProps extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('dependantwirevalue', {
                 detail: { providedValue },
-            }),
+            })
         );
     }
 }

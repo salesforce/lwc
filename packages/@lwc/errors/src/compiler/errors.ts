@@ -48,7 +48,7 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig,
+    config?: ErrorConfig
 ): CompilerDiagnostic {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const diagnostic: CompilerDiagnostic = {
@@ -76,7 +76,7 @@ export function generateCompilerDiagnostic(
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig,
+    config?: ErrorConfig
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const error = new CompilerError(errorInfo.code, message);
@@ -108,7 +108,7 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
 export function normalizeToCompilerError(
     errorInfo: LWCErrorInfo,
     error: any,
-    origin?: CompilerDiagnosticOrigin,
+    origin?: CompilerDiagnosticOrigin
 ): CompilerError {
     if (error instanceof CompilerError) {
         if (origin) {
@@ -121,7 +121,7 @@ export function normalizeToCompilerError(
     const { code, message, filename, location } = convertErrorToDiagnostic(
         error,
         errorInfo,
-        origin,
+        origin
     );
 
     const compilerError = new CompilerError(code, `${error.name}: ${message}`, filename, location);
@@ -139,7 +139,7 @@ export function normalizeToCompilerError(
 export function normalizeToDiagnostic(
     errorInfo: LWCErrorInfo,
     error: any,
-    origin?: CompilerDiagnosticOrigin,
+    origin?: CompilerDiagnosticOrigin
 ): CompilerDiagnostic {
     if (error instanceof CompilerError) {
         const diagnostic = error.toDiagnostic();
@@ -156,7 +156,7 @@ export function normalizeToDiagnostic(
 function convertErrorToDiagnostic(
     error: any,
     fallbackErrorInfo: LWCErrorInfo,
-    origin?: CompilerDiagnosticOrigin,
+    origin?: CompilerDiagnosticOrigin
 ): CompilerDiagnostic {
     const code = getCodeFromError(error) || fallbackErrorInfo.code;
     const message = error.lwcCode

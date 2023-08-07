@@ -26,6 +26,6 @@ module.exports = function (browser) {
                 return this.shadowRoot.activeElement;
             });
         },
-        true,
+        true
     );
 };

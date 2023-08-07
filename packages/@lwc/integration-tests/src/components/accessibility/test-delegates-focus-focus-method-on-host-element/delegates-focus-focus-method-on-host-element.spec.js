@@ -18,13 +18,13 @@ describe('Invoking the focus method of a host element', () => {
         // non-null value so that we enter the code path that we want to test.
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'input',
+            'input'
         );
         await input.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'integration-button.negative',
+            'integration-button.negative'
         );
         await target.focus();
 
@@ -38,13 +38,13 @@ describe('Invoking the focus method of a host element', () => {
         // non-null value so that we enter the code path that we want to test.
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'input',
+            'input'
         );
         await input.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'integration-button.zero',
+            'integration-button.zero'
         );
         await target.focus();
 
@@ -58,13 +58,13 @@ describe('Invoking the focus method of a host element', () => {
         // non-null value so that we enter the code path that we want to test.
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'input',
+            'input'
         );
         await input.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-host-element',
-            'integration-button.none',
+            'integration-button.none'
         );
         await target.focus();
 

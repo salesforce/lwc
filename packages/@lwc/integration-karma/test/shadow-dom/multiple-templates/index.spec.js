@@ -19,21 +19,21 @@ if (process.env.NATIVE_SHADOW) {
             return Promise.resolve()
                 .then(() => {
                     expect(getComputedStyle(element.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 255)',
+                        'rgb(0, 0, 255)'
                     );
                     expect(getNumStyleSheets()).toEqual(1);
                     element.next();
                 })
                 .then(() => {
                     expect(getComputedStyle(element.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(255, 0, 0)',
+                        'rgb(255, 0, 0)'
                     );
                     expect(getNumStyleSheets()).toEqual(2);
                     element.next();
                 })
                 .then(() => {
                     expect(getComputedStyle(element.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 255)',
+                        'rgb(0, 0, 255)'
                     );
                     expect(getNumStyleSheets()).toEqual(2);
                 });
@@ -50,10 +50,10 @@ if (!process.env.COMPAT) {
             return Promise.resolve()
                 .then(() => {
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.red')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.red')).color
                     ).toEqual('rgb(0, 0, 0)');
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.green')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.green')).color
                     ).toEqual('rgb(0, 0, 0)');
                     expect(getComputedStyle(element).marginLeft).toEqual('0px');
                     element.next();
@@ -61,10 +61,10 @@ if (!process.env.COMPAT) {
                 })
                 .then(() => {
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.red')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.red')).color
                     ).toEqual('rgb(255, 0, 0)');
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.green')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.green')).color
                     ).toEqual('rgb(0, 128, 0)');
                     expect(getComputedStyle(element).marginLeft).toEqual('5px');
                     element.next();
@@ -74,18 +74,18 @@ if (!process.env.COMPAT) {
                     if (process.env.NATIVE_SHADOW) {
                         // TODO [#2466]: In native shadow, stylesheets are not removed from the DOM
                         expect(
-                            getComputedStyle(element.shadowRoot.querySelector('.red')).color,
+                            getComputedStyle(element.shadowRoot.querySelector('.red')).color
                         ).toEqual('rgb(255, 0, 0)');
                         expect(
-                            getComputedStyle(element.shadowRoot.querySelector('.green')).color,
+                            getComputedStyle(element.shadowRoot.querySelector('.green')).color
                         ).toEqual('rgb(0, 128, 0)');
                         expect(getComputedStyle(element).marginLeft).toEqual('5px');
                     } else {
                         expect(
-                            getComputedStyle(element.shadowRoot.querySelector('.red')).color,
+                            getComputedStyle(element.shadowRoot.querySelector('.red')).color
                         ).toEqual('rgb(0, 0, 0)');
                         expect(
-                            getComputedStyle(element.shadowRoot.querySelector('.green')).color,
+                            getComputedStyle(element.shadowRoot.querySelector('.green')).color
                         ).toEqual('rgb(0, 0, 0)');
                         expect(getComputedStyle(element).marginLeft).toEqual('0px');
                     }
@@ -94,10 +94,10 @@ if (!process.env.COMPAT) {
                 })
                 .then(() => {
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.red')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.red')).color
                     ).toEqual('rgb(255, 0, 0)');
                     expect(
-                        getComputedStyle(element.shadowRoot.querySelector('.green')).color,
+                        getComputedStyle(element.shadowRoot.querySelector('.green')).color
                     ).toEqual('rgb(0, 128, 0)');
                     expect(getComputedStyle(element).marginLeft).toEqual('5px');
                 });

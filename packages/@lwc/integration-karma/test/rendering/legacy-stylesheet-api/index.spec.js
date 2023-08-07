@@ -57,7 +57,7 @@ describe('legacy undocumented stylesheetTokens API', () => {
             // patch the one with a stylesheet onto the one without
             withoutStylesheet.stylesheetTokens = withStylesheet.stylesheetTokens;
         }).toLogWarningDev(
-            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/,
+            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
         // stylesheetTokens should reflect stylesheetToken

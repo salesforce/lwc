@@ -16,7 +16,7 @@ const TRANSFORMATION_OPTIONS: TransformOptions = {
 describe('transformSync', () => {
     it('should throw when processing an invalid HTML file', () => {
         expect(() => transformSync(`<html`, 'foo.html', TRANSFORMATION_OPTIONS)).toThrow(
-            'Invalid HTML syntax: eof-in-tag.',
+            'Invalid HTML syntax: eof-in-tag.'
         );
     });
 
@@ -177,7 +177,7 @@ describe('transformSync', () => {
                 transformSync(template, 'foo.html', {
                     enableDynamicComponents: false,
                     ...TRANSFORMATION_OPTIONS,
-                }),
+                })
             ).toThrow('LWC1188: Invalid dynamic components usage');
         });
 
@@ -209,9 +209,9 @@ describe('transformSync', () => {
                 transformSync(template, 'foo.html', {
                     experimentalDynamicDirective: false,
                     ...TRANSFORMATION_OPTIONS,
-                }),
+                })
             ).toThrowErrorMatchingInlineSnapshot(
-                '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."',
+                '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."'
             );
         });
 

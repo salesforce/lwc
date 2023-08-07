@@ -59,7 +59,7 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 export function patchClassAttribute(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
-    renderer: RendererAPI,
+    renderer: RendererAPI
 ) {
     const {
         elm,

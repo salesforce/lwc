@@ -41,13 +41,13 @@ describe('Testing array primitives', () => {
         ['one', 'two', 'three', 'four', 'five', 'concat 1', 'concat 2'],
         (elm) => {
             elm.concatNativeToProxy();
-        },
+        }
     );
     testReactivity(
         'concat proxy to native',
         ['concat 1', 'concat 2', 'one', 'two', 'three', 'four', 'five'],
         (elm) => {
             elm.concatProxyToNative();
-        },
+        }
     );
 });

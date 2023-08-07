@@ -34,7 +34,7 @@ type LogDispatcher = (
     cmpName?: string,
     vmIndex?: number,
     renderMode?: RenderMode,
-    shadowMode?: ShadowMode,
+    shadowMode?: ShadowMode
 ) => void;
 
 const operationIdNameMapping = [

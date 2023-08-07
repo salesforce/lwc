@@ -79,7 +79,7 @@ function serializeAttrs(element: Element): string {
 function serializeChildren(
     children: ChildNode[],
     parentTagName: string,
-    preserveComments: boolean,
+    preserveComments: boolean
 ): string {
     let html = '';
 
@@ -93,7 +93,7 @@ function serializeChildren(
             html += serializeCommentNode(child, preserveComments);
         } else {
             throw new TypeError(
-                'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.',
+                'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
             );
         }
     });

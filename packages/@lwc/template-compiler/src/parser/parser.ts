@@ -181,7 +181,7 @@ export default class ParserCtx {
     findAncestor<A extends ParentNode>(
         predicate: (node: ParentNode) => node is A,
         traversalCond: (nodes: ParentWrapper) => unknown = () => true,
-        startNode?: ParentNode,
+        startNode?: ParentNode
     ): A | null {
         for (const { current, parent } of this.ancestors(startNode)) {
             if (predicate(current)) {
@@ -203,7 +203,7 @@ export default class ParserCtx {
      * until it finds one where predicate returns true.
      */
     findInCurrentElementScope<A extends ParentNode>(
-        predicate: (node: ParentNode) => node is A,
+        predicate: (node: ParentNode) => node is A
     ): A | null {
         const currentScope = this.currentElementScope() || [];
         return currentScope.find(predicate) || null;
@@ -265,7 +265,7 @@ export default class ParserCtx {
         const currentIfContext = this.currentIfContext();
         if (currentIfContext) {
             throw new Error(
-                'Should not invoke beginIfChain if an if context already exists. First end the current chain before starting a new one.',
+                'Should not invoke beginIfChain if an if context already exists. First end the current chain before starting a new one.'
             );
         }
 
@@ -361,7 +361,7 @@ export default class ParserCtx {
         fn: () => T,
         errorInfo: LWCErrorInfo,
         location: SourceLocation,
-        msgFormatter?: (error: any) => string,
+        msgFormatter?: (error: any) => string
     ): T {
         try {
             return fn();
@@ -430,7 +430,7 @@ export default class ParserCtx {
                 origin: {
                     location: normalizeLocation(location),
                 },
-            }),
+            })
         );
     }
 

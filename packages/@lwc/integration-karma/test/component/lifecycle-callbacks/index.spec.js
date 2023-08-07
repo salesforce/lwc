@@ -191,7 +191,7 @@ if (process.env.NATIVE_SHADOW) {
                       'foo-internal-e:connectedCallback',
                       'foo-internal-e:renderedCallback',
                       'foo-e:renderedCallback',
-                  ],
+                  ]
         );
     });
 } else {

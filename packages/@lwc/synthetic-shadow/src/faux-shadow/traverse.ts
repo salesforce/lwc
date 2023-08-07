@@ -49,7 +49,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
         if (!(compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS)) {
             // eslint-disable-next-line no-console
             console.error(
-                `isNodeSlotted() should never be called with a node that is not a child node of the given host`,
+                `isNodeSlotted() should never be called with a node that is not a child node of the given host`
             );
         }
     }
@@ -147,7 +147,7 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
         if (!(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS)) {
             // eslint-disable-next-line no-console
             console.error(
-                `isNodeOwnedBy() should never be called with a node that is not a child node of of the given owner`,
+                `isNodeOwnedBy() should never be called with a node that is not a child node of of the given owner`
             );
         }
     }
@@ -174,7 +174,7 @@ export function shadowRootChildNodes(root: ShadowRoot): Array<Element & Node> {
 
 export function getAllSlottedMatches<T extends Node>(
     host: Element,
-    nodeList: NodeList | Node[],
+    nodeList: NodeList | Node[]
 ): T[] {
     const filteredAndPatched: T[] = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -252,7 +252,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
                 }
                 return seed;
             },
-            [],
+            []
         );
     } else {
         // slot element
@@ -272,6 +272,6 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
     return ArrayFilter.call(
         childNodes,
-        (child) => !isNodeShadowed(child) || !isNodeOwnedBy(owner, child),
+        (child) => !isNodeShadowed(child) || !isNodeOwnedBy(owner, child)
     );
 }

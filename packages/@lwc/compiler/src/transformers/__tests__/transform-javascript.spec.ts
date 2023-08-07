@@ -80,8 +80,8 @@ it('should apply babel plugins when Lightning Web Security is on', async () => {
 
     expect(stripWhitespace(code)).toContain(
         stripWhitespace(
-            '(window === globalThis || window === document ? location : window.location).href',
-        ),
+            '(window === globalThis || window === document ? location : window.location).href'
+        )
     );
     expect(code).toContain('_asyncToGenerator');
     expect(code).toContain('_wrapAsyncGenerator');

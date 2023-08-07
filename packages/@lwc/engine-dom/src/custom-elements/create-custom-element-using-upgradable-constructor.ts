@@ -18,7 +18,7 @@ let elementBeingUpgradedByLWC = false;
 // This class should be created once per tag name.
 const createUpgradableConstructor = (
     connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => {
     const hasConnectedCallback = !isUndefined(connectedCallback);
     const hasDisconnectedCallback = !isUndefined(disconnectedCallback);
@@ -68,7 +68,7 @@ export const createCustomElementUsingUpgradableConstructor = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
     connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback
 ) => {
     // use global custom elements registry
     let UpgradableConstructor = cachedConstructors.get(tagName);
@@ -76,12 +76,12 @@ export const createCustomElementUsingUpgradableConstructor = (
     if (isUndefined(UpgradableConstructor)) {
         if (!isUndefined(customElements.get(tagName))) {
             throw new Error(
-                `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`,
+                `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
             );
         }
         UpgradableConstructor = createUpgradableConstructor(
             connectedCallback,
-            disconnectedCallback,
+            disconnectedCallback
         );
         customElements.define(tagName, UpgradableConstructor);
         cachedConstructors.set(tagName, UpgradableConstructor);

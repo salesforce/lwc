@@ -32,7 +32,7 @@ describe('issue #1031', () => {
 
         const secondOutside = await browser.shadowDeep$(
             'integration-issue-1031',
-            '.second-outside',
+            '.second-outside'
         );
         await secondOutside.click();
 

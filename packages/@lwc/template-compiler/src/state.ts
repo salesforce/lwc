@@ -34,7 +34,7 @@ export default class State {
                   config.customRendererConfig.elements.map((element) => {
                       const { tagName, attributes, namespace } = element;
                       return [tagName, { namespace, attributes: new Set(attributes) }];
-                  }),
+                  })
               )
             : {};
         this.crDirectives = new Set(config.customRendererConfig?.directives);

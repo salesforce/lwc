@@ -23,7 +23,7 @@ const ALWAYS_INVALID_TYPES = new Map(
         Super: '`super`',
         ThisExpression: '`this`',
         YieldExpression: '`yield`',
-    }),
+    })
 );
 const STATEMENT_TYPES = new Set([
     'BlockStatement',
@@ -84,7 +84,7 @@ function validateLiteral(node: t.Literal) {
     invariant(
         (node as t.BigIntLiteral).bigint === undefined,
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
-        ['BigInts'],
+        ['BigInts']
     );
     // Regular expression literals are difficult to visually parse, and
     // may be difficult to programatically parse with future parsing methods. For those
@@ -92,27 +92,27 @@ function validateLiteral(node: t.Literal) {
     invariant(
         (node as t.RegExpLiteral).regex === undefined,
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
-        ['regular expression literals'],
+        ['regular expression literals']
     );
 }
 
 function validateNode(node: BaseNode, _parent: BaseNode, isWithinArrowFn: boolean) {
     invariant(
         !node.leadingComments?.length && !node.trailingComments?.length,
-        ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED,
+        ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED
     );
     invariant(
         !STATEMENT_TYPES.has(node.type),
-        ParserDiagnostics.INVALID_EXPR_STATEMENTS_PROHIBITED,
+        ParserDiagnostics.INVALID_EXPR_STATEMENTS_PROHIBITED
     );
     invariant(
         !(MUTATION_TYPES.has(node.type) && !isWithinArrowFn),
-        ParserDiagnostics.INVALID_EXPR_MUTATION_OUTSIDE_ARROW,
+        ParserDiagnostics.INVALID_EXPR_MUTATION_OUTSIDE_ARROW
     );
     invariant(
         !ALWAYS_INVALID_TYPES.has(node.type),
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
-        [ALWAYS_INVALID_TYPES.get(node.type)],
+        [ALWAYS_INVALID_TYPES.get(node.type)]
     );
 
     if (t.isArrowFunctionExpression(node)) {

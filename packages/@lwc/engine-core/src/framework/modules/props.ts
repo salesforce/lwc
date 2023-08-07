@@ -19,7 +19,7 @@ function isLiveBindingProp(sel: string, key: string): boolean {
 export function patchProps(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
-    renderer: RendererAPI,
+    renderer: RendererAPI
 ) {
     let { props } = vnode.data;
     const { spread } = vnode.data;
@@ -71,8 +71,8 @@ export function patchProps(
                 if (!(key in elm!)) {
                     logWarn(
                         `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
-                            key,
-                        )}", or the attribute does not exist in this browser or DOM implementation.`,
+                            key
+                        )}", or the attribute does not exist in this browser or DOM implementation.`
                     );
                 }
             }

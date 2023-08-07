@@ -21,7 +21,7 @@ export default class extends LightningElement {
                     get foo() {
                         return this._data;
                     }
-                },
+                }
             );
         }
     }

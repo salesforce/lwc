@@ -15,7 +15,7 @@ describe('Tab navigation without tabindex', () => {
     it('should support tabindex toggling', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-toggle',
-            '.second-outside',
+            '.second-outside'
         );
         await secondOutside.click();
         await browser.keys(['Tab']);

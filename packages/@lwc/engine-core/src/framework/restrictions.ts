@@ -32,7 +32,7 @@ function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor
             enumerable: true,
             writable: true,
         },
-        options,
+        options
     );
 }
 
@@ -42,7 +42,7 @@ function generateAccessorDescriptor(options: PropertyDescriptor): PropertyDescri
             configurable: true,
             enumerable: true,
         },
-        options,
+        options
     );
 }
 
@@ -60,13 +60,13 @@ export function lockDomMutation() {
 
 function logMissingPortalError(name: string, type: string) {
     return logError(
-        `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`,
+        `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`
     );
 }
 
 export function patchElementWithRestrictions(
     elm: Element,
-    options: { isPortal: boolean; isLight: boolean; isSynthetic: boolean },
+    options: { isPortal: boolean; isLight: boolean; isSynthetic: boolean }
 ): void {
     assertNotProd(); // this method should never leak to prod
 
@@ -189,13 +189,13 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 this: ShadowRoot,
                 type: string,
                 listener: EventListener,
-                options?: boolean | AddEventListenerOptions,
+                options?: boolean | AddEventListenerOptions
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method on ShadowRoot does not support any options.',
-                        getAssociatedVMIfPresent(this),
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -250,13 +250,13 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 this: HTMLElement,
                 type: string,
                 listener: EventListener,
-                options?: boolean | AddEventListenerOptions,
+                options?: boolean | AddEventListenerOptions
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
-                        getAssociatedVMIfPresent(this),
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -268,7 +268,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
 }
 
 function getLightningElementPrototypeRestrictionsDescriptors(
-    proto: typeof LightningElement.prototype,
+    proto: typeof LightningElement.prototype
 ): PropertyDescriptorMap {
     assertNotProd(); // this method should never leak to prod
 
@@ -285,11 +285,11 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                     if (!/^[a-z][a-z0-9_]*$/.test(type)) {
                         logError(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
-                                vm,
+                                vm
                             )}.` +
                                 ` Event name must start with a lowercase letter and followed only lowercase` +
                                 ` letters, numbers, and underscores`,
-                            vm,
+                            vm
                         );
                     }
                 }
@@ -315,7 +315,7 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
 }
 
 export function patchLightningElementPrototypeWithRestrictions(
-    proto: typeof LightningElement.prototype,
+    proto: typeof LightningElement.prototype
 ) {
     defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }

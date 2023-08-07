@@ -18,7 +18,7 @@ export default function (define) {
                               },
                               key: 1,
                           },
-                          [],
+                          []
                       )
                     : null,
             ];

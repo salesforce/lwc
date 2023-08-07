@@ -328,7 +328,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                         const NotAConstructor = getConstructor();
                         customElements.define(
                             `x-will-fail-${Math.round(Math.random() * 1000000)}`,
-                            NotAConstructor,
+                            NotAConstructor
                         );
                     };
                     expect(define).toThrowError(TypeError);
@@ -395,7 +395,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(calls[0]).toEqual(
                     shouldBeFormAssociated
                         ? { name: 'formAssociatedCallback', elm, form }
-                        : undefined,
+                        : undefined
                 );
 
                 // check formDisabledCallback
@@ -404,14 +404,14 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(calls[1]).toEqual(
                     shouldBeFormAssociated
                         ? { name: 'formDisabledCallback', elm, disabled: true }
-                        : undefined,
+                        : undefined
                 );
 
                 // check formResetCallback
                 form.reset();
                 expect(calls.length).toEqual(shouldBeFormAssociated ? 3 : 0);
                 expect(calls[2]).toEqual(
-                    shouldBeFormAssociated ? { name: 'formResetCallback', elm } : undefined,
+                    shouldBeFormAssociated ? { name: 'formResetCallback', elm } : undefined
                 );
 
                 // formStateRestoreCallback cannot be manually invoked, just call it ourselves
@@ -431,7 +431,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     'x-face-callbacks',
                     class extends HTMLElement {
                         static formAssociated = true;
-                    },
+                    }
                 );
             });
 
@@ -441,7 +441,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     'x-face-callbacks-not-form-associated',
                     class extends HTMLElement {
                         static formAssociated = false;
-                    },
+                    }
                 );
             });
         });
@@ -453,7 +453,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 'x-no-attr-change-cb',
                 class extends HTMLElement {
                     static observedAttributes = ['foo'];
-                },
+                }
             );
 
             const elm = document.createElement('x-no-attr-change-cb');

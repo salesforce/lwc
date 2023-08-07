@@ -25,7 +25,7 @@ describe('Basic Light DOM', () => {
             const elm = createElement('x-test', { is: TemplateTest });
             document.body.appendChild(elm);
         }).toLogErrorDev(
-            'Error: [LWC error]: `this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.',
+            'Error: [LWC error]: `this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
         );
 
         expect(template).toBeNull();

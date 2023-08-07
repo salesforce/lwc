@@ -8,7 +8,7 @@ function testInvalidOptions(type, option) {
     it(`throws a TypeError if option is a ${type}`, () => {
         expect(() => createElement('x-component', option)).toThrowError(
             TypeError,
-            /"createElement" function expects an object as second parameter but received/,
+            /"createElement" function expects an object as second parameter but received/
         );
     });
 }
@@ -22,7 +22,7 @@ function testInvalidIsValue(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
         expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
-            '"createElement" function expects an "is" option with a valid component constructor.',
+            '"createElement" function expects an "is" option with a valid component constructor.'
         );
     });
 }
@@ -35,7 +35,7 @@ function testInvalidComponentConstructor(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
         expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
-            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 }

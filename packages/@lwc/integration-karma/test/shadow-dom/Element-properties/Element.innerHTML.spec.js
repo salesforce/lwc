@@ -9,10 +9,10 @@ describe('Element.innerHTML - get', () => {
 
         expect(elm.innerHTML).toBe('');
         expect(elm.shadowRoot.querySelector('x-container').innerHTML).toBe(
-            '<div>Slotted Text<input name="slotted"></div>',
+            '<div>Slotted Text<input name="slotted"></div>'
         );
         expect(elm.shadowRoot.querySelector('div').innerHTML).toBe(
-            'Slotted Text<input name="slotted">',
+            'Slotted Text<input name="slotted">'
         );
     });
 
@@ -22,7 +22,7 @@ describe('Element.innerHTML - get', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.querySelector('div').innerHTML).toBe(
-            'Before[<slot></slot>]After',
+            'Before[<slot></slot>]After'
         );
         expect(container.shadowRoot.querySelector('slot').innerHTML).toBe('');
     });
@@ -52,7 +52,7 @@ describe('Element.innerHTML - set', () => {
             expected = expected.not; // no error
         }
         expected.toLogErrorDev(
-            /\[LWC error\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./,
+            /\[LWC error\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

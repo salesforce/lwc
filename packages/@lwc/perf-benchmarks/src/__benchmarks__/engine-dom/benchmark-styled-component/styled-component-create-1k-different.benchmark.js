@@ -15,5 +15,5 @@ styledComponentBenchmark(
     `dom/styled-component/shadow/create-different/1k`,
     NUM_COMPONENTS,
     components,
-    { after, before, benchmark, run },
+    { after, before, benchmark, run }
 );

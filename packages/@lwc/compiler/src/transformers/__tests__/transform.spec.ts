@@ -14,7 +14,7 @@ function testValidateOptions(methodName: string, method: any) {
 
         it(`${methodName} should validate presence of filename`, () => {
             expect(() => method(`console.log('Hello')`)).toThrow(
-                /Expect a string for id. Received undefined/,
+                /Expect a string for id. Received undefined/
             );
         });
     });
@@ -26,7 +26,7 @@ testValidateOptions('transformSync', transformSync);
 describe('transform', () => {
     it('returns a promise resolving to an object with code', () => {
         return expect(
-            transform(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' }),
+            transform(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' })
         ).resolves.toMatchObject({
             code: expect.any(String),
         });
@@ -36,7 +36,7 @@ describe('transform', () => {
 describe('transformSync', () => {
     it('returns to an object with code', () => {
         expect(
-            transformSync(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' }),
+            transformSync(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' })
         ).toMatchObject({
             code: expect.any(String),
         });

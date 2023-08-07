@@ -94,7 +94,7 @@ function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
     const owner = getNodeOwner(this);
     const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
     return createStaticHTMLCollection(
-        ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element),
+        ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
     );
 }
 
@@ -209,21 +209,21 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'innerHTML')) {
     defineProperty(
         HTMLElement.prototype,
         'innerHTML',
-        getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!,
+        getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!
     );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'outerHTML')) {
     defineProperty(
         HTMLElement.prototype,
         'outerHTML',
-        getOwnPropertyDescriptor(Element.prototype, 'outerHTML')!,
+        getOwnPropertyDescriptor(Element.prototype, 'outerHTML')!
     );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
     defineProperty(
         HTMLElement.prototype,
         'children',
-        getOwnPropertyDescriptor(Element.prototype, 'children')!,
+        getOwnPropertyDescriptor(Element.prototype, 'children')!
     );
 }
 
@@ -231,7 +231,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]),
+        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
     );
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
@@ -267,7 +267,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this),
+            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
     }
@@ -294,7 +294,7 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === ownerKey,
+                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
         } else {
             // Note: we deviate from native shadow here, but are not fixing
@@ -307,7 +307,7 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context),
+                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.
@@ -336,7 +336,7 @@ defineProperties(Element.prototype, {
     querySelectorAll: {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const nodeList = arrayFromCollection(
-                elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]),
+                elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
 
             // Note: we deviate from native shadow here, but are not fixing
@@ -358,14 +358,14 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByClassName.apply(
                         this,
-                        ArraySlice.call(arguments) as [string],
-                    ),
+                        ArraySlice.call(arguments) as [string]
+                    )
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
                 // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements),
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
             },
             writable: true,
@@ -375,13 +375,13 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByTagName: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string]),
+                    elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
                 // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements),
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
             },
             writable: true,
@@ -393,14 +393,14 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagNameNS.apply(
                         this,
-                        ArraySlice.call(arguments) as [string, string],
-                    ),
+                        ArraySlice.call(arguments) as [string, string]
+                    )
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
                 // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
                 return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements),
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
             },
             writable: true,
@@ -415,6 +415,6 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {
     defineProperty(
         HTMLElement.prototype,
         'getElementsByClassName',
-        getOwnPropertyDescriptor(Element.prototype, 'getElementsByClassName') as PropertyDescriptor,
+        getOwnPropertyDescriptor(Element.prototype, 'getElementsByClassName') as PropertyDescriptor
     );
 }

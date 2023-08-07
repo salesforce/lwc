@@ -23,7 +23,7 @@ export default {
 
         expect(consoleCalls.warn).toHaveSize(1);
         expect(consoleCalls.warn[0][0].message).toContain(
-            'Mismatch hydrating element <div>: innerHTML values do not match for element, will recover from the difference',
+            'Mismatch hydrating element <div>: innerHTML values do not match for element, will recover from the difference'
         );
 
         target.content = '<p>another-content</p>';

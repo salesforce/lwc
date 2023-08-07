@@ -232,7 +232,7 @@ describe('Node.getRootNode', () => {
             const doc = new DOMParser().parseFromString('<foo />', 'application/xml');
             processingInstruction = doc.createProcessingInstruction(
                 'xml-stylesheet',
-                'href="mycss.css" type="text/css"',
+                'href="mycss.css" type="text/css"'
             );
         });
         it('getRootNode() on disconnected node should return same node', () => {
@@ -247,7 +247,7 @@ describe('Node.getRootNode', () => {
 
             expect(processingInstruction.getRootNode()).toBe(processingInstruction);
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(
-                processingInstruction,
+                processingInstruction
             );
 
             expect(document.getRootNode()).toBe(document);
