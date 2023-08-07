@@ -41,6 +41,7 @@
         "@types/babel__core": "^7.20.1",
         "@types/jest": "^29.5.2",
         "@types/node": "^20.4.8",
+        "@types/prettier": "^2.7.3",
         "@typescript-eslint/eslint-plugin": "^5.61.0",
         "@typescript-eslint/parser": "^5.61.0",
         "bytes": "^3.1.2",

@@ -1816,6 +1816,11 @@
   resolved "https://registry.yarnpkg.com/@types/parse5/-/parse5-6.0.3.tgz#705bb349e789efa06f43f128cef51240753424cb"
   integrity sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==
 
+"@types/prettier@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.3.tgz#3e51a17e291d01d17d3fc61422015a933af7a08f"
+  integrity sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==
+
 "@types/puppeteer-core@^5.4.0":
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/@types/puppeteer-core/-/puppeteer-core-5.4.0.tgz#880a7917b4ede95cbfe2d5e81a558cfcb072c0fb"
