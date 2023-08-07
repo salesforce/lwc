@@ -79,23 +79,23 @@ type StylesheetProp = (typeof STYLESHEET_PROPS)[number];
 function reportViolation(
     type: 'template',
     eventId: ReportingEventId.TemplateMutation,
-    prop: TemplateProp
+    prop: TemplateProp,
 ): void;
 function reportViolation(
     type: 'stylesheet',
     eventId: ReportingEventId.StylesheetMutation,
-    prop: StylesheetProp
+    prop: StylesheetProp,
 ): void;
 function reportViolation(
     type: 'template' | 'stylesheet',
     eventId: ReportingEventId.TemplateMutation | ReportingEventId.StylesheetMutation,
-    prop: TemplateProp | StylesheetProp
+    prop: TemplateProp | StylesheetProp,
 ): void {
     if (process.env.NODE_ENV !== 'production') {
         logWarnOnce(
             `Mutating the "${prop}" property on a ${type} ` +
                 `is deprecated and will be removed in a future version of LWC. ` +
-                `See: https://sfdc.co/template-mutation`
+                `See: https://sfdc.co/template-mutation`,
         );
     }
     report(eventId, { propertyName: prop });
@@ -164,7 +164,7 @@ function deepFreeze(stylesheets: TemplateStylesheetFactories) {
 // Deep-traverse an array (of arrays) of stylesheet factory functions, and call the callback for every array/function
 function traverseStylesheets(
     stylesheets: TemplateStylesheetFactories,
-    callback: (subStylesheets: TemplateStylesheetFactories | StylesheetFactory) => void
+    callback: (subStylesheets: TemplateStylesheetFactories | StylesheetFactory) => void,
 ) {
     callback(stylesheets);
     for (let i = 0; i < stylesheets.length; i++) {

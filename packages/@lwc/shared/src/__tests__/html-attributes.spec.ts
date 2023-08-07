@@ -106,6 +106,6 @@ describe('kebabCaseToCamelCase', () => {
         'kebabCaseToCamelCase("%s") returns "%s"',
         (attr, prop) => {
             expect(kebabCaseToCamelCase(attr)).toEqual(prop);
-        }
+        },
     );
 });

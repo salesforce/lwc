@@ -20,7 +20,7 @@ describe('nested components with negative tabindex', () => {
             'integration-nested-tabindex-negative',
             'integration-parent',
             'integration-child',
-            'input'
+            'input',
         );
         await input.click(); // click into input
 

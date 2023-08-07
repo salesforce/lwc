@@ -22,7 +22,7 @@ describe('Delegate focus with tabindex 0', () => {
             },
             {
                 timeoutMsg: 'Input should be focused',
-            }
+            },
         );
     });
 
@@ -36,7 +36,7 @@ describe('Delegate focus with tabindex 0', () => {
             },
             {
                 timeoutMsg: 'Second button should be focused',
-            }
+            },
         );
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
@@ -48,7 +48,7 @@ describe('Delegate focus with tabindex 0', () => {
             },
             {
                 timeoutMsg: 'Input should be focused',
-            }
+            },
         );
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
@@ -60,7 +60,7 @@ describe('Delegate focus with tabindex 0', () => {
             },
             {
                 timeoutMsg: 'First button should be focused',
-            }
+            },
         );
     });
 });

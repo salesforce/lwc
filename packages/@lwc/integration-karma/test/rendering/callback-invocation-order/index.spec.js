@@ -199,7 +199,7 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
                   'parent:b:connectedCallback',
                   'leaf:b:connectedCallback',
                   'leaf:after-slot:connectedCallback',
-              ]
+              ],
     );
 
     resetTimingBuffer();
@@ -225,7 +225,7 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
                       'leaf:a:disconnectedCallback',
                       'parent:b:disconnectedCallback',
                       'leaf:b:disconnectedCallback',
-                  ]
+                  ],
         );
     });
 });
@@ -281,7 +281,7 @@ it('should invoke callbacks on the right order when multiple templates are used 
                           'leaf:T2-4:connectedCallback',
                           'leaf:T2-5:connectedCallback',
                           'leaf:T2-6:connectedCallback',
-                      ]
+                      ],
             );
             resetTimingBuffer();
             elm.show = false;

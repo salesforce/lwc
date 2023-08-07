@@ -113,7 +113,7 @@ function isQualifiedObserver(observer: MutationObserver, target: Node): boolean 
  */
 function filterMutationRecords(
     mutations: MutationRecord[],
-    observer: MutationObserver
+    observer: MutationObserver,
 ): MutationRecord[] {
     return ArrayReduce.call(
         mutations,
@@ -175,7 +175,7 @@ function filterMutationRecords(
             }
             return filteredSet;
         },
-        []
+        [],
     ) as MutationRecord[];
 }
 
@@ -184,7 +184,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
     if (isUndefined(wrappedCallback)) {
         wrappedCallback = (callback as any)[wrapperLookupField] = (
             mutations: MutationRecord[],
-            observer: MutationObserver
+            observer: MutationObserver,
         ): void => {
             // Filter mutation records
             const filteredRecords = filterMutationRecords(mutations, observer);
@@ -206,7 +206,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  */
 function PatchedMutationObserver(
     this: MutationObserver,
-    callback: MutationCallback
+    callback: MutationCallback,
 ): MutationObserver {
     const wrappedCallback: any = getWrappedCallback(callback);
     const observer = new OriginalMutationObserver(wrappedCallback);
@@ -241,7 +241,7 @@ function patchedDisconnect(this: MutationObserver): void {
 function patchedObserve(
     this: MutationObserver,
     target: Node,
-    options?: MutationObserverInit
+    options?: MutationObserverInit,
 ): void {
     let targetObservers = getNodeObservers(target);
 

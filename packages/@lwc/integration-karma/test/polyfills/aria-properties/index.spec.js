@@ -21,7 +21,7 @@ function testAriaProperty(property, attribute) {
                 expected = expected.not;
             }
             expected.toLogWarningDev(
-                `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
+                `Error: [LWC warn]: Element <div> uses non-standard property "${property}". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`,
             );
         }
 
@@ -132,7 +132,7 @@ function testAriaProperty(property, attribute) {
 
         falsyValuesThatRemove.forEach((value) => {
             it(`should remove the attribute if the property is set to ${prettyPrint(
-                value
+                value,
             )}`, () => {
                 const el = document.createElement('div');
                 el.setAttribute(attribute, 'foo');
@@ -148,7 +148,7 @@ function testAriaProperty(property, attribute) {
 
         falsyValuesThatDoNotRemove.forEach((value) => {
             it(`should not remove the attribute if the property is set to ${prettyPrint(
-                value
+                value,
             )}`, () => {
                 const el = document.createElement('div');
                 el.setAttribute(attribute, 'foo');

@@ -19,7 +19,7 @@ describe('Event target in slot elements', () => {
 
         const element = await browser.shadowDeep$(
             'integration-slotted-event-target',
-            '.target-is-select'
+            '.target-is-select',
         );
         assert.strictEqual(await element.getText(), 'Event Target is select element');
     });

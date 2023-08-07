@@ -189,7 +189,7 @@ function testFixtures() {
                 result = lwcEngineServer!.renderComponent(
                     module!.tagName,
                     module!.default,
-                    config.props || {}
+                    config.props || {},
                 );
             } catch (_err: any) {
                 err = _err.message;
@@ -202,7 +202,7 @@ function testFixtures() {
                 'expected.html': result ? formatHTML(result) : undefined,
                 'error.txt': err,
             };
-        }
+        },
     );
 }
 

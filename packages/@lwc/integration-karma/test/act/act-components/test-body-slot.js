@@ -31,9 +31,9 @@ export default function (define) {
                                     },
                                     key: 2,
                                 },
-                                []
+                                [],
                             ),
-                        ]
+                        ],
                     ),
                 ];
             }
@@ -43,6 +43,6 @@ export default function (define) {
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
             lwc.freezeTemplate(tmpl);
             return tmpl;
-        }
+        },
     );
 }

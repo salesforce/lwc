@@ -75,9 +75,9 @@ describe('customRendererConfig normalization', () => {
                         },
                     ],
                 },
-            })
+            }),
         ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1150: customRendererConfig contains duplicate entry for use element tag"`
+            `"LWC1150: customRendererConfig contains duplicate entry for use element tag"`,
         );
     });
 
@@ -93,9 +93,9 @@ describe('customRendererConfig normalization', () => {
                         },
                     ],
                 },
-            })
+            }),
         ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1151: customRendererConfig should not contain a custom element tag, but found lightning-input"`
+            `"LWC1151: customRendererConfig should not contain a custom element tag, but found lightning-input"`,
         );
     });
 });

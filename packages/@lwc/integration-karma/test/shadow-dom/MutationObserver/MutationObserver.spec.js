@@ -112,7 +112,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             const childSRSpy = jasmine.createSpy();
             new MutationObserver(childSRSpy).observe(
                 parent.shadowRoot.querySelector('x-child').shadowRoot,
-                observerConfig
+                observerConfig,
             );
 
             slottedDiv.appendChild(document.createElement('p'));
@@ -265,7 +265,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                     expect(actualMutationRecords[0].removedNodes.length).toBe(2);
                     const removedNodes = Array.prototype.slice.call(
                         actualMutationRecords[0].removedNodes,
-                        0
+                        0,
                     );
                     // In IE11, the order of nodes removal is reverse. Sorting the records to make the result deterministic
                     removedNodes.sort((nodeA, nodeB) => {
@@ -294,7 +294,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 const parentDiv = parent.shadowRoot.querySelector('div');
                 const observer1 = new MutationObserver(function (
                     actualMutationRecords,
-                    actualObserver
+                    actualObserver,
                 ) {
                     expect(actualObserver).toBe(observer1);
                     expect(actualMutationRecords.length).toBe(1);
@@ -306,7 +306,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 observer1.observe(parent.shadowRoot, observerConfig);
                 const observer2 = new MutationObserver(function (
                     actualMutationRecords,
-                    actualObserver
+                    actualObserver,
                 ) {
                     expect(actualObserver).toBe(observer2);
                     expect(actualMutationRecords.length).toBe(1);

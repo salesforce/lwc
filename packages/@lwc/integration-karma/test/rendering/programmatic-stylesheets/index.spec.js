@@ -23,7 +23,7 @@ describe('programmatic stylesheets', () => {
 
         return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(255, 0, 0)'
+                'rgb(255, 0, 0)',
             );
             // styles do not leak (e.g. synthetic shadow)
             expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
@@ -49,7 +49,7 @@ describe('programmatic stylesheets', () => {
 
         return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(255, 0, 0)'
+                'rgb(255, 0, 0)',
             );
         });
     });
@@ -96,7 +96,7 @@ describe('programmatic stylesheets', () => {
 
             return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
             });
         });
@@ -122,7 +122,7 @@ describe('programmatic stylesheets', () => {
 
             return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                    'rgb(0, 0, 255)'
+                    'rgb(0, 0, 255)',
                 );
             });
         });
@@ -153,7 +153,7 @@ describe('programmatic stylesheets', () => {
                     const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
                     // See above note about native vs synthetic shadow
                     expect(style.color).toEqual(
-                        process.env.NATIVE_SHADOW ? 'rgb(0, 128, 0)' : 'rgb(0, 0, 255)'
+                        process.env.NATIVE_SHADOW ? 'rgb(0, 128, 0)' : 'rgb(0, 0, 255)',
                     );
                     expect(style.backgroundColor).toEqual('rgb(250, 128, 114)');
                 });
@@ -194,7 +194,7 @@ describe('programmatic stylesheets', () => {
                     is: Invalid,
                 });
             }).toLogErrorDev(
-                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid>/
+                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid>/,
             );
 
             document.body.appendChild(elm);
@@ -208,7 +208,7 @@ describe('programmatic stylesheets', () => {
                     is: Invalid2,
                 });
             }).toLogErrorDev(
-                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid2>/
+                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid2>/,
             );
 
             document.body.appendChild(elm);
@@ -223,7 +223,7 @@ describe('programmatic stylesheets', () => {
                 });
                 document.body.appendChild(elm);
             }).toLogWarningDev(
-                /\[LWC warn]: Dynamically setting the "stylesheets" static property on StylesheetsMutation will not affect the stylesheets injected./
+                /\[LWC warn]: Dynamically setting the "stylesheets" static property on StylesheetsMutation will not affect the stylesheets injected./,
             );
 
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly

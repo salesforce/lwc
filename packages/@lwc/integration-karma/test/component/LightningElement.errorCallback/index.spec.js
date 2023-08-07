@@ -170,7 +170,7 @@ describe('error boundary', () => {
             expect(
                 elm.shadowRoot
                     .querySelector('x-alt-child-boundary-view-throw')
-                    .shadowRoot.querySelector('x-post-error-child-view')
+                    .shadowRoot.querySelector('x-post-error-child-view'),
             ).not.toBe(null);
         });
     });
@@ -182,7 +182,7 @@ describe('error boundary during initial component construction', () => {
         hostSelector,
         hostClass,
         offendingChildSelector,
-        expectedErrorMessage
+        expectedErrorMessage,
     ) {
         it(`should invoke parent errorCallback ${testcase}`, () => {
             const parent = createElement(hostSelector, { is: hostClass });
@@ -198,28 +198,28 @@ describe('error boundary during initial component construction', () => {
         'x-child-constructor-throw-during-init',
         XChildConstructorThrowDuringInit,
         'x-child-constructor-throw',
-        'child-constructor-throw: triggered error'
+        'child-constructor-throw: triggered error',
     );
     testStub(
         'when child throws in render',
         'x-child-render-throw-during-init',
         XChildRenderThrowDuringInit,
         'x-child-render-throw',
-        'Child threw an error during rendering'
+        'Child threw an error during rendering',
     );
     testStub(
         'when child throws in renderedCallback',
         'x-child-rendered-throw-during-init',
         XChildRenderedThrowDuringInit,
         'x-child-rendered-throw',
-        'Child threw in renderedCallback'
+        'Child threw in renderedCallback',
     );
     testStub(
         'when child throws in connectedCallback',
         'x-child-connected-throw-during-init',
         XChildConnectedThrowDuringInit,
         'x-child-connected-throw',
-        'Child threw in connectedCallback'
+        'Child threw in connectedCallback',
     );
 });
 
@@ -238,22 +238,22 @@ describe('error thrown in errorCallback', () => {
     testStub(
         'when child throws in connectedCallback',
         'x-parent-throws-child-connected-throws',
-        XParentThrowsChildConnectedThrows
+        XParentThrowsChildConnectedThrows,
     );
     testStub(
         'when child throws in constructor',
         'x-parent-throws-child-constructor-throws',
-        XParentThrowsChildConstructorThrows
+        XParentThrowsChildConstructorThrows,
     );
     testStub(
         'when child throws in render',
         'x-parent-throws-child-render-throws',
-        XParentThrowsChildRenderThrows
+        XParentThrowsChildRenderThrows,
     );
     testStub(
         'when child throws in renderedCallback',
         'x-parent-throws-child-rendered-throws',
-        XParentThrowsChildRenderedThrows
+        XParentThrowsChildRenderedThrows,
     );
 });
 
@@ -270,22 +270,22 @@ describe('errorCallback error caught by another errorCallback', () => {
     testStub(
         'when child throws in connectedCallback',
         'x-grandparent-throws-child-connected-throws',
-        XGrandparentThrowsChildConnectedThrows
+        XGrandparentThrowsChildConnectedThrows,
     );
     testStub(
         'when child throws in constructor',
         'x-grandparent-throws-child-constructor-throws',
-        XGrandparentThrowsChildConstructorThrows
+        XGrandparentThrowsChildConstructorThrows,
     );
     testStub(
         'when child throws in render',
         'x-grandparent-throws-child-render-throws',
-        XGrandparentThrowsChildRenderThrows
+        XGrandparentThrowsChildRenderThrows,
     );
     testStub(
         'when child throws in renderedCallback',
         'x-grandparent-throws-child-rendered-throws',
-        XGrandparentThrowsChildRenderedThrows
+        XGrandparentThrowsChildRenderedThrows,
     );
 });
 
@@ -348,7 +348,7 @@ if (!process.env.COMPAT) {
                             // error is thrown by parent's errorCallback
                             expect(caughtError).not.toBeUndefined();
                             expect(caughtError.message).toMatch(
-                                /error in the parent error callback after value mutation/
+                                /error in the parent error callback after value mutation/,
                             );
                             // child after the throwing child is not rendered
                             // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
@@ -362,7 +362,7 @@ if (!process.env.COMPAT) {
                             // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
                             // give up rendering entirely just because one element threw in errorCallback.
                             expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
-                                'shown'
+                                'shown',
                             );
                         })
                 );
@@ -373,25 +373,25 @@ if (!process.env.COMPAT) {
             'when child throws in connectedCallback',
             'x-parent-throws-on-mutate-child-connected-throws',
             XParentThrowsOnMutateChildConnectedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         );
         testStub(
             'when child throws in constructor',
             'x-parent-throws-on-mutate-child-constructor-throws',
             XParentThrowsOnMutateChildConstructorThrows,
-            false
+            false,
         );
         testStub(
             'when child throws in render',
             'x-parent-throws-on-mutate-child-render-throws',
             XParentThrowsOnMutateChildRenderThrows,
-            false
+            false,
         );
         testStub(
             'when child throws in renderedCallback',
             'x-parent-throws-on-mutate-child-rendered-throws',
             XParentThrowsOnMutateChildRenderedThrows,
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         );
     });
 }

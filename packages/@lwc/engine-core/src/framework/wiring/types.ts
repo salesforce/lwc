@@ -50,7 +50,7 @@ export interface WireDebugInfo {
 }
 
 export type WireContextSubscriptionCallback = (
-    subscriptionPayload: WireContextSubscriptionPayload
+    subscriptionPayload: WireContextSubscriptionPayload,
 ) => void;
 
 export interface WireContextSubscriptionPayload {
@@ -69,11 +69,11 @@ export interface ContextProviderOptions {
 
 export type ContextProvider = (
     elmOrComponent: EventTarget,
-    options: ContextProviderOptions
+    options: ContextProviderOptions,
 ) => void;
 
 export type RegisterContextProviderFn = (
     element: HostElement,
     adapterContextToken: string,
-    onContextSubscription: WireContextSubscriptionCallback
+    onContextSubscription: WireContextSubscriptionCallback,
 ) => void;

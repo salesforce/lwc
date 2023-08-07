@@ -63,7 +63,7 @@ async function main() {
                 fmt(deltaPercHigh / 100),
                 fmt(avg(deltaPercLow, deltaPercHigh) / 100),
             ];
-        })
+        }),
     );
 
     console.log(markdownTable([header, ...results.sort((a, b) => (a[0] < b[0] ? -1 : 1))]));

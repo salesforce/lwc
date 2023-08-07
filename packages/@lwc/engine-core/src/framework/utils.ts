@@ -21,7 +21,7 @@ function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
         if (nextTickCallbackQueue.length === 0) {
             throw new Error(
-                `Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`
+                `Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`,
             );
         }
     }
@@ -36,7 +36,7 @@ export function addCallbackToNextTick(callback: Callback) {
     if (process.env.NODE_ENV !== 'production') {
         if (!isFunction(callback)) {
             throw new Error(
-                `Internal Error: addCallbackToNextTick() can only accept a function callback`
+                `Internal Error: addCallbackToNextTick() can only accept a function callback`,
             );
         }
     }

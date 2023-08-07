@@ -55,7 +55,7 @@ const {
 // of Array.prototype methods used elsewhere in the codebase.
 function arrayEvery<T>(
     arr: any[],
-    predicate: (value: any, index: number, array: typeof arr) => value is T
+    predicate: (value: any, index: number, array: typeof arr) => value is T,
 ): arr is T[] {
     return ArrayEvery.call(arr, predicate);
 }

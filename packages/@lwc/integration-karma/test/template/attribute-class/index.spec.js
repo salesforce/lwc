@@ -86,7 +86,7 @@ describe('dynamic class attribute', () => {
                 document.body.appendChild(elm);
 
                 expect(elm.shadowRoot.querySelector('div').getAttribute('class')).toBe(
-                    expectedValue
+                    expectedValue,
                 );
             });
         }
@@ -107,7 +107,7 @@ describe('dynamic class attribute', () => {
                 elm.dynamicClass = value;
                 await Promise.resolve();
                 expect(elm.shadowRoot.querySelector('div').getAttribute('class')).toBe(
-                    expectedValue
+                    expectedValue,
                 );
             });
         }

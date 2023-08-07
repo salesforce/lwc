@@ -24,7 +24,7 @@ if (!process.env.NATIVE_SHADOW) {
             expect(() => {
                 activeElement = target.shadowRoot.activeElement;
             }).toLogErrorDev(
-                /NodeOwnedBy\(\) should never be called with a node that is not a child node of/
+                /NodeOwnedBy\(\) should never be called with a node that is not a child node of/,
             );
 
             // synthetic shadow gets this wrong when lwc:dom=manual is not used, so just assert that it exists

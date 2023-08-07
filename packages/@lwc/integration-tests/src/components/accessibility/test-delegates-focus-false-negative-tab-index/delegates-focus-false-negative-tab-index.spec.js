@@ -28,7 +28,7 @@ describe('Tabbing into custom element with delegates focus', () => {
             {
                 timeoutMsg:
                     'expect integration-delegates-focus-false-negative-tab-index to be focused',
-            }
+            },
         );
 
         await browser.waitUntil(
@@ -38,7 +38,7 @@ describe('Tabbing into custom element with delegates focus', () => {
             },
             {
                 timeoutMsg: 'expect anchor to be focused',
-            }
+            },
         );
     });
 });

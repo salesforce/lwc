@@ -53,7 +53,7 @@ function createEnvFile() {
                 API_VERSION: ${JSON.stringify(API_VERSION)}
             }
         };
-    `
+    `,
     );
 }
 

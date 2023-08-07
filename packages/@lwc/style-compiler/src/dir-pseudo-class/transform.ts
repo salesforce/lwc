@@ -31,7 +31,7 @@ export default function (root: Root) {
                     {
                         index: node.sourceIndex,
                         word: node.value,
-                    }
+                    },
                 );
             }
 
@@ -76,7 +76,7 @@ export default function (root: Root) {
                     selector.first,
                     combinator({
                         value: ' ',
-                    })
+                    }),
                 );
                 // Add the [dir] attribute in front of the " " combinator, i.e. as an ancestor
                 selector.insertBefore(selector.first, syntheticAttribute);

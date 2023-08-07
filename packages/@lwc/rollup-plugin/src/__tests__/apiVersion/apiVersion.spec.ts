@@ -13,7 +13,7 @@ import lwc, { RollupLwcOptions } from '../../index';
 describe('API versioning', () => {
     async function runRollup(
         pathname: string,
-        options: RollupLwcOptions
+        options: RollupLwcOptions,
     ): Promise<{ code: string; warnings: RollupLog[] }> {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({

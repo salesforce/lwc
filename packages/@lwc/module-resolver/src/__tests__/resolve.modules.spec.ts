@@ -13,28 +13,28 @@ describe('parameters checks', () => {
     test('throw when importer is not a string', () => {
         expect(() => (resolveModule as any)()).toThrowErrorWithType(
             TypeError,
-            'The importee argument must be a string. Received type undefined'
+            'The importee argument must be a string. Received type undefined',
         );
     });
 
     test('throw when dirname is not a string', () => {
         expect(() => (resolveModule as any)('test')).toThrowErrorWithType(
             TypeError,
-            'The dirname argument must be a string. Received type undefined'
+            'The dirname argument must be a string. Received type undefined',
         );
     });
 
     test('throw when passing a relative path', () => {
         expect(() => resolveModule('./test', '.')).toThrowErrorWithType(
             TypeError,
-            'The importee argument must be a valid LWC module name. Received "./test"'
+            'The importee argument must be a valid LWC module name. Received "./test"',
         );
     });
 
     test('throw when passing an absolute path', () => {
         expect(() => resolveModule('/test', '.')).toThrowErrorWithType(
             TypeError,
-            'The importee argument must be a valid LWC module name. Received "/test"'
+            'The importee argument must be a valid LWC module name. Received "/test"',
         );
     });
 });
@@ -59,8 +59,8 @@ describe('alias resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${dirname}". Invalid alias module record "{"name":"aliased","path":"./missing.js"}", file "${fixture(
-                'errors/missing-aliased-file/missing.js'
-            )}" does not exist`
+                'errors/missing-aliased-file/missing.js',
+            )}" does not exist`,
         );
     });
 });
@@ -85,8 +85,8 @@ describe('dir resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${dirname}". Invalid dir module record "{"dir":"./missing"}", directory ${fixture(
-                'errors/missing-dir/missing'
-            )} doesn't exists`
+                'errors/missing-dir/missing',
+            )} doesn't exists`,
         );
     });
 
@@ -97,8 +97,8 @@ describe('dir resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${dirname}". Unable to find a valid entry point for "${fixture(
-                'errors/missing-dir-entry/modules/foo/bar/bar'
-            )}"`
+                'errors/missing-dir-entry/modules/foo/bar/bar',
+            )}"`,
         );
     });
 });
@@ -134,7 +134,7 @@ describe('NPM resolution', () => {
 
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${dirname}". Invalid npm module record "{"npm":"missing-deps"}", "missing-deps" npm module can't be resolved`
+            `Invalid LWC configuration in "${dirname}". Invalid npm module record "{"npm":"missing-deps"}", "missing-deps" npm module can't be resolved`,
         );
     });
 
@@ -145,8 +145,8 @@ describe('NPM resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/missing-npm-package-lwc-config/node_modules/deps'
-            )}". Missing "modules" property for a npm config`
+                'errors/missing-npm-package-lwc-config/node_modules/deps',
+            )}". Missing "modules" property for a npm config`,
         );
     });
 
@@ -157,8 +157,8 @@ describe('NPM resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/missing-npm-module-config/node_modules/deps'
-            )}". Missing "modules" property for a npm config`
+                'errors/missing-npm-module-config/node_modules/deps',
+            )}". Missing "modules" property for a npm config`,
         );
     });
 
@@ -169,8 +169,8 @@ describe('NPM resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/missing-npm-expose-config/node_modules/deps'
-            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains`
+                'errors/missing-npm-expose-config/node_modules/deps',
+            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains`,
         );
     });
 
@@ -181,8 +181,8 @@ describe('NPM resolution', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'errors/missing-npm-exposed-module/node_modules/deps'
-            )}". Unable to find "exposed" under npm package "deps"`
+                'errors/missing-npm-exposed-module/node_modules/deps',
+            )}". Unable to find "exposed" under npm package "deps"`,
         );
     });
 
@@ -262,7 +262,7 @@ describe('resolution override', () => {
 
         expect(() => resolveModule('test', dirname, opts)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${dirname}". Unknown module record "{}"`
+            `Invalid LWC configuration in "${dirname}". Unknown module record "{}"`,
         );
     });
 
@@ -272,7 +272,7 @@ describe('resolution override', () => {
 
         expect(() => resolveModule('test', dirname, opts)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${dirname}". Invalid module record. Module record must be an object, instead got "foo/test".`
+            `Invalid LWC configuration in "${dirname}". Invalid module record. Module record must be an object, instead got "foo/test".`,
         );
     });
 });

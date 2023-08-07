@@ -24,7 +24,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             const testCase = elm.shadowRoot.querySelector('.consecutive-LF');
 
             expect(testCase.innerText).toMatch(
-                /initial\s+first case text\s+second case text\s+end/
+                /initial\s+first case text\s+second case text\s+end/,
             );
         });
 
@@ -56,7 +56,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             const testCase = elm.shadowRoot.querySelector('.collect-text-multiple-levels');
 
             expect(testCase.innerText).toMatch(
-                /This is, a text that should be displayed, in one line\. It includes links\.\s+Also paragraphs\s+and then another text/
+                /This is, a text that should be displayed, in one line\. It includes links\.\s+Also paragraphs\s+and then another text/,
             );
         });
 
@@ -101,7 +101,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
 
             expect(testElement.innerText).toMatch(
-                /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
+                /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/,
             );
         });
 
@@ -109,7 +109,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
 
             expect(testElement.innerText).toMatch(
-                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/,
             );
         });
 
@@ -117,7 +117,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
             const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
 
             expect(testElement.innerText).toMatch(
-                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/,
             );
         });
 
@@ -155,7 +155,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
                 const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
 
                 expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
+                    /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/,
                 );
             });
 
@@ -163,7 +163,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
                 const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
 
                 expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/,
                 );
             });
 
@@ -171,7 +171,7 @@ if (!process.env.COMPAT && !process.env.NATIVE_SHADOW) {
                 const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
 
                 expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/,
                 );
             });
         });

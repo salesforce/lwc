@@ -21,7 +21,7 @@ it('should throw if a component tries to use a template that is not registered',
         document.body.appendChild(elm);
     }).toThrowConnectedError(
         TypeError,
-        /Invalid template returned by the render\(\) method on \[.*\]\./
+        /Invalid template returned by the render\(\) method on \[.*\]\./,
     );
 });
 

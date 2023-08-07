@@ -13,7 +13,7 @@ export default function process(root: Root, result: Result, isScoped: boolean) {
     root.walkAtRules('import', (node) => {
         if (isScoped) {
             throw node.error(
-                `Invalid import statement, imports are not allowed in *.scoped.css files.`
+                `Invalid import statement, imports are not allowed in *.scoped.css files.`,
             );
         }
         // Ensure @import are at the top of the file
@@ -37,7 +37,7 @@ export default function process(root: Root, result: Result, isScoped: boolean) {
 
         if (params.length > 1) {
             throw node.error(
-                `Invalid import statement, import statement only support a single parameter.`
+                `Invalid import statement, import statement only support a single parameter.`,
             );
         }
 

@@ -37,7 +37,7 @@ function testAssignedNodes(testDescription, getContainer) {
 if (process.env.COMPAT !== true) {
     testAssignedNodes(
         'assignedNodes() retains native behavior in native shadow dom tree',
-        () => document.body
+        () => document.body,
     );
 
     testAssignedNodes(
@@ -47,6 +47,6 @@ if (process.env.COMPAT !== true) {
             document.body.appendChild(lwcParent);
 
             return lwcParent.shadowRoot.querySelector('div');
-        }
+        },
     );
 }

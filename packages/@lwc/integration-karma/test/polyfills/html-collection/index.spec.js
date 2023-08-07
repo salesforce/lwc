@@ -44,10 +44,10 @@ describe('HTMLCollection', () => {
 
         it('when calling from document.body node', () => {
             expect(document.body.getElementsByTagNameNS('', ``) instanceof HTMLCollection).toBe(
-                true
+                true,
             );
             expect(document.body.getElementsByTagNameNS('', ``) + '').toBe(
-                '[object HTMLCollection]'
+                '[object HTMLCollection]',
             );
         });
 

@@ -20,7 +20,7 @@ export default {
 
         expect(consoleCalls.warn).toHaveSize(1);
         expect(consoleCalls.warn[0][0].message).toContain(
-            'Hydration mismatch: comment values do not match, will recover from the difference'
+            'Hydration mismatch: comment values do not match, will recover from the difference',
         );
     },
 };

@@ -26,7 +26,7 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
                 {
                     errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
                 },
-                state
+                state,
             );
         }
     });
@@ -36,12 +36,15 @@ function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
     const objectProperties = [];
     const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
     if (trackDecoratorMetas.length) {
-        const config = trackDecoratorMetas.reduce((acc, meta) => {
-            acc[meta.propertyName] = TRACK_PROPERTY_VALUE;
-            return acc;
-        }, {} as { [key: string]: number });
+        const config = trackDecoratorMetas.reduce(
+            (acc, meta) => {
+                acc[meta.propertyName] = TRACK_PROPERTY_VALUE;
+                return acc;
+            },
+            {} as { [key: string]: number },
+        );
         objectProperties.push(
-            t.objectProperty(t.identifier(LWC_COMPONENT_PROPERTIES.TRACK), t.valueToNode(config))
+            t.objectProperty(t.identifier(LWC_COMPONENT_PROPERTIES.TRACK), t.valueToNode(config)),
         );
     }
     return objectProperties;

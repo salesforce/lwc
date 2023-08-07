@@ -77,8 +77,8 @@ function validateSlots(vm: VM) {
         assert.isTrue(
             isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
-                cmpSlots.slotAssignments[slotName]
-            )} for slot "${slotName}" in ${vm}.`
+                cmpSlots.slotAssignments[slotName],
+            )} for slot "${slotName}" in ${vm}.`,
         );
     }
 }
@@ -92,16 +92,16 @@ function validateLightDomTemplate(template: Template, vm: VM) {
         if (template.renderMode !== 'light') {
             logError(
                 `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                    vm
-                )}.`
+                    vm,
+                )}.`,
             );
         }
     } else {
         if (!isUndefined(template.renderMode)) {
             logError(
                 `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                    vm
-                )} or set it to 'lwc:render-mode="shadow"`
+                    vm,
+                )} or set it to 'lwc:render-mode="shadow"`,
             );
         }
     }
@@ -113,7 +113,7 @@ const enum FragmentCache {
 }
 
 function buildParseFragmentFn(
-    createFragmentFn: (html: string, renderer: RendererAPI) => Element
+    createFragmentFn: (html: string, renderer: RendererAPI) => Element,
 ): (strings: string[], ...keys: number[]) => () => Element {
     return (strings: string[], ...keys: number[]) => {
         const cache = create(null);
@@ -188,8 +188,8 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
         assert.isTrue(
             isFunction(html),
             `evaluateTemplate() second argument must be an imported template instead of ${toString(
-                html
-            )}`
+                html,
+            )}`,
         );
         // in dev-mode, we support hot swapping of templates, which means that
         // the component instance might be attempting to use an old version of
@@ -232,7 +232,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                         throw new TypeError(
                             `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
                                 vm.def.name
-                            }.html"\`), instead, it has returned: ${toString(html)}.`
+                            }.html"\`), instead, it has returned: ${toString(html)}.`,
                         );
                     }
 
@@ -285,7 +285,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
             vmBeingRendered = vmOfTemplateBeingUpdatedInception;
 
             logOperationEnd(OperationId.Render, vm);
-        }
+        },
     );
 
     if (process.env.NODE_ENV !== 'production') {
@@ -297,7 +297,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 }
 
 function computeHasScopedStylesInStylesheets(
-    stylesheets: TemplateStylesheetFactories | undefined | null
+    stylesheets: TemplateStylesheetFactories | undefined | null,
 ): boolean {
     if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
@@ -320,7 +320,7 @@ export function computeHasScopedStyles(template: Template, vm: VM | undefined): 
 }
 
 export function hasStyles(
-    stylesheets: TemplateStylesheetFactories | undefined | null
+    stylesheets: TemplateStylesheetFactories | undefined | null,
 ): stylesheets is TemplateStylesheetFactories {
     return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

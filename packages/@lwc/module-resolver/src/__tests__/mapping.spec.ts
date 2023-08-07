@@ -32,7 +32,7 @@ describe('resolve mapped modules', () => {
             type: RegistryType.alias,
             scope: fixture('mapping/node_modules/@lwc/lwc-modules-bar/node_modules/common-util'),
             entry: fixture(
-                'mapping/node_modules/@lwc/lwc-modules-bar/node_modules/common-util/src/common-util.js'
+                'mapping/node_modules/@lwc/lwc-modules-bar/node_modules/common-util/src/common-util.js',
             ),
         });
     });
@@ -44,8 +44,8 @@ describe('resolve mapped modules', () => {
         expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
-                'mapping/node_modules/@lwc/multi-module-mapping'
-            )}". Unable to apply mapping: The specifier "non-existing" is not exposed by the npm module`
+                'mapping/node_modules/@lwc/multi-module-mapping',
+            )}". Unable to apply mapping: The specifier "non-existing" is not exposed by the npm module`,
         );
     });
 });

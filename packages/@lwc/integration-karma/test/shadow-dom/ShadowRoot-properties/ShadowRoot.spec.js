@@ -76,19 +76,19 @@ if (!process.env.NATIVE_SHADOW) {
 
         it(`should throw when invoking ShadowRoot.getSelection`, () => {
             expect(() => elm.shadowRoot.getSelection()).toThrowError(
-                `Disallowed method "getSelection" on ShadowRoot.`
+                `Disallowed method "getSelection" on ShadowRoot.`,
             );
         });
 
         it(`should throw when invoking ShadowRoot.cloneNode`, () => {
             expect(() => elm.shadowRoot.cloneNode()).toThrowError(
-                `Disallowed method "cloneNode" on ShadowRoot.`
+                `Disallowed method "cloneNode" on ShadowRoot.`,
             );
         });
 
         it(`should throw when invoking ShadowRoot.getElementById`, () => {
             expect(() => elm.shadowRoot.getElementById()).toThrowError(
-                `Disallowed method "getElementById" on ShadowRoot.`
+                `Disallowed method "getElementById" on ShadowRoot.`,
             );
         });
     });

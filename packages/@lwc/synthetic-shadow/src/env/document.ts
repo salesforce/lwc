@@ -8,7 +8,7 @@ import { getOwnPropertyDescriptor } from '@lwc/shared';
 
 const DocumentPrototypeActiveElement: (this: Document) => Element | null = getOwnPropertyDescriptor(
     Document.prototype,
-    'activeElement'
+    'activeElement',
 )!.get!;
 
 const elementFromPoint: (x: number, y: number) => Element | null =
@@ -20,7 +20,7 @@ const elementsFromPoint: (x: number, y: number) => Element[] = Document.prototyp
 // of a node in a template doesn't have a default view: https://jsfiddle.net/hv9z0q5a/
 const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescriptor(
     Document.prototype,
-    'defaultView'
+    'defaultView',
 )!.get!;
 
 const {

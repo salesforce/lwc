@@ -13,7 +13,7 @@ const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListene
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
 
 function isEventListenerOrEventListenerObject(
-    fnOrObj: unknown
+    fnOrObj: unknown,
 ): fnOrObj is EventListenerOrEventListenerObject {
     return (
         isFunction(fnOrObj) ||
@@ -26,7 +26,7 @@ function isEventListenerOrEventListenerObject(
 export function shouldInvokeListener(
     event: Event,
     target: EventTarget,
-    currentTarget: EventTarget
+    currentTarget: EventTarget,
 ) {
     // Subsequent logic assumes that `currentTarget` must be contained in the composed path for the listener to be
     // invoked, but this is not always the case. `composedPath()` will sometimes return an empty array, even when the
@@ -58,7 +58,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     isFalse(isSyntheticShadowHost(currentTarget)),
-                    'This routine should not be used to wrap event listeners for host elements and shadow roots.'
+                    'This routine should not be used to wrap event listeners for host elements and shadow roots.',
                 );
             }
 

@@ -14,10 +14,10 @@ describe('Light DOM styling', () => {
         const getColor = (elm) => getComputedStyle(elm).color;
 
         expect(getColor(elm.shadowRoot.querySelector('x-one .my-fancy-class'))).toEqual(
-            'rgb(255, 0, 0)'
+            'rgb(255, 0, 0)',
         );
         expect(getColor(elm.shadowRoot.querySelector('x-two .my-fancy-class'))).toEqual(
-            'rgb(255, 0, 0)'
+            'rgb(255, 0, 0)',
         );
         // synthetic shadow can't do this kind of style encapsulation
         if (process.env.NATIVE_SHADOW) {
@@ -25,8 +25,8 @@ describe('Light DOM styling', () => {
                 getColor(
                     elm.shadowRoot
                         .querySelector('x-shadow')
-                        .shadowRoot.querySelector('.my-fancy-class')
-                )
+                        .shadowRoot.querySelector('.my-fancy-class'),
+                ),
             ).toEqual('rgb(0, 0, 0)');
         }
 
@@ -41,7 +41,7 @@ describe('Light DOM styling', () => {
 
             expect(getColor(two.querySelector('.my-fancy-class'))).toEqual('rgb(0, 0, 0)');
             expect(getColor(shadow.shadowRoot.querySelector('.my-fancy-class'))).toEqual(
-                'rgb(0, 0, 0)'
+                'rgb(0, 0, 0)',
             );
         }
     });

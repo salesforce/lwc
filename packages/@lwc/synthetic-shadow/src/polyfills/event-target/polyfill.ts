@@ -21,7 +21,7 @@ function patchedAddEventListener(
     this: EventTarget,
     type: string,
     listener: EventListenerOrEventListenerObject,
-    optionsOrCapture?: boolean | AddEventListenerOptions
+    optionsOrCapture?: boolean | AddEventListenerOptions,
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
@@ -51,7 +51,7 @@ function patchedRemoveEventListener(
     this: EventTarget,
     _type: string,
     _listener: EventListenerOrEventListenerObject,
-    _optionsOrCapture?: boolean | EventListenerOptions
+    _optionsOrCapture?: boolean | EventListenerOptions,
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array

@@ -40,14 +40,14 @@ import * as t from '../shared/estree';
  * ```
  */
 export function optimizeStaticExpressions(
-    templateFn: t.FunctionDeclaration
+    templateFn: t.FunctionDeclaration,
 ): Array<t.FunctionDeclaration | t.VariableDeclaration> {
     const result: Array<t.FunctionDeclaration | t.VariableDeclaration> = [];
     const keysToVariableNames = new Map();
 
     // Return true if this node is an object/array that is fully static
     function isStaticObjectOrArray(
-        node: t.BaseNode
+        node: t.BaseNode,
     ): node is t.ObjectExpression | t.ArrayExpression {
         if (t.isObjectExpression(node)) {
             return node.properties.every((prop) => {

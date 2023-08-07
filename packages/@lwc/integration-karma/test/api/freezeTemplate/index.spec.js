@@ -29,7 +29,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.stylesheetToken = 'newToken';
         }).toLogWarningDev(
-            /Mutating the "stylesheetToken" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheetToken" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.stylesheetToken).toEqual('newToken');
@@ -56,7 +56,7 @@ describe('freezeTemplate', () => {
                 shadowAttribute: 'newToken',
             };
         }).toLogWarningDev(
-            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.stylesheetTokens).toEqual({
@@ -83,7 +83,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.stylesheets = [newStylesheet];
         }).toLogWarningDev(
-            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.stylesheets.length).toEqual(1);
@@ -108,7 +108,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.stylesheets.push(newStylesheet);
         }).toLogWarningDev(
-            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         window.__lwcResetAlreadyLoggedMessages();
@@ -120,7 +120,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.stylesheets.pop();
         }).toLogWarningDev(
-            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.stylesheets.length).toEqual(1);
@@ -144,7 +144,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.stylesheets[1].push(newStylesheet);
         }).toLogWarningDev(
-            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/,
         );
         expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
@@ -163,7 +163,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.slots = newSlots;
         }).toLogWarningDev(
-            /Mutating the "slots" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "slots" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.slots).toBe(newSlots);
@@ -182,7 +182,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             template.renderMode = undefined;
         }).toLogWarningDev(
-            /Mutating the "renderMode" property on a template is deprecated and will be removed in a future version of LWC/
+            /Mutating the "renderMode" property on a template is deprecated and will be removed in a future version of LWC/,
         );
 
         expect(template.renderMode).toBe(undefined);
@@ -201,7 +201,7 @@ describe('freezeTemplate', () => {
         expect(() => {
             stylesheet.$scoped$ = true;
         }).toLogWarningDev(
-            /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
+            /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./,
         );
         expect(dispatcher.calls.allArgs()).toEqual([
             ['StylesheetMutation', { propertyName: '$scoped$' }],

@@ -55,7 +55,7 @@ function transform(source: string, opts = {}) {
     // Replace the latest API version as well
     code = code.replace(
         new RegExp(`apiVersion: ${HIGHEST_API_VERSION}`, 'g'),
-        `apiVersion: 9999999`
+        `apiVersion: 9999999`,
     );
 
     return code;
@@ -88,6 +88,6 @@ describe('fixtures', () => {
                 'expected.js': result,
                 'error.json': error,
             };
-        }
+        },
     );
 });

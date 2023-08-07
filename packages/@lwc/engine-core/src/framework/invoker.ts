@@ -31,7 +31,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
         () => {
             callHook(component, fn, args);
         },
-        noop
+        noop,
     );
 }
 
@@ -57,7 +57,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // invoked by accessing the component on the vm.
         if (vmBeingConstructed.component !== result) {
             throw new TypeError(
-                'Invalid component constructor, the class should extend LightningElement.'
+                'Invalid component constructor, the class should extend LightningElement.',
             );
         }
     } catch (e) {
@@ -104,7 +104,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
             // post
             isInvokingRender = isRenderBeingInvokedInception;
             setVMBeingRendered(vmBeingRenderedInception);
-        }
+        },
     );
     // If render() invocation failed, process errorCallback in boundary and return an empty template
     return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
@@ -114,7 +114,7 @@ export function invokeEventListener(
     vm: VM,
     fn: EventListener,
     thisValue: LightningElement | undefined,
-    event: Event
+    event: Event,
 ) {
     const { callHook, owner } = vm;
     runWithBoundaryProtection(
@@ -126,11 +126,11 @@ export function invokeEventListener(
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
                     isFunction(fn),
-                    `Invalid event handler for event '${event.type}' on ${vm}.`
+                    `Invalid event handler for event '${event.type}' on ${vm}.`,
                 );
             }
             callHook(thisValue, fn, [event]);
         },
-        noop
+        noop,
     );
 }

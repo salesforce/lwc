@@ -90,8 +90,8 @@ describe('reactivity in scoped slots', () => {
         function verifyContentAndCallbacks(expectedContent, expectedCallbacks) {
             expect(
                 [...elm.shadowRoot.querySelectorAll('x-slotted-with-callbacks')].map(
-                    (_) => _.shadowRoot.innerHTML
-                )
+                    (_) => _.shadowRoot.innerHTML,
+                ),
             ).toEqual(expectedContent);
             expect(window.timingBuffer).toEqual(expectedCallbacks);
         }
@@ -114,7 +114,7 @@ describe('reactivity in scoped slots', () => {
                         'child-39:disconnectedCallback', // Removed list entry is disconnected
                         'childSlotTagWithKey:renderedCallback', // slot receiver has been rendered
                         'parent:renderedCallback', // item.id is being observed in parent's template, so call its renderedCallback
-                    ]
+                    ],
                 );
 
                 // reset timing buffer before next rerender
@@ -129,7 +129,7 @@ describe('reactivity in scoped slots', () => {
                         'child-38:renderedCallback',
                         'childSlotTagWithKey:renderedCallback',
                         'parent:renderedCallback',
-                    ]
+                    ],
                 );
 
                 // reset timing buffer before next rerender
@@ -146,7 +146,7 @@ describe('reactivity in scoped slots', () => {
                         'child-37:renderedCallback',
                         'child-38:disconnectedCallback',
                         'childSlotTagWithKey:renderedCallback',
-                    ]
+                    ],
                 );
             });
     });
@@ -202,7 +202,7 @@ describe('reactivity in scoped slots', () => {
         it('slot content can contain if:true directive and is reactive', () => {
             function verifySlotContent(expectedContent) {
                 expect([...elm.shadowRoot.querySelectorAll('div')].map((_) => _.innerHTML)).toEqual(
-                    expectedContent
+                    expectedContent,
                 );
             }
             const elm = createElement('x-parent', { is: ParentWithConditionalSlotContent });

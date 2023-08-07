@@ -188,7 +188,7 @@ const nativeGetRootNode = Node.prototype.getRootNode;
  * else, assume we are working in non-native shadow mode and climb using parentNode
  */
 const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(
-    nativeGetRootNode
+    nativeGetRootNode,
 )
     ? nativeGetRootNode
     : function (this: Node): Node {
@@ -418,7 +418,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
     defineProperty(
         HTMLElement.prototype,
         'contains',
-        getOwnPropertyDescriptor(Node.prototype, 'contains')!
+        getOwnPropertyDescriptor(Node.prototype, 'contains')!,
     );
 }
 
@@ -426,6 +426,6 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
     defineProperty(
         HTMLElement.prototype,
         'parentElement',
-        getOwnPropertyDescriptor(Node.prototype, 'parentElement')!
+        getOwnPropertyDescriptor(Node.prototype, 'parentElement')!,
     );
 }

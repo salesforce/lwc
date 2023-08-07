@@ -15,7 +15,7 @@ describe('Tab navigation when tabindex 0', () => {
     it('should focus on custom element when tabbing forward from a sibling element', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tab-navigation-tabindex-zero',
-            '.second-outside'
+            '.second-outside',
         );
         await secondOutside.click();
         await browser.keys(['Tab']);
@@ -32,7 +32,7 @@ describe('Tab navigation when tabindex 0', () => {
     it('should focus on internal element when tabbing forward twice from a sibling element', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tab-navigation-tabindex-zero',
-            '.second-outside'
+            '.second-outside',
         );
         await secondOutside.click();
         await browser.keys(['Tab']);
@@ -45,7 +45,7 @@ describe('Tab navigation when tabindex 0', () => {
     it('should focus on internal element when tabbing backwards from a sibling element', async () => {
         const thirdOutside = await browser.shadowDeep$(
             'integration-tab-navigation-tabindex-zero',
-            '.third-outside'
+            '.third-outside',
         );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
@@ -58,7 +58,7 @@ describe('Tab navigation when tabindex 0', () => {
         const firstInside = await browser.shadowDeep$(
             'integration-tab-navigation-tabindex-zero',
             'integration-child',
-            '.first-inside'
+            '.first-inside',
         );
         await firstInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);

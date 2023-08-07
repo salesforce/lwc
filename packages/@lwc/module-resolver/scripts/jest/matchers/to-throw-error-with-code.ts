@@ -12,7 +12,7 @@ export function toThrowErrorWithCode(
     this: MatcherUtils,
     received: any,
     code: string,
-    message?: string
+    message?: string,
 ) {
     let error: Error | undefined;
 

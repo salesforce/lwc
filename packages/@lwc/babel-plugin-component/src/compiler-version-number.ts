@@ -24,7 +24,7 @@ export default function compilerVersionNumber({ types: t }: BabelAPI): Visitor<L
                     path.node.body[path.node.body.length - 1],
                     'trailing',
                     LWC_VERSION_COMMENT,
-                    /* line */ false
+                    /* line */ false,
                 );
             } else {
                 // E.g. `class Foo extends Lightning Element { bar = 'baz'; /*LWC compiler v1.2.3*/ }`

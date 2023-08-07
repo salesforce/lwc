@@ -70,7 +70,7 @@ describe('Table diffing', () => {
 
         const getRowContents = () => {
             return [...elm.shadowRoot.querySelectorAll('x-row')].map((row) =>
-                parseInt(row.shadowRoot.querySelector('span').textContent, 10)
+                parseInt(row.shadowRoot.querySelector('span').textContent, 10),
             );
         };
 
@@ -96,7 +96,7 @@ describe('Table diffing', () => {
 
         const getRowContents = () => {
             return [...elm.shadowRoot.querySelectorAll('x-row')].map((row) =>
-                parseInt(row.shadowRoot.querySelector('span').textContent, 10)
+                parseInt(row.shadowRoot.querySelector('span').textContent, 10),
             );
         };
         expect(getRowContents()).toEqual(ids);

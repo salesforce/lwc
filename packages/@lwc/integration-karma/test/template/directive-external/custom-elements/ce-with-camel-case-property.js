@@ -3,6 +3,6 @@ if (!process.env.COMPAT) {
         'ce-with-camel-case-property',
         class extends HTMLElement {
             camelCaseProp;
-        }
+        },
     );
 }

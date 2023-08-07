@@ -21,7 +21,7 @@ describe('Event.defaultPrevented', () => {
                 bubbles: true,
                 cancelable: true,
                 composed: true,
-            })
+            }),
         );
     });
 
@@ -40,7 +40,7 @@ describe('Event.defaultPrevented', () => {
                 bubbles: true,
                 cancelable: true,
                 composed: true,
-            })
+            }),
         );
     });
 
@@ -62,7 +62,7 @@ describe('Event.defaultPrevented', () => {
                 bubbles: true,
                 cancelable: false,
                 composed: true,
-            })
+            }),
         );
     });
 });

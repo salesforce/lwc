@@ -17,7 +17,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         const span = await browser.shadowDeep$(
             'integration-delegates-focus-nested-focusable-custom-elements',
             'integration-parent',
-            '.focusable-span'
+            '.focusable-span',
         );
         await span.click();
         const active = await browser.activeElementShadowDeep();

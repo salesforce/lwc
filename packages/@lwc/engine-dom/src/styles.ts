@@ -94,7 +94,7 @@ function createConstructableStylesheet(content: string) {
 function insertConstructableStylesheet(
     content: string,
     target: ShadowRoot | Document,
-    cacheData: ConstructableStylesheetCacheData
+    cacheData: ConstructableStylesheetCacheData,
 ) {
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
@@ -105,7 +105,7 @@ function insertConstructableStylesheet(
 function insertStyleElement(
     content: string,
     target: ShadowRoot | HTMLHeadElement,
-    cacheData: StyleElementCacheData
+    cacheData: StyleElementCacheData,
 ) {
     const elm = createStyleElement(content, cacheData);
     target.appendChild(elm);
@@ -164,7 +164,7 @@ function insertLocalStylesheet(content: string, target: ShadowRoot) {
         insertConstructableStylesheet(
             content,
             target,
-            cacheData as ConstructableStylesheetCacheData
+            cacheData as ConstructableStylesheetCacheData,
         );
     } else {
         // Fall back to <style> element

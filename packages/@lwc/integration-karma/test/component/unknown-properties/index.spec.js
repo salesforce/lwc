@@ -9,7 +9,7 @@ describe('unknown properties', () => {
         }).toLogWarningDev(
             'Error: [LWC warn]: Unknown public property "propertyThatDefinitelyDoesNotExist" of element <x-child>. ' +
                 'This is either a typo on the corresponding attribute "property-that-definitely-does-not-exist", or ' +
-                'the attribute does not exist in this browser or DOM implementation.'
+                'the attribute does not exist in this browser or DOM implementation.',
         );
     });
 });

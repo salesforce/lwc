@@ -20,7 +20,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         const activeFromDocument = await browser.activeElement();
         assert.strictEqual(
             await activeFromDocument.getTagName(),
-            'integration-delegates-focus-false'
+            'integration-delegates-focus-false',
         );
 
         const activeFromShadow = await browser.activeElementShadowDeep();

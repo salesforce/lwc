@@ -14,7 +14,7 @@ function dispatchEventWithLog(target, nodes, event) {
             node.addEventListener(event.type, (event) => {
                 log.push([node, event.target, event.composedPath()]);
             });
-        }
+        },
     );
 
     target.dispatchEvent(event);

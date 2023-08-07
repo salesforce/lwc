@@ -33,7 +33,7 @@ describe('lwc:spread', () => {
         // eslint-disable-next-line no-console
         expect(console.log).toHaveBeenCalledWith(
             'template click called',
-            jasmine.any(Object) /* component */
+            jasmine.any(Object) /* component */,
         );
     });
 
@@ -66,14 +66,14 @@ describe('lwc:spread', () => {
     });
     it('should assign props to dynamic elements using lwc:dynamic', () => {
         expect(
-            elm.shadowRoot.querySelector('x-cmp').shadowRoot.querySelector('span').textContent
+            elm.shadowRoot.querySelector('x-cmp').shadowRoot.querySelector('span').textContent,
         ).toEqual('Name: Dynamic');
     });
     it('should assign props to dynamic elements', () => {
         expect(
             elm.shadowRoot
                 .querySelector('[data-id="lwc-component"]')
-                .shadowRoot.querySelector('span').textContent
+                .shadowRoot.querySelector('span').textContent,
         ).toEqual('Name: Dynamic');
     });
 });

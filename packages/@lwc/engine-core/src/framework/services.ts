@@ -14,7 +14,7 @@ type ServiceCallback = (
     component: object,
     data: VNodeData,
     def: ComponentDef,
-    context: Context
+    context: Context,
 ) => void;
 
 interface ServiceDef {
@@ -40,7 +40,7 @@ export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isObject(service),
-            `Invalid service declaration, ${service}: service must be an object`
+            `Invalid service declaration, ${service}: service must be an object`,
         );
     }
     for (let i = 0; i < hooks.length; ++i) {
@@ -59,7 +59,7 @@ export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isArray(cbs) && cbs.length > 0,
-            `Optimize invokeServiceHook() to be invoked only when needed`
+            `Optimize invokeServiceHook() to be invoked only when needed`,
         );
     }
     const { component, def, context } = vm;

@@ -16,7 +16,7 @@ describe('Internal tab navigation when tabindex -1', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-internal',
             'integration-child',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         await browser.keys(['Tab']);
@@ -29,7 +29,7 @@ describe('Internal tab navigation when tabindex -1', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-internal',
             'integration-child',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);

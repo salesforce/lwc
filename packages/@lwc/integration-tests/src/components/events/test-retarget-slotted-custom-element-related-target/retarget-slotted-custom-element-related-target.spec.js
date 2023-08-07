@@ -17,7 +17,7 @@ describe('Retarget relatedTarget', () => {
         const target = await browser.shadowDeep$(
             'integration-retarget-slotted-custom-element-related-target',
             'integration-child',
-            '.child-input'
+            '.child-input',
         );
         await target.focus();
         await browser.keys(['Shift', 'Tab', 'Shift']);
@@ -25,7 +25,7 @@ describe('Retarget relatedTarget', () => {
         const indicator = await browser.shadowDeep$(
             'integration-retarget-slotted-custom-element-related-target',
             'integration-parent',
-            '.related-target-tagname'
+            '.related-target-tagname',
         );
         assert.strictEqual(await indicator.getText(), 'integration-child');
     });

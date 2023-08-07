@@ -17,7 +17,7 @@ describe('when the shadow already contains the active element', () => {
         const input = await browser.shadowDeep$(
             'integration-noop-when-already-focused',
             'integration-child',
-            'input'
+            'input',
         );
         await input.click();
 

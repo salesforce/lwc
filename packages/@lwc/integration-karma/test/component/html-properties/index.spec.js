@@ -192,7 +192,7 @@ describe('global html properties', () => {
                     // In the case of non-original descriptors, the attribute is not set
                     const expectedNumAddedAttributes = isOriginalDescriptor ? 1 : 0;
                     expect(elm.attributes.length).toEqual(
-                        initialNumAttributes + expectedNumAddedAttributes
+                        initialNumAttributes + expectedNumAddedAttributes,
                     );
                 });
             } else {

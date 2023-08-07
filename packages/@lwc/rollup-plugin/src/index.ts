@@ -108,7 +108,7 @@ function appendAliasSpecifierQueryParam(id: string, specifier: string): string {
 function transformWarningToRollupWarning(
     warning: CompilerDiagnostic,
     src: string,
-    id: string
+    id: string,
 ): RollupWarning {
     // For reference on RollupWarnings, a good example is:
     // https://github.com/rollup/plugins/blob/53776ee/packages/typescript/src/diagnostics/toWarning.ts
@@ -170,14 +170,14 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
                     if (input.length > 1) {
                         this.warn(
-                            `The "rootDir" option should be explicitly set when passing an "input" array to rollup. The "rootDir" option is implicitly resolved to ${rootDir}.`
+                            `The "rootDir" option should be explicitly set when passing an "input" array to rollup. The "rootDir" option is implicitly resolved to ${rootDir}.`,
                         );
                     }
                 } else {
                     rootDir = path.dirname(path.resolve(Object.values(input)[0]));
 
                     this.warn(
-                        `The "rootDir" option should be explicitly set when passing "input" object to rollup. The "rootDir" option is implicitly resolved to ${rootDir}.`
+                        `The "rootDir" option should be explicitly set when passing "input" object to rollup. The "rootDir" option is implicitly resolved to ${rootDir}.`,
                     );
                 }
             } else {
@@ -203,13 +203,13 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
                     const importeeResolvedPath = path.resolve(
                         path.dirname(importerFilename),
-                        importee
+                        importee,
                     );
                     // importeeAbsPath will contain query params because they are attached to importeeExt.
                     // ex: myfile.scoped.css?scoped=true
                     const importeeAbsPath = pluginUtils.addExtension(
                         importeeResolvedPath,
-                        importeeExt
+                        importeeExt,
                     );
 
                     // remove query params
@@ -287,7 +287,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                     this.warn(
                         `The imported CSS file ${filename} does not exist: Importing it as undefined. ` +
                             `This behavior may be removed in a future version of LWC. Please avoid importing a ` +
-                            `CSS file that does not exist.`
+                            `CSS file that does not exist.`,
                     );
                     return EMPTY_IMPLICIT_CSS_CONTENT;
                 }

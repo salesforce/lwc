@@ -14,7 +14,7 @@ export function styledComponentBenchmark(
     name,
     numComponents,
     componentOrComponents,
-    { after, benchmark, run }
+    { after, benchmark, run },
 ) {
     benchmark(name, () => {
         const elms = [];

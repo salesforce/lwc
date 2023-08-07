@@ -41,7 +41,7 @@ describe('restrictions', () => {
             expect(() => {
                 elm.addEventListener('click', () => {}, { once: true });
             }).toLogErrorDev(
-                'Error: [LWC error]: The `addEventListener` method in `LightningElement` does not support any options.\n'
+                'Error: [LWC error]: The `addEventListener` method in `LightningElement` does not support any options.\n',
             );
         });
     });
@@ -51,7 +51,7 @@ describe('restrictions', () => {
             expect(() => {
                 elm.dispatchEventWithInvalidName();
             }).toLogErrorDev(
-                'Error: [LWC error]: Invalid event type "UPPERCASE-AND-HYPHENS" dispatched in element <x-component>. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores\n'
+                'Error: [LWC error]: Invalid event type "UPPERCASE-AND-HYPHENS" dispatched in element <x-component>. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores\n',
             );
         });
 
@@ -102,7 +102,7 @@ describe('restrictions', () => {
                 }
 
                 expected.toThrowError(
-                    /Invalid attempt to set outerHTML on Element|This element's parent is of type '#document-fragment', which is not an element node|Cannot set outerHTML on element because its parent is not an Element/
+                    /Invalid attempt to set outerHTML on Element|This element's parent is of type '#document-fragment', which is not an element node|Cannot set outerHTML on element because its parent is not an Element/,
                 );
             }).toLogErrorDev(/Invalid attempt to set outerHTML on Element/);
         });

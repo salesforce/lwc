@@ -65,7 +65,7 @@ export function isLiteral(node: t.BaseNode): node is t.Literal {
 export function memberExpression(
     object: t.MemberExpression['object'],
     property: t.MemberExpression['property'],
-    config?: Partial<t.MemberExpression>
+    config?: Partial<t.MemberExpression>,
 ): t.MemberExpression {
     return {
         type: 'MemberExpression',
@@ -80,7 +80,7 @@ export function memberExpression(
 export function callExpression(
     callee: t.CallExpression['callee'],
     args: t.CallExpression['arguments'],
-    config?: Partial<t.CallExpression>
+    config?: Partial<t.CallExpression>,
 ): t.CallExpression {
     return {
         type: 'CallExpression',
@@ -93,7 +93,7 @@ export function callExpression(
 
 export function literal(
     value: t.SimpleLiteral['value'],
-    config?: Partial<t.SimpleLiteral>
+    config?: Partial<t.SimpleLiteral>,
 ): t.SimpleLiteral {
     return {
         type: 'Literal',
@@ -106,7 +106,7 @@ export function conditionalExpression(
     test: t.ConditionalExpression['test'],
     consequent: t.ConditionalExpression['consequent'],
     alternate: t.ConditionalExpression['alternate'],
-    config?: Partial<t.ConditionalExpression>
+    config?: Partial<t.ConditionalExpression>,
 ): t.ConditionalExpression {
     return {
         type: 'ConditionalExpression',
@@ -120,7 +120,7 @@ export function conditionalExpression(
 export function unaryExpression(
     operator: t.UnaryExpression['operator'],
     argument: t.UnaryExpression['argument'],
-    config?: Partial<t.UnaryExpression>
+    config?: Partial<t.UnaryExpression>,
 ): t.UnaryExpression {
     return {
         type: 'UnaryExpression',
@@ -135,7 +135,7 @@ export function binaryExpression(
     operator: t.BinaryExpression['operator'],
     left: t.BinaryExpression['left'],
     right: t.BinaryExpression['right'],
-    config?: Partial<t.BinaryExpression>
+    config?: Partial<t.BinaryExpression>,
 ): t.BinaryExpression {
     return {
         type: 'BinaryExpression',
@@ -150,7 +150,7 @@ export function logicalExpression(
     operator: t.LogicalExpression['operator'],
     left: t.LogicalExpression['left'],
     right: t.LogicalExpression['right'],
-    config?: Partial<t.LogicalExpression>
+    config?: Partial<t.LogicalExpression>,
 ): t.LogicalExpression {
     return {
         type: 'LogicalExpression',
@@ -165,7 +165,7 @@ export function assignmentExpression(
     operator: t.AssignmentExpression['operator'],
     left: t.AssignmentExpression['left'],
     right: t.AssignmentExpression['right'],
-    config?: Partial<t.AssignmentExpression>
+    config?: Partial<t.AssignmentExpression>,
 ): t.AssignmentExpression {
     return {
         type: 'AssignmentExpression',
@@ -179,7 +179,7 @@ export function assignmentExpression(
 export function property(
     key: t.Property['key'],
     value: t.Property['value'],
-    config?: Partial<t.Property>
+    config?: Partial<t.Property>,
 ): t.Property {
     return {
         type: 'Property',
@@ -196,7 +196,7 @@ export function property(
 export function assignmentProperty(
     key: t.AssignmentProperty['key'],
     value: t.AssignmentProperty['value'],
-    config?: Partial<t.AssignmentProperty>
+    config?: Partial<t.AssignmentProperty>,
 ): t.AssignmentProperty {
     return {
         type: 'Property',
@@ -212,7 +212,7 @@ export function assignmentProperty(
 
 export function objectExpression(
     properties: t.ObjectExpression['properties'],
-    config?: Partial<t.ObjectExpression>
+    config?: Partial<t.ObjectExpression>,
 ): t.ObjectExpression {
     return {
         type: 'ObjectExpression',
@@ -223,7 +223,7 @@ export function objectExpression(
 
 export function objectPattern(
     properties: t.ObjectPattern['properties'],
-    config?: Partial<t.ObjectPattern>
+    config?: Partial<t.ObjectPattern>,
 ): t.ObjectPattern {
     return {
         type: 'ObjectPattern',
@@ -234,7 +234,7 @@ export function objectPattern(
 
 export function arrayExpression(
     elements: t.ArrayExpression['elements'],
-    config?: Partial<t.ArrayExpression>
+    config?: Partial<t.ArrayExpression>,
 ): t.ArrayExpression {
     return {
         type: 'ArrayExpression',
@@ -245,7 +245,7 @@ export function arrayExpression(
 
 export function expressionStatement(
     expression: t.ExpressionStatement['expression'],
-    config?: Partial<t.ExpressionStatement>
+    config?: Partial<t.ExpressionStatement>,
 ): t.ExpressionStatement {
     return {
         type: 'ExpressionStatement',
@@ -256,7 +256,7 @@ export function expressionStatement(
 
 export function taggedTemplateExpression(
     tag: Expression,
-    quasi: t.TemplateLiteral
+    quasi: t.TemplateLiteral,
 ): t.TaggedTemplateExpression {
     return {
         type: 'TaggedTemplateExpression',
@@ -267,7 +267,7 @@ export function taggedTemplateExpression(
 
 export function templateLiteral(
     quasis: t.TemplateElement[],
-    expressions: t.Expression[]
+    expressions: t.Expression[],
 ): t.TemplateLiteral {
     return {
         type: 'TemplateLiteral',
@@ -288,7 +288,7 @@ export function functionExpression(
     id: null | t.Identifier,
     params: t.FunctionExpression['params'],
     body: t.FunctionExpression['body'],
-    config?: Partial<t.FunctionExpression>
+    config?: Partial<t.FunctionExpression>,
 ): t.FunctionExpression {
     return {
         type: 'FunctionExpression',
@@ -303,7 +303,7 @@ export function functionDeclaration(
     id: null | t.Identifier,
     params: t.FunctionDeclaration['params'],
     body: t.FunctionDeclaration['body'],
-    config?: Partial<t.FunctionDeclaration>
+    config?: Partial<t.FunctionDeclaration>,
 ): t.FunctionDeclaration {
     return {
         type: 'FunctionDeclaration',
@@ -316,7 +316,7 @@ export function functionDeclaration(
 
 export function blockStatement(
     body: t.BlockStatement['body'],
-    config?: Partial<t.BlockStatement>
+    config?: Partial<t.BlockStatement>,
 ): t.BlockStatement {
     return {
         type: 'BlockStatement',
@@ -327,7 +327,7 @@ export function blockStatement(
 
 export function returnStatement(
     argument: t.ReturnStatement['argument'],
-    config?: Partial<t.ReturnStatement>
+    config?: Partial<t.ReturnStatement>,
 ): t.ReturnStatement {
     return {
         type: 'ReturnStatement',
@@ -339,7 +339,7 @@ export function returnStatement(
 export function variableDeclarator(
     id: t.VariableDeclarator['id'],
     init: t.VariableDeclarator['init'],
-    config?: Partial<t.VariableDeclarator>
+    config?: Partial<t.VariableDeclarator>,
 ): t.VariableDeclarator {
     return {
         type: 'VariableDeclarator',
@@ -352,7 +352,7 @@ export function variableDeclarator(
 export function variableDeclaration(
     kind: t.VariableDeclaration['kind'],
     declarations: t.VariableDeclaration['declarations'],
-    config?: Partial<t.VariableDeclaration>
+    config?: Partial<t.VariableDeclaration>,
 ): t.VariableDeclaration {
     return {
         type: 'VariableDeclaration',
@@ -365,7 +365,7 @@ export function variableDeclaration(
 export function importDeclaration(
     specifiers: t.ImportDeclaration['specifiers'],
     source: t.ImportDeclaration['source'],
-    config?: Partial<t.ImportDeclaration>
+    config?: Partial<t.ImportDeclaration>,
 ): t.ImportDeclaration {
     return {
         type: 'ImportDeclaration',
@@ -377,7 +377,7 @@ export function importDeclaration(
 
 export function importDefaultSpecifier(
     local: t.ImportDefaultSpecifier['local'],
-    config?: Partial<t.ImportDefaultSpecifier>
+    config?: Partial<t.ImportDefaultSpecifier>,
 ): t.ImportDefaultSpecifier {
     return {
         type: 'ImportDefaultSpecifier',
@@ -389,7 +389,7 @@ export function importDefaultSpecifier(
 export function importSpecifier(
     imported: t.ImportSpecifier['imported'],
     local: t.ImportSpecifier['local'],
-    config?: Partial<t.ImportSpecifier>
+    config?: Partial<t.ImportSpecifier>,
 ): t.ImportSpecifier {
     return {
         type: 'ImportSpecifier',
@@ -400,7 +400,7 @@ export function importSpecifier(
 }
 export function exportDefaultDeclaration(
     declaration: t.ExportDefaultDeclaration['declaration'],
-    config?: Partial<t.ExportDefaultDeclaration>
+    config?: Partial<t.ExportDefaultDeclaration>,
 ): t.ExportDefaultDeclaration {
     return {
         type: 'ExportDefaultDeclaration',

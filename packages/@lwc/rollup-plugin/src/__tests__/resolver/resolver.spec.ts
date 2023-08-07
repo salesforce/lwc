@@ -124,7 +124,7 @@ describe('resolver', () => {
                     this.foo = 'bar';
                 }
             }
-        `.replace(/\s/g, '')
+        `.replace(/\s/g, ''),
         );
     });
 
@@ -144,7 +144,7 @@ describe('resolver', () => {
                             const fullImportee = path.resolve(importerDir, importee);
                             const fullImporteeWithoutQuery = path.resolve(
                                 importerDir,
-                                importeeWithoutQuery
+                                importeeWithoutQuery,
                             );
                             if (fs.existsSync(fullImporteeWithoutQuery)) {
                                 // mimics @rollup/plugin-node-resolve, which can resolve the ID with the query param
@@ -179,7 +179,7 @@ describe('resolver', () => {
 
         expect(warnings).toHaveLength(1);
         expect(warnings[0].message).toMatch(
-            /The imported CSS file .+\/stylesheet.css does not exist: Importing it as undefined./
+            /The imported CSS file .+\/stylesheet.css does not exist: Importing it as undefined./,
         );
         expect(output[0].code).toContain('var stylesheet = undefined;');
     });

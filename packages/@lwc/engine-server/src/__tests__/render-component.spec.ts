@@ -12,7 +12,7 @@ class Test extends LightningElement {}
 describe('renderComponent', () => {
     it('returns the rendered tree as string', () => {
         expect(renderComponent('x-test', Test)).toBe(
-            '<x-test><template shadowroot="open"></template></x-test>'
+            '<x-test><template shadowroot="open"></template></x-test>',
         );
     });
 
@@ -20,26 +20,26 @@ describe('renderComponent', () => {
         'asserts the first parameter is a string (type: %p)',
         (value) => {
             expect(() => renderComponent(value as any, Test, {})).toThrow(
-                `"renderComponent" expects a string as the first parameter but instead received ${value}.`
+                `"renderComponent" expects a string as the first parameter but instead received ${value}.`,
             );
-        }
+        },
     );
 
     it.each([undefined, null, 1, 'test', {}])(
         'asserts the seconds parameter is a function (type: %p)',
         (value) => {
             expect(() => renderComponent('x-test', value as any, {})).toThrow(
-                `"renderComponent" expects a valid component constructor as the second parameter but instead received ${value}.`
+                `"renderComponent" expects a valid component constructor as the second parameter but instead received ${value}.`,
             );
-        }
+        },
     );
 
     it.each([null, 1, 'test', () => {}])(
         'asserts the third parameter is an object (type: %p)',
         (value) => {
             expect(() => renderComponent('x-test', Test, value as any)).toThrow(
-                `"renderComponent" expects an object as the third parameter but instead received ${value}.`
+                `"renderComponent" expects an object as the third parameter but instead received ${value}.`,
             );
-        }
+        },
     );
 });

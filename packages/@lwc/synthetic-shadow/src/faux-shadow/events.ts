@@ -55,7 +55,7 @@ function getEventHandler(listener: EventListenerOrEventListenerObject): EventLis
 }
 
 function isEventListenerOrEventListenerObject(
-    listener: any
+    listener: any,
 ): listener is EventListenerOrEventListenerObject {
     return isFunction(listener) || isFunction(listener?.handleEvent);
 }
@@ -84,7 +84,7 @@ const shadowRootEventListenerMap: WeakMap<EventListenerOrEventListenerObject, Ma
     new WeakMap();
 
 function getManagedShadowRootListener(
-    listener: EventListenerOrEventListenerObject
+    listener: EventListenerOrEventListenerObject,
 ): ManagedListener {
     if (!isEventListenerOrEventListenerObject(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
@@ -117,7 +117,7 @@ const customElementEventListenerMap: WeakMap<EventListenerOrEventListenerObject,
     new WeakMap();
 
 function getManagedCustomElementListener(
-    listener: EventListenerOrEventListenerObject
+    listener: EventListenerOrEventListenerObject,
 ): ManagedListener {
     if (!isEventListenerOrEventListenerObject(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
@@ -234,14 +234,14 @@ export function addCustomElementEventListener(
     this: Element,
     type: string,
     listener: unknown,
-    _options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions,
 ) {
     if (process.env.NODE_ENV !== 'production') {
         if (!isEventListenerOrEventListenerObject(listener)) {
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
-                    this
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                    this,
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`,
             );
         }
     }
@@ -255,7 +255,7 @@ export function removeCustomElementEventListener(
     this: Element,
     type: string,
     listener: unknown,
-    _options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions,
 ) {
     if (isEventListenerOrEventListenerObject(listener)) {
         const managedListener = getManagedCustomElementListener(listener);
@@ -267,14 +267,14 @@ export function addShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
     listener: unknown,
-    _options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions,
 ) {
     if (process.env.NODE_ENV !== 'production') {
         if (!isEventListenerOrEventListenerObject(listener)) {
             throw new TypeError(
                 `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
-                    sr
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                    sr,
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`,
             );
         }
     }
@@ -289,7 +289,7 @@ export function removeShadowRootEventListener(
     sr: ShadowRoot,
     type: string,
     listener: unknown,
-    _options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions,
 ) {
     if (isEventListenerOrEventListenerObject(listener)) {
         const elm = getHost(sr);

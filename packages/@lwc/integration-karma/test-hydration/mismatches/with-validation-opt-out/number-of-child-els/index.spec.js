@@ -16,7 +16,7 @@ export default {
 
         expect(consoleCalls.error).toHaveSize(2);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.'
+            'Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.',
         );
         expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
     },

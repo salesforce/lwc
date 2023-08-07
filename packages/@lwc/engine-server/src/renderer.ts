@@ -88,7 +88,7 @@ function cloneNode(node: HostChildNode): HostChildNode {
     if (process.env.NODE_ENV !== 'production') {
         if (node[HostTypeKey] !== HostNodeType.Raw) {
             throw new TypeError(
-                `SSR: cloneNode was called with invalid NodeType <${node[HostTypeKey]}>, only HostNodeType.Raw is supported.`
+                `SSR: cloneNode was called with invalid NodeType <${node[HostTypeKey]}>, only HostNodeType.Raw is supported.`,
             );
         }
     }
@@ -236,14 +236,14 @@ function setText(node: N, content: string) {
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace,
     );
     return attribute ? attribute.value : null;
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace,
     );
 
     if (isUndefined(namespace)) {
@@ -263,14 +263,14 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
     element[HostAttributesKey] = element[HostAttributesKey].filter(
-        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
+        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace,
     );
 }
 
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
         let classAttribute = element[HostAttributesKey].find(
-            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
+            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey]),
         );
 
         if (isUndefined(classAttribute)) {
@@ -305,7 +305,7 @@ function getClassList(element: E) {
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
     const styleAttribute = element[HostAttributesKey].find(
-        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
+        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey]),
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
@@ -334,7 +334,7 @@ const addEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
-    options?: AddEventListenerOptions | boolean
+    options?: AddEventListenerOptions | boolean,
 ) => void;
 
 // Noop on SSR.
@@ -342,40 +342,40 @@ const removeEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
-    options?: AddEventListenerOptions | boolean
+    options?: AddEventListenerOptions | boolean,
 ) => void;
 
 const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
 const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
-    element: HostElement
+    element: HostElement,
 ) => DOMRect;
 const querySelector = unsupportedMethod('querySelector') as (
     element: HostElement,
-    selectors: string
+    selectors: string,
 ) => Element | null;
 const querySelectorAll = unsupportedMethod('querySelectorAll') as (
     element: HostElement,
-    selectors: string
+    selectors: string,
 ) => NodeList;
 const getElementsByTagName = unsupportedMethod('getElementsByTagName') as (
     element: HostElement,
-    tagNameOrWildCard: string
+    tagNameOrWildCard: string,
 ) => HTMLCollection;
 const getElementsByClassName = unsupportedMethod('getElementsByClassName') as (
     element: HostElement,
-    names: string
+    names: string,
 ) => HTMLCollection;
 const getChildren = unsupportedMethod('getChildren') as (element: HostElement) => HTMLCollection;
 const getChildNodes = unsupportedMethod('getChildNodes') as (element: HostElement) => NodeList;
 const getFirstChild = unsupportedMethod('getFirstChild') as (
-    element: HostElement
+    element: HostElement,
 ) => HostNode | null;
 const getFirstElementChild = unsupportedMethod('getFirstElementChild') as (
-    element: HostElement
+    element: HostElement,
 ) => HostElement | null;
 const getLastChild = unsupportedMethod('getLastChild') as (element: HostElement) => HostNode | null;
 const getLastElementChild = unsupportedMethod('getLastElementChild') as (
-    element: HostElement
+    element: HostElement,
 ) => HostElement | null;
 
 function getTagName(elm: HostElement): string {

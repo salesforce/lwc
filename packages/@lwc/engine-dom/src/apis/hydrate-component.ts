@@ -49,23 +49,23 @@ function createVMWithProps(element: Element, Ctor: typeof LightningElement, prop
 export function hydrateComponent(
     element: Element,
     Ctor: typeof LightningElement,
-    props: { [name: string]: any } = {}
+    props: { [name: string]: any } = {},
 ) {
     if (!(element instanceof Element)) {
         throw new TypeError(
-            `"hydrateComponent" expects a valid DOM element as the first parameter but instead received ${element}.`
+            `"hydrateComponent" expects a valid DOM element as the first parameter but instead received ${element}.`,
         );
     }
 
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"hydrateComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
+            `"hydrateComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`,
         );
     }
 
     if (!isObject(props) || isNull(props)) {
         throw new TypeError(
-            `"hydrateComponent" expects an object as the third parameter but instead received ${props}.`
+            `"hydrateComponent" expects an object as the third parameter but instead received ${props}.`,
         );
     }
 

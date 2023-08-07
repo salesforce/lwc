@@ -77,7 +77,7 @@ describe('Locker hooks', () => {
             expect(hooks.callHook).toHaveBeenCalledWith(
                 jasmine.any(Object),
                 jasmine.any(Function),
-                [1, 'foo']
+                [1, 'foo'],
             );
         });
 
@@ -108,7 +108,7 @@ describe('Locker hooks', () => {
             expect(hooks.callHook).toHaveBeenCalledWith(
                 jasmine.any(Object),
                 jasmine.any(Function),
-                [evt]
+                [evt],
             );
         });
     });

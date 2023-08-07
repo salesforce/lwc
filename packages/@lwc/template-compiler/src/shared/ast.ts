@@ -67,7 +67,7 @@ export function root(parse5ElmLocation: parse5.ElementLocation): Root {
 export function element(
     tagName: string,
     namespaceURI: string,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
 ): Element {
     return {
         type: 'Element',
@@ -84,7 +84,7 @@ export function element(
 
 export function externalComponent(
     tagName: string,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
 ): ExternalComponent {
     return {
         type: 'ExternalComponent',
@@ -115,7 +115,7 @@ export function component(tagName: string, parse5ElmLocation: parse5.ElementLoca
 
 export function lwcComponent(
     tagName: LwcTagName,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
 ): LwcComponent {
     return {
         type: 'Lwc',
@@ -149,7 +149,7 @@ export function text(
     raw: string,
     // TODO [#3370]: remove experimental template expression flag
     value: Literal | Expression | ComplexExpression,
-    parse5Location: parse5.Location
+    parse5Location: parse5.Location,
 ): Text {
     return {
         type: 'Text',
@@ -169,7 +169,7 @@ export function comment(raw: string, value: string, parse5Location: parse5.Locat
 }
 
 export function elementSourceLocation(
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation,
 ): ElementSourceLocation {
     const elementLocation = sourceLocation(parse5ElmLocation);
     const startTag = sourceLocation(parse5ElmLocation.startTag);
@@ -205,7 +205,7 @@ export function forEach(
     elementLocation: SourceLocation,
     directiveLocation: SourceLocation,
     item: Identifier,
-    index?: Identifier
+    index?: Identifier,
 ): ForEach {
     return {
         type: 'ForEach',
@@ -222,7 +222,7 @@ export function forOf(
     expression: Expression,
     iterator: Identifier,
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
 ): ForOf {
     return {
         type: 'ForOf',
@@ -238,7 +238,7 @@ export function scopedSlotFragment(
     identifier: Identifier,
     elementLocation: SourceLocation,
     directiveLocation: SourceLocation,
-    slotName: Literal | Expression
+    slotName: Literal | Expression,
 ): ScopedSlotFragment {
     return {
         type: 'ScopedSlotFragment',
@@ -254,7 +254,7 @@ export function ifNode(
     modifier: string,
     condition: Expression,
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
 ): If {
     return {
         type: 'If',
@@ -269,7 +269,7 @@ export function ifNode(
 export function ifBlockNode(
     condition: Expression,
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
 ): IfBlock {
     return {
         type: 'IfBlock',
@@ -283,7 +283,7 @@ export function ifBlockNode(
 export function elseifBlockNode(
     condition: Expression,
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
 ): ElseifBlock {
     return {
         type: 'ElseifBlock',
@@ -296,7 +296,7 @@ export function elseifBlockNode(
 
 export function elseBlockNode(
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
 ): ElseBlock {
     return {
         type: 'ElseBlock',
@@ -309,7 +309,7 @@ export function elseBlockNode(
 export function eventListener(
     name: string,
     handler: Expression,
-    location: SourceLocation
+    location: SourceLocation,
 ): EventListener {
     return {
         type: 'EventListener',
@@ -375,7 +375,7 @@ export function slotDataDirective(value: Identifier, location: SourceLocation): 
 
 export function domDirective(
     lwcDomAttr: LWCDirectiveDomMode,
-    location: SourceLocation
+    location: SourceLocation,
 ): DomDirective {
     return {
         type: 'Directive',
@@ -387,7 +387,7 @@ export function domDirective(
 
 export function innerHTMLDirective(
     value: Expression | Literal<string>,
-    location: SourceLocation
+    location: SourceLocation,
 ): InnerHTMLDirective {
     return {
         type: 'Directive',
@@ -408,7 +408,7 @@ export function refDirective(value: Literal<string>, location: SourceLocation): 
 
 export function preserveCommentsDirective(
     preserveComments: boolean,
-    location: SourceLocation
+    location: SourceLocation,
 ): PreserveCommentsDirective {
     return {
         type: 'Directive',
@@ -420,7 +420,7 @@ export function preserveCommentsDirective(
 
 export function renderModeDirective(
     renderMode: LWCDirectiveRenderMode,
-    location: SourceLocation
+    location: SourceLocation,
 ): RenderModeDirective {
     return {
         type: 'Directive',
@@ -433,7 +433,7 @@ export function renderModeDirective(
 export function attribute(
     name: string,
     value: Expression | Literal,
-    location: SourceLocation
+    location: SourceLocation,
 ): Attribute {
     return {
         type: 'Attribute',
@@ -447,7 +447,7 @@ export function property(
     name: string,
     attributeName: string,
     value: Expression | Literal,
-    location: SourceLocation
+    location: SourceLocation,
 ): Property {
     return {
         type: 'Property',
@@ -511,7 +511,7 @@ export function isExpression(node: BaseNode | Literal): node is Expression {
 }
 
 export function isStringLiteral(
-    node: Expression | Literal | ComplexExpression
+    node: Expression | Literal | ComplexExpression,
 ): node is Literal<string> {
     return node.type === 'Literal' && typeof node.value === 'string';
 }
@@ -557,7 +557,7 @@ export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBloc
 }
 
 export function isElementDirective(
-    node: BaseNode
+    node: BaseNode,
 ): node is IfBlock | ElseifBlock | ElseBlock | ForBlock | If | ScopedSlotFragment {
     return isConditionalBlock(node) || isForBlock(node) || isIf(node) || isScopedSlotFragment(node);
 }
@@ -607,7 +607,7 @@ export function isRenderModeDirective(directive: RootDirective): directive is Re
 }
 
 export function isPreserveCommentsDirective(
-    directive: RootDirective
+    directive: RootDirective,
 ): directive is PreserveCommentsDirective {
     return directive.name === 'PreserveComments';
 }

@@ -22,7 +22,7 @@ import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 export default function scriptTransform(
     code: string,
     filename: string,
-    options: NormalizedTransformOptions
+    options: NormalizedTransformOptions,
 ): TransformResult {
     const {
         isExplicitImport,
@@ -57,7 +57,7 @@ export default function scriptTransform(
         plugins.push(
             lockerBabelPluginTransformUnforgeables,
             babelAsyncToGenPlugin,
-            babelAsyncGeneratorFunctionsPlugin
+            babelAsyncGeneratorFunctionsPlugin,
         );
     }
 

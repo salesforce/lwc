@@ -229,7 +229,7 @@ if (isUserTimingSupported && process.env.NODE_ENV !== 'production') {
                               },
                           ],
                       },
-                  ]
+                  ],
         );
 
         testNestedRehydration([

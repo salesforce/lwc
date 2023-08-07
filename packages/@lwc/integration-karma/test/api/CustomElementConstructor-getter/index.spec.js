@@ -15,7 +15,7 @@ const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in wind
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(
         TypeError,
-        `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
+        `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`,
     );
 });
 
@@ -61,7 +61,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
         customElements.define(
             'test-custom-element-preexisting',
-            WithChildElms.CustomElementConstructor
+            WithChildElms.CustomElementConstructor,
         );
         expect(elm.shadowRoot).not.toBe(null);
     });
@@ -81,7 +81,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             customElements.define(
                 'test-custom-element-preexisting2',
                 // "creating" a new component, so we can register under a different tag
-                class extends WithChildElms.CustomElementConstructor {}
+                class extends WithChildElms.CustomElementConstructor {},
             );
             const observedErrors = consoleSpy.calls.warn
                 .flat()
@@ -104,7 +104,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             customElements.define(
                 'test-custom-element-preexisting3',
                 // "creating" a new component, so we can register under a different tag
-                class extends WithChildElms.CustomElementConstructor {}
+                class extends WithChildElms.CustomElementConstructor {},
             );
             const observedErrors = consoleSpy.calls.warn
                 .flat()
@@ -123,7 +123,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             customElements.define(
                 'test-custom-element-preexisting4',
                 // "creating" a new component, so we can register under a different tag
-                class extends WithChildElms.CustomElementConstructor {}
+                class extends WithChildElms.CustomElementConstructor {},
             );
             const elm = document.createElement('div');
             elm.innerHTML =

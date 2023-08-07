@@ -12,13 +12,13 @@ describe('Key outside iteration', () => {
         document.body.appendChild(elm);
 
         expect(
-            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
         ).toEqual('red');
         elm.color = 'blue';
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
             ).toEqual('blue');
         });
     });
@@ -28,7 +28,7 @@ describe('Key outside iteration', () => {
         document.body.appendChild(elm);
 
         expect(
-            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
         ).toEqual('red');
         expect(elm.shadowRoot.children.length).toEqual(1);
         elm.color = 'blue';
@@ -36,7 +36,7 @@ describe('Key outside iteration', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
             ).toEqual('blue');
             expect(elm.shadowRoot.children.length).toEqual(2);
             expect(elm.shadowRoot.children[1].textContent).toEqual('shown');
@@ -48,7 +48,7 @@ describe('Key outside iteration', () => {
         document.body.appendChild(elm);
 
         expect(
-            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
         ).toEqual('red');
         expect(elm.shadowRoot.children.length).toEqual(2);
         expect(elm.shadowRoot.children[1].textContent).toEqual('shown');
@@ -57,7 +57,7 @@ describe('Key outside iteration', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
             ).toEqual('blue');
             expect(elm.shadowRoot.children.length).toEqual(1);
         });
@@ -68,7 +68,7 @@ describe('Key outside iteration', () => {
         document.body.appendChild(elm);
 
         expect(
-            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
         ).toEqual('red');
         expect(elm.shadowRoot.children.length).toEqual(1);
         elm.color = 'blue';
@@ -76,7 +76,7 @@ describe('Key outside iteration', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
             ).toEqual('blue');
             expect(elm.shadowRoot.children.length).toEqual(2);
             expect(elm.shadowRoot.children[0].textContent).toEqual('shown');
@@ -90,7 +90,7 @@ describe('Key outside iteration', () => {
         document.body.appendChild(elm);
 
         expect(
-            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+            elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
         ).toEqual('red');
         expect(elm.shadowRoot.children.length).toEqual(2);
         expect(elm.shadowRoot.children[0].textContent).toEqual('shown');
@@ -99,7 +99,7 @@ describe('Key outside iteration', () => {
 
         return Promise.resolve().then(() => {
             expect(
-                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent
+                elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div').textContent,
             ).toEqual('blue');
             expect(elm.shadowRoot.children.length).toEqual(1);
         });

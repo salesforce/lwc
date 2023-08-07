@@ -21,7 +21,7 @@ interface ShadowedNode extends Node {
 function fastDefineProperty(
     node: Node,
     propName: typeof HostElementKey | typeof ShadowedNodeKey,
-    config: { value: number; configurable?: boolean }
+    config: { value: number; configurable?: boolean },
 ) {
     const shadowedNode = node as ShadowedNode;
     if (process.env.NODE_ENV !== 'production') {

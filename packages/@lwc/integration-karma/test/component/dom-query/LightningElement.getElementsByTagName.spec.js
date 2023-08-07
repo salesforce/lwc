@@ -9,7 +9,7 @@ describe('LightningElement.getElementsByTagName', () => {
                 is: ConstructorGetElementsByTagName,
             });
         }).toLogErrorDev(
-            /Error: \[LWC error]: this.getElementsByTagName\(\) should not be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because the element is not yet in the DOM or has no children yet\./
+            /Error: \[LWC error]: this.getElementsByTagName\(\) should not be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because the element is not yet in the DOM or has no children yet\./,
         );
     });
 });

@@ -78,10 +78,10 @@ describe('Light DOM scoped CSS', () => {
         document.body.appendChild(elm);
         expect(getComputedStyle(elm).backgroundColor).toEqual('rgb(0, 0, 255)');
         expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-            'rgb(255, 0, 0)'
+            'rgb(255, 0, 0)',
         );
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-light-child div')).color
+            getComputedStyle(elm.shadowRoot.querySelector('x-light-child div')).color,
         ).not.toEqual('rgb(255, 0, 0)');
     });
 

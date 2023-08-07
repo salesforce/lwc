@@ -36,7 +36,7 @@ describe('[W-8350504] focus() method invocation, inside a focus handler, trigger
         const button = await browser.shadowDeep$(
             'integration-invoke-focus-on-click',
             'integration-child',
-            'button'
+            'button',
         );
         await button.click(); // click into button
 

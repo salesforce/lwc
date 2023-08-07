@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Figure out all the packages we might be importing from @lwc/perf-benchmarks-components
 // so that we can tell Rollup that those are `external`.
 const componentModules = globSync(
-    path.join(__dirname, '../perf-benchmarks-components/dist/**/*.js')
+    path.join(__dirname, '../perf-benchmarks-components/dist/**/*.js'),
 ).map((filename) => path.relative(path.join(__dirname, '../..'), filename).replace(/^\.\//, ''));
 
 function createConfig(benchmarkFile) {
@@ -30,8 +30,8 @@ function createConfig(benchmarkFile) {
                     ['after', 'before', 'benchmark', 'run'].map((name) => [
                         name,
                         [benchmarkFramework, name],
-                    ])
-                )
+                    ]),
+                ),
             ),
         ],
         output: {

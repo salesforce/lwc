@@ -17,7 +17,7 @@ export default {
 
         expect(consoleCalls.error).toHaveSize(2);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Server rendered more nodes than the client.'
+            'Server rendered more nodes than the client.',
         );
         expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
     },

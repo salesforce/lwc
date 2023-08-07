@@ -35,7 +35,7 @@ export default function (define) {
                                     },
                                     key: 2,
                                 },
-                                []
+                                [],
                             ),
                             api_custom_element(
                                 'ui-another',
@@ -49,9 +49,9 @@ export default function (define) {
                                     },
                                     key: 3,
                                 },
-                                []
+                                [],
                             ),
-                        ]
+                        ],
                     ),
                 ];
             }
@@ -61,6 +61,6 @@ export default function (define) {
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
             lwc.freezeTemplate(tmpl);
             return tmpl;
-        }
+        },
     );
 }

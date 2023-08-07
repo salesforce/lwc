@@ -15,7 +15,7 @@ describe('Tab navigation when tabindex -1', () => {
     it('should skip shadow (forward)', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-negative',
-            '.second-outside'
+            '.second-outside',
         );
         await secondOutside.click();
         await browser.keys(['Tab']);
@@ -27,7 +27,7 @@ describe('Tab navigation when tabindex -1', () => {
     it('should skip shadow (backward)', async () => {
         const thirdOutside = await browser.shadowDeep$(
             'integration-tabindex-negative',
-            '.third-outside'
+            '.third-outside',
         );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);

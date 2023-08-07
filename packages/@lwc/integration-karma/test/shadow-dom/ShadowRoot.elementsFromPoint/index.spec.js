@@ -65,7 +65,7 @@ describe('elementsFromPoint', () => {
             const { left, top, width, height } = div.getBoundingClientRect();
             const elementsFromPoint = document.elementsFromPoint(
                 left + width / 2,
-                top + height / 2
+                top + height / 2,
             );
 
             expect(elementsFromPoint).toEqual([div, document.body, document.documentElement]);
@@ -123,7 +123,7 @@ describe('elementsFromPoint', () => {
                     [child, childDiv, parent, parentDiv, grandparent, grandparentDiv].forEach(
                         (el) => {
                             el.style = '';
-                        }
+                        },
                     );
                 };
 

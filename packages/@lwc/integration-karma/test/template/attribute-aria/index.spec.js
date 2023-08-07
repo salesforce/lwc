@@ -26,7 +26,7 @@ describe('setting aria attributes', () => {
             expect(childComponent.callPropertyGetter(prop)).toEqual(expectedValue);
             expect(childComponent.getAttribute(ariaPropertiesMapping[prop])).toEqual(expectedValue);
             expect(childComponent.callGetAttribute(ariaPropertiesMapping[prop])).toEqual(
-                expectedValue
+                expectedValue,
             );
         }
 

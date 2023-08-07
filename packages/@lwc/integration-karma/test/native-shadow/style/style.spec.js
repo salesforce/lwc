@@ -17,10 +17,10 @@ describe('style', () => {
 
         expect(getComputedStyle(div).color).toEqual('rgb(0, 0, 255)'); // blue
         expect(getComputedStyle(firstShadow.shadowRoot.querySelector('div')).color).toEqual(
-            'rgb(255, 0, 0)'
+            'rgb(255, 0, 0)',
         ); // red
         expect(getComputedStyle(secondShadow.shadowRoot.querySelector('div')).color).toEqual(
-            'rgb(255, 255, 0)'
+            'rgb(255, 255, 0)',
         ); // yellow
     });
 });

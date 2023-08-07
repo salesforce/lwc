@@ -9,7 +9,7 @@ import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 export const assignedSlotGetter: (this: Text) => HTMLSlotElement | null = hasOwnProperty.call(
     Text.prototype,
-    'assignedSlot'
+    'assignedSlot',
 )
     ? getOwnPropertyDescriptor(Text.prototype, 'assignedSlot')!.get!
     : () => null;

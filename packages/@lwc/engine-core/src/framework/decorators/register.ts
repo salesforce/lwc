@@ -78,7 +78,7 @@ function getClassDescriptorType(descriptor: PropertyDescriptor): DescriptorType 
 function validateObservedField(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
@@ -93,14 +93,14 @@ function validateObservedField(
 function validateFieldDecoratedWithTrack(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
         // TODO [#3408]: this should throw, not log
         logError(
-            `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`
+            `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`,
         );
     }
 }
@@ -108,7 +108,7 @@ function validateFieldDecoratedWithTrack(
 function validateFieldDecoratedWithWire(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
@@ -121,13 +121,13 @@ function validateFieldDecoratedWithWire(
 function validateMethodDecoratedWithWire(
     Ctor: LightningElementConstructor,
     methodName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
         // TODO [#3441]: This line of code does not seem possible to reach.
         logError(
-            `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
+            `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`,
         );
     }
 }
@@ -135,7 +135,7 @@ function validateMethodDecoratedWithWire(
 function validateFieldDecoratedWithApi(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
@@ -150,14 +150,14 @@ function validateFieldDecoratedWithApi(
 function validateAccessorDecoratedWithApi(
     Ctor: LightningElementConstructor,
     fieldName: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isFunction(descriptor.set)) {
         if (!isFunction(descriptor.get)) {
             // TODO [#3441]: This line of code does not seem possible to reach.
             logError(
-                `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
+                `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`,
             );
         }
     } else if (!isFunction(descriptor.get)) {
@@ -169,7 +169,7 @@ function validateAccessorDecoratedWithApi(
 function validateMethodDecoratedWithApi(
     Ctor: LightningElementConstructor,
     methodName: string,
-    descriptor: PropertyDescriptor | undefined
+    descriptor: PropertyDescriptor | undefined,
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
@@ -184,7 +184,7 @@ function validateMethodDecoratedWithApi(
  */
 export function registerDecorators(
     Ctor: LightningElementConstructor,
-    meta: RegisterDecoratorMeta
+    meta: RegisterDecoratorMeta,
 ): LightningElementConstructor {
     const proto = Ctor.prototype;
     const { publicProps, publicMethods, wire, track, fields } = meta;
@@ -256,7 +256,7 @@ export function registerDecorators(
                     if (!adapter) {
                         // TODO [#3408]: this should throw, not log
                         logError(
-                            `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
+                            `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`,
                         );
                     }
                     validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
@@ -271,7 +271,7 @@ export function registerDecorators(
                     if (!adapter) {
                         // TODO [#3408]: this should throw, not log
                         logError(
-                            `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
+                            `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`,
                         );
                     }
                     validateFieldDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);

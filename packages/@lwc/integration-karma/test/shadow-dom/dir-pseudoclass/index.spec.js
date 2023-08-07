@@ -32,37 +32,37 @@ describe(':dir() pseudoclass', () => {
             return Promise.resolve()
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
+                        'rgb(0, 0, 1)',
                     );
                     expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
-                        'rgb(0, 0, 3)'
+                        'rgb(0, 0, 3)',
                     );
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color,
                     ).toEqual('rgb(0, 0, 5)');
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color,
                     ).toEqual('rgb(0, 0, 7)');
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color,
                     ).toEqual('rgb(0, 0, 9)');
                     elm.setAttribute('dir', 'rtl');
                 })
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 2)'
+                        'rgb(0, 0, 2)',
                     );
                     expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
-                        'rgb(0, 0, 4)'
+                        'rgb(0, 0, 4)',
                     );
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color,
                     ).toEqual('rgb(0, 0, 6)');
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color,
                     ).toEqual('rgb(0, 0, 8)');
                     expect(
-                        getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color
+                        getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color,
                     ).toEqual('rgb(0, 0, 10)');
                 });
         });
@@ -76,13 +76,13 @@ describe(':dir() pseudoclass', () => {
             return Promise.resolve()
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
+                        'rgb(0, 0, 1)',
                     );
                     elm.setAttribute('dir', 'rtl');
                 })
                 .then(() => {
                     expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 2)'
+                        'rgb(0, 0, 2)',
                     );
                 });
         });
@@ -97,19 +97,19 @@ describe(':dir() pseudoclass', () => {
                 .then(() => {
                     // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
                     expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
+                        'rgb(0, 0, 1)',
                     );
                     elm.setAttribute('dir', 'rtl');
                 })
                 .then(() => {
                     expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 2)'
+                        'rgb(0, 0, 2)',
                     );
                     elm.setAttribute('dir', 'ltr');
                 })
                 .then(() => {
                     expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
+                        'rgb(0, 0, 1)',
                     );
                 });
         });

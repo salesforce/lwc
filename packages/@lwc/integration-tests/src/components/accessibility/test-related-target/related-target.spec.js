@@ -25,7 +25,7 @@ async function getChildEvents() {
     const child = await browser.shadowDeep$(
         'integration-related-target',
         'integration-parent',
-        'integration-child'
+        'integration-child',
     );
     return getEvents(child);
 }
@@ -35,7 +35,7 @@ function getChildInput() {
         'integration-related-target',
         'integration-parent',
         'integration-child',
-        'input'
+        'input',
     );
 }
 

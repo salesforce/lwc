@@ -20,12 +20,12 @@ declare module 'lwc' {
         addEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | AddEventListenerOptions
+            options?: boolean | AddEventListenerOptions,
         ): void;
         removeEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | EventListenerOptions
+            options?: boolean | EventListenerOptions,
         ): void;
         setAttributeNS(ns: string, attrName: string, value: any): void;
         removeAttributeNS(ns: string, attrName: string): void;
@@ -115,29 +115,29 @@ declare module 'lwc' {
         addEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | AddEventListenerOptions
+            options?: boolean | AddEventListenerOptions,
         ): void;
         removeEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | EventListenerOptions
+            options?: boolean | EventListenerOptions,
         ): void;
         hasChildNodes(): boolean;
         compareDocumentPosition(otherNode: Node): number;
         contains(otherNode: Node): boolean;
         elementFromPoint(x: number, y: number): Element | null;
         querySelector<K extends keyof HTMLElementTagNameMap>(
-            selectors: K
+            selectors: K,
         ): HTMLElementTagNameMap[K] | null;
         querySelector<K extends keyof SVGElementTagNameMap>(
-            selectors: K
+            selectors: K,
         ): SVGElementTagNameMap[K] | null;
         querySelector<E extends Element = Element>(selectors: string): E | null;
         querySelectorAll<K extends keyof HTMLElementTagNameMap>(
-            selectors: K
+            selectors: K,
         ): NodeListOf<HTMLElementTagNameMap[K]>;
         querySelectorAll<K extends keyof SVGElementTagNameMap>(
-            selectors: K
+            selectors: K,
         ): NodeListOf<SVGElementTagNameMap[K]>;
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
     }
@@ -196,7 +196,7 @@ declare module 'lwc' {
      */
     export function wire(
         adapter: WireAdapterConstructor | LegacyWireAdapterConstructor,
-        config?: WireConfigValue
+        config?: WireConfigValue,
     ): PropertyDecorator;
 
     type LegacyWireAdapterConstructor = (config?: any) => any;

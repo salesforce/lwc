@@ -31,7 +31,7 @@ function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.Obj
 
 function getWiredParams(
     t: BabelTypes,
-    wireConfig: NodePath<types.ObjectExpression>
+    wireConfig: NodePath<types.ObjectExpression>,
 ): types.ObjectProperty[] {
     return wireConfig
         .get('properties')
@@ -60,7 +60,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
         //       notation to match the current behavior (that most likely end up resolving that param as undefined).
         const isInvalidMemberExpr = memberExprPaths.some(
             (maybeIdentifier) =>
-                !(t.isValidES3Identifier(maybeIdentifier) && maybeIdentifier.length > 0)
+                !(t.isValidES3Identifier(maybeIdentifier) && maybeIdentifier.length > 0),
         );
         const memberExprPropertyGen = !isInvalidMemberExpr
             ? t.identifier
@@ -70,7 +70,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             return {
                 configValueExpression: t.memberExpression(
                     t.identifier(WIRE_CONFIG_ARG_NAME),
-                    memberExprPropertyGen(memberExprPaths[0])
+                    memberExprPropertyGen(memberExprPaths[0]),
                 ),
             };
         }
@@ -82,8 +82,8 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
                 t.memberExpression(
                     t.identifier(WIRE_CONFIG_ARG_NAME),
                     memberExprPropertyGen(memberExprPaths[0]),
-                    isInvalidMemberExpr
-                )
+                    isInvalidMemberExpr,
+                ),
             ),
         ]);
 
@@ -91,7 +91,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
         let conditionTest: types.Expression = t.binaryExpression(
             '!=',
             t.identifier(varName),
-            t.nullLiteral()
+            t.nullLiteral(),
         );
 
         for (let i = 1, n = memberExprPaths.length; i < n - 1; i++) {
@@ -101,14 +101,14 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
                 t.memberExpression(
                     t.identifier(varName),
                     memberExprPropertyGen(memberExprPaths[i]),
-                    isInvalidMemberExpr
-                )
+                    isInvalidMemberExpr,
+                ),
             );
 
             conditionTest = t.logicalExpression(
                 '&&',
                 conditionTest,
-                t.binaryExpression('!=', nextPropValue, t.nullLiteral())
+                t.binaryExpression('!=', nextPropValue, t.nullLiteral()),
             );
         }
 
@@ -118,9 +118,9 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             t.memberExpression(
                 t.identifier(varName),
                 memberExprPropertyGen(memberExprPaths[memberExprPaths.length - 1]),
-                isInvalidMemberExpr
+                isInvalidMemberExpr,
             ),
-            t.identifier('undefined')
+            t.identifier('undefined'),
         );
 
         return {
@@ -141,8 +141,8 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             configProps.push(
                 t.objectProperty(
                     (param as types.ObjectProperty).key,
-                    paramConfigValue.configValueExpression
-                )
+                    paramConfigValue.configValueExpression,
+                ),
             );
 
             if (paramConfigValue.varDeclaration) {
@@ -156,7 +156,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
     const fnExpression = t.functionExpression(
         null,
         [t.identifier(WIRE_CONFIG_ARG_NAME)],
-        t.blockStatement(configBlockBody)
+        t.blockStatement(configBlockBody),
     );
 
     return t.objectProperty(t.identifier('config'), fnExpression);
@@ -168,18 +168,18 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
             const wireConfig = [];
             if (wiredValue.adapter) {
                 wireConfig.push(
-                    t.objectProperty(t.identifier('adapter'), wiredValue.adapter.expression)
+                    t.objectProperty(t.identifier('adapter'), wiredValue.adapter.expression),
                 );
             }
 
             if (wiredValue.params) {
                 const dynamicParamNames = wiredValue.params.map((p) => {
                     return t.stringLiteral(
-                        t.isIdentifier(p.key) ? p.key.name : (p.key as types.StringLiteral).value
+                        t.isIdentifier(p.key) ? p.key.name : (p.key as types.StringLiteral).value,
                     );
                 });
                 wireConfig.push(
-                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
+                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames)),
                 );
             }
 
@@ -191,9 +191,9 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),
-                t.objectExpression(wireConfig)
+                t.objectExpression(wireConfig),
             );
-        })
+        }),
     );
 }
 
@@ -257,7 +257,7 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments') as [
             NodePath,
-            NodePath<types.ObjectExpression> | undefined
+            NodePath<types.ObjectExpression> | undefined,
         ];
 
         const propertyName = (path.parentPath.get('key.name') as any).node as string;
@@ -296,8 +296,8 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
         objectProperties.push(
             t.objectProperty(
                 t.identifier(LWC_COMPONENT_PROPERTIES.WIRE),
-                buildWireConfigValue(t, wiredValues)
-            )
+                buildWireConfigValue(t, wiredValues),
+            ),
         );
     }
 

@@ -126,7 +126,7 @@ function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRend
 
     // Check for duplicate tag names
     const dupTagNames: string[] = tagNames.filter(
-        (item, index) => index !== tagNames.indexOf(item)
+        (item, index) => index !== tagNames.indexOf(item),
     );
     invariant(dupTagNames.length == 0, TemplateErrors.DUPLICATE_ELEMENT_ENTRY, [
         dupTagNames.join(', '),
@@ -138,7 +138,7 @@ function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRend
 export function normalizeConfig(config: Config): NormalizedConfig {
     invariant(
         config !== undefined && typeof config === 'object',
-        TemplateErrors.OPTIONS_MUST_BE_OBJECT
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT,
     );
 
     const customRendererConfig = config.customRendererConfig

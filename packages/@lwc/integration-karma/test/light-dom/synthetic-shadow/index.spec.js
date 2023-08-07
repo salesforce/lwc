@@ -46,7 +46,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         xit('textContent', () => {
             expect(nodes.p.textContent).toEqual('I am an assigned element.');
             expect(nodes.consumer.textContent).toEqual(
-                'I am an assigned element.I am an assigned text.'
+                'I am an assigned element.I am an assigned text.',
             );
             expect(elm.textContent).toEqual('I am an assigned element.I am an assigned text.');
         });
@@ -54,20 +54,20 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         xit('innerHTML', () => {
             expect(nodes.p.innerHTML).toEqual('I am an assigned element.');
             expect(nodes.consumer.innerHTML).toEqual(
-                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.',
             );
             expect(elm.innerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>',
             );
         });
         // TODO [#2425]: Incorrect serialization
         xit('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
             expect(nodes.consumer.outerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>',
             );
             expect(elm.outerHTML).toEqual(
-                '<x-light-container><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
+                '<x-light-container><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>',
             );
         });
 
@@ -124,28 +124,28 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         it('textContent', () => {
             expect(nodes.p.textContent).toEqual('I am an assigned element.');
             expect(nodes.consumer.textContent).toEqual(
-                'I am an assigned element.I am an assigned text.'
+                'I am an assigned element.I am an assigned text.',
             );
             expect(nodes['light-container'].textContent).toEqual(
-                'I am an assigned element.I am an assigned text.'
+                'I am an assigned element.I am an assigned text.',
             );
         });
         it('innerHTML', () => {
             expect(nodes.p.innerHTML).toEqual('I am an assigned element.');
             expect(nodes.consumer.innerHTML).toEqual(
-                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.',
             );
             expect(nodes['light-container'].innerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>',
             );
         });
         it('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
             expect(nodes.consumer.outerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>',
             );
             expect(nodes['light-container'].outerHTML).toEqual(
-                '<x-light-container data-id="light-container"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
+                '<x-light-container data-id="light-container"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>',
             );
         });
 

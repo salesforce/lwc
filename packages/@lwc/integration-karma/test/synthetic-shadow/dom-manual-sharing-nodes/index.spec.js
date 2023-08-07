@@ -13,10 +13,10 @@ describe('dom manual sharing nodes', () => {
         return new Promise((resolve) => requestAnimationFrame(() => resolve()))
             .then(() => {
                 expect(
-                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color
+                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color,
                 ).toEqual('rgb(0, 0, 0)');
                 expect(getComputedStyle(styled.shadowRoot.querySelector('.manual')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
 
                 styled.insertManualNode(unstyled.getManualNode());
@@ -24,7 +24,7 @@ describe('dom manual sharing nodes', () => {
             })
             .then(() => {
                 expect(getComputedStyle(styled.shadowRoot.querySelector('.manual')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
             });
     });
@@ -38,10 +38,10 @@ describe('dom manual sharing nodes', () => {
         return new Promise((resolve) => requestAnimationFrame(() => resolve()))
             .then(() => {
                 expect(
-                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color
+                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color,
                 ).toEqual('rgb(0, 0, 0)');
                 expect(getComputedStyle(styled.shadowRoot.querySelector('.manual')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
 
                 unstyled.insertManualNode(styled.getManualNode());
@@ -49,7 +49,7 @@ describe('dom manual sharing nodes', () => {
             })
             .then(() => {
                 expect(
-                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color
+                    getComputedStyle(unstyled.shadowRoot.querySelector('.manual')).color,
                 ).toEqual('rgb(0, 0, 0)');
             });
     });

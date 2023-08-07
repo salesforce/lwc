@@ -67,7 +67,7 @@ module.exports = (config) => {
             '**/*.spec.js': ['lwc'],
             // Transform all framework files
             ...Object.fromEntries(
-                ALL_FRAMEWORK_FILES.map((file) => [file, ['transform-framework']])
+                ALL_FRAMEWORK_FILES.map((file) => [file, ['transform-framework']]),
             ),
         },
 

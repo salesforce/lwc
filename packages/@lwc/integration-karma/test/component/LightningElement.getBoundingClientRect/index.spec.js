@@ -22,7 +22,7 @@ if (supportCallingGetBoundingClientRect) {
         expect(() => {
             createElement('x-constructor-invocation', { is: ConstructorInvocation });
         }).toLogErrorDev(
-            /Error: \[LWC error]: this\.getBoundingClientRect\(\) should not be called during the construction of the custom element for <x-constructor-invocation> because the element is not yet in the DOM or has no children yet\./
+            /Error: \[LWC error]: this\.getBoundingClientRect\(\) should not be called during the construction of the custom element for <x-constructor-invocation> because the element is not yet in the DOM or has no children yet\./,
         );
     });
 }

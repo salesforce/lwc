@@ -21,6 +21,6 @@ module.exports = function (browser) {
                 target.focus();
             }, this);
         },
-        true
+        true,
     );
 };

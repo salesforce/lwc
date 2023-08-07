@@ -9,7 +9,7 @@ describe('LightningElement.childNodes', () => {
         expect(() => {
             createElement('x-constructor-child-nodes', { is: ConstructorChildNodes });
         }).toLogErrorDev(
-            /Error: \[LWC error]: this.childNodes should not be called during the construction of the custom element for <x-constructor-child-nodes> because the element is not yet in the DOM or has no children yet\./
+            /Error: \[LWC error]: this.childNodes should not be called during the construction of the custom element for <x-constructor-child-nodes> because the element is not yet in the DOM or has no children yet\./,
         );
     });
 

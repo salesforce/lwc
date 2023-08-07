@@ -66,7 +66,7 @@ describe('Eventnodes.button.removeEventListener', () => {
 
     it('should not throw error when listener is not added', () => {
         expect(() => nodes.button.removeEventListener('dummy', () => {})).not.toThrowError(
-            TypeError
+            TypeError,
         );
     });
 
@@ -84,7 +84,7 @@ describe('Eventnodes.button.removeEventListener', () => {
         [123, 'string', true, BigInt('123'), Symbol('dummy')].forEach((primitive) => {
             it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
                 expect(() => nodes.button.removeEventListener('dummy', primitive)).toThrowError(
-                    TypeError
+                    TypeError,
                 );
             });
         });

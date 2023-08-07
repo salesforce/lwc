@@ -20,10 +20,10 @@ export default {
 
         expect(consoleCalls.error).toHaveSize(3);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "title" has different values, expected "client-title" but found "ssr-title"'
+            'Mismatch hydrating element <p>: attribute "title" has different values, expected "client-title" but found "ssr-title"',
         );
         expect(consoleCalls.error[1][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"'
+            'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"',
         );
         expect(consoleCalls.error[2][0].message).toContain('Hydration completed with errors.');
     },

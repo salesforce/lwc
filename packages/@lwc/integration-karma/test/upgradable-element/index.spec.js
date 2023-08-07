@@ -50,6 +50,6 @@ it('should create elements with correct component behavior even when they share 
     document.body.appendChild(anotherChildElm);
     expect(anotherChildElm.tagName.toLowerCase()).toBe('x-child');
     expect(anotherChildElm.shadowRoot.querySelector('div').textContent).toBe(
-        'Duplicate Child Component'
+        'Duplicate Child Component',
     );
 });

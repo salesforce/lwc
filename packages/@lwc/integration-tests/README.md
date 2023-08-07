@@ -137,7 +137,7 @@ Here `<functional-area>` would be the broader area under test such as events, sl
 
 In the above example, `app` and `child` are present because the test verifies event handling between a child and parent component and to reflect the playground setup, but are not required for every test. `<specific-repro>.html` may also use the `<test-case>` template currently used in some lwc-integration tests to cleanly display Github issue and Lightning Web Components playground links.
 
-The level describe blocks inside `<specific-repro>.spec.js` should also note the Github issue number if relevant. For example, `` describe('Issue 657: Cannot attach event in `connectedCallback`', () => {...}) ``.
+The level describe blocks inside `<specific-repro>.spec.js` should also note the Github issue number if relevant. For example, ``describe('Issue 657: Cannot attach event in `connectedCallback`', () => {...})``.
 
 If it doesn't require additional components for the repro, you could simply have
 

@@ -24,7 +24,7 @@ export default {
         expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(2);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "class" has different values, expected "" but found "null"'
+            'Mismatch hydrating element <p>: attribute "class" has different values, expected "" but found "null"',
         );
         expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
     },

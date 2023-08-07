@@ -41,7 +41,7 @@ export function sanitizeAttribute(
     tagName: string,
     namespaceUri: string,
     attrName: string,
-    attrValue: any
+    attrValue: any,
 ): string {
     // locker-service patches this function during runtime to sanitize vulnerable attributes. When
     // ran off-core this function becomes a noop and returns the user authored value.

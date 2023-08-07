@@ -35,7 +35,7 @@ export interface TransformResult {
 export function transform(
     src: string,
     filename: string,
-    options: TransformOptions
+    options: TransformOptions,
 ): Promise<TransformResult> {
     validateArguments(src, filename);
     return new Promise((resolve, reject) => {
@@ -55,7 +55,7 @@ export function transform(
 export function transformSync(
     src: string,
     filename: string,
-    options: TransformOptions
+    options: TransformOptions,
 ): TransformResult {
     validateArguments(src, filename);
     const normalizedOptions = validateTransformOptions(options);
@@ -70,7 +70,7 @@ function validateArguments(src: string, filename: string) {
 function transformFile(
     src: string,
     filename: string,
-    options: NormalizedTransformOptions
+    options: NormalizedTransformOptions,
 ): TransformResult {
     let transformer;
 

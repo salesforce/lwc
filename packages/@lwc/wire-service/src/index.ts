@@ -25,7 +25,7 @@ interface LegacyAdapterDataCallback extends DataCallback {
  */
 export function register(
     adapterId: any,
-    adapterEventTargetCallback: (eventTarget: WireEventTarget) => void
+    adapterEventTargetCallback: (eventTarget: WireEventTarget) => void,
 ) {
     if (adapterId == null || !isExtensible(adapterId)) {
         throw new TypeError('adapter id must be extensible');
@@ -100,7 +100,7 @@ function isValidConfig(config: Record<string, any>, params: string[]): boolean {
 function isDifferentConfig(
     newConfig: Record<string, any>,
     oldConfig: Record<string, any>,
-    params: string[]
+    params: string[],
 ) {
     return params.some((param) => newConfig[param] !== oldConfig[param]);
 }

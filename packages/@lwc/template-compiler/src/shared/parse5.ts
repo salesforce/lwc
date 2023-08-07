@@ -19,7 +19,7 @@ export function isTextNode(node: parse5.Node): node is parse5.TextNode {
 }
 
 export function getTemplateContent(
-    templateElement: parse5.Element
+    templateElement: parse5.Element,
 ): parse5.DocumentFragment | undefined {
     return (templateElement as any).content;
 }

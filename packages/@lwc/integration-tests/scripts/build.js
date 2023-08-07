@@ -110,7 +110,7 @@ testEntries
         fs.writeFileSync(
             `${testOutput}/${testNamespace}/${testName}/index.html`,
             templates.html(testName),
-            'utf8'
+            'utf8',
         );
     }, Promise.resolve())
     .catch((err) => {

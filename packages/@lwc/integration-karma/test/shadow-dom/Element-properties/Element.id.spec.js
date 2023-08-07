@@ -22,7 +22,7 @@ describe('scoped-ids', () => {
                 expect(() => {
                     document.body.appendChild(elm);
                 }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./
+                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./,
                 );
                 const child = elm.shadowRoot.querySelector('x-child');
                 // #1769: The difference in behavior of id attribute is tracked with this issue
@@ -34,7 +34,7 @@ describe('scoped-ids', () => {
                 expect(() => {
                     document.body.appendChild(elm);
                 }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./
+                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./,
                 );
                 const child = elm.shadowRoot.querySelector('x-child');
                 expect(child.getAttribute('id')).toBe('');
@@ -47,7 +47,7 @@ describe('scoped-ids', () => {
                 expect(() => {
                     document.body.appendChild(elm);
                 }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./
+                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./,
                 );
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toBeNull();
@@ -58,7 +58,7 @@ describe('scoped-ids', () => {
                 expect(() => {
                     document.body.appendChild(elm);
                 }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./
+                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./,
                 );
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toBe('');

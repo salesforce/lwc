@@ -15,12 +15,12 @@ if (process.env.NODE_ENV !== 'production') {
             const elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
             expect(elm.shadowRoot.firstChild.shadowRoot.firstChild.outerHTML).toBe(
-                '<p class="b">b</p>'
+                '<p class="b">b</p>',
             );
             expect(swapComponent(B, C)).toBe(true);
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.firstChild.shadowRoot.firstChild.outerHTML).toBe(
-                    '<p class="c">c</p>'
+                    '<p class="c">c</p>',
                 );
             });
         });

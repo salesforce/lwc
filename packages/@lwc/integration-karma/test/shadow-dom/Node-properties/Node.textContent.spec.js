@@ -19,10 +19,10 @@ describe('Node.textContent - getter', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.textContent).toBe(
-            process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After'
+            process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After',
         );
         expect(container.shadowRoot.querySelector('slot').textContent).toBe(
-            process.env.NATIVE_SHADOW ? 'default-slotted' : ''
+            process.env.NATIVE_SHADOW ? 'default-slotted' : '',
         );
     });
 });
@@ -51,7 +51,7 @@ describe('Node.textContent - setter', () => {
             expected = expected.not; // no error
         }
         expected.toLogErrorDev(
-            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
+            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./,
         );
     });
 });

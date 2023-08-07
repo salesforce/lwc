@@ -20,7 +20,7 @@ const { code, warnings } = compile(
         <h1>Hello World!</h1>
     </template>
 `,
-    options
+    options,
 );
 
 for (let warning of warnings) {

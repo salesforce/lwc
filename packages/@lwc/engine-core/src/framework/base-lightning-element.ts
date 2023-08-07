@@ -64,17 +64,17 @@ import { instrumentInstance } from './runtime-instrumentation';
  */
 function createBridgeToElementDescriptor(
     propName: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
         throw new TypeError(
-            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`,
         );
     }
     if (!isFunction(set)) {
         throw new TypeError(
-            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`,
         );
     }
     return {
@@ -86,7 +86,7 @@ function createBridgeToElementDescriptor(
                 if (process.env.NODE_ENV !== 'production') {
                     logError(
                         `The value of property \`${propName}\` can't be read from the constructor because the owner component hasn't set the value yet. Instead, use the constructor to set a default value for the property.`,
-                        vm
+                        vm,
                     );
                 }
                 return;
@@ -100,24 +100,24 @@ function createBridgeToElementDescriptor(
                 const vmBeingRendered = getVMBeingRendered();
                 if (isInvokingRender) {
                     logError(
-                        `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
+                        `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`,
                     );
                 }
                 if (isUpdatingTemplate) {
                     logError(
-                        `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
+                        `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`,
                     );
                 }
                 if (isBeingConstructed(vm)) {
                     logError(
                         `Failed to construct '${getComponentTag(
-                            vm
-                        )}': The result must not have attributes.`
+                            vm,
+                        )}': The result must not have attributes.`,
                     );
                 }
                 if (isObject(newValue) && !isNull(newValue)) {
                     logError(
-                        `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
+                        `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`,
                     );
                 }
             }
@@ -199,7 +199,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  **/
 // @ts-ignore
 export const LightningElement: LightningElementConstructor = function (
-    this: LightningElement
+    this: LightningElement,
 ): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
@@ -219,7 +219,7 @@ export const LightningElement: LightningElementConstructor = function (
         const { assertInstanceOfHTMLElement } = vm.renderer;
         assertInstanceOfHTMLElement(
             vm.elm,
-            `Component creation requires a DOM element to be associated to ${vm}.`
+            `Component creation requires a DOM element to be associated to ${vm}.`,
         );
     }
 
@@ -288,8 +288,8 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     if (isBeingConstructed(vm)) {
         logError(
             `this.${methodOrPropName} should not be called during the construction of the custom element for ${getComponentTag(
-                vm
-            )} because the element is not yet in the DOM or has no children yet.`
+                vm,
+            )} because the element is not yet in the DOM or has no children yet.`,
         );
     }
 }
@@ -310,7 +310,7 @@ LightningElement.prototype = {
     addEventListener(
         type: string,
         listener: EventListener,
-        options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions,
     ): void {
         const vm = getAssociatedVM(this);
         const {
@@ -322,17 +322,17 @@ LightningElement.prototype = {
             const vmBeingRendered = getVMBeingRendered();
             if (isInvokingRender) {
                 logError(
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`,
                 );
             }
             if (isUpdatingTemplate) {
                 logError(
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`,
                 );
             }
             if (!isFunction(listener)) {
                 logError(
-                    `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
+                    `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`,
                 );
             }
         }
@@ -344,7 +344,7 @@ LightningElement.prototype = {
     removeEventListener(
         type: string,
         listener: EventListener,
-        options?: boolean | AddEventListenerOptions
+        options?: boolean | AddEventListenerOptions,
     ): void {
         const vm = getAssociatedVM(this);
         const {
@@ -416,8 +416,8 @@ LightningElement.prototype = {
             if (isBeingConstructed(vm)) {
                 logError(
                     `Failed to construct '${getComponentTag(
-                        vm
-                    )}': The result must not have attributes.`
+                        vm,
+                    )}': The result must not have attributes.`,
                 );
             }
         }
@@ -436,8 +436,8 @@ LightningElement.prototype = {
             if (isBeingConstructed(vm)) {
                 logError(
                     `Failed to construct '${getComponentTag(
-                        vm
-                    )}': The result must not have attributes.`
+                        vm,
+                    )}': The result must not have attributes.`,
                 );
             }
         }
@@ -478,7 +478,7 @@ LightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             if (isBeingConstructed(vm)) {
                 logError(
-                    `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
+                    `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`,
                 );
             }
         }
@@ -492,7 +492,7 @@ LightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             if (vm.renderMode === RenderMode.Light) {
                 logError(
-                    '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
+                    '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.',
                 );
             }
         }
@@ -507,8 +507,8 @@ LightningElement.prototype = {
             if (process.env.NODE_ENV !== 'production') {
                 logError(
                     `this.refs should not be called while ${getComponentTag(
-                        vm
-                    )} is rendering. Use this.refs only when the DOM is stable, e.g. in renderedCallback().`
+                        vm,
+                    )} is rendering. Use this.refs only when the DOM is stable, e.g. in renderedCallback().`,
                 );
             }
             // If the template is in the process of being updated, then we don't want to go through the normal
@@ -535,10 +535,10 @@ LightningElement.prototype = {
         ) {
             logError(
                 `this.refs is undefined for ${getComponentTag(
-                    vm
+                    vm,
                 )}. This is either because the attached template has no "lwc:ref" directive, or this.refs was ` +
                     `invoked before renderedCallback(). Use this.refs only when the referenced HTML elements have ` +
-                    `been rendered to the DOM, such as within renderedCallback() or disconnectedCallback().`
+                    `been rendered to the DOM, such as within renderedCallback() or disconnectedCallback().`,
             );
         }
 
@@ -697,7 +697,7 @@ export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
 for (const propName in HTMLElementOriginalDescriptors) {
     lightningBasedDescriptors[propName] = createBridgeToElementDescriptor(
         propName,
-        HTMLElementOriginalDescriptors[propName]
+        HTMLElementOriginalDescriptors[propName],
     );
 }
 

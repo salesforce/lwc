@@ -144,7 +144,7 @@ function validateOptions(options: TransformOptions) {
 
         // eslint-disable-next-line no-console
         console.warn(
-            `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+            `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`,
         );
     }
 
@@ -153,7 +153,7 @@ function validateOptions(options: TransformOptions) {
 
         // eslint-disable-next-line no-console
         console.warn(
-            `"stylesheetConfig" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+            `"stylesheetConfig" property is deprecated. The value doesn't impact the compilation and can safely be removed.`,
         );
     }
 
@@ -170,13 +170,13 @@ function validateOutputConfig(config: OutputConfig) {
     invariant(
         isUndefinedOrBoolean(config.sourcemap),
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
-        [config.sourcemap]
+        [config.sourcemap],
     );
 
     if (!isUndefined(config.minify)) {
         // eslint-disable-next-line no-console
         console.warn(
-            `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+            `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`,
         );
     }
 }

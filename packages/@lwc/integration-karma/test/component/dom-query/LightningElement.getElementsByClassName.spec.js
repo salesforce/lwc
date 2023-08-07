@@ -9,7 +9,7 @@ describe('LightningElement.getElementsByClassName', () => {
                 is: ConstructorGetElementsByClassName,
             });
         }).toLogErrorDev(
-            /Error: \[LWC error]: this.getElementsByClassName\(\) should not be called during the construction of the custom element for <x-constructor-get-elements-by-class-name> because the element is not yet in the DOM or has no children yet\./
+            /Error: \[LWC error]: this.getElementsByClassName\(\) should not be called during the construction of the custom element for <x-constructor-get-elements-by-class-name> because the element is not yet in the DOM or has no children yet\./,
         );
     });
 });

@@ -90,7 +90,7 @@ describe('global HTML Properties', () => {
                 return Promise.resolve().then(() => {
                     expect(attributeIsReactiveRenderCount).toBe(2);
                     expect(element.shadowRoot.querySelector(`div.${prop}`).textContent).toBe(
-                        `${value}`
+                        `${value}`,
                     );
                 });
             });
@@ -227,7 +227,7 @@ it('should log console error accessing props in constructor', () => {
     expect(() => {
         createElement('prop-getter-title', { is: AccessAttributeInConstructor });
     }).toLogErrorDev(
-        /\[LWC error\]: The value of property `title` can't be read from the constructor because the owner component hasn't set the value yet. Instead, use the constructor to set a default value for the property./
+        /\[LWC error\]: The value of property `title` can't be read from the constructor because the owner component hasn't set the value yet. Instead, use the constructor to set a default value for the property./,
     );
 });
 

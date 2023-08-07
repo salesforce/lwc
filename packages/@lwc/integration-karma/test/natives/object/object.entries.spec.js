@@ -26,7 +26,7 @@ describe('Plain Object', () => {
                 },
                 y: { value: 'y', enumerable: false },
                 z: { value: 'z', enumerable: true },
-            }
+            },
         );
 
         const actual = Object.entries(myObj).join('|');
@@ -97,7 +97,7 @@ describe('Proxy Object', () => {
                 },
                 y: { value: 'y', enumerable: false },
                 z: { value: 'z', enumerable: true },
-            }
+            },
         );
 
         const proxy = new Proxy(obj, {});
@@ -112,7 +112,7 @@ describe('Proxy Object', () => {
                 y: 42,
                 [Symbol('z')]: 'z',
             },
-            {}
+            {},
         );
         const actual = Object.entries(proxy).join('|');
         expect(actual).toBe('x,x|y,42');

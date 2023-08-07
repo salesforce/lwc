@@ -11,26 +11,26 @@ if (!process.env.NATIVE_SHADOW) {
 
             // shadow grandparent
             expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-container_container' : 'lwc-7c9hba002d8'
+                process.env.API_VERSION <= 58 ? 'x-container_container' : 'lwc-7c9hba002d8',
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(0, 128, 0)'
+                'rgb(0, 128, 0)',
             );
 
             // light child
             const child = elm.shadowRoot.querySelector('x-light');
             expect(child.querySelector('h1').outerHTML).not.toContain('x-child_child');
             expect(getComputedStyle(child.querySelector('h1')).backgroundColor).toEqual(
-                'rgb(255, 0, 0)'
+                'rgb(255, 0, 0)',
             );
 
             // shadow grandchild
             const grandchild = child.querySelector('x-grandchild');
             expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-grandchild_grandchild' : 'lwc-42b236sbaik'
+                process.env.API_VERSION <= 58 ? 'x-grandchild_grandchild' : 'lwc-42b236sbaik',
             );
             expect(
-                getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor
+                getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor,
             ).toEqual('rgb(0, 255, 255)');
         });
     });

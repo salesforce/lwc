@@ -18,13 +18,13 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         // non-null value so that we enter the code path that we want to test.
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            '.head'
+            '.head',
         );
         await input.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            'integration-button.negative'
+            'integration-button.negative',
         );
         await target.focus();
 
@@ -37,13 +37,13 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         // non-null value so that we enter the code path that we want to test.
         const head = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            '.head'
+            '.head',
         );
         await head.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            'integration-button.zero'
+            'integration-button.zero',
         );
         await target.focus();
 
@@ -56,13 +56,13 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         // non-null value so that we enter the code path that we want to test.
         const head = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            '.head'
+            '.head',
         );
         await head.click();
 
         const target = await browser.shadowDeep$(
             'integration-delegates-focus-focus-method-on-internal-element',
-            'integration-button.none'
+            'integration-button.none',
         );
         await target.focus();
 

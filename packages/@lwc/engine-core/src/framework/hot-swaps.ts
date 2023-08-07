@@ -94,7 +94,7 @@ export function getTemplateOrSwappedTemplate(tpl: Template): Template {
 }
 
 export function getComponentOrSwappedComponent(
-    Ctor: LightningElementConstructor
+    Ctor: LightningElementConstructor,
 ): LightningElementConstructor {
     assertNotProd(); // this method should never leak to prod
 
@@ -166,7 +166,7 @@ export function swapTemplate(oldTpl: Template, newTpl: Template): boolean {
 
 export function swapComponent(
     oldComponent: LightningElementConstructor,
-    newComponent: LightningElementConstructor
+    newComponent: LightningElementConstructor,
 ): boolean {
     if (process.env.NODE_ENV !== 'production') {
         if (isComponentConstructor(oldComponent) && isComponentConstructor(newComponent)) {

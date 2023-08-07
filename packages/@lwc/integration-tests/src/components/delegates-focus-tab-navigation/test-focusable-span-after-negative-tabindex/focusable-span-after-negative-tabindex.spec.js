@@ -15,7 +15,7 @@ describe('Delegates focus', () => {
     it('should focus the input when clicked', async () => {
         const first = await browser.shadowDeep$(
             'integration-focusable-span-after-negative-tabindex',
-            '.first'
+            '.first',
         );
         await first.click();
 

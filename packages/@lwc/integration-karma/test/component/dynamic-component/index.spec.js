@@ -77,7 +77,7 @@ describe('dynamic components', () => {
 
         const verifyListContent = (expectedChildren) => {
             const actualChildren = Array.from(container.shadowRoot.children).map((_) =>
-                _.tagName.toLowerCase()
+                _.tagName.toLowerCase(),
             );
             expect(actualChildren).toEqual(expectedChildren);
         };

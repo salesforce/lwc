@@ -69,7 +69,7 @@ if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunne
             const addChild = await browser.shadowDeep$('integration-lifecycle-leak', '.add-child');
             const removeChildren = await browser.shadowDeep$(
                 'integration-lifecycle-leak',
-                '.remove-children'
+                '.remove-children',
             );
 
             const getNumChildren = () => {

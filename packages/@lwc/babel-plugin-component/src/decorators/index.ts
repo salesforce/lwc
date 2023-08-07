@@ -41,7 +41,7 @@ function getReferences(identifier: NodePath<types.Identifier>) {
 /** Returns the type of decorator depdending on the property or method if get applied to */
 function getDecoratedNodeType(
     decoratorPath: NodePath<types.Decorator>,
-    state: LwcBabelPluginPass
+    state: LwcBabelPluginPass,
 ): DecoratorType {
     const propertyOrMethod = decoratorPath.parentPath;
     if (isClassMethod(propertyOrMethod)) {
@@ -58,27 +58,33 @@ function getDecoratedNodeType(
             {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
             },
-            state
+            state,
         );
     }
 }
 
 function validateImportedLwcDecoratorUsage(
     engineImportSpecifiers: ImportSpecifier[],
-    state: LwcBabelPluginPass
+    state: LwcBabelPluginPass,
 ) {
     engineImportSpecifiers
         .filter(({ name }) => isLwcDecoratorName(name))
-        .reduce((acc, { name, path }) => {
-            // Get a list of all the  local references
-            const local = path.get('imported') as NodePath<types.Identifier>;
-            const references = getReferences(local).map((reference) => ({
-                name,
-                reference,
-            }));
+        .reduce(
+            (acc, { name, path }) => {
+                // Get a list of all the  local references
+                const local = path.get('imported') as NodePath<types.Identifier>;
+                const references = getReferences(local).map((reference) => ({
+                    name,
+                    reference,
+                }));
 
-            return [...acc, ...references] as { name: string; reference: NodePath<types.Node> }[];
-        }, [] as { name: string; reference: NodePath<types.Node> }[])
+                return [...acc, ...references] as {
+                    name: string;
+                    reference: NodePath<types.Node>;
+                }[];
+            },
+            [] as { name: string; reference: NodePath<types.Node> }[],
+        )
         .forEach(({ name, reference }) => {
             // Get the decorator from the identifier
             // If the the decorator is:
@@ -95,7 +101,7 @@ function validateImportedLwcDecoratorUsage(
                         errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
                         messageArgs: [name],
                     },
-                    state
+                    state,
                 );
             }
 
@@ -107,7 +113,7 @@ function validateImportedLwcDecoratorUsage(
                         errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
                         messageArgs: [name],
                     },
-                    state
+                    state,
                 );
             }
         });
@@ -134,7 +140,7 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
 function removeImportedDecoratorSpecifiers(
-    engineImportSpecifiers: { name: any; path: NodePath<Node> }[]
+    engineImportSpecifiers: { name: any; path: NodePath<Node> }[],
 ) {
     engineImportSpecifiers
         .filter(({ name }) => isLwcDecoratorName(name))
@@ -166,7 +172,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: L
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
                 messageArgs: [name, AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
             },
-            state
+            state,
         );
     } else {
         return generateError(
@@ -175,7 +181,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: L
                 errorInfo: DecoratorErrors.INVALID_DECORATOR,
                 messageArgs: [AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
             },
-            state
+            state,
         );
     }
 }
@@ -192,7 +198,7 @@ function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<type
 
 function getDecoratorMetadata(
     decoratorPath: NodePath<types.Decorator>,
-    state: LwcBabelPluginPass
+    state: LwcBabelPluginPass,
 ): DecoratorMeta {
     const expressionPath = decoratorPath.get('expression') as NodePath<types.Node>;
 
@@ -219,7 +225,7 @@ function getDecoratorMetadata(
 function getMetadataObjectPropertyList(
     t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[]
+    classBodyItems: NodePath<ClassBodyItem>[],
 ) {
     const list = [
         ...api.transform(t, decoratorMetas, classBodyItems),
@@ -242,7 +248,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     function createRegisterDecoratorsCallExpression(
         path: NodePath<types.Class>,
         classExpression: types.Identifier | types.ClassExpression,
-        props: any[]
+        props: any[],
     ) {
         const id = addNamed(path, REGISTER_DECORATORS_ID, LWC_PACKAGE_ALIAS);
         return t.callExpression(id, [classExpression, t.objectExpression(props)]);
@@ -261,7 +267,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             visitedClasses.add(node);
 
             const classBodyItems: NodePath<ClassBodyItem>[] = path.get(
-                'body.body'
+                'body.body',
             ) as NodePath<ClassBodyItem>[];
             if (classBodyItems.length === 0) {
                 return;
@@ -275,7 +281,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             const metaPropertyList = getMetadataObjectPropertyList(
                 t,
                 decoratorMetas,
-                classBodyItems
+                classBodyItems,
             );
             if (metaPropertyList.length === 0) {
                 return;
@@ -296,7 +302,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 // if it does not have an id, we can treat it as a ClassExpression
                 const classExpression = t.toExpression(node);
                 path.replaceWith(
-                    createRegisterDecoratorsCallExpression(path, classExpression, metaPropertyList)
+                    createRegisterDecoratorsCallExpression(path, classExpression, metaPropertyList),
                 );
             } else {
                 // Example: export default class NamedClass extends LightningElement {}
@@ -307,8 +313,8 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 const statementPath = path.getStatementParent();
                 statementPath!.insertAfter(
                     t.expressionStatement(
-                        createRegisterDecoratorsCallExpression(path, node.id!, metaPropertyList)
-                    )
+                        createRegisterDecoratorsCallExpression(path, node.id!, metaPropertyList),
+                    ),
                 );
             }
         },

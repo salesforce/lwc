@@ -25,7 +25,7 @@ import { validateStyleTextContents } from './utils/validate-style-text-contents'
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
         .map((attr) =>
-            attr.value.length ? `${attr.name}="${htmlEscape(attr.value, true)}"` : attr.name
+            attr.value.length ? `${attr.name}="${htmlEscape(attr.value, true)}"` : attr.name,
         )
         .join(' ');
 }
@@ -55,7 +55,7 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
     }
 
     return `<template ${attrs.join(' ')}>${serializeChildNodes(
-        shadowRoot[HostChildrenKey]
+        shadowRoot[HostChildrenKey],
     )}</template>`;
 }
 

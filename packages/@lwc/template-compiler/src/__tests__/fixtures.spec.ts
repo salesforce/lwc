@@ -33,7 +33,7 @@ describe('fixtures', () => {
             // String.prototype.replaceAll only available in Node 15+
             const code = compiled.code.replace(
                 new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
-                'X.X.X'
+                'X.X.X',
             );
 
             return {
@@ -41,6 +41,6 @@ describe('fixtures', () => {
                 'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
             };
-        }
+        },
     );
 });

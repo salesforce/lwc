@@ -17,7 +17,7 @@ describe('multiple templates', () => {
         return Promise.resolve().then(() => {
             expect(element.querySelector('div').textContent).toEqual('b');
             expect(getComputedStyle(element.querySelector('div')).color).toEqual(
-                'rgb(233, 150, 122)'
+                'rgb(233, 150, 122)',
             );
             expect(getComputedStyle(element.querySelector('div')).marginLeft).toEqual('10px');
             // element should not be dirty after template change
@@ -31,28 +31,28 @@ describe('multiple templates', () => {
         return Promise.resolve()
             .then(() => {
                 expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
-                    'rgb(0, 0, 0)'
+                    'rgb(0, 0, 0)',
                 );
                 expect(getComputedStyle(element).marginLeft).toEqual('0px');
                 element.next();
             })
             .then(() => {
                 expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
                 expect(getComputedStyle(element).marginLeft).toEqual('5px');
                 element.next();
             })
             .then(() => {
                 expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
-                    'rgb(0, 0, 0)'
+                    'rgb(0, 0, 0)',
                 );
                 expect(getComputedStyle(element).marginLeft).toEqual('0px');
                 element.next();
             })
             .then(() => {
                 expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
-                    'rgb(255, 0, 0)'
+                    'rgb(255, 0, 0)',
                 );
                 expect(getComputedStyle(element).marginLeft).toEqual('5px');
             });

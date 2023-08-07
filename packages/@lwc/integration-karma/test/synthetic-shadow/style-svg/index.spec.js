@@ -47,7 +47,7 @@ describe('styling svg', () => {
             document.body.appendChild(elm);
             await new Promise((resolve) => requestAnimationFrame(() => resolve()));
             expect(getComputedStyle(elm.shadowRoot.querySelector('svg')).fill).toEqual(
-                'rgb(255, 0, 0)'
+                'rgb(255, 0, 0)',
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('text')).display).toEqual('none');
         });

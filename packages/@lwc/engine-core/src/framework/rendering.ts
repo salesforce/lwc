@@ -74,7 +74,7 @@ export function patchChildren(
     c1: VNodes,
     c2: VNodes,
     parent: ParentNode,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ): void {
     if (hasDynamicChildren(c2)) {
         updateDynamicChildren(c1, c2, parent, renderer);
@@ -101,7 +101,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
                 'Expected these VNodes to be the same: ' +
                     JSON.stringify({ sel: n1.sel, key: n1.key }) +
                     ', ' +
-                    JSON.stringify({ sel: n2.sel, key: n2.key })
+                    JSON.stringify({ sel: n2.sel, key: n2.key }),
             );
         }
     }
@@ -200,7 +200,7 @@ function mountComment(
     vnode: VComment,
     parent: ParentNode,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     const { owner } = vnode;
     const { createComment } = renderer;
@@ -215,7 +215,7 @@ function mountFragment(
     vnode: VFragment,
     parent: ParentNode,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
@@ -239,7 +239,7 @@ function mountElement(
     vnode: VElement,
     parent: ParentNode,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     const {
         sel,
@@ -273,7 +273,7 @@ function mountStatic(
     vnode: VStatic,
     parent: ParentNode,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     const { owner } = vnode;
     const { cloneNode, isSyntheticShadowDefined } = renderer;
@@ -300,7 +300,7 @@ function mountCustomElement(
     vnode: VCustomElement,
     parent: ParentNode,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     const { sel, owner } = vnode;
     const { createCustomElement } = renderer;
@@ -338,7 +338,7 @@ function mountCustomElement(
         normalizedTagname,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
     );
 
     vnode.elm = elm;
@@ -382,7 +382,7 @@ function patchCustomElement(
     n1: VCustomElement,
     n2: VCustomElement,
     parent: ParentNode,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     // TODO [#3331]: This if branch should be removed in 246 with lwc:dynamic
     if (n1.ctor !== n2.ctor) {
@@ -446,7 +446,7 @@ function mountVNodes(
     renderer: RendererAPI,
     anchor: Node | null,
     start: number = 0,
-    end: number = vnodes.length
+    end: number = vnodes.length,
 ) {
     for (; start < end; ++start) {
         const vnode = vnodes[start];
@@ -460,7 +460,7 @@ function unmount(
     vnode: VNode,
     parent: ParentNode,
     renderer: RendererAPI,
-    doRemove: boolean = false
+    doRemove: boolean = false,
 ) {
     const { type, elm, sel } = vnode;
 
@@ -504,7 +504,7 @@ function unmountVNodes(
     renderer: RendererAPI,
     doRemove: boolean = false,
     start: number = 0,
-    end: number = vnodes.length
+    end: number = vnodes.length,
 ) {
     for (; start < end; ++start) {
         const ch = vnodes[start];
@@ -546,7 +546,7 @@ function insertFragmentOrNode(
     vnode: VNode,
     parent: Node,
     anchor: Node | null,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -592,7 +592,7 @@ export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI
 function patchElementPropsAndAttrs(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     if (isNull(oldVnode)) {
         applyEventListeners(vnode, renderer);
@@ -674,8 +674,8 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         ) {
             logError(
                 `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
-                    vm
-                )} tag. Scoped slot content can only be passed to a light dom child.`
+                    vm,
+                )} tag. Scoped slot content can only be passed to a light dom child.`,
             );
         }
     }
@@ -762,7 +762,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`
+            `Invalid vnode for a custom element, it must have children defined.`,
         );
     }
 
@@ -845,7 +845,7 @@ function hasDynamicChildren(children: VNodes): boolean {
 function createKeyToOldIdx(
     children: VNodes,
     beginIdx: number,
-    endIdx: number
+    endIdx: number,
 ): Record<Key, number> {
     const map: Record<Key, number> = {};
 
@@ -866,7 +866,7 @@ function updateDynamicChildren(
     oldCh: VNodes,
     newCh: VNodes,
     parent: ParentNode,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ) {
     let oldStartIdx = 0;
     let newStartIdx = 0;

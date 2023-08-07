@@ -88,20 +88,20 @@ export function createElement(
     options: {
         is: typeof LightningElement;
         mode?: 'open' | 'closed';
-    }
+    },
 ): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
-                options
-            )}".`
+                options,
+            )}".`,
         );
     }
 
     const Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"createElement" function expects an "is" option with a valid component constructor.`
+            `"createElement" function expects an "is" option with a valid component constructor.`,
         );
     }
 
@@ -147,7 +147,7 @@ export function createElement(
         tagName,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
     );
     return element;
 }

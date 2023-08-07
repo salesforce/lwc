@@ -35,7 +35,7 @@ export function fauxElementsFromPoint(
     context: Node,
     doc: Document,
     left: number,
-    top: number
+    top: number,
 ): Element[] {
     const elements: Element[] | null = elementsFromPoint.call(doc, left, top);
     const result: Element[] = [];
@@ -67,7 +67,7 @@ export function fauxElementsFromPoint(
             // multiple times.
             const ancestorHost = findAncestorHostInImmediateShadowRoot(
                 elementRootNode,
-                rootNodes[0]
+                rootNodes[0],
             );
             if (
                 !isUndefined(ancestorHost) &&

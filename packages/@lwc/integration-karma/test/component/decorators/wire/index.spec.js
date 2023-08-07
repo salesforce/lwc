@@ -15,7 +15,7 @@ describe('restrictions', () => {
                 showFeatures() {}
             }
         }).toLogErrorDev(
-            /Invalid @wire showFeatures field\. Found a duplicate method with the same name\./
+            /Invalid @wire showFeatures field\. Found a duplicate method with the same name\./,
         );
     });
 });
@@ -37,7 +37,7 @@ describe('regression [W-9927596] - wired field with duplicate observed field', (
 
             Ctor = DuplicateProperty;
         }).toLogErrorDev(
-            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
         );
 
         const elm = createElement('x-duplicate-property', { is: Ctor });

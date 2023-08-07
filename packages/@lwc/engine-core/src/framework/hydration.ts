@@ -143,7 +143,7 @@ function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAP
 // Any attribute names specified in that array will not be validated, and the
 // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
 function getValidationPredicate(
-    optOutStaticProp: string[] | true | undefined
+    optOutStaticProp: string[] | true | undefined,
 ): AttrValidationPredicate {
     if (isUndefined(optOutStaticProp)) {
         return (_attrName: string) => true;
@@ -161,7 +161,7 @@ function getValidationPredicate(
     }
     if (process.env.NODE_ENV !== 'production') {
         logWarn(
-            'Validation opt out must be `true` or an array of attributes that should not be validated.'
+            'Validation opt out must be `true` or an array of attributes that should not be validated.',
         );
     }
     return (_attrName: string) => true;
@@ -175,7 +175,7 @@ function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | nu
         if (!textNodeContentsAreEqual(node, vnode, renderer)) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
-                vnode.owner
+                vnode.owner,
             );
         }
     }
@@ -197,7 +197,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
         if (nodeValue !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
-                vnode.owner
+                vnode.owner,
             );
         }
     }
@@ -244,7 +244,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     const { owner } = vnode;
     const { context } = vnode.data;
     const isDomManual = Boolean(
-        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LwcDomMode.Manual
+        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LwcDomMode.Manual,
     );
 
     if (isDomManual) {
@@ -266,9 +266,9 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
                     logWarn(
                         `Mismatch hydrating element <${getProperty(
                             elm,
-                            'tagName'
+                            'tagName',
                         ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                        owner
+                        owner,
                     );
                 }
             }
@@ -288,7 +288,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 function hydrateCustomElement(
     elm: Node,
     vnode: VCustomElement,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ): Node | null {
     const { validationOptOut } = vnode.ctor;
     const shouldValidateAttr = getValidationPredicate(validationOptOut);
@@ -345,7 +345,7 @@ function hydrateChildren(
     node: Node | null,
     children: VNodes,
     parentNode: Element | ShadowRoot,
-    owner: VM
+    owner: VM,
 ) {
     let hasWarned = false;
     let nextNode: Node | null = node;
@@ -363,7 +363,7 @@ function hydrateChildren(
                         hasWarned = true;
                         logError(
                             `Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.`,
-                            owner
+                            owner,
                         );
                     }
                 }
@@ -379,7 +379,7 @@ function hydrateChildren(
             if (!hasWarned) {
                 logError(
                     `Hydration mismatch: incorrect number of rendered nodes. Server rendered more nodes than the client.`,
-                    owner
+                    owner,
                 );
             }
         }
@@ -415,7 +415,7 @@ function hasCorrectNodeType<T extends Node>(
     vnode: VNode,
     node: Node,
     nodeType: number,
-    renderer: RendererAPI
+    renderer: RendererAPI,
 ): node is T {
     const { getProperty } = renderer;
     if (getProperty(node, 'nodeType') !== nodeType) {
@@ -432,7 +432,7 @@ function isMatchingElement(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    shouldValidateAttr: AttrValidationPredicate = () => true
+    shouldValidateAttr: AttrValidationPredicate = () => true,
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
@@ -440,9 +440,9 @@ function isMatchingElement(
             logError(
                 `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
                     elm,
-                    'tagName'
+                    'tagName',
                 ).toLowerCase()}".`,
-                vnode.owner
+                vnode.owner,
             );
         }
 
@@ -462,7 +462,7 @@ function isMatchingElement(
 
 function attributeValuesAreEqual(
     vnodeValue: string | number | boolean | null | undefined,
-    value: string | null
+    value: string | null,
 ) {
     const vnodeValueAsString = String(vnodeValue);
 
@@ -484,7 +484,7 @@ function validateAttrs(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    shouldValidateAttr: (attrName: string) => boolean
+    shouldValidateAttr: (attrName: string) => boolean,
 ): boolean {
     const {
         data: { attrs = {} },
@@ -507,11 +507,11 @@ function validateAttrs(
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         elm,
-                        'tagName'
+                        'tagName',
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
                         isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
                     }`,
-                    owner
+                    owner,
                 );
             }
             nodesAreCompatible = false;
@@ -596,11 +596,11 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             logError(
                 `Mismatch hydrating element <${getProperty(
                     elm,
-                    'tagName'
+                    'tagName',
                 ).toLowerCase()}>: attribute "class" has different values, expected ${readableVnodeClassname} but found ${JSON.stringify(
-                    elmClassName
+                    elmClassName,
                 )}`,
-                vnode.owner
+                vnode.owner,
             );
         }
     }
@@ -652,9 +652,9 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
             logError(
                 `Mismatch hydrating element <${getProperty(
                     elm,
-                    'tagName'
+                    'tagName',
                 ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-                vnode.owner
+                vnode.owner,
             );
         }
     }
@@ -690,9 +690,9 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
             logError(
                 `Hydration mismatch: expecting element with tag "${getProperty(
                     client,
-                    'tagName'
+                    'tagName',
                 ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
-                vnode.owner
+                vnode.owner,
             );
         }
 
@@ -707,12 +707,12 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         client,
-                        'tagName'
+                        'tagName',
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
                         client,
-                        attrName
+                        attrName,
                     )}" but found "${getAttribute(ssr, attrName)}"`,
-                    vnode.owner
+                    vnode.owner,
                 );
             }
             isCompatibleElements = false;

@@ -51,7 +51,7 @@ describe('restrictions', () => {
                 showFeatures() {}
             }
         }).toLogErrorDev(
-            /Invalid @track showFeatures field\. Found a duplicate method with the same name\./
+            /Invalid @track showFeatures field\. Found a duplicate method with the same name\./,
         );
     });
 
@@ -70,7 +70,7 @@ describe('restrictions', () => {
                 set showFeatures(v) {}
             }
         }).toLogErrorDev(
-            /Invalid @track showFeatures field\. Found a duplicate accessor with the same name\./
+            /Invalid @track showFeatures field\. Found a duplicate accessor with the same name\./,
         );
     });
 });
@@ -197,7 +197,7 @@ describe('regression [W-9927596] - track field with duplicate observed field', (
 
             Ctor = DuplicateProperty;
         }).toLogErrorDev(
-            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
         );
 
         const elm = createElement('x-duplicate-property', { is: Ctor });

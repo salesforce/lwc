@@ -9,7 +9,7 @@ const CustomEventConstructor = CustomEvent;
 function PatchedCustomEvent<T>(
     this: Event,
     type: string,
-    eventInitDict: CustomEventInit<T>
+    eventInitDict: CustomEventInit<T>,
 ): CustomEvent<T> {
     const event = new CustomEventConstructor(type, eventInitDict);
 

@@ -47,7 +47,7 @@ check(input)
     .then((res) => {
         if (res.isTreeShakable === false) {
             console.error(
-                `Failed to fully treeshake ${input}. Remaining code after treeshaking:\n\n${res.code}`
+                `Failed to fully treeshake ${input}. Remaining code after treeshaking:\n\n${res.code}`,
             );
         }
 

@@ -58,7 +58,7 @@ export const enum APIFeature {
 
 export function isAPIFeatureEnabled(
     apiVersionFeature: APIFeature,
-    apiVersion: APIVersion
+    apiVersion: APIVersion,
 ): boolean {
     switch (apiVersionFeature) {
         case APIFeature.LOWERCASE_SCOPE_TOKENS:

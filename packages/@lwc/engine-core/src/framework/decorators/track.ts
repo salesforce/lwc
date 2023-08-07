@@ -22,7 +22,7 @@ import { logError } from '../../shared/logger';
 export default function track(
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
 ): any;
 export default function track(target: any): any {
     if (arguments.length === 1) {
@@ -30,7 +30,7 @@ export default function track(target: any): any {
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(
-            `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
+            `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`,
         );
     }
     throw new Error();
@@ -50,15 +50,15 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
                 if (isInvokingRender) {
                     logError(
                         `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                            key
-                        )}`
+                            key,
+                        )}`,
                     );
                 }
                 if (isUpdatingTemplate) {
                     logError(
                         `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
-                            key
-                        )}`
+                            key,
+                        )}`,
                     );
                 }
             }

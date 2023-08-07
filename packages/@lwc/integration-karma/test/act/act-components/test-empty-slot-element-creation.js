@@ -31,7 +31,7 @@ export default function (define) {
                                     },
                                     key: 2,
                                 },
-                                []
+                                [],
                             ),
                             api_slot(
                                 '',
@@ -39,9 +39,9 @@ export default function (define) {
                                     key: 3,
                                 },
                                 [],
-                                $slotset
+                                $slotset,
                             ),
-                        ]
+                        ],
                     ),
                 ];
             }
@@ -52,6 +52,6 @@ export default function (define) {
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
             lwc.freezeTemplate(tmpl);
             return tmpl;
-        }
+        },
     );
 }

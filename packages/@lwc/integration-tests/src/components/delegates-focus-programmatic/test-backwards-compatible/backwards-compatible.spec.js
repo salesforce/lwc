@@ -16,7 +16,7 @@ describe('when the component overrides the focus method', () => {
     it('should continue custom focus behavior', async () => {
         const target = await browser.shadowDeep$(
             'integration-backwards-compatible',
-            'integration-child'
+            'integration-child',
         );
         await target.focus();
 

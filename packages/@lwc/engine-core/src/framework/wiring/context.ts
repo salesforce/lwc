@@ -22,7 +22,7 @@ const AdapterToTokenMap: Map<WireAdapterConstructor, string> = new Map();
 
 export function createContextProviderWithRegister(
     adapter: WireAdapterConstructor,
-    registerContextProvider: RegisterContextProviderFn
+    registerContextProvider: RegisterContextProviderFn,
 ): ContextProvider {
     let adapterContextToken = AdapterToTokenMap.get(adapter);
     if (!isUndefined(adapterContextToken)) {
@@ -58,7 +58,7 @@ export function createContextProviderWithRegister(
                 setDisconnectedCallback(disconnectCallback);
 
                 consumerConnectedCallback(consumer);
-            }
+            },
         );
     };
 }
@@ -66,7 +66,7 @@ export function createContextProviderWithRegister(
 export function createContextWatcher(
     vm: VM,
     wireDef: WireDef,
-    callbackWhenContextIsReady: (newContext: ContextValue) => void
+    callbackWhenContextIsReady: (newContext: ContextValue) => void,
 ) {
     const { adapter } = wireDef;
     const adapterContextToken = AdapterToTokenMap.get(adapter);

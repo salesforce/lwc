@@ -28,7 +28,7 @@ export default function (define) {
                                     _m0 || ($ctx._m0 = api_bind($cmp.handleToggleSectionCollapsed)),
                             },
                         },
-                        []
+                        [],
                     ),
                 ];
             }
@@ -38,6 +38,6 @@ export default function (define) {
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
             lwc.freezeTemplate(tmpl);
             return tmpl;
-        }
+        },
     );
 }

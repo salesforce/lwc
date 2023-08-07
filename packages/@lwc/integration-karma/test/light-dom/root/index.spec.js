@@ -45,7 +45,7 @@ describe('root light element', () => {
         const log = dispatchEventWithLog(
             nodes.button,
             nodes,
-            new CustomEvent('test', { bubbles: true, composed: false })
+            new CustomEvent('test', { bubbles: true, composed: false }),
         );
 
         const composedPath = [

@@ -18,7 +18,7 @@ describe('iteration rendering', () => {
             const dataIds = extractDataIds(child);
             expect(dataIds.first.textContent).toEqual(isIterator ? (i === 0).toString() : '');
             expect(dataIds.last.textContent).toEqual(
-                isIterator ? (i === children.length - 1).toString() : ''
+                isIterator ? (i === children.length - 1).toString() : '',
             );
             expect(dataIds.index.textContent).toEqual(i.toString());
             expect(dataIds.value.textContent).toEqual(expected.toString());

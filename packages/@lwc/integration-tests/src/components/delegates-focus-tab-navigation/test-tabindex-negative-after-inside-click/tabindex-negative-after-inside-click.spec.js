@@ -16,12 +16,12 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
             'integration-child[data-id=click-target]',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
-            '.second-outside'
+            '.second-outside',
         );
         await secondOutside.click();
         await browser.keys(['Tab']);
@@ -34,7 +34,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
             'integration-child[data-id=click-target]',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         await browser.keys(['Tab']); // third inside
@@ -48,12 +48,12 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
             'integration-child[data-id=click-target]',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         const thirdOutside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
-            '.third-outside'
+            '.third-outside',
         );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
@@ -66,7 +66,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',
             'integration-child[data-id=click-target]',
-            '.second-inside'
+            '.second-inside',
         );
         await secondInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']); // first inside

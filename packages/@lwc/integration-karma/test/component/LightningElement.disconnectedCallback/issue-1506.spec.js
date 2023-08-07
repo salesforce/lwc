@@ -5,7 +5,7 @@ it('setting tracked value in disconnectedCallback should not throw', () => {
     const elm = createElement('x-parent', { is: Parent });
     document.body.appendChild(elm);
     expect(
-        elm.shadowRoot.querySelector('x-disconnected-callback-sets-tracked-value')
+        elm.shadowRoot.querySelector('x-disconnected-callback-sets-tracked-value'),
     ).not.toBeNull();
     elm.toggleTemplate();
 

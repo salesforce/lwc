@@ -33,7 +33,7 @@ export function checkVersionMismatch(func: StylesheetFactory, type: 'stylesheet'
 export function checkVersionMismatch(func: LightningElementConstructor, type: 'component'): void;
 export function checkVersionMismatch(
     func: Template | StylesheetFactory | LightningElementConstructor,
-    type: 'template' | 'stylesheet' | 'component'
+    type: 'template' | 'stylesheet' | 'component',
 ) {
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
@@ -45,7 +45,7 @@ export function checkVersionMismatch(
             // stylesheets and templates do not have user-meaningful names, but components do
             const friendlyName = type === 'component' ? `${type} ${func.name}` : type;
             logError(
-                `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
+                `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`,
             );
             report(ReportingEventId.CompilerRuntimeVersionMismatch, {
                 compilerVersion: version,

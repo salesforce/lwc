@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
                 })
                 .then(() => {
                     expect(elm.shadowRoot.firstChild.outerHTML).toBe(
-                        '<p class="second">second</p>'
+                        '<p class="second">second</p>',
                     );
                 });
         });

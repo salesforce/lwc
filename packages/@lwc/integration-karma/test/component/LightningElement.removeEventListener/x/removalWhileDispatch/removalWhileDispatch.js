@@ -19,7 +19,7 @@ export default class RemovalWhileDispatch extends LightningElement {
                 detail: {
                     handlers: [],
                 },
-            })
+            }),
         );
     }
 }

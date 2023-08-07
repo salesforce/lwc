@@ -54,7 +54,7 @@ describe('observed-fields', () => {
 
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.querySelector('.complex-value').textContent).toBe(
-                    'mutated name-mutated lastName'
+                    'mutated name-mutated lastName',
                 );
             });
         });
@@ -95,14 +95,14 @@ describe('observed-fields', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label txt');
             expect(elm.shadowRoot.querySelector('.computedLabel').textContent).toBe(
-                'label txt computed'
+                'label txt computed',
             );
 
             elm.label = 'label modified';
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label modified');
                 expect(elm.shadowRoot.querySelector('.computedLabel').textContent).toBe(
-                    'label txt computed'
+                    'label txt computed',
                 );
             });
         });
@@ -128,7 +128,7 @@ describe('observed-fields', () => {
 
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe(
-                'static value modified'
+                'static value modified',
             );
         });
     });
@@ -145,7 +145,7 @@ describe('observed-fields', () => {
                     showFeatures() {}
                 }
             }).toLogErrorDev(
-                /Invalid observed showFeatures field\. Found a duplicate method with the same name\./
+                /Invalid observed showFeatures field\. Found a duplicate method with the same name\./,
             );
         });
     });
@@ -178,7 +178,7 @@ describe('regression [W-9927596] - observed field with duplicate accessor', () =
 
             Ctor = DuplicateAccessor;
         }).toLogErrorDev(
-            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./,
         );
 
         const elm = createElement('x-duplicate-accessor', { is: Ctor });

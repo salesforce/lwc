@@ -49,10 +49,10 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
  * perform array operations on them. See issue #1545 for more details.
  */
 export function arrayFromCollection<T extends NodeList>(
-    collection: T
+    collection: T,
 ): T extends NodeListOf<infer U> ? U[] : Node[];
 export function arrayFromCollection<T extends HTMLCollection>(
-    collection: T
+    collection: T,
 ): T extends HTMLCollectionOf<infer U> ? U[] : Element[];
 export function arrayFromCollection<T extends HTMLCollection | NodeList>(collection: T): Node[] {
     const size = collection.length;

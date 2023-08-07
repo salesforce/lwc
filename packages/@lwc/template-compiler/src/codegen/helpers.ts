@@ -51,10 +51,10 @@ export function getMemberExpressionRoot(expression: t.MemberExpression): t.Ident
 
 export function objectToAST(
     obj: object,
-    valueMapper: (key: string) => t.Expression
+    valueMapper: (key: string) => t.Expression,
 ): t.ObjectExpression {
     return t.objectExpression(
-        Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key)))
+        Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key))),
     );
 }
 
@@ -84,7 +84,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
 export function hasIdAttribute(node: Node): boolean {
     if (isBaseElement(node)) {
         const hasIdAttr = [...node.attributes, ...node.properties].some(
-            ({ name }) => name === 'id'
+            ({ name }) => name === 'id',
         );
 
         if (hasIdAttr) {
@@ -102,7 +102,7 @@ export function hasIdAttribute(node: Node): boolean {
 export function memorizeHandler(
     codeGen: CodeGen,
     componentHandler: t.Expression,
-    handler: t.Expression
+    handler: t.Expression,
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
@@ -115,7 +115,7 @@ export function memorizeHandler(
         const memorization = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memorizedId),
-            handler
+            handler,
         );
 
         handler = t.logicalExpression('||', memorizedId, memorization);
@@ -129,13 +129,13 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     if (codeGen.slotNames.size) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),
-            t.identifier('slots')
+            t.identifier('slots'),
         );
 
         const slotsArray = t.arrayExpression(
             Array.from(codeGen.slotNames)
                 .sort()
-                .map((slot) => t.literal(slot))
+                .map((slot) => t.literal(slot)),
         );
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
@@ -145,7 +145,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     const stylesheetsMetadata = t.assignmentExpression(
         '=',
         t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
-        t.arrayExpression([])
+        t.arrayExpression([]),
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
@@ -154,7 +154,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),
-            t.literal('light')
+            t.literal('light'),
         );
         metadataExpressions.push(t.expressionStatement(renderModeMetadata));
     }
@@ -163,7 +163,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         const refsMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('hasRefs')),
-            t.literal(true)
+            t.literal(true),
         );
         metadataExpressions.push(t.expressionStatement(refsMetadata));
     }
@@ -198,7 +198,7 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
 // ['background', 'red', true] // { background: 'red !important' }
 export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t.ArrayExpression {
     const styles: Array<[string, string] | [string, string, boolean]> = Object.entries(
-        styleMap
+        styleMap,
     ).map(([key, value]) => {
         const important = value.endsWith('!important');
         if (important) {
@@ -208,7 +208,7 @@ export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t
         return [key, value, important];
     });
     return t.arrayExpression(
-        styles.map((arr) => t.arrayExpression(arr.map((val) => t.literal(val))))
+        styles.map((arr) => t.arrayExpression(arr.map((val) => t.literal(val)))),
     );
 }
 

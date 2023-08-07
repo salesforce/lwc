@@ -9,7 +9,7 @@ import { createElement } from '../index';
 describe('createElement', () => {
     it('throws an error', () => {
         expect(createElement).toThrow(
-            'createElement is not supported in @lwc/engine-server, only @lwc/engine-dom.'
+            'createElement is not supported in @lwc/engine-server, only @lwc/engine-dom.',
         );
     });
 });

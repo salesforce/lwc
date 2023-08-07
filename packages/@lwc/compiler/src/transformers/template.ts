@@ -25,7 +25,7 @@ import { TransformResult } from './transformer';
 export default function templateTransform(
     src: string,
     filename: string,
-    options: NormalizedTransformOptions
+    options: NormalizedTransformOptions,
 ): TransformResult {
     const {
         experimentalDynamicComponent,
@@ -122,7 +122,7 @@ function generateScopeToken(
     filename: string,
     namespace: string | undefined,
     name: string | undefined,
-    apiVersion: APIVersion
+    apiVersion: APIVersion,
 ) {
     const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
 

@@ -37,7 +37,7 @@ export function validateStyleTextContents(contents: string): void {
 
     if (!isSingleStyleNodeContainingSingleTextNode(fragment)) {
         throw new Error(
-            'CSS contains unsafe characters and cannot be serialized inside a style element'
+            'CSS contains unsafe characters and cannot be serialized inside a style element',
         );
     }
 }

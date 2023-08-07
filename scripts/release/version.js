@@ -24,7 +24,7 @@ async function promptVersion() {
 
     try {
         const answer = await new Promise((resolve) =>
-            rl.question('Enter a new LWC version: ', resolve)
+            rl.question('Enter a new LWC version: ', resolve),
         );
         return answer;
     } catch (error) {
@@ -39,7 +39,7 @@ function updatePackages(newVersion) {
     try {
         const packagesToUpdate = getPackagesToUpdate();
         const workspacesPackageJson = new Set(
-            packagesToUpdate.map(({ packageJson }) => packageJson.name)
+            packagesToUpdate.map(({ packageJson }) => packageJson.name),
         );
 
         for (const { packageJson } of packagesToUpdate) {
@@ -47,7 +47,7 @@ function updatePackages(newVersion) {
             // Look for different types of dependencies
             // ex: dependencies, devDependencies, peerDependencies
             const pkgDependencyTypes = Object.keys(packageJson).filter((key) =>
-                key.match(/.*[dD]ependencies/)
+                key.match(/.*[dD]ependencies/),
             );
             // Update dependencies in package.json
             for (const pkgDependencyType of pkgDependencyTypes) {
@@ -64,7 +64,7 @@ function updatePackages(newVersion) {
         for (const { originalVersion, packageJson, packageJsonPath } of packagesToUpdate) {
             fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4) + '\n');
             console.log(
-                `Updated ${packageJson.name} from ${originalVersion} to ${packageJson.version}`
+                `Updated ${packageJson.name} from ${originalVersion} to ${packageJson.version}`,
             );
         }
     } catch (error) {
@@ -83,7 +83,7 @@ function getPackagesToUpdate() {
             const workspacePkg = globSync(`${workspace}/package.json`);
             return [...accWorkspacePkgs, ...workspacePkg];
         },
-        [rootPackageJsonPath]
+        [rootPackageJsonPath],
     );
 
     for (const pkgName of workspacePkgs) {

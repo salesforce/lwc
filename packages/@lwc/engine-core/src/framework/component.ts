@@ -37,7 +37,7 @@ const registeredComponentMap: Map<LightningElementConstructor, ComponentConstruc
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
     Ctor: any,
-    metadata: ComponentConstructorMetadata
+    metadata: ComponentConstructorMetadata,
 ): any {
     if (isFunction(Ctor)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -54,7 +54,7 @@ export function registerComponent(
 }
 
 export function getComponentRegisteredTemplate(
-    Ctor: LightningElementConstructor
+    Ctor: LightningElementConstructor,
 ): Template | undefined {
     return registeredComponentMap.get(Ctor)?.tmpl;
 }
@@ -104,15 +104,15 @@ export function markComponentAsDirty(vm: VM) {
         const vmBeingRendered = getVMBeingRendered();
         assert.isFalse(
             vm.isDirty,
-            `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`
+            `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`,
         );
         assert.isFalse(
             isInvokingRender,
-            `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
+            `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`,
         );
         assert.isFalse(
             isUpdatingTemplate,
-            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`
+            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`,
         );
     }
     vm.isDirty = true;

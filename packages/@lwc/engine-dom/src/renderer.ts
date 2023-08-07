@@ -34,5 +34,5 @@ export const renderer: RendererAPI = assign(
         createCustomElement,
         isNativeShadowDefined: globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED],
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
-    }
+    },
 );

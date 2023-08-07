@@ -59,7 +59,7 @@ function initSlotObserver() {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     mutation.type === 'childList',
-                    `Invalid mutation type: ${mutation.type}. This mutation handler for slots should only handle "childList" mutations.`
+                    `Invalid mutation type: ${mutation.type}. This mutation handler for slots should only handle "childList" mutations.`,
                 );
             }
             const { target: slot } = mutation;
@@ -86,7 +86,7 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
             }
             return seed;
         },
-        []
+        [],
     );
 }
 
@@ -131,7 +131,7 @@ defineProperties(HTMLSlotElement.prototype, {
             this: HTMLSlotElement,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions
+            options?: boolean | AddEventListenerOptions,
         ) {
             // super.addEventListener - but that doesn't work with typescript
             HTMLElement.prototype.addEventListener.call(this, type, listener, options);
@@ -158,7 +158,7 @@ defineProperties(HTMLSlotElement.prototype, {
             } else {
                 return originalAssignedElements.apply(
                     this,
-                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                    ArraySlice.call(arguments) as [AssignedNodesOptions],
                 );
             }
         },
@@ -176,7 +176,7 @@ defineProperties(HTMLSlotElement.prototype, {
             } else {
                 return originalAssignedNodes.apply(
                     this,
-                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                    ArraySlice.call(arguments) as [AssignedNodesOptions],
                 );
             }
         },
