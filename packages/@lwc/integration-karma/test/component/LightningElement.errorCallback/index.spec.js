@@ -298,8 +298,8 @@ if (!process.env.COMPAT) {
         let originalOnError;
         let caughtError;
 
-        // Depending on whether ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE is set or not,
-        // this may be an unhandled error or an unhandled rejection
+        // Depending on whether native custom elements lifecycle is enabled or not, this may be an unhandled error or an
+        // unhandled rejection
         const onError = (e) => {
             e.preventDefault(); // Avoids logging to the console
             caughtError = e;
