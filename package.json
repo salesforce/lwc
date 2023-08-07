@@ -26,6 +26,9 @@
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "release:version": "./scripts/release/version.js"
     },
+    "//": {
+        "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
+    },
     "devDependencies": {
         "@commitlint/cli": "^17.6.6",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
@@ -55,7 +58,7 @@
         "lint-staged": "^13.2.3",
         "magic-string": "^0.30.2",
         "nx": "16.6.0",
-        "prettier": "^3.0.1",
+        "prettier": "^2.8.8",
         "rollup": "^3.27.2",
         "terser": "^5.19.2",
         "ts-jest": "^29.1.1",
@@ -81,10 +84,10 @@
         "yarn": "1.22.19"
     },
     "resolutions": {
-        "//": [
-            "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
-            "semver: Pinned to 7.5.4 to address security vulnerability"
-        ],
+        "//": {
+            "jasmine-core": "v4 has a breaking change we need to address in our Karma tests: https://github.com/jasmine/jasmine/pull/1742",
+            "semver": "Pinned to 7.5.4 to address security vulnerability"
+        },
         "jasmine-core": "3.10.1",
         "semver": "7.5.4"
     }
