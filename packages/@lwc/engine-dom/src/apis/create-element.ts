@@ -123,8 +123,8 @@ export function createElement(
 
     const apiVersion = getComponentAPIVersion(Ctor);
 
-    // temporary "kill switch"
     const useNativeCustomElementLifecycle =
+        // temporary "kill switch"
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
         isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 
