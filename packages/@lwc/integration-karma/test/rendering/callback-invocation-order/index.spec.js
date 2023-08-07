@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import ShadowParent from 'x/shadowParent';
 import ShadowLightParent from 'x/shadowLightParent';
@@ -24,7 +25,7 @@ const fixtures = [
         tagName: 'x-shadow-parent',
         ctor: ShadowParent,
         connect: process.env.NATIVE_SHADOW
-            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            ? isNativeCustomElementLifecycleEnabled()
                 ? [
                       'shadowParent:connectedCallback',
                       'leaf:before-container:connectedCallback',
@@ -120,7 +121,7 @@ const fixtures = [
         tagName: 'x-light-shadow-parent',
         ctor: LightShadowParent,
         connect: process.env.NATIVE_SHADOW
-            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            ? isNativeCustomElementLifecycleEnabled()
                 ? [
                       'lightShadowContainer:connectedCallback',
                       'shadowContainer:connectedCallback',
@@ -172,7 +173,7 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
     document.body.appendChild(elm);
     expect(window.timingBuffer).toEqual(
         process.env.NATIVE_SHADOW
-            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            ? isNativeCustomElementLifecycleEnabled()
                 ? [
                       'shadowContainer:connectedCallback',
                       'leaf:before-slot:connectedCallback',
@@ -207,7 +208,7 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
     elm.hide = true;
     return Promise.resolve().then(() => {
         expect(window.timingBuffer).toEqual(
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            isNativeCustomElementLifecycleEnabled()
                 ? [
                       'shadowContainer:disconnectedCallback',
                       'leaf:after-slot:disconnectedCallback',
@@ -253,7 +254,7 @@ it('should invoke callbacks on the right order when multiple templates are used 
             // disconnect x-shadow-parent +
             // connect x-shadow-container with 2 parents, 'a' and 'b'
             expect(window.timingBuffer).toEqual(
-                window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                isNativeCustomElementLifecycleEnabled()
                     ? [
                           'leaf:T1-1:disconnectedCallback',
                           'leaf:T1-2:disconnectedCallback',

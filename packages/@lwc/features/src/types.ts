@@ -33,11 +33,10 @@ export interface FeatureFlagMap {
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
 
     /**
-     * When enabled, we use the native custom element lifecycle hooks for callbacks such as
-     * connectedCallback and disconnectedCallback, rather than a synthetic system based
-     * on global DOM patching.
+     * When true, disables native custom element lifecycle, even if the API version is high enough to support it.
+     * This is designed as a temporary "kill switch."
      */
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
+    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
 
     /**
      * Flag to invoke the wire adapter update method right after the component is connected, instead

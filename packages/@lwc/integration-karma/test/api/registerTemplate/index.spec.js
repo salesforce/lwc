@@ -17,12 +17,14 @@ it('should throw if a component tries to use a template that is not registered',
 
     const elm = createElement('x-test', { is: Test });
 
-    expect(() => {
+    const func = () => {
         document.body.appendChild(elm);
-    }).toThrowConnectedError(
-        TypeError,
-        /Invalid template returned by the render\(\) method on \[.*\]\./
-    );
+    };
+
+    // This will always throw synchronously because the component has no API version, and thus defaults
+    // to the oldest (i.e. synthetic custom element lifecycle events)
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Invalid template returned by the render\(\) method on \[.*\]\./);
 });
 
 it('should not throw if the template is registered first', () => {

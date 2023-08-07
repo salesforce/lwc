@@ -65,8 +65,8 @@ export interface RendererAPI {
     createCustomElement: (
         tagName: string,
         upgradeCallback: LifecycleCallback,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback
     ) => E;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (

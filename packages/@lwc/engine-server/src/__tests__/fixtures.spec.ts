@@ -206,10 +206,10 @@ function testFixtures() {
     );
 }
 
-// Run the fixtures with both synthetic and native custom element lifecycle.
+// Run the fixtures with certain features flags both enabled and disabled.
 // The expectation is that the fixtures will be exactly the same for both.
 describe('fixtures', () => {
-    describe('synthetic custom element lifecycle', () => {
+    describe('no feature flags set', () => {
         testFixtures();
     });
 
@@ -224,10 +224,6 @@ describe('fixtures', () => {
 
         testFixtures();
     }
-
-    describe('native custom element lifecycle', () => {
-        testWithFeatureFlagEnabled('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE');
-    });
 
     describe('disable aria reflection polyfill', () => {
         testWithFeatureFlagEnabled('DISABLE_ARIA_REFLECTION_POLYFILL');

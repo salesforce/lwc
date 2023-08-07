@@ -58,9 +58,6 @@ commands:
       api_version:
         type: integer
         default: -1 # treated as "latest" in this config
-      enable_native_custom_element_lifecycle:
-        type: boolean
-        default: false
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
@@ -94,7 +91,6 @@ commands:
             fi
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
-            <<# parameters.enable_native_custom_element_lifecycle >> ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 <</ parameters.enable_native_custom_element_lifecycle >> \
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
             <<# parameters.disable_synthetic_shadow_support_in_compiler >> DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 <</ parameters.disable_synthetic_shadow_support_in_compiler >> \
@@ -185,9 +181,6 @@ commands:
       api_version:
         type: integer
         default: -1 # treated as "latest" in this config
-      enable_native_custom_element_lifecycle:
-        type: boolean
-        default: false
       disable_aria_reflection_polyfill:
         type: boolean
         default: false
@@ -209,7 +202,6 @@ commands:
           working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
-          enable_native_custom_element_lifecycle: << parameters.enable_native_custom_element_lifecycle >>
           disable_aria_reflection_polyfill: << parameters.disable_aria_reflection_polyfill >>
           node_env_production: << parameters.node_env_production >>
           disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
@@ -289,15 +281,15 @@ jobs:
       - run_karma:
           force_native_shadow_mode: true
       - run_karma:
-          enable_native_custom_element_lifecycle: true
-      - run_karma:
-          disable_synthetic: true
-          enable_native_custom_element_lifecycle: true
-      - run_karma:
           api_version: 58
       - run_karma:
           disable_synthetic: true
           api_version: 58
+      - run_karma:
+          api_version: 59
+      - run_karma:
+          disable_synthetic: true
+          api_version: 59
       - run_karma:
           disable_synthetic: true
           disable_aria_reflection_polyfill: true
