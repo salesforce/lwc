@@ -144,6 +144,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'attachInternals'
         | 'children'
         | 'childNodes'
         | 'classList'
@@ -457,6 +458,13 @@ LightningElement.prototype = {
         }
 
         return getBoundingClientRect(elm);
+    },
+
+    attachInternals(): ElementInternals {
+        const vm = getAssociatedVM(this);
+        const { elm } = vm;
+        const { attachInternals } = vm.renderer;
+        return attachInternals(elm);
     },
 
     get isConnected(): boolean {

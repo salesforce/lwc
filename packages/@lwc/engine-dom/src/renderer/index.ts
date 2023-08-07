@@ -193,6 +193,10 @@ function getTagName(elm: Element): string {
     return elm.tagName;
 }
 
+function attachInternals(elm: HTMLElement): ElementInternals {
+    return elm.attachInternals();
+}
+
 export { registerContextConsumer, registerContextProvider } from './context';
 
 export {
@@ -231,4 +235,5 @@ export {
     isConnected,
     assertInstanceOfHTMLElement,
     ownerDocument,
+    attachInternals,
 };
