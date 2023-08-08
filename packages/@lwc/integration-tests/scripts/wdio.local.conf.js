@@ -10,11 +10,6 @@ const merge = require('deepmerge');
 const baseConfig = require('./wdio.conf.js');
 
 const headless = process.env.HEADLESS_CHROME !== 'false';
-const drivers = {
-    chrome: {
-        version: 'latest',
-    },
-};
 
 exports.config = merge(baseConfig.config, {
     maxInstances: 5,
@@ -29,17 +24,6 @@ exports.config = merge(baseConfig.config, {
     ],
 
     services: [
-        [
-            'selenium-standalone',
-            {
-                installArgs: {
-                    drivers,
-                },
-                args: {
-                    drivers,
-                },
-            },
-        ],
         'devtools', // exposes browser.cdp, only works locally: https://webdriver.io/docs/devtools-service/
     ],
 });
