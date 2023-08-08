@@ -6,16 +6,8 @@ import XTemplateMutations from 'x/templateMutations';
 
 const observerConfig = { childList: true, subtree: true };
 
-/**
- * In compat mode, there are timing issues when a spy is used as observer callback
- * Using a setTimeout allows for the chained promise to run in the next macrotask
- * to avoid any false positives in compat mode
- **/
-
 function waitForMutationObservedToBeInvoked() {
-    return new Promise((resolve) => {
-        setTimeout(resolve);
-    });
+    return Promise.resolve();
 }
 
 describe('MutationObserver is synthetic shadow dom aware.', () => {

@@ -70,16 +70,10 @@ it('should invoke get traps for length, 0 and 1', () => {
 
     expect(result).toEqual([1, 2, 3, 4]);
 
-    // Since Proxy COMPAT doesn't normalize the accessed key, we need to convert all the accessed keys to String to
-    // ensure consistent behavior regardless with we use the Native or the COMPAT version of Proxy.
-    //    Native Proxy => ['length', '0', '1']
-    //    Native Proxy => ['length', 0, 1]
-    const getKeys = getCalls.map((item) => String(item[1]));
+    const getKeys = getCalls.map((item) => item[1]);
 
     // Instead of comparing all the items using .toEqual(), we look if specific elements are present in the accessed
-    // keys. On older versions of Chrome and Firefox we are running a strange mode where the served code is COMPAT,
-    // while native proxy are used. Because of the transformations applied, some extra properties are accessed on the
-    // native proxies (eg. _ES5ProxyType)
+    // keys.
     expect(getKeys.includes('length')).toBe(true);
     expect(getKeys.includes('0')).toBe(true);
     expect(getKeys.includes('1')).toBe(true);

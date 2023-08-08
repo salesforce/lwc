@@ -1,8 +1,6 @@
-if (!process.env.COMPAT) {
-    class CEWithoutChildren extends HTMLElement {
-        constructor() {
-            super();
-        }
+class CEWithoutChildren extends HTMLElement {
+    constructor() {
+        super();
     }
-    customElements.define('ce-without-children', CEWithoutChildren);
 }
+customElements.define('ce-without-children', CEWithoutChildren);

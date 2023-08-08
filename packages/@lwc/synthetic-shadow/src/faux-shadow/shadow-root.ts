@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -13,7 +13,6 @@ import {
     isNull,
     isTrue,
     isUndefined,
-    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
@@ -26,7 +25,7 @@ import {
 import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
 import { DocumentPrototypeActiveElement, getElementById, querySelectorAll } from '../env/document';
-import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -95,10 +94,6 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
     },
     configurable: true,
     enumerable: true,
-});
-
-defineProperty(globalThis, KEY__IS_NATIVE_SHADOW_ROOT_DEFINED, {
-    value: isNativeShadowRootDefined,
 });
 
 // The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this

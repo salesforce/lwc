@@ -33,20 +33,17 @@ function testAssignedNodes(testDescription, getContainer) {
     });
 }
 
-// Should not be expecting native shadow behavior to work in compat mode
-if (process.env.COMPAT !== true) {
-    testAssignedNodes(
-        'assignedNodes() retains native behavior in native shadow dom tree',
-        () => document.body
-    );
+testAssignedNodes(
+    'assignedNodes() retains native behavior in native shadow dom tree',
+    () => document.body
+);
 
-    testAssignedNodes(
-        'assignedNodes() retains behavior in native shadow tree nested in lwc parent',
-        () => {
-            const lwcParent = createElement('x-lwc-parent', { is: LWCParent });
-            document.body.appendChild(lwcParent);
+testAssignedNodes(
+    'assignedNodes() retains behavior in native shadow tree nested in lwc parent',
+    () => {
+        const lwcParent = createElement('x-lwc-parent', { is: LWCParent });
+        document.body.appendChild(lwcParent);
 
-            return lwcParent.shadowRoot.querySelector('div');
-        }
-    );
-}
+        return lwcParent.shadowRoot.querySelector('div');
+    }
+);

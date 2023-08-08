@@ -5,12 +5,7 @@ import withoutLwcDomManual from 'x/withoutLwcDomManual';
 import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
 
 function waitForStyleToBeApplied() {
-    // Using a timeout instead of a Promise.resolve to wait for the MutationObserver to be triggered.
-    // The Promise polyfill on COMPAT browsers is based on MutationObserver. There are some timing issues between
-    // Promise.resolve and MutationObserver callback invocation.
-    return new Promise((resolve) => {
-        setTimeout(resolve);
-    });
+    return Promise.resolve();
 }
 
 describe('dom mutation without the lwc:dom="manual" directive', () => {
