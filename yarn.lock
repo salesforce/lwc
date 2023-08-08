@@ -2020,7 +2020,7 @@
     "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
-"@wdio/cli@8.14.4":
+"@wdio/cli@^8.14.4":
   version "8.14.4"
   resolved "https://registry.yarnpkg.com/@wdio/cli/-/cli-8.14.4.tgz#3eba90787fcf697251004e97a6f70ca82000c47a"
   integrity sha512-67a/DhDr2jm/mnH+Asvn0vvY9eT9vK4lLecBv20X0hMkLAS2qKLEbJz1+JfewP2ScArlSluG4R7Zq/qU0F+i3g==
@@ -2072,7 +2072,7 @@
     import-meta-resolve "^3.0.0"
     read-pkg-up "^10.0.0"
 
-"@wdio/devtools-service@8.14.3":
+"@wdio/devtools-service@^8.14.3":
   version "8.14.3"
   resolved "https://registry.yarnpkg.com/@wdio/devtools-service/-/devtools-service-8.14.3.tgz#8595da45bd6437d165563b563e6f5ad95d188d5b"
   integrity sha512-GV+yj7h07yHE0HY9rWk8SW45RK3womo6FGftv3LgrADYJO9I5y/7y14hPPrgLUCBrOeI6JK8Qj7a5yXHi+Q/IQ==
@@ -2101,7 +2101,7 @@
     expect-webdriverio "^4.2.5"
     webdriverio "8.14.3"
 
-"@wdio/local-runner@8.14.3":
+"@wdio/local-runner@^8.14.3":
   version "8.14.3"
   resolved "https://registry.yarnpkg.com/@wdio/local-runner/-/local-runner-8.14.3.tgz#39fd347a0463fe6e173152cecd26bb42f6ec5767"
   integrity sha512-y4pHl8xphE0fEuDI1JXBVH7FQo8YAyEk32lmpOD7rsI/+M+b+ukYcSQtfHfVPVYGNVvipFbiavi8yJPho0jF+w==
@@ -2135,7 +2135,7 @@
     loglevel-plugin-prefix "^0.8.4"
     strip-ansi "^7.1.0"
 
-"@wdio/mocha-framework@8.14.0":
+"@wdio/mocha-framework@^8.14.0":
   version "8.14.0"
   resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-8.14.0.tgz#78e1568cdb9b89e11dfcc007720869509962d485"
   integrity sha512-j2ngUFGF0T+Zax3Tops6TxyWNy+OxvMRsloZaE+wIMrAMnp6ocGC+W4si2cW5ZuZlvaoM6j406XZOmxW//pUCA==
@@ -2200,7 +2200,7 @@
     webdriver "8.14.3"
     webdriverio "8.14.3"
 
-"@wdio/sauce-service@8.14.5":
+"@wdio/sauce-service@^8.14.5":
   version "8.14.5"
   resolved "https://registry.yarnpkg.com/@wdio/sauce-service/-/sauce-service-8.14.5.tgz#5bc4ce23e6d78ceea97f2562c0850ded59a97ea5"
   integrity sha512-P4w5XDgyzqV14biY//L462WVUQXhNibKfqkAk1FW5qzNEVJL3401i9MvqbP6AQxQpOF0bgPiDxibPwt5w6oGlw==
@@ -2212,7 +2212,7 @@
     saucelabs "^7.1.3"
     webdriverio "8.14.3"
 
-"@wdio/spec-reporter@8.14.0":
+"@wdio/spec-reporter@^8.14.0":
   version "8.14.0"
   resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-8.14.0.tgz#8f4f6303182fd67632abfebb473689a1697967a9"
   integrity sha512-LmDXAcA1Xy5Yd+0lxhsULfZwr0hqxjjwLO4Uys6qUyGGSUJpL8psF26sO8kFYLHBpDN0DNxzvNm7iIvPAtE1dw==
@@ -2223,7 +2223,7 @@
     easy-table "^1.2.0"
     pretty-ms "^7.0.0"
 
-"@wdio/static-server-service@8.14.0":
+"@wdio/static-server-service@^8.14.0":
   version "8.14.0"
   resolved "https://registry.yarnpkg.com/@wdio/static-server-service/-/static-server-service-8.14.0.tgz#c785222aba8f053718c09e697d2a55e142462d9a"
   integrity sha512-5HIofRwEpID//bLOBU2tiWmtcdk3btx9WCRRXUrGL8q+sY4uv1FnPHIQLW1lIiCWIjydAqnXe+00/TIoT6E57Q==
@@ -12644,7 +12644,7 @@ webdriver@8.14.3:
     wait-port "^1.0.4"
     ws "^8.8.0"
 
-webdriverio@8.14.3, webdriverio@^8.13.1:
+webdriverio@8.14.3, webdriverio@^8.13.1, webdriverio@^8.14.3:
   version "8.14.3"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-8.14.3.tgz#490cdd505b6cf57a50d6f67841b8295d6f25c94f"
   integrity sha512-NMVap664xbbPKrVWpcxyTEVmkUadS8wu2eBtT8uMhesLCtaCZjxTF5andHpIEFitKhgHf22SeP++1ZrQpMoRCA==
