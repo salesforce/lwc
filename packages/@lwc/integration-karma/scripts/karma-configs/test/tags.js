@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -8,7 +8,7 @@
 'use strict';
 
 const {
-    COMPAT,
+    LEGACY_BROWSERS,
     SYNTHETIC_SHADOW_ENABLED,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     DISABLE_ARIA_REFLECTION_POLYFILL,
@@ -21,7 +21,7 @@ const {
 const TAGS = [
     `${SYNTHETIC_SHADOW_ENABLED ? 'synthetic' : 'native'}-shadow`,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
-    COMPAT && 'compat',
+    LEGACY_BROWSERS && 'legacy-browsers',
     DISABLE_ARIA_REFLECTION_POLYFILL && 'disable-aria-polyfill',
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER && 'disable-synthetic-in-compiler',
     `NODE_ENV-${NODE_ENV_FOR_TEST}`,

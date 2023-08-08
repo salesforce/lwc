@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -55,7 +55,6 @@ function createElement(tagName: string, namespace?: string): HostElement {
     };
 }
 
-const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
 type N = HostNode;
@@ -419,7 +418,6 @@ function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback
 const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
 
 export const renderer = {
-    isNativeShadowDefined,
     isSyntheticShadowDefined,
     insert,
     remove,

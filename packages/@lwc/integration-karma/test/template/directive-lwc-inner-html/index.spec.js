@@ -49,17 +49,12 @@ it('re-renders the content on update', () => {
 
 describe('type conversion', () => {
     const cases = [
+        [null, ''],
         [undefined, 'undefined'],
         ['string', 'string'],
         [true, 'true'],
         [42, '42'],
     ];
-
-    // Element.innerHTML implementation is incorrect on IE11. Instead of removing the element
-    // content when passing null, IE11 insert 'null' as the element text content.
-    if (!process.env.COMPAT) {
-        cases.unshift([null, '']);
-    }
 
     cases.forEach(([actual, expected]) => {
         it(`renders properly when passing type ${typeof actual}`, () => {
