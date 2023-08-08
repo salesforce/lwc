@@ -319,25 +319,28 @@ jobs:
           command: yarn coverage
           working_directory: packages/@lwc/integration-karma
 
-
   test_integration:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - prod mode
-          command: yarn local:prod
+          command_name: Run integration test - Chrome - prod mode
+          command: yarn sauce:prod --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
   test_integration_dev:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - dev mode
-          command: yarn local:dev
+          command_name: Run integration test - Chrome - dev mode
+          command: yarn sauce:dev --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
 
