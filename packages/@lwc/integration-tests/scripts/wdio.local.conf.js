@@ -19,7 +19,7 @@ exports.config = merge(baseConfig.config, {
             browserName: 'chrome',
             'goog:chromeOptions': {
                 args: [
-                    ...(headless ? ['headless', 'disable-gpu'] : []),
+                    ...(headless ? ['headless=new', 'disable-gpu'] : []),
                     'no-sandbox',
                     'disable-dev-shm-usage', // see https://stackoverflow.com/a/50642913
                 ],
