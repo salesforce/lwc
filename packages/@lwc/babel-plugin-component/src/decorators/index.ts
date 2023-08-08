@@ -77,7 +77,10 @@ function validateImportedLwcDecoratorUsage(
                 reference,
             }));
 
-            return [...acc, ...references] as { name: string; reference: NodePath<types.Node> }[];
+            return [...acc, ...references] as {
+                name: string;
+                reference: NodePath<types.Node>;
+            }[];
         }, [] as { name: string; reference: NodePath<types.Node> }[])
         .forEach(({ name, reference }) => {
             // Get the decorator from the identifier
