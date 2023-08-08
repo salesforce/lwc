@@ -322,7 +322,7 @@ jobs:
   test_integration:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration
     steps:
       - load_workspace
       - start_sauce_connect
@@ -334,7 +334,7 @@ jobs:
   test_integration_dev:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration
     steps:
       - load_workspace
       - start_sauce_connect
