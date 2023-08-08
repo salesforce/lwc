@@ -7,7 +7,6 @@
 
 import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
-import { LightningElement } from '../framework/base-lightning-element';
 import { logWarnOnce } from '../shared/logger';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
 import { BaseBridgeElement } from '../framework/base-bridge-element';
@@ -29,12 +28,6 @@ const NON_STANDARD_ARIA_PROPS = [
     'ariaOwns',
 ];
 
-function isLightningElement(elm: Element) {
-    // The former case is for `this.prop` (inside component) and the latter is for `element.prop` (outside component).
-    // In both cases, we apply the non-standard prop even when the global polyfill is disabled, so this is kosher.
-    return elm instanceof LightningElement || elm instanceof BaseBridgeElement;
-}
-
 function findVM(elm: Element): VM | undefined {
     // If it's a shadow DOM component, then it has a host
     const { host } = elm.getRootNode() as ShadowRoot;
@@ -45,7 +38,8 @@ function findVM(elm: Element): VM | undefined {
     // Else it might be a light DOM component. Walk up the tree trying to find the owner
     let parentElement: Element | null = elm;
     while (!isNull((parentElement = parentElement.parentElement))) {
-        if (isLightningElement(parentElement)) {
+        if (parentElement instanceof BaseBridgeElement) {
+            // parentElement is an LWC component
             const vm = getAssociatedVMIfPresent(parentElement);
             if (!isUndefined(vm)) {
                 return vm;
@@ -56,32 +50,30 @@ function findVM(elm: Element): VM | undefined {
 }
 
 function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, setValue: any) {
-    if (!isLightningElement(elm)) {
-        const vm = findVM(elm);
+    const vm = findVM(elm);
 
-        if (process.env.NODE_ENV !== 'production') {
-            logWarnOnce(
-                `Element <${elm.tagName.toLowerCase()}> ` +
-                    (isUndefined(vm) ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
-                    `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
-                    `See https://sfdc.co/deprecated-aria`
-            );
-        }
-
-        let setValueType: string | undefined;
-        if (isSetter) {
-            // `typeof null` is "object" which is not very useful for detecting null.
-            // We mostly want to know null vs undefined vs other types here, due to
-            // https://github.com/salesforce/lwc/issues/3284
-            setValueType = isNull(setValue) ? 'null' : typeof setValue;
-        }
-        report(ReportingEventId.NonStandardAriaReflection, {
-            tagName: vm?.tagName,
-            propertyName: prop,
-            isSetter,
-            setValueType,
-        });
+    if (process.env.NODE_ENV !== 'production') {
+        logWarnOnce(
+            `Element <${elm.tagName.toLowerCase()}> ` +
+                (isUndefined(vm) ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
+                `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
+                `See https://sfdc.co/deprecated-aria`
+        );
     }
+
+    let setValueType: string | undefined;
+    if (isSetter) {
+        // `typeof null` is "object" which is not very useful for detecting null.
+        // We mostly want to know null vs undefined vs other types here, due to
+        // https://github.com/salesforce/lwc/issues/3284
+        setValueType = isNull(setValue) ? 'null' : typeof setValue;
+    }
+    report(ReportingEventId.NonStandardAriaReflection, {
+        tagName: vm?.tagName,
+        propertyName: prop,
+        isSetter,
+        setValueType,
+    });
 }
 
 function enableDetection() {
@@ -120,7 +112,7 @@ function enableDetection() {
 
 // No point in running this code if we're not in a browser, or if the global polyfill is not loaded
 if (process.env.IS_BROWSER) {
-    if (!lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+    if (lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
         // Always run detection in dev mode, so we can at least print to the console
         if (process.env.NODE_ENV !== 'production') {
             enableDetection();

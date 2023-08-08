@@ -37,7 +37,15 @@ if (!process.env.NATIVE_SHADOW) {
                 targetElm = elm.shadowRoot.querySelector('x-aria-target');
             });
 
-            [false, true].forEach((usePropertyAccess) => {
+            const usePropertyAccessValues = [false];
+
+            // It doesn't make sense to test setting e.g. `elm.ariaLabelledBy` if the global
+            // polyfill is not applied
+            if (window.lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
+                usePropertyAccessValues.push(true);
+            }
+
+            usePropertyAccessValues.forEach((usePropertyAccess) => {
                 const expectedMessages = [
                     ...(usePropertyAccess ? [expectedMessageForNonStandardAria] : []),
                     expectedMessageForCrossRoot,

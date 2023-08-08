@@ -166,7 +166,7 @@ function testAriaProperty(property, attribute) {
 }
 
 // These tests don't make sense if the global polyfill is not loaded
-if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+if (window.lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
         testAriaProperty(ariaProperty, ariaAttribute);
     }
