@@ -237,34 +237,31 @@ describe('ACTCompiler', () => {
         expect(nodes.value.textContent).toEqual('Foo');
     });
 
-    if (!process.env.COMPAT) {
-        // IE11 does not implement childNodes correctly
-        it('html tags', () => {
-            const component = createAndInsertActComponent(testHtmlTags);
+    it('html tags', () => {
+        const component = createAndInsertActComponent(testHtmlTags);
 
-            const htmlTags = component.shadowRoot.querySelector('html-tags');
+        const htmlTags = component.shadowRoot.querySelector('html-tags');
 
-            expect(htmlTags.childNodes.length).toEqual(4);
-            const span = htmlTags.childNodes[0];
-            const div = htmlTags.childNodes[1];
-            const img = htmlTags.childNodes[2];
-            const text = htmlTags.childNodes[3];
+        expect(htmlTags.childNodes.length).toEqual(4);
+        const span = htmlTags.childNodes[0];
+        const div = htmlTags.childNodes[1];
+        const img = htmlTags.childNodes[2];
+        const text = htmlTags.childNodes[3];
 
-            expect(span.tagName.toLowerCase()).toEqual('span');
-            expect(span.style.color).toEqual('blue');
-            expect(span.className).toEqual('class1');
+        expect(span.tagName.toLowerCase()).toEqual('span');
+        expect(span.style.color).toEqual('blue');
+        expect(span.className).toEqual('class1');
 
-            expect(div.getAttribute('title')).toEqual('test');
-            expect(div.children.length).toEqual(1);
-            expect(div.children[0].tagName.toLowerCase()).toEqual('h1');
-            expect(img.src).toEqual(
-                'data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
-            );
-            expect(img.alt).toEqual('Smiley face');
-            expect(img.getAttribute('height')).toEqual('42');
-            expect(text.textContent).toEqual('</img>');
-        });
-    }
+        expect(div.getAttribute('title')).toEqual('test');
+        expect(div.children.length).toEqual(1);
+        expect(div.children[0].tagName.toLowerCase()).toEqual('h1');
+        expect(img.src).toEqual(
+            'data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
+        );
+        expect(img.alt).toEqual('Smiley face');
+        expect(img.getAttribute('height')).toEqual('42');
+        expect(text.textContent).toEqual('</img>');
+    });
 
     it('multiple children in slot', () => {
         const component = createAndInsertActComponent(testMultipleChildrenInSlot);

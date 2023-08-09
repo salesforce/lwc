@@ -35,31 +35,13 @@ it('should apply transformation for stylesheet file', async () => {
 });
 
 describe('custom properties', () => {
-    it('should not transform var functions if custom properties a resolved natively', async () => {
+    it('should not transform var functions', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const { code } = await transform(actual, 'foo.css', {
             ...TRANSFORMATION_OPTIONS,
-            stylesheetConfig: {
-                customProperties: { resolution: { type: 'native' } },
-            },
         });
 
         expect(code).toContain('var(--bg-color)');
-    });
-
-    it('should transform var functions if custom properties a resolved via a module', async () => {
-        const actual = `div { color: var(--bg-color); }`;
-        const { code } = await transform(actual, 'foo.css', {
-            ...TRANSFORMATION_OPTIONS,
-            stylesheetConfig: {
-                customProperties: {
-                    resolution: { type: 'module', name: '@customProperties' },
-                },
-            },
-        });
-
-        expect(code).not.toContain('var(--bg-color)');
-        expect(code).toContain('import varResolver from "@customProperties";');
     });
 });
 

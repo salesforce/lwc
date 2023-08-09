@@ -110,96 +110,88 @@ describe('elementsFromPoint', () => {
             test(inSlottableInner, [inSlottableInner, inSlottable, slottable, inContainer]);
         });
 
-        // IE11 sometimes includes <html> in the elements array, sometimes not. It's not worth testing
-        if (!process.env.COMPAT) {
-            it('host elements are not all visible', () => {
-                const grandparent = createElement('x-grandparent', { is: Grandparent });
-                document.body.appendChild(grandparent);
-                const nodes = extractShadowDataIds(grandparent.shadowRoot);
-                const { child, childDiv, parent, parentDiv, grandparentDiv } = nodes;
-                const html = document.documentElement;
+        it('host elements are not all visible', () => {
+            const grandparent = createElement('x-grandparent', { is: Grandparent });
+            document.body.appendChild(grandparent);
+            const nodes = extractShadowDataIds(grandparent.shadowRoot);
+            const { child, childDiv, parent, parentDiv, grandparentDiv } = nodes;
+            const html = document.documentElement;
 
-                const resetStyles = () => {
-                    [child, childDiv, parent, parentDiv, grandparent, grandparentDiv].forEach(
-                        (el) => {
-                            el.style = '';
-                        }
-                    );
-                };
+            const resetStyles = () => {
+                [child, childDiv, parent, parentDiv, grandparent, grandparentDiv].forEach((el) => {
+                    el.style = '';
+                });
+            };
 
-                function test(element, expectedElements) {
-                    testElementsFromPoint(element.getRootNode(), 50, 50, [
-                        ...expectedElements,
-                        html,
-                    ]);
-                }
+            function test(element, expectedElements) {
+                testElementsFromPoint(element.getRootNode(), 50, 50, [...expectedElements, html]);
+            }
 
-                test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
-                test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                grandparent.style = 'width: 0px; height: 0px;';
+            grandparent.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv]);
-                test(parentDiv, [child, parentDiv, parent, grandparentDiv]);
-                test(grandparentDiv, [parent, grandparentDiv]);
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv]);
+            test(grandparentDiv, [parent, grandparentDiv]);
 
-                resetStyles();
-                parent.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent]);
-                test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                resetStyles();
-                child.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            child.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent]);
-                test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                resetStyles();
-                parent.style = 'width: 0px; height: 0px;';
-                parentDiv.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, child, grandparentDiv, grandparent]);
-                test(parentDiv, [child, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            test(childDiv, [childDiv, child, grandparentDiv, grandparent]);
+            test(parentDiv, [child, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                resetStyles();
-                parent.style = 'width: 0px; height: 0px;';
-                parentDiv.style = 'width: 0px; height: 0px;';
-                child.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, grandparentDiv, grandparent]);
-                test(parentDiv, [child, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            test(childDiv, [childDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                resetStyles();
-                parent.style = 'width: 0px; height: 0px;';
-                child.style = 'width: 0px; height: 0px;';
-                test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent]);
-                test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+            test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
-                resetStyles();
-                parent.style = 'width: 0px; height: 0px;';
-                parentDiv.style = 'width: 0px; height: 0px;';
-                child.style = 'width: 0px; height: 0px;';
-                childDiv.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+            childDiv.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [grandparentDiv, grandparent]);
-                test(parentDiv, [grandparentDiv, grandparent]);
-                test(grandparentDiv, [grandparentDiv, grandparent]);
+            test(childDiv, [grandparentDiv, grandparent]);
+            test(parentDiv, [grandparentDiv, grandparent]);
+            test(grandparentDiv, [grandparentDiv, grandparent]);
 
-                resetStyles();
-                parentDiv.style = 'width: 0px; height: 0px;';
-                child.style = 'width: 0px; height: 0px;';
+            resetStyles();
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
 
-                test(childDiv, [childDiv, parent, grandparentDiv, grandparent]);
-                test(parentDiv, [child, parent, grandparentDiv, grandparent]);
-                test(grandparentDiv, [parent, grandparentDiv, grandparent]);
-            });
-        }
+            test(childDiv, [childDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+        });
     }
 });

@@ -7,10 +7,7 @@ import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 
 function assertEventStateReset(evt) {
-    // TODO [#2283]: IE11 does not return Event.NONE (0) when accessing eventPhase asynchronously
-    if (process.env.COMPAT !== true) {
-        expect(evt.eventPhase).toBe(0);
-    }
+    expect(evt.eventPhase).toBe(0);
     expect(evt.currentTarget).toBe(null);
     expect(evt.composedPath().length).toBe(0);
 }

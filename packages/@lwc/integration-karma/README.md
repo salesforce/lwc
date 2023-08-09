@@ -30,7 +30,7 @@ Every time the test suite runs with the `COVERAGE=1` environment variable it pro
 
 This set of environment variables applies to the `start` and `test` commands:
 
--   **`COMPAT=1`:** Compile and deliver tests in COMPAT mode.
+-   **`LEGACY_BROWSERS=1`:** Run SauceLabs tests in legacy browsers.
 -   **`DISABLE_SYNTHETIC=1`:** Run without any synthetic shadow polyfill patches.
 -   **`FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1`:** Force tests to run in native shadow mode with synthetic shadow polyfill patches.
 -   **`ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1`:** Use native custom element lifecycle callbacks.
@@ -79,8 +79,6 @@ You can also pass in `--log-level=debug` to `karma` for debug logging.
     -   `toLogErrorDev(message)`: `expect` a function to log an error with a specific message in DEV only.
     -   `toThrowErrorDev(Error, message)`: `expect` a function to throw an error with a specific Error constructor and a specific message.
 -   Some of the test command options are available in the test suite on the global `process.env` object:
-    -   `process.env.COMPAT`: is set to `false` by default and `true` if the `COMPAT` environment
-        variable is set.
     -   `process.env.DISABLE_SYNTHETIC`: is set to `false` by default and `true` if the
         `DISABLE_SYNTHETIC` environment variable is set.
     -   `FORCE_NATIVE_SHADOW_MODE_FOR_TEST`: is set to `false` by default and `true` if the
