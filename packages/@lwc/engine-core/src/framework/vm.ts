@@ -462,7 +462,7 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
             if (def.shadowSupportMode === ShadowSupportMode.Any) {
                 shadowMode = ShadowMode.Native;
             } else {
-                const shadowAncestor = getNearestShadowAncestor(vm);
+                const shadowAncestor = getNearestShadowAncestor(owner);
                 if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
                     // Transitive support for native Shadow DOM. A component in native mode
                     // transitively opts all of its descendants into native.
