@@ -11,7 +11,6 @@ import { APIVersion } from '@lwc/shared';
 import validateIdSelectors from './no-id-selectors/validate';
 import transformImport from './css-import/transform';
 import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
-import transformCustomProperties from './custom-properties/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
 import transformAtRules from './scope-at-rules/transform';
 
@@ -46,7 +45,6 @@ export default function postCssLwcPlugin(options: {
 
     return (root, result) => {
         transformImport(root, result, options.scoped);
-        transformCustomProperties(root, result);
         transformAtRules(root);
 
         root.walkRules((rule) => {

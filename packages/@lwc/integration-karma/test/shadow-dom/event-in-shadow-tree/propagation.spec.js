@@ -516,11 +516,9 @@ describe('event propagation', () => {
         });
     });
 
-    // IE11 doesn't bubble events to the document fragment
-    //
-    // Also this test does not work with native custom element lifecycle because disconnected
+    // This test does not work with native custom element lifecycle because disconnected
     // fragments cannot fire connectedCallback/disconnectedCallback events
-    if (!process.env.COMPAT && !window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         describe('dispatched within a disconnected tree', () => {
             it('{bubbles: true, composed: true}', () => {
                 const nodes = createDisconnectedTestElement();

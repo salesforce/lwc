@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -115,3 +115,6 @@ afterAll(function () {
 
     throwIfConsoleCalled();
 });
+
+// The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;

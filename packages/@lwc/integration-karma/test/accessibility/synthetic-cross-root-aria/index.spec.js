@@ -12,8 +12,7 @@ const expectedMessageForNonStandardAria =
     'Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria';
 
 // These tests are designed to detect non-standard cross-root ARIA usage in synthetic shadow DOM
-// As for COMPAT, this detection logic is only enabled for modern browsers
-if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+if (!process.env.NATIVE_SHADOW) {
     describe('synthetic shadow cross-root ARIA', () => {
         let dispatcher;
 

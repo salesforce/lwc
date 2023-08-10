@@ -41,7 +41,7 @@ const { code } = transformSync(source, filename, options);
 -   `options` (object, required) - the transformation options. The `name` and the `namespace` of the component is a minimum required for transformation.
     -   `name` (type: `string`, required) - name of the component, e.g. `foo` in `x/foo`.
     -   `namespace` (type: `string`, required) - namespace of the component, e.g. `x` in `x/foo`.
-    -   `stylesheetConfig` (type: `object`, default: `{}`) - The stylesheet compiler configuration to pass to the `@lwc/style-compiler`.
+    -   `stylesheetConfig` (type: `object`, default: `{}`) - Deprecated. Ignored by compiler.
     -   `experimentalDynamicComponent` (type: `DynamicImportConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
     -   `experimentalDynamicDirective` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable deprecated dynamic components.
     -   `enableDynamicComponents` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable dynamic components.

@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import postcss, { Result, Declaration } from 'postcss';
-import postcssValueParser from 'postcss-value-parser';
+import postcss, { Result } from 'postcss';
 import matchAll from 'string.prototype.matchall';
 import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { Config } from './index';
-import { isImportMessage, isVarFunctionMessage } from './utils/message';
+import { isImportMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
 import {
     DIR_ATTRIBUTE_NATIVE_RTL,
@@ -43,24 +42,14 @@ const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
 const USE_NATIVE_DIR_PSEUDOCLASS = 'useNativeDirPseudoclass';
 const TOKEN = 'token';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
-const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
 export default function serialize(result: Result, config: Config): string {
     const { messages } = result;
-    const collectVarFunctions = Boolean(
-        config.customProperties && config.customProperties.resolverModule
-    );
-    const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map((message) => message.id);
     const disableSyntheticShadow = Boolean(config.disableSyntheticShadowSupport);
     const scoped = Boolean(config.scoped);
 
     let buffer = '';
-
-    if (collectVarFunctions && useVarResolver) {
-        buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!
-            .resolverModule!}";\n`;
-    }
 
     for (let i = 0; i < importedStylesheets.length; i++) {
         buffer += `import ${STYLESHEET_IDENTIFIER + i} from "${importedStylesheets[i]}";\n`;
@@ -71,7 +60,7 @@ export default function serialize(result: Result, config: Config): string {
     }
 
     const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
-    const serializedStyle = serializeCss(result, collectVarFunctions).trim();
+    const serializedStyle = serializeCss(result).trim();
 
     if (serializedStyle) {
         // inline function
@@ -216,7 +205,7 @@ function deduplicateHostTokens(nativeHostTokens: Token[], syntheticHostTokens: T
     ];
 }
 
-function serializeCss(result: Result, collectVarFunctions: boolean): string {
+function serializeCss(result: Result): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
     let nativeHostTokens: Token[] | undefined;
@@ -259,13 +248,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
             // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
-            if (collectVarFunctions) {
-                const declTokens = tokenizeCssDeclaration(node);
-                currentRuleTokens.push(...declTokens);
-                currentRuleTokens.push({ type: TokenType.text, value: ';' });
-            } else {
-                currentRuleTokens.push(...tokenizeCss(part));
-            }
+            currentRuleTokens.push(...tokenizeCss(part));
         } else if (node && node.type === 'atrule') {
             // Certain atrules have declaration associated with for example @font-face. We need to add the rules tokens
             // when it's the case.
@@ -356,123 +339,4 @@ function tokenizeCss(data: string): Token[] {
     }
 
     return tokens;
-}
-
-function isTextOrExpression(token: Token): boolean {
-    return token.type === TokenType.text || token.type == TokenType.expression;
-}
-
-/*
- * This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
- * and transforms its custom variables in function calls
- */
-function recursiveValueParse(node: any, inVarExpression = false): Token[] {
-    const { type, nodes, value } = node;
-
-    // If it has not type it means is the root, process its children
-    if (!type && nodes) {
-        return nodes.reduce((acc: Token[], n: any) => {
-            acc.push(...recursiveValueParse(n, inVarExpression));
-            return acc;
-        }, []);
-    }
-
-    if (type === 'comment') {
-        return [];
-    }
-
-    if (type === 'div') {
-        return [
-            {
-                type: inVarExpression ? TokenType.divider : TokenType.text,
-                value,
-            },
-        ];
-    }
-
-    if (type === 'string') {
-        const { quote } = node;
-        return [
-            {
-                type: TokenType.text,
-                value: quote ? quote + value + quote : value,
-            },
-        ];
-    }
-
-    // If we are inside a var() expression use need to stringify since we are converting it into a function
-    if (type === 'word') {
-        const convertIdentifier = value.startsWith('--');
-        if (convertIdentifier) {
-            return [{ type: TokenType.identifier, value: `"${value}"` }];
-        }
-        // For animation properties, the shadow/host attributes may be in this text
-        return tokenizeCss(value);
-    }
-
-    // If we inside a var() function we need to prepend and append to generate an expression
-    if (type === 'function') {
-        if (value === 'var') {
-            // `tokens` may include tokens of type `divider`, `expression`, `identifier`,
-            // and `text`. However, an identifier will only ever be adjacent to a divider,
-            // whereas text and expression tokens may be adjacent to one another. This is
-            // important below when inserting concatenetors.
-            //
-            // For fuller context, see the following conversation:
-            //   https://github.com/salesforce/lwc/pull/2902#discussion_r904626421
-            let tokens = recursiveValueParse({ nodes }, true);
-            tokens = reduceTokens(tokens);
-            const exprToken = tokens.reduce((buffer, token, index) => {
-                const isTextToken = token.type === TokenType.text;
-                const normalizedToken = isTextToken ? JSON.stringify(token.value) : token.value;
-                const nextToken = tokens[index + 1];
-
-                // If we have a token sequence of text + expression or expression + text,
-                // we need to add the concatenation operator. Examples:
-                //
-                //   Input:  var(--x, 0 0 2px var(--y, #fff))
-                //   Output: varResolver("--x", "0 0 2px " + varResolver("--y", "#fff"))
-                //
-                //   Input:  var(--x, var(--y, #fff) 0 0 2px)
-                //   Output: varResolver("--x", varResolver("--y", "#fff") + " 0 0 2px"))
-                //
-                // Since identifier tokens will never be adjacent to text or expression
-                // tokens (see above comment), a concatenator will never be required if
-                // `token` or `nextToken` is an identifier.
-                const shouldAddConcatenator =
-                    isTextOrExpression(token) && nextToken && isTextOrExpression(nextToken);
-                const concatOperator = shouldAddConcatenator ? ' + ' : '';
-
-                return buffer + normalizedToken + concatOperator;
-            }, '');
-
-            // Generate the function call for runtime evaluation
-            return [
-                {
-                    type: TokenType.expression,
-                    value: `${VAR_RESOLVER_IDENTIFIER}(${exprToken})`,
-                },
-            ];
-            // for any other function just do the equivalent string concatenation (no need for expressions)
-        } else {
-            const tokens = nodes.reduce((acc: Token[], n: any) => {
-                acc.push(...recursiveValueParse(n, false));
-                return acc;
-            }, []);
-            return [
-                { type: TokenType.text, value: `${value}(` },
-                ...reduceTokens(tokens),
-                { type: TokenType.text, value: ')' },
-            ];
-        }
-    }
-
-    // For any other token types we just need to return text
-    return [{ type: TokenType.text, value }];
-}
-
-function tokenizeCssDeclaration(node: Declaration): Token[] {
-    const valueRoot = postcssValueParser(node.value);
-    const parsed = recursiveValueParse(valueRoot);
-    return [{ type: TokenType.text, value: `${node.prop.trim()}: ` }, ...parsed];
 }
