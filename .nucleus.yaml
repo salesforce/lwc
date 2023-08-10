@@ -42,6 +42,7 @@ branches:
   milestone-.*: # used for prerelease testing
     pull-request:
       <<: *branch-definition
+      workflow: build-and-test
 steps:
   node-conformance:
     run:
