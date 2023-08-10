@@ -39,6 +39,9 @@ branches:
   winter24:
     pull-request:
       <<: *branch-definition
+  milestone-.*: # used for prerelease testing
+    pull-request:
+      <<: *branch-definition
 steps:
   node-conformance:
     run:
