@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const path = require('path');
-
-const fs = require('fs-extra');
+const path = require('node:path');
+const fs = require('node:fs');
 const rollup = require('rollup');
 const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
 const rollupReplacePlugin = require('@rollup/plugin-replace');
@@ -90,14 +89,14 @@ const baseOutputConfig = { format: 'iife', globals: globalModules };
 // -- Build shared artifacts -----------------------------------------------------
 
 // copy static files
-fs.copySync(engineModeFile, path.join(testSharedOutput, 'engine.js'));
-fs.copySync(shadowModeFile, path.join(testSharedOutput, 'shadow.js'));
+fs.mkdirSync(testSharedOutput, { recursive: true });
+fs.copyFileSync(engineModeFile, path.join(testSharedOutput, 'engine.js'));
+fs.copyFileSync(shadowModeFile, path.join(testSharedOutput, 'shadow.js'));
 
 // -- Build component tests -----------------------------------------------------=
 
-testEntries
-    .reduce(async (promise, test) => {
-        await promise;
+async function main() {
+    for (const test of testEntries) {
         const { name: testName, path: testEntry, namespace: testNamespace } = test;
         console.log(`Building integration test: ${testName} | ${testEntry}`);
         const bundle = await rollup.rollup({ ...createRollupInputConfig(), input: testEntry });
@@ -112,7 +111,10 @@ testEntries
             templates.html(testName),
             'utf8'
         );
-    }, Promise.resolve())
-    .catch((err) => {
-        console.log(err);
-    });
+    }
+}
+
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});

@@ -39,6 +39,10 @@ branches:
   winter24:
     pull-request:
       <<: *branch-definition
+  milestone-.*: # used for prerelease testing
+    pull-request:
+      <<: *branch-definition
+      workflow: build-and-test # the default workflow is release, and we just want build+tests
 steps:
   node-conformance:
     run:
