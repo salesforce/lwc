@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -12,7 +12,7 @@ if (process.env.NATIVE_SHADOW) {
     throw new Error('NATIVE_SHADOW is deprecated. Use DISABLE_SYNTHETIC instead!');
 }
 
-const COMPAT = Boolean(process.env.COMPAT);
+const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
 const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
 const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST);
 const ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
@@ -27,7 +27,7 @@ const API_VERSION = process.env.API_VERSION && parseInt(process.env.API_VERSION,
 
 module.exports = {
     // Test configuration
-    COMPAT,
+    LEGACY_BROWSERS,
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     DISABLE_ARIA_REFLECTION_POLYFILL,
     NODE_ENV_FOR_TEST,

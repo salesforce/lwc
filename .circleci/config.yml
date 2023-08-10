@@ -21,11 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:16.20.1
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.19.0-browsers
+      - image: cimg/node:16.20.1-browsers
 
 
 # Custom commands definition
@@ -46,7 +46,7 @@ commands:
       coverage:
         type: boolean
         default: false
-      compat:
+      legacy_browsers:
         type: boolean
         default: false
       disable_synthetic:
@@ -98,7 +98,7 @@ commands:
             <<# parameters.disable_aria_reflection_polyfill >> DISABLE_ARIA_REFLECTION_POLYFILL=1 <</ parameters.disable_aria_reflection_polyfill >> \
             <<# parameters.node_env_production >> NODE_ENV_FOR_TEST=production <</ parameters.node_env_production >> \
             <<# parameters.disable_synthetic_shadow_support_in_compiler >> DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 <</ parameters.disable_synthetic_shadow_support_in_compiler >> \
-            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
+            <<# parameters.legacy_browsers >> LEGACY_BROWSERS=1 <</ parameters.legacy_browsers >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
   # Setup
@@ -197,7 +197,7 @@ commands:
       disable_synthetic_shadow_support_in_compiler:
         type: boolean
         default: false
-      compat:
+      legacy_browsers:
         type: boolean
         default: false
       coverage:
@@ -214,7 +214,7 @@ commands:
           node_env_production: << parameters.node_env_production >>
           disable_synthetic_shadow_support_in_compiler: << parameters.disable_synthetic_shadow_support_in_compiler >>
           api_version: << parameters.api_version >>
-          compat: << parameters.compat >>
+          legacy_browsers: << parameters.legacy_browsers >>
           coverage: << parameters.coverage >>
           command: yarn sauce
 
@@ -285,7 +285,7 @@ jobs:
       - run_karma:
           disable_synthetic: true
       - run_karma:
-          compat: true
+          legacy_browsers: true
       - run_karma:
           force_native_shadow_mode: true
       - run_karma:
@@ -324,25 +324,28 @@ jobs:
           command: yarn coverage
           working_directory: packages/@lwc/integration-karma
 
-
   test_integration:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_prod
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - prod mode
-          command: yarn local:prod
+          command_name: Run integration test - Chrome - prod mode
+          command: yarn sauce:prod --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
   test_integration_dev:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_dev
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - dev mode
-          command: yarn local:dev
+          command_name: Run integration test - Chrome - dev mode
+          command: yarn sauce:dev --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
 

@@ -13,30 +13,27 @@ describe('LightningElement.childNodes', () => {
         );
     });
 
-    if (!process.env.COMPAT) {
-        // IE11 does not implement childNodes correctly
-        it('returns the right elements', () => {
-            const elm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(elm);
+    it('returns the right elements', () => {
+        const elm = createElement('x-parent', { is: Parent });
+        document.body.appendChild(elm);
 
-            const parentResult = elm.childNodes;
-            expect(parentResult.length).toBe(0);
+        const parentResult = elm.childNodes;
+        expect(parentResult.length).toBe(0);
 
-            const childResult = elm.shadowRoot.querySelector('x-child').componentChildNodes();
-            expect(childResult.length).toBe(2);
-            expect(childResult[0].className).toBe('foo slotted1');
-            expect(childResult[1].className).toBe('foo slotted2');
-        });
+        const childResult = elm.shadowRoot.querySelector('x-child').componentChildNodes();
+        expect(childResult.length).toBe(2);
+        expect(childResult[0].className).toBe('foo slotted1');
+        expect(childResult[1].className).toBe('foo slotted2');
+    });
 
-        it('returns the right nodes', () => {
-            const elm = createElement('x-parent-with-text-node', { is: ParentWithTextNode });
-            document.body.appendChild(elm);
+    it('returns the right nodes', () => {
+        const elm = createElement('x-parent-with-text-node', { is: ParentWithTextNode });
+        document.body.appendChild(elm);
 
-            const childResult = elm.shadowRoot.querySelector('x-child').componentChildNodes();
+        const childResult = elm.shadowRoot.querySelector('x-child').componentChildNodes();
 
-            expect(childResult.length).toBe(1);
-            expect(childResult[0].nodeType).toBe(Node.TEXT_NODE);
-            expect(childResult[0].textContent).toBe('hello from a text node');
-        });
-    }
+        expect(childResult.length).toBe(1);
+        expect(childResult[0].nodeType).toBe(Node.TEXT_NODE);
+        expect(childResult[0].textContent).toBe('hello from a text node');
+    });
 });

@@ -1,14 +1,11 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
 
-if (!process.env.COMPAT) {
-    // Symbol not supported
-    describe('locker-live-property', () => {
-        it('should pass the hasOwnProperty check for the locker live property', () => {
-            const elm = createElement('x-component', { is: Component });
-            document.body.appendChild(elm);
+describe('locker-live-property', () => {
+    it('should pass the hasOwnProperty check for the locker live property', () => {
+        const elm = createElement('x-component', { is: Component });
+        document.body.appendChild(elm);
 
-            expect(elm.shadowRoot.querySelector('div').textContent).toEqual('true');
-        });
+        expect(elm.shadowRoot.querySelector('div').textContent).toEqual('true');
     });
-}
+});

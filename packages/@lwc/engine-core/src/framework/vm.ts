@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -431,7 +431,7 @@ function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
 
 function computeShadowMode(vm: VM, renderer: RendererAPI) {
     const { def } = vm;
-    const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
+    const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
     if (isSyntheticShadowDefined) {
@@ -439,32 +439,22 @@ function computeShadowMode(vm: VM, renderer: RendererAPI) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (isNativeShadowDefined) {
-            // Not combined with above condition because @lwc/features only supports identifiers in
-            // the if-condition.
-            if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
-                if (def.shadowSupportMode === ShadowSupportMode.Any) {
+        } else if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
+            if (def.shadowSupportMode === ShadowSupportMode.Any) {
+                shadowMode = ShadowMode.Native;
+            } else {
+                const shadowAncestor = getNearestShadowAncestor(vm);
+                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+                    // Transitive support for native Shadow DOM. A component in native mode
+                    // transitively opts all of its descendants into native.
                     shadowMode = ShadowMode.Native;
                 } else {
-                    const shadowAncestor = getNearestShadowAncestor(vm);
-                    if (
-                        !isNull(shadowAncestor) &&
-                        shadowAncestor.shadowMode === ShadowMode.Native
-                    ) {
-                        // Transitive support for native Shadow DOM. A component in native mode
-                        // transitively opts all of its descendants into native.
-                        shadowMode = ShadowMode.Native;
-                    } else {
-                        // Synthetic if neither this component nor any of its ancestors are configured
-                        // to be native.
-                        shadowMode = ShadowMode.Synthetic;
-                    }
+                    // Synthetic if neither this component nor any of its ancestors are configured
+                    // to be native.
+                    shadowMode = ShadowMode.Synthetic;
                 }
-            } else {
-                shadowMode = ShadowMode.Synthetic;
             }
         } else {
-            // Synthetic if there is no native Shadow DOM support.
             shadowMode = ShadowMode.Synthetic;
         }
     } else {

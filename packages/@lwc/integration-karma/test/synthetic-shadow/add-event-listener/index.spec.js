@@ -27,11 +27,9 @@ describe('add handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 
     describe('listener object mutation', () => {
@@ -63,11 +61,9 @@ describe('add handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 });
 
@@ -103,11 +99,9 @@ describe('remove handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 
     describe('listener identity', () => {
@@ -134,11 +128,9 @@ describe('remove handleEvent support', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 });
 
@@ -174,11 +166,9 @@ describe('dedupe behavior for add handleEvent', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 
     describe('listener identity', () => {
@@ -205,10 +195,8 @@ describe('dedupe behavior for add handleEvent', () => {
             test(createElement('x-test', { is: Test }).shadowRoot);
         });
 
-        if (process.env.COMPAT !== true) {
-            it('native shadow root', () => {
-                test(document.createElement('div').attachShadow({ mode: 'open' }));
-            });
-        }
+        it('native shadow root', () => {
+            test(document.createElement('div').attachShadow({ mode: 'open' }));
+        });
     });
 });
