@@ -7,6 +7,8 @@ import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
 import AttrChanged from 'x/attrChanged';
 import ReflectCamel from 'x/reflectCamel';
+import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
+import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
 
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(
@@ -69,7 +71,16 @@ describe('non-empty custom element', () => {
     afterEach(() => {
         consoleSpy.reset();
     });
-    it('should log error if custom element has children', () => {
+
+    function expectWarnings(expectedWarnings) {
+        const observedWarnings = consoleSpy.calls.warn
+            .flat()
+            .map((err) => (err instanceof Error ? err.message : err));
+
+        expect(observedWarnings).toEqual(expectedWarnings);
+    }
+
+    it('should log error if non-native-shadow custom element has children', () => {
         const elm = document.createElement('test-custom-element-preexisting2');
         elm.innerHTML = '<div>child1</div><div>child2</div>';
         document.body.appendChild(elm);
@@ -78,19 +89,76 @@ describe('non-empty custom element', () => {
             // "creating" a new component, so we can register under a different tag
             class extends WithChildElms.CustomElementConstructor {}
         );
-        const observedErrors = consoleSpy.calls.warn
-            .flat()
-            .map((err) => (err instanceof Error ? err.message : err));
-
-        if (process.env.NODE_ENV === 'production') {
-            expect(observedErrors).toEqual([]);
-        } else {
-            expect(observedErrors).toEqual([
-                'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+        if (process.env.NODE_ENV !== 'production' && !process.env.NATIVE_SHADOW) {
+            expectWarnings([
+                'Light DOM and synthetic shadow custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
             ]);
+        } else {
+            expectWarnings([]);
         }
-        expect(elm.shadowRoot.innerHTML).toBe('<div></div>');
+
+        expect(elm.shadowRoot.childNodes.length).toBe(1);
+        expect(elm.shadowRoot.childNodes[0].tagName).toBe('DIV');
+        expect(elm.shadowRoot.childNodes[0].textContent).toBe('');
+
+        if (process.env.NATIVE_SHADOW) {
+            // slotted pre-existing content is supported for native shadow
+            expect(elm.innerHTML).toBe('<div>child1</div><div>child2</div>');
+        } else {
+            expect(elm.childNodes.length).toBe(0);
+        }
     });
+
+    it('should log error if slotted light dom custom element has children', () => {
+        const elm = document.createElement('test-with-child-elms-has-slot-light');
+        elm.innerHTML = '<div>Slotted</div>';
+        document.body.appendChild(elm);
+        customElements.define(
+            'test-with-child-elms-has-slot-light',
+            // "creating" a new component, so we can register under a different tag
+            class extends WithChildElmsHasSlotLight.CustomElementConstructor {}
+        );
+
+        if (process.env.NODE_ENV !== 'production') {
+            expectWarnings([
+                'Light DOM and synthetic shadow custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+            ]);
+        } else {
+            expectWarnings([]);
+        }
+
+        expect(elm.innerHTML).toBe('');
+    });
+
+    it('should log error if slotted synthetic shadow dom custom element has children', () => {
+        const elm = document.createElement('test-with-child-elms-has-slot');
+        elm.innerHTML = '<div>Slotted</div>';
+        document.body.appendChild(elm);
+        customElements.define(
+            'test-with-child-elms-has-slot',
+            // "creating" a new component, so we can register under a different tag
+            class extends WithChildElmsHasSlot.CustomElementConstructor {}
+        );
+        if (process.env.NODE_ENV !== 'production' && !process.env.NATIVE_SHADOW) {
+            expectWarnings([
+                'Light DOM and synthetic shadow custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+            ]);
+        } else {
+            expectWarnings([]);
+        }
+
+        expect(elm.shadowRoot.childNodes.length).toBe(1);
+        expect(elm.shadowRoot.childNodes[0].tagName).toBe('SLOT');
+        expect(elm.shadowRoot.childNodes[0].textContent).toBe('');
+
+        if (process.env.NATIVE_SHADOW) {
+            // slotted pre-existing content is supported for native shadow
+            expect(elm.innerHTML).toBe('<div>Slotted</div>');
+        } else {
+            expect(elm.childNodes.length).toBe(0);
+        }
+    });
+
     it('should log error if custom element has shadow root', () => {
         const elm = document.createElement('test-custom-element-preexisting3');
         elm.attachShadow({ mode: 'open' });
@@ -101,14 +169,11 @@ describe('non-empty custom element', () => {
             // "creating" a new component, so we can register under a different tag
             class extends WithChildElms.CustomElementConstructor {}
         );
-        const observedErrors = consoleSpy.calls.warn
-            .flat()
-            .map((err) => (err instanceof Error ? err.message : err));
 
         if (process.env.NODE_ENV === 'production') {
-            expect(observedErrors).toEqual([]);
+            expectWarnings([]);
         } else {
-            expect(observedErrors).toEqual([
+            expectWarnings([
                 'Found an existing shadow root for the custom element "Child". Call `hydrateComponent` instead.',
             ]);
         }
@@ -124,18 +189,17 @@ describe('non-empty custom element', () => {
         elm.innerHTML =
             '<test-custom-element-preexisting4>Slotted</test-custom-element-preexisting4>';
         document.body.appendChild(elm);
-        const observedErrors = consoleSpy.calls.warn
-            .flat()
-            .map((err) => (err instanceof Error ? err.message : err));
 
-        if (process.env.NODE_ENV === 'production') {
-            expect(observedErrors).toEqual([]);
-        } else {
-            expect(observedErrors).toEqual([
-                'Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
+        if (process.env.NODE_ENV !== 'production' && !process.env.NATIVE_SHADOW) {
+            expectWarnings([
+                'Light DOM and synthetic shadow custom elements cannot have child nodes. Ensure the element is empty, including whitespace.',
             ]);
+        } else {
+            expectWarnings([]);
         }
-        expect(elm.children[0].shadowRoot.innerHTML).toBe('<div></div>');
+
+        expect(elm.childNodes.length).toBe(1);
+        expect(elm.childNodes[0].shadowRoot.innerHTML).toBe('<div></div>');
     });
 });
 

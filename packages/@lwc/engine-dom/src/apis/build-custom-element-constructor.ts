@@ -6,11 +6,14 @@
  */
 
 import {
+    LightningElement,
+    RenderMode,
+    ShadowMode,
+    computeShadowAndRenderMode,
     connectRootElement,
     createVM,
     disconnectRootElement,
     getComponentHtmlPrototype,
-    LightningElement,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -62,6 +65,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     return class extends HTMLElement {
         constructor() {
             super();
+
             if (!isNull(this.shadowRoot)) {
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
@@ -71,15 +75,27 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 }
                 clearNode(this.shadowRoot);
             }
-            if (this.childNodes.length > 0) {
+
+            // Compute renderMode/shadowMode in advance. This must be done before `createVM` because `createVM` may
+            // mutate the element.
+            const { shadowMode, renderMode } = computeShadowAndRenderMode(Ctor, renderer);
+
+            // Native shadow components are allowed to have pre-existing `childNodes` before upgrade. This supports
+            // use cases where a custom element has declaratively-defined slotted content, e.g.:
+            // https://github.com/salesforce/lwc/issues/3639
+            const isNativeShadow =
+                renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Native;
+            if (!isNativeShadow && this.childNodes.length > 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
                     console.warn(
-                        `Custom elements cannot have child nodes. Ensure the element is empty, including whitespace.`
+                        `Light DOM and synthetic shadow custom elements cannot have child nodes. ` +
+                            `Ensure the element is empty, including whitespace.`
                     );
                 }
                 clearNode(this);
             }
+
             createVM(this, Ctor, renderer, {
                 mode: 'open',
                 owner: null,
