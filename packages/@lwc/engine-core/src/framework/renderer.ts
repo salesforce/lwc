@@ -24,6 +24,7 @@ export interface RendererAPI {
     createText: (content: string) => N;
     createComment: (content: string) => N;
     nextSibling: (node: N) => N | null;
+    previousSibling: (node: N) => N | null;
     attachShadow: (element: E, options: ShadowRootInit) => N;
     getProperty: (node: N, key: string) => any;
     setProperty: (node: N, key: string, value: any) => void;

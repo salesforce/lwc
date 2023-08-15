@@ -10,7 +10,6 @@ import { SVG_NAMESPACE } from '@lwc/shared';
 import * as t from '../shared/estree';
 import {
     ChildNode,
-    Element,
     Expression,
     ComplexExpression,
     Literal,
@@ -18,13 +17,15 @@ import {
     Root,
     EventListener,
     RefDirective,
+    Text,
+    StaticElement,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
     PARSE_SVG_FRAGMENT_METHOD_NAME,
     TEMPLATE_PARAMS,
 } from '../shared/constants';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import { isElement, isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
@@ -50,7 +51,8 @@ type RenderPrimitive =
     | 'sanitizeHtmlContent'
     | 'fragment'
     | 'staticFragment'
-    | 'scopedSlotFactory';
+    | 'scopedSlotFactory'
+    | 'staticPart';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -78,6 +80,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
     scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
+    staticPart: { name: 'sp', alias: 'api_static_part' },
 };
 
 interface Scope {
@@ -496,7 +499,7 @@ export default class CodeGen {
         return expression as t.Expression;
     }
 
-    genStaticElement(element: Element, slotParentName?: string): t.Expression {
+    genStaticElement(element: StaticElement, slotParentName?: string): t.Expression {
         const key =
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
@@ -536,25 +539,69 @@ export default class CodeGen {
 
         const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
 
-        // Only add the third argument (databag) if this element needs it
-        if (element.listeners.length || element.directives.length) {
-            const databagProperties: t.Property[] = [];
-
-            // has event listeners
-            if (element.listeners.length) {
-                databagProperties.push(this.genEventListeners(element.listeners));
-            }
-
-            // see STATIC_SAFE_DIRECTIVES for what's allowed here
-            for (const directive of element.directives) {
-                if (directive.name === 'Ref') {
-                    databagProperties.push(this.genRef(directive));
-                }
-            }
-
-            args.push(t.objectExpression(databagProperties));
+        // Only add the third argument (staticParts) if this element needs it
+        const staticParts = this.genStaticParts(element);
+        if (staticParts) {
+            args.push(staticParts);
         }
 
         return this._renderApiCall(RENDER_APIS.staticFragment, args);
+    }
+
+    genStaticParts(element: StaticElement): t.ArrayExpression | undefined {
+        const stack: (StaticElement | Text)[] = [element];
+        const partIdsToDatabagProps = new Map<number, t.Property[]>();
+        let partId = -1;
+
+        const addDatabagProp = (prop: t.Property) => {
+            let databags = partIdsToDatabagProps.get(partId);
+            if (!databags) {
+                databags = [];
+                partIdsToDatabagProps.set(partId, databags);
+            }
+            databags.push(prop);
+        };
+
+        // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
+        while (stack.length > 0) {
+            const node = stack.shift()!;
+            partId++;
+            if (isElement(node)) {
+                // has event listeners
+                if (node.listeners.length) {
+                    addDatabagProp(this.genEventListeners(node.listeners));
+                }
+
+                // see STATIC_SAFE_DIRECTIVES for what's allowed here
+                for (const directive of node.directives) {
+                    if (directive.name === 'Ref') {
+                        addDatabagProp(this.genRef(directive));
+                    }
+                }
+
+                // For depth-first traversal, prepend to the stack in reverse order
+                for (let i = node.children.length - 1; i >= 0; i--) {
+                    const childNode = node.children[i];
+                    stack.unshift(childNode);
+                }
+            }
+        }
+
+        if (partIdsToDatabagProps.size === 0) {
+            return undefined; // no databags needed
+        }
+
+        return t.arrayExpression(
+            [...partIdsToDatabagProps.entries()].map(([partId, databagProperties]) => {
+                return this.genStaticPart(partId, databagProperties);
+            })
+        );
+    }
+
+    genStaticPart(partId: number, databagProperties: t.Property[]): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.staticPart, [
+            t.literal(partId),
+            t.objectExpression(databagProperties),
+        ]);
     }
 }

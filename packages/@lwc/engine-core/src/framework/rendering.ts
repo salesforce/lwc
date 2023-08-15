@@ -69,6 +69,8 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+import { applyRefs } from './modules/refs';
+import { applyStaticParts } from './modules/static-parts';
 
 export function patchChildren(
     c1: VNodes,
@@ -255,6 +257,7 @@ function mountElement(
     applyStyleScoping(elm, owner, renderer);
     applyDomManual(elm, vnode);
     applyElementRestrictions(elm, vnode);
+    applyRefs(vnode, owner);
 
     patchElementPropsAndAttrs(null, vnode, renderer);
 
@@ -292,8 +295,7 @@ function mountStatic(
     }
 
     insertNode(elm, parent, anchor, renderer);
-    // Event listeners are only applied once when mounting, so they are allowed for static vnodes
-    applyEventListeners(vnode, renderer);
+    applyStaticParts(elm, vnode, renderer);
 }
 
 function mountCustomElement(
@@ -352,6 +354,7 @@ function mountCustomElement(
     }
 
     patchElementPropsAndAttrs(null, vnode, renderer);
+    applyRefs(vnode, owner);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {

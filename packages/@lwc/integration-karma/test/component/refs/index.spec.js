@@ -6,8 +6,11 @@ import None from 'x/none';
 import NoneActive from 'x/noneActive';
 import Multi from 'x/multi';
 import MultiNoRefsInOne from 'x/multiNoRefsInOne';
+import MultiParent from 'x/multiParent';
 import Overwrite from 'x/overwrite';
 import Conflict from 'x/conflict';
+import ConflictDynamic from 'x/conflictDynamic';
+import ConflictFullyStatic from 'x/conflictFullyStatic';
 import Parent from 'x/parent';
 import Light from 'x/light';
 import Dynamic from 'x/dynamic';
@@ -169,15 +172,50 @@ describe('refs', () => {
         expect(elm.refs).toEqual(undefined);
     });
 
-    it('conflict between elements with same ref', () => {
-        const elm = createElement('x-conflict', { is: Conflict });
+    describe('conflicts between elements with the same ref', () => {
+        const scenarios = [
+            {
+                name: 'Basic',
+                tagName: 'x-conflict',
+                Ctor: Conflict,
+            },
+            {
+                name: 'Dynamic',
+                tagName: 'x-dynamic',
+                Ctor: ConflictDynamic,
+            },
+            {
+                name: 'Fully static',
+                tagName: 'x-fully-static',
+                Ctor: ConflictFullyStatic,
+            },
+        ];
+
+        scenarios.forEach(({ name, tagName, Ctor }) => {
+            it(name, () => {
+                const elm = createElement(tagName, { is: Ctor });
+
+                document.body.appendChild(elm);
+
+                expect(elm.getRefTextContent('foo')).toEqual('march');
+                expect(elm.getRefTextContent('bar')).toEqual('april');
+                expect(elm.getRefTextContent('baz')).toEqual('july');
+                expect(elm.getRefTextContent('quux')).toEqual('september');
+            });
+        });
+    });
+
+    it('multiple copies of same component, refs do not collide', () => {
+        const elm = createElement('x-multi-parent', { is: MultiParent });
 
         document.body.appendChild(elm);
 
-        expect(elm.getRefTextContent('foo')).toEqual('march');
-        expect(elm.getRefTextContent('bar')).toEqual('april');
-        expect(elm.getRefTextContent('baz')).toEqual('july');
-        expect(elm.getRefTextContent('quux')).toEqual('september');
+        const expectedDivs = [...elm.shadowRoot.children].map((_) => _.shadowRoot.firstChild);
+        const actualDivs = elm.getAllRefs();
+        expect(expectedDivs.length).toBe(actualDivs.length);
+        expect(expectedDivs[0]).toBe(actualDivs[0]);
+        expect(expectedDivs[1]).toBe(actualDivs[1]);
+        expect(expectedDivs[2]).toBe(actualDivs[2]);
     });
 
     it('ref on a component', () => {
