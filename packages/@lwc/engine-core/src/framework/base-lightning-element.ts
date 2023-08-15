@@ -468,7 +468,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (vm.renderMode === RenderMode.Light || vm.shadowMode === ShadowMode.Synthetic) {
-            throw new ReferenceError(
+            throw new Error(
                 'attachInternals API is not supported in light DOM or synthetic shadow.'
             );
         }
