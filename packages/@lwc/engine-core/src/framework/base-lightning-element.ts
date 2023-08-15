@@ -462,8 +462,17 @@ LightningElement.prototype = {
 
     attachInternals(): ElementInternals {
         const vm = getAssociatedVM(this);
-        const { elm } = vm;
-        const { attachInternals } = vm.renderer;
+        const {
+            elm,
+            renderer: { attachInternals },
+        } = vm;
+
+        if (vm.renderMode === RenderMode.Light || vm.shadowMode === ShadowMode.Synthetic) {
+            throw new ReferenceError(
+                'attachInternals API is not supported in light DOM or synthetic shadow.'
+            );
+        }
+
         return attachInternals(elm);
     },
 

@@ -148,6 +148,12 @@ export function HTMLBridgeElementFactory(
     descriptors.attributeChangedCallback = {
         value: createAttributeChangedCallback(attributeToPropMap, superAttributeChangedCallback),
     };
+
+    // To avoid leaking private component details, accessing internals from outside a component is not allowed.
+    descriptors.attachInternals = {
+        value: undefined,
+    };
+
     // Specify attributes for which we want to reflect changes back to their corresponding
     // properties via attributeChangedCallback.
     defineProperty(HTMLBridgeElement, 'observedAttributes', {

@@ -194,7 +194,7 @@ function getTagName(elm: Element): string {
 }
 
 function attachInternals(elm: HTMLElement): ElementInternals {
-    return elm.attachInternals();
+    return HTMLElement.prototype.attachInternals.call(elm);
 }
 
 export { registerContextConsumer, registerContextProvider } from './context';
