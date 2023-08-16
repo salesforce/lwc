@@ -1136,7 +1136,7 @@
 
 "@locker/babel-plugin-transform-unforgeables@0.19.9":
   version "0.19.9"
-  resolved "https://registry.yarnpkg.org/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.9.tgz#43981a48a2b31994afb69dd4808fa7c4f7d038f6"
+  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.9.tgz#43981a48a2b31994afb69dd4808fa7c4f7d038f6"
   integrity sha512-MMshwLWU/WdeyMJRwgxrcgpQUEH2/Iul9pr1VS9uHP5QkKIG755MJ6IjNtdvLTVQdhxkVxr+bJjsg8wGhEBAzA==
   dependencies:
     "@babel/generator" "7.21.4"
