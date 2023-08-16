@@ -13,7 +13,7 @@ const testConnectedCallbackError = (elm, msg) => {
 };
 
 describe('attachInternals', () => {
-    if (process.env.NATIVE_SHADOW && process.env.ELEMENT_INTERNALS_DEFINED) {
+    if (process.env.NATIVE_SHADOW) {
         let elm;
         beforeEach(() => {
             elm = createElement('ai-native-shadow-component', { is: ShadowDomCmp });
@@ -24,30 +24,39 @@ describe('attachInternals', () => {
             document.body.removeChild(elm);
         });
 
-        describe('native shadow', () => {
-            it('should be able to create ElementInternals object', () => {
-                expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
-            });
+        if (process.env.ELEMENT_INTERNALS_DEFINED) {
+            describe('native shadow', () => {
+                it('should be able to create ElementInternals object', () => {
+                    expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
+                });
 
-            it('should not be callable outside a component', () => {
-                const cmp = document.querySelector('ai-native-shadow-component');
-                if (process.env.NODE_ENV === 'production') {
-                    expect(cmp.attachInternals).toBeUndefined();
-                } else {
-                    expect(() => cmp.attachInternals).toLogErrorDev(
-                        /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\./
+                it('should not be callable outside a component', () => {
+                    const cmp = document.querySelector('ai-native-shadow-component');
+                    if (process.env.NODE_ENV === 'production') {
+                        expect(cmp.attachInternals).toBeUndefined();
+                    } else {
+                        expect(() => cmp.attachInternals).toLogErrorDev(
+                            /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\./
+                        );
+                    }
+                });
+
+                it('should throw an error when called twice on the same element', () => {
+                    // The error type is different between browsers
+                    expect(() => elm.callAttachInternals()).toThrowError();
+                });
+            });
+        } else {
+            describe('unsupported browser environment', () => {
+                it('should throw an error when used with unsupported browser environments', () => {
+                    testConnectedCallbackError(
+                        elm,
+                        'attachInternals API is not supported in this browser environment.'
                     );
-                }
+                });
             });
-
-            it('should throw an error when called twice on the same element', () => {
-                // The error type is different between browsers
-                expect(() => elm.callAttachInternals()).toThrowError();
-            });
-        });
-    }
-
-    if (!process.env.NATIVE_SHADOW) {
+        }
+    } else {
         describe('synthetic shadow', () => {
             it('should throw error when used inside a component', () => {
                 const elm = createElement('ai-synthetic-shadow-component', {
@@ -70,18 +79,4 @@ describe('attachInternals', () => {
             );
         });
     });
-
-    if (!process.env.ELEMENT_INTERNALS_DEFINED) {
-        describe('unsupported browser environment', () => {
-            it('should throw an error when used with unsupported browser environments', () => {
-                const elm = createElement('ai-shadow-component', {
-                    is: ShadowDomCmp,
-                });
-                testConnectedCallbackError(
-                    elm,
-                    'attachInternals API is not supported in this browser environment.'
-                );
-            });
-        });
-    }
 });
