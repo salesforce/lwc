@@ -24,11 +24,18 @@ describe('attachInternals', () => {
 
             it('should not be callable outside a component', () => {
                 const cmp = document.querySelector('ai-native-shadow-component');
-                expect(cmp.attachInternals).toBeUndefined();
+                if (process.env.NODE_ENV === 'production') {
+                    expect(cmp.attachInternals).toBeUndefined();
+                } else {
+                    expect(() => cmp.attachInternals).toLogErrorDev(
+                        /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\./
+                    );
+                }
             });
 
             it('should throw an error when called twice on the same element', () => {
-                expect(() => elm.callAttachInternals()).toThrowError(DOMException);
+                // The error type is different between browsers
+                expect(() => elm.callAttachInternals()).toThrowError();
             });
         });
     } else {
