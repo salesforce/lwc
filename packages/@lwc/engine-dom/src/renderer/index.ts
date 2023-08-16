@@ -198,11 +198,6 @@ function getTagName(elm: Element): string {
 // Additionally, cache the attachInternals method to protect against 3rd party monkey-patching.
 const attachInternalsFunc = HTMLElement.prototype.attachInternals;
 function attachInternals(elm: HTMLElement): ElementInternals {
-    // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
-    if (isUndefined(attachInternalsFunc)) {
-        throw new Error('attachInternals API is not supported in this browser environment.');
-    }
-
     return attachInternalsFunc.call(elm);
 }
 

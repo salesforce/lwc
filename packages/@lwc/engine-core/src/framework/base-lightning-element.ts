@@ -473,6 +473,11 @@ LightningElement.prototype = {
             );
         }
 
+        if (typeof ElementInternals === 'undefined') {
+            // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
+            throw new Error('attachInternals API is not supported in this browser environment.');
+        }
+
         return attachInternals(elm);
     },
 
