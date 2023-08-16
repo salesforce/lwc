@@ -196,9 +196,14 @@ function getTagName(elm: Element): string {
 // Use the attachInternals method from HTMLElement.prototype because access to it is removed
 // in HTMLBridgeElement, ie: elm.attachInternals is undefined.
 // Additionally, cache the attachInternals method to protect against 3rd party monkey-patching.
-const nativeAttachInternals = HTMLElement.prototype.attachInternals;
+const attachInternalsFunc = HTMLElement.prototype.attachInternals;
 function attachInternals(elm: HTMLElement): ElementInternals {
-    return nativeAttachInternals.call(elm);
+    // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
+    if (isUndefined(attachInternalsFunc)) {
+        throw new Error('attachInternals API is not supported in this browser environment.');
+    }
+
+    return attachInternalsFunc.call(elm);
 }
 
 export { registerContextConsumer, registerContextProvider } from './context';
