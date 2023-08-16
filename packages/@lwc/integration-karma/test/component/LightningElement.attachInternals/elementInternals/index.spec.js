@@ -3,17 +3,17 @@ import { ariaProperties, ariaAttributes } from 'test-utils';
 
 import ElementInternal from 'ei/component';
 
-let elm;
-beforeEach(() => {
-    elm = createElement('ei-component', { is: ElementInternal });
-    document.body.appendChild(elm);
-});
+if (process.env.NATIVE_SHADOW && process.env.ELEMENT_INTERNALS_DEFINED) {
+    let elm;
+    beforeEach(() => {
+        elm = createElement('ei-component', { is: ElementInternal });
+        document.body.appendChild(elm);
+    });
 
-afterEach(() => {
-    document.body.removeChild(elm);
-});
+    afterEach(() => {
+        document.body.removeChild(elm);
+    });
 
-if (process.env.NATIVE_SHADOW) {
     describe('ElementInternals', () => {
         it('should be associated to the correct element', () => {
             // Ensure external and internal views of shadowRoot are the same

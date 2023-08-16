@@ -50,7 +50,8 @@ function createEnvFile() {
                 NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
                 SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
-                API_VERSION: ${JSON.stringify(API_VERSION)}
+                API_VERSION: ${JSON.stringify(API_VERSION)},
+                ELEMENT_INTERNALS_DEFINED: typeof ElementInternals !== 'undefined'
             }
         };
     `
