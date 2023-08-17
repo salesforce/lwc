@@ -1134,10 +1134,10 @@
   resolved "https://registry.yarnpkg.com/@ljharb/through/-/through-2.3.9.tgz#85f221eb82f9d555e180e87d6e50fb154af85408"
   integrity sha512-yN599ZBuMPPK4tdoToLlvgJB4CLK8fGl7ntfy0Wn7U6ttNvHYurd81bfUiK/6sMkiIwm65R6ck4L6+Y3DfVbNQ==
 
-"@locker/babel-plugin-transform-unforgeables@0.19.8":
-  version "0.19.8"
-  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.8.tgz#246942d5e1b8c549534e2d230b8c92287cbcf88d"
-  integrity sha512-E5cSM/qYTL0TdscEXaYiI8sPqpZW/ry1ltzILKtm0D6MBmtR6/z83+rgm65RGCtlJB1lIGQeXuOwoMVVfTRezA==
+"@locker/babel-plugin-transform-unforgeables@0.19.9":
+  version "0.19.9"
+  resolved "https://registry.yarnpkg.com/@locker/babel-plugin-transform-unforgeables/-/babel-plugin-transform-unforgeables-0.19.9.tgz#43981a48a2b31994afb69dd4808fa7c4f7d038f6"
+  integrity sha512-MMshwLWU/WdeyMJRwgxrcgpQUEH2/Iul9pr1VS9uHP5QkKIG755MJ6IjNtdvLTVQdhxkVxr+bJjsg8wGhEBAzA==
   dependencies:
     "@babel/generator" "7.21.4"
     match-json "1.3.5"
