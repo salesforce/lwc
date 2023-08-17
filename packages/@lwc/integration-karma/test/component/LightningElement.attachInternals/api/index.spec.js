@@ -9,7 +9,7 @@ const testConnectedCallbackError = (elm, msg) => {
         document.body.appendChild(elm);
     });
     expect(error).not.toBeUndefined();
-    expect(error.message).toEqual(msg);
+    expect(error.message).toBe(msg);
 };
 
 describe('attachInternals', () => {
