@@ -154,7 +154,9 @@ export function HTMLBridgeElementFactory(
     descriptors.attachInternals = {
         get() {
             if (process.env.NODE_ENV !== 'production') {
-                logError('attachInternals cannot be accessed outside of a component.');
+                logError(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
             }
         },
     };

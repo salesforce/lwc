@@ -18,6 +18,7 @@ import {
     defineProperties,
     defineProperty,
     freeze,
+    isFalse,
     isFunction,
     isNull,
     isObject,
@@ -295,6 +296,8 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     }
 }
 
+const supportsElementInternals = typeof ElementInternals !== 'undefined';
+
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
@@ -467,7 +470,7 @@ LightningElement.prototype = {
             renderer: { attachInternals },
         } = vm;
 
-        if (typeof ElementInternals === 'undefined') {
+        if (isFalse(supportsElementInternals)) {
             // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
             throw new Error('attachInternals API is not supported in this browser environment.');
         }

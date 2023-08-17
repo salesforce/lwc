@@ -19,7 +19,7 @@ const createTestElement = (name, def) => {
     return elm;
 };
 
-if (process.env.ELEMENT_INTERNALS_DEFINED) {
+if (typeof ElementInternals !== 'undefined') {
     if (process.env.NATIVE_SHADOW) {
         describe('native shadow', () => {
             let elm;
@@ -77,7 +77,7 @@ it('should not be callable outside a component', () => {
         expect(elm.attachInternals).toBeUndefined();
     } else {
         expect(() => elm.attachInternals).toLogErrorDev(
-            /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\./
+            /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
         );
     }
 });
