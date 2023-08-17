@@ -19,49 +19,57 @@ const createTestElement = (name, def) => {
     return elm;
 };
 
-if (process.env.NATIVE_SHADOW && process.env.ELEMENT_INTERNALS_DEFINED) {
-    describe('native shadow', () => {
-        let elm;
-        beforeEach(() => {
-            elm = createTestElement('ai-shadow-component', ShadowDomCmp);
-        });
+if (process.env.ELEMENT_INTERNALS_DEFINED) {
+    if (process.env.NATIVE_SHADOW) {
+        describe('native shadow', () => {
+            let elm;
+            beforeEach(() => {
+                elm = createTestElement('ai-shadow-component', ShadowDomCmp);
+            });
 
-        afterEach(() => {
-            document.body.removeChild(elm);
-        });
+            afterEach(() => {
+                document.body.removeChild(elm);
+            });
 
-        it('should be able to create ElementInternals object', () => {
-            expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
-        });
+            it('should be able to create ElementInternals object', () => {
+                expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
+            });
 
-        it('should throw an error when called twice on the same element', () => {
-            // The error type is different between browsers
-            expect(() => elm.callAttachInternals()).toThrowError();
+            it('should throw an error when called twice on the same element', () => {
+                // The error type is different between browsers
+                expect(() => elm.callAttachInternals()).toThrowError();
+            });
         });
-    });
-}
+    } else {
+        describe('synthetic shadow', () => {
+            it('should throw error when used inside a component', () => {
+                const elm = createElement('ai-synthetic-shadow-component', { is: ShadowDomCmp });
+                testConnectedCallbackError(
+                    elm,
+                    'attachInternals API is not supported in light DOM or synthetic shadow.'
+                );
+            });
+        });
+    }
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('synthetic shadow', () => {
+    describe('light DOM', () => {
         it('should throw error when used inside a component', () => {
-            const elm = createElement('ai-synthetic-shadow-component', { is: ShadowDomCmp });
+            const elm = createElement('ai-light-dom-component', { is: LightDomCmp });
             testConnectedCallbackError(
                 elm,
                 'attachInternals API is not supported in light DOM or synthetic shadow.'
             );
         });
     });
-}
-
-describe('light DOM', () => {
-    it('should throw error when used inside a component', () => {
-        const elm = createElement('ai-light-dom-component', { is: LightDomCmp });
+} else {
+    it('should throw an error when used with unsupported browser environments', () => {
+        const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
         testConnectedCallbackError(
             elm,
-            'attachInternals API is not supported in light DOM or synthetic shadow.'
+            'attachInternals API is not supported in this browser environment.'
         );
     });
-});
+}
 
 it('should not be callable outside a component', () => {
     const elm = createTestElement('ai-component', BasicCmp);
@@ -73,13 +81,3 @@ it('should not be callable outside a component', () => {
         );
     }
 });
-
-if (!process.env.ELEMENT_INTERNALS_DEFINED) {
-    it('should throw an error when used with unsupported browser environments', () => {
-        const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
-        testConnectedCallbackError(
-            elm,
-            'attachInternals API is not supported in this browser environment.'
-        );
-    });
-}
