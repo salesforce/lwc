@@ -66,7 +66,7 @@ if (process.env.ELEMENT_INTERNALS_DEFINED) {
         const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
         testConnectedCallbackError(
             elm,
-            'attachInternals API is not supported in this browser environment.'
+            /Error: attachInternals API is not supported in this browser environment\./
         );
     });
 }
