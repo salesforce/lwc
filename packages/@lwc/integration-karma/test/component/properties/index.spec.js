@@ -72,28 +72,25 @@ const expectedEnumerableAndWritableProps = [
 ];
 
 describe('properties', () => {
-    // IE11 and old Safari are buggy, return 'constructor' along with the other properties
-    if (!process.env.COMPAT) {
-        let elm;
+    let elm;
 
-        beforeEach(() => {
-            elm = createElement('x-component', { is: Component });
-            document.body.appendChild(elm);
-        });
+    beforeEach(() => {
+        elm = createElement('x-component', { is: Component });
+        document.body.appendChild(elm);
+    });
 
-        it('has expected enumerable properties', () => {
-            const props = elm.getEnumerableProps();
-            expect(props).toEqual(expectedEnumerableProps);
-        });
+    it('has expected enumerable properties', () => {
+        const props = elm.getEnumerableProps();
+        expect(props).toEqual(expectedEnumerableProps);
+    });
 
-        it('has expected writable properties', () => {
-            const props = elm.getEnumerableAndWritableProps();
-            expect(props).toEqual(expectedEnumerableAndWritableProps);
-        });
+    it('has expected writable properties', () => {
+        const props = elm.getEnumerableAndWritableProps();
+        expect(props).toEqual(expectedEnumerableAndWritableProps);
+    });
 
-        it('has expected configurable properties', () => {
-            const props = elm.getEnumerableAndConfigurableProps();
-            expect(props).toEqual([]);
-        });
-    }
+    it('has expected configurable properties', () => {
+        const props = elm.getEnumerableAndConfigurableProps();
+        expect(props).toEqual([]);
+    });
 });

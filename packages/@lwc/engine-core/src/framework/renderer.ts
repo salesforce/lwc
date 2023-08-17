@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -15,7 +15,6 @@ type E = HostElement;
 export type LifecycleCallback = (elm: E) => void;
 
 export interface RendererAPI {
-    isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;

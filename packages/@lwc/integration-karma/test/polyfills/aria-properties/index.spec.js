@@ -166,8 +166,7 @@ function testAriaProperty(property, attribute) {
 }
 
 // These tests don't make sense if the global polyfill is not loaded
-// Also IE11 has some bugs, so we disable for COMPAT mode
-if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL && !process.env.COMPAT) {
+if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
         testAriaProperty(ariaProperty, ariaAttribute);
     }
