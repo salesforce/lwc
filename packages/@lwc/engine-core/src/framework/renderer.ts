@@ -73,4 +73,5 @@ export interface RendererAPI {
         adapterContextToken: string,
         subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
+    attachInternals: (elm: E) => ElementInternals;
 }
