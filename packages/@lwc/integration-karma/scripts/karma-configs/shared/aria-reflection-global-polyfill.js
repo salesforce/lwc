@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2023, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 // Minimal polyfill of ARIA string reflection, plus some non-standard ARIA props
 // Taken from https://github.com/salesforce/lwc/blob/44a01ef/packages/%40lwc/shared/src/aria.ts#L22-L70
 // This should be analogous to the same one used in lwc-platform
