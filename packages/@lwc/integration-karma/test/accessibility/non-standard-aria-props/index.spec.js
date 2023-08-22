@@ -4,7 +4,7 @@ import Light from 'x/light';
 import Shadow from 'x/shadow';
 
 // This test only works if the ARIA reflection polyfill is loaded
-if (window.lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
+if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
     describe('non-standard ARIA properties', () => {
         let dispatcher;
 

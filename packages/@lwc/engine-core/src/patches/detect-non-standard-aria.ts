@@ -28,6 +28,11 @@ const NON_STANDARD_ARIA_PROPS = [
     'ariaOwns',
 ];
 
+function isGlobalAriaPolyfillLoaded(): boolean {
+    // sniff for the legacy polyfill being loaded
+    return !isUndefined(getOwnPropertyDescriptor(Element.prototype, 'ariaActiveDescendant'));
+}
+
 function findVM(elm: Element): VM | undefined {
     // If it's a shadow DOM component, then it has a host
     const { host } = elm.getRootNode() as ShadowRoot;
@@ -111,14 +116,12 @@ function enableDetection() {
 }
 
 // No point in running this code if we're not in a browser, or if the global polyfill is not loaded
-if (process.env.IS_BROWSER) {
-    if (lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-        // Always run detection in dev mode, so we can at least print to the console
-        if (process.env.NODE_ENV !== 'production') {
-            enableDetection();
-        } else {
-            // In prod mode, only enable detection if reporting is enabled
-            onReportingEnabled(enableDetection);
-        }
+if (process.env.IS_BROWSER && isGlobalAriaPolyfillLoaded()) {
+    // Always run detection in dev mode, so we can at least print to the console
+    if (process.env.NODE_ENV !== 'production') {
+        enableDetection();
+    } else {
+        // In prod mode, only enable detection if reporting is enabled
+        onReportingEnabled(enableDetection);
     }
 }

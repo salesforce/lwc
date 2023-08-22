@@ -59,12 +59,6 @@ export interface FeatureFlagMap {
      * ```
      */
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
-
-    /**
-     * Flag to enable the ARIA reflection polyfill. When set to true, ARIA reflection will be applied globally
-     * to Element.prototype, not just to the LightningElement and HTMLBridgeElement base classes.
-     */
-    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

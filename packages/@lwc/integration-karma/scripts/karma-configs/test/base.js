@@ -12,7 +12,12 @@ const path = require('path');
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
-const { SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
+const {
+    SYNTHETIC_SHADOW_ENABLED,
+    GREP,
+    COVERAGE,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+} = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
 
@@ -22,12 +27,20 @@ const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
+const ARIA_REFLECTION_GLOBAL_POLYFILL = require.resolve(
+    '../shared/aria-reflection-global-polyfill.js'
+);
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 
-const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, WIRE_SERVICE];
+const ALL_FRAMEWORK_FILES = [
+    SYNTHETIC_SHADOW,
+    LWC_ENGINE,
+    WIRE_SERVICE,
+    ARIA_REFLECTION_GLOBAL_POLYFILL,
+];
 
 // Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
 // This is due to the fact that we are running so many simultaneous rollup commands
@@ -40,6 +53,9 @@ function getFiles() {
 
     if (SYNTHETIC_SHADOW_ENABLED) {
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
+    }
+    if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
+        frameworkFiles.push(createPattern(ARIA_REFLECTION_GLOBAL_POLYFILL));
     }
     frameworkFiles.push(createPattern(LWC_ENGINE));
     frameworkFiles.push(createPattern(WIRE_SERVICE));

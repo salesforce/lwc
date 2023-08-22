@@ -41,7 +41,7 @@ if (!process.env.NATIVE_SHADOW) {
 
             // It doesn't make sense to test setting e.g. `elm.ariaLabelledBy` if the global
             // polyfill is not applied
-            if (window.lwcRuntimeFlags.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
+            if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                 usePropertyAccessValues.push(true);
             }
 
