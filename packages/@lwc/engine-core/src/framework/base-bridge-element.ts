@@ -21,6 +21,7 @@ import {
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
+import { logError } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
@@ -148,6 +149,18 @@ export function HTMLBridgeElementFactory(
     descriptors.attributeChangedCallback = {
         value: createAttributeChangedCallback(attributeToPropMap, superAttributeChangedCallback),
     };
+
+    // To avoid leaking private component details, accessing internals from outside a component is not allowed.
+    descriptors.attachInternals = {
+        get() {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
+    };
+
     // Specify attributes for which we want to reflect changes back to their corresponding
     // properties via attributeChangedCallback.
     defineProperty(HTMLBridgeElement, 'observedAttributes', {
