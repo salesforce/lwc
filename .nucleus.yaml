@@ -68,7 +68,8 @@ steps:
       paths:
         # it's necessary to redeclare **/node_modules because this overrides the default behavior
         - '**/node_modules'
-      alwaysUpdate: true
+        # add NX cache
+        - '.nx-cache'
     after: node-build
   npm-publish-release:
     params:
