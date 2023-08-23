@@ -70,6 +70,7 @@ steps:
         - '**/node_modules'
         # add NX cache
         - '.nx-cache'
+      always-update: true
     after: node-build
   npm-publish-release:
     params:
