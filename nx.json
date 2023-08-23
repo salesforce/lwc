@@ -1,36 +1,52 @@
 {
-    "extends": "nx/presets/npm.json",
-    "tasksRunnerOptions": {
-        "default": {
-            "runner": "nx/tasks-runners/default",
-            "options": {
-                "cacheDirectory": "./.nx-cache",
-                "cacheableOperations": ["build", "dev"]
-            }
-        }
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheDirectory": "./.nx-cache",
+        "cacheableOperations": [
+          "build",
+          "dev"
+        ]
+      }
+    }
+  },
+  "extends": "nx/presets/npm.json",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
     },
-    "targetDefaults": {
-        "build": {
-            "dependsOn": ["^build"]
-        },
-        "dev": {
-            "dependsOn": ["^build"]
-        },
-        "test": {
-            "//": "Build @lwc/perf-benchmarks dependencies and build target when invoking the test:performance script on the root package.json.",
-            "dependsOn": ["build"]
-        },
-        "sauce": {
-            "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
-            "dependsOn": ["^build"]
-        }
+    "dev": {
+      "dependsOn": [
+        "^build"
+      ]
     },
-    "affected": {
-        "defaultBase": "master"
+    "test": {
+      "//": "Build @lwc/perf-benchmarks dependencies and build target when invoking the test:performance script on the root package.json.",
+      "dependsOn": [
+        "build"
+      ]
     },
-    "namedInputs": {
-        "sharedGlobals": ["{workspaceRoot}/scripts/rollup/rollup.config.js"],
-        "default": ["{projectRoot}/**/*", "sharedGlobals"]
-    },
-    "$schema": "./node_modules/nx/schemas/nx-schema.json"
+    "sauce": {
+      "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  },
+  "affected": {
+    "defaultBase": "master"
+  },
+  "namedInputs": {
+    "sharedGlobals": [
+      "{workspaceRoot}/scripts/rollup/rollup.config.js"
+    ],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ]
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }
