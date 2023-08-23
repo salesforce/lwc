@@ -31,5 +31,6 @@
     "namedInputs": {
         "sharedGlobals": ["{workspaceRoot}/scripts/rollup/rollup.config.js"],
         "default": ["{projectRoot}/**/*", "sharedGlobals"]
-    }
+    },
+    "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }
