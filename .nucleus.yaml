@@ -70,6 +70,7 @@ steps:
         - '**/node_modules'
         # add NX cache
         - '.nx-cache'
+      always-update: true # ensure nx cache is updated even when yarn.lock doesn't change
     after: node-build
   npm-publish-release:
     params:
