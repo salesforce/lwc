@@ -68,7 +68,7 @@ steps:
       paths:
         # it's necessary to redeclare **/node_modules because this overrides the default behavior
         - '**/node_modules'
-      always-update: true
+      alwaysUpdate: true
     after: node-build
   npm-publish-release:
     params:
