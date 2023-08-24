@@ -68,7 +68,7 @@ for (const prop of ARIA_PROPERTIES) {
             set(value) {
                 // Per the spec, only null is treated as removing the attribute. However, Chromium/WebKit currently
                 // differ from the spec and allow undefined as well. Here, we follow the spec, as well as
-                // @lwc/aria-reflection's historical behavior. See: https://github.com/w3c/aria/issues/1858
+                // aria-reflection.ts's historical behavior. See: https://github.com/w3c/aria/issues/1858
                 if (value === null) {
                     this.removeAttribute(attribute);
                 } else {

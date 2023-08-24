@@ -1,9 +1,0 @@
-{
-    "extends": "../../../tsconfig.json",
-
-    "compilerOptions": {
-        "lib": ["dom", "es2018"]
-    },
-
-    "include": ["src/"]
-}

@@ -27,10 +27,10 @@ import {
     keys,
     setPrototypeOf,
 } from '@lwc/shared';
-import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';

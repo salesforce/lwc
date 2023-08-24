@@ -20,8 +20,8 @@ import {
     keys,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
-import { applyAriaReflection } from '@lwc/aria-reflection';
 import { logError } from '../shared/logger';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
