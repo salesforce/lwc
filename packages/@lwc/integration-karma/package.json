@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-karma",
     "private": true,
-    "version": "3.1.3",
+    "version": "3.2.0",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
@@ -15,11 +15,11 @@
         "karma-jasmine": "must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11"
     },
     "devDependencies": {
-        "@lwc/compiler": "3.1.3",
-        "@lwc/engine-dom": "3.1.3",
-        "@lwc/engine-server": "3.1.3",
-        "@lwc/rollup-plugin": "3.1.3",
-        "@lwc/synthetic-shadow": "3.1.3",
+        "@lwc/compiler": "3.2.0",
+        "@lwc/engine-dom": "3.2.0",
+        "@lwc/engine-server": "3.2.0",
+        "@lwc/rollup-plugin": "3.2.0",
+        "@lwc/synthetic-shadow": "3.2.0",
         "chokidar": "^3.5.3",
         "istanbul-lib-coverage": "^3.2.0",
         "istanbul-lib-report": "^3.0.1",
