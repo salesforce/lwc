@@ -7,6 +7,7 @@ import Component from 'x/component';
 const expectedEnumerableProps = [
     'accessKey',
     'addEventListener',
+    'attachInternals',
     'childNodes',
     'children',
     'classList',
@@ -50,6 +51,7 @@ const expectedEnumerableProps = [
 
 const expectedEnumerableAndWritableProps = [
     'addEventListener',
+    'attachInternals',
     'dispatchEvent',
     'getAttribute',
     'getAttributeNS',

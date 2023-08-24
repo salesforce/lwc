@@ -8,10 +8,13 @@
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentHtmlPrototype } from './def';
 export {
-    createVM,
+    RenderMode,
+    ShadowMode,
     connectRootElement,
+    createVM,
     disconnectRootElement,
     getAssociatedVMIfPresent,
+    computeShadowAndRenderMode,
 } from './vm';
 export { createContextProviderWithRegister } from './wiring';
 
