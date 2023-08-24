@@ -9,7 +9,6 @@ branches:
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
-        - Guardrails/analyzer-framework
         - LightningMobileRuntime/ui-lmr-components
         - MobilePlatform/lds-debug-app
         - Trailhead-Platform/ui-trailhead-core-components
