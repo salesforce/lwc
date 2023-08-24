@@ -87,7 +87,7 @@ for (const dir of directories) {
                 build: {
                     // It's important to use the `./` here, otherwise NX does not restore the dist files
                     // See https://github.com/salesforce/lwc/issues/3511
-                    outputs: ['./dist'],
+                    outputs: ['{projectRoot}/dist'],
                 },
             },
         },

@@ -35,7 +35,7 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "{projectRoot}/dist"
                 ],
                 "//": "The build output depends on these env variables. See: https://nx.dev/concepts/how-caching-works#runtime-hash-inputs",
                 "inputs": [
