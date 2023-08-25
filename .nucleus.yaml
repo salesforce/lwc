@@ -74,18 +74,3 @@ steps:
     params:
       access: public
       tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
-jobs: # temporarily fixing image to 42 (https://salesforce-internal.slack.com/archives/C022MRLQ9R6/p1692739919528749)
-    build-and-test:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    create-canary-release:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    build-dependency:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    release:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    bump-version:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    update-dep-versions:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
-    core-deploy:
-        image: 331455399823.dkr.ecr.us-east-2.amazonaws.com/sfci/uiplatform/nucleus-centos7-java11-nodejs-browsers:42
