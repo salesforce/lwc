@@ -24,7 +24,7 @@ function getIifeName(filename) {
     } else if (filename.includes('@lwc/synthetic-shadow')) {
         // synthetic shadow does not need an IIFE name
         return undefined;
-    } else if (filename.includes('aria-reflection-global-polyfill.js')) {
+    } else if (filename.includes('aria-reflection')) {
         // aria reflection global polyfill does not need an IIFE name
         return undefined;
     }

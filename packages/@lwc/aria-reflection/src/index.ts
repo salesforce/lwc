@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 // Minimal polyfill of ARIA string reflection, plus some non-standard ARIA props
 // Taken from https://github.com/salesforce/lwc/blob/44a01ef/packages/%40lwc/shared/src/aria.ts#L22-L70
-// This should be analogous to the same one used in lwc-platform
+// This is designed for maximum backwards compatibility on LEX - it should never change.
+// We deliberately don't import from @lwc/shared because that would make this code less portable.
 const ARIA_PROPERTIES = [
     'ariaActiveDescendant',
     'ariaAtomic',
@@ -68,13 +70,14 @@ for (const prop of ARIA_PROPERTIES) {
             set(value) {
                 // Per the spec, only null is treated as removing the attribute. However, Chromium/WebKit currently
                 // differ from the spec and allow undefined as well. Here, we follow the spec, as well as
-                // aria-reflection.ts's historical behavior. See: https://github.com/w3c/aria/issues/1858
+                // our historical behavior. See: https://github.com/w3c/aria/issues/1858
                 if (value === null) {
                     this.removeAttribute(attribute);
                 } else {
                     this.setAttribute(attribute, value);
                 }
             },
+            // configurable and enumerable to allow it to be overridden – this mimics Safari's/Chrome's behavior
             configurable: true,
             enumerable: true,
         });

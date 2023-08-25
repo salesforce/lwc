@@ -27,20 +27,13 @@ const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
-const ARIA_REFLECTION_GLOBAL_POLYFILL = require.resolve(
-    '../shared/aria-reflection-global-polyfill.js'
-);
+const ARIA_REFLECTION = require.resolve('@lwc/aria-reflection/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 
-const ALL_FRAMEWORK_FILES = [
-    SYNTHETIC_SHADOW,
-    LWC_ENGINE,
-    WIRE_SERVICE,
-    ARIA_REFLECTION_GLOBAL_POLYFILL,
-];
+const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, WIRE_SERVICE, ARIA_REFLECTION];
 
 // Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
 // This is due to the fact that we are running so many simultaneous rollup commands
@@ -55,7 +48,7 @@ function getFiles() {
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
     }
     if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-        frameworkFiles.push(createPattern(ARIA_REFLECTION_GLOBAL_POLYFILL));
+        frameworkFiles.push(createPattern(ARIA_REFLECTION));
     }
     frameworkFiles.push(createPattern(LWC_ENGINE));
     frameworkFiles.push(createPattern(WIRE_SERVICE));
