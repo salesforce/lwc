@@ -495,7 +495,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         role: 'role',
     };
 
-    // See the README for aria-reflection.ts
+    // See the README for @lwc/aria-reflection
     var nonStandardAriaProperties = [
         'ariaActiveDescendant',
         'ariaControls',

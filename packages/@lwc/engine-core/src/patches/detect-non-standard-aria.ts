@@ -13,10 +13,10 @@ import { BaseBridgeElement } from '../framework/base-bridge-element';
 
 //
 // The goal of this code is to detect usages of non-standard reflected ARIA properties. These are caused by
-// legacy non-standard Element.prototype extensions added by the aria-reflection.ts.
+// legacy non-standard Element.prototype extensions added by the @lwc/aria-reflection package.
 //
 
-// See the README for aria-reflection.ts
+// See the README for @lwc/aria-reflection
 const NON_STANDARD_ARIA_PROPS = [
     'ariaActiveDescendant',
     'ariaControls',
@@ -85,7 +85,7 @@ function enableDetection() {
     const { prototype } = Element;
     for (const prop of NON_STANDARD_ARIA_PROPS) {
         const descriptor = getOwnPropertyDescriptor(prototype, prop);
-        // The descriptor should exist because the ARIA string reflection polyfill has run by now.
+        // The descriptor should exist because the @lwc/aria-reflection polyfill has run by now.
         // This happens automatically because of the ordering of imports.
         if (process.env.NODE_ENV !== 'production') {
             /* istanbul ignore if */
@@ -95,7 +95,7 @@ function enableDetection() {
                 isUndefined(descriptor.set)
             ) {
                 // should never happen
-                throw new Error('detect-non-standard-aria.ts loaded before aria string reflection');
+                throw new Error('detect-non-standard-aria.ts loaded before @lwc/aria-reflection');
             }
         }
         // @ts-ignore
