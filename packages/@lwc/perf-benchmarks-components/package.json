@@ -1,18 +1,18 @@
 {
     "name": "@lwc/perf-benchmarks-components",
-    "version": "3.1.3",
+    "version": "3.2.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c ./rollup.config.mjs"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "3.1.3"
+        "@lwc/rollup-plugin": "3.2.0"
     },
     "nx": {
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "{projectRoot}/dist"
                 ]
             }
         }

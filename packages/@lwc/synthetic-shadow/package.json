@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/synthetic-shadow",
-    "version": "3.1.3",
+    "version": "3.2.0",
     "description": "Synthetic Shadow Root for LWC",
     "keywords": [
         "lwc"
@@ -36,14 +36,14 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "{projectRoot}/dist"
                 ]
             }
         }
     },
     "devDependencies": {
-        "@lwc/features": "3.1.3",
-        "@lwc/shared": "3.1.3"
+        "@lwc/features": "3.2.0",
+        "@lwc/shared": "3.2.0"
     },
     "lwc": {
         "modules": [

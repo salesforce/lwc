@@ -18,6 +18,7 @@ import {
     defineProperties,
     defineProperty,
     freeze,
+    isFalse,
     isFunction,
     isNull,
     isObject,
@@ -144,6 +145,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'attachInternals'
         | 'children'
         | 'childNodes'
         | 'classList'
@@ -293,6 +295,8 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         );
     }
 }
+
+const supportsElementInternals = typeof ElementInternals !== 'undefined';
 
 // @ts-ignore
 LightningElement.prototype = {
@@ -457,6 +461,27 @@ LightningElement.prototype = {
         }
 
         return getBoundingClientRect(elm);
+    },
+
+    attachInternals(): ElementInternals {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { attachInternals },
+        } = vm;
+
+        if (isFalse(supportsElementInternals)) {
+            // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
+            throw new Error('attachInternals API is not supported in this browser environment.');
+        }
+
+        if (vm.renderMode === RenderMode.Light || vm.shadowMode === ShadowMode.Synthetic) {
+            throw new Error(
+                'attachInternals API is not supported in light DOM or synthetic shadow.'
+            );
+        }
+
+        return attachInternals(elm);
     },
 
     get isConnected(): boolean {
