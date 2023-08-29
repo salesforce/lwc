@@ -268,7 +268,9 @@ jobs:
   test_benchmark_smoke:
     executor: node-browsers
     steps:
-      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
+          # TODO: remove when CircleCI issue is fixed: https://github.com/CircleCI-Public/browser-tools-orb/issues/90
+          chrome-version: 116.0.5845.96
       - load_workspace
       - run:
           name: Run benchmark smoke tests
