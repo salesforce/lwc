@@ -26,7 +26,13 @@ import { logError, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import {
+    addCallbackToNextTick,
+    EmptyArray,
+    EmptyObject,
+    flattenStylesheets,
+    shouldUseNativeCustomElementLifecycle,
+} from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
@@ -260,10 +266,16 @@ function resetComponentStateWhenRemoved(vm: VM) {
 // old vnode.children is removed from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vm.state === VMState.connected || vm.state === VMState.disconnected,
-            `${vm} must have been connected.`
-        );
+        if (!shouldUseNativeCustomElementLifecycle(vm)) {
+            // With native lifecycle, we cannot be certain that connectedCallback was called before a component
+            // was removed from the VDOM. If the component is disconnected, then connectedCallback will not fire
+            // in native mode, although it will fire in synthetic mode due to appendChild triggering it.
+            // See: W-14037619 for details
+            assert.isTrue(
+                vm.state === VMState.connected || vm.state === VMState.disconnected,
+                `${vm} must have been connected.`
+            );
+        }
     }
     resetComponentStateWhenRemoved(vm);
 }

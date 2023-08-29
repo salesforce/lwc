@@ -5,13 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    APIFeature,
     ArrayPop,
     ArrayPush,
     ArraySome,
     assert,
     create,
-    isAPIFeatureEnabled,
     isArray,
     isFalse,
     isNull,
@@ -26,8 +24,8 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
-import { EmptyArray } from './utils';
-import { getComponentAPIVersion, markComponentAsDirty } from './component';
+import { EmptyArray, shouldUseNativeCustomElementLifecycle } from './utils';
+import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
@@ -71,7 +69,6 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
-import { LightningElementConstructor } from './base-lightning-element';
 
 export function patchChildren(
     c1: VNodes,
@@ -1024,17 +1021,4 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
             }
         }
     }
-}
-
-function shouldUseNativeCustomElementLifecycle(vm: VM) {
-    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        // temporary "kill switch"
-        return false;
-    }
-
-    const apiVersion = getComponentAPIVersion(
-        vm.component.constructor as LightningElementConstructor
-    );
-
-    return isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 }

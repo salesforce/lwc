@@ -4,10 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isArray, isFunction, isUndefined, keys, seal } from '@lwc/shared';
+import {
+    APIFeature,
+    ArrayPush,
+    create,
+    isAPIFeatureEnabled,
+    isArray,
+    isFunction,
+    isUndefined,
+    keys,
+    seal,
+} from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { RefVNodes, VM } from './vm';
 import { VBaseElement, VStatic } from './vnodes';
+import { getComponentAPIVersion } from './component';
+import { LightningElementConstructor } from './base-lightning-element';
 
 type Callback = () => void;
 
@@ -54,6 +66,19 @@ export function guid(): string {
     }
 
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+export function shouldUseNativeCustomElementLifecycle(vm: VM) {
+    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        // temporary "kill switch"
+        return false;
+    }
+
+    const apiVersion = getComponentAPIVersion(
+        vm.component.constructor as LightningElementConstructor
+    );
+
+    return isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 }
 
 // Borrowed from Vue template compiler.
