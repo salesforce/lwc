@@ -51,6 +51,7 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticParts } from './modules/static-parts';
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
+import { applyRefs } from './modules/refs';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -278,6 +279,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     }
 
     patchElementPropsAndAttrs(vnode, renderer);
+    applyRefs(vnode, vnode.owner);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -325,6 +327,7 @@ function hydrateCustomElement(
 
     allocateChildren(vnode, vm);
     patchElementPropsAndAttrs(vnode, renderer);
+    applyRefs(vnode, vnode.owner);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {

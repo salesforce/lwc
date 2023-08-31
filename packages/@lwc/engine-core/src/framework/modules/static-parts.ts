@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNull, isUndefined, assert } from '@lwc/shared';
+import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
 import { VStatic, VStaticPart } from '../vnodes';
 import { RendererAPI } from '../renderer';
 import { applyEventListeners } from './events';
@@ -36,7 +36,7 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
 
     // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
     while (stack.length > 0) {
-        const elm = stack.shift()!;
+        const elm = ArrayShift.call(stack)!;
         partId++;
 
         const part = partIdsToParts.get(partId);
@@ -53,7 +53,7 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
         // by calling `children`.
         let child = getLastChild(elm);
         while (!isNull(child)) {
-            stack.unshift(child);
+            ArrayUnshift.call(stack, child);
             child = previousSibling(child);
         }
     }

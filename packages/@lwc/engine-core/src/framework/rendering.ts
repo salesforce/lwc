@@ -257,9 +257,9 @@ function mountElement(
     applyStyleScoping(elm, owner, renderer);
     applyDomManual(elm, vnode);
     applyElementRestrictions(elm, vnode);
-    applyRefs(vnode, owner);
 
     patchElementPropsAndAttrs(null, vnode, renderer);
+    applyRefs(vnode, owner);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);

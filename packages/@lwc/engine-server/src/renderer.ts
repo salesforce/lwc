@@ -127,7 +127,7 @@ function getSibling(node: N, offset: number) {
     }
 
     const nodeIndex = parent[HostChildrenKey].indexOf(node);
-    return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) || null;
+    return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) ?? null;
 }
 
 function nextSibling(node: N) {
