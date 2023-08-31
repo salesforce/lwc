@@ -76,7 +76,7 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
 export function applyStaticParts(root: Element, vnode: VStatic, renderer: RendererAPI): void {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we
     // support event listeners (no interactivity), so traversing parts makes no sense
-    if (!process.env.BROWSER) {
+    if (!process.env.IS_BROWSER) {
         return;
     }
     const { parts, owner } = vnode;
