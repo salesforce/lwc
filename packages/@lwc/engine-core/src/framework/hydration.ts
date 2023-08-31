@@ -279,7 +279,6 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     }
 
     patchElementPropsAndAttrs(vnode, renderer);
-    applyRefs(vnode, vnode.owner);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -327,7 +326,6 @@ function hydrateCustomElement(
 
     allocateChildren(vnode, vm);
     patchElementPropsAndAttrs(vnode, renderer);
-    applyRefs(vnode, vnode.owner);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -413,6 +411,7 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
 
 function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
     applyEventListeners(vnode, renderer);
+    applyRefs(vnode, vnode.owner);
     patchProps(null, vnode, renderer);
 }
 
