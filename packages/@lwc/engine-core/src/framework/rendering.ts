@@ -259,7 +259,6 @@ function mountElement(
     applyElementRestrictions(elm, vnode);
 
     patchElementPropsAndAttrs(null, vnode, renderer);
-    applyRefs(vnode, owner);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);
@@ -354,7 +353,6 @@ function mountCustomElement(
     }
 
     patchElementPropsAndAttrs(null, vnode, renderer);
-    applyRefs(vnode, owner);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
@@ -610,6 +608,10 @@ function patchElementPropsAndAttrs(
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
+
+    // Refs may need to be updated
+    // FIXME: why can't we just do this during mounting?
+    applyRefs(vnode, vnode.owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
