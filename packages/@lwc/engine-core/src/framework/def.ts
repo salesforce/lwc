@@ -58,12 +58,17 @@ export interface ComponentDef {
     template: Template;
     renderMode: RenderMode;
     shadowSupportMode: ShadowSupportMode;
+    formAssociated: boolean | undefined;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
     disconnectedCallback?: LightningElement['disconnectedCallback'];
     renderedCallback?: LightningElement['renderedCallback'];
     errorCallback?: LightningElement['errorCallback'];
+    formAssociatedCallback?: LightningElement['formAssociatedCallback'];
+    formResetCallback?: LightningElement['formResetCallback'];
+    formDisabledCallback?: LightningElement['formDisabledCallback'];
+    formStateRestoreCallback?: LightningElement['formStateRestoreCallback'];
     render: LightningElement['render'];
 }
 
@@ -96,7 +101,11 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
-    const { shadowSupportMode: ctorShadowSupportMode, renderMode: ctorRenderMode } = Ctor;
+    const {
+        shadowSupportMode: ctorShadowSupportMode,
+        renderMode: ctorRenderMode,
+        formAssociated: ctorFormAssociated,
+    } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
@@ -137,8 +146,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         decoratorsMeta;
     const proto = Ctor.prototype;
 
-    let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
-        proto;
+    let {
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+        formAssociatedCallback,
+        formResetCallback,
+        formDisabledCallback,
+        formStateRestoreCallback,
+        render,
+    } = proto;
     const superProto = getCtorProto(Ctor);
     const superDef =
         superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
@@ -156,6 +174,10 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
     renderedCallback = renderedCallback || superDef.renderedCallback;
     errorCallback = errorCallback || superDef.errorCallback;
+    formAssociatedCallback = formAssociatedCallback || superDef.formAssociatedCallback;
+    formResetCallback = formResetCallback || superDef.formResetCallback;
+    formDisabledCallback = formDisabledCallback || superDef.formDisabledCallback;
+    formStateRestoreCallback = formStateRestoreCallback || superDef.formStateRestoreCallback;
     render = render || superDef.render;
 
     let shadowSupportMode = superDef.shadowSupportMode;
@@ -166,6 +188,11 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     let renderMode = superDef.renderMode;
     if (!isUndefined(ctorRenderMode)) {
         renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
+    }
+
+    let formAssociated = superDef.formAssociated;
+    if (!isUndefined(ctorFormAssociated)) {
+        formAssociated = ctorFormAssociated;
     }
 
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
@@ -185,10 +212,15 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         template,
         renderMode,
         shadowSupportMode,
+        formAssociated,
         connectedCallback,
         disconnectedCallback,
-        renderedCallback,
         errorCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback,
+        renderedCallback,
         render,
     };
 
@@ -283,6 +315,7 @@ const lightingElementDef: ComponentDef = {
     methods: EmptyObject,
     renderMode: RenderMode.Shadow,
     shadowSupportMode: ShadowSupportMode.Default,
+    formAssociated: undefined,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,

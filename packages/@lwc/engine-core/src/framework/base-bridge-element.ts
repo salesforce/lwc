@@ -161,6 +161,16 @@ export function HTMLBridgeElementFactory(
         },
     };
 
+    descriptors.formAssociated = {
+        get() {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+                );
+            }
+        },
+    };
+
     // Specify attributes for which we want to reflect changes back to their corresponding
     // properties via attributeChangedCallback.
     defineProperty(HTMLBridgeElement, 'observedAttributes', {

@@ -850,3 +850,68 @@ export function forceRehydration(vm: VM) {
         scheduleRehydration(vm);
     }
 }
+
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
+    if (!process.env.IS_BROWSER) {
+        return;
+    }
+
+    const {
+        renderMode,
+        shadowMode,
+        def: { formAssociated },
+    } = vm;
+
+    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+        throw new Error(
+            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+        );
+    }
+
+    // Technically the UpgradableConstructor always sets `static formAssociated` to true but we need to verify that any LWCs
+    // using FACE callbacks also set this value. This is because we plan to remove the UpgradableConstructor in the future and
+    // invoke the LWC constructor directly.
+    if (isUndefined(formAssociated)) {
+        throw new Error(
+            `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+        );
+    }
+
+    invokeComponentCallback(vm, faceCb);
+}
+
+export function runFormAssociatedCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formAssociatedCallback } = vm.def;
+
+    if (!isUndefined(formAssociatedCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback);
+    }
+}
+
+export function runFormDisabledCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formDisabledCallback } = vm.def;
+
+    if (!isUndefined(formDisabledCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback);
+    }
+}
+
+export function runFormResetCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formResetCallback } = vm.def;
+
+    if (!isUndefined(formResetCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formResetCallback);
+    }
+}
+
+export function runFormStateRestoreCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formStateRestoreCallback } = vm.def;
+
+    if (!isUndefined(formStateRestoreCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
+    }
+}

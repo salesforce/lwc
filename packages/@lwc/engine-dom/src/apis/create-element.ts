@@ -20,6 +20,10 @@ import {
     disconnectRootElement,
     LightningElement,
     LifecycleCallback,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -133,6 +137,10 @@ export function createElement(
 
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
+    let formAssociatedCallback: LifecycleCallback | undefined;
+    let formDisabledCallback: LifecycleCallback | undefined;
+    let formResetCallback: LifecycleCallback | undefined;
+    let formStateRestoreCallback: LifecycleCallback | undefined;
 
     if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
@@ -141,13 +149,29 @@ export function createElement(
         disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
         };
+        formAssociatedCallback = (elm: HTMLElement) => {
+            runFormAssociatedCallback(elm);
+        };
+        formDisabledCallback = (elm: HTMLElement) => {
+            runFormDisabledCallback(elm);
+        };
+        formResetCallback = (elm: HTMLElement) => {
+            runFormResetCallback(elm);
+        };
+        formStateRestoreCallback = (elm: HTMLElement) => {
+            runFormStateRestoreCallback(elm);
+        };
     }
 
     const element = createCustomElement(
         tagName,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback
     );
     return element;
 }

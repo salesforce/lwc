@@ -26,6 +26,7 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    supportsElementInternals,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
@@ -136,6 +137,7 @@ export interface LightningElementConstructor {
 
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
+    formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
     stylesheets: TemplateStylesheetFactories;
 }
@@ -193,6 +195,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     disconnectedCallback?(): void;
     renderedCallback?(): void;
     errorCallback?(error: any, stack: string): void;
+    formAssociatedCallback?(): void;
+    formResetCallback?(): void;
+    formDisabledCallback?(): void;
+    formStateRestoreCallback?(): void;
 }
 
 /**
@@ -295,8 +301,6 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         );
     }
 }
-
-const supportsElementInternals = typeof ElementInternals !== 'undefined';
 
 // @ts-ignore
 LightningElement.prototype = {
@@ -475,7 +479,7 @@ LightningElement.prototype = {
             throw new Error('attachInternals API is not supported in this browser environment.');
         }
 
-        if (vm.renderMode === RenderMode.Light || vm.shadowMode === ShadowMode.Synthetic) {
+        if (vm.shadowMode === ShadowMode.Synthetic) {
             throw new Error(
                 'attachInternals API is not supported in light DOM or synthetic shadow.'
             );
