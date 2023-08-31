@@ -19,26 +19,30 @@ const createTestElement = (name, def) => {
     return elm;
 };
 
+const attachInternalsSanityTest = (cmp) => {
+    let elm;
+    beforeEach(() => {
+        elm = createTestElement('ai-component', cmp);
+    });
+
+    afterEach(() => {
+        document.body.removeChild(elm);
+    });
+
+    it('should be able to create ElementInternals object', () => {
+        expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
+    });
+
+    it('should throw an error when called twice on the same element', () => {
+        // The error type is different between browsers
+        expect(() => elm.callAttachInternals()).toThrowError();
+    });
+};
+
 if (typeof ElementInternals !== 'undefined') {
     if (process.env.NATIVE_SHADOW) {
         describe('native shadow', () => {
-            let elm;
-            beforeEach(() => {
-                elm = createTestElement('ai-shadow-component', ShadowDomCmp);
-            });
-
-            afterEach(() => {
-                document.body.removeChild(elm);
-            });
-
-            it('should be able to create ElementInternals object', () => {
-                expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
-            });
-
-            it('should throw an error when called twice on the same element', () => {
-                // The error type is different between browsers
-                expect(() => elm.callAttachInternals()).toThrowError();
-            });
+            attachInternalsSanityTest(ShadowDomCmp);
         });
     } else {
         describe('synthetic shadow', () => {
@@ -53,13 +57,7 @@ if (typeof ElementInternals !== 'undefined') {
     }
 
     describe('light DOM', () => {
-        it('should throw error when used inside a component', () => {
-            const elm = createElement('ai-light-dom-component', { is: LightDomCmp });
-            testConnectedCallbackError(
-                elm,
-                'attachInternals API is not supported in light DOM or synthetic shadow.'
-            );
-        });
+        attachInternalsSanityTest(LightDomCmp);
     });
 } else {
     it('should throw an error when used with unsupported browser environments', () => {
