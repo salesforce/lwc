@@ -1,5 +1,5 @@
 orbs:
-  browser-tools: circleci/browser-tools@1.4.3
+  browser-tools: circleci/browser-tools@1.4.4
 
 # Shared config
 ignore_forks: &ignore_forks
@@ -268,7 +268,11 @@ jobs:
   test_benchmark_smoke:
     executor: node-browsers
     steps:
-      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      # TODO [#3691]: remove `apt-get` and `chrome-version` lines when CircleCI issue is fixed
+      # https://github.com/CircleCI-Public/browser-tools-orb/issues/90
+      - run: sudo apt-get update
+      - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
+          chrome-version: 116.0.5845.96
       - load_workspace
       - run:
           name: Run benchmark smoke tests
