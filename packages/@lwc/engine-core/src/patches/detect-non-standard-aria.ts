@@ -29,7 +29,9 @@ const NON_STANDARD_ARIA_PROPS = [
 ];
 
 function isGlobalAriaPolyfillLoaded(): boolean {
-    // sniff for the legacy polyfill being loaded
+    // Sniff for the legacy polyfill being loaded. The reason this works is because ariaActiveDescendant is a
+    // non-standard ARIA property reflection that is only supported in our legacy polyfill. See
+    // @lwc/aria-reflection/README.md for details.
     return !isUndefined(getOwnPropertyDescriptor(Element.prototype, 'ariaActiveDescendant'));
 }
 
