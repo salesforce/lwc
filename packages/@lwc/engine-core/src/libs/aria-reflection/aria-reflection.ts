@@ -12,12 +12,13 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
+import { LightningElement } from '../../framework/base-lightning-element';
 
 // Apply ARIA string reflection behavior to a prototype.
 // This is deliberately kept separate from @lwc/aria-reflection. @lwc/aria-reflection is a global polyfill that is
 // needed for backwards compatibility in LEX, whereas `applyAriaReflection` is designed to only apply to our own
 // LightningElement/BaseBridgeElement prototypes.
-export function applyAriaReflection(prototype: any) {
+export function applyAriaReflection(prototype: HTMLElement | LightningElement) {
     for (const propName of keys(AriaPropNameToAttrNameMap)) {
         const attrName = AriaPropNameToAttrNameMap[propName];
         if (isUndefined(getOwnPropertyDescriptor(prototype, propName))) {
