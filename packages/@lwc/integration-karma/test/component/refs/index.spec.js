@@ -25,6 +25,8 @@ import Expando from 'x/expando';
 import ExpandoCheck from 'x/expandoCheck';
 import Slotter from 'x/slotter';
 import AccessDuringRender from 'x/accessDuringRender';
+import RerenderElement from 'x/rerenderElement';
+import RerenderComponent from 'x/rerenderComponent';
 
 describe('refs', () => {
     describe('basic refs example', () => {
@@ -309,6 +311,32 @@ describe('refs', () => {
 
         expect(ids.slottable.getRefs().beforeSlot).toBe(ids.beforeSlot);
         expect(ids.slottable.getRefs().afterSlot).toBe(ids.afterSlot);
+    });
+
+    describe('re-rendering a vnode with a ref', () => {
+        it('element', async () => {
+            const elm = createElement('x-rerender-element', { is: RerenderElement });
+            document.body.appendChild(elm);
+
+            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
+            for (let i = 0; i < 3; i++) {
+                elm.version = i;
+                await Promise.resolve();
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
+            }
+        });
+
+        it('component', async () => {
+            const elm = createElement('x-rerender-component', { is: RerenderComponent });
+            document.body.appendChild(elm);
+
+            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
+            for (let i = 0; i < 3; i++) {
+                elm.version = i;
+                await Promise.resolve();
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
+            }
+        });
     });
 
     describe('lifecycle', () => {

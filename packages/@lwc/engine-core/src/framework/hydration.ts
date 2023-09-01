@@ -278,7 +278,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         }
     }
 
-    patchElementPropsAndAttrs(vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -325,7 +325,7 @@ function hydrateCustomElement(
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
-    patchElementPropsAndAttrs(vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -409,10 +409,11 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     return vnode.elm!;
 }
 
-function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
+function patchElementPropsAndAttrsAndRefs(vnode: VBaseElement, renderer: RendererAPI) {
     applyEventListeners(vnode, renderer);
-    applyRefs(vnode, vnode.owner);
     patchProps(null, vnode, renderer);
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
+    applyRefs(vnode, vnode.owner);
 }
 
 function hasCorrectNodeType<T extends Node>(

@@ -258,7 +258,7 @@ function mountElement(
     applyDomManual(elm, vnode);
     applyElementRestrictions(elm, vnode);
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);
@@ -267,7 +267,7 @@ function mountElement(
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
+    patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
 }
 
@@ -352,7 +352,7 @@ function mountCustomElement(
         allocateChildren(vnode, vm);
     }
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
@@ -398,7 +398,7 @@ function patchCustomElement(
         const elm = (n2.elm = n1.elm!);
         const vm = (n2.vm = n1.vm);
 
-        patchElementPropsAndAttrs(n1, n2, renderer);
+        patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
         if (!isUndefined(vm)) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
@@ -590,7 +590,7 @@ export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI
     }
 }
 
-function patchElementPropsAndAttrs(
+function patchElementPropsAndAttrsAndRefs(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
     renderer: RendererAPI
@@ -609,8 +609,7 @@ function patchElementPropsAndAttrs(
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
 
-    // Refs may need to be updated
-    // FIXME: why can't we just do this during mounting?
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyRefs(vnode, vnode.owner);
 }
 
