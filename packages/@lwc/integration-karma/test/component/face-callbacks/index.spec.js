@@ -13,13 +13,13 @@ const createFormElement = () => {
     return form;
 };
 
-const sanityTestFormAssociatedCustomElements = (cmp) => {
+const sanityTestFormAssociatedCustomElements = (ctor) => {
     let form;
     let face;
 
     beforeEach(() => {
         form = createFormElement();
-        face = createElement('face-form-associated', { is: cmp });
+        face = createElement('face-form-associated', { is: ctor });
         form.appendChild(face);
     });
 
@@ -47,7 +47,7 @@ const sanityTestFormAssociatedCustomElements = (cmp) => {
     it('is associated with the correct form', () => {
         const form2 = document.createElement('form');
         form2.setAttribute('class', 'form2');
-        const face2 = createElement('face-form-associated-2', { is: cmp });
+        const face2 = createElement('face-form-associated-2', { is: ctor });
         form2.appendChild(face2);
         const container = document.body.querySelector('face-container');
         container.shadowRoot.appendChild(form2);
@@ -57,11 +57,11 @@ const sanityTestFormAssociatedCustomElements = (cmp) => {
     });
 };
 
-const testErrorThrownWhenStaticFormAssociatedNotSet = (cmp) => {
+const testErrorThrownWhenStaticFormAssociatedNotSet = (ctor) => {
     it(`throws an error if 'static formAssociated' is not set`, () => {
         const form = createFormElement();
         const notFormAssociated = createElement('face-not-form-associated', {
-            is: cmp,
+            is: ctor,
         });
 
         expect(() => form.appendChild(notFormAssociated)).toThrowConnectedError(
@@ -97,21 +97,26 @@ if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
     });
 } else {
     describe('synthetic lifecycle', () => {
-        it('does not call face lifecycle methods', () => {
-            const face = createElement('face-form-associated', { is: FormAssociated });
-            const form = createFormElement();
-            form.appendChild(face);
+        [
+            { name: 'shadow DOM', is: FormAssociated },
+            { name: 'light DOM', is: LightDomFormAssociated },
+        ].forEach(({ name, is }) => {
+            it(`${name} does not call face lifecycle methods`, () => {
+                const face = createElement('face-form-associated', { is });
+                const form = createFormElement();
+                form.appendChild(face);
 
-            // formAssociatedCallback
-            expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
+                // formAssociatedCallback
+                expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
 
-            // formDisabledCallback
-            face.setAttribute('disabled', true);
-            expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
+                // formDisabledCallback
+                face.setAttribute('disabled', true);
+                expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
 
-            // formResetCallback
-            form.reset();
-            expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
+                // formResetCallback
+                form.reset();
+                expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
+            });
         });
     });
 }
