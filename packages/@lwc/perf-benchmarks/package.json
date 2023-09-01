@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "3.1.3",
+    "version": "3.2.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -17,10 +17,10 @@
         "Also note that we use legacy versions of rollup-plugin-node-resolve and rollup-plugin-commonjs because Best uses an old version of Rollup."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "3.1.3",
-        "@lwc/engine-server": "3.1.3",
-        "@lwc/perf-benchmarks-components": "3.1.3",
-        "@lwc/synthetic-shadow": "3.1.3"
+        "@lwc/engine-dom": "3.2.0",
+        "@lwc/engine-server": "3.2.0",
+        "@lwc/perf-benchmarks-components": "3.2.0",
+        "@lwc/synthetic-shadow": "3.2.0"
     },
     "devDependencies": {
         "@best/cli": "^9.0.0",
@@ -35,7 +35,7 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "{projectRoot}/dist"
                 ],
                 "//": "The build output depends on these env variables. See: https://nx.dev/concepts/how-caching-works#runtime-hash-inputs",
                 "inputs": [

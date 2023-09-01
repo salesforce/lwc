@@ -8,11 +8,12 @@ if (process.env.NATIVE_SHADOW) {
             const element = createElement('x-multi', { is: Multi });
 
             const getNumStyleSheets = () => {
+                let count = 0;
                 if (element.shadowRoot.adoptedStyleSheets) {
-                    return element.shadowRoot.adoptedStyleSheets.length;
-                } else {
-                    return element.shadowRoot.querySelectorAll('style').length;
+                    count += element.shadowRoot.adoptedStyleSheets.length;
                 }
+                count += element.shadowRoot.querySelectorAll('style').length;
+                return count;
             };
 
             document.body.appendChild(element);

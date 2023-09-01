@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/errors",
-    "version": "3.1.3",
+    "version": "3.2.0",
     "description": "LWC Error Utilities",
     "keywords": [
         "lwc"
@@ -36,7 +36,7 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "./dist"
+                    "{projectRoot}/dist"
                 ]
             }
         }
