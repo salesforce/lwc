@@ -29,7 +29,7 @@ import {
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -85,7 +85,7 @@ function createBridgeToElementDescriptor(
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    logError(
+                    logWarn(
                         `The value of property \`${propName}\` can't be read from the constructor because the owner component hasn't set the value yet. Instead, use the constructor to set a default value for the property.`,
                         vm
                     );
@@ -100,24 +100,24 @@ function createBridgeToElementDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 if (isInvokingRender) {
-                    logError(
+                    logWarn(
                         `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
                     );
                 }
                 if (isUpdatingTemplate) {
-                    logError(
+                    logWarn(
                         `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
                     );
                 }
                 if (isBeingConstructed(vm)) {
-                    logError(
+                    logWarn(
                         `Failed to construct '${getComponentTag(
                             vm
                         )}': The result must not have attributes.`
                     );
                 }
                 if (isObject(newValue) && !isNull(newValue)) {
-                    logError(
+                    logWarn(
                         `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
                     );
                 }
@@ -288,7 +288,7 @@ function doAttachShadow(vm: VM): ShadowRoot {
 
 function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     if (isBeingConstructed(vm)) {
-        logError(
+        logWarn(
             `this.${methodOrPropName} should not be called during the construction of the custom element for ${getComponentTag(
                 vm
             )} because the element is not yet in the DOM or has no children yet.`
@@ -325,17 +325,17 @@ LightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
             if (isInvokingRender) {
-                logError(
+                logWarn(
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
                 );
             }
             if (isUpdatingTemplate) {
-                logError(
+                logWarn(
                     `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
                 );
             }
             if (!isFunction(listener)) {
-                logError(
+                logWarn(
                     `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
                 );
             }
@@ -418,7 +418,7 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             if (isBeingConstructed(vm)) {
-                logError(
+                logWarn(
                     `Failed to construct '${getComponentTag(
                         vm
                     )}': The result must not have attributes.`
@@ -438,7 +438,7 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             if (isBeingConstructed(vm)) {
-                logError(
+                logWarn(
                     `Failed to construct '${getComponentTag(
                         vm
                     )}': The result must not have attributes.`
@@ -502,7 +502,7 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             if (isBeingConstructed(vm)) {
-                logError(
+                logWarn(
                     `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
                 );
             }
@@ -516,7 +516,7 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             if (vm.renderMode === RenderMode.Light) {
-                logError(
+                logWarn(
                     '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
                 );
             }
@@ -530,7 +530,7 @@ LightningElement.prototype = {
 
         if (isUpdatingTemplate) {
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     `this.refs should not be called while ${getComponentTag(
                         vm
                     )} is rendering. Use this.refs only when the DOM is stable, e.g. in renderedCallback().`
@@ -558,7 +558,7 @@ LightningElement.prototype = {
             isNull(cmpTemplate) &&
             !isBeingConstructed(vm)
         ) {
-            logError(
+            logWarn(
                 `this.refs is undefined for ${getComponentTag(
                     vm
                 )}. This is either because the attached template has no "lwc:ref" directive, or this.refs was ` +

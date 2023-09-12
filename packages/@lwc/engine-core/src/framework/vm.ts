@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logWarn, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -403,7 +403,7 @@ function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
         if (valid) {
             return flattenStylesheets(stylesheets);
         } else if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
                 vm
             );

@@ -16,7 +16,7 @@ import {
 import { LightningElementConstructor } from '../base-lightning-element';
 
 import { assertNotProd, EmptyObject } from '../utils';
-import { logError } from '../../shared/logger';
+import { logWarn } from '../../shared/logger';
 import { createObservedFieldPropertyDescriptor } from '../observed-fields';
 import {
     WireAdapterConstructor,
@@ -86,7 +86,7 @@ function validateObservedField(
         const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
         // TODO [#3408]: this should throw, not log
-        logError(message);
+        logWarn(message);
     }
 }
 
@@ -99,9 +99,7 @@ function validateFieldDecoratedWithTrack(
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
         // TODO [#3408]: this should throw, not log
-        logError(
-            `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`
-        );
+        logWarn(`Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`);
     }
 }
 
@@ -114,7 +112,7 @@ function validateFieldDecoratedWithWire(
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
         // TODO [#3408]: this should throw, not log
-        logError(`Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`);
+        logWarn(`Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`);
     }
 }
 
@@ -126,7 +124,7 @@ function validateMethodDecoratedWithWire(
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
         // TODO [#3441]: This line of code does not seem possible to reach.
-        logError(
+        logWarn(
             `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
         );
     }
@@ -143,7 +141,7 @@ function validateFieldDecoratedWithApi(
         const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
         // TODO [#3408]: this should throw, not log
-        logError(message);
+        logWarn(message);
     }
 }
 
@@ -156,13 +154,13 @@ function validateAccessorDecoratedWithApi(
     if (isFunction(descriptor.set)) {
         if (!isFunction(descriptor.get)) {
             // TODO [#3441]: This line of code does not seem possible to reach.
-            logError(
+            logWarn(
                 `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
             );
         }
     } else if (!isFunction(descriptor.get)) {
         // TODO [#3441]: This line of code does not seem possible to reach.
-        logError(`Missing @api get ${fieldName} accessor.`);
+        logWarn(`Missing @api get ${fieldName} accessor.`);
     }
 }
 
@@ -174,7 +172,7 @@ function validateMethodDecoratedWithApi(
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
         // TODO [#3441]: This line of code does not seem possible to reach.
-        logError(`Invalid @api ${methodName} method.`);
+        logWarn(`Invalid @api ${methodName} method.`);
     }
 }
 
@@ -255,7 +253,7 @@ export function registerDecorators(
                 if (process.env.NODE_ENV !== 'production') {
                     if (!adapter) {
                         // TODO [#3408]: this should throw, not log
-                        logError(
+                        logWarn(
                             `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
                         );
                     }
@@ -270,7 +268,7 @@ export function registerDecorators(
                 if (process.env.NODE_ENV !== 'production') {
                     if (!adapter) {
                         // TODO [#3408]: this should throw, not log
-                        logError(
+                        logWarn(
                             `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
                         );
                     }

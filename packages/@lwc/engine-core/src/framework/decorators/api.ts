@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isFunction, isNull, toString } from '@lwc/shared';
-import { logError } from '../../shared/logger';
+import { logWarn } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { LightningElement } from '../base-lightning-element';
@@ -31,7 +31,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    logError(
+                    logWarn(
                         `Can’t read the value of property \`${toString(
                             key
                         )}\` from the constructor because the owner component hasn’t set the value yet. Instead, use the constructor to set a default value for the property.`,
@@ -48,7 +48,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 if (isInvokingRender) {
-                    logError(
+                    logWarn(
                         `render() method has side effects on the state of property "${toString(
                             key
                         )}"`,
@@ -56,7 +56,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                     );
                 }
                 if (isUpdatingTemplate) {
-                    logError(
+                    logWarn(
                         `Updating the template has side effects on the state of property "${toString(
                             key
                         )}"`,
@@ -97,7 +97,7 @@ export function createPublicAccessorDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 if (isInvokingRender) {
-                    logError(
+                    logWarn(
                         `render() method has side effects on the state of property "${toString(
                             key
                         )}"`,
@@ -105,7 +105,7 @@ export function createPublicAccessorDescriptor(
                     );
                 }
                 if (isUpdatingTemplate) {
-                    logError(
+                    logWarn(
                         `Updating the template has side effects on the state of property "${toString(
                             key
                         )}"`,
@@ -116,7 +116,7 @@ export function createPublicAccessorDescriptor(
             if (set) {
                 set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     `Invalid attempt to set a new value for property "${toString(
                         key
                     )}" that does not has a setter decorated with @api.`,

@@ -6,7 +6,7 @@
  */
 import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
@@ -44,7 +44,7 @@ export function checkVersionMismatch(
             warned = true; // only warn once to avoid flooding the console
             // stylesheets and templates do not have user-meaningful names, but components do
             const friendlyName = type === 'component' ? `${type} ${func.name}` : type;
-            logError(
+            logWarn(
                 `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
             );
             report(ReportingEventId.CompilerRuntimeVersionMismatch, {

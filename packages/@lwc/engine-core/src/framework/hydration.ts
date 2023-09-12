@@ -18,7 +18,7 @@ import {
     isString,
 } from '@lwc/shared';
 
-import { logError, logWarn } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
 import { cloneAndOmitKey, parseStyleText } from './utils';
@@ -70,7 +70,7 @@ export function hydrateRoot(vm: VM) {
     hydrateVM(vm);
 
     if (hasMismatch && process.env.NODE_ENV !== 'production') {
-        logError('Hydration completed with errors.', vm);
+        logWarn('Hydration completed with errors.', vm);
     }
 }
 
@@ -361,7 +361,7 @@ function hydrateChildren(
                 if (process.env.NODE_ENV !== 'production') {
                     if (!hasWarned) {
                         hasWarned = true;
-                        logError(
+                        logWarn(
                             `Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.`,
                             owner
                         );
@@ -377,7 +377,7 @@ function hydrateChildren(
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
-                logError(
+                logWarn(
                     `Hydration mismatch: incorrect number of rendered nodes. Server rendered more nodes than the client.`,
                     owner
                 );
@@ -420,7 +420,7 @@ function hasCorrectNodeType<T extends Node>(
     const { getProperty } = renderer;
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
-            logError('Hydration mismatch: incorrect node type received', vnode.owner);
+            logWarn('Hydration mismatch: incorrect node type received', vnode.owner);
         }
         return false;
     }
@@ -437,7 +437,7 @@ function isMatchingElement(
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
                     elm,
                     'tagName'
@@ -504,7 +504,7 @@ function validateAttrs(
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
             if (process.env.NODE_ENV !== 'production') {
                 const { getProperty } = renderer;
-                logError(
+                logWarn(
                     `Mismatch hydrating element <${getProperty(
                         elm,
                         'tagName'
@@ -593,7 +593,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
 
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
@@ -649,7 +649,7 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
             const { getProperty } = renderer;
-            logError(
+            logWarn(
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
@@ -687,7 +687,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
     let isCompatibleElements = true;
     if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Hydration mismatch: expecting element with tag "${getProperty(
                     client,
                     'tagName'
@@ -704,7 +704,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
     clientAttrsNames.forEach((attrName) => {
         if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     `Mismatch hydrating element <${getProperty(
                         client,
                         'tagName'

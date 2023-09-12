@@ -23,7 +23,7 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
@@ -129,7 +129,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            logError(
+            logWarn(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered
             );
@@ -175,7 +175,7 @@ function ti(value: any): number {
     if (process.env.NODE_ENV !== 'production') {
         const vmBeingRendered = getVMBeingRendered();
         if (shouldNormalize) {
-            logError(
+            logWarn(
                 `Invalid tabindex value \`${toString(
                     value
                 )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
@@ -215,7 +215,7 @@ function s(
                 // Check if slot types of parent and child are matching
                 if (assignedNodeIsScopedSlot !== isScopedSlotElement) {
                     if (process.env.NODE_ENV !== 'production') {
-                        logError(
+                        logWarn(
                             `Mismatched slot types for ${
                                 slotName === '' ? '(default)' : slotName
                             } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
@@ -291,7 +291,7 @@ function c(
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            logError(
+            logWarn(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered
             );
@@ -346,7 +346,7 @@ function i(
     const vmBeingRendered = getVMBeingRendered();
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Invalid template iteration for value "${toString(
                     iterable
                 )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
@@ -418,7 +418,7 @@ function i(
     }
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(iterationError)) {
-            logError(iterationError, vmBeingRendered!);
+            logWarn(iterationError, vmBeingRendered!);
         }
     }
     return list;
@@ -497,7 +497,7 @@ function k(compilerKey: number, obj: any): string | void {
             return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
@@ -509,7 +509,7 @@ function gid(id: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
                 vmBeingRendered
             );
@@ -533,7 +533,7 @@ function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
             if (isUndefined(url)) {
-                logError(
+                logWarn(
                     `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
                     vmBeingRendered
                 );

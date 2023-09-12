@@ -32,7 +32,7 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
@@ -106,7 +106,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         if (!Ctor.constructor) {
             // This error seems impossible to hit, due to an earlier check in `isComponentConstructor()`.
             // But we keep it here just in case.
-            logError(
+            logWarn(
                 `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
             );
         }
@@ -116,7 +116,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             ctorShadowSupportMode !== ShadowSupportMode.Any &&
             ctorShadowSupportMode !== ShadowSupportMode.Default
         ) {
-            logError(
+            logWarn(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
@@ -126,7 +126,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             ctorRenderMode !== 'light' &&
             ctorRenderMode !== 'shadow'
         ) {
-            logError(
+            logWarn(
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }

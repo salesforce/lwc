@@ -21,7 +21,7 @@ import {
     SVG_NAMESPACE,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { LifecycleCallback, RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -672,7 +672,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
             renderMode !== RenderMode.Light &&
             ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
         ) {
-            logError(
+            logWarn(
                 `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
                     vm
                 )} tag. Scoped slot content can only be passed to a light dom child.`

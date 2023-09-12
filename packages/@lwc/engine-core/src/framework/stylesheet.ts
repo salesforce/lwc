@@ -6,7 +6,7 @@
  */
 import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -140,7 +140,7 @@ function evaluateStylesheetsContent(
                 !isScopedCss &&
                 vm.renderMode === RenderMode.Light
             ) {
-                logError(
+                logWarn(
                     'Unscoped CSS is not supported in Light DOM in this environment. Please use scoped CSS ' +
                         '(*.scoped.css) instead of unscoped CSS (*.css). See also: https://sfdc.co/scoped-styles-light-dom'
                 );

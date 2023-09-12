@@ -17,7 +17,7 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import api, { RenderAPI } from './api';
 import {
@@ -90,7 +90,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     }
     if (vm.renderMode === RenderMode.Light) {
         if (template.renderMode !== 'light') {
-            logError(
+            logWarn(
                 `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
                     vm
                 )}.`
@@ -98,7 +98,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
         }
     } else {
         if (!isUndefined(template.renderMode)) {
-            logError(
+            logWarn(
                 `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
                     vm
                 )} or set it to 'lwc:render-mode="shadow"`
@@ -290,7 +290,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
     if (process.env.NODE_ENV !== 'production') {
         if (!isArray(vnodes)) {
-            logError(`Compiler should produce html functions that always return an array.`);
+            logWarn(`Compiler should produce html functions that always return an array.`);
         }
     }
     return vnodes;
