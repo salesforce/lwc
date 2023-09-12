@@ -18,7 +18,7 @@ import {
     isNull,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { LightningElement } from './base-lightning-element';
@@ -58,8 +58,8 @@ export function lockDomMutation() {
     isDomMutationAllowed = false;
 }
 
-function logMissingPortalError(name: string, type: string) {
-    return logError(
+function logMissingPortalWarn(name: string, type: string) {
+    return logWarn(
         `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`
     );
 }
@@ -77,7 +77,7 @@ export function patchElementWithRestrictions(
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: Element, value: string) {
-                logError(`Invalid attempt to set outerHTML on Element.`);
+                logWarn(`Invalid attempt to set outerHTML on Element.`);
                 return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -94,14 +94,14 @@ export function patchElementWithRestrictions(
         assign(descriptors, {
             appendChild: generateDataDescriptor({
                 value(this: Node, aChild: Node) {
-                    logMissingPortalError('appendChild', 'method');
+                    logMissingPortalWarn('appendChild', 'method');
                     return appendChild.call(this, aChild);
                 },
             }),
             insertBefore: generateDataDescriptor({
                 value(this: Node, newNode: Node, referenceNode: Node) {
                     if (!isDomMutationAllowed) {
-                        logMissingPortalError('insertBefore', 'method');
+                        logMissingPortalWarn('insertBefore', 'method');
                     }
                     return insertBefore.call(this, newNode, referenceNode);
                 },
@@ -109,14 +109,14 @@ export function patchElementWithRestrictions(
             removeChild: generateDataDescriptor({
                 value(this: Node, aChild: Node) {
                     if (!isDomMutationAllowed) {
-                        logMissingPortalError('removeChild', 'method');
+                        logMissingPortalWarn('removeChild', 'method');
                     }
                     return removeChild.call(this, aChild);
                 },
             }),
             replaceChild: generateDataDescriptor({
                 value(this: Node, newChild: Node, oldChild: Node) {
-                    logMissingPortalError('replaceChild', 'method');
+                    logMissingPortalWarn('replaceChild', 'method');
                     return replaceChild.call(this, newChild, oldChild);
                 },
             }),
@@ -126,7 +126,7 @@ export function patchElementWithRestrictions(
                 },
                 set(this: Node, value: string) {
                     if (!isDomMutationAllowed) {
-                        logMissingPortalError('nodeValue', 'property');
+                        logMissingPortalWarn('nodeValue', 'property');
                     }
                     originalNodeValueDescriptor.set!.call(this, value);
                 },
@@ -136,7 +136,7 @@ export function patchElementWithRestrictions(
                     return originalTextContentDescriptor.get!.call(this);
                 },
                 set(this: Node, value: string) {
-                    logMissingPortalError('textContent', 'property');
+                    logMissingPortalWarn('textContent', 'property');
                     originalTextContentDescriptor.set!.call(this, value);
                 },
             }),
@@ -145,7 +145,7 @@ export function patchElementWithRestrictions(
                     return originalInnerHTMLDescriptor.get!.call(this);
                 },
                 set(this: Element, value: string) {
-                    logMissingPortalError('innerHTML', 'property');
+                    logMissingPortalWarn('innerHTML', 'property');
                     return originalInnerHTMLDescriptor.set!.call(this, value);
                 },
             }),
@@ -171,7 +171,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, value: string) {
-                logError(`Invalid attempt to set innerHTML on ShadowRoot.`);
+                logWarn(`Invalid attempt to set innerHTML on ShadowRoot.`);
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -180,7 +180,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, value: string) {
-                logError(`Invalid attempt to set textContent on ShadowRoot.`);
+                logWarn(`Invalid attempt to set textContent on ShadowRoot.`);
                 return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
@@ -193,7 +193,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
-                    logError(
+                    logWarn(
                         'The `addEventListener` method on ShadowRoot does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
@@ -223,7 +223,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logError(`Invalid attempt to set innerHTML on HTMLElement.`);
+                logWarn(`Invalid attempt to set innerHTML on HTMLElement.`);
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -232,7 +232,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logError(`Invalid attempt to set outerHTML on HTMLElement.`);
+                logWarn(`Invalid attempt to set outerHTML on HTMLElement.`);
                 return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -241,7 +241,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logError(`Invalid attempt to set textContent on HTMLElement.`);
+                logWarn(`Invalid attempt to set textContent on HTMLElement.`);
                 return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
@@ -254,7 +254,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
-                    logError(
+                    logWarn(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
@@ -283,7 +283,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                     const { type } = event;
 
                     if (!/^[a-z][a-z0-9_]*$/.test(type)) {
-                        logError(
+                        logWarn(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
                                 vm
                             )}.` +
