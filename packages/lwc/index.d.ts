@@ -88,6 +88,8 @@ declare module 'lwc' {
         ariaSetSize: string | null;
         ariaColCount: string | null;
         ariaColIndex: string | null;
+        ariaColIndexText: string | null;
+        ariaDescription: string | null;
         ariaDetails: string | null;
         ariaErrorMessage: string | null;
         ariaKeyShortcuts: string | null;
@@ -96,8 +98,11 @@ declare module 'lwc' {
         ariaRoleDescription: string | null;
         ariaRowCount: string | null;
         ariaRowIndex: string | null;
+        ariaRowIndexText: string | null;
         ariaRowSpan: string | null;
         ariaColSpan: string | null;
+        ariaBrailleLabel: string | null;
+        ariaBrailleRoleDescription: string | null;
         role: string | null;
     }
 
