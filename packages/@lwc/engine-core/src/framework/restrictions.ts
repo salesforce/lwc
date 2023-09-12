@@ -18,7 +18,7 @@ import {
     isNull,
 } from '@lwc/shared';
 
-import { logWarn } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { LightningElement } from './base-lightning-element';
@@ -77,7 +77,7 @@ export function patchElementWithRestrictions(
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: Element, value: string) {
-                logWarn(`Invalid attempt to set outerHTML on Element.`);
+                logError(`Invalid attempt to set outerHTML on Element.`);
                 return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -171,7 +171,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, value: string) {
-                logWarn(`Invalid attempt to set innerHTML on ShadowRoot.`);
+                logError(`Invalid attempt to set innerHTML on ShadowRoot.`);
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -180,7 +180,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, value: string) {
-                logWarn(`Invalid attempt to set textContent on ShadowRoot.`);
+                logError(`Invalid attempt to set textContent on ShadowRoot.`);
                 return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
@@ -193,7 +193,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
-                    logWarn(
+                    logError(
                         'The `addEventListener` method on ShadowRoot does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
@@ -223,7 +223,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logWarn(`Invalid attempt to set innerHTML on HTMLElement.`);
+                logError(`Invalid attempt to set innerHTML on HTMLElement.`);
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -232,7 +232,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logWarn(`Invalid attempt to set outerHTML on HTMLElement.`);
+                logError(`Invalid attempt to set outerHTML on HTMLElement.`);
                 return originalOuterHTMLDescriptor.set!.call(this, value);
             },
         }),
@@ -241,7 +241,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                logWarn(`Invalid attempt to set textContent on HTMLElement.`);
+                logError(`Invalid attempt to set textContent on HTMLElement.`);
                 return originalTextContentDescriptor.set!.call(this, value);
             },
         }),
@@ -254,7 +254,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
             ) {
                 // TODO [#1824]: Potentially relax this restriction
                 if (!isUndefined(options)) {
-                    logWarn(
+                    logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
@@ -283,7 +283,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                     const { type } = event;
 
                     if (!/^[a-z][a-z0-9_]*$/.test(type)) {
-                        logWarn(
+                        logError(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
                                 vm
                             )}.` +
