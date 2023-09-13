@@ -59,7 +59,7 @@
         "lint-staged": "^14.0.1",
         "magic-string": "^0.30.2",
         "nx": "16.8.1",
-        "prettier": "^2.8.8",
+        "prettier": "^3.0.3",
         "rollup": "^3.29.1",
         "terser": "^5.19.4",
         "ts-jest": "^29.1.1",
@@ -81,7 +81,7 @@
         "node": ">=10"
     },
     "volta": {
-        "node": "16.19.0",
+        "node": "16.20.1",
         "yarn": "1.22.19"
     },
     "resolutions": {

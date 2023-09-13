@@ -18,7 +18,7 @@ const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
     const [id, config] = path.get('expression.arguments') as [
         NodePath | undefined,
-        NodePath<types.ObjectExpression> | undefined
+        NodePath<types.ObjectExpression> | undefined,
     ];
 
     if (!id) {
