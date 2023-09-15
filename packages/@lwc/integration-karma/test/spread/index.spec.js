@@ -2,12 +2,13 @@ import { createElement } from 'lwc';
 import Test from 'x/test';
 
 describe('lwc:spread', () => {
-    let elm, simpleChild, overriddenChild;
+    let elm, simpleChild, overriddenChild, trackedChild;
     beforeEach(() => {
         elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         simpleChild = elm.shadowRoot.querySelector('.x-child-simple');
         overriddenChild = elm.shadowRoot.querySelector('.x-child-overridden');
+        trackedChild = elm.shadowRoot.querySelector('.x-child-tracked');
         spyOn(console, 'log');
     });
     it('should render basic test', () => {
@@ -75,5 +76,14 @@ describe('lwc:spread', () => {
                 .querySelector('[data-id="lwc-component"]')
                 .shadowRoot.querySelector('span').textContent
         ).toEqual('Name: Dynamic');
+    });
+
+    it('should rerender when tracked props are assigned', async () => {
+        expect(trackedChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Tracked');
+        elm.modify(function () {
+            this.trackedProps.name = 'Altered';
+        });
+        await Promise.resolve();
+        expect(trackedChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Altered');
     });
 });
