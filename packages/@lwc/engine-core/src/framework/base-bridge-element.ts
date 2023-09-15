@@ -21,7 +21,7 @@ import {
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
@@ -164,7 +164,7 @@ export function HTMLBridgeElementFactory(
     descriptors.formAssociated = {
         get() {
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
                 );
             }

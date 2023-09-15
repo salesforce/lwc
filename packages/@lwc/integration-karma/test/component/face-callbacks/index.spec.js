@@ -24,8 +24,8 @@ const sanityTestFormAssociatedCustomElements = (ctor) => {
     });
 
     it('cannot access formAssociated outside of a component', () => {
-        expect(() => face.formAssociated).toLogErrorDev(
-            'Error: [LWC error]: formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+        expect(() => face.formAssociated).toLogWarningDev(
+            /formAssociated cannot be accessed outside of a component. Set the value within the component class./
         );
     });
 
@@ -57,15 +57,15 @@ const sanityTestFormAssociatedCustomElements = (ctor) => {
     });
 };
 
-const testErrorThrownWhenStaticFormAssociatedNotSet = (ctor) => {
-    it(`throws an error if 'static formAssociated' is not set`, () => {
+const testWarningLoggedWhenStaticFormAssociatedNotSet = (ctor) => {
+    it(`logs a dev warning if 'static formAssociated' is not set`, () => {
         const form = createFormElement();
         const notFormAssociated = createElement('face-not-form-associated', {
             is: ctor,
         });
 
-        expect(() => form.appendChild(notFormAssociated)).toThrowCallbackReactionError(
-            `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+        expect(() => form.appendChild(notFormAssociated)).toLogWarningDev(
+            /Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain./
         );
     });
 };
@@ -75,7 +75,7 @@ if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         if (process.env.NATIVE_SHADOW) {
             describe('native shadow', () => {
                 sanityTestFormAssociatedCustomElements(FormAssociated);
-                testErrorThrownWhenStaticFormAssociatedNotSet(NotFormAssociated);
+                testWarningLoggedWhenStaticFormAssociatedNotSet(NotFormAssociated);
             });
         } else {
             describe('synthetic shadow', () => {
@@ -92,7 +92,7 @@ if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
 
         describe('light DOM', () => {
             sanityTestFormAssociatedCustomElements(LightDomFormAssociated);
-            testErrorThrownWhenStaticFormAssociatedNotSet(LightDomNotFormAssociated);
+            testWarningLoggedWhenStaticFormAssociatedNotSet(LightDomNotFormAssociated);
         });
     });
 } else {
