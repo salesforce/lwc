@@ -8,6 +8,8 @@ export default class Test extends LightningElement {
     dynamicCtor = Child;
     dynamicProps = { name: 'Dynamic' };
     @track trackedProps = { name: 'Tracked' };
+    innerHTMLProps = { innerHTML: 'innerHTML from spread' };
+    innerHTML = 'innerHTML from directive';
 
     spreadClick() {
         // eslint-disable-next-line no-console
