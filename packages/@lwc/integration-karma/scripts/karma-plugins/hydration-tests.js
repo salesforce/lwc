@@ -140,10 +140,12 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
         const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
         try {
-            const { code: testCode, watchFiles: testWatchFiles } =
-                await getTestModuleCode(filePath);
-            const { code: componentDef, watchFiles: componentWatchFiles } =
-                await getCompiledModule(suiteDir);
+            const { code: testCode, watchFiles: testWatchFiles } = await getTestModuleCode(
+                filePath
+            );
+            const { code: componentDef, watchFiles: componentWatchFiles } = await getCompiledModule(
+                suiteDir
+            );
 
             const ssrOutput = getSsrCode(componentDef, testCode);
 
