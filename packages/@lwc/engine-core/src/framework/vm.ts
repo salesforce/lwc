@@ -858,10 +858,6 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
-    if (!process.env.IS_BROWSER) {
-        return;
-    }
-
     const {
         renderMode,
         shadowMode,
