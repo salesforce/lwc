@@ -594,7 +594,7 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(codeGen.genRef(ref));
         }
 
-        // Spread
+        // Properties: lwc:spread directive
         if (spread) {
             // spread goes last, so it can be used to override any other properties
             propsObj.properties.push(t.spreadElement(codeGen.bindExpression(spread.value)));
