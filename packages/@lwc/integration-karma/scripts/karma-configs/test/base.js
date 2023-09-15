@@ -24,7 +24,6 @@ const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
-// const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 
 const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, WIRE_SERVICE];
