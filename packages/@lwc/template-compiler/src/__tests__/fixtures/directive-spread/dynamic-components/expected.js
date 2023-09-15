@@ -3,7 +3,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { dc: api_dynamic_component } = $api;
   return [
     api_dynamic_component($cmp.ctor, {
-      spread: $cmp.hello,
+      props: {
+        ...$cmp.hello,
+      },
       key: 0,
     }),
   ];
