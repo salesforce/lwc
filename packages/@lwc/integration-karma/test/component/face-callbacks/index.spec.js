@@ -64,7 +64,7 @@ const testErrorThrownWhenStaticFormAssociatedNotSet = (ctor) => {
             is: ctor,
         });
 
-        expect(() => form.appendChild(notFormAssociated)).toThrowConnectedError(
+        expect(() => form.appendChild(notFormAssociated)).toThrowCallbackReactionError(
             `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
         );
     });
@@ -83,7 +83,7 @@ if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                     const form = createFormElement();
                     const face = createElement('face-form-associated', { is: FormAssociated });
 
-                    expect(() => form.appendChild(face)).toThrowConnectedError(
+                    expect(() => form.appendChild(face)).toThrowCallbackReactionError(
                         'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
                     );
                 });

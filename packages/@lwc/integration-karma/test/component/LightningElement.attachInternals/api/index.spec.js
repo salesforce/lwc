@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import { customElementConnectedErrorListener } from 'test-utils';
+import { customElementCallbackReactionErrorListener } from 'test-utils';
 
 import ShadowDomCmp from 'ai/shadowDom';
 import LightDomCmp from 'ai/lightDom';
 import BasicCmp from 'ai/basic';
 
 const testConnectedCallbackError = (elm, msg) => {
-    const error = customElementConnectedErrorListener(() => {
+    const error = customElementCallbackReactionErrorListener(() => {
         document.body.appendChild(elm);
     });
     expect(error).not.toBeUndefined();
