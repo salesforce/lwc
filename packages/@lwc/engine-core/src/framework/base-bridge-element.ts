@@ -21,7 +21,7 @@ import {
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
@@ -111,7 +111,8 @@ export interface HTMLElementConstructor {
 
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
-    props: string[],
+    publicProperties: string[],
+    privateProperties: string[],
     methods: string[]
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
@@ -121,9 +122,26 @@ export function HTMLBridgeElementFactory(
     const { attributeChangedCallback: superAttributeChangedCallback } = SuperClass.prototype as any;
     const { observedAttributes: superObservedAttributes = [] } = SuperClass as any;
     const descriptors: PropertyDescriptorMap = create(null);
+
+    // present a hint message so that developers are aware that they have not decorated property with @api
+    if (process.env.NODE_ENV !== 'production') {
+        for (let i = 0, len = privateProperties.length; i < len; i += 1) {
+            const propName = privateProperties[i];
+            attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
+            descriptors[propName] = {
+                get() {
+                    logWarn(`Property ${propName} is not decorated with @api`);
+                },
+                set: createSetter(propName),
+                enumerable: true,
+                configurable: true,
+            };
+        }
+    }
+
     // expose getters and setters for each public props on the new Element Bridge
-    for (let i = 0, len = props.length; i < len; i += 1) {
-        const propName = props[i];
+    for (let i = 0, len = publicProperties.length; i < len; i += 1) {
+        const propName = publicProperties[i];
         attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
         descriptors[propName] = {
             get: createGetter(propName),
@@ -175,6 +193,7 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    [],
     []
 );
 
