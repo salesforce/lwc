@@ -849,7 +849,7 @@ export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => voi
     } = vm;
 
     // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
-    if (isUndefined(formAssociated)) {
+    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
         if (process.env.NODE_ENV !== 'production') {
             logWarn(
                 `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
