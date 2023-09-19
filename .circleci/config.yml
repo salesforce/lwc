@@ -21,11 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.20.1
+      - image: cimg/node:18.18.0
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.20.1-browsers
+      - image: cimg/node:18.18.0-browsers
 
 
 # Custom commands definition
