@@ -130,7 +130,9 @@ export function HTMLBridgeElementFactory(
             attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
             descriptors[propName] = {
                 get() {
-                    logWarn(`Property ${propName} is not decorated with @api`);
+                    logWarn(
+                        `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
+                    );
                 },
                 set: createSetter(propName),
                 enumerable: true,
