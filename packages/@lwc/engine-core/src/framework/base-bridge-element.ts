@@ -144,18 +144,15 @@ export function HTMLBridgeElementFactory(
 
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
-        const privateProperties = [];
-        for (const prop in protoDescriptors) {
-            const propDescriptor = protoDescriptors[prop];
-            if ((propDescriptor.get || propDescriptor.set) && publicProperties.indexOf(prop) === -1)
-                privateProperties.push(prop);
-        }
-
-        for (let i = 0, len = privateProperties.length; i < len; i += 1) {
-            const propName = privateProperties[i];
-            attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
-
-            descriptors[propName] = createStandardAssessorDescriptor(propName);
+        for (const propName in protoDescriptors) {
+            const propDescriptor = protoDescriptors[propName];
+            if (
+                (propDescriptor.get || propDescriptor.set) &&
+                publicProperties.indexOf(propName) === -1
+            ) {
+                attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
+                descriptors[propName] = createStandardAssessorDescriptor(propName);
+            }
         }
     }
 
