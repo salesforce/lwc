@@ -112,7 +112,7 @@ export interface HTMLElementConstructor {
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     publicProperties: string[],
-    privateProperties: string[],
+    protoDescriptors: PropertyDescriptorMap,
     methods: string[]
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
@@ -125,6 +125,13 @@ export function HTMLBridgeElementFactory(
 
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
+        const privateProperties = [];
+        for (const prop in protoDescriptors) {
+            const propDescriptor = protoDescriptors[prop];
+            if ((propDescriptor.get || propDescriptor.set) && publicProperties.indexOf(prop) === -1)
+                privateProperties.push(prop);
+        }
+
         for (let i = 0, len = privateProperties.length; i < len; i += 1) {
             const propName = privateProperties[i];
             attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
@@ -195,7 +202,7 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    [],
+    {},
     []
 );
 

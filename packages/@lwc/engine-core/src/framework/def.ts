@@ -18,6 +18,7 @@ import {
     create,
     defineProperties,
     freeze,
+    getOwnPropertyDescriptors,
     getPrototypeOf,
     htmlPropertyToAttribute,
     isFunction,
@@ -137,15 +138,6 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         decoratorsMeta;
     const proto = Ctor.prototype;
 
-    const publicProperties = keys(apiFields);
-    const protoDescriptors = Object.getOwnPropertyDescriptors(proto);
-    const privateProperties = [];
-    for (const prop in protoDescriptors) {
-        const propDescriptor = protoDescriptors[prop];
-        if ((propDescriptor.get || propDescriptor.set) && publicProperties.indexOf(prop) === -1)
-            privateProperties.push(prop);
-    }
-
     let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
         proto;
     const superProto = getCtorProto(Ctor);
@@ -153,8 +145,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
     const bridge = HTMLBridgeElementFactory(
         superDef.bridge,
-        publicProperties,
-        privateProperties,
+        keys(apiFields),
+        getOwnPropertyDescriptors(proto),
         keys(apiMethods)
     );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
