@@ -104,6 +104,25 @@ function createAttributeChangedCallback(
     };
 }
 
+function createStandardAssessorDescriptor(propName: string) {
+    let prop;
+    return {
+        get() {
+            // log warning
+            logWarn(
+                `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
+            );
+            return prop;
+        },
+        set(value) {
+            // log warning
+            prop = value;
+        },
+        enumerable: true,
+        configurable: true,
+    };
+}
+
 export interface HTMLElementConstructor {
     prototype: HTMLElement;
     new (): HTMLElement;
@@ -135,16 +154,8 @@ export function HTMLBridgeElementFactory(
         for (let i = 0, len = privateProperties.length; i < len; i += 1) {
             const propName = privateProperties[i];
             attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
-            descriptors[propName] = {
-                get() {
-                    logWarn(
-                        `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
-                    );
-                },
-                set: createSetter(propName),
-                enumerable: true,
-                configurable: true,
-            };
+
+            descriptors[propName] = createStandardAssessorDescriptor(propName);
         }
     }
 
