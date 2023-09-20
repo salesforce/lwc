@@ -335,6 +335,7 @@ interface DecoratorMeta {
     readonly wiredMethods: PropertyDescriptorMap;
     readonly wiredFields: PropertyDescriptorMap;
     readonly observedFields: PropertyDescriptorMap;
+    readonly trackFields: PropertyDescriptorMap;
 }
 
 function setDecoratorsMeta(Ctor: LightningElementConstructor, meta: DecoratorMeta) {
@@ -348,6 +349,7 @@ const defaultMeta: DecoratorMeta = {
     wiredMethods: EmptyObject,
     wiredFields: EmptyObject,
     observedFields: EmptyObject,
+    trackFields: EmptyObject,
 };
 
 export function getDecoratorsMeta(Ctor: LightningElementConstructor): DecoratorMeta {
