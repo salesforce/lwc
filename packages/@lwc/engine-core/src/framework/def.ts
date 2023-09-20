@@ -134,8 +134,15 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     }
 
     const decoratorsMeta = getDecoratorsMeta(Ctor);
-    const { apiFields, apiFieldsConfig, apiMethods, wiredFields, wiredMethods, observedFields } =
-        decoratorsMeta;
+    const {
+        apiFields,
+        apiFieldsConfig,
+        apiMethods,
+        wiredFields,
+        wiredMethods,
+        observedFields,
+        trackFields,
+    } = decoratorsMeta;
     const proto = Ctor.prototype;
 
     let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
@@ -147,7 +154,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         superDef.bridge,
         keys(apiFields),
         getOwnPropertyDescriptors(proto),
-        keys(apiMethods)
+        keys(apiMethods),
+        keys(trackFields)
     );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);

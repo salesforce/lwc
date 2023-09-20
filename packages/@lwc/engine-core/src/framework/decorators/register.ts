@@ -193,6 +193,7 @@ export function registerDecorators(
     const wiredMethods: PropertyDescriptorMap = create(null);
     const wiredFields: PropertyDescriptorMap = create(null);
     const observedFields: PropertyDescriptorMap = create(null);
+    const trackFields: PropertyDescriptorMap = create(null);
     const apiFieldsConfig: Record<string, PropType> = create(null);
     let descriptor: PropertyDescriptor | undefined;
     if (!isUndefined(publicProps)) {
@@ -291,6 +292,7 @@ export function registerDecorators(
                 validateFieldDecoratedWithTrack(Ctor, fieldName, descriptor);
             }
             descriptor = internalTrackDecorator(fieldName);
+            trackFields[fieldName] = descriptor;
             defineProperty(proto, fieldName, descriptor);
         }
     }
@@ -319,6 +321,7 @@ export function registerDecorators(
         wiredMethods,
         wiredFields,
         observedFields,
+        trackFields,
     });
     return Ctor;
 }

@@ -132,7 +132,8 @@ export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     publicProperties: string[],
     protoDescriptors: PropertyDescriptorMap,
-    methods: string[]
+    methods: string[],
+    trackFields: string[]
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
@@ -148,7 +149,8 @@ export function HTMLBridgeElementFactory(
             const propDescriptor = protoDescriptors[propName];
             if (
                 (propDescriptor.get || propDescriptor.set) &&
-                publicProperties.indexOf(propName) === -1
+                publicProperties.indexOf(propName) === -1 &&
+                trackFields.indexOf(propName) === -1
             ) {
                 attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
                 descriptors[propName] = createStandardAssessorDescriptor(propName);
@@ -211,6 +213,7 @@ export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     {},
+    [],
     []
 );
 
