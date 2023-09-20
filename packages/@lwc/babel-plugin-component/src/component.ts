@@ -68,7 +68,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             const hasIdentifier = t.isIdentifier((node as types.ClassDeclaration).id);
             if (hasIdentifier) {
                 statementPath!.insertBefore(node);
-                node = (node as types.ClassDeclaration).id;
+                node = (node as types.ClassDeclaration).id!;
             } else {
                 // if it does not have an id, we can treat it as a ClassExpression
                 t.toExpression(node as types.ClassDeclaration);
