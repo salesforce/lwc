@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LightningElement, api, getComponentDef } from 'lwc';
+import { LightningElement, api, getComponentDef, createElement } from 'lwc';
 import { ariaProperties } from 'test-utils';
 
 import PublicProperties from 'x/publicProperties';
@@ -7,6 +7,7 @@ import PublicAccessors from 'x/publicAccessors';
 import PublicMethods from 'x/publicMethods';
 import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
+import PrivateAccessors from 'x/privateAccessors';
 
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
@@ -151,6 +152,26 @@ describe('@api', () => {
             overriddenInChild: PublicMethodsInheritance.prototype.overriddenInChild,
             childMethod: PublicMethodsInheritance.prototype.childMethod,
         });
+    });
+
+    it('should log warning when accessing a private prop', () => {
+        const message = `Error: [LWC warn]: The property "privateGetter" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['privateGetter'];
+        }).toLogWarningDev(message);
+    });
+
+    it('should not log warning when accessing a public prop', () => {
+        const message = `Error: [LWC warn]: The property "publicGetter" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['publicGetter'];
+        }).not.toLogWarningDev(message);
     });
 });
 
