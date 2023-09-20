@@ -104,8 +104,8 @@ function createAttributeChangedCallback(
     };
 }
 
-function createStandardAssessorDescriptor(propName: string) {
-    let prop;
+function createStandardAccessorDescriptor(propName: string) {
+    let prop: any;
     return {
         get() {
             // log warning
@@ -114,7 +114,7 @@ function createStandardAssessorDescriptor(propName: string) {
             );
             return prop;
         },
-        set(value) {
+        set(value: any) {
             // log warning
             prop = value;
         },
@@ -153,7 +153,7 @@ export function HTMLBridgeElementFactory(
                 trackFields.indexOf(propName) === -1
             ) {
                 attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
-                descriptors[propName] = createStandardAssessorDescriptor(propName);
+                descriptors[propName] = createStandardAccessorDescriptor(propName);
             }
         }
     }
