@@ -85,12 +85,14 @@ describe('LightningElement.focus', () => {
         // Note in Chrome and Firefox the behavior is the same, document.activeElement does not point to the
         // custom element but to the <body>
         const customElementFocusableWhenFormAssociated = () => {
-            customElements.define(
-                'safari-focus-bug',
-                class SafariFocusBug extends HTMLElement {
-                    static formAssociated = true;
-                }
-            );
+            if (!customElements.get('safari-focus-bug')) {
+                customElements.define(
+                    'safari-focus-bug',
+                    class SafariFocusBug extends HTMLElement {
+                        static formAssociated = true;
+                    }
+                );
+            }
             const elm = document.createElement('safari-focus-bug');
             document.body.appendChild(elm);
             elm.focus();
