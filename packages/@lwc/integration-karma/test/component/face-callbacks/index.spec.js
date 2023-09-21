@@ -13,7 +13,7 @@ const createFormElement = () => {
     return form;
 };
 
-const sanityTestFormAssociatedCustomElements = (ctor) => {
+const faceSanityTest = (ctor) => {
     let form;
     let face;
 
@@ -57,7 +57,7 @@ const sanityTestFormAssociatedCustomElements = (ctor) => {
     });
 };
 
-const testWarningLoggedWhenStaticFormAssociatedNotSet = (ctor) => {
+const testWarningLoggedWhenFormAssociatedNotSet = (ctor) => {
     it(`logs a dev warning if 'static formAssociated' is not set`, () => {
         const form = createFormElement();
         const notFormAssociated = createElement('face-not-form-associated', {
@@ -70,53 +70,55 @@ const testWarningLoggedWhenStaticFormAssociatedNotSet = (ctor) => {
     });
 };
 
-if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-    describe('native lifecycle', () => {
-        if (process.env.NATIVE_SHADOW) {
-            describe('native shadow', () => {
-                sanityTestFormAssociatedCustomElements(FormAssociated);
-                testWarningLoggedWhenStaticFormAssociatedNotSet(NotFormAssociated);
-            });
-        } else {
-            describe('synthetic shadow', () => {
-                it('cannot be used and throws an error', () => {
-                    const form = createFormElement();
-                    const face = createElement('face-form-associated', { is: FormAssociated });
+if (typeof ElementInternals !== 'undefined') {
+    if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        describe('native lifecycle', () => {
+            if (process.env.NATIVE_SHADOW) {
+                describe('native shadow', () => {
+                    faceSanityTest(FormAssociated);
+                    testWarningLoggedWhenFormAssociatedNotSet(NotFormAssociated);
+                });
+            } else {
+                describe('synthetic shadow', () => {
+                    it('cannot be used and throws an error', () => {
+                        const form = createFormElement();
+                        const face = createElement('face-form-associated', { is: FormAssociated });
 
-                    expect(() => form.appendChild(face)).toThrowCallbackReactionError(
-                        'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-                    );
+                        expect(() => form.appendChild(face)).toThrowCallbackReactionError(
+                            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+                        );
+                    });
+                });
+            }
+
+            describe('light DOM', () => {
+                faceSanityTest(LightDomFormAssociated);
+                testWarningLoggedWhenFormAssociatedNotSet(LightDomNotFormAssociated);
+            });
+        });
+    } else {
+        describe('synthetic lifecycle', () => {
+            [
+                { name: 'shadow DOM', is: FormAssociated },
+                { name: 'light DOM', is: LightDomFormAssociated },
+            ].forEach(({ name, is }) => {
+                it(`${name} does not call face lifecycle methods`, () => {
+                    const face = createElement('face-form-associated', { is });
+                    const form = createFormElement();
+                    form.appendChild(face);
+
+                    // formAssociatedCallback
+                    expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
+
+                    // formDisabledCallback
+                    face.setAttribute('disabled', true);
+                    expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
+
+                    // formResetCallback
+                    form.reset();
+                    expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
                 });
             });
-        }
-
-        describe('light DOM', () => {
-            sanityTestFormAssociatedCustomElements(LightDomFormAssociated);
-            testWarningLoggedWhenStaticFormAssociatedNotSet(LightDomNotFormAssociated);
         });
-    });
-} else {
-    describe('synthetic lifecycle', () => {
-        [
-            { name: 'shadow DOM', is: FormAssociated },
-            { name: 'light DOM', is: LightDomFormAssociated },
-        ].forEach(({ name, is }) => {
-            it(`${name} does not call face lifecycle methods`, () => {
-                const face = createElement('face-form-associated', { is });
-                const form = createFormElement();
-                form.appendChild(face);
-
-                // formAssociatedCallback
-                expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
-
-                // formDisabledCallback
-                face.setAttribute('disabled', true);
-                expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
-
-                // formResetCallback
-                form.reset();
-                expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
-            });
-        });
-    });
+    }
 }
