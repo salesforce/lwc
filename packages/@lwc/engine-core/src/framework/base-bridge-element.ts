@@ -21,6 +21,7 @@ import {
     seal,
     keys,
     htmlPropertyToAttribute,
+    isNull,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 import { logError, logWarn } from '../shared/logger';
@@ -148,9 +149,11 @@ export function HTMLBridgeElementFactory(
 
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
-        for (const propName of keys(getOwnPropertyDescriptors(proto))) {
-            if (ArrayIndexOf.call(publicProperties, propName) === -1) {
-                descriptors[propName] = createStandardAccessorDescriptor(propName);
+        if (!isUndefined(proto) && !isNull(proto)) {
+            for (const propName of keys(getOwnPropertyDescriptors(proto))) {
+                if (ArrayIndexOf.call(publicProperties, propName) === -1) {
+                    descriptors[propName] = createStandardAccessorDescriptor(propName);
+                }
             }
         }
     }
