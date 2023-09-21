@@ -127,7 +127,9 @@ function generateScopeToken(
     const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
 
     if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
-        const hashCode = generateHashCode(uniqueToken);
+        // "Salt" the scope token using the LWC version, so that it changes with every release.
+        // This is to further discourage developers from relying on it.
+        const hashCode = generateHashCode(uniqueToken + (process.env.LWC_VERSION as string));
 
         // This scope token is all lowercase so that it works correctly in case-sensitive namespaces (e.g. SVG).
         // It is deliberately designed to discourage people from relying on it by appearing somewhat random.

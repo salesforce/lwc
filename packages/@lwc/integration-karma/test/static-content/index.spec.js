@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { generateScopeToken } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -36,7 +37,9 @@ if (!process.env.NATIVE_SHADOW) {
                     .shadowRoot.querySelector('div');
 
                 const token =
-                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc-6a8uqob2ku4';
+                    process.env.API_VERSION <= 58
+                        ? 'x-component_component'
+                        : generateScopeToken('x-component_component');
                 expect(syntheticMode.hasAttribute(token)).toBe(true);
                 expect(nativeMode.hasAttribute(token)).toBe(false);
             });
@@ -79,7 +82,9 @@ describe('static content when stylesheets change', () => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
                 expect(classList).toEqual([
                     'foo',
-                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-6fpm08fjoch',
+                    process.env.API_VERSION <= 58
+                        ? 'x-multipleStyles_b'
+                        : generateScopeToken('x-multipleStyles_b'),
                 ]);
 
                 expect(() => {

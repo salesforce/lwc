@@ -80,6 +80,12 @@ function formatHTML(src: string): string {
         return '  '.repeat(depth);
     };
 
+    // Replace all CSS scope tokens (e.g. "lwc-abc123") to avoid it changing every release.
+    // The lookahead check (`\b(?![->])`) is to avoid matching tag names like `<lwc-foo-bar>`.
+    src = src
+        .replace(/\blwc-[a-z0-9]+-host\b(?![->])/g, '__lwc_scope_token_host__')
+        .replace(/\blwc-[a-z0-9]+\b(?![->])/g, '__lwc_scope_token__');
+
     while (pos < src.length) {
         // Consume element tags and comments.
         if (src.charAt(pos) === '<') {
