@@ -69,6 +69,9 @@ const GLOBAL_HTML_ATTRIBUTES = [
     ...Object.keys(Element.prototype).filter((prop) => ariaProperties.includes(prop)),
 ].sort();
 
+const message = (propName) =>
+    `Error: [LWC warn]: The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
+
 it('it should return the global HTML attributes in props', () => {
     class Component extends LightningElement {}
     const def = getComponentDef(Component);
@@ -155,23 +158,57 @@ describe('@api', () => {
     });
 
     it('should log warning when accessing a private prop', () => {
-        const message = `Error: [LWC warn]: The property "privateGetter" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
         const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
-            elm['privateGetter'];
-        }).toLogWarningDev(message);
+            elm['privateProp'];
+        }).toLogWarningDev(message('privateProp'));
+    });
+
+    it('should log warning when setting a private prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['privateProp'] = 'foo';
+        }).toLogWarningDev(message('privateProp'));
     });
 
     it('should not log warning when accessing a public prop', () => {
-        const message = `Error: [LWC warn]: The property "publicGetter" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
         const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
-            elm['publicGetter'];
-        }).not.toLogWarningDev(message);
+            elm['publicProb'];
+        }).not.toLogWarningDev(message('publicProp'));
+    });
+
+    it('should not log warning when setting a public prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['publicProb'] = 'foo';
+        }).not.toLogWarningDev();
+    });
+
+    it('should log warning when accessing a private prop without a getter', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['nonDecoratedPrivateProp'];
+        }).toLogWarningDev(message('nonDecoratedPrivateProp'));
+    });
+
+    it('should log warning when accessing a tracked private prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['trackedProp'];
+        }).toLogWarningDev(message('trackedProp'));
     });
 });
 

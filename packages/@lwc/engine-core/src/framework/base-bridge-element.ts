@@ -10,11 +10,13 @@
  */
 import {
     ArraySlice,
+    ArrayIndexOf,
     create,
     defineProperties,
     defineProperty,
     freeze,
     getOwnPropertyNames,
+    getOwnPropertyDescriptors,
     isUndefined,
     seal,
     keys,
@@ -26,6 +28,7 @@ import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
+import { LightningElement } from './base-lightning-element';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -108,14 +111,15 @@ function createStandardAccessorDescriptor(propName: string) {
     let prop: any;
     return {
         get() {
-            // log warning
             logWarn(
                 `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
             );
             return prop;
         },
         set(value: any) {
-            // log warning
+            logWarn(
+                `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
+            );
             prop = value;
         },
         enumerable: true,
@@ -131,9 +135,8 @@ export interface HTMLElementConstructor {
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     publicProperties: string[],
-    protoDescriptors: PropertyDescriptorMap,
     methods: string[],
-    trackFields: string[]
+    proto: LightningElement
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
@@ -145,14 +148,8 @@ export function HTMLBridgeElementFactory(
 
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
-        for (const propName in protoDescriptors) {
-            const propDescriptor = protoDescriptors[propName];
-            if (
-                (propDescriptor.get || propDescriptor.set) &&
-                publicProperties.indexOf(propName) === -1 &&
-                trackFields.indexOf(propName) === -1
-            ) {
-                attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
+        for (const propName of keys(getOwnPropertyDescriptors(proto))) {
+            if (ArrayIndexOf.call(publicProperties, propName) === -1) {
                 descriptors[propName] = createStandardAccessorDescriptor(propName);
             }
         }
@@ -212,9 +209,8 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    {},
     [],
-    []
+    null
 );
 
 if (process.env.IS_BROWSER) {

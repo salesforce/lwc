@@ -18,7 +18,6 @@ import {
     create,
     defineProperties,
     freeze,
-    getOwnPropertyDescriptors,
     getPrototypeOf,
     htmlPropertyToAttribute,
     isFunction,
@@ -134,15 +133,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     }
 
     const decoratorsMeta = getDecoratorsMeta(Ctor);
-    const {
-        apiFields,
-        apiFieldsConfig,
-        apiMethods,
-        wiredFields,
-        wiredMethods,
-        observedFields,
-        trackFields,
-    } = decoratorsMeta;
+    const { apiFields, apiFieldsConfig, apiMethods, wiredFields, wiredMethods, observedFields } =
+        decoratorsMeta;
     const proto = Ctor.prototype;
 
     let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
@@ -153,9 +145,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     const bridge = HTMLBridgeElementFactory(
         superDef.bridge,
         keys(apiFields),
-        getOwnPropertyDescriptors(proto),
         keys(apiMethods),
-        keys(trackFields)
+        proto
     );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);
