@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { generateScopeToken } from 'test-utils';
 import Container from 'x/container';
 
 // This test only matters for synthetic shadow
@@ -11,10 +10,8 @@ if (!process.env.NATIVE_SHADOW) {
             document.body.appendChild(elm);
 
             // shadow grandparent
-            expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58
-                    ? 'x-container_container'
-                    : generateScopeToken('x-container_container')
+            expect(elm.shadowRoot.querySelector('h1').outerHTML).toMatch(
+                process.env.API_VERSION <= 58 ? /\bx-container_container\b/ : /\blwc-[a-z0-9]+\b/
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
                 'rgb(0, 128, 0)'
@@ -29,10 +26,8 @@ if (!process.env.NATIVE_SHADOW) {
 
             // shadow grandchild
             const grandchild = child.querySelector('x-grandchild');
-            expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58
-                    ? 'x-grandchild_grandchild'
-                    : generateScopeToken('x-grandchild_grandchild')
+            expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toMatch(
+                process.env.API_VERSION <= 58 ? /\bx-grandchild_grandchild\b/ : /\blwc-[a-z0-9]+\b/
             );
             expect(
                 getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor

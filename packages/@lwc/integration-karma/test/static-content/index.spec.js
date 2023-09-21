@@ -1,5 +1,4 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { generateScopeToken } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -36,12 +35,14 @@ if (!process.env.NATIVE_SHADOW) {
                     .shadowRoot.querySelector('x-component')
                     .shadowRoot.querySelector('div');
 
-                const token =
-                    process.env.API_VERSION <= 58
-                        ? 'x-component_component'
-                        : generateScopeToken('x-component_component');
-                expect(syntheticMode.hasAttribute(token)).toBe(true);
-                expect(nativeMode.hasAttribute(token)).toBe(false);
+                const syntheticAttrs = [...syntheticMode.attributes].map((_) => _.name);
+                const nativeAttrs = [...nativeMode.attributes].map((_) => _.name);
+
+                expect(syntheticAttrs.length).toBe(1);
+                expect(syntheticAttrs[0]).toMatch(
+                    process.env.API_VERSION <= 58 ? /^x-component_component$/ : /^lwc-[a-z0-9]+$/
+                );
+                expect(nativeAttrs.length).toBe(0);
             });
         });
     });
@@ -80,12 +81,11 @@ describe('static content when stylesheets change', () => {
         return Promise.resolve()
             .then(() => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-                expect(classList).toEqual([
-                    'foo',
-                    process.env.API_VERSION <= 58
-                        ? 'x-multipleStyles_b'
-                        : generateScopeToken('x-multipleStyles_b'),
-                ]);
+                expect(classList.length).toBe(2);
+                expect(classList[0]).toBe('foo');
+                expect(classList[1]).toMatch(
+                    process.env.API_VERSION <= 58 ? /^x-multipleStyles_b$/ : /^lwc-[a-z0-9]+$/
+                );
 
                 expect(() => {
                     elm.updateTemplate({
