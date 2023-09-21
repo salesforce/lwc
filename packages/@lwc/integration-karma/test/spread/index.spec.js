@@ -1,17 +1,36 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
+import { getHooks, setHooks } from 'test-utils';
 
+function setSanitizeHtmlContentHookForTest(impl) {
+    const { sanitizeHtmlContent } = getHooks();
+
+    setHooks({
+        sanitizeHtmlContent: impl,
+    });
+
+    return sanitizeHtmlContent;
+}
 describe('lwc:spread', () => {
-    let elm, simpleChild, overriddenChild;
+    let elm, simpleChild, overriddenChild, trackedChild, innerHTMLChild, originalHook;
     beforeEach(() => {
+        originalHook = setSanitizeHtmlContentHookForTest((x) => x);
         elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         simpleChild = elm.shadowRoot.querySelector('.x-child-simple');
         overriddenChild = elm.shadowRoot.querySelector('.x-child-overridden');
+        trackedChild = elm.shadowRoot.querySelector('.x-child-tracked');
+        innerHTMLChild = elm.shadowRoot.querySelector('.div-innerhtml');
         spyOn(console, 'log');
+    });
+    afterEach(() => {
+        setSanitizeHtmlContentHookForTest(originalHook);
     });
     it('should render basic test', () => {
         expect(simpleChild.shadowRoot.querySelector('span').textContent).toEqual('Name: LWC');
+    });
+    it('should override innerHTML from inner-html directive', () => {
+        expect(innerHTMLChild.innerHTML).toEqual('innerHTML from spread');
     });
     it('should assign onclick', () => {
         simpleChild.click();
@@ -75,5 +94,14 @@ describe('lwc:spread', () => {
                 .querySelector('[data-id="lwc-component"]')
                 .shadowRoot.querySelector('span').textContent
         ).toEqual('Name: Dynamic');
+    });
+
+    it('should rerender when tracked props are assigned', async () => {
+        expect(trackedChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Tracked');
+        elm.modify(function () {
+            this.trackedProps.name = 'Altered';
+        });
+        await Promise.resolve();
+        expect(trackedChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Altered');
     });
 });
