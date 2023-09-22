@@ -149,7 +149,8 @@ export function HTMLBridgeElementFactory(
     const descriptors: PropertyDescriptorMap = create(null);
 
     // present a hint message so that developers are aware that they have not decorated property with @api
-    if (process.env.NODE_ENV !== 'production') {
+    // Note this seems to conflict with the Jest serializer, so disabling in the "test" NODE_ENV for now
+    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
         if (!isUndefined(proto) && !isNull(proto)) {
             const nonPublicPropertiesToWarnOn = new Set(
                 [
