@@ -108,7 +108,7 @@ function createAttributeChangedCallback(
     };
 }
 
-function createStandardAccessorDescriptor(propName: string) {
+function createAccessorThatWarns(propName: string) {
     let prop: any;
     return {
         get() {
@@ -152,7 +152,7 @@ export function HTMLBridgeElementFactory(
         if (!isUndefined(proto) && !isNull(proto)) {
             for (const propName of keys(getOwnPropertyDescriptors(proto))) {
                 if (ArrayIndexOf.call(publicProperties, propName) === -1) {
-                    descriptors[propName] = createStandardAccessorDescriptor(propName);
+                    descriptors[propName] = createAccessorThatWarns(propName);
                 }
             }
         }
