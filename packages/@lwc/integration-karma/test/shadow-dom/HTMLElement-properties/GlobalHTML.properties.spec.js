@@ -39,12 +39,12 @@ describe('global HTML Properties', () => {
         document.body.appendChild(elm);
         const cmp = elm.componentInstance;
         expect(cmp.getAttribute('tabindex')).toBe('0');
-    }),
-        it('should not throw when accessing attribute in root elements', () => {
-            const elm = createElement('x-foo', { is: Test });
-            document.body.appendChild(elm);
-            elm.setAttribute('tabindex', 1);
-        });
+    });
+    it('should not throw when accessing attribute in root elements', () => {
+        const elm = createElement('x-foo', { is: Test });
+        document.body.appendChild(elm);
+        elm.setAttribute('tabindex', 1);
+    });
 
     it('should delete existing attribute prior rendering', () => {
         const elm = createElement('x-foo', { is: Test });
@@ -202,7 +202,9 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: NonReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
-            elm.tabIndex = -1;
+            expect(() => {
+                elm.tabIndex = -1;
+            }).toLogWarningDev(/Add the @api annotation to the property declaration/);
         }).not.toThrow();
     });
 
@@ -210,7 +212,9 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: ReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
-            elm.tabIndex = -1;
+            expect(() => {
+                elm.tabIndex = -1;
+            }).toLogWarningDev(/Add the @api annotation to the property declaration/);
         }).not.toThrow();
     });
 });

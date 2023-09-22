@@ -137,6 +137,7 @@ export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     publicProperties: string[],
     methods: string[],
+    observedFields: string[],
     proto: LightningElement | null
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
@@ -150,7 +151,10 @@ export function HTMLBridgeElementFactory(
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(proto) && !isNull(proto)) {
-            for (const propName of keys(getOwnPropertyDescriptors(proto))) {
+            for (const propName of new Set([
+                ...keys(getOwnPropertyDescriptors(proto)),
+                ...observedFields,
+            ])) {
                 if (ArrayIndexOf.call(publicProperties, propName) === -1) {
                     descriptors[propName] = createAccessorThatWarns(propName);
                 }
@@ -212,6 +216,7 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    [],
     [],
     null
 );

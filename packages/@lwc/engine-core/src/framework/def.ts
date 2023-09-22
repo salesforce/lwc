@@ -146,6 +146,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         superDef.bridge,
         keys(apiFields),
         keys(apiMethods),
+        keys(observedFields),
         proto
     );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
