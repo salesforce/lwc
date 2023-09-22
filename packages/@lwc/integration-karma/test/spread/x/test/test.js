@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { api, LightningElement, track } from 'lwc';
 import Child from 'x/child';
 
 export default class Test extends LightningElement {
@@ -7,6 +7,9 @@ export default class Test extends LightningElement {
     spanProps = { className: 'spanclass' };
     dynamicCtor = Child;
     dynamicProps = { name: 'Dynamic' };
+    @track trackedProps = { name: 'Tracked' };
+    innerHTMLProps = { innerHTML: 'innerHTML from spread' };
+    innerHTML = 'innerHTML from directive';
 
     spreadClick() {
         // eslint-disable-next-line no-console
