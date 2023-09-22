@@ -151,10 +151,17 @@ export function HTMLBridgeElementFactory(
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(proto) && !isNull(proto)) {
-            for (const propName of new Set([
-                ...keys(getOwnPropertyDescriptors(proto)),
-                ...observedFields,
-            ])) {
+            const nonPublicPropertiesToWarnOn = new Set(
+                [
+                    // getters, setters, and methods
+                    ...keys(getOwnPropertyDescriptors(proto)),
+                    // class properties
+                    ...observedFields,
+                    // we don't want to override "constructor"
+                ].filter((propName) => propName !== 'constructor')
+            );
+
+            for (const propName of nonPublicPropertiesToWarnOn) {
                 if (ArrayIndexOf.call(publicProperties, propName) === -1) {
                     descriptors[propName] = createAccessorThatWarns(propName);
                 }
