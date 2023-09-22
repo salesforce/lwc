@@ -137,7 +137,7 @@ export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     publicProperties: string[],
     methods: string[],
-    proto: LightningElement
+    proto: LightningElement | null
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
