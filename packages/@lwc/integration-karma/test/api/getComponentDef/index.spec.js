@@ -8,6 +8,7 @@ import PublicMethods from 'x/publicMethods';
 import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 import PrivateAccessors from 'x/privateAccessors';
+import HtmlElementProps from 'x/htmlElementProps';
 
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
@@ -209,6 +210,20 @@ describe('@api', () => {
         expect(() => {
             elm['trackedProp'];
         }).toLogWarningDev(message('trackedProp'));
+    });
+
+    it('should not log a warning on HTMLElement props', () => {
+        const elm = createElement('x-html-element-props', { is: HtmlElementProps });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.constructor;
+            elm.tabIndex;
+            elm.title;
+            elm.attributes;
+        }).not.toLogWarningDev();
+
+        expect(elm.attributes.length).toBe(0);
     });
 });
 

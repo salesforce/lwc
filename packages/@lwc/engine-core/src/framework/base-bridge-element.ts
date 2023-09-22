@@ -149,8 +149,7 @@ export function HTMLBridgeElementFactory(
     const descriptors: PropertyDescriptorMap = create(null);
 
     // present a hint message so that developers are aware that they have not decorated property with @api
-    // Note this seems to conflict with the Jest serializer, so disabling in the "test" NODE_ENV for now
-    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(proto) && !isNull(proto)) {
             const nonPublicPropertiesToWarnOn = new Set(
                 [
@@ -158,8 +157,12 @@ export function HTMLBridgeElementFactory(
                     ...keys(getOwnPropertyDescriptors(proto)),
                     // class properties
                     ...observedFields,
-                    // we don't want to override "constructor"
-                ].filter((propName) => propName !== 'constructor')
+                ]
+                    // we don't want to override HTMLElement props because these are meaningful in other ways,
+                    // and can break tooling that expects it to be iterable or defined, e.g. Jest:
+                    // https://github.com/jestjs/jest/blob/b4c9587/packages/pretty-format/src/plugins/DOMElement.ts#L95
+                    // It also doesn't make sense to override e.g. "constructor".
+                    .filter((propName) => !(propName in HTMLElement.prototype))
             );
 
             for (const propName of nonPublicPropertiesToWarnOn) {

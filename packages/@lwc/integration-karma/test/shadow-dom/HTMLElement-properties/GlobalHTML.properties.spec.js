@@ -202,9 +202,7 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: NonReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
-            expect(() => {
-                elm.tabIndex = -1;
-            }).toLogWarningDev(/Add the @api annotation to the property declaration/);
+            elm.tabIndex = -1;
         }).not.toThrow();
     });
 
@@ -212,9 +210,7 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: ReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
-            expect(() => {
-                elm.tabIndex = -1;
-            }).toLogWarningDev(/Add the @api annotation to the property declaration/);
+            elm.tabIndex = -1;
         }).not.toThrow();
     });
 });
