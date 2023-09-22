@@ -181,7 +181,7 @@ describe('@api', () => {
 
         expect(() => {
             elm['publicProb'];
-        }).not.toLogWarningDev(message('publicProp'));
+        }).not.toLogWarningDev();
     });
 
     it('should not log warning when setting a public prop', () => {
