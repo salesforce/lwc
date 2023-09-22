@@ -27,7 +27,7 @@ import { applyAriaReflection } from '@lwc/aria-reflection';
 import { logError, logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
-import { HTMLElementConstructor } from './html-element';
+import { HTMLElementConstructor, HTMLElementPrototype } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { LightningElement } from './base-lightning-element';
 
@@ -162,7 +162,7 @@ export function HTMLBridgeElementFactory(
                     // and can break tooling that expects it to be iterable or defined, e.g. Jest:
                     // https://github.com/jestjs/jest/blob/b4c9587/packages/pretty-format/src/plugins/DOMElement.ts#L95
                     // It also doesn't make sense to override e.g. "constructor".
-                    .filter((propName) => !(propName in HTMLElement.prototype))
+                    .filter((propName) => !(propName in HTMLElementPrototype))
             );
 
             for (const propName of nonPublicPropertiesToWarnOn) {
