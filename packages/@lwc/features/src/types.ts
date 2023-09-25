@@ -66,6 +66,13 @@ export interface FeatureFlagMap {
      * and HTMLBridgeElement base classes, not on every Element.
      */
     DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
+
+    /**
+     * If true, render legacy CSS scope tokens in addition to the modern CSS scope tokens. This is designed
+     * for cases where backwards compat is required (e.g. global stylesheets using these tokens in their selectors).
+     */
+    // TODO [#3733]: remove support for legacy scope tokens
+    ENABLE_LEGACY_SCOPE_TOKENS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -14,6 +14,7 @@ import {
     ShadowRootResolver,
 } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
+import { setLegacyShadowToken, getLegacyShadowToken } from './legacy-shadow-token';
 
 const DomManualPrivateKey = '$$DomManualKey$$';
 
@@ -30,7 +31,13 @@ const portalObserverConfig: MutationObserverInit = {
     childList: true,
 };
 
-function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
+// TODO [#3733]: remove support for legacy scope tokens
+function adoptChildNode(
+    node: Node,
+    fn: ShadowRootResolver,
+    shadowToken: string | undefined,
+    legacyShadowToken: string | undefined
+) {
     const previousNodeShadowResolver = getShadowRootResolver(node);
     if (previousNodeShadowResolver === fn) {
         return; // nothing to do here, it is already correctly patched
@@ -38,6 +45,7 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
     setShadowRootResolver(node, fn);
     if (node instanceof Element) {
         setShadowToken(node, shadowToken);
+        setLegacyShadowToken(node, legacyShadowToken);
 
         if (isSyntheticShadowHost(node)) {
             // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
@@ -51,7 +59,7 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
         // recursively patching all children as well
         const childNodes = childNodesGetter.call(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            adoptChildNode(childNodes[i], fn, shadowToken);
+            adoptChildNode(childNodes[i], fn, shadowToken, legacyShadowToken);
         }
     }
 }
@@ -73,6 +81,9 @@ function initPortalObserver() {
             // the target of the mutation should always have a ShadowRootResolver attached to it
             const fn = getShadowRootResolver(elm)!;
             const shadowToken = getShadowToken(elm);
+            const legacyShadowToken = lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS
+                ? getLegacyShadowToken(elm)
+                : undefined;
 
             // Process removals first to handle the case where an element is removed and reinserted
             for (let i = 0, len = removedNodes.length; i < len; i += 1) {
@@ -80,14 +91,14 @@ function initPortalObserver() {
                 if (
                     !(compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY)
                 ) {
-                    adoptChildNode(node, DocumentResolverFn, undefined);
+                    adoptChildNode(node, DocumentResolverFn, undefined, undefined);
                 }
             }
 
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
                 if (compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
-                    adoptChildNode(node, fn, shadowToken);
+                    adoptChildNode(node, fn, shadowToken, legacyShadowToken);
                 }
             }
         });
