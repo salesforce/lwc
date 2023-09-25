@@ -46,7 +46,7 @@ const SAUCE_BROWSERS = [
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
-        platformName: 'macOS 12', // Note: this must be updated when macOS releases new updates
+        platformName: 'macOS 11', // Note: this must be updated when macOS releases new updates
     },
 
     // Compat browsers
