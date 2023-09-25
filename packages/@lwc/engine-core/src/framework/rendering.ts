@@ -610,13 +610,13 @@ function patchElementPropsAndAttrs(
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
-    // TODO [#2762]: this dot notation with add is probably problematic
-    // probably we should have a renderer api for just the add operation
     const { getClassList } = renderer;
 
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
     if (!isNull(scopeToken)) {
+        // TODO [#2762]: this dot notation with add is probably problematic
+        // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
     }
 
@@ -624,6 +624,8 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
         const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
         if (!isNull(legacyScopeToken)) {
+            // TODO [#2762]: this dot notation with add is probably problematic
+            // probably we should have a renderer api for just the add operation
             getClassList(elm).add(legacyScopeToken);
         }
     }
