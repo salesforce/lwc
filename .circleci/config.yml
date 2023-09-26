@@ -358,19 +358,3 @@ workflows:
           requires:
             - build
             - hold
-
-      - test_integration:
-          # lwc-sauce-labs context not needed due to using local chrome
-          filters:
-            <<: *only_forks
-          requires:
-            - test_unit
-            - test_karma
-
-      - test_integration_dev:
-          # lwc-sauce-labs context not needed due to using local chrome
-          filters:
-            <<: *only_forks
-          requires:
-            - test_unit
-            - test_karma
