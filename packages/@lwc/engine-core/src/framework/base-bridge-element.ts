@@ -152,6 +152,13 @@ export function HTMLBridgeElementFactory(
 
     // To avoid leaking private component details, accessing internals from outside a component is not allowed.
     descriptors.attachInternals = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
         get() {
             if (process.env.NODE_ENV !== 'production') {
                 logError(
@@ -162,6 +169,13 @@ export function HTMLBridgeElementFactory(
     };
 
     descriptors.formAssociated = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+                );
+            }
+        },
         get() {
             if (process.env.NODE_ENV !== 'production') {
                 logWarn(

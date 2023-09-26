@@ -300,6 +300,60 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     }
 }
 
+// List of properties on ElementInternals that are formAssociated can be found in the spec:
+// https://html.spec.whatwg.org/multipage/custom-elements.html#form-associated-custom-elements
+const formAssociatedProps = new Set([
+    'setFormValue',
+    'form',
+    'setValidity',
+    'willValidate',
+    'validity',
+    'validationMessage',
+    'checkValidity',
+    'reportValidity',
+    'labels',
+]);
+
+// Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
+// This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
+// ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
+// We are doing this to guard against customers taking a dependency on form elements being associated to ElementInternals
+// when 'formAssociated' has not been set on the LWC.
+function createElementInternalsProxy(
+    elementInternals: ElementInternals,
+    isFormAssociated: boolean
+) {
+    const elementInternalsProxy = new Proxy(elementInternals, {
+        set(target, propertyKey, newValue) {
+            const key = typeof propertyKey === 'symbol' ? propertyKey.description : propertyKey;
+            if (key && formAssociatedProps.has(key) && !isFormAssociated) {
+                //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+                throw new DOMException(
+                    `Failed to execute '${key}' on 'ElementInternals': The target element is not a form-associated custom element.`
+                );
+            }
+            return Reflect.set(target, propertyKey, newValue);
+        },
+        get(target, propertyKey) {
+            const key = typeof propertyKey === 'symbol' ? propertyKey.description : propertyKey;
+            if (key && formAssociatedProps.has(key) && !isFormAssociated) {
+                //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+                throw new DOMException(
+                    `Failed to execute '${key}' on 'ElementInternals': The target element is not a form-associated custom element.`
+                );
+            }
+            const internalsPropertyValue = Reflect.get(target, propertyKey);
+            // Bind the property value to the target so that function invocations are called with the
+            // correct context ('this' value).
+            return typeof internalsPropertyValue === 'function'
+                ? internalsPropertyValue.bind(target)
+                : internalsPropertyValue;
+        },
+    });
+
+    return elementInternalsProxy;
+}
+
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
@@ -469,6 +523,7 @@ LightningElement.prototype = {
         const vm = getAssociatedVM(this);
         const {
             elm,
+            def: { formAssociated },
             renderer: { attachInternals },
         } = vm;
 
@@ -478,7 +533,8 @@ LightningElement.prototype = {
             );
         }
 
-        return attachInternals(elm);
+        const internals = attachInternals(elm);
+        return createElementInternalsProxy(internals, Boolean(formAssociated));
     },
 
     get isConnected(): boolean {
