@@ -534,6 +534,7 @@ LightningElement.prototype = {
         }
 
         const internals = attachInternals(elm);
+        // #TODO[2970]: remove proxy once `UpgradeableConstructor` has been removed
         return createElementInternalsProxy(internals, Boolean(formAssociated));
     },
 
