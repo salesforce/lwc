@@ -270,7 +270,7 @@ jobs:
     steps:
       - run: sudo apt-get update
       - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
-          chrome-version: 117.0.5938.92-1
+          chrome-version: 117.0.5938.92
       - load_workspace
       - run:
           name: Run benchmark smoke tests
