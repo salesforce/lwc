@@ -610,19 +610,38 @@ function patchElementPropsAndAttrs(
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+    const { getClassList } = renderer;
+
     // Set the class name for `*.scoped.css` style scoping.
-    const scopeToken = getScopeTokenClass(owner);
+    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
     if (!isNull(scopeToken)) {
-        const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
     }
 
+    // TODO [#3733]: remove support for legacy scope tokens
+    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+        const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
+        if (!isNull(legacyScopeToken)) {
+            // TODO [#2762]: this dot notation with add is probably problematic
+            // probably we should have a renderer api for just the add operation
+            getClassList(elm).add(legacyScopeToken);
+        }
+    }
+
     // Set property element for synthetic shadow DOM style scoping.
     const { stylesheetToken: syntheticToken } = owner.context;
-    if (owner.shadowMode === ShadowMode.Synthetic && !isUndefined(syntheticToken)) {
-        (elm as any).$shadowToken$ = syntheticToken;
+    if (owner.shadowMode === ShadowMode.Synthetic) {
+        if (!isUndefined(syntheticToken)) {
+            (elm as any).$shadowToken$ = syntheticToken;
+        }
+        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+            const legacyToken = owner.context.legacyStylesheetToken;
+            if (!isUndefined(legacyToken)) {
+                (elm as any).$legacyShadowToken$ = legacyToken;
+            }
+        }
     }
 }
 
