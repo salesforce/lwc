@@ -1,5 +1,5 @@
 orbs:
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.3
 
 # Shared config
 ignore_forks: &ignore_forks
@@ -21,11 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:18.18.0
+      - image: cimg/node:16.19.0
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:18.18.0-browsers
+      - image: cimg/node:16.19.0-browsers
 
 
 # Custom commands definition
