@@ -1,5 +1,5 @@
 orbs:
-  browser-tools: circleci/browser-tools@1.4.3
+  browser-tools: circleci/browser-tools@1.4.6
 
 # Shared config
 ignore_forks: &ignore_forks
@@ -21,11 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:18.18.0
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.19.0-browsers
+      - image: cimg/node:18.18.0-browsers
 
 
 # Custom commands definition
@@ -268,7 +268,9 @@ jobs:
   test_benchmark_smoke:
     executor: node-browsers
     steps:
-      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      - run: sudo apt-get update
+      - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
+          chrome-version: 117.0.5938.92
       - load_workspace
       - run:
           name: Run benchmark smoke tests
@@ -319,25 +321,28 @@ jobs:
           command: yarn coverage
           working_directory: packages/@lwc/integration-karma
 
-
   test_integration:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_prod
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - prod mode
-          command: yarn local:prod
+          command_name: Run integration test - Chrome - prod mode
+          command: yarn sauce:prod --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
   test_integration_dev:
-    executor: node-browsers
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_dev
     steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
       - load_workspace
+      - start_sauce_connect
       - retry_command:
-          command_name: Run integration test - local Chrome - dev mode
-          command: yarn local:dev
+          command_name: Run integration test - Chrome - dev mode
+          command: yarn sauce:dev --browsers chrome
           working_directory: packages/@lwc/integration-tests
 
 
