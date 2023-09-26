@@ -42,11 +42,11 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        browserVersion: '14',
+        browserVersion: '16',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
-        platformName: 'macOS 11', // Note: this must be updated when macOS releases new updates
+        platformName: 'macOS 12', // Note: this must be updated when macOS releases new updates
     },
 
     // Compat browsers
