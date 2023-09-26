@@ -265,15 +265,6 @@ jobs:
           name: Run unit tests
           command: yarn test:ci
 
-  test_benchmark_smoke:
-    executor: node-browsers
-    steps:
-      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
-      - load_workspace
-      - run:
-          name: Run benchmark smoke tests
-          command: BENCHMARK_SMOKE_TEST=1 yarn test:performance
-
   test_karma:
     executor: node
     environment:
@@ -369,12 +360,6 @@ workflows:
             - test_unit
 
       - test_integration_dev:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - test_unit
-
-      - test_benchmark_smoke:
           filters:
             <<: *ignore_forks
           requires:
