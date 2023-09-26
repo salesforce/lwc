@@ -1,5 +1,5 @@
 orbs:
-  browser-tools: circleci/browser-tools@1.4.3
+  browser-tools: circleci/browser-tools@1.4.4
 
 # Shared config
 ignore_forks: &ignore_forks
@@ -265,6 +265,18 @@ jobs:
           name: Run unit tests
           command: yarn test:ci
 
+  test_benchmark_smoke:
+    executor: node-browsers
+    steps:
+      - run: sudo apt-get update
+      - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
+          chrome-version: 116.0.5845.96
+      - browser-tools/install-browser-tools # required for selenium used by tachometer benchmark smoke tests
+      - load_workspace
+      - run:
+          name: Run benchmark smoke tests
+          command: BENCHMARK_SMOKE_TEST=1 yarn test:performance
+
   test_karma:
     executor: node
     environment:
@@ -310,6 +322,28 @@ jobs:
           command: yarn coverage
           working_directory: packages/@lwc/integration-karma
 
+
+  test_integration:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
+      - load_workspace
+      - retry_command:
+          command_name: Run integration test - local Chrome - prod mode
+          command: yarn local:prod
+          working_directory: packages/@lwc/integration-tests
+
+  test_integration_dev:
+    executor: node-browsers
+    steps:
+      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
+      - load_workspace
+      - retry_command:
+          command_name: Run integration test - local Chrome - dev mode
+          command: yarn local:dev
+          working_directory: packages/@lwc/integration-tests
+
+
 # Workflows definition
 workflows:
   version: 2
@@ -326,6 +360,24 @@ workflows:
             - build
 
       - test_karma:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_integration:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_integration_dev:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_unit
+
+      - test_benchmark_smoke:
           filters:
             <<: *ignore_forks
           requires:
@@ -358,3 +410,19 @@ workflows:
           requires:
             - build
             - hold
+
+      - test_integration:
+          # lwc-sauce-labs context not needed due to using local chrome
+          filters:
+            <<: *only_forks
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_dev:
+          # lwc-sauce-labs context not needed due to using local chrome
+          filters:
+            <<: *only_forks
+          requires:
+            - test_unit
+            - test_karma
