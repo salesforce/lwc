@@ -1,5 +1,5 @@
 orbs:
-  browser-tools: circleci/browser-tools@1.4.3
+  browser-tools: circleci/browser-tools@1.4.6
 
 # Shared config
 ignore_forks: &ignore_forks
