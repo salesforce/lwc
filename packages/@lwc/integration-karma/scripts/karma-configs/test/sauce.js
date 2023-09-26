@@ -42,7 +42,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        browserVersion: '16',
+        browserVersion: 'latest',
         compat: false,
         nativeShadowCompatible: true,
         test_hydration: true,
