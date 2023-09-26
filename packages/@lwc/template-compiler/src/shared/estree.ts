@@ -193,6 +193,13 @@ export function property(
     };
 }
 
+export function spreadElement(argument: t.Expression): t.SpreadElement {
+    return {
+        type: 'SpreadElement',
+        argument,
+    };
+}
+
 export function assignmentProperty(
     key: t.AssignmentProperty['key'],
     value: t.AssignmentProperty['value'],
