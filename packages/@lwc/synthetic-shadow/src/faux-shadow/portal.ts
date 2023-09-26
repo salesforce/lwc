@@ -45,7 +45,9 @@ function adoptChildNode(
     setShadowRootResolver(node, fn);
     if (node instanceof Element) {
         setShadowToken(node, shadowToken);
-        setLegacyShadowToken(node, legacyShadowToken);
+        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+            setLegacyShadowToken(node, legacyShadowToken);
+        }
 
         if (isSyntheticShadowHost(node)) {
             // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
