@@ -7,7 +7,11 @@ import Sharing2 from 'x/sharing2';
 
 // This test makes no sense for browsers that don't support constructable stylesheets
 // or for synthetic shadow
-if (process.env.NATIVE_SHADOW && document.adoptedStyleSheets) {
+if (
+    process.env.NATIVE_SHADOW &&
+    document.adoptedStyleSheets &&
+    Object.getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length').writable
+) {
     describe('stylesheets', () => {
         it('re-uses constructable stylesheets for instances of the same component', () => {
             const elm1 = createElement('x-component', { is: Component });
