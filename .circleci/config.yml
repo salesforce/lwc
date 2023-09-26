@@ -310,28 +310,6 @@ jobs:
           command: yarn coverage
           working_directory: packages/@lwc/integration-karma
 
-
-  test_integration:
-    executor: node-browsers
-    steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
-      - load_workspace
-      - retry_command:
-          command_name: Run integration test - local Chrome - prod mode
-          command: yarn local:prod
-          working_directory: packages/@lwc/integration-tests
-
-  test_integration_dev:
-    executor: node-browsers
-    steps:
-      - browser-tools/install-browser-tools # install local chrome rather than using saucelabs
-      - load_workspace
-      - retry_command:
-          command_name: Run integration test - local Chrome - dev mode
-          command: yarn local:dev
-          working_directory: packages/@lwc/integration-tests
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -348,18 +326,6 @@ workflows:
             - build
 
       - test_karma:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - test_unit
-
-      - test_integration:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - test_unit
-
-      - test_integration_dev:
           filters:
             <<: *ignore_forks
           requires:
