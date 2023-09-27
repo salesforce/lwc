@@ -115,3 +115,6 @@ afterAll(function () {
 
     throwIfConsoleCalled();
 });
+
+// The default of 5000ms seems to get surpassed frequently in Safari in SauceLabs
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
