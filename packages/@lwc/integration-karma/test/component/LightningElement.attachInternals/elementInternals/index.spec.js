@@ -3,7 +3,7 @@ import { ariaProperties, ariaAttributes } from 'test-utils';
 
 import ElementInternal from 'ei/component';
 
-if (process.env.NATIVE_SHADOW && process.env.ELEMENT_INTERNALS_DEFINED) {
+if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
     let elm;
     beforeEach(() => {
         elm = createElement('ei-component', { is: ElementInternal });

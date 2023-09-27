@@ -216,7 +216,7 @@ export function HTMLBridgeElementFactory(
     descriptors.formAssociated = {
         get() {
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
                 );
             }

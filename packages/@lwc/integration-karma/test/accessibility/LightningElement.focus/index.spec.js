@@ -80,8 +80,29 @@ describe('LightningElement.focus', () => {
             expect(elm.shadowRoot.activeElement).toBeNull();
         });
 
-        // TODO [#2566]: Firefox behaves differently from Chrome/Safari in this test
-        if (!(process.env.NATIVE_SHADOW && delegatesFocus)) {
+        // TODO [#3724]: There's a bug in Safari that causes non-focusable custom elements
+        // to be focusable when formAssociated=true.
+        // Note in Chrome and Firefox the behavior is the same, document.activeElement does not point to the
+        // custom element but to the <body>
+        const customElementFocusableWhenFormAssociated = () => {
+            if (!customElements.get('safari-focus-bug')) {
+                customElements.define(
+                    'safari-focus-bug',
+                    class SafariFocusBug extends HTMLElement {
+                        static formAssociated = true;
+                    }
+                );
+            }
+            const elm = document.createElement('safari-focus-bug');
+            document.body.appendChild(elm);
+            elm.focus();
+            return document.activeElement === elm;
+        };
+
+        if (
+            !(process.env.NATIVE_SHADOW && delegatesFocus) &&
+            !customElementFocusableWhenFormAssociated()
+        ) {
             it(`should not move focus if an internal element is already focused ${category}`, () => {
                 const elm = createElement('x-focus', { is: Ctor });
                 document.body.appendChild(elm);

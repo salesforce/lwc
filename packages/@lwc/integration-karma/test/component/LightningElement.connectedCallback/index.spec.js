@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { customElementConnectedErrorListener } from 'test-utils';
+import { customElementCallbackReactionErrorListener } from 'test-utils';
 
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
@@ -42,7 +42,7 @@ testConnectSlot('Node.replaceChild', (elm) => {
 it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-connected-callback-throw', { is: ConnectedCallbackThrow });
 
-    const error = customElementConnectedErrorListener(() => {
+    const error = customElementCallbackReactionErrorListener(() => {
         document.body.appendChild(elm);
     });
 

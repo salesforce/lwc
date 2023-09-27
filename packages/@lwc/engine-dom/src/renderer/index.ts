@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, isNull, isUndefined, attachInternalsFunc } from '@lwc/shared';
+import { assert, isNull, isUndefined } from '@lwc/shared';
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
@@ -196,6 +196,16 @@ function getTagName(elm: Element): string {
 function attachInternals(elm: HTMLElement): ElementInternals {
     return attachInternalsFunc.call(elm);
 }
+
+// Use the attachInternals method from HTMLElement.prototype because access to it is removed
+// in HTMLBridgeElement, ie: elm.attachInternals is undefined.
+// Additionally, cache the attachInternals method to protect against 3rd party monkey-patching.
+const attachInternalsFunc =
+    typeof ElementInternals !== 'undefined'
+        ? HTMLElement.prototype.attachInternals
+        : () => {
+              throw new Error('attachInternals API is not supported in this browser environment.');
+          };
 
 export { registerContextConsumer, registerContextProvider } from './context';
 

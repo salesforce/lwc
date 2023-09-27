@@ -18,7 +18,6 @@ import {
     defineProperties,
     defineProperty,
     freeze,
-    isFalse,
     isFunction,
     isNull,
     isObject,
@@ -26,7 +25,6 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
-    supportsElementInternals,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
@@ -473,11 +471,6 @@ LightningElement.prototype = {
             elm,
             renderer: { attachInternals },
         } = vm;
-
-        if (isFalse(supportsElementInternals)) {
-            // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
-            throw new Error('attachInternals API is not supported in this browser environment.');
-        }
 
         if (vm.shadowMode === ShadowMode.Synthetic) {
             throw new Error(

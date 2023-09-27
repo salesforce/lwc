@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logError, logWarn, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -852,28 +852,25 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
-    if (!process.env.IS_BROWSER) {
-        return;
-    }
-
     const {
         renderMode,
         shadowMode,
         def: { formAssociated },
     } = vm;
 
+    // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
+    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+            );
+        }
+        return;
+    }
+
     if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
         throw new Error(
             'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-        );
-    }
-
-    // Technically the UpgradableConstructor always sets `static formAssociated` to true but we need to verify that any LWCs
-    // using FACE callbacks also set this value. This is because we plan to remove the UpgradableConstructor in the future and
-    // invoke the LWC constructor directly.
-    if (isUndefined(formAssociated)) {
-        throw new Error(
-            `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
         );
     }
 
