@@ -39,12 +39,12 @@ describe('global HTML Properties', () => {
         document.body.appendChild(elm);
         const cmp = elm.componentInstance;
         expect(cmp.getAttribute('tabindex')).toBe('0');
-    }),
-        it('should not throw when accessing attribute in root elements', () => {
-            const elm = createElement('x-foo', { is: Test });
-            document.body.appendChild(elm);
-            elm.setAttribute('tabindex', 1);
-        });
+    });
+    it('should not throw when accessing attribute in root elements', () => {
+        const elm = createElement('x-foo', { is: Test });
+        document.body.appendChild(elm);
+        elm.setAttribute('tabindex', 1);
+    });
 
     it('should delete existing attribute prior rendering', () => {
         const elm = createElement('x-foo', { is: Test });

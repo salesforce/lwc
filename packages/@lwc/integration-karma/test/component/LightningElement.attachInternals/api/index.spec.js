@@ -60,13 +60,18 @@ if (typeof ElementInternals !== 'undefined') {
         attachInternalsSanityTest(LightDomCmp);
     });
 } else {
-    it('should throw an error when used with unsupported browser environments', () => {
-        const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
-        testConnectedCallbackError(
-            elm,
-            'attachInternals API is not supported in this browser environment.'
-        );
-    });
+    // Because of the order error messages are thrown, this error only appears when synthetic shadow
+    // is disabled. Otherwise, 'attachInternals API is not supported in light DOM or synthetic shadow.'
+    // is thrown instead.
+    if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
+        it('should throw an error when used with unsupported browser environments', () => {
+            const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
+            testConnectedCallbackError(
+                elm,
+                'attachInternals API is not supported in this browser environment.'
+            );
+        });
+    }
 }
 
 it('should not be callable outside a component', () => {

@@ -9,7 +9,7 @@ import { lwcRuntimeFlags } from '../index';
 
 describe('lwcRuntimeFlags', () => {
     it('known flags default to undefined', () => {
-        expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toBeUndefined();
+        expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toBeUndefined();
     });
 
     it('unknown flags default to undefined', () => {
