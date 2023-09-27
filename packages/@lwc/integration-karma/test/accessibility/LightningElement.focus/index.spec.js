@@ -93,10 +93,16 @@ describe('LightningElement.focus', () => {
                     }
                 );
             }
+            // Reset focus
+            document.body.focus();
+            // Create CE and focus it
             const elm = document.createElement('safari-focus-bug');
             document.body.appendChild(elm);
             elm.focus();
-            return document.activeElement === elm;
+            // Verify if bug exists
+            const isCEFocused = document.activeElement === elm;
+            document.body.removeChild(elm);
+            return isCEFocused;
         };
 
         if (
