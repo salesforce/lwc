@@ -4,4 +4,6 @@
     <span lwc:spread={spanProps}>Hello</span>
     <x-cmp lwc:dynamic={dynamicCtor} lwc:spread={dynamicProps}></x-cmp>
     <lwc:component data-id="lwc-component" lwc:is={dynamicCtor} lwc:spread={dynamicProps}></lwc:component>
+    <x-child class="x-child-tracked" lwc:spread={trackedProps}></x-child>
+    <div class="div-innerhtml" lwc:dom="manual" lwc:spread={innerHTMLProps} lwc:inner-html={innerHTML}></div>
 </template>

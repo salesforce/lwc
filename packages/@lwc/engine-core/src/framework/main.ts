@@ -58,7 +58,6 @@ export type {
 
 // Public APIs -------------------------------------------------------------------------------------
 export { LightningElement } from './base-lightning-element';
-export { register } from './services';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';

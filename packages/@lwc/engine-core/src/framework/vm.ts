@@ -27,7 +27,6 @@ import { logError, logWarnOnce } from '../shared/logger';
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
-import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
@@ -97,6 +96,13 @@ export interface Context {
     hasTokenInClass: boolean | undefined;
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
+    /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken: string | undefined;
+    /** True if a legacyStylesheetToken was added to the host class */
+    hasLegacyTokenInClass: boolean | undefined;
+    /** True if a legacyStylesheetToken was added to the host attributes */
+    hasLegacyTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
@@ -321,6 +327,9 @@ export function createVM<HostNode, HostElement>(
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
+            legacyStylesheetToken: undefined,
+            hasLegacyTokenInClass: undefined,
+            hasLegacyTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNodes: null,
             tplCache: EmptyObject,
@@ -576,11 +585,6 @@ export function runRenderedCallback(vm: VM) {
         return;
     }
 
-    const { rendered } = Services;
-    if (rendered) {
-        invokeServiceHook(vm, rendered);
-    }
-
     if (!isUndefined(renderedCallback)) {
         logOperationStart(OperationId.RenderedCallback, vm);
         invokeComponentCallback(vm, renderedCallback);
@@ -631,11 +635,6 @@ export function runConnectedCallback(vm: VM) {
         return; // nothing to do since it was already connected
     }
     vm.state = VMState.connected;
-    // reporting connection
-    const { connected } = Services;
-    if (connected) {
-        invokeServiceHook(vm, connected);
-    }
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
@@ -665,11 +664,6 @@ function runDisconnectedCallback(vm: VM) {
         vm.isDirty = true;
     }
     vm.state = VMState.disconnected;
-    // reporting disconnection
-    const { disconnected } = Services;
-    if (disconnected) {
-        invokeServiceHook(vm, disconnected);
-    }
     if (hasWireAdapters(vm)) {
         disconnectWireAdapters(vm);
     }
