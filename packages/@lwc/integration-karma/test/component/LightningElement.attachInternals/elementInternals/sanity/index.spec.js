@@ -24,6 +24,8 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
         // Firefox does not support ARIAMixin inside ElementInternals.
         // Check to see if ARIAMixin value is defined on ElementInternals before
         // testing accessibility.
+        // #TODO[3693]: Firefox is shipping ARIAMixin support in the nightly distribution, remove this check
+        // once support has officially been released.
         if (Object.prototype.hasOwnProperty.call(window.ElementInternals.prototype, 'ariaAtomic')) {
             describe('accessibility', () => {
                 it('should be able to set ARIAMixin properties on ElementInternals', () => {

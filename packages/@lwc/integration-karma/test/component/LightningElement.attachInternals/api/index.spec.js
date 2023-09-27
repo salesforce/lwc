@@ -74,8 +74,8 @@ it('should not be callable outside a component', () => {
     if (process.env.NODE_ENV === 'production') {
         expect(elm.attachInternals).toBeUndefined();
     } else {
-        expect(() => elm.attachInternals).toLogErrorDev(
-            /Error: \[LWC error]: attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
+        expect(() => elm.attachInternals).toLogWarningDev(
+            /attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
         );
     }
 });

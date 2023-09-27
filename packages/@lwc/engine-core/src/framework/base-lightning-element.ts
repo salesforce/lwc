@@ -314,6 +314,16 @@ const formAssociatedProps = new Set([
     'labels',
 ]);
 
+// Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
+function assertFormAssociatedPropertySet(propertyKey: string, isFormAssociated: boolean) {
+    if (formAssociatedProps.has(propertyKey) && !isFormAssociated) {
+        //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+        throw new DOMException(
+            `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
+        );
+    }
+}
+
 // Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
 // This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
 // ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
@@ -325,23 +335,13 @@ function createElementInternalsProxy(
 ) {
     const elementInternalsProxy = new Proxy(elementInternals, {
         set(target, propertyKey, newValue) {
-            const key = typeof propertyKey === 'symbol' ? propertyKey.description : propertyKey;
-            if (key && formAssociatedProps.has(key) && !isFormAssociated) {
-                //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
-                throw new DOMException(
-                    `Failed to execute '${key}' on 'ElementInternals': The target element is not a form-associated custom element.`
-                );
-            }
+            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
+            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
             return Reflect.set(target, propertyKey, newValue);
         },
         get(target, propertyKey) {
-            const key = typeof propertyKey === 'symbol' ? propertyKey.description : propertyKey;
-            if (key && formAssociatedProps.has(key) && !isFormAssociated) {
-                //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
-                throw new DOMException(
-                    `Failed to execute '${key}' on 'ElementInternals': The target element is not a form-associated custom element.`
-                );
-            }
+            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
+            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
             const internalsPropertyValue = Reflect.get(target, propertyKey);
             // Bind the property value to the target so that function invocations are called with the
             // correct context ('this' value).

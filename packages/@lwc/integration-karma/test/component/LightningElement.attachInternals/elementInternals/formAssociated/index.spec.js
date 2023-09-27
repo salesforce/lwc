@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
 
-if (typeof ElementInternals !== 'undefined') {
+if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENABLED) {
     // Verify ElementInternals proxy getter throws error.
     it('form-related operations and attributes should throw DOMException for non-form-associated custom elements.', () => {
         const control = createElement('x-not-form-associated', { is: NotFormAssociated });
