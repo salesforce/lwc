@@ -114,7 +114,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         if (
             !isUndefined(ctorShadowSupportMode) &&
             ctorShadowSupportMode !== ShadowSupportMode.Any &&
-            ctorShadowSupportMode !== ShadowSupportMode.Default
+            ctorShadowSupportMode !== ShadowSupportMode.Default &&
+            ctorShadowSupportMode !== ShadowSupportMode.Native
         ) {
             logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`

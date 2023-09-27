@@ -83,6 +83,7 @@ export const enum ShadowMode {
 export const enum ShadowSupportMode {
     Any = 'any',
     Default = 'reset',
+    Native = 'native',
 }
 
 export const enum LwcDomMode {
@@ -459,7 +460,10 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
 
     let shadowMode;
     if (isSyntheticShadowDefined) {
-        if (def.renderMode === RenderMode.Light) {
+        if (
+            def.renderMode === RenderMode.Light ||
+            def.shadowSupportMode === ShadowSupportMode.Native
+        ) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;

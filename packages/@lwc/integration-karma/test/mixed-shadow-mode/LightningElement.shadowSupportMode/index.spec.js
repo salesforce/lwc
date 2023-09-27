@@ -3,6 +3,7 @@ import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-
 
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
+import NativeOnly from 'x/native';
 
 describe('shadowSupportMode static property', () => {
     it('should log error for invalid values', () => {
@@ -29,6 +30,29 @@ describe('ENABLE_MIXED_SHADOW_MODE', () => {
 
     it('should enable mixed shadow mode', () => {
         const elm = createElement('x-valid', { is: Valid });
+        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
+            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        } else {
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        }
+    });
+
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+    });
+});
+
+describe('ENABLE_NATIVE_SHADOW_MODE', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+    });
+
+    it('should be configured as "any" (sanity)', () => {
+        expect(NativeOnly.shadowSupportMode === 'native').toBeTrue();
+    });
+
+    it('should enable mixed shadow mode', () => {
+        const elm = createElement('x-native-only', { is: NativeOnly });
         if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
             expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
         } else {
