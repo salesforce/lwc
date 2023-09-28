@@ -96,6 +96,13 @@ export interface Context {
     hasTokenInClass: boolean | undefined;
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
+    /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken: string | undefined;
+    /** True if a legacyStylesheetToken was added to the host class */
+    hasLegacyTokenInClass: boolean | undefined;
+    /** True if a legacyStylesheetToken was added to the host attributes */
+    hasLegacyTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
@@ -320,6 +327,9 @@ export function createVM<HostNode, HostElement>(
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
+            legacyStylesheetToken: undefined,
+            hasLegacyTokenInClass: undefined,
+            hasLegacyTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNodes: null,
             tplCache: EmptyObject,
