@@ -1,1 +1,3 @@
 yarn lint-staged
+yarn test
+yarn test:karma
