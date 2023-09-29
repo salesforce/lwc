@@ -13,7 +13,7 @@ it('throws when not overridden', () => {
         const elm = createElement('x-inner-html', { is: XInnerHtml });
         elm.content = ACTUAL_CONTENT;
         document.body.appendChild(elm);
-    }).toThrowConnectedError(Error, /sanitizeHtmlContent hook must be implemented/);
+    }).toThrowCallbackReactionError(Error, /sanitizeHtmlContent hook must be implemented/);
 });
 
 function setSanitizeHtmlContentHookForTest(impl) {

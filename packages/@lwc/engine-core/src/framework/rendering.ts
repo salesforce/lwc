@@ -39,6 +39,10 @@ import {
     RenderMode,
     rerenderVM,
     runConnectedCallback,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
     ShadowMode,
     VM,
     VMState,
@@ -319,6 +323,10 @@ function mountCustomElement(
 
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
+    let formAssociatedCallback: LifecycleCallback | undefined;
+    let formDisabledCallback: LifecycleCallback | undefined;
+    let formResetCallback: LifecycleCallback | undefined;
+    let formStateRestoreCallback: LifecycleCallback | undefined;
 
     if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
@@ -326,6 +334,18 @@ function mountCustomElement(
         };
         disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
+        };
+        formAssociatedCallback = (elm: HTMLElement) => {
+            runFormAssociatedCallback(elm);
+        };
+        formDisabledCallback = (elm: HTMLElement) => {
+            runFormDisabledCallback(elm);
+        };
+        formResetCallback = (elm: HTMLElement) => {
+            runFormResetCallback(elm);
+        };
+        formStateRestoreCallback = (elm: HTMLElement) => {
+            runFormStateRestoreCallback(elm);
         };
     }
 
@@ -338,7 +358,11 @@ function mountCustomElement(
         normalizedTagname,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback
     );
 
     vnode.elm = elm;
