@@ -16,7 +16,7 @@ require('dotenv').config({
 
 const baseConfig = require('./wdio.conf.js');
 
-// #TODO[3754]: Only Chrome on Windows platform currently works, all other browser tests fail.
+// #TODO[3754]: Only Chrome and Edge on Windows platform currently works, all other browser tests fail.
 // Need to investigate why sauce labs fails for all other platforms.
 const browsers = [
     // Note that headless Chrome also needs to be updated in wdio.conf.js for non-SauceLabs runs
