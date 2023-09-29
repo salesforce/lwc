@@ -1,6 +1,5 @@
 orbs:
   browser-tools: circleci/browser-tools@1.4.4
-  saucectl: saucelabs/saucectl-run@2.0.0
 
 # Shared config
 ignore_forks: &ignore_forks
@@ -281,7 +280,7 @@ jobs:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
     steps:
       - load_workspace
-      - saucectl/saucectl-run
+      - start_sauce_connect
       - run_karma
       - run_karma:
           disable_synthetic: true
@@ -326,7 +325,7 @@ jobs:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_prod
     steps:
       - load_workspace
-      - saucectl/saucectl-run
+      - start_sauce_connect
       - retry_command:
           command_name: Run integration test - Chrome - prod mode
           command: yarn sauce:prod --browsers chrome
@@ -338,7 +337,7 @@ jobs:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_integration_dev
     steps:
       - load_workspace
-      - saucectl/saucectl-run
+      - start_sauce_connect
       - retry_command:
           command_name: Run integration test - Chrome - dev mode
           command: yarn sauce:dev --browsers chrome
