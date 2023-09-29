@@ -215,7 +215,7 @@ function trackMutations(tmpl: Template) {
 
 function addLegacyStylesheetTokensShim(tmpl: Template) {
     // When ENABLE_FROZEN_TEMPLATE is false, then we shim stylesheetTokens on top of stylesheetToken for anyone who
-    // is accessing the old internal API (backwards compat).
+    // is accessing the old internal API (backwards compat). Details: W-14210169
     defineProperty(tmpl, 'stylesheetTokens', {
         enumerable: true,
         configurable: true,
