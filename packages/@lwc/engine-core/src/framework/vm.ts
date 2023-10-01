@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import timsort from 'timsort';
+
 import {
     ArrayPush,
     ArraySlice,
@@ -603,7 +605,7 @@ function flushRehydrationQueue() {
             `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
-    const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
+    const vms = timsort.sort(rehydrateQueue, (a: VM, b: VM): number => a.idx - b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];
