@@ -30,41 +30,67 @@ describe('api decorator with superclasses', () => {
                         superClassVariant
                     )}${capitalize(subClassVariant)}`;
 
-                    const testElement = (elm, expectThrow) => {
-                        if (expectThrow) {
-                            expect(elm[methodName]).toBeUndefined();
-                            expect(() => {
+                    const testElement = (elm, expectUndefined, expectWarn) => {
+                        const doTest = () => {
+                            if (expectUndefined) {
+                                expect(elm[methodName]).toBeUndefined();
+                            } else {
                                 elm[methodName]();
-                            }).toThrow();
+                            }
+                        };
+
+                        if (expectWarn) {
+                            expect(() => {
+                                doTest();
+                            }).toLogWarningDev(
+                                /Add the @api annotation to the property declaration/
+                            );
                         } else {
-                            elm[methodName]();
+                            expect(() => {
+                                doTest();
+                            }).not.toLogWarningDev();
                         }
                     };
 
                     it('call on subClass', () => {
                         // TODO [#3762]: components should not "inherit" @api from their superclasses
-                        const expectThrow = ![
+                        const expectUndefined = ![
                             subClassVariant,
                             superClassVariant,
                             superSuperClassVariant,
                         ].includes('public');
+                        // TODO [#3761]: components that don't extend LightningElement should warn for missing @api
+                        // These cases are very inconsistent, but this is the current behavior
+                        const expectWarn =
+                            (subClassVariant === 'omit' &&
+                                superSuperClassVariant === 'private' &&
+                                superClassVariant !== 'public') ||
+                            (subClassVariant === 'private' &&
+                                superClassVariant !== 'public' &&
+                                superSuperClassVariant === 'private');
 
-                        testElement(subClass, expectThrow);
+                        testElement(subClass, expectUndefined, expectWarn);
                     });
 
                     it('call on superClass', () => {
                         // TODO [#3762]: components should not "inherit" @api from their superclasses
-                        const expectThrow = ![superClassVariant, superSuperClassVariant].includes(
-                            'public'
-                        );
+                        const expectUndefined = ![
+                            superClassVariant,
+                            superSuperClassVariant,
+                        ].includes('public');
+                        // TODO [#3761]: components that don't extend LightningElement should warn for missing @api
+                        // These cases are very inconsistent, but this is the current behavior
+                        const expectWarn =
+                            superSuperClassVariant === 'private' && superClassVariant !== 'public';
 
-                        testElement(superClass, expectThrow);
+                        testElement(superClass, expectUndefined, expectWarn);
                     });
 
                     it('call on superSuperClass', () => {
-                        const expectThrow = superSuperClassVariant !== 'public';
+                        const expectUndefined = superSuperClassVariant !== 'public';
+                        const expectWarn = superSuperClassVariant === 'private';
 
-                        testElement(superSuperClass, expectThrow);
+                        testElement(superSuperClass, expectUndefined, expectWarn);
                     });
                 });
             }
