@@ -51,7 +51,7 @@ describe('ENABLE_NATIVE_SHADOW_MODE', () => {
         expect(NativeOnly.shadowSupportMode === 'native').toBeTrue();
     });
 
-    it('should enable mixed shadow mode', () => {
+    it('should render native shadow root', () => {
         const elm = createElement('x-native-only', { is: NativeOnly });
         if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
             expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
