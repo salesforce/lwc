@@ -47,7 +47,7 @@ describe('ENABLE_NATIVE_SHADOW_MODE', () => {
         setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
 
-    it('should be configured as "any" (sanity)', () => {
+    it('should be configured as "native" (sanity)', () => {
         expect(NativeOnly.shadowSupportMode === 'native').toBeTrue();
     });
 
