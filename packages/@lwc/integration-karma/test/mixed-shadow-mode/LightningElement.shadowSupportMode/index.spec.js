@@ -43,10 +43,6 @@ describe('ENABLE_MIXED_SHADOW_MODE', () => {
 });
 
 describe('ENABLE_NATIVE_SHADOW_MODE', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-    });
-
     it('should be configured as "native" (sanity)', () => {
         expect(NativeOnly.shadowSupportMode === 'native').toBeTrue();
     });
@@ -56,11 +52,7 @@ describe('ENABLE_NATIVE_SHADOW_MODE', () => {
         if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
             expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
         } else {
-            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toThrow('Native shadow is not supported on this enviroment');
         }
-    });
-
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
     });
 });
