@@ -117,4 +117,4 @@ afterAll(function () {
 });
 
 // The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;

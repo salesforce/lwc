@@ -525,7 +525,8 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     const { data, owner } = vnode;
     let { className, classMap } = data;
     const { getProperty, getClassList, getAttribute } = renderer;
-    const scopedToken = getScopeTokenClass(owner);
+    // we don't care about legacy for hydration. it's a new use case
+    const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
     const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,

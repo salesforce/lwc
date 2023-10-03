@@ -1,5 +1,5 @@
 import { createElement, registerTemplate } from 'lwc';
-import { customElementConnectedErrorListener } from 'test-utils';
+import { customElementCallbackReactionErrorListener } from 'test-utils';
 
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
@@ -13,7 +13,7 @@ function testInvalidTemplate(type, template) {
         // Once the error is fixed, we should add the error message to the assertion.
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowConnectedError();
+        }).toThrowCallbackReactionError();
     });
 }
 
@@ -31,7 +31,7 @@ it(`logs an error if returns an invalid template`, () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowConnectedError(
+    }).toThrowCallbackReactionError(
         Error,
         /Invalid template returned by the render\(\) method on .+\. It must return an imported template \(e\.g\.: `import html from "\.\/DynamicTemplate.html"`\), instead, it has returned: .+\./
     );
@@ -53,7 +53,7 @@ it(`logs an error if the returned compiled template is invalid`, () => {
 it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-render-throw', { is: RenderThrow });
 
-    const error = customElementConnectedErrorListener(() => {
+    const error = customElementCallbackReactionErrorListener(() => {
         document.body.appendChild(elm);
     });
 

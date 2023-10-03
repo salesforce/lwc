@@ -15,6 +15,10 @@ export {
     disconnectRootElement,
     getAssociatedVMIfPresent,
     computeShadowAndRenderMode,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
 } from './vm';
 export { createContextProviderWithRegister } from './wiring';
 

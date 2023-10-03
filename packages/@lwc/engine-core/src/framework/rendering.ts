@@ -39,6 +39,10 @@ import {
     RenderMode,
     rerenderVM,
     runConnectedCallback,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
     ShadowMode,
     VM,
     VMState,
@@ -319,6 +323,10 @@ function mountCustomElement(
 
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
+    let formAssociatedCallback: LifecycleCallback | undefined;
+    let formDisabledCallback: LifecycleCallback | undefined;
+    let formResetCallback: LifecycleCallback | undefined;
+    let formStateRestoreCallback: LifecycleCallback | undefined;
 
     if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
@@ -326,6 +334,18 @@ function mountCustomElement(
         };
         disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
+        };
+        formAssociatedCallback = (elm: HTMLElement) => {
+            runFormAssociatedCallback(elm);
+        };
+        formDisabledCallback = (elm: HTMLElement) => {
+            runFormDisabledCallback(elm);
+        };
+        formResetCallback = (elm: HTMLElement) => {
+            runFormResetCallback(elm);
+        };
+        formStateRestoreCallback = (elm: HTMLElement) => {
+            runFormStateRestoreCallback(elm);
         };
     }
 
@@ -338,7 +358,11 @@ function mountCustomElement(
         normalizedTagname,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback
     );
 
     vnode.elm = elm;
@@ -610,19 +634,38 @@ function patchElementPropsAndAttrs(
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+    const { getClassList } = renderer;
+
     // Set the class name for `*.scoped.css` style scoping.
-    const scopeToken = getScopeTokenClass(owner);
+    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
     if (!isNull(scopeToken)) {
-        const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
     }
 
+    // TODO [#3733]: remove support for legacy scope tokens
+    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+        const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
+        if (!isNull(legacyScopeToken)) {
+            // TODO [#2762]: this dot notation with add is probably problematic
+            // probably we should have a renderer api for just the add operation
+            getClassList(elm).add(legacyScopeToken);
+        }
+    }
+
     // Set property element for synthetic shadow DOM style scoping.
     const { stylesheetToken: syntheticToken } = owner.context;
-    if (owner.shadowMode === ShadowMode.Synthetic && !isUndefined(syntheticToken)) {
-        (elm as any).$shadowToken$ = syntheticToken;
+    if (owner.shadowMode === ShadowMode.Synthetic) {
+        if (!isUndefined(syntheticToken)) {
+            (elm as any).$shadowToken$ = syntheticToken;
+        }
+        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+            const legacyToken = owner.context.legacyStylesheetToken;
+            if (!isUndefined(legacyToken)) {
+                (elm as any).$legacyShadowToken$ = legacyToken;
+            }
+        }
     }
 }
 

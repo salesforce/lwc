@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logError, logWarn, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -97,6 +97,13 @@ export interface Context {
     hasTokenInClass: boolean | undefined;
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
+    /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken: string | undefined;
+    /** True if a legacyStylesheetToken was added to the host class */
+    hasLegacyTokenInClass: boolean | undefined;
+    /** True if a legacyStylesheetToken was added to the host attributes */
+    hasLegacyTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
@@ -321,6 +328,9 @@ export function createVM<HostNode, HostElement>(
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
+            legacyStylesheetToken: undefined,
+            hasLegacyTokenInClass: undefined,
+            hasLegacyTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNodes: null,
             tplCache: EmptyObject,
@@ -846,5 +856,67 @@ export function forceRehydration(vm: VM) {
         // forcing the vm to rehydrate in the next tick
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
+    }
+}
+
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
+    const {
+        renderMode,
+        shadowMode,
+        def: { formAssociated },
+    } = vm;
+
+    // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
+    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+            );
+        }
+        return;
+    }
+
+    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+        throw new Error(
+            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+        );
+    }
+
+    invokeComponentCallback(vm, faceCb);
+}
+
+export function runFormAssociatedCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formAssociatedCallback } = vm.def;
+
+    if (!isUndefined(formAssociatedCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback);
+    }
+}
+
+export function runFormDisabledCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formDisabledCallback } = vm.def;
+
+    if (!isUndefined(formDisabledCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback);
+    }
+}
+
+export function runFormResetCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formResetCallback } = vm.def;
+
+    if (!isUndefined(formResetCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formResetCallback);
+    }
+}
+
+export function runFormStateRestoreCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formStateRestoreCallback } = vm.def;
+
+    if (!isUndefined(formStateRestoreCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
     }
 }

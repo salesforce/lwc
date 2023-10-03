@@ -24,7 +24,7 @@ import {
     isNull,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
-import { logError, logWarn } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor, HTMLElementPrototype } from './html-element';
@@ -204,10 +204,34 @@ export function HTMLBridgeElementFactory(
 
     // To avoid leaking private component details, accessing internals from outside a component is not allowed.
     descriptors.attachInternals = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
         get() {
             if (process.env.NODE_ENV !== 'production') {
-                logError(
+                logWarn(
                     'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
+    };
+
+    descriptors.formAssociated = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+                );
+            }
+        },
+        get() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
                 );
             }
         },
