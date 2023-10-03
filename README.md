@@ -20,7 +20,6 @@
   </a>
 </p>
 
-
 # Lightning Web Components Repository
 
 This repository contains the source code for the Lightning Web Components Engine and Compiler. Additionally, it contains examples, documentation, meeting notes and discussion notes for developers [contributing][contributing] or using Lightning Web Components.
