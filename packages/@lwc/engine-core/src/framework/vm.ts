@@ -461,14 +461,18 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
     let shadowMode;
     if (isSyntheticShadowDefined) {
         if (
-            def.renderMode === RenderMode.Light ||
-            def.shadowSupportMode === ShadowSupportMode.Native
+            def.renderMode === RenderMode.Light
         ) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
-            if (def.shadowSupportMode === ShadowSupportMode.Any) {
+        } else if (
+                lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
+                shadowSupportMode === ShadowSupportMode.Native
+            ) {
+            if (def.shadowSupportMode === ShadowSupportMode.Any ||
+                def.shadowSupportMode === ShadowSupportMode.Native
+            ) {
                 shadowMode = ShadowMode.Native;
             } else {
                 const shadowAncestor = getNearestShadowAncestor(owner);
