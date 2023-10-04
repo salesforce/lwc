@@ -8067,9 +8067,10 @@ karma-jasmine@^4.0.2:
   dependencies:
     jasmine-core "^3.6.0"
 
-karma-sauce-launcher@nolanlawson/karma-sauce-launcher#e171723:
+karma-sauce-launcher-fix-firefox@3.0.1:
   version "3.0.1"
-  resolved "https://codeload.github.com/nolanlawson/karma-sauce-launcher/tar.gz/e1717230230e9695610369eb4fb9afb26d34faff"
+  resolved "https://registry.yarnpkg.com/karma-sauce-launcher-fix-firefox/-/karma-sauce-launcher-fix-firefox-3.0.1.tgz#2e64d7ae4c44ce92866eb7bbed2e482d7abb3ba2"
+  integrity sha512-jPQb5hI2Vepnc1Vi6zAqcRNP2FFuJhp4a1DtRFDVt7Bk8kJNeLVIpXDsvYtS5ewQAxTdb4ZPTNrWMmkYbmhFoA==
   dependencies:
     global-agent "^2.1.12"
     saucelabs "6.2.2"

@@ -13,7 +13,7 @@
     },
     "//": {
         "karma-jasmine": "must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11",
-        "karma-sauce-launcher": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
+        "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
         "@lwc/compiler": "3.5.0",
@@ -29,7 +29,7 @@
         "karma-chrome-launcher": "^3.2.0",
         "karma-coverage": "^2.2.1",
         "karma-jasmine": "^4.0.2",
-        "karma-sauce-launcher": "nolanlawson/karma-sauce-launcher#e171723",
+        "karma-sauce-launcher-fix-firefox": "3.0.1",
         "magic-string": "^0.30.2"
     }
 }
