@@ -44,8 +44,7 @@
     "devDependencies": {
         "@lwc/aria-reflection": "3.5.0",
         "@lwc/engine-core": "3.5.0",
-        "@lwc/shared": "3.5.0",
-        "magic-string": "^0.30.2"
+        "@lwc/shared": "3.5.0"
     },
     "lwc": {
         "modules": [
