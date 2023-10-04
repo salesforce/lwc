@@ -159,14 +159,15 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         render,
     } = proto;
     const superProto = getCtorProto(Ctor);
-    const superDef =
-        superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
+    const hasCustomSuperClass = superProto !== LightningElement;
+    const superDef = hasCustomSuperClass ? getComponentInternalDef(superProto) : lightingElementDef;
     const bridge = HTMLBridgeElementFactory(
         superDef.bridge,
         keys(apiFields),
         keys(apiMethods),
         keys(observedFields),
-        proto
+        proto,
+        hasCustomSuperClass
     );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);

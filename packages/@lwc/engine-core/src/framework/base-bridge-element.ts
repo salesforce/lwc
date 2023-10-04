@@ -138,7 +138,8 @@ export function HTMLBridgeElementFactory(
     publicProperties: string[],
     methods: string[],
     observedFields: string[],
-    proto: LightningElement | null
+    proto: LightningElement | null,
+    hasCustomSuperClass: boolean
 ): HTMLElementConstructor {
     const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
@@ -150,7 +151,8 @@ export function HTMLBridgeElementFactory(
 
     // present a hint message so that developers are aware that they have not decorated property with @api
     if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(proto) && !isNull(proto)) {
+        // TODO [#3761]: enable for components that don't extend from LightningElement
+        if (!isUndefined(proto) && !isNull(proto) && !hasCustomSuperClass) {
             const nonPublicPropertiesToWarnOn = new Set(
                 [
                     // getters, setters, and methods
@@ -253,7 +255,8 @@ export const BaseBridgeElement = HTMLBridgeElementFactory(
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     [],
     [],
-    null
+    null,
+    false
 );
 
 if (process.env.IS_BROWSER) {
