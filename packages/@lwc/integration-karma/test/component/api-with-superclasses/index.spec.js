@@ -62,12 +62,9 @@ describe('api decorator with superclasses', () => {
                         // TODO [#3761]: components that don't extend LightningElement should warn for missing @api
                         // These cases are very inconsistent, but this is the current behavior
                         const expectWarn =
-                            (subClassVariant === 'omit' &&
-                                superSuperClassVariant === 'private' &&
-                                superClassVariant !== 'public') ||
-                            (subClassVariant === 'private' &&
-                                superClassVariant !== 'public' &&
-                                superSuperClassVariant === 'private');
+                            subClassVariant !== 'public' &&
+                            superClassVariant !== 'public' &&
+                            superSuperClassVariant === 'private';
 
                         testElement(subClass, expectUndefined, expectWarn);
                     });
