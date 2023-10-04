@@ -61,6 +61,8 @@ describe('api decorator with superclasses', () => {
                         ].includes('public');
                         // TODO [#3761]: components that don't extend LightningElement should warn for missing @api
                         // These cases are very inconsistent, but this is the current behavior
+                        // Basically, the warning accessor is only placed on the SuperSuperClass (because it
+                        // extends from LightningElement) and is invoked for each call to the private methods
                         const expectWarn =
                             subClassVariant !== 'public' &&
                             superClassVariant !== 'public' &&
