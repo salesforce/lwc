@@ -29,11 +29,11 @@ exports.LEGACY_SAUCE_BROWSERS = [
     {
         label: 'sl_chrome_compat',
         browserName: 'chrome',
-        version: 'latest-2',
+        browserVersion: 'latest-2',
     },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        version: '14',
+        browserVersion: '14',
     },
 ];
