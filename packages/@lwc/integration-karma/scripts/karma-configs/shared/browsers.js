@@ -35,5 +35,6 @@ exports.LEGACY_SAUCE_BROWSERS = [
         label: 'sl_safari_compat',
         browserName: 'safari',
         browserVersion: '14',
+        platformName: 'macOS 11',
     },
 ];
