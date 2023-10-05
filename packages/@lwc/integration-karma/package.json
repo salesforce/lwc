@@ -29,7 +29,6 @@
         "karma-chrome-launcher": "^3.2.0",
         "karma-coverage": "^2.2.1",
         "karma-jasmine": "^4.0.2",
-        "karma-sauce-launcher-fix-firefox": "3.0.1",
-        "magic-string": "^0.30.2"
+        "karma-sauce-launcher-fix-firefox": "3.0.1"
     }
 }
