@@ -73,6 +73,8 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+import { applyRefs } from './modules/refs';
+import { applyStaticParts } from './modules/static-parts';
 
 export function patchChildren(
     c1: VNodes,
@@ -260,7 +262,7 @@ function mountElement(
     applyDomManual(elm, vnode);
     applyElementRestrictions(elm, vnode);
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);
@@ -269,7 +271,7 @@ function mountElement(
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
+    patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
 }
 
@@ -296,8 +298,7 @@ function mountStatic(
     }
 
     insertNode(elm, parent, anchor, renderer);
-    // Event listeners are only applied once when mounting, so they are allowed for static vnodes
-    applyEventListeners(vnode, renderer);
+    applyStaticParts(elm, vnode, renderer);
 }
 
 function mountCustomElement(
@@ -375,7 +376,7 @@ function mountCustomElement(
         allocateChildren(vnode, vm);
     }
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
@@ -421,7 +422,7 @@ function patchCustomElement(
         const elm = (n2.elm = n1.elm!);
         const vm = (n2.vm = n1.vm);
 
-        patchElementPropsAndAttrs(n1, n2, renderer);
+        patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
         if (!isUndefined(vm)) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
@@ -613,7 +614,7 @@ export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI
     }
 }
 
-function patchElementPropsAndAttrs(
+function patchElementPropsAndAttrsAndRefs(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
     renderer: RendererAPI
@@ -631,6 +632,9 @@ function patchElementPropsAndAttrs(
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
+
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
+    applyRefs(vnode, vnode.owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

@@ -2,7 +2,7 @@
     "files": [
         {
             "path": "packages/@lwc/engine-dom/dist/index.js",
-            "maxSize": "21.2KB"
+            "maxSize": "22KB"
         },
         {
             "path": "packages/@lwc/synthetic-shadow/dist/index.js",
