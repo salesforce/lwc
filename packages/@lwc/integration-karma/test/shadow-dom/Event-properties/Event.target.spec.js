@@ -78,7 +78,7 @@ describe('Event.target', () => {
         describe('legacy behavior', () => {
             beforeAll(() => {
                 // Suppress error logging
-                spyOn(console, 'error');
+                spyOn(console, 'warn');
             });
 
             it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', (done) => {

@@ -124,7 +124,6 @@ export interface VNodeData {
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
     readonly renderer?: RendererAPI;
-    readonly spread?: Readonly<Record<string, any>>;
 }
 
 export interface VElementData extends VNodeData {

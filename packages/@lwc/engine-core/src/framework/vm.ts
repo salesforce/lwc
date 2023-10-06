@@ -22,12 +22,11 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logError, logWarn, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
-import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
@@ -84,6 +83,7 @@ export const enum ShadowMode {
 export const enum ShadowSupportMode {
     Any = 'any',
     Default = 'reset',
+    Native = 'native',
 }
 
 export const enum LwcDomMode {
@@ -97,6 +97,13 @@ export interface Context {
     hasTokenInClass: boolean | undefined;
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
+    /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken: string | undefined;
+    /** True if a legacyStylesheetToken was added to the host class */
+    hasLegacyTokenInClass: boolean | undefined;
+    /** True if a legacyStylesheetToken was added to the host attributes */
+    hasLegacyTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
@@ -321,6 +328,9 @@ export function createVM<HostNode, HostElement>(
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
+            legacyStylesheetToken: undefined,
+            hasLegacyTokenInClass: undefined,
+            hasLegacyTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNodes: null,
             tplCache: EmptyObject,
@@ -464,8 +474,14 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
-            if (def.shadowSupportMode === ShadowSupportMode.Any) {
+        } else if (
+            lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
+            def.shadowSupportMode === ShadowSupportMode.Native
+        ) {
+            if (
+                def.shadowSupportMode === ShadowSupportMode.Any ||
+                def.shadowSupportMode === ShadowSupportMode.Native
+            ) {
                 shadowMode = ShadowMode.Native;
             } else {
                 const shadowAncestor = getNearestShadowAncestor(owner);
@@ -576,11 +592,6 @@ export function runRenderedCallback(vm: VM) {
         return;
     }
 
-    const { rendered } = Services;
-    if (rendered) {
-        invokeServiceHook(vm, rendered);
-    }
-
     if (!isUndefined(renderedCallback)) {
         logOperationStart(OperationId.RenderedCallback, vm);
         invokeComponentCallback(vm, renderedCallback);
@@ -631,11 +642,6 @@ export function runConnectedCallback(vm: VM) {
         return; // nothing to do since it was already connected
     }
     vm.state = VMState.connected;
-    // reporting connection
-    const { connected } = Services;
-    if (connected) {
-        invokeServiceHook(vm, connected);
-    }
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
@@ -665,11 +671,6 @@ function runDisconnectedCallback(vm: VM) {
         vm.isDirty = true;
     }
     vm.state = VMState.disconnected;
-    // reporting disconnection
-    const { disconnected } = Services;
-    if (disconnected) {
-        invokeServiceHook(vm, disconnected);
-    }
     if (hasWireAdapters(vm)) {
         disconnectWireAdapters(vm);
     }
@@ -854,5 +855,67 @@ export function forceRehydration(vm: VM) {
         // forcing the vm to rehydrate in the next tick
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
+    }
+}
+
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
+    const {
+        renderMode,
+        shadowMode,
+        def: { formAssociated },
+    } = vm;
+
+    // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
+    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+            );
+        }
+        return;
+    }
+
+    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+        throw new Error(
+            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+        );
+    }
+
+    invokeComponentCallback(vm, faceCb);
+}
+
+export function runFormAssociatedCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formAssociatedCallback } = vm.def;
+
+    if (!isUndefined(formAssociatedCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback);
+    }
+}
+
+export function runFormDisabledCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formDisabledCallback } = vm.def;
+
+    if (!isUndefined(formDisabledCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback);
+    }
+}
+
+export function runFormResetCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formResetCallback } = vm.def;
+
+    if (!isUndefined(formResetCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formResetCallback);
+    }
+}
+
+export function runFormStateRestoreCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formStateRestoreCallback } = vm.def;
+
+    if (!isUndefined(formStateRestoreCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
     }
 }

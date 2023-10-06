@@ -595,6 +595,12 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(codeGen.genRef(ref));
         }
 
+        // Properties: lwc:spread directive
+        if (spread) {
+            // spread goes last, so it can be used to override any other properties
+            propsObj.properties.push(t.spreadElement(codeGen.bindExpression(spread.value)));
+            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
+        }
         if (propsObj.properties.length) {
             data.push(t.property(t.identifier('props'), propsObj));
         }
@@ -608,12 +614,6 @@ function transform(codeGen: CodeGen): t.Expression {
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
-        }
-
-        // Spread
-        if (spread) {
-            data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
-            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
         }
 
         // Key property on VNode

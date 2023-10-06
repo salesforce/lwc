@@ -12,7 +12,6 @@ import './polyfills';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
-    register,
     api,
     track,
     wire,

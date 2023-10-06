@@ -66,7 +66,11 @@ export interface RendererAPI {
         tagName: string,
         upgradeCallback: LifecycleCallback,
         connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback
+        disconnectedCallback?: LifecycleCallback,
+        formAssociatedCallback?: LifecycleCallback,
+        formDisabledCallback?: LifecycleCallback,
+        formResetCallback?: LifecycleCallback,
+        formStateRestoreCallback?: LifecycleCallback
     ) => E;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (

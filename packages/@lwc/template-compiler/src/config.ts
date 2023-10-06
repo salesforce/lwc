@@ -166,8 +166,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: true,
-        apiVersion,
         ...config,
+        apiVersion, // overrides the config apiVersion
         ...{ customRendererConfig },
         ...{ instrumentation },
     };
