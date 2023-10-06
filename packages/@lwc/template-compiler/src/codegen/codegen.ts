@@ -579,11 +579,10 @@ export default class CodeGen {
                     }
                 }
 
-                // For depth-first traversal, prepend to the stack in reverse order
-                for (let i = node.children.length - 1; i >= 0; i--) {
-                    const childNode = node.children[i];
-                    stack.unshift(childNode);
-                }
+                // For depth-first traversal, children must be preprended in order, so that they are processed before
+                // siblings. Note that this is consistent with the order used in the diffing algo as well as
+                // `traverseAndSetElements` in @lwc/engine-core.
+                stack.unshift(...node.children);
             }
         }
 
