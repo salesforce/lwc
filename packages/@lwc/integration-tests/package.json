@@ -11,7 +11,9 @@
         "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.local.conf.js",
         "sauce": "yarn sauce:prod",
         "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js"
+        "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
+        "sauce:dev:ci": "MODE=dev yarn build:dev && MODE=dev ../../../scripts/ci/retry.sh wdio ./scripts/wdio.sauce.conf.js",
+        "sauce:prod:ci": "MODE=prod yarn build:prod && MODE=prod ../../../scripts/ci/retry.sh wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "3.6.0",

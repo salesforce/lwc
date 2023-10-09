@@ -23,6 +23,10 @@
         "sauce": {
             "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
             "dependsOn": ["^build"]
+        },
+        "sauce:ci": {
+            "//": "Build @lwc/integration dependencies when invoking the test:integration script on the root package.json.",
+            "dependsOn": ["^build"]
         }
     },
     "affected": {

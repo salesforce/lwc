@@ -21,6 +21,7 @@
         "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
         "test:ci": "yarn test --no-cache --coverage --runInBand",
         "test:karma": "nx test @lwc/integration-karma",
+        "test:karma:ci": "nx sauce:ci @lwc/integration-karma",
         "test:integration": "nx sauce @lwc/integration-tests",
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",

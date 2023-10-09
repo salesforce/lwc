@@ -1,0 +1,62 @@
+name: Run Karma integration tests
+
+on:
+  push:
+    branches:
+      - master
+      - release
+      - 'spring*'
+      - 'summer*'
+      - 'winter*'
+  pull_request:
+    branches:
+      - master
+      - release
+      - 'spring*'
+      - 'summer*'
+      - 'winter*'
+
+env:
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
+  COVERAGE: "1"
+
+jobs:
+  run-karma-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.18.0"
+          cache: 'yarn'
+
+      - uses: saucelabs/sauce-connect-action@v2
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          tunnelName: github-action-tunnel-karma
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - run: yarn test:karma:ci
+      - run: DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: LEGACY_BROWSERS=1 yarn test:karma:ci
+      - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn test:karma:ci
+      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:karma:ci
+      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: API_VERSION=58 yarn test:karma:ci
+      - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: DISABLE_ARIA_REFLECTION_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: NODE_ENV_FOR_TEST=production yarn test:karma:ci
+      - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn test:karma:ci
+      - run: yarn hydration:sauce:ci
+        working-directory: ./packages/@lwc/integration-karma
+      - run: yarn coverage
+        working-directory: ./packages/@lwc/integration-karma
