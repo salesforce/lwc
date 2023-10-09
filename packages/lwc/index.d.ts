@@ -194,39 +194,56 @@ declare module 'lwc' {
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
      */
-    export function wire(
-        adapter: WireAdapterConstructor | LegacyWireAdapterConstructor,
-        config?: WireConfigValue
+    export function wire<Config extends object = any, Value = any, Context extends object = any>(
+        adapter:
+            | WireAdapterConstructor<Config, Value, Context>
+            | LegacyWireAdapterConstructor<Config, Value>,
+        config?: WireConfigValue<Config>
     ): PropertyDecorator;
 
-    type LegacyWireAdapterConstructor = (config?: any) => any;
-    type WireConfigValue = Record<string, any>;
-    type ContextValue = Record<string, any>;
+    type LegacyWireAdapterConstructor<Config = any, Value = any> = (config?: Config) => Value;
+    type WireConfigValue<Config extends object = Record<string, any>> = {
+        [K in keyof Config]: Config[K];
+    };
+    type ContextValue<Context extends object = Record<string, any>> = Partial<
+        Record<keyof Context, any>
+    >;
 
-    interface WireAdapter {
-        update(config: WireConfigValue, context?: ContextValue): void;
+    interface WireAdapter<Config extends object = any, Context extends object = any> {
+        update(config: WireConfigValue<Config>, context?: ContextValue<Context>): void;
         connect(): void;
         disconnect(): void;
     }
 
-    type WireDataCallback = (value: any) => void;
+    type WireDataCallback<Value = any> = (value: Value) => void;
     type WireAdapterSchemaValue = 'optional' | 'required';
 
-    interface ContextConsumer {
-        provide(newContext: ContextValue): void;
+    interface ContextConsumer<Context extends object = any> {
+        provide(newContext: ContextValue<Context>): void;
     }
 
-    interface ContextProviderOptions {
-        consumerConnectedCallback: (consumer: ContextConsumer) => void;
-        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
+    interface ContextProviderOptions<Context extends object = any> {
+        consumerConnectedCallback: (consumer: ContextConsumer<Context>) => void;
+        consumerDisconnectedCallback?: (consumer: ContextConsumer<Context>) => void;
     }
 
-    interface WireAdapterConstructor {
-        new (callback: WireDataCallback): WireAdapter;
-        configSchema?: Record<string, WireAdapterSchemaValue>;
-        contextSchema?: Record<string, WireAdapterSchemaValue>;
+    interface WireAdapterConstructor<
+        Config extends object = any,
+        Value = any,
+        Context extends object = any
+    > {
+        new (callback: WireDataCallback<Value>): WireAdapter<Config, Context>;
+        configSchema?: Record<keyof Config, WireAdapterSchemaValue>;
+        contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
     }
 
-    type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
-    export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
+    type Contextualizer<Context extends object = any> = (
+        elm: EventTarget,
+        options: ContextProviderOptions<Context>
+    ) => void;
+    export function createContextProvider<
+        Config extends object = any,
+        Value = any,
+        Context extends object = any
+    >(config: WireAdapterConstructor<Config, Value, Context>): Contextualizer<Context>;
 }
