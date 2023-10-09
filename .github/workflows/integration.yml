@@ -38,15 +38,15 @@ jobs:
           node-version: "18.18.0"
           cache: 'yarn'
 
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./
+
       - uses: saucelabs/sauce-connect-action@v2
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: ./
 
       - run: yarn sauce:prod --browsers chrome
       - run: yarn sauce:dev --browsers chrome
