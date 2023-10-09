@@ -19,6 +19,7 @@ on:
 env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  SAUCE_TUNNEL_ID: github-action-tunnel-integration-${{GITHUB_RUN_ID}}
   PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
   COVERAGE: "1"
 
