@@ -25,6 +25,9 @@ env:
 jobs:
   run-integration-tests:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./packages/@lwc/integration-tests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -43,8 +46,7 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        working-directory: ./
 
       - run: yarn sauce:prod --browsers chrome
-        working-directory: ./packages/@lwc/integration-tests
       - run: yarn sauce:dev --browsers chrome
-        working-directory: ./packages/@lwc/integration-tests
