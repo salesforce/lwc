@@ -40,7 +40,7 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelName: github-action-tunnel-karma
+          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
