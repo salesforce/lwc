@@ -37,7 +37,7 @@ describe('Node.textContent - setter', () => {
         }).toLogErrorDev(/Invalid attempt to set textContent on ShadowRoot/);
     });
 
-    it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {
+    it('should log a warning when invoking setter for an element in the shadow only in synthetic mode', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);
 
@@ -50,8 +50,8 @@ describe('Node.textContent - setter', () => {
         if (process.env.NATIVE_SHADOW) {
             expected = expected.not; // no error
         }
-        expected.toLogErrorDev(
-            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
+        expected.toLogWarningDev(
+            /\[LWC warn\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

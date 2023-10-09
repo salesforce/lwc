@@ -1,0 +1,24 @@
+<template>
+  <!-- single <div> so it's one big static block -->
+  <div>
+    <div lwc:ref="bar">january</div>
+    <div>
+      <div>
+        <div lwc:ref="foo">february</div>
+      </div>
+    </div>
+    <div lwc:ref="foo">march</div>
+    <div>
+      <div>
+        <div lwc:ref="bar">april</div>
+      </div>
+    </div>
+    <div lwc:ref="baz">may</div>
+    <div lwc:ref="baz">june</div>
+    <div lwc:ref="baz">july</div>
+    <div lwc:ref='quux'>
+      august
+      <div lwc:ref='quux'>september</div>
+    </div>
+  </div>
+</template>

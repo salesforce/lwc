@@ -231,7 +231,7 @@ describe('error thrown in errorCallback', () => {
             const elm = createElement(hostSelector, { is: hostClass });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowConnectedError(/error in the parent error callback/);
+            }).toThrowCallbackReactionError(/error in the parent error callback/);
         });
     }
 
@@ -263,7 +263,7 @@ describe('errorCallback error caught by another errorCallback', () => {
             const elm = createElement(hostSelector, { is: hostClass });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowConnectedError(/error in the grandparent error callback/);
+            }).toThrowCallbackReactionError(/error in the grandparent error callback/);
         });
     }
 

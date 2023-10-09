@@ -64,7 +64,7 @@ if (!process.env.NATIVE_SHADOW) {
     it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+        spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
 
         const span = document.createElement('span');
         elm.shadowRoot.querySelector('h2').appendChild(span);
