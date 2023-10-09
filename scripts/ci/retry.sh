@@ -9,7 +9,6 @@
 #
 
 set -e
-set -x
 
 export PATH="${PATH}:./node_modules/.bin"
 
