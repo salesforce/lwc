@@ -203,7 +203,7 @@ declare module 'lwc' {
 
     type LegacyWireAdapterConstructor<Config = any, Value = any> = (config?: Config) => Value;
     type WireConfigValue<Config extends object = Record<string, any>> = {
-        [K in keyof Config]: Config[K];
+        [K in keyof Config]: Config[K] | string;
     };
     type ContextValue<Context extends object = Record<string, any>> = Partial<
         Record<keyof Context, any>
