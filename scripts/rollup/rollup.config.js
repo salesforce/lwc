@@ -134,7 +134,13 @@ module.exports = {
             // These are the devDeps that may be inlined into the dist/ bundles
             // These include packages owned by us (LWC, observable-membrane), as well as parse5
             // and its single dependency, which are bundled because it makes it simpler to distribute
-            resolveOnly: [/^@lwc\//, 'observable-membrane', /^parse5($|\/)/, 'entities'],
+            resolveOnly: [
+                /^@lwc\//,
+                'observable-membrane',
+                /^parse5($|\/)/,
+                'entities',
+                /^@parse5\/tools/,
+            ],
         }),
         ...sharedPlugins(),
         injectInlineRenderer(),
