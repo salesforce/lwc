@@ -6,13 +6,27 @@
  */
 
 import { parseExpressionAt } from 'acorn';
-import { Document, DocumentFragment, TextNode, ParsingError, ParserOptions } from 'parse5';
+import {
+    DefaultTreeAdapterMap,
+    Parser,
+    ParserOptions,
+    Tokenizer,
+    TokenizerOptions,
+    TokenHandler,
+} from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import Parser from 'parse5/lib/parser';
-import Tokenizer from 'parse5/lib/tokenizer';
+import { ParserError } from 'parse5';
+import {
+    ChildNode,
+    Document,
+    DocumentFragment,
+    Element,
+    TextNode,
+    Token,
+} from '../../shared/parse5';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
-import type { PreparsedExpressionMap } from './types';
+import type { PreparsedExpressionMap, Preprocessor } from './types';
 
 const OPENING_CURLY_LEN = 1;
 const CLOSING_CURLY_LEN = 1;
@@ -79,25 +93,29 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
  * specified by the HTML spec.
  */
 class TemplateHtmlTokenizer extends Tokenizer {
+    // @ts-ignore
+    preprocessor!: Preprocessor;
+
     parser: TemplateHtmlParser;
+    currentLocation!: Token.Location;
+    currentAttr!: Token.Attribute;
+    currentCharacterToken!: Token.CharacterToken | null;
+    currentToken!: Token.Token | null;
+    consumedAfterSnapshot!: number;
+    getCurrentLocation!: (offset: number) => Token.Location;
+    prepareToken!: (ct: Token.CharacterToken) => void;
+    _advanceBy!: (numCodePoints: number) => void;
+    _createCharacterToken!: (type: Token.CharacterToken['type'], chars: string) => void;
+    _emitCurrentCharacterToken!: (loc: Token.Location) => void;
+
     // We track which attribute values are in-progess so that we can defer
     // to the default tokenizer's behavior after the first character of
     // an unquoted attr value has been checked for an opening curly brace.
     checkedAttrs = new WeakSet<any>();
 
-    constructor(parser: TemplateHtmlParser) {
-        super();
+    constructor(opts: TokenizerOptions, parser: TemplateHtmlParser, handler: TokenHandler) {
+        super(opts, handler);
         this.parser = parser;
-    }
-
-    // Move the lexer's cursor forward by the indicated number of positions. This
-    // mechanism is superior to setting `this.preprocessor.pos` because it allows
-    // parse5's location mixin to count new lines and columns, resulting in correct
-    // AST location information.
-    advanceBy(numChars: number) {
-        for (let i = 0; i < numChars; i++) {
-            this.preprocessor.advance();
-        }
     }
 
     parseTemplateExpression() {
@@ -132,8 +150,6 @@ class TemplateHtmlTokenizer extends Tokenizer {
             ['expression must end with curly brace.']
         );
 
-        this.advanceBy(expressionTextNodeValue.length);
-
         // Parsed expressions that are cached here will be later retrieved when the
         // LWC template AST is being constructed.
         this.parser.preparsedJsExpressions.set(expressionStart, estreeNode);
@@ -146,20 +162,21 @@ class TemplateHtmlTokenizer extends Tokenizer {
     // next character determines whether the lexer enters the ATTRIBUTE_VALUE_QUOTED_STATE
     // or ATTRIBUTE_VALUE_UNQUOTED_STATE. Customizations required to support template
     // expressions are only in effect when parsing an unquoted attribute value.
-    ATTRIBUTE_VALUE_UNQUOTED_STATE(codePoint: number) {
+    _stateAttributeValueUnquoted(codePoint: number) {
         if (codePoint === OPENING_CURLY_BRACKET && !this.checkedAttrs.has(this.currentAttr)) {
             this.checkedAttrs.add(this.currentAttr);
             this.currentAttr!.value = this.parseTemplateExpression();
-            // Moving the cursor back by one allows the state machine to correctly detect
-            // the state into which it should next transition.
-            this._unconsume();
+
+            this._advanceBy(this.currentAttr!.value.length - 1);
+            this.consumedAfterSnapshot = this.currentAttr!.value.length;
         } else {
             // If the first character in an unquoted-attr-value is not an opening
             // curly brace, it isn't a template expression. Opening curly braces
             // coming later in an unquoted attr value should not be considered
             // the beginning of a template expression.
             this.checkedAttrs.add(this.currentAttr);
-            super.ATTRIBUTE_VALUE_UNQUOTED_STATE(codePoint);
+            // @ts-ignore
+            super._stateAttributeValueUnquoted(codePoint);
         }
     }
 
@@ -167,35 +184,56 @@ class TemplateHtmlTokenizer extends Tokenizer {
     // state when the cursor is outside of an (opening or closing) tag, and outside of
     // special parts of an HTML document like the contents of a <style> or <script> tag.
     // In other words, we're parsing a text node when in DATA_STATE.
-    DATA_STATE(codePoint: number) {
+    _stateData(codePoint: number) {
         if (codePoint === OPENING_CURLY_BRACKET) {
             // An opening curly brace may be the first character in a text node.
             // If that is not the case, we need to emit the text node characters
             // that come before the curly brace.
             if (this.currentCharacterToken) {
+                this.currentLocation = this.getCurrentLocation(0);
+                this.consumedAfterSnapshot = 0;
                 // Emit the text segment preceding the curly brace.
-                this._emitCurrentCharacterToken();
+                this._emitCurrentCharacterToken(this.currentLocation);
             }
 
             const expressionTextNodeValue = this.parseTemplateExpression();
 
             // Create a new text-node token to contain our `{expression}`
-            this._createCharacterToken(Tokenizer.CHARACTER_TOKEN, expressionTextNodeValue);
+            this._createCharacterToken(Token.TokenType.CHARACTER, expressionTextNodeValue);
+
+            this._advanceBy(expressionTextNodeValue.length);
+            this.currentLocation = this.getCurrentLocation(0);
 
             // Emit the text node token containing the `{expression}`
-            this._emitCurrentCharacterToken();
+            this._emitCurrentCharacterToken(this.currentLocation);
 
             // Moving the cursor back by one allows the state machine to correctly detect
             // the state into which it should next transition.
-            this._unconsume();
+            this.preprocessor.retreat(1);
+
+            this.currentToken = null;
+            this.currentCharacterToken = null;
         } else {
-            super.DATA_STATE(codePoint);
+            // @ts-ignore
+            super._stateData(codePoint);
         }
     }
 }
 
-interface TemplateHtmlParserOptions extends ParserOptions {
+interface TemplateHtmlParserOptions extends ParserOptions<DefaultTreeAdapterMap> {
     preparsedJsExpressions: PreparsedExpressionMap;
+}
+
+function isTemplateExpressionTextNodeValue(value: string | undefined): boolean {
+    return value?.[0] === '{';
+}
+
+function isTextNode(node: ChildNode | undefined): node is TextNode {
+    return node?.nodeName === '#text';
+}
+
+function isTemplateExpressionTextNode(node: ChildNode | undefined): boolean {
+    return isTextNode(node) && isTemplateExpressionTextNodeValue(node.value);
 }
 
 /**
@@ -203,21 +241,18 @@ interface TemplateHtmlParserOptions extends ParserOptions {
  * done in the tokenizer. This class is only present to facilitate use
  * of that tokenizer when parsing expressions.
  */
-class TemplateHtmlParser extends Parser {
+class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
     preparsedJsExpressions: PreparsedExpressionMap;
-    tokenizer!: TemplateHtmlTokenizer;
 
-    constructor(_options: TemplateHtmlParserOptions) {
-        const { preparsedJsExpressions, ...options } = _options;
-        super(options);
+    constructor(extendedOpts: TemplateHtmlParserOptions, document: Document, fragmentCxt: Element) {
+        const { preparsedJsExpressions, ...options } = extendedOpts;
+        super(options, document, fragmentCxt);
         this.preparsedJsExpressions = preparsedJsExpressions;
-    }
-
-    _bootstrap(document: Document, fragmentContext: any) {
-        super._bootstrap(document, fragmentContext);
-        // The default `_bootstrap` method creates a new Tokenizer; here, we ensure that our
-        // customized tokenizer is used.
-        this.tokenizer = new TemplateHtmlTokenizer(this);
+        this.tokenizer = new TemplateHtmlTokenizer(
+            this.options,
+            this,
+            this
+        ) as unknown as Tokenizer;
     }
 
     // The parser will try to concatenate adjacent text tokens into a single
@@ -226,14 +261,21 @@ class TemplateHtmlParser extends Parser {
     // that, we create a new text node for the template expression rather than
     // allowing the concatenation to proceed.
     _insertCharacters(token: any) {
-        if (token.chars[0] !== '{') {
+        const parentNode = this.openElements.current;
+        const previousPeer = parentNode.childNodes.at(-1);
+        if (
+            // If we're not dealing with a template expression...
+            !isTemplateExpressionTextNodeValue(token.chars) &&
+            // ... and the previous node wasn't a text-node-template-expression...
+            !isTemplateExpressionTextNode(previousPeer)
+        ) {
+            // ... concatenate the provided characters with the previous token's characters.
             return super._insertCharacters(token);
         }
-        const parentNode = this.openElements.current;
         const textNode: TextNode = {
             nodeName: '#text',
             value: token.chars,
-            sourceCodeLocation: token.location,
+            sourceCodeLocation: { ...token.location },
             parentNode,
         };
         parentNode.childNodes.push(textNode);
@@ -243,7 +285,7 @@ class TemplateHtmlParser extends Parser {
 interface ParseFragmentConfig {
     ctx: ParserCtx;
     sourceCodeLocationInfo: boolean;
-    onParseError: (error: ParsingError) => void;
+    onParseError: (err: ParserError) => void;
 }
 
 /**
@@ -258,11 +300,13 @@ interface ParseFragmentConfig {
 export function parseFragment(source: string, config: ParseFragmentConfig): DocumentFragment {
     const { ctx, sourceCodeLocationInfo = true, onParseError } = config;
 
-    const parser = new TemplateHtmlParser({
+    const opts = {
         sourceCodeLocationInfo,
         onParseError,
         preparsedJsExpressions: ctx.preparsedJsExpressions!,
-    });
+    };
 
-    return parser.parseFragment(source);
+    const parser = TemplateHtmlParser.getFragmentParser<DefaultTreeAdapterMap>(null, opts);
+    parser.tokenizer.write(source, true);
+    return parser.getFragment();
 }
