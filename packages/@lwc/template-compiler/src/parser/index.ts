@@ -399,7 +399,10 @@ function parseChildren(
     parse5ParentLocation: parse5Token.ElementLocation
 ): void {
     let container: parse5Tools.ParentNode = parse5Parent;
-    if (parse5Tools.isTemplateNode(parse5Parent)) {
+    // `content` isn't nullable but we need to keep the optional chaining
+    // until parse5/tools also asserts that `content` is set. It should be
+    // impossible to have nullish `content`, but templates in SVG can cause it
+    if (parse5Tools.isTemplateNode(parse5Parent) && parse5Parent.content?.childNodes.length > 0) {
         container = parse5Parent.content;
     }
     const children = container.childNodes;
