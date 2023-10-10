@@ -53,6 +53,7 @@
         "@types/estree": "1.0.2",
         "@types/he": "^1.2.1",
         "@types/source-map": "0.5.7",
-        "parse5": "~7.1.2"
+        "parse5": "~7.1.2",
+        "@parse5/tools": "^0.3.0"
     }
 }

@@ -13,8 +13,10 @@ import {
     isNull,
 } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
+import * as parse5Tools from '@parse5/tools';
+import {Token as parse5Token} from 'parse5';
+
 import * as t from '../shared/estree';
-import * as parse5Utils from '../shared/parse5';
 import * as ast from '../shared/ast';
 import State from '../state';
 import {
@@ -78,6 +80,7 @@ import {
     VALID_IF_MODIFIER,
 } from './constants';
 
+
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
@@ -128,7 +131,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseRoot(ctx: ParserCtx, parse5Elm: parse5Utils.Element): Root {
+function parseRoot(ctx: ParserCtx, parse5Elm: parse5Tools.Element): Root {
     const { sourceCodeLocation: rootLocation } = parse5Elm;
 
     /* istanbul ignore if */
@@ -177,9 +180,9 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5Utils.Element): Root {
  */
 function parseElement(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
+    parse5Elm: parse5Tools.Element,
     parentNode: ParentNode,
-    parse5ParentLocation: parse5Utils.ElementLocation
+    parse5ParentLocation: parse5Token.ElementLocation
 ): void {
     const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
@@ -211,7 +214,7 @@ function parseElement(
         validateProperties(ctx, element);
     } else {
         // parseBaseElement will always return an element EXCEPT when processing a <template>
-        validateTemplate(ctx, parsedAttr, parse5Elm as parse5Utils.Template, parse5ElmLocation);
+        validateTemplate(ctx, parsedAttr, parse5Elm as parse5Tools.Template, parse5ElmLocation);
     }
 
     const currentNode = element ?? directive;
@@ -230,9 +233,9 @@ function parseElement(
 
 function parseElementLocation(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
-    parse5ParentLocation: parse5Utils.ElementLocation
-): parse5Utils.ElementLocation {
+    parse5Elm: parse5Tools.Element,
+    parse5ParentLocation: parse5Token.ElementLocation
+): parse5Token.ElementLocation {
     let location = parse5Elm.sourceCodeLocation;
 
     // AST hierarchy is ForBlock > If > BaseElement, if immediate parent is not a BaseElement it is a template.
@@ -253,8 +256,8 @@ function parseElementLocation(
     // can safely skip the closing tag validation.
     let current = parse5Elm;
 
-    while (!location && parse5Utils.isElementNode(current.parentNode)) {
-        current = current.parentNode as parse5Utils.Element;
+    while (!location && current.parentNode && parse5Tools.isElementNode(current.parentNode)) {
+        current = current.parentNode as parse5Tools.Element;
         location = current.sourceCodeLocation;
     }
 
@@ -272,8 +275,8 @@ const DIRECTIVE_PARSERS = [
 ];
 function parseElementDirectives(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ParentNode | undefined {
@@ -292,9 +295,9 @@ function parseElementDirectives(
 function parseBaseElement(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5Elm: parse5Utils.Element,
+    parse5Elm: parse5Tools.Element,
     parent: ParentNode,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5ElmLocation: parse5Token.ElementLocation
 ): BaseElement | undefined {
     const { tagName: tag, namespaceURI } = parse5Elm;
 
@@ -330,9 +333,9 @@ function parseBaseElement(
 
 function parseLwcElement(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
+    parse5Elm: parse5Tools.Element,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5ElmLocation: parse5Token.ElementLocation
 ) {
     let lwcElementParser;
 
@@ -349,9 +352,9 @@ function parseLwcElement(
 
 function parseLwcComponent(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
+    parse5Elm: parse5Tools.Element,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5ElmLocation: parse5Token.ElementLocation
 ): LwcComponent {
     if (!ctx.config.enableDynamicComponents) {
         ctx.throwAtLocation(
@@ -373,9 +376,9 @@ function parseLwcComponent(
 
 function parseLwcElementAsBuiltIn(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
+    parse5Elm: parse5Tools.Element,
     _parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5ElmLocation: parse5Token.ElementLocation
 ): Element {
     const { tagName: tag, namespaceURI } = parse5Elm;
     // Certain tag names that start with lwc:* are signals to the compiler for special behavior.
@@ -392,16 +395,20 @@ function parseLwcElementAsBuiltIn(
 
 function parseChildren(
     ctx: ParserCtx,
-    parse5Parent: parse5Utils.Element,
+    parse5Parent: parse5Tools.Element,
     parent: ParentNode,
-    parse5ParentLocation: parse5Utils.ElementLocation
+    parse5ParentLocation: parse5Token.ElementLocation
 ): void {
-    const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
+    let container: parse5Tools.ParentNode = parse5Parent;
+    if (parse5Tools.isTemplateNode(parse5Parent)) {
+        container = parse5Parent.content;
+    }
+    const children = container.childNodes;
 
     ctx.beginSiblingScope();
     for (const child of children) {
         ctx.withErrorRecovery(() => {
-            if (parse5Utils.isElementNode(child)) {
+            if (parse5Tools.isElementNode(child)) {
                 ctx.beginElementScope();
                 parseElement(ctx, child, parent, parse5ParentLocation);
 
@@ -416,14 +423,14 @@ function parseChildren(
                 ) {
                     ctx.endIfChain();
                 }
-            } else if (parse5Utils.isTextNode(child)) {
+            } else if (parse5Tools.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
                 // Non whitespace text nodes end any if chain we may be parsing
                 if (ctx.isParsingSiblingIfBlock() && textNodes.length > 0) {
                     ctx.endIfChain();
                 }
-            } else if (parse5Utils.isCommentNode(child)) {
+            } else if (parse5Tools.isCommentNode(child)) {
                 const commentNode = parseComment(child);
                 parent.children.push(commentNode);
                 // If preserveComments is enabled, comments become syntactically meaningful and
@@ -437,7 +444,7 @@ function parseChildren(
     ctx.endSiblingScope();
 }
 
-function parseText(ctx: ParserCtx, parse5Text: parse5Utils.TextNode): Text[] {
+function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     const parsedTextNodes: Text[] = [];
     const location = parse5Text.sourceCodeLocation;
 
@@ -497,7 +504,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Utils.TextNode): Text[] {
     return parsedTextNodes;
 }
 
-function parseComment(parse5Comment: parse5Utils.CommentNode): Comment {
+function parseComment(parse5Comment: parse5Tools.CommentNode): Comment {
     const location = parse5Comment.sourceCodeLocation;
 
     /* istanbul ignore if */
@@ -515,17 +522,17 @@ function parseComment(parse5Comment: parse5Utils.CommentNode): Comment {
 
 function getTemplateRoot(
     ctx: ParserCtx,
-    documentFragment: parse5Utils.DocumentFragment
-): parse5Utils.Element {
+    documentFragment: parse5Tools.DocumentFragment
+): parse5Tools.Element {
     // Filter all the empty text nodes
     const validRoots = documentFragment.childNodes.filter(
         (child) =>
-            parse5Utils.isElementNode(child) ||
-            (parse5Utils.isTextNode(child) && child.value.trim().length)
+            parse5Tools.isElementNode(child) ||
+            (parse5Tools.isTextNode(child) && child.value.trim().length)
     );
 
     if (validRoots.length > 1) {
-        const duplicateRoot = validRoots[1].sourceCodeLocation;
+        const duplicateRoot = validRoots[1].sourceCodeLocation ?? undefined;
         ctx.throw(
             ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
             [],
@@ -535,7 +542,7 @@ function getTemplateRoot(
 
     const [root] = validRoots;
 
-    if (!root || !parse5Utils.isElementNode(root)) {
+    if (!root || !parse5Tools.isElementNode(root)) {
         ctx.throw(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
     }
 
@@ -572,8 +579,8 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
 
 function parseIf(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): If | undefined {
@@ -626,8 +633,8 @@ function parseIf(
 
 function parseIfBlock(
     ctx: ParserCtx,
-    _parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    _parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): IfBlock | undefined {
@@ -663,8 +670,8 @@ function parseIfBlock(
 
 function parseElseifBlock(
     ctx: ParserCtx,
-    _parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    _parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     _parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ElseifBlock | undefined {
@@ -714,8 +721,8 @@ function parseElseifBlock(
 
 function parseElseBlock(
     ctx: ParserCtx,
-    _parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    _parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     _parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ElseBlock | undefined {
@@ -1118,8 +1125,8 @@ function applyRefDirective(
 
 function parseForEach(
     ctx: ParserCtx,
-    _parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    _parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ForEach | undefined {
@@ -1177,8 +1184,8 @@ function parseForEach(
 
 function parseForOf(
     ctx: ParserCtx,
-    _parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    _parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ForOf | undefined {
@@ -1222,8 +1229,8 @@ function parseForOf(
 
 function parseScopedSlotFragment(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation,
+    parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation,
     parent: ParentNode,
     parsedAttr: ParsedAttribute
 ): ScopedSlotFragment | undefined {
@@ -1334,7 +1341,7 @@ const ALLOWED_SLOT_ATTRIBUTES_SET = new Set<string>(ALLOWED_SLOT_ATTRIBUTES);
 function parseSlot(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5ElmLocation: parse5Token.ElementLocation
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
@@ -1515,7 +1522,7 @@ function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): 
 function validateElement(
     ctx: ParserCtx,
     element: BaseElement,
-    parse5Elm: parse5Utils.Element
+    parse5Elm: parse5Tools.Element
 ): void {
     const { tagName: tag, namespaceURI: namespace } = parse5Elm;
 
@@ -1570,8 +1577,8 @@ function validateElement(
 function validateTemplate(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    template: parse5Utils.Template,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    template: parse5Tools.Template,
+    parse5ElmLocation: parse5Token.ElementLocation
 ): void {
     const location = ast.sourceLocation(parse5ElmLocation);
 
@@ -1711,8 +1718,8 @@ function validateProperties(ctx: ParserCtx, element: BaseElement): void {
 
 function parseAttributes(
     ctx: ParserCtx,
-    parse5Elm: parse5Utils.Element,
-    parse5ElmLocation: parse5Utils.ElementLocation
+    parse5Elm: parse5Tools.Element,
+    parse5ElmLocation: parse5Token.ElementLocation
 ): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
     const { attrs: attributes, tagName } = parse5Elm;
@@ -1736,8 +1743,8 @@ function parseAttributes(
 function getTemplateAttribute(
     ctx: ParserCtx,
     tag: string,
-    attribute: parse5Utils.Token.Attribute,
-    attributeLocation: parse5Utils.Token.Location
+    attribute: parse5Token.Attribute,
+    attributeLocation: parse5Token.Location
 ): Attribute {
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state

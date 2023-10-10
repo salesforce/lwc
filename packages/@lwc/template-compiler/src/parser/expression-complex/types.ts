@@ -6,11 +6,11 @@
  */
 
 import type { Node as AcornNode } from 'acorn';
-import type { Preprocessor as Parse5Preprocessor } from '../../shared/parse5';
+import type { Tokenizer } from 'parse5';
 
 export type PreparsedExpressionMap = Map<number, AcornNode>;
 
-export type Preprocessor = Omit<Parse5Preprocessor, 'pos'> & {
+export type Preprocessor = Omit<Tokenizer['preprocessor'], 'pos'> & {
     pos: number;
     advance: () => void;
 };

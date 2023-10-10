@@ -13,8 +13,8 @@ import {
     SVG_NAMESPACE,
     ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
+import { Token } from 'parse5';
 
-import { Token as parse5Tokens } from '../shared/parse5';
 import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
@@ -82,7 +82,7 @@ export function normalizeAttributeValue(
     ctx: ParserCtx,
     raw: string,
     tag: string,
-    attr: parse5Tokens.Attribute,
+    attr: Token.Attribute,
     location: SourceLocation
 ): {
     value: string;
@@ -161,7 +161,7 @@ export function normalizeAttributeValue(
     return { value, escapedExpression: false };
 }
 
-export function attributeName(attr: parse5Tokens.Attribute): string {
+export function attributeName(attr: Token.Attribute): string {
     const { prefix, name } = attr;
     return prefix ? `${prefix}:${name}` : name;
 }

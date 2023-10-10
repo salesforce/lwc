@@ -6,11 +6,11 @@
  */
 
 import * as parse5 from 'parse5';
-import type { DefaultTreeAdapterMap } from 'parse5';
+import {DocumentFragment} from '@parse5/tools';
 
-type DocumentFragment = DefaultTreeAdapterMap['documentFragment'];
-
-function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
+function isSingleStyleNodeContainingSingleTextNode(
+    node: DocumentFragment
+) {
     if (node.childNodes.length !== 1) {
         return false;
     }
