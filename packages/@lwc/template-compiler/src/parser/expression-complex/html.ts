@@ -17,13 +17,7 @@ import {
     Token,
 } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import {
-    ChildNode,
-    Document,
-    DocumentFragment,
-    Element,
-    TextNode
-} from '@parse5/tools';
+import { ChildNode, Document, DocumentFragment, Element, TextNode } from '@parse5/tools';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';

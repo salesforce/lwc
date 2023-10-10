@@ -14,7 +14,7 @@ import {
 } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
 import * as parse5Tools from '@parse5/tools';
-import {Token as parse5Token} from 'parse5';
+import { Token as parse5Token } from 'parse5';
 
 import * as t from '../shared/estree';
 import * as ast from '../shared/ast';
@@ -79,7 +79,6 @@ import {
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
-
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
