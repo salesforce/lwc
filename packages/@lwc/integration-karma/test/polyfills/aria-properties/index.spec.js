@@ -134,13 +134,19 @@ function testAriaProperty(property, attribute) {
             if (settingValueRemoves(undefined)) {
                 // Native Webkit/Chromium – setting undefined is treated the same as null
                 falsyValuesThatRemove.push(undefined);
+            } else {
+                falsyValuesThatDoNotRemove.push(undefined);
             }
             if (settingValueRemoves(null)) {
                 // As of this writing, Firefox is inconsistent with Chromium/WebKit and treats setting undefined/null
                 // as setting a string value: https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
                 falsyValuesThatRemove.push(null);
+            } else {
+                falsyValuesThatDoNotRemove.push(null);
             }
         } else {
+            // Our polyfill - null removes
+            falsyValuesThatRemove.push(null);
             // Our polyfill – setting undefined is not treated like null
             falsyValuesThatDoNotRemove.push(undefined);
         }
