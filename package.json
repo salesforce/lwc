@@ -31,6 +31,7 @@
         "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
     },
     "devDependencies": {
+        "@babel/plugin-transform-modules-commonjs": "^7.23.0",
         "@commitlint/cli": "^17.7.2",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",

@@ -381,6 +381,15 @@
     "@babel/helper-plugin-utils" "^7.22.5"
     "@babel/helper-remap-async-to-generator" "^7.22.5"
 
+"@babel/plugin-transform-modules-commonjs@^7.23.0":
+  version "7.23.0"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-commonjs/-/plugin-transform-modules-commonjs-7.23.0.tgz#b3dba4757133b2762c00f4f94590cf6d52602481"
+  integrity sha512-32Xzss14/UVc7k9g775yMIvkVK8xwKE0DPdP5JTapr3+Z9w4tzeOuLNY6BXDQR6BdnzIlXnCGAzsk/ICHBLVWQ==
+  dependencies:
+    "@babel/helper-module-transforms" "^7.23.0"
+    "@babel/helper-plugin-utils" "^7.22.5"
+    "@babel/helper-simple-access" "^7.22.5"
+
 "@babel/plugin-transform-parameters@^7.20.7":
   version "7.22.15"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-parameters/-/plugin-transform-parameters-7.22.15.tgz#719ca82a01d177af358df64a514d64c2e3edb114"
@@ -1393,6 +1402,13 @@
   dependencies:
     node-addon-api "^3.2.1"
     node-gyp-build "^4.3.0"
+
+"@parse5/tools@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@parse5/tools/-/tools-0.3.0.tgz#4cac601408065a84c31a88431b02f9f69f92434a"
+  integrity sha512-zxRyTHkqb7WQMV8kTNBKWb1BeOFUKXBXTBWuxg9H9hfvQB3IwP6Iw2U75Ia5eyRxPNltmY7E8YAlz6zWwUnjKg==
+  dependencies:
+    parse5 "^7.0.0"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"

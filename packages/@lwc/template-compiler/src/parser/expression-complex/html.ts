@@ -13,17 +13,11 @@ import {
     Tokenizer,
     TokenizerOptions,
     TokenHandler,
+    ParserError,
+    Token,
 } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import { ParserError } from 'parse5';
-import {
-    ChildNode,
-    Document,
-    DocumentFragment,
-    Element,
-    TextNode,
-    Token,
-} from '../../shared/parse5';
+import { ChildNode, Document, DocumentFragment, Element, TextNode } from '@parse5/tools';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
@@ -260,7 +254,7 @@ class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
     // text node, and not combined with adjacent text or whitespace. To avoid
     // that, we create a new text node for the template expression rather than
     // allowing the concatenation to proceed.
-    _insertCharacters(token: any) {
+    _insertCharacters(token: Token.CharacterToken) {
         const parentNode = this.openElements.current;
         const previousPeer = parentNode.childNodes.at(-1);
         if (
@@ -275,7 +269,7 @@ class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
         const textNode: TextNode = {
             nodeName: '#text',
             value: token.chars,
-            sourceCodeLocation: { ...token.location },
+            sourceCodeLocation: token.location ? { ...token.location } : null,
             parentNode,
         };
         parentNode.childNodes.push(textNode);
