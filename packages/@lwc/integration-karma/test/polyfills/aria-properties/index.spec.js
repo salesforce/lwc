@@ -14,16 +14,10 @@ function testAriaProperty(property, attribute) {
             reportingControl.detachDispatcher();
         });
 
-        const standardAriaPropToDefaultValue = Object.fromEntries(
-            Object.keys(ariaPropertiesMapping)
-                .filter((prop) => !nonStandardAriaProperties.includes(prop))
-                .map((prop) => {
-                    const div = document.createElement('div');
-                    // Usually null, but undefined in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
-                    const defaultValue = div[prop];
-                    return [prop, defaultValue];
-                })
-        );
+        function getDefaultValue(prop) {
+            const div = document.createElement('div');
+            return div[prop];
+        }
 
         function expectWarningIfNonStandard(callback) {
             // eslint-disable-next-line jest/valid-expect
@@ -78,12 +72,11 @@ function testAriaProperty(property, attribute) {
 
         it(`should return default value if the value is not set`, () => {
             const el = document.createElement('div');
+            // Our polyfill always returns null, Firefox may return undefined
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+            const expectedDefaultValue = isNative ? getDefaultValue(property) : null;
             expectWarningIfNonStandard(() => {
-                expect(el[property]).toBe(
-                    property in standardAriaPropToDefaultValue
-                        ? standardAriaPropToDefaultValue[property]
-                        : null
-                );
+                expect(el[property]).toBe(expectedDefaultValue);
             });
             expectGetterReportIfNonStandard();
         });
