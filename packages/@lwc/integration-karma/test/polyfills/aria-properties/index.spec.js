@@ -14,6 +14,17 @@ function testAriaProperty(property, attribute) {
             reportingControl.detachDispatcher();
         });
 
+        const standardAriaPropToDefaultValue = Object.fromEntries(
+            Object.keys(ariaPropertiesMapping)
+                .filter((prop) => !nonStandardAriaProperties.includes(prop))
+                .map((prop) => {
+                    const div = document.createElement('div');
+                    // Usually null, but undefined in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+                    const defaultValue = div[prop];
+                    return [prop, defaultValue];
+                })
+        );
+
         function expectWarningIfNonStandard(callback) {
             // eslint-disable-next-line jest/valid-expect
             let expected = expect(callback);
@@ -65,10 +76,14 @@ function testAriaProperty(property, attribute) {
             expect(Object.prototype.hasOwnProperty.call(Element.prototype, property)).toBe(true);
         });
 
-        it(`should return null if the value is not set`, () => {
+        it(`should return default value if the value is not set`, () => {
             const el = document.createElement('div');
             expectWarningIfNonStandard(() => {
-                expect(el[property]).toBe(null);
+                expect(el[property]).toBe(
+                    property in standardAriaPropToDefaultValue
+                        ? standardAriaPropToDefaultValue[property]
+                        : null
+                );
             });
             expectGetterReportIfNonStandard();
         });
@@ -103,7 +118,7 @@ function testAriaProperty(property, attribute) {
         });
 
         // Falsy values that are treated as removing the attribute when set
-        const falsyValuesThatRemove = [null];
+        const falsyValuesThatRemove = [];
 
         // Falsy values that are *not* treated as removing the attribute when set
         const falsyValuesThatDoNotRemove = [0, false, '', NaN];
@@ -114,17 +129,26 @@ function testAriaProperty(property, attribute) {
         const isNative = Object.getOwnPropertyDescriptor(Element.prototype, property)
             .set.toString()
             .includes('[native code]');
-        const settingUndefinedRemoves = () => {
-            // This test is just in case Chromium/WebKit change their behavior, or Firefox ships their version
+
+        // This test is just in case Chromium/WebKit/Firefox change their behavior
+        const settingValueRemoves = (val) => {
             const div = document.createElement('div');
-            div[property] = undefined;
+            div[property] = val;
             return div[property] === null;
         };
-        if (isNative && settingUndefinedRemoves()) {
-            // Native Webkit/Chromium – setting undefined is treated the same as null
-            falsyValuesThatRemove.push(undefined);
+
+        if (isNative) {
+            if (settingValueRemoves(undefined)) {
+                // Native Webkit/Chromium – setting undefined is treated the same as null
+                falsyValuesThatRemove.push(undefined);
+            }
+            if (settingValueRemoves(null)) {
+                // As of this writing, Firefox is inconsistent with Chromium/WebKit and treats setting undefined/null
+                // as setting a string value: https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+                falsyValuesThatRemove.push(null);
+            }
         } else {
-            // Our polyfill or the current spec – setting undefined is not treated like null
+            // Our polyfill – setting undefined is not treated like null
             falsyValuesThatDoNotRemove.push(undefined);
         }
 

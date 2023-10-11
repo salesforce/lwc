@@ -134,10 +134,13 @@ describe('global html properties', () => {
         // Return the expected property value when no setter has been called
         const getDefaultPropertyValue = () => {
             switch (propName) {
+                case 'role':
                 case 'spellcheck':
                 case 'tabIndex':
                     // For spellcheck, Firefox returns false, Chrome/Safari returns true
                     // For tabIndex, IE11 returns 0 and the others return -1
+                    // For role, Firefox returns empty string, Chrome/Safari return null
+                    // https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
                     return document.createElement('div')[propName];
                 case 'draggable':
                 case 'hidden':
@@ -148,8 +151,6 @@ describe('global html properties', () => {
                 case 'id':
                 case 'lang':
                     return '';
-                case 'role':
-                    return null;
                 case 'title':
                     return '';
                 default:
