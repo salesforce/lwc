@@ -825,7 +825,7 @@ export function runWithBoundaryProtection(
             addErrorComponentStack(vm, error);
 
             const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
-            if (isUndefined(errorBoundaryVm) || errorBoundaryVm.renderer.engineKind === 'ssr') {
+            if (!process.env.IS_BROWSER || isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
             resetComponentRoot(vm); // remove offenders

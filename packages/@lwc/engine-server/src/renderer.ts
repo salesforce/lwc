@@ -426,7 +426,6 @@ const attachInternals = unsupportedMethod('attachInternals') as (
 ) => ElementInternals;
 
 export const renderer = {
-    engineKind: 'ssr' as 'ssr',
     isSyntheticShadowDefined,
     insert,
     remove,
