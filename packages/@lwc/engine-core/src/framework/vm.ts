@@ -825,7 +825,12 @@ export function runWithBoundaryProtection(
             addErrorComponentStack(vm, error);
 
             const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
-            if (isUndefined(errorBoundaryVm)) {
+            // Error boundaries are not in effect when server-side rendering. `errorCallback`
+            // is intended to allow recovery from errors - changing the state of a component
+            // and instigating a re-render. That is at odds with the single-pass, synchronous
+            // nature of SSR. For that reason, all errors bubble up to the `renderComponent`
+            // call site.
+            if (!process.env.IS_BROWSER || isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
             resetComponentRoot(vm); // remove offenders
