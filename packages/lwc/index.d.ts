@@ -191,10 +191,16 @@ declare module 'lwc' {
 
     /**
      * Decorator factory to wire a property or method to a wire adapter data source
+     * Use generic types to allow type checking for wire adapters
+     * Default all the generic types to any to maintain backward compatibility
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
      */
-    export function wire<Config extends object = any, Value = any, Context extends object = any>(
+    export function wire<
+        Config extends Record<string, any> = any,
+        Value = any,
+        Context extends Record<string, any> = any
+    >(
         adapter:
             | WireAdapterConstructor<Config, Value, Context>
             | LegacyWireAdapterConstructor<Config, Value>,
@@ -203,11 +209,10 @@ declare module 'lwc' {
 
     type LegacyWireAdapterConstructor<Config = any, Value = any> = (config?: Config) => Value;
     type WireConfigValue<Config extends object = Record<string, any>> = {
+        // wire reactive variables are strings prefixed with '$' so the config value can just be string
         [K in keyof Config]: Config[K] | string;
     };
-    type ContextValue<Context extends object = Record<string, any>> = Partial<
-        Record<keyof Context, any>
-    >;
+    type ContextValue<Context extends object = Record<string, any>> = Context;
 
     interface WireAdapter<Config extends object = any, Context extends object = any> {
         update(config: WireConfigValue<Config>, context?: ContextValue<Context>): void;
