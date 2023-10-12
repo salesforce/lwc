@@ -211,9 +211,12 @@ const attachInternalsFunc =
               throw new Error('attachInternals API is not supported in this browser environment.');
           };
 
+const engineKind = 'csr';
+
 export { registerContextConsumer, registerContextProvider } from './context';
 
 export {
+    engineKind,
     insert,
     remove,
     cloneNode,
