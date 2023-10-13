@@ -24,6 +24,7 @@ import {
     isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
+    noop,
     setPrototypeOf,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
@@ -315,7 +316,7 @@ const formAssociatedProps = new Set([
 ]);
 
 // Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
-function assertFormAssociatedPropertySet(propertyKey: string, isFormAssociated: boolean) {
+function verifyPropForFormAssociation(propertyKey: string, isFormAssociated: boolean) {
     if (formAssociatedProps.has(propertyKey) && !isFormAssociated) {
         //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
         throw new DOMException(
@@ -351,24 +352,25 @@ function createElementInternalsProxy(
 ) {
     const elementInternalsProxy = new Proxy(elementInternals, {
         set(target, propertyKey, newValue) {
-            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
-            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
-            return (
-                isAllowedElementInternalAccessor(propertyKey as string) &&
-                Reflect.set(target, propertyKey, newValue)
-            );
+            if (isAllowedElementInternalAccessor(propertyKey as string)) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey as string, isFormAssociated);
+                return Reflect.set(target, propertyKey, newValue);
+            }
+            return false;
         },
         get(target, propertyKey) {
-            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
-            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
-            const internalsPropertyValue = isAllowedElementInternalAccessor(propertyKey as string)
-                ? Reflect.get(target, propertyKey)
-                : undefined;
-            // Bind the property value to the target so that function invocations are called with the
-            // correct context ('this' value).
-            return typeof internalsPropertyValue === 'function'
-                ? internalsPropertyValue.bind(target)
-                : internalsPropertyValue;
+            if (isAllowedElementInternalAccessor(propertyKey as string)) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey as string, isFormAssociated);
+                // Bind the property value to the target so that function invocations are called with the
+                // correct context ('this' value).
+                const internalsPropertyValue = Reflect.get(target, propertyKey);
+                return typeof internalsPropertyValue === 'function'
+                    ? internalsPropertyValue.bind(target)
+                    : internalsPropertyValue;
+            }
+            return noop;
         },
     });
 
