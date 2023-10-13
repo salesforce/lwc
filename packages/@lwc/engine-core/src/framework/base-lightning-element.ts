@@ -28,7 +28,7 @@ import {
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -324,6 +324,22 @@ function assertFormAssociatedPropertySet(propertyKey: string, isFormAssociated: 
     }
 }
 
+// Prevent access to properties not defined in the HTML spec in case browsers decide to
+// provide new APIs that provide access to form associated properties.
+// This can be removed along with UpgradeableConstructor.
+function isAllowedElementInternalAccessor(prop: string) {
+    // Allow list is based on HTML spec:
+    // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
+    const isAllowedAccessor =
+        prop === 'shadowRoot' || prop.match(/^aria/) || formAssociatedProps.has(prop);
+    if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
+        logWarn(
+            'Only access to ElementInternals properties defined in the HTML spec are accessible'
+        );
+    }
+    return isAllowedAccessor;
+}
+
 // Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
 // This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
 // ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
@@ -337,12 +353,17 @@ function createElementInternalsProxy(
         set(target, propertyKey, newValue) {
             // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
             assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
-            return Reflect.set(target, propertyKey, newValue);
+            return (
+                isAllowedElementInternalAccessor(propertyKey as string) &&
+                Reflect.set(target, propertyKey, newValue)
+            );
         },
         get(target, propertyKey) {
             // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
             assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
-            const internalsPropertyValue = Reflect.get(target, propertyKey);
+            const internalsPropertyValue = isAllowedElementInternalAccessor(propertyKey as string)
+                ? Reflect.get(target, propertyKey)
+                : undefined;
             // Bind the property value to the target so that function invocations are called with the
             // correct context ('this' value).
             return typeof internalsPropertyValue === 'function'
