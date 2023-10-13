@@ -92,6 +92,7 @@ export function applyStaticParts(
 
     // This adds `part.elm` to each `part`. We have to do this on every mount/patch because the `parts`
     // array is recreated from scratch every time, so each `part.elm` is now undefined.
+    // TODO [#3800]: avoid calling traverseAndSetElements on every re-render
     traverseAndSetElements(root, parts, renderer);
 
     // Currently only event listeners and refs are supported for static vnodes

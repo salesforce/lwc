@@ -352,7 +352,6 @@ describe('refs', () => {
             const fooDiv = elm.getRef('foo');
             expect(fooDiv).not.toBeUndefined();
 
-            expect(elm.getRef('foo')).toBe(fooDiv);
             await Promise.resolve();
             for (let i = 0; i < 3; i++) {
                 elm.version = i;
