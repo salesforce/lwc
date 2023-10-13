@@ -119,7 +119,7 @@ function createComment(content: string): HostNode {
     };
 }
 
-function getSibling(node: N, offset: number) {
+function nextSibling(node: N) {
     const parent = node[HostParentKey];
 
     if (isNull(parent)) {
@@ -127,15 +127,7 @@ function getSibling(node: N, offset: number) {
     }
 
     const nodeIndex = parent[HostChildrenKey].indexOf(node);
-    return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) ?? null;
-}
-
-function nextSibling(node: N) {
-    return getSibling(node, 1);
-}
-
-function previousSibling(node: N) {
-    return getSibling(node, -1);
+    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
@@ -436,7 +428,6 @@ export const renderer = {
     createComment,
     createCustomElement,
     nextSibling,
-    previousSibling,
     attachShadow,
     getProperty,
     setProperty,

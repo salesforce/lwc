@@ -52,7 +52,6 @@ import {
     BaseElement,
     ElseifBlock,
     ScopedSlotFragment,
-    StaticElement,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -84,7 +83,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
-            return codeGen.genStaticElement(element as StaticElement, slotParentName);
+            return codeGen.genStaticElement(element, slotParentName);
         }
 
         const children = transformChildren(element);

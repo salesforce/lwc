@@ -27,7 +27,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
-import { EmptyArray } from './utils';
+import { EmptyArray, setRefVNode } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -46,8 +46,7 @@ import {
     VFragment,
     isVScopedSlotFragment,
     VScopedSlotFragment,
-    VStaticPart,
-    VStaticPartData,
+    VStaticElementData,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -55,15 +54,6 @@ const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
-}
-
-// [s]tatic [p]art
-function sp(partId: number, data: VStaticPartData): VStaticPart {
-    return {
-        partId,
-        data,
-        elm: undefined, // elm is defined later
-    };
 }
 
 // [s]coped [s]lot [f]actory
@@ -80,7 +70,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 }
 
 // [st]atic node
-function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
+function st(fragment: Element, key: Key, data?: VStaticElementData): VStatic {
     const owner = getVMBeingRendered()!;
     const vnode: VStatic = {
         type: VNodeType.Static,
@@ -89,8 +79,14 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
         elm: undefined,
         fragment,
         owner,
-        parts,
+        data,
     };
+
+    const ref = data?.ref;
+
+    if (!isUndefined(ref)) {
+        setRefVNode(owner, ref, vnode);
+    }
 
     return vnode;
 }
@@ -151,7 +147,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key } = data;
+    const { key, ref } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -162,6 +158,10 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         key,
         owner: vmBeingRendered,
     };
+
+    if (!isUndefined(ref)) {
+        setRefVNode(vmBeingRendered, ref, vnode);
+    }
 
     return vnode;
 }
@@ -310,7 +310,7 @@ function c(
             });
         }
     }
-    const { key } = data;
+    const { key, ref } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -327,6 +327,10 @@ function c(
         vm,
     };
     addVNodeToChildLWC(vnode);
+
+    if (!isUndefined(ref)) {
+        setRefVNode(vmBeingRendered, ref, vnode);
+    }
 
     return vnode;
 }
@@ -687,7 +691,6 @@ const api = ObjectFreeze({
     shc,
     ssf,
     ddc,
-    sp,
 });
 
 export default api;

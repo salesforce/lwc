@@ -48,10 +48,8 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
-import { applyStaticParts } from './modules/static-parts';
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
-import { applyRefs } from './modules/refs';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -220,8 +218,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     }
 
     vnode.elm = elm;
-
-    applyStaticParts(elm, vnode, renderer);
+    applyEventListeners(vnode, renderer);
 
     return elm;
 }
@@ -278,7 +275,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         }
     }
 
-    patchElementPropsAndAttrsAndRefs(vnode, renderer);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -325,7 +322,7 @@ function hydrateCustomElement(
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
-    patchElementPropsAndAttrsAndRefs(vnode, renderer);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -409,11 +406,9 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     return vnode.elm!;
 }
 
-function patchElementPropsAndAttrsAndRefs(vnode: VBaseElement, renderer: RendererAPI) {
+function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
     applyEventListeners(vnode, renderer);
     patchProps(null, vnode, renderer);
-    // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    applyRefs(vnode, vnode.owner);
 }
 
 function hasCorrectNodeType<T extends Node>(

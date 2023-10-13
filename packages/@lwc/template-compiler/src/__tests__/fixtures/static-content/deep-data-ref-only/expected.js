@@ -1,25 +1,43 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div></div></div><div${3}></div><div${3}></div></div>`;
+const $fragment1 = parseFragment`<div${3}></div>`;
+const $fragment2 = parseFragment`<div${3}></div>`;
+const $fragment3 = parseFragment`<div${3}></div>`;
+const $fragment4 = parseFragment`<div${3}></div>`;
+const $fragment5 = parseFragment`<div${3}></div>`;
 const stc0 = {
-  ref: "foo",
+  key: 0,
 };
 const stc1 = {
-  ref: "baz",
+  key: 3,
 };
 const stc2 = {
-  ref: "bar",
+  key: 4,
 };
 const stc3 = {
+  ref: "foo",
+};
+const stc4 = {
+  ref: "baz",
+};
+const stc5 = {
+  ref: "bar",
+};
+const stc6 = {
   ref: "quux",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { sp: api_static_part, st: api_static_fragment } = $api;
+  const { st: api_static_fragment, h: api_element } = $api;
   return [
-    api_static_fragment($fragment1(), 1, [
-      api_static_part(4, stc0),
-      api_static_part(5, stc1),
-      api_static_part(6, stc2),
-      api_static_part(7, stc3),
+    api_element("div", stc0, [
+      api_static_fragment($fragment1(), 2),
+      api_element("div", stc1, [
+        api_element("div", stc2, [
+          api_static_fragment($fragment2(), 6, stc3),
+          api_static_fragment($fragment3(), 8, stc4),
+        ]),
+      ]),
+      api_static_fragment($fragment4(), 10, stc5),
+      api_static_fragment($fragment5(), 12, stc6),
     ]),
   ];
   /*LWC compiler vX.X.X*/
