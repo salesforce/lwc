@@ -189,6 +189,7 @@ declare module 'lwc' {
      */
     export const track: PropertyDecorator;
 
+    type StringKeyedRecord = Record<string, any>;
     /**
      * Decorator factory to wire a property or method to a wire adapter data source
      * Use generic types to allow type checking for wire adapters
@@ -205,9 +206,9 @@ declare module 'lwc' {
      * @param config configuration object for the adapter
      */
     export function wire<
-        Config extends Record<string, any> = any,
+        Config extends StringKeyedRecord = any,
         Value = any,
-        Context extends Record<string, any> = any
+        Context extends StringKeyedRecord = any
     >(
         adapter:
             | WireAdapterConstructor<Config, Value, Context>
@@ -216,13 +217,16 @@ declare module 'lwc' {
     ): PropertyDecorator;
 
     type LegacyWireAdapterConstructor<Config = any, Value = any> = (config?: Config) => Value;
-    type WireConfigValue<Config extends object = Record<string, any>> = {
+    type WireConfigValue<Config extends StringKeyedRecord = StringKeyedRecord> = {
         // wire reactive variables are strings prefixed with '$' so the config value can just be string
         [K in keyof Config]: Config[K] | string;
     };
-    type ContextValue<Context extends object = Record<string, any>> = Context;
+    type ContextValue<Context extends StringKeyedRecord = StringKeyedRecord> = Context;
 
-    interface WireAdapter<Config extends object = any, Context extends object = any> {
+    interface WireAdapter<
+        Config extends StringKeyedRecord = any,
+        Context extends StringKeyedRecord = any
+    > {
         update(config: WireConfigValue<Config>, context?: ContextValue<Context>): void;
         connect(): void;
         disconnect(): void;
@@ -231,32 +235,32 @@ declare module 'lwc' {
     type WireDataCallback<Value = any> = (value: Value) => void;
     type WireAdapterSchemaValue = 'optional' | 'required';
 
-    interface ContextConsumer<Context extends object = any> {
+    interface ContextConsumer<Context extends StringKeyedRecord = any> {
         provide(newContext: ContextValue<Context>): void;
     }
 
-    interface ContextProviderOptions<Context extends object = any> {
+    interface ContextProviderOptions<Context extends StringKeyedRecord = any> {
         consumerConnectedCallback: (consumer: ContextConsumer<Context>) => void;
         consumerDisconnectedCallback?: (consumer: ContextConsumer<Context>) => void;
     }
 
     interface WireAdapterConstructor<
-        Config extends object = any,
+        Config extends StringKeyedRecord = any,
         Value = any,
-        Context extends object = any
+        Context extends StringKeyedRecord = any
     > {
         new (callback: WireDataCallback<Value>): WireAdapter<Config, Context>;
         configSchema?: Record<keyof Config, WireAdapterSchemaValue>;
         contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
     }
 
-    type Contextualizer<Context extends object = any> = (
+    type Contextualizer<Context extends StringKeyedRecord = any> = (
         elm: EventTarget,
         options: ContextProviderOptions<Context>
     ) => void;
     export function createContextProvider<
-        Config extends object = any,
+        Config extends StringKeyedRecord = any,
         Value = any,
-        Context extends object = any
+        Context extends StringKeyedRecord = any
     >(config: WireAdapterConstructor<Config, Value, Context>): Contextualizer<Context>;
 }
