@@ -221,7 +221,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 
     vnode.elm = elm;
 
-    applyStaticParts(elm, vnode, renderer);
+    applyStaticParts(elm, vnode, renderer, true);
 
     return elm;
 }

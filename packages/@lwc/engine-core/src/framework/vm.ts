@@ -546,7 +546,10 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { renderRoot, children: oldCh, renderer } = vm;
+    const { renderRoot, children: oldCh, renderer, cmpTemplate } = vm;
+
+    // reset the refs; they will be set during `patchChildren`
+    vm.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
 
     // caching the new children collection
     vm.children = newCh;

@@ -11,6 +11,7 @@ import StaticUnsafeTopLevel from 'x/staticUnsafeTopLevel';
 import OnlyEventListener from 'x/onlyEventListener';
 import OnlyEventListenerChild from 'x/onlyEventListenerChild';
 import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
+import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -342,5 +343,32 @@ describe('static optimization with event listeners', () => {
                 expect(dispatcher.calls.count()).toBe(2);
             });
         });
+    });
+});
+
+describe('event listeners on static nodes when other nodes are updated', () => {
+    it('event listeners work after updates', async () => {
+        const elm = createElement('x-listener-static-with-updates', {
+            is: ListenerStaticWithUpdates,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        let expectedCount = 0;
+
+        expect(elm.fooEventCount).toBe(expectedCount);
+        elm.fireFooEvent();
+        expect(elm.fooEventCount).toBe(++expectedCount);
+
+        await Promise.resolve();
+        for (let i = 0; i < 3; i++) {
+            elm.version = i;
+            elm.fireFooEvent();
+            expect(elm.fooEventCount).toBe(++expectedCount);
+            await Promise.resolve();
+            elm.fireFooEvent();
+            expect(elm.fooEventCount).toBe(++expectedCount);
+        }
     });
 });
