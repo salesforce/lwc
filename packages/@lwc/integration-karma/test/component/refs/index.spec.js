@@ -27,7 +27,7 @@ import Slotter from 'x/slotter';
 import AccessDuringRender from 'x/accessDuringRender';
 import RerenderElement from 'x/rerenderElement';
 import RerenderComponent from 'x/rerenderComponent';
-import RerenderElementStaticRef from 'x/RerenderElementStaticRef';
+import RerenderElementStaticRef from 'x/rerenderElementStaticRef';
 
 describe('refs', () => {
     describe('basic refs example', () => {
