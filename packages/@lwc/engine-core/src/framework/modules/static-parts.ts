@@ -90,14 +90,17 @@ export function applyStaticParts(
         return;
     }
 
-    traverseAndSetElements(root, parts, renderer); // this adds `part.elm` to each `part`
+    // This adds `part.elm` to each `part`. We have to do this on every mount/patch because the `parts`
+    // array is recreated from scratch every time, so each `part.elm` is now undefined.
+    traverseAndSetElements(root, parts, renderer);
 
+    // Currently only event listeners and refs are supported for static vnodes
     for (const part of parts) {
         if (mount) {
-            // Event listeners are only applied once when mounting, so they are allowed for static vnodes
+            // Event listeners only need to be applied once when mounting
             applyEventListeners(part, renderer);
         }
-        // Refs are allowed as well, and must be updated after every render
+        // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
     }
 }
