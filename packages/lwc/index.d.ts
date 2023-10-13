@@ -193,6 +193,14 @@ declare module 'lwc' {
      * Decorator factory to wire a property or method to a wire adapter data source
      * Use generic types to allow type checking for wire adapters
      * Default all the generic types to any to maintain backward compatibility
+     *
+     * For example, a wire adapter 'getRecord' can have the following type definition
+     *
+     * export const getRecord: WireAdapterConstructor<GetRecordConfig, RecordRepresentation>;
+     *
+     * in which 'GetRecordConfig' is the adapter config object type and 'RecordRepresentation'
+     * is the returned value.
+     *
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
      */
