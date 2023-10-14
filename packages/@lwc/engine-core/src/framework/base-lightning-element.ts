@@ -18,13 +18,13 @@ import {
     defineProperties,
     defineProperty,
     freeze,
+    hasOwnProperty,
     isFunction,
     isNull,
     isObject,
     isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
-    noop,
     setPrototypeOf,
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
@@ -316,8 +316,12 @@ const formAssociatedProps = new Set([
 ]);
 
 // Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
-function verifyPropForFormAssociation(propertyKey: string, isFormAssociated: boolean) {
-    if (formAssociatedProps.has(propertyKey) && !isFormAssociated) {
+function verifyPropForFormAssociation(propertyKey: string | symbol, isFormAssociated: boolean) {
+    if (
+        typeof propertyKey == 'string' &&
+        formAssociatedProps.has(propertyKey) &&
+        !isFormAssociated
+    ) {
         //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
         throw new DOMException(
             `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
@@ -325,19 +329,27 @@ function verifyPropForFormAssociation(propertyKey: string, isFormAssociated: boo
     }
 }
 
+const elementInternalsAccessorAllowList = new Set(['shadowRoot', 'role', ...formAssociatedProps]);
+
 // Prevent access to properties not defined in the HTML spec in case browsers decide to
 // provide new APIs that provide access to form associated properties.
 // This can be removed along with UpgradeableConstructor.
-function isAllowedElementInternalAccessor(prop: string) {
-    // Allow list is based on HTML spec:
-    // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
-    const isAllowedAccessor =
-        prop === 'shadowRoot' || prop.match(/^aria/) || formAssociatedProps.has(prop);
-    if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
-        logWarn(
-            'Only access to ElementInternals properties defined in the HTML spec are accessible'
-        );
+function isAllowedElementInternalAccessor(propertyKey: string | symbol) {
+    let isAllowedAccessor = false;
+    // As of this writing all ElementInternal property keys as described in the spec are implemented with strings
+    // in Chrome, Firefox, and Safari
+    if (typeof propertyKey === 'string') {
+        // Allow list is based on HTML spec:
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
+        isAllowedAccessor =
+            elementInternalsAccessorAllowList.has(propertyKey) || /^aria/.test(propertyKey);
+        if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
+            logWarn(
+                'Only access to ElementInternals properties defined in the HTML spec are accessible'
+            );
+        }
     }
+
     return isAllowedAccessor;
 }
 
@@ -352,25 +364,31 @@ function createElementInternalsProxy(
 ) {
     const elementInternalsProxy = new Proxy(elementInternals, {
         set(target, propertyKey, newValue) {
-            if (isAllowedElementInternalAccessor(propertyKey as string)) {
+            if (isAllowedElementInternalAccessor(propertyKey)) {
                 // Verify that formAssociated is set for form associated properties
-                verifyPropForFormAssociation(propertyKey as string, isFormAssociated);
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
                 return Reflect.set(target, propertyKey, newValue);
             }
+            // As of this writing ElementInternals do not have non-string properties that can be set.
             return false;
         },
         get(target, propertyKey) {
-            if (isAllowedElementInternalAccessor(propertyKey as string)) {
+            if (
+                // Pass through Object.prototype methods such as toString()
+                hasOwnProperty.call(Object.prototype, propertyKey) ||
+                // As of this writing, ElementInternals only uses Symbol.toStringTag which is called
+                // on Object.hasOwnProperty invocations
+                Symbol.for('Symbol.toStringTag') === propertyKey ||
+                // ElementInternals allow listed properties
+                isAllowedElementInternalAccessor(propertyKey)
+            ) {
                 // Verify that formAssociated is set for form associated properties
-                verifyPropForFormAssociation(propertyKey as string, isFormAssociated);
-                // Bind the property value to the target so that function invocations are called with the
-                // correct context ('this' value).
-                const internalsPropertyValue = Reflect.get(target, propertyKey);
-                return typeof internalsPropertyValue === 'function'
-                    ? internalsPropertyValue.bind(target)
-                    : internalsPropertyValue;
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
+                const propertyValue = Reflect.get(target, propertyKey);
+                return typeof propertyValue === 'function'
+                    ? propertyValue.bind(target)
+                    : propertyValue;
             }
-            return noop;
         },
     });
 
