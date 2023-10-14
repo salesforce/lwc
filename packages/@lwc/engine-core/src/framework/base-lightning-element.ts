@@ -344,9 +344,7 @@ function isAllowedElementInternalAccessor(propertyKey: string | symbol) {
         isAllowedAccessor =
             elementInternalsAccessorAllowList.has(propertyKey) || /^aria/.test(propertyKey);
         if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
-            logWarn(
-                'Only access to ElementInternals properties defined in the HTML spec are accessible'
-            );
+            logWarn('Only properties defined in the ElementInternals HTML spec are available.');
         }
     }
 

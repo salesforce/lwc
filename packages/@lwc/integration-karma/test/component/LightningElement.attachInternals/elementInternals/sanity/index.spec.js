@@ -27,12 +27,12 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
                 // Chrome/Firefox/Safari have different messages
                 expect(() =>
                     expect(() => (elm.internals.foo = 'bar')).toLogWarningDev(
-                        /Only access to ElementInternals properties defined in the HTML spec are accessible/
+                        /Only properties defined in the ElementInternals HTML spec are available./
                     )
                 ).toThrow();
                 // Not allowed getters
                 expect(() => elm.internals.foo).toLogWarningDev(
-                    /Only access to ElementInternals properties defined in the HTML spec are accessible/
+                    /Only properties defined in the ElementInternals HTML spec are available./
                 );
                 // Allowed getter
                 expect(() => elm.internals.ariaAtomic).not.toThrow();
