@@ -24,11 +24,12 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
         it('only allow listed properties accessible', () => {
             if (process.env.NODE_ENV !== 'production') {
                 // Not allowed setter
+                // Chrome/Firefox/Safari have different messages
                 expect(() =>
                     expect(() => (elm.internals.foo = 'bar')).toLogWarningDev(
                         /Only access to ElementInternals properties defined in the HTML spec are accessible/
                     )
-                ).toThrowError(/'set' on proxy: trap returned falsish for property/);
+                ).toThrow();
                 // Not allowed getters
                 expect(() => elm.internals.foo).toLogWarningDev(
                     /Only access to ElementInternals properties defined in the HTML spec are accessible/
@@ -37,9 +38,8 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
                 expect(() => elm.internals.ariaAtomic).not.toThrow();
             } else {
                 // Not allowed setter
-                expect(() => (elm.internals.foo = 'bar')).toThrowError(
-                    /'set' on proxy: trap returned falsish for property/
-                );
+                // Chrome/Firefox/Safari have different messages
+                expect(() => (elm.internals.foo = 'bar')).toThrow();
                 // Not allowed getters
                 expect(elm.internals.foo).toBeUndefined();
                 // Allowed getter
