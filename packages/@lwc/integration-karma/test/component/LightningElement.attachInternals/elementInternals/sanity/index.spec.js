@@ -21,6 +21,40 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
             expect(elm.internals.shadowRoot).toBe(elm.shadowRoot);
         });
 
+        it('only allow listed properties accessible', () => {
+            if (process.env.NODE_ENV !== 'production') {
+                // Not allowed setter
+                expect(() =>
+                    expect(() => (elm.internals.foo = 'bar')).toLogWarningDev(
+                        /Only access to ElementInternals properties defined in the HTML spec are accessible/
+                    )
+                ).toThrowError(/'set' on proxy: trap returned falsish for property/);
+                // Not allowed getters
+                expect(() => elm.internals.foo).toLogWarningDev(
+                    /Only access to ElementInternals properties defined in the HTML spec are accessible/
+                );
+                // Allowed getter
+                expect(() => elm.internals.ariaAtomic).not.toThrow();
+            } else {
+                // Not allowed setter
+                expect(() => (elm.internals.foo = 'bar')).toThrowError(
+                    /'set' on proxy: trap returned falsish for property/
+                );
+                // Not allowed getters
+                expect(elm.internals.foo).toBeUndefined();
+                // Allowed getter
+                expect(() => elm.internals.ariaAtomic).not.toThrow();
+            }
+        });
+
+        it('should allow invocations from Object.prototype and symbols', () => {
+            // Inherited from Object.prototype
+            expect(elm.internals.toString()).toContain('ElementInternals');
+            // Calls out to Symbol.toStringTag, will return a false value but reaches into
+            // Symbol.toStringTag to verify
+            expect(() => hasOwnProperty.call(elm.internals, 'ariaAtomic')).not.toThrow();
+        });
+
         // Firefox does not support ARIAMixin inside ElementInternals.
         // Check to see if ARIAMixin value is defined on ElementInternals before
         // testing accessibility.
