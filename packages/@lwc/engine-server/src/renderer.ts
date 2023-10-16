@@ -351,7 +351,7 @@ function createUpgradableElementConstructor(tagName: string): CreateElementAndUp
     };
 }
 
-function getUpgradableConstructor(
+function getUpgradableElement(
     tagName: string,
     _connectedCallback?: LifecycleCallback,
     _disconnectedCallback?: LifecycleCallback
@@ -367,7 +367,7 @@ function getUpgradableConstructor(
 }
 
 function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
-    const UpgradableConstructor = getUpgradableConstructor(tagName);
+    const UpgradableConstructor = getUpgradableElement(tagName);
     return new (UpgradableConstructor as any)(upgradeCallback);
 }
 
@@ -471,5 +471,5 @@ export const renderer = {
     ownerDocument,
     registerContextConsumer,
     attachInternals,
-    getUpgradableConstructor,
+    defineCustomElement: getUpgradableElement,
 };

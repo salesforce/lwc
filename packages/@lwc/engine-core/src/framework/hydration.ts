@@ -16,6 +16,7 @@ import {
     ArrayIncludes,
     isTrue,
     isString,
+    StringToLowerCase,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -313,7 +314,7 @@ function hydrateCustomElement(
     }
 
     const { sel, mode, ctor, owner } = vnode;
-    renderer.getUpgradableConstructor(elm.tagName.toLowerCase());
+    renderer.defineCustomElement(StringToLowerCase.call(elm.tagName));
 
     const vm = createVM(elm, ctor, renderer, {
         mode,

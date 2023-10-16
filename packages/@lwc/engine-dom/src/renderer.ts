@@ -29,7 +29,7 @@ export const renderer: RendererAPI = assign(
         insertStylesheet,
         // relies on a shared global cache
         createCustomElement,
-        getUpgradableConstructor,
+        defineCustomElement: getUpgradableConstructor,
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
     }
 );

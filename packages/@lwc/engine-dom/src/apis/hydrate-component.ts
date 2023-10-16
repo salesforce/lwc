@@ -12,7 +12,7 @@ import {
     connectRootElement,
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
-import { isFunction, isNull, isObject } from '@lwc/shared';
+import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
@@ -76,7 +76,7 @@ export function hydrateComponent(
     }
 
     try {
-        renderer.getUpgradableConstructor(element.tagName.toLowerCase());
+        renderer.defineCustomElement(StringToLowerCase.call(element.tagName));
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);
