@@ -76,7 +76,8 @@ export function hydrateComponent(
     }
 
     try {
-        renderer.defineCustomElement(StringToLowerCase.call(element.tagName));
+        const { defineCustomElement, getTagName } = renderer;
+        defineCustomElement(StringToLowerCase.call(getTagName(element)));
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);
