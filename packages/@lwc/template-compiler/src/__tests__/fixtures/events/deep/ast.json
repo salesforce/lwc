@@ -1,0 +1,142 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 85,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 74,
+                "end": 85
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 63,
+                    "start": 15,
+                    "end": 73,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 54,
+                        "start": 15,
+                        "end": 64
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 54,
+                        "endLine": 2,
+                        "endColumn": 63,
+                        "start": 64,
+                        "end": 73
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "data-dynamic",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "dynamic",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 13,
+                                "endLine": 2,
+                                "endColumn": 35,
+                                "start": 23,
+                                "end": 45
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 13,
+                            "endLine": 2,
+                            "endColumn": 35,
+                            "start": 23,
+                            "end": 45
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "click",
+                        "handler": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 8,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "foo"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 5,
+                                "end": 8,
+                                "name": "bar"
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 36,
+                                "endLine": 2,
+                                "endColumn": 53,
+                                "start": 46,
+                                "end": 63
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 36,
+                            "endLine": 2,
+                            "endColumn": 53,
+                            "start": 46,
+                            "end": 63
+                        }
+                    }
+                ],
+                "children": []
+            }
+        ]
+    }
+}
