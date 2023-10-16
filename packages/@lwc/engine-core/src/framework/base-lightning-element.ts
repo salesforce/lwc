@@ -338,7 +338,7 @@ function isAllowedElementInternalAccessor(propertyKey: string | symbol) {
     let isAllowedAccessor = false;
     // As of this writing all ElementInternal property keys as described in the spec are implemented with strings
     // in Chrome, Firefox, and Safari
-    if (typeof propertyKey === 'string') {
+    if (isString(propertyKey)) {
         // Allow list is based on HTML spec:
         // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
         isAllowedAccessor =
