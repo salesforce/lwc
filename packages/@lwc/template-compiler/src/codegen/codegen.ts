@@ -482,6 +482,10 @@ export default class CodeGen {
         }
 
         const scope = this;
+
+        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+        // node later during static content optimization
+        expression = structuredClone(expression);
         walk(expression, {
             leave(node, parent) {
                 if (
