@@ -18,7 +18,6 @@ import {
     defineProperties,
     defineProperty,
     freeze,
-    isFalse,
     isFunction,
     isNull,
     isObject,
@@ -136,6 +135,7 @@ export interface LightningElementConstructor {
 
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
+    formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
     stylesheets: TemplateStylesheetFactories;
 }
@@ -193,6 +193,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     disconnectedCallback?(): void;
     renderedCallback?(): void;
     errorCallback?(error: any, stack: string): void;
+    formAssociatedCallback?(): void;
+    formResetCallback?(): void;
+    formDisabledCallback?(): void;
+    formStateRestoreCallback?(): void;
 }
 
 /**
@@ -296,7 +300,59 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     }
 }
 
-const supportsElementInternals = typeof ElementInternals !== 'undefined';
+// List of properties on ElementInternals that are formAssociated can be found in the spec:
+// https://html.spec.whatwg.org/multipage/custom-elements.html#form-associated-custom-elements
+const formAssociatedProps = new Set([
+    'setFormValue',
+    'form',
+    'setValidity',
+    'willValidate',
+    'validity',
+    'validationMessage',
+    'checkValidity',
+    'reportValidity',
+    'labels',
+]);
+
+// Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
+function assertFormAssociatedPropertySet(propertyKey: string, isFormAssociated: boolean) {
+    if (formAssociatedProps.has(propertyKey) && !isFormAssociated) {
+        //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+        throw new DOMException(
+            `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
+        );
+    }
+}
+
+// Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
+// This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
+// ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
+// We are doing this to guard against customers taking a dependency on form elements being associated to ElementInternals
+// when 'formAssociated' has not been set on the LWC.
+function createElementInternalsProxy(
+    elementInternals: ElementInternals,
+    isFormAssociated: boolean
+) {
+    const elementInternalsProxy = new Proxy(elementInternals, {
+        set(target, propertyKey, newValue) {
+            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
+            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
+            return Reflect.set(target, propertyKey, newValue);
+        },
+        get(target, propertyKey) {
+            // ElementInternals implementation uses strings as property keys exclusively in chrome, firefox, and safari
+            assertFormAssociatedPropertySet(propertyKey as string, isFormAssociated);
+            const internalsPropertyValue = Reflect.get(target, propertyKey);
+            // Bind the property value to the target so that function invocations are called with the
+            // correct context ('this' value).
+            return typeof internalsPropertyValue === 'function'
+                ? internalsPropertyValue.bind(target)
+                : internalsPropertyValue;
+        },
+    });
+
+    return elementInternalsProxy;
+}
 
 // @ts-ignore
 LightningElement.prototype = {
@@ -467,21 +523,19 @@ LightningElement.prototype = {
         const vm = getAssociatedVM(this);
         const {
             elm,
+            def: { formAssociated },
             renderer: { attachInternals },
         } = vm;
 
-        if (isFalse(supportsElementInternals)) {
-            // Browsers that don't support attachInternals will need to be polyfilled before LWC is loaded.
-            throw new Error('attachInternals API is not supported in this browser environment.');
-        }
-
-        if (vm.renderMode === RenderMode.Light || vm.shadowMode === ShadowMode.Synthetic) {
+        if (vm.shadowMode === ShadowMode.Synthetic) {
             throw new Error(
                 'attachInternals API is not supported in light DOM or synthetic shadow.'
             );
         }
 
-        return attachInternals(elm);
+        const internals = attachInternals(elm);
+        // #TODO[2970]: remove proxy once `UpgradeableConstructor` has been removed
+        return createElementInternalsProxy(internals, Boolean(formAssociated));
     },
 
     get isConnected(): boolean {

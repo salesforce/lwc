@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-core",
-    "version": "3.2.0",
+    "version": "3.7.1",
     "description": "Core LWC engine APIs.",
     "keywords": [
         "lwc"
@@ -42,8 +42,8 @@
         }
     },
     "dependencies": {
-        "@lwc/features": "3.2.0",
-        "@lwc/shared": "3.2.0"
+        "@lwc/features": "3.7.1",
+        "@lwc/shared": "3.7.1"
     },
     "devDependencies": {
         "observable-membrane": "2.0.0"

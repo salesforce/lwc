@@ -51,6 +51,9 @@ export interface Template {
     stylesheets?: TemplateStylesheetFactories;
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
+    /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
     /** True if this template contains template refs, undefined or false otherwise */
@@ -110,6 +113,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
 const enum FragmentCache {
     HAS_SCOPED_STYLE = 1 << 0,
     SHADOW_MODE_SYNTHETIC = 1 << 1,
+    HAS_LEGACY_SCOPE_TOKEN = 1 << 2,
 }
 
 function buildParseFragmentFn(
@@ -120,12 +124,14 @@ function buildParseFragmentFn(
 
         return function (): Element {
             const {
-                context: { hasScopedStyles, stylesheetToken },
+                context: { hasScopedStyles, stylesheetToken, legacyStylesheetToken },
                 shadowMode,
                 renderer,
             } = getVMBeingRendered()!;
             const hasStyleToken = !isUndefined(stylesheetToken);
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
+            const hasLegacyToken =
+                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && !isUndefined(legacyStylesheetToken);
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
@@ -134,15 +140,26 @@ function buildParseFragmentFn(
             if (hasStyleToken && isSyntheticShadow) {
                 cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
             }
+            if (hasLegacyToken) {
+                // This isn't strictly required for prod, but it's required for our karma tests
+                // since the lwcRuntimeFlag may change over time
+                cacheKey |= FragmentCache.HAS_LEGACY_SCOPE_TOKEN;
+            }
 
             if (!isUndefined(cache[cacheKey])) {
                 return cache[cacheKey];
             }
 
-            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
+            // If legacy stylesheet tokens are required, then add them to the rendered string
+            const stylesheetTokenToRender =
+                stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
+
+            const classToken =
+                hasScopedStyles && hasStyleToken ? ' ' + stylesheetTokenToRender : '';
             const classAttrToken =
-                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
-            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
+                hasScopedStyles && hasStyleToken ? ` class="${stylesheetTokenToRender}"` : '';
+            const attrToken =
+                hasStyleToken && isSyntheticShadow ? ' ' + stylesheetTokenToRender : '';
 
             let htmlFragment = '';
             for (let i = 0, n = keys.length; i < n; i++) {
@@ -245,7 +262,10 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
-                    updateStylesheetToken(vm, html);
+                    updateStylesheetToken(vm, html, /* legacy */ false);
+                    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+                        updateStylesheetToken(vm, html, /* legacy */ true);
+                    }
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.

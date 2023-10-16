@@ -134,9 +134,9 @@
                                     "startLine": 4,
                                     "startColumn": 13,
                                     "endLine": 7,
-                                    "endColumn": 13,
+                                    "endColumn": 30,
                                     "start": 73,
-                                    "end": 331,
+                                    "end": 348,
                                     "startTag": {
                                         "startLine": 4,
                                         "startColumn": 13,
@@ -144,6 +144,14 @@
                                         "endColumn": 74,
                                         "start": 73,
                                         "end": 134
+                                    },
+                                    "endTag": {
+                                        "startLine": 7,
+                                        "startColumn": 13,
+                                        "endLine": 7,
+                                        "endColumn": 30,
+                                        "start": 331,
+                                        "end": 348
                                     }
                                 },
                                 "attributes": [

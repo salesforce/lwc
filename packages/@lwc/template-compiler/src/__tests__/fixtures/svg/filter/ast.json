@@ -662,9 +662,9 @@
                                             "startLine": 13,
                                             "startColumn": 10,
                                             "endLine": 16,
-                                            "endColumn": 10,
+                                            "endColumn": 20,
                                             "start": 574,
-                                            "end": 718,
+                                            "end": 728,
                                             "startTag": {
                                                 "startLine": 13,
                                                 "startColumn": 10,
@@ -672,6 +672,14 @@
                                                 "endColumn": 60,
                                                 "start": 574,
                                                 "end": 624
+                                            },
+                                            "endTag": {
+                                                "startLine": 16,
+                                                "startColumn": 10,
+                                                "endLine": 16,
+                                                "endColumn": 20,
+                                                "start": 718,
+                                                "end": 728
                                             }
                                         },
                                         "attributes": [
@@ -3379,9 +3387,9 @@
                                     "startLine": 62,
                                     "startColumn": 4,
                                     "endLine": 66,
-                                    "endColumn": 4,
+                                    "endColumn": 25,
                                     "start": 2588,
-                                    "end": 2824,
+                                    "end": 2845,
                                     "startTag": {
                                         "startLine": 62,
                                         "startColumn": 4,
@@ -3389,6 +3397,14 @@
                                         "endColumn": 41,
                                         "start": 2588,
                                         "end": 2768
+                                    },
+                                    "endTag": {
+                                        "startLine": 66,
+                                        "startColumn": 4,
+                                        "endLine": 66,
+                                        "endColumn": 25,
+                                        "start": 2824,
+                                        "end": 2845
                                     }
                                 },
                                 "attributes": [
@@ -3824,9 +3840,9 @@
                                     "startLine": 70,
                                     "startColumn": 4,
                                     "endLine": 73,
-                                    "endColumn": 4,
+                                    "endColumn": 14,
                                     "start": 3064,
-                                    "end": 3147,
+                                    "end": 3157,
                                     "startTag": {
                                         "startLine": 70,
                                         "startColumn": 4,
@@ -3834,6 +3850,14 @@
                                         "endColumn": 13,
                                         "start": 3064,
                                         "end": 3073
+                                    },
+                                    "endTag": {
+                                        "startLine": 73,
+                                        "startColumn": 4,
+                                        "endLine": 73,
+                                        "endColumn": 14,
+                                        "start": 3147,
+                                        "end": 3157
                                     }
                                 },
                                 "attributes": [],

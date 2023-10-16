@@ -10,13 +10,14 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
 // example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
 const features: FeatureFlagMap = {
-    DUMMY_TEST_FLAG: null,
+    PLACEHOLDER_TEST_FLAG: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     ENABLE_MIXED_SHADOW_MODE: null,
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_FROZEN_TEMPLATE: null,
+    ENABLE_LEGACY_SCOPE_TOKENS: null,
 };
 
 // eslint-disable-next-line no-restricted-properties

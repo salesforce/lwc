@@ -21,11 +21,11 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.20.1
+      - image: cimg/node:18.18.0
   node-browsers:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16.20.1-browsers
+      - image: cimg/node:18.18.0-browsers
 
 
 # Custom commands definition
@@ -164,7 +164,7 @@ commands:
           name: Install and start sauce connect
           background: true
           command: |
-              curl https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz -o saucelabs.tar.gz
+              curl https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz -o saucelabs.tar.gz
               tar -xzf saucelabs.tar.gz
               cd sc-*
               bin/sc -u ${<< parameters.username >>} -k ${<< parameters.key >>} -i ${<< parameters.tunnel_id >>} -P 4445
@@ -268,11 +268,7 @@ jobs:
   test_benchmark_smoke:
     executor: node-browsers
     steps:
-      # TODO [#3691]: remove `apt-get` and `chrome-version` lines when CircleCI issue is fixed
-      # https://github.com/CircleCI-Public/browser-tools-orb/issues/90
-      - run: sudo apt-get update
-      - browser-tools/install-chrome: # required for selenium used by tachometer benchmark smoke tests
-          chrome-version: 116.0.5845.96
+      - browser-tools/install-chrome # required for selenium used by tachometer benchmark smoke tests
       - load_workspace
       - run:
           name: Run benchmark smoke tests

@@ -70,17 +70,23 @@ export default function templateTransform(
     // thrown above. As for "Log" and "Fatal", they are currently unused.
     const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
-    const scopeToken = generateScopeToken(filename, namespace, name, apiVersion);
+    // TODO [#3733]: remove support for legacy scope tokens
+    const { scopeToken, legacyScopeToken } = generateScopeTokens(filename, namespace, name);
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, scopeToken),
+        code: serialize(result.code, filename, scopeToken, legacyScopeToken, apiVersion),
         map: { mappings: '' },
         warnings,
         cssScopeTokens: [
             scopeToken,
             `${scopeToken}-host`, // implicit scope token created by `makeHostToken()` in `@lwc/engine-core`
+            // The legacy tokens must be returned as well since we technically don't know what we're going to render
+            // This is not strictly required since this is only used for Jest serialization (as of this writing),
+            // and people are unlikely to set runtime flags in Jest, but it is technically correct to include this.
+            legacyScopeToken,
+            `${legacyScopeToken}-host`,
         ],
     };
 }
@@ -118,30 +124,37 @@ function escapeScopeToken(input: string) {
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
-function generateScopeToken(
+function generateScopeTokens(
     filename: string,
     namespace: string | undefined,
-    name: string | undefined,
-    apiVersion: APIVersion
+    name: string | undefined
 ) {
     const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
 
-    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
-        const hashCode = generateHashCode(uniqueToken);
+    // This scope token is all lowercase so that it works correctly in case-sensitive namespaces (e.g. SVG).
+    // It is deliberately designed to discourage people from relying on it by appearing somewhat random.
+    // (But not totally random, because it's nice to have stable scope tokens for our own tests.)
+    // Base-32 is chosen because it is not case-sensitive (0-v), and generates short strings with the given hash
+    // code implementation (10-11 characters).
+    const hashCode = generateHashCode(uniqueToken);
+    const scopeToken = `lwc-${hashCode.toString(32)}`;
 
-        // This scope token is all lowercase so that it works correctly in case-sensitive namespaces (e.g. SVG).
-        // It is deliberately designed to discourage people from relying on it by appearing somewhat random.
-        // (But not totally random, because it's nice to have stable scope tokens for our own tests.)
-        // Base-32 is chosen because it is not case-sensitive (0-v), and generates short strings with the given hash
-        // code implementation (10-11 characters).
-        return `lwc-${hashCode.toString(32)}`;
-    } else {
-        // This scope token is based on the namespace and name, and contains a mix of uppercase/lowercase chars
-        return escapeScopeToken(uniqueToken);
-    }
+    // This scope token is based on the namespace and name, and contains a mix of uppercase/lowercase chars
+    const legacyScopeToken = escapeScopeToken(uniqueToken);
+
+    return {
+        scopeToken,
+        legacyScopeToken,
+    };
 }
 
-function serialize(code: string, filename: string, scopeToken: string): string {
+function serialize(
+    code: string,
+    filename: string,
+    scopeToken: string,
+    legacyScopeToken: string,
+    apiVersion: APIVersion
+): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
 
@@ -157,7 +170,18 @@ function serialize(code: string, filename: string, scopeToken: string): string {
     buffer += 'if (_implicitScopedStylesheets) {\n';
     buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);\n`;
     buffer += `}\n`;
-    buffer += `tmpl.stylesheetToken = "${scopeToken}";\n`;
+
+    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
+        // Include both the new and legacy tokens, so that the runtime can decide based on a flag whether
+        // we need to render the legacy one. This is designed for cases where the legacy one is required
+        // for backwards compat (e.g. global stylesheets that rely on the legacy format for a CSS selector).
+        buffer += `tmpl.stylesheetToken = "${scopeToken}";\n`;
+        buffer += `tmpl.legacyStylesheetToken = "${legacyScopeToken}";\n`;
+    } else {
+        // In old API versions, we can just keep doing what we always did
+        buffer += `tmpl.stylesheetToken = "${legacyScopeToken}";\n`;
+    }
+
     // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
     // as `code` above. At this point, no more expando props should be added to `tmpl`.
     buffer += 'freezeTemplate(tmpl);\n';

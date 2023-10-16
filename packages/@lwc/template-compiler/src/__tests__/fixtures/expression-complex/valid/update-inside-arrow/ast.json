@@ -113,17 +113,8 @@
                                         "argument": {
                                             "type": "MemberExpression",
                                             "object": {
-                                                "type": "MemberExpression",
-                                                "object": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "property": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "computed": false,
-                                                "optional": false
+                                                "type": "Identifier",
+                                                "name": "$cmp"
                                             },
                                             "property": {
                                                 "type": "Identifier",

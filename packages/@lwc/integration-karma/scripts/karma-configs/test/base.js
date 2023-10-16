@@ -30,7 +30,6 @@ const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
 const ARIA_REFLECTION = require.resolve('@lwc/aria-reflection/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
-const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 
 const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, WIRE_SERVICE, ARIA_REFLECTION];
@@ -52,7 +51,6 @@ function getFiles() {
     }
     frameworkFiles.push(createPattern(LWC_ENGINE));
     frameworkFiles.push(createPattern(WIRE_SERVICE));
-    frameworkFiles.push(createPattern(WIRE_SETUP));
     frameworkFiles.push(createPattern(TEST_SETUP));
 
     return [

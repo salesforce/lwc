@@ -38,7 +38,7 @@ describe('Element.innerHTML - set', () => {
         }).toLogErrorDev(/Invalid attempt to set innerHTML on HTMLElement/);
     });
 
-    it('should log an error when invoking setter for an element in the shadow only in synthetic mode', () => {
+    it('should log a warning when invoking setter for an element in the shadow only in synthetic mode', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
@@ -51,8 +51,8 @@ describe('Element.innerHTML - set', () => {
         if (process.env.NATIVE_SHADOW) {
             expected = expected.not; // no error
         }
-        expected.toLogErrorDev(
-            /\[LWC error\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./
+        expected.toLogWarningDev(
+            /\[LWC warn\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

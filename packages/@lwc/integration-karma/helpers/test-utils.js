@@ -320,7 +320,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
     // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
     //    only be caught with window.addEventListener('error')
-    function customElementConnectedErrorListener(callback) {
+    //      - Note native lifecycle callbacks are all thrown asynchronously.
+    function customElementCallbackReactionErrorListener(callback) {
         return window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
             ? windowErrorListener(callback)
             : directErrorListener(callback);
@@ -331,8 +332,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         toLogError: consoleDevMatcherFactory('error', true),
         toLogWarningDev: consoleDevMatcherFactory('warn'),
         toThrowErrorDev: errorMatcherFactory(directErrorListener),
-        toThrowConnectedErrorDev: errorMatcherFactory(customElementConnectedErrorListener),
-        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener, true),
+        toThrowCallbackReactionErrorDev: errorMatcherFactory(
+            customElementCallbackReactionErrorListener
+        ),
+        toThrowCallbackReactionError: errorMatcherFactory(
+            customElementCallbackReactionErrorListener,
+            true
+        ),
     };
 
     beforeAll(function () {
@@ -538,7 +544,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getHooks: getHooks,
         setHooks: setHooks,
         spyConsole: spyConsole,
-        customElementConnectedErrorListener: customElementConnectedErrorListener,
+        customElementCallbackReactionErrorListener: customElementCallbackReactionErrorListener,
         ariaPropertiesMapping: ariaPropertiesMapping,
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,

@@ -13,7 +13,6 @@ import './formatters';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
-    register,
     api,
     track,
     wire,

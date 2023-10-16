@@ -318,7 +318,9 @@ describe('attribute reflection', () => {
         // for props, only @api props are set
         expect(elm.observed).toBeUndefined();
         expect(elm.api).toBe('foo');
-        expect(elm.track).toBeUndefined();
+        expect(() => {
+            expect(elm.track).toBeUndefined();
+        }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
     it('does not call setter more than once if unchanged', () => {
