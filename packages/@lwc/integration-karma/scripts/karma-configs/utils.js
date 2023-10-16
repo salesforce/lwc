@@ -110,7 +110,7 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
             ? [...config.reporters, 'dots', 'saucelabs']
             : [...config.reporters, 'progress', 'saucelabs'],
 
-        plugins: [...config.plugins, 'karma-sauce-launcher'],
+        plugins: [...config.plugins, 'karma-sauce-launcher-fix-firefox'],
 
         // Force Karma to run in singleRun mode in order to shutdown the server after the tests finished to run.
         singleRun: true,

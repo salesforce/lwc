@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import compile, { parse } from '../index';
+import { DiagnosticLevel } from '@lwc/errors';
+import compile, { Config, parse } from '../index';
 
 describe('option validation', () => {
     it('validated presence of options', () => {
@@ -34,5 +35,30 @@ describe('parse', () => {
 
         expect(res.root).not.toBeDefined();
         expect(res.warnings).toHaveLength(1);
+    });
+
+    describe('apiVersion', () => {
+        const configs: { name: string; config: Config }[] = [
+            { name: '58', config: { apiVersion: 58 } },
+            { name: '59', config: { apiVersion: 59 } },
+            { name: 'undefined', config: { apiVersion: undefined } },
+            // someone may pass us null despite the types
+            { name: 'null', config: { apiVersion: null } as unknown as Config },
+            { name: 'unspecified', config: {} },
+        ];
+        configs.forEach(({ name, config }) => {
+            it(`parse() with double </template> with config=${name}`, () => {
+                const result = parse('<template></template></template>', config);
+                const expectWarning = config.apiVersion === 58; // null/undefined/unspecified is treated as latest
+                expect(result.warnings.length).toBe(1);
+                expect(result.warnings[0].level).toBe(
+                    expectWarning ? DiagnosticLevel.Warning : DiagnosticLevel.Error
+                );
+                expect(result.warnings[0].code).toBe(expectWarning ? 1148 : 1058);
+                expect(result.warnings[0].message).toContain(
+                    'end-tag-without-matching-open-element'
+                );
+            });
+        });
     });
 });

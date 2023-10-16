@@ -50,7 +50,7 @@ describe('event handler is not a function', () => {
 
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowConnectedError(/Expected an EventListener but received undefined/);
+        }).toThrowCallbackReactionError(/Expected an EventListener but received undefined/);
 
         if (process.env.NODE_ENV === 'production') {
             expect(consoleSpy.calls.error.length).toEqual(0);

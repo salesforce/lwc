@@ -39,6 +39,10 @@ import {
     RenderMode,
     rerenderVM,
     runConnectedCallback,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
     ShadowMode,
     VM,
     VMState,
@@ -69,6 +73,8 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+import { applyRefs } from './modules/refs';
+import { applyStaticParts } from './modules/static-parts';
 
 export function patchChildren(
     c1: VNodes,
@@ -256,7 +262,7 @@ function mountElement(
     applyDomManual(elm, vnode);
     applyElementRestrictions(elm, vnode);
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);
@@ -265,7 +271,7 @@ function mountElement(
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
+    patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
 }
 
@@ -292,8 +298,7 @@ function mountStatic(
     }
 
     insertNode(elm, parent, anchor, renderer);
-    // Event listeners are only applied once when mounting, so they are allowed for static vnodes
-    applyEventListeners(vnode, renderer);
+    applyStaticParts(elm, vnode, renderer);
 }
 
 function mountCustomElement(
@@ -319,6 +324,10 @@ function mountCustomElement(
 
     let connectedCallback: LifecycleCallback | undefined;
     let disconnectedCallback: LifecycleCallback | undefined;
+    let formAssociatedCallback: LifecycleCallback | undefined;
+    let formDisabledCallback: LifecycleCallback | undefined;
+    let formResetCallback: LifecycleCallback | undefined;
+    let formStateRestoreCallback: LifecycleCallback | undefined;
 
     if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         connectedCallback = (elm: HTMLElement) => {
@@ -326,6 +335,18 @@ function mountCustomElement(
         };
         disconnectedCallback = (elm: HTMLElement) => {
             disconnectRootElement(elm);
+        };
+        formAssociatedCallback = (elm: HTMLElement) => {
+            runFormAssociatedCallback(elm);
+        };
+        formDisabledCallback = (elm: HTMLElement) => {
+            runFormDisabledCallback(elm);
+        };
+        formResetCallback = (elm: HTMLElement) => {
+            runFormResetCallback(elm);
+        };
+        formStateRestoreCallback = (elm: HTMLElement) => {
+            runFormStateRestoreCallback(elm);
         };
     }
 
@@ -338,7 +359,11 @@ function mountCustomElement(
         normalizedTagname,
         upgradeCallback,
         connectedCallback,
-        disconnectedCallback
+        disconnectedCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback
     );
 
     vnode.elm = elm;
@@ -351,7 +376,7 @@ function mountCustomElement(
         allocateChildren(vnode, vm);
     }
 
-    patchElementPropsAndAttrs(null, vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
@@ -397,7 +422,7 @@ function patchCustomElement(
         const elm = (n2.elm = n1.elm!);
         const vm = (n2.vm = n1.vm);
 
-        patchElementPropsAndAttrs(n1, n2, renderer);
+        patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
         if (!isUndefined(vm)) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
@@ -589,7 +614,7 @@ export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI
     }
 }
 
-function patchElementPropsAndAttrs(
+function patchElementPropsAndAttrsAndRefs(
     oldVnode: VBaseElement | null,
     vnode: VBaseElement,
     renderer: RendererAPI
@@ -607,22 +632,44 @@ function patchElementPropsAndAttrs(
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
+
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
+    applyRefs(vnode, vnode.owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+    const { getClassList } = renderer;
+
     // Set the class name for `*.scoped.css` style scoping.
-    const scopeToken = getScopeTokenClass(owner);
+    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
     if (!isNull(scopeToken)) {
-        const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
     }
 
+    // TODO [#3733]: remove support for legacy scope tokens
+    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+        const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
+        if (!isNull(legacyScopeToken)) {
+            // TODO [#2762]: this dot notation with add is probably problematic
+            // probably we should have a renderer api for just the add operation
+            getClassList(elm).add(legacyScopeToken);
+        }
+    }
+
     // Set property element for synthetic shadow DOM style scoping.
     const { stylesheetToken: syntheticToken } = owner.context;
-    if (owner.shadowMode === ShadowMode.Synthetic && !isUndefined(syntheticToken)) {
-        (elm as any).$shadowToken$ = syntheticToken;
+    if (owner.shadowMode === ShadowMode.Synthetic) {
+        if (!isUndefined(syntheticToken)) {
+            (elm as any).$shadowToken$ = syntheticToken;
+        }
+        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+            const legacyToken = owner.context.legacyStylesheetToken;
+            if (!isUndefined(legacyToken)) {
+                (elm as any).$legacyShadowToken$ = legacyToken;
+            }
+        }
     }
 }
 

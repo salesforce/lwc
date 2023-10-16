@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { HTML_NAMESPACE } from '@lwc/shared';
-import * as parse5 from 'parse5';
-
+import { Token as parse5TokenInfo } from 'parse5';
 import {
     Literal,
     SourceLocation,
@@ -55,7 +54,7 @@ import {
     BaseLwcElement,
 } from './types';
 
-export function root(parse5ElmLocation: parse5.ElementLocation): Root {
+export function root(parse5ElmLocation: parse5TokenInfo.ElementLocation): Root {
     return {
         type: 'Root',
         location: elementSourceLocation(parse5ElmLocation),
@@ -67,7 +66,7 @@ export function root(parse5ElmLocation: parse5.ElementLocation): Root {
 export function element(
     tagName: string,
     namespaceURI: string,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5TokenInfo.ElementLocation
 ): Element {
     return {
         type: 'Element',
@@ -84,7 +83,7 @@ export function element(
 
 export function externalComponent(
     tagName: string,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5TokenInfo.ElementLocation
 ): ExternalComponent {
     return {
         type: 'ExternalComponent',
@@ -99,7 +98,10 @@ export function externalComponent(
     };
 }
 
-export function component(tagName: string, parse5ElmLocation: parse5.ElementLocation): Component {
+export function component(
+    tagName: string,
+    parse5ElmLocation: parse5TokenInfo.ElementLocation
+): Component {
     return {
         type: 'Component',
         name: tagName,
@@ -115,7 +117,7 @@ export function component(tagName: string, parse5ElmLocation: parse5.ElementLoca
 
 export function lwcComponent(
     tagName: LwcTagName,
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5TokenInfo.ElementLocation
 ): LwcComponent {
     return {
         type: 'Lwc',
@@ -130,7 +132,7 @@ export function lwcComponent(
     };
 }
 
-export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation): Slot {
+export function slot(slotName: string, parse5ElmLocation: parse5TokenInfo.ElementLocation): Slot {
     return {
         type: 'Slot',
         name: 'slot',
@@ -149,7 +151,7 @@ export function text(
     raw: string,
     // TODO [#3370]: remove experimental template expression flag
     value: Literal | Expression | ComplexExpression,
-    parse5Location: parse5.Location
+    parse5Location: parse5TokenInfo.Location
 ): Text {
     return {
         type: 'Text',
@@ -159,7 +161,11 @@ export function text(
     };
 }
 
-export function comment(raw: string, value: string, parse5Location: parse5.Location): Comment {
+export function comment(
+    raw: string,
+    value: string,
+    parse5Location: parse5TokenInfo.Location
+): Comment {
     return {
         type: 'Comment',
         raw,
@@ -169,20 +175,20 @@ export function comment(raw: string, value: string, parse5Location: parse5.Locat
 }
 
 export function elementSourceLocation(
-    parse5ElmLocation: parse5.ElementLocation
+    parse5ElmLocation: parse5TokenInfo.ElementLocation
 ): ElementSourceLocation {
     const elementLocation = sourceLocation(parse5ElmLocation);
-    const startTag = sourceLocation(parse5ElmLocation.startTag);
+    const startTag = sourceLocation(parse5ElmLocation.startTag!);
     // endTag must be optional because Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
     const endTag = parse5ElmLocation.endTag
         ? sourceLocation(parse5ElmLocation.endTag)
         : parse5ElmLocation.endTag;
 
-    return { ...elementLocation, startTag, endTag };
+    return { ...elementLocation, startTag, endTag: endTag! };
 }
 
-export function sourceLocation(location: parse5.Location): SourceLocation {
+export function sourceLocation(location: parse5TokenInfo.Location): SourceLocation {
     return {
         startLine: location.startLine,
         startColumn: location.startCol,

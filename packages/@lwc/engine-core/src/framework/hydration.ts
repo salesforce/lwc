@@ -48,8 +48,10 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
+import { applyStaticParts } from './modules/static-parts';
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
+import { applyRefs } from './modules/refs';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -218,7 +220,8 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     }
 
     vnode.elm = elm;
-    applyEventListeners(vnode, renderer);
+
+    applyStaticParts(elm, vnode, renderer);
 
     return elm;
 }
@@ -275,7 +278,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         }
     }
 
-    patchElementPropsAndAttrs(vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -322,7 +325,7 @@ function hydrateCustomElement(
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
-    patchElementPropsAndAttrs(vnode, renderer);
+    patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -406,9 +409,11 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     return vnode.elm!;
 }
 
-function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
+function patchElementPropsAndAttrsAndRefs(vnode: VBaseElement, renderer: RendererAPI) {
     applyEventListeners(vnode, renderer);
     patchProps(null, vnode, renderer);
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
+    applyRefs(vnode, vnode.owner);
 }
 
 function hasCorrectNodeType<T extends Node>(
@@ -525,7 +530,8 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     const { data, owner } = vnode;
     let { className, classMap } = data;
     const { getProperty, getClassList, getAttribute } = renderer;
-    const scopedToken = getScopeTokenClass(owner);
+    // we don't care about legacy for hydration. it's a new use case
+    const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
     const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,

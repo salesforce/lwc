@@ -4,11 +4,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     $api;
   return [
     api_deprecated_dynamic_component("x-foo", $cmp.dynamicCtor, {
-      spread: $cmp.dynamicProps,
+      props: {
+        ...$cmp.dynamicProps,
+      },
       key: 0,
     }),
     api_dynamic_component($cmp.dynamicCtor, {
-      spread: $cmp.dynamicProps,
+      props: {
+        ...$cmp.dynamicProps,
+      },
       key: 1,
     }),
   ];
