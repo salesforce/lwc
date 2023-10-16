@@ -20,6 +20,7 @@ import {
     freeze,
     hasOwnProperty,
     isFunction,
+    isString,
     isNull,
     isObject,
     isUndefined,
@@ -317,11 +318,7 @@ const formAssociatedProps = new Set([
 
 // Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
 function verifyPropForFormAssociation(propertyKey: string | symbol, isFormAssociated: boolean) {
-    if (
-        isString(propertyKey)
-        formAssociatedProps.has(propertyKey) &&
-        !isFormAssociated
-    ) {
+    if (isString(propertyKey) && formAssociatedProps.has(propertyKey) && !isFormAssociated) {
         //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
         throw new DOMException(
             `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
@@ -383,9 +380,7 @@ function createElementInternalsProxy(
                 // Verify that formAssociated is set for form associated properties
                 verifyPropForFormAssociation(propertyKey, isFormAssociated);
                 const propertyValue = Reflect.get(target, propertyKey);
-                return isFunction(propertyValue)
-                    ? propertyValue.bind(target)
-                    : propertyValue;
+                return isFunction(propertyValue) ? propertyValue.bind(target) : propertyValue;
             }
         },
     });
