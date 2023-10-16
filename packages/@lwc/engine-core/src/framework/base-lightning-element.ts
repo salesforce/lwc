@@ -383,7 +383,7 @@ function createElementInternalsProxy(
                 // Verify that formAssociated is set for form associated properties
                 verifyPropForFormAssociation(propertyKey, isFormAssociated);
                 const propertyValue = Reflect.get(target, propertyKey);
-                return typeof propertyValue === 'function'
+                return isFunction(propertyValue)
                     ? propertyValue.bind(target)
                     : propertyValue;
             }
