@@ -548,6 +548,9 @@ function rehydrate(vm: VM) {
 function patchShadowRoot(vm: VM, newCh: VNodes) {
     const { renderRoot, children: oldCh, renderer } = vm;
 
+    // reset the refs; they will be set during `patchChildren`
+    resetRefVNodes(vm);
+
     // caching the new children collection
     vm.children = newCh;
 
@@ -923,4 +926,9 @@ export function runFormStateRestoreCallback(elm: HTMLElement) {
     if (!isUndefined(formStateRestoreCallback)) {
         runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
     }
+}
+
+export function resetRefVNodes(vm: VM) {
+    const { cmpTemplate } = vm;
+    vm.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
 }
