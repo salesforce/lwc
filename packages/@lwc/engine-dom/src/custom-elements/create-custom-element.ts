@@ -113,7 +113,7 @@ const createUpgradableConstructor = (
     return UpgradableConstructor;
 };
 
-export function getOrCreateUpgradableConstructor(
+export function getUpgradableConstructor(
     tagName: string,
     connectedCallback?: LifecycleCallback,
     disconnectedCallback?: LifecycleCallback
@@ -146,7 +146,7 @@ export const createCustomElement = (
     formResetCallback?: LifecycleCallback,
     formStateRestoreCallback?: LifecycleCallback
 ) => {
-    const UpgradableConstructor = getOrCreateUpgradableConstructor(
+    const UpgradableConstructor = getUpgradableConstructor(
         tagName,
         connectedCallback,
         disconnectedCallback

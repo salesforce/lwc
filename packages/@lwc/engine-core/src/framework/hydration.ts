@@ -313,7 +313,7 @@ function hydrateCustomElement(
     }
 
     const { sel, mode, ctor, owner } = vnode;
-    renderer.getOrCreateUpgradableConstructor(elm.tagName.toLowerCase());
+    renderer.getUpgradableConstructor(elm.tagName.toLowerCase());
 
     const vm = createVM(elm, ctor, renderer, {
         mode,

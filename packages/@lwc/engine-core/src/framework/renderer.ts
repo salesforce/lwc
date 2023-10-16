@@ -72,7 +72,7 @@ export interface RendererAPI {
         formResetCallback?: LifecycleCallback,
         formStateRestoreCallback?: LifecycleCallback
     ) => E;
-    getOrCreateUpgradableConstructor: (
+    getUpgradableConstructor: (
         tagName: string,
         connectedCallback?: LifecycleCallback,
         disconnectedCallback?: LifecycleCallback

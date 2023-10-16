@@ -25,7 +25,7 @@ export type SandboxableRendererAPI = Omit<
     | 'createCustomElement'
     | 'insertStylesheet'
     | 'isSyntheticShadowDefined'
-    | 'getOrCreateUpgradableConstructor'
+    | 'getUpgradableConstructor'
 >;
 
 export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : SandboxableRendererAPI;

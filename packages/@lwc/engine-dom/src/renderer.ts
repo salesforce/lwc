@@ -9,7 +9,7 @@ import { assign, hasOwnProperty, KEY__SHADOW_TOKEN } from '@lwc/shared';
 import { insertStylesheet } from './styles';
 import {
     createCustomElement,
-    getOrCreateUpgradableConstructor,
+    getUpgradableConstructor,
 } from './custom-elements/create-custom-element';
 import { rendererFactory } from './renderer-factory';
 
@@ -29,7 +29,7 @@ export const renderer: RendererAPI = assign(
         insertStylesheet,
         // relies on a shared global cache
         createCustomElement,
-        getOrCreateUpgradableConstructor,
+        getUpgradableConstructor,
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
     }
 );
