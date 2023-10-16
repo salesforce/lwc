@@ -32,6 +32,13 @@ import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindComplexExpression } from './expression';
 
+// structuredClone is only available in Node 17+
+// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
+const doStructuredClone =
+    typeof structuredClone === 'function'
+        ? structuredClone
+        : (obj: any) => JSON.parse(JSON.stringify(obj));
+
 type RenderPrimitive =
     | 'iterator'
     | 'flatten'
@@ -485,7 +492,7 @@ export default class CodeGen {
 
         // Cloning here is necessary because `this.replace()` is destructive, and we might use the
         // node later during static content optimization
-        expression = structuredClone(expression);
+        expression = doStructuredClone(expression);
         walk(expression, {
             leave(node, parent) {
                 if (
