@@ -388,7 +388,7 @@ describe('event listeners on deep paths', () => {
         expect(elm.counter).toBe(count);
 
         const childElms = Object.values(extractDataIds(elm));
-        expect(childElms).toHaveLength(12); // static1, dynamic1, deepStatic1, static2, etc. until 4
+        expect(childElms.length).toBe(12); // static1, dynamic1, deepStatic1, static2, etc. until 4
 
         for (const childElm of childElms) {
             childElm.dispatchEvent(new CustomEvent('foo'));
