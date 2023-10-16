@@ -76,6 +76,7 @@ export function hydrateComponent(
     }
 
     try {
+        renderer.getOrCreateUpgradableConstructor(element.tagName.toLowerCase());
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

@@ -72,6 +72,11 @@ export interface RendererAPI {
         formResetCallback?: LifecycleCallback,
         formStateRestoreCallback?: LifecycleCallback
     ) => E;
+    getOrCreateUpgradableConstructor: (
+        tagName: string,
+        connectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback
+    ) => Function;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,
