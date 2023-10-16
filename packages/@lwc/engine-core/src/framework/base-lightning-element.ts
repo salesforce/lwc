@@ -318,7 +318,7 @@ const formAssociatedProps = new Set([
 // Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
 function verifyPropForFormAssociation(propertyKey: string | symbol, isFormAssociated: boolean) {
     if (
-        typeof propertyKey == 'string' &&
+        isString(propertyKey)
         formAssociatedProps.has(propertyKey) &&
         !isFormAssociated
     ) {
