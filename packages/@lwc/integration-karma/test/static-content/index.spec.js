@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -12,6 +13,7 @@ import OnlyEventListener from 'x/onlyEventListener';
 import OnlyEventListenerChild from 'x/onlyEventListenerChild';
 import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
 import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
+import DeepListener from 'x/deepListener';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -369,6 +371,28 @@ describe('event listeners on static nodes when other nodes are updated', () => {
             await Promise.resolve();
             elm.fireFooEvent();
             expect(elm.fooEventCount).toBe(++expectedCount);
+        }
+    });
+});
+
+describe('event listeners on deep paths', () => {
+    it('handles events correctly', async () => {
+        const elm = createElement('x-deep-listener', {
+            is: DeepListener,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        let count = 0;
+        expect(elm.counter).toBe(count);
+
+        const childElms = Object.values(extractDataIds(elm));
+        expect(childElms.length).toBe(12); // static1, dynamic1, deepStatic1, static2, etc. until 4
+
+        for (const childElm of childElms) {
+            childElm.dispatchEvent(new CustomEvent('foo'));
+            expect(elm.counter).toBe(++count);
         }
     });
 });
