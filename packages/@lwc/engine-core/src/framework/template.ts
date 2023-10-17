@@ -283,9 +283,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     setActiveVM(vm);
                 }
 
-                // reset the refs; they will be set during the tmpl() instantiation
-                vm.refVNodes = html.hasRefs ? create(null) : null;
-
                 // right before producing the vnodes, we clear up all internal references
                 // to custom elements from the template.
                 vm.velements = [];

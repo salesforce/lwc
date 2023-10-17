@@ -38,6 +38,7 @@ declare module 'lwc' {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element>;
         getElementsByClassName(names: string): HTMLCollectionOf<Element>;
+        attachInternals(): ElementInternals;
         readonly tagName: string;
         readonly classList: DOMTokenList;
 

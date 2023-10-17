@@ -16,6 +16,7 @@ import {
     ArrayIncludes,
     isTrue,
     isString,
+    StringToLowerCase,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -31,6 +32,7 @@ import {
     LwcDomMode,
     VM,
     runRenderedCallback,
+    resetRefVNodes,
 } from './vm';
 import {
     VNodes,
@@ -79,6 +81,9 @@ export function hydrateRoot(vm: VM) {
 function hydrateVM(vm: VM) {
     const children = renderComponent(vm);
     vm.children = children;
+
+    // reset the refs; they will be set during `hydrateChildren`
+    resetRefVNodes(vm);
 
     const {
         renderRoot: parentNode,
@@ -221,7 +226,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 
     vnode.elm = elm;
 
-    applyStaticParts(elm, vnode, renderer);
+    applyStaticParts(elm, vnode, renderer, true);
 
     return elm;
 }
@@ -313,6 +318,8 @@ function hydrateCustomElement(
     }
 
     const { sel, mode, ctor, owner } = vnode;
+    const { defineCustomElement, getTagName } = renderer;
+    defineCustomElement(StringToLowerCase.call(getTagName(elm)));
 
     const vm = createVM(elm, ctor, renderer, {
         mode,

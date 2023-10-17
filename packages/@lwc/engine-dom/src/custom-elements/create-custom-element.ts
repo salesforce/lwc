@@ -113,17 +113,11 @@ const createUpgradableConstructor = (
     return UpgradableConstructor;
 };
 
-export const createCustomElement = (
+export function getUpgradableConstructor(
     tagName: string,
-    upgradeCallback: LifecycleCallback,
     connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback,
-    formAssociatedCallback?: LifecycleCallback,
-    formDisabledCallback?: LifecycleCallback,
-    formResetCallback?: LifecycleCallback,
-    formStateRestoreCallback?: LifecycleCallback
-) => {
-    // use global custom elements registry
+    disconnectedCallback?: LifecycleCallback
+) {
     let UpgradableConstructor = cachedConstructors.get(tagName);
 
     if (isUndefined(UpgradableConstructor)) {
@@ -139,6 +133,24 @@ export const createCustomElement = (
         customElements.define(tagName, UpgradableConstructor);
         cachedConstructors.set(tagName, UpgradableConstructor);
     }
+    return UpgradableConstructor;
+}
+
+export const createCustomElement = (
+    tagName: string,
+    upgradeCallback: LifecycleCallback,
+    connectedCallback?: LifecycleCallback,
+    disconnectedCallback?: LifecycleCallback,
+    formAssociatedCallback?: LifecycleCallback,
+    formDisabledCallback?: LifecycleCallback,
+    formResetCallback?: LifecycleCallback,
+    formStateRestoreCallback?: LifecycleCallback
+) => {
+    const UpgradableConstructor = getUpgradableConstructor(
+        tagName,
+        connectedCallback,
+        disconnectedCallback
+    );
 
     formAssociatedCallbackToUse = formAssociatedCallback;
     formDisabledCallbackToUse = formDisabledCallback;
