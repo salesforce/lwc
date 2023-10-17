@@ -13,13 +13,13 @@ export default class App extends LightningElement {
         },
     };
 
-    uno = ((component) => ({
+    uno: {
         dos: {
-            tres() {
-                component.counter++;
+            tres: () => {
+                this.counter++;
             },
         },
-    }))(this);
+    };
 
     ichi = ((component) => ({
         ni: {
