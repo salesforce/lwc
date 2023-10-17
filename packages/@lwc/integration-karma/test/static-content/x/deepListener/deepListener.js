@@ -21,13 +21,13 @@ export default class App extends LightningElement {
         },
     };
 
-    ichi = ((component) => ({
+    ichi: {
         ni: {
             san: {
-                yon() {
-                    component.counter++;
+                shi: () => {
+                    this.counter++;
                 },
             },
         },
-    }))(this);
+    };
 }
