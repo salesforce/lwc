@@ -7,11 +7,11 @@ export default class App extends LightningElement {
         this.counter++;
     }
 
-    un = ((component) => ({
-        deux() {
-            component.counter++;
+    un: {
+        deux: () => {
+            this.counter++;
         },
-    }))(this);
+    };
 
     uno = ((component) => ({
         dos: {
