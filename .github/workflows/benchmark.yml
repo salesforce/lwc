@@ -2,9 +2,8 @@ name: Run Best benchmark
 
 # We could run on every PR, but there is not much need right now.
 # By running on every push to master, we get historical Best data for the master branch.
-on:
-  push:
-    branches: [ master ]
+
+on: push
 
 env:
   BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
@@ -29,6 +28,9 @@ jobs:
       - name: Install dependencies
         # Puppeteer Chromium download is only needed for @best/runner-local, which is unused here
         run: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
+
+      - name: IP
+        run: curl https://checkip.amazonaws.com
 
       - name: Build benchmarks
         run: yarn build:performance
