@@ -16,6 +16,7 @@ import {
     ArrayIncludes,
     isTrue,
     isString,
+    StringToLowerCase,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -317,6 +318,8 @@ function hydrateCustomElement(
     }
 
     const { sel, mode, ctor, owner } = vnode;
+    const { defineCustomElement, getTagName } = renderer;
+    defineCustomElement(StringToLowerCase.call(getTagName(elm)));
 
     const vm = createVM(elm, ctor, renderer, {
         mode,

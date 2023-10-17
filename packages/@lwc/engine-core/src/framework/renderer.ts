@@ -72,6 +72,11 @@ export interface RendererAPI {
         formResetCallback?: LifecycleCallback,
         formStateRestoreCallback?: LifecycleCallback
     ) => E;
+    defineCustomElement: (
+        tagName: string,
+        connectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback
+    ) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,
