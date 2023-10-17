@@ -7,13 +7,13 @@ export default class App extends LightningElement {
         this.counter++;
     }
 
-    un: {
+    un = {
         deux: () => {
             this.counter++;
         },
     };
 
-    uno: {
+    uno = {
         dos: {
             tres: () => {
                 this.counter++;
@@ -21,7 +21,7 @@ export default class App extends LightningElement {
         },
     };
 
-    ichi: {
+    ichi = {
         ni: {
             san: {
                 shi: () => {
