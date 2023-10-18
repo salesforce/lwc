@@ -95,12 +95,23 @@ describe('dynamic components', () => {
             });
         });
 
-        it('renders components in correct order when constructors are removed', () => {
+        it('renders components in correct order when constructors are removed', async () => {
+            const spy = spyOn(console, 'warn');
+
             container.removeConstructors();
-            return Promise.resolve().then(() => {
-                // Set 2 of the constructors to null
-                verifyListContent(['x-bar', 'x-fred']);
-            });
+            await Promise.resolve();
+            // Set 2 of the constructors to null
+            verifyListContent(['x-bar', 'x-fred']);
+
+            // Dynamic components seem to not call connected/disconnectedCallback correctly in this case
+            await Promise.resolve();
+            expect(spy).toHaveBeenCalledTimes(2);
+            expect(spy.calls.allArgs()[0][0]).toMatch(
+                /should have fired a connectedCallback, but did not/
+            );
+            expect(spy.calls.allArgs()[1][0]).toMatch(
+                /should have fired a disconnectedCallback, but did not/
+            );
         });
     });
 

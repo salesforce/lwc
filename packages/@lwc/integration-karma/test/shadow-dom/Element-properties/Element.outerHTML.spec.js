@@ -29,13 +29,22 @@ describe('Element.outerHTML - get', () => {
 });
 
 describe('Element.outerHTML - set', () => {
-    it('should throw when invoking setter on the host element', () => {
+    it('should throw when invoking setter on the host element', async () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
+
+        const spy = spyOn(console, 'warn');
 
         expect(() => {
             elm.outerHTML = '<span>Hello World!</span>';
         }).toLogErrorDev(/Invalid attempt to set outerHTML on HTMLElement/);
+
+        await Promise.resolve();
+        // We are setting outerHTML which removes the element but doesn't trigger synthetic disconnectedCallback
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy.calls.mostRecent().args[0]).toMatch(
+            /should have fired a disconnectedCallback, but did not/
+        );
     });
 
     it('should log an error when invoking setter for an element in the shadow', () => {

@@ -6,6 +6,25 @@ import InlineForEach from 'x/inlineForEach';
 import InlineIterator from 'x/inlineIterator';
 
 describe('iteration rendering', () => {
+    let spy;
+
+    beforeEach(() => {
+        spy = spyOn(console, 'warn');
+    });
+
+    afterEach(async () => {
+        await Promise.resolve();
+
+        // apparently lists of components have this behavior during re-rendering
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(spy.calls.allArgs()[0][0]).toMatch(
+            /should have fired a connectedCallback, but did not/
+        );
+        expect(spy.calls.allArgs()[1][0]).toMatch(
+            /should have fired a disconnectedCallback, but did not/
+        );
+    });
+
     function validateRenderedChildren(elm, iterationType) {
         const isIterator = iterationType === 'iterator';
         const expectedChildren = elm.items;

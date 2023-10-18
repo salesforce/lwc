@@ -46,9 +46,10 @@ if (!process.env.NATIVE_SHADOW) {
             slottedNode,
             elementOutsideLWC,
             rootLwcElement,
-            cmpShadow;
+            cmpShadow,
+            spy;
         beforeEach(() => {
-            spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
+            spy = spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
             const elm = createElement('x-container', { is: Container });
 
             elementOutsideLWC = document.createElement('div');
@@ -63,6 +64,20 @@ if (!process.env.NATIVE_SHADOW) {
             elementInShadow = rootLwcElement.shadowRoot.querySelector('div');
             slottedComponent = cmpShadow.querySelector('x-with-slot');
             slottedNode = cmpShadow.querySelector('.slotted');
+        });
+
+        afterEach(async () => {
+            document.body.removeChild(elementOutsideLWC);
+
+            await Promise.resolve();
+
+            // for whatever reason these don't fire disconnectedCallbacks
+            expect(spy).toHaveBeenCalledTimes(5);
+            const args = spy.calls.allArgs();
+            expect(args[0][0]).toMatch(/lwc:dom="manual"/);
+            for (const arg of args.slice(1)) {
+                expect(arg[0]).toMatch(/should have fired a disconnectedCallback, but did not/);
+            }
         });
 
         describe('Element.prototype API', () => {
