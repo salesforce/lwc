@@ -65,12 +65,12 @@ export interface RendererAPI {
     createCustomElement: (
         tagName: string,
         upgradeCallback: LifecycleCallback,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback,
-        formAssociatedCallback?: LifecycleCallback,
-        formDisabledCallback?: LifecycleCallback,
-        formResetCallback?: LifecycleCallback,
-        formStateRestoreCallback?: LifecycleCallback
+        connectedCallback: LifecycleCallback,
+        disconnectedCallback: LifecycleCallback,
+        formAssociatedCallback: LifecycleCallback,
+        formDisabledCallback: LifecycleCallback,
+        formResetCallback: LifecycleCallback,
+        formStateRestoreCallback: LifecycleCallback
     ) => E;
     defineCustomElement: (
         tagName: string,

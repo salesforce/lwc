@@ -21,6 +21,7 @@ export {
     runFormStateRestoreCallback,
 } from './vm';
 export { createContextProviderWithRegister } from './wiring';
+export { reportLifecycleCallback } from './track-lifecycle';
 
 export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';

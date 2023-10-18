@@ -51,6 +51,7 @@ import {
     VStaticPart,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { reportLifecycleCallback } from './track-lifecycle';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -221,7 +222,7 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function connectRootElement(elm: any) {
+export function connectRootElement(elm: any, native: boolean) {
     const vm = getAssociatedVM(elm);
 
     logGlobalOperationStart(OperationId.GlobalHydrate, vm);
@@ -229,18 +230,18 @@ export function connectRootElement(elm: any) {
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
     if (vm.state === VMState.connected) {
-        disconnectRootElement(elm);
+        disconnectRootElement(elm, native);
     }
 
-    runConnectedCallback(vm);
+    runConnectedCallback(vm, native);
     rehydrate(vm);
 
     logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
 }
 
-export function disconnectRootElement(elm: any) {
+export function disconnectRootElement(elm: any, native: boolean) {
     const vm = getAssociatedVM(elm);
-    resetComponentStateWhenRemoved(vm);
+    resetComponentStateWhenRemoved(vm, native);
 }
 
 export function appendVM(vm: VM) {
@@ -249,23 +250,23 @@ export function appendVM(vm: VM) {
 
 // just in case the component comes back, with this we guarantee re-rendering it
 // while preventing any attempt to rehydration until after reinsertion.
-function resetComponentStateWhenRemoved(vm: VM) {
+function resetComponentStateWhenRemoved(vm: VM, native: boolean) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
         const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        runDisconnectedCallback(vm);
+        runDisconnectedCallback(vm, native);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        runChildNodesDisconnectedCallback(vm);
-        runLightChildNodesDisconnectedCallback(vm);
+        runChildNodesDisconnectedCallback(vm, native);
+        runLightChildNodesDisconnectedCallback(vm, native);
     }
 }
 
 // this method is triggered by the diffing algo only when a vnode from the
 // old vnode.children is removed from the DOM.
-export function removeVM(vm: VM) {
+export function removeVM(vm: VM, native: boolean) {
     if (process.env.NODE_ENV !== 'production') {
         if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             // With native lifecycle, we cannot be certain that connectedCallback was called before a component
@@ -278,7 +279,7 @@ export function removeVM(vm: VM) {
             );
         }
     }
-    resetComponentStateWhenRemoved(vm);
+    resetComponentStateWhenRemoved(vm, native);
 }
 
 function getNearestShadowAncestor(owner: VM | null): VM | null {
@@ -639,7 +640,7 @@ function flushRehydrationQueue() {
     logGlobalOperationEnd(OperationId.GlobalRehydrate);
 }
 
-export function runConnectedCallback(vm: VM) {
+export function runConnectedCallback(vm: VM, native: boolean) {
     const { state } = vm;
     if (state === VMState.connected) {
         return; // nothing to do since it was already connected
@@ -647,6 +648,9 @@ export function runConnectedCallback(vm: VM) {
     vm.state = VMState.connected;
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
+    }
+    if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE && !native) {
+        reportLifecycleCallback(vm.elm, 'connected', native);
     }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
@@ -662,7 +666,7 @@ function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
-function runDisconnectedCallback(vm: VM) {
+function runDisconnectedCallback(vm: VM, native: boolean) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
@@ -677,6 +681,9 @@ function runDisconnectedCallback(vm: VM) {
     if (hasWireAdapters(vm)) {
         disconnectWireAdapters(vm);
     }
+    if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE && !native) {
+        reportLifecycleCallback(vm.elm, 'disconnected', native);
+    }
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         logOperationStart(OperationId.DisconnectedCallback, vm);
@@ -687,7 +694,7 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runChildNodesDisconnectedCallback(vm: VM) {
+function runChildNodesDisconnectedCallback(vm: VM, native: boolean) {
     const { velements: vCustomElementCollection } = vm;
 
     // Reporting disconnection for every child in inverse order since they are
@@ -709,15 +716,15 @@ function runChildNodesDisconnectedCallback(vm: VM) {
             // in the case where the VM failed in the middle of its creation,
             // eg: constructor throwing before invoking super().
             if (!isUndefined(childVM)) {
-                resetComponentStateWhenRemoved(childVM);
+                resetComponentStateWhenRemoved(childVM, native);
             }
         }
     }
 }
 
-function runLightChildNodesDisconnectedCallback(vm: VM) {
+function runLightChildNodesDisconnectedCallback(vm: VM, native: boolean) {
     const { aChildren: adoptedChildren } = vm;
-    recursivelyDisconnectChildren(adoptedChildren);
+    recursivelyDisconnectChildren(adoptedChildren, native);
 }
 
 /**
@@ -727,19 +734,19 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
  * custom element itself will trigger the removal of anything slotted or anything
  * defined on its shadow.
  */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
+function recursivelyDisconnectChildren(vnodes: VNodes, native: boolean) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode = vnodes[i];
 
         if (!isNull(vnode) && !isUndefined(vnode.elm)) {
             switch (vnode.type) {
                 case VNodeType.Element:
-                    recursivelyDisconnectChildren(vnode.children);
+                    recursivelyDisconnectChildren(vnode.children, native);
                     break;
 
                 case VNodeType.CustomElement: {
                     const vm = getAssociatedVM(vnode.elm);
-                    resetComponentStateWhenRemoved(vm);
+                    resetComponentStateWhenRemoved(vm, native);
                     break;
                 }
             }
@@ -755,7 +762,7 @@ export function resetComponentRoot(vm: VM) {
     recursivelyRemoveChildren(vm.children, vm);
     vm.children = EmptyArray;
 
-    runChildNodesDisconnectedCallback(vm);
+    runChildNodesDisconnectedCallback(vm, /* native */ false);
     vm.velements = EmptyArray;
 }
 

@@ -23,7 +23,7 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { LifecycleCallback, RendererAPI } from './renderer';
+import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
@@ -75,6 +75,7 @@ import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
 import { applyStaticParts } from './modules/static-parts';
+import { reportLifecycleCallback } from './track-lifecycle';
 
 export function patchChildren(
     c1: VNodes,
@@ -328,34 +329,40 @@ function mountCustomElement(
         // the custom element from the registry is expecting an upgrade callback
         vm = createViewModelHook(elm, vnode, renderer);
     };
-
-    let connectedCallback: LifecycleCallback | undefined;
-    let disconnectedCallback: LifecycleCallback | undefined;
-    let formAssociatedCallback: LifecycleCallback | undefined;
-    let formDisabledCallback: LifecycleCallback | undefined;
-    let formResetCallback: LifecycleCallback | undefined;
-    let formStateRestoreCallback: LifecycleCallback | undefined;
-
-    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        connectedCallback = (elm: HTMLElement) => {
-            connectRootElement(elm);
-        };
-        disconnectedCallback = (elm: HTMLElement) => {
-            disconnectRootElement(elm);
-        };
-        formAssociatedCallback = (elm: HTMLElement) => {
+    const connectedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm, true);
+        } else {
+            reportLifecycleCallback(elm, 'connected', /* native */ true);
+        }
+    };
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm, true);
+        } else {
+            reportLifecycleCallback(elm, 'disconnected', /* native */ true);
+        }
+    };
+    const formAssociatedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormAssociatedCallback(elm);
-        };
-        formDisabledCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formDisabledCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormDisabledCallback(elm);
-        };
-        formResetCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formResetCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormResetCallback(elm);
-        };
-        formStateRestoreCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formStateRestoreCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormStateRestoreCallback(elm);
-        };
-    }
+        }
+    };
 
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java
@@ -394,12 +401,12 @@ function mountCustomElement(
                     // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
                     assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
                 }
-                runConnectedCallback(vm);
+                runConnectedCallback(vm, /* native */ false);
             }
         } else {
             // On the server, we don't have native custom element lifecycle callbacks, so we must
             // manually invoke the connectedCallback for a child component.
-            runConnectedCallback(vm);
+            runConnectedCallback(vm, /* native */ false);
         }
     }
 
@@ -524,7 +531,7 @@ function unmount(
             // No need to unmount the children here, `removeVM` will take care of removing the
             // children.
             if (!isUndefined(vm)) {
-                removeVM(vm);
+                removeVM(vm, /* native */ false);
             }
         }
     }

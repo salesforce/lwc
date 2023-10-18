@@ -12,6 +12,10 @@ export const enum ReportingEventId {
     NonStandardAriaReflection = 'NonStandardAriaReflection',
     TemplateMutation = 'TemplateMutation',
     StylesheetMutation = 'StylesheetMutation',
+    NativeConnectedWithoutSynthetic = 'NativeConnectedWithoutSynthetic',
+    SyntheticConnectedWithoutNative = 'SyntheticConnectedWithoutNative',
+    NativeDisconnectedWithoutSynthetic = 'NativeDisconnectedWithoutSynthetic',
+    SyntheticDisconnectedWithoutNative = 'SyntheticDisconnectedWithoutNative',
 }
 
 export interface BasePayload {

@@ -104,11 +104,11 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
 
         connectedCallback() {
-            connectRootElement(this);
+            connectRootElement(this, true);
         }
 
         disconnectedCallback() {
-            disconnectRootElement(this);
+            disconnectRootElement(this, true);
         }
 
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {

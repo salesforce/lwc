@@ -19,11 +19,11 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    LifecycleCallback,
     runFormAssociatedCallback,
     runFormDisabledCallback,
     runFormResetCallback,
     runFormStateRestoreCallback,
+    reportLifecycleCallback,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -31,7 +31,7 @@ import { renderer } from '../renderer';
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
 
-type NodeSlotCallback = (element: Node) => void;
+type NodeSlotCallback = (element: Node, native: boolean) => void;
 
 const ConnectingSlot = new WeakMap<any, NodeSlotCallback>();
 const DisconnectingSlot = new WeakMap<any, NodeSlotCallback>();
@@ -44,7 +44,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     const fn = slot.get(node);
 
     if (!isUndefined(fn)) {
-        fn(node);
+        fn(node, /* native */ false);
     }
 
     return node; // for convenience
@@ -134,34 +134,40 @@ export function createElement(
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
     };
-
-    let connectedCallback: LifecycleCallback | undefined;
-    let disconnectedCallback: LifecycleCallback | undefined;
-    let formAssociatedCallback: LifecycleCallback | undefined;
-    let formDisabledCallback: LifecycleCallback | undefined;
-    let formResetCallback: LifecycleCallback | undefined;
-    let formStateRestoreCallback: LifecycleCallback | undefined;
-
-    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        connectedCallback = (elm: HTMLElement) => {
-            connectRootElement(elm);
-        };
-        disconnectedCallback = (elm: HTMLElement) => {
-            disconnectRootElement(elm);
-        };
-        formAssociatedCallback = (elm: HTMLElement) => {
+    const connectedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            connectRootElement(elm, true);
+        } else {
+            reportLifecycleCallback(elm, 'connected', /* native */ true);
+        }
+    };
+    const disconnectedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            disconnectRootElement(elm, true);
+        } else {
+            reportLifecycleCallback(elm, 'disconnected', /* native */ true);
+        }
+    };
+    const formAssociatedCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormAssociatedCallback(elm);
-        };
-        formDisabledCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formDisabledCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormDisabledCallback(elm);
-        };
-        formResetCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formResetCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormResetCallback(elm);
-        };
-        formStateRestoreCallback = (elm: HTMLElement) => {
+        }
+    };
+    const formStateRestoreCallback = (elm: HTMLElement) => {
+        if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             runFormStateRestoreCallback(elm);
-        };
-    }
+        }
+    };
 
     const element = createCustomElement(
         tagName,
