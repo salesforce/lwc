@@ -171,6 +171,12 @@ describe('Node.getRootNode', () => {
                 div.appendChild(innerElem);
             });
 
+            afterEach(() => {
+                // Avoids native lifecycle warning
+                const div = outerElem.shadowRoot.querySelector('div');
+                div.removeChild(innerElem);
+            });
+
             it('getRootNode() of inner custom element should return outer shadowRoot', () => {
                 expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
                 expect(innerElem.getRootNode(composedTrueConfig)).toBe(document);

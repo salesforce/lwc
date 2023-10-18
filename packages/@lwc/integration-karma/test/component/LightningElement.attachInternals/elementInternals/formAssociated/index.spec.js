@@ -36,13 +36,25 @@ if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENA
         );
     });
 
+    let form;
+
     const createControlElm = () => {
-        const form = document.createElement('form');
+        form = document.createElement('form');
         const control = createElement('x-form-associated', { is: FormAssociated });
         form.appendChild(control);
         document.body.appendChild(form);
         return control;
     };
+
+    // Avoids native lifecycle warning
+    afterEach(() => {
+        if (form) {
+            for (const child of form.children) {
+                form.removeChild(child);
+            }
+            form = undefined;
+        }
+    });
 
     // Verify ElementInternals proxy getter does not throw error.
     it('form-related operations and attributes should not throw for form-associated custom elements.', () => {

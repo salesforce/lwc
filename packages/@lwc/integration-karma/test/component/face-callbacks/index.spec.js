@@ -98,13 +98,15 @@ if (typeof ElementInternals !== 'undefined') {
         });
     } else {
         describe('synthetic lifecycle', () => {
+            let form;
+
             [
                 { name: 'shadow DOM', is: FormAssociated },
                 { name: 'light DOM', is: LightDomFormAssociated },
             ].forEach(({ name, is }) => {
                 it(`${name} does not call face lifecycle methods`, () => {
                     const face = createElement('face-form-associated', { is });
-                    const form = createFormElement();
+                    form = createFormElement();
                     form.appendChild(face);
 
                     // formAssociatedCallback
@@ -118,6 +120,16 @@ if (typeof ElementInternals !== 'undefined') {
                     form.reset();
                     expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
                 });
+            });
+
+            // Avoids native lifecycle warning
+            afterEach(() => {
+                if (form) {
+                    for (const child of form.children) {
+                        form.removeChild(child);
+                    }
+                    form = undefined;
+                }
             });
         });
     }

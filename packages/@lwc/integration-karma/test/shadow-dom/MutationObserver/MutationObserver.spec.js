@@ -23,6 +23,13 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             globalObserver.observe(container, observerConfig);
         });
 
+        // Avoids native lifecycle warning
+        afterEach(() => {
+            for (const child of container.children) {
+                container.removeChild(child);
+            }
+        });
+
         it('global observer should be called 1 time, when the host element is attached to document', (done) => {
             // Prepare body for new lwc element
             const host = createElement('x-parent', { is: XParent });
@@ -180,6 +187,13 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
         beforeEach(() => {
             container = document.createElement('div');
             document.body.appendChild(container);
+        });
+
+        // Avoids native lifecycle warning
+        afterEach(() => {
+            for (const child of container.children) {
+                container.removeChild(child);
+            }
         });
 
         if (!process.env.MIXED_SHADOW) {

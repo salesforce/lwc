@@ -1,4 +1,4 @@
-import { isUndefined } from '@lwc/shared';
+import { isUndefined, StringToLowerCase } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
 import { getAssociatedVMIfPresent, VM } from './vm';
@@ -36,7 +36,7 @@ function getFriendlyErrorMessage(
     }
 }
 
-function reportViolation(
+function reportLifecycleViolation(
     lifecycleType: LifecycleType,
     elm: any,
     nativeCount: number,
@@ -57,13 +57,15 @@ function reportViolation(
             : nativeCount > syntheticCount
             ? ReportingEventId.NativeDisconnectedWithoutSynthetic
             : ReportingEventId.SyntheticDisconnectedWithoutNative;
+    const tagName = StringToLowerCase.call(elm.tagName);
     report(eventId, {
-        tagName: vm.tagName,
+        tagName: tagName,
     });
     if (process.env.NODE_ENV !== 'production') {
         // Avoid excessively logging to the console in the case of duplicates.
         logWarnOnce(
-            `Element <${vm.tagName}> ` +
+            `Element <${tagName}> rendered by <${StringToLowerCase.call(vm.tagName)}> ` +
+                `${JSON.stringify({ nativeCount, syntheticCount })} ` +
                 getFriendlyErrorMessage(eventId) +
                 ` For details, see: https://sfdc.co/native-lifecycle`,
             vm
@@ -98,11 +100,16 @@ export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, 
         const syntheticDisconnected = syntheticDisconnectedCounts.get(elm) ?? 0;
 
         if (nativeConnected !== syntheticConnected) {
-            reportViolation('connected', elm, nativeConnected, syntheticConnected);
+            reportLifecycleViolation('connected', elm, nativeConnected, syntheticConnected);
         }
 
         if (nativeDisconnected !== syntheticDisconnected) {
-            reportViolation('disconnected', elm, nativeDisconnected, syntheticDisconnected);
+            reportLifecycleViolation(
+                'disconnected',
+                elm,
+                nativeDisconnected,
+                syntheticDisconnected
+            );
         }
 
         nativeConnectedCounts.delete(elm);
