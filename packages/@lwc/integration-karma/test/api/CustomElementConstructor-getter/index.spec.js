@@ -204,6 +204,9 @@ describe('non-empty custom element', () => {
 });
 
 describe('lifecycle', () => {
+    let elm;
+    let spy;
+
     beforeAll(() => {
         const LifecycleParentCustomElement = LifecycleParent.CustomElementConstructor;
         customElements.define('test-lifecycle-parent', LifecycleParentCustomElement);
@@ -211,13 +214,22 @@ describe('lifecycle', () => {
 
     beforeEach(() => {
         window.timingBuffer = [];
+        spy = spyOn(console, 'warn');
     });
-    afterEach(() => {
+
+    afterEach(async () => {
         delete window.timingBuffer;
+
+        document.body.removeChild(elm);
+
+        // direct children of CustomElementConstructors do not have their disconnected callbacks called correctly
+        await Promise.resolve();
+        expect(spy).toHaveBeenCalledTimes(1);
+        // expect(spy.calls.mostRecent()[0]).toMatch(/fired a connectedCallback when it should not have/);
     });
 
     it('should call the lifecycle in the right order', () => {
-        const elm = document.createElement('test-lifecycle-parent');
+        elm = document.createElement('test-lifecycle-parent');
         document.body.appendChild(elm);
 
         expect(window.timingBuffer).toEqual([

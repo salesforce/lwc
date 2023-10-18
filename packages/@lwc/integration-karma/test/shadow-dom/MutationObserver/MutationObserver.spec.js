@@ -41,6 +41,13 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].target).toBe(container);
                 expect(actualMutationRecords[0].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('X-PARENT');
+
+                // Avoids native lifecycle warning
+                containerObserver.disconnect();
+                for (const child of container.children) {
+                    container.removeChild(child);
+                }
+
                 done();
             };
             const containerObserver = new MutationObserver(callback);

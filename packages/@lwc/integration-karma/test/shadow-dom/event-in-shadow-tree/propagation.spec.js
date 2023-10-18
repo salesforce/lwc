@@ -520,6 +520,20 @@ describe('event propagation', () => {
     // fragments cannot fire connectedCallback/disconnectedCallback events
     if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         describe('dispatched within a disconnected tree', () => {
+            let spy;
+            beforeEach(() => {
+                spy = spyOn(console, 'warn');
+            });
+
+            afterEach(async () => {
+                // disconnected dom tree, so we expect this warning
+                await Promise.resolve();
+                expect(spy).toHaveBeenCalledTimes(3);
+                for (const args of spy.calls.allArgs()) {
+                    expect(args[0]).toMatch(/fired a connectedCallback when it should not have/);
+                }
+            });
+
             it('{bubbles: true, composed: true}', () => {
                 const nodes = createDisconnectedTestElement();
                 const event = new CustomEvent('test', { bubbles: true, composed: true });

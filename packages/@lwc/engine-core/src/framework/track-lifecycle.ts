@@ -7,6 +7,7 @@ const nativeConnectedCounts = new WeakMap<any, number>();
 const nativeDisconnectedCounts = new WeakMap<any, number>();
 const syntheticConnectedCounts = new WeakMap<any, number>();
 const syntheticDisconnectedCounts = new WeakMap<any, number>();
+const ignoredElements = new WeakSet<any>();
 
 export type LifecycleType = 'connected' | 'disconnected';
 
@@ -78,8 +79,16 @@ function reportLifecycleViolation(
  *
  * This is designed to only run in the browser, and only when native lifecycle is disabled.
  */
-export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, native: boolean) {
+export async function reportLifecycleCallback(
+    elm: any,
+    lifecycleType: LifecycleType,
+    native: boolean
+) {
     if (!detectionEnabled) {
+        return;
+    }
+
+    if (ignoredElements.has(elm)) {
         return;
     }
 
@@ -116,6 +125,13 @@ export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, 
         nativeDisconnectedCounts.delete(elm);
         syntheticConnectedCounts.delete(elm);
         syntheticDisconnectedCounts.delete(elm);
+
+        if (lifecycleType === 'disconnected') {
+            // Ignore any further connected/disconnected events for this element.
+            // This is a heuristic for LWC's diffing algo, which generates extra connectedCallbacks in native mode,
+            // but the component author can't do anything about that, so it's useless to report/warn.
+            ignoredElements.add(elm);
+        }
     });
 }
 

@@ -33,13 +33,21 @@ describe('Node.getRootNode', () => {
         expect(elm.getRootNode(composedTrueConfig)).toBe(elm);
     });
 
-    it('root element in a disconnected DOM tree', () => {
+    it('root element in a disconnected DOM tree', async () => {
+        const spy = spyOn(console, 'warn');
         const elm = createElement('x-slotted', { is: Slotted });
         const frag = document.createDocumentFragment();
         frag.appendChild(elm);
 
         expect(elm.getRootNode()).toBe(frag);
         expect(elm.getRootNode(composedTrueConfig)).toBe(frag);
+
+        // disconnected dom tree, so we expect this warning
+        await Promise.resolve();
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy.calls.mostRecent().args[0]).toMatch(
+            /fired a connectedCallback when it should not have/
+        );
     });
 
     it('shadowRoot', () => {
@@ -157,6 +165,9 @@ describe('Node.getRootNode', () => {
             const innerTxt = nestedElem.shadowRoot.childNodes[0];
             expect(innerTxt.getRootNode()).toBe(nestedElem.shadowRoot);
             expect(innerTxt.getRootNode(composedTrueConfig)).toBe(document);
+
+            // Avoids native lifecycle warning
+            elm.removeChild(nestedElem);
         });
 
         // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
@@ -212,6 +223,11 @@ describe('Node.getRootNode', () => {
                 div.appendChild(innerElem);
                 // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
                 spyOn(console, 'warn');
+            });
+
+            afterEach(() => {
+                // Avoids native lifecycle warning
+                outerElem.shadowRoot.querySelector('div').removeChild(innerElem);
             });
 
             it("getRootNode() of inner shadow's dynamic element should return inner shadowRoot", () => {
