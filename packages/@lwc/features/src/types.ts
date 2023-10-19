@@ -46,6 +46,12 @@ export interface FeatureFlagMap {
     ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
 
     /**
+     * Flag to disable the reporting/warning for mismatches between how the native custom element lifecycle
+     * callbacks (connectedCallback/disconnectedCallback) function compared to the synthetic callbacks.
+     */
+    DISABLE_LIFECYCLE_REPORTING: FeatureFlagValue;
+
+    /**
      * Disables unscoped CSS in Light DOM
      */
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;

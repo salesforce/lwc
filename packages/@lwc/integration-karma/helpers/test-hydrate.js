@@ -5,6 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// TODO [#3816]: Hydration does not support FACE or native lifecycle, thus does not support lifecycle reporting
+window.lwcRuntimeFlags.DISABLE_LIFECYCLE_REPORTING = true;
+
 window.HydrateTest = (function (lwc, testUtils) {
     testUtils.setHooks({
         sanitizeHtmlContent: (content) => content,

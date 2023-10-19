@@ -153,11 +153,11 @@ function checkForViolations(elm: any) {
  * @param native - true if this is a native lifecycle event
  */
 export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, native: boolean) {
-    if (!detectionEnabled) {
-        return;
-    }
-
-    if (ignoredElements.has(elm)) {
+    if (
+        !detectionEnabled ||
+        ignoredElements.has(elm) ||
+        lwcRuntimeFlags.DISABLE_LIFECYCLE_REPORTING
+    ) {
         return;
     }
 
