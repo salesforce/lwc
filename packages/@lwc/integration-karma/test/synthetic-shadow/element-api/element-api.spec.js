@@ -71,10 +71,11 @@ if (!process.env.NATIVE_SHADOW) {
 
             await Promise.resolve();
 
-            // for whatever reason these don't fire disconnectedCallbacks
             expect(spy).toHaveBeenCalledTimes(5);
             const args = spy.calls.allArgs();
             expect(args[0][0]).toMatch(/lwc:dom="manual"/);
+            // These components are doing a bunch of unconventional stuff, manually inserting nodes without dom=manual,
+            // so it causes issues with disconnectedCallback not firing in synthetic mode.
             for (const arg of args.slice(1)) {
                 expect(arg[0]).toMatch(/should have fired a disconnectedCallback, but did not/);
             }

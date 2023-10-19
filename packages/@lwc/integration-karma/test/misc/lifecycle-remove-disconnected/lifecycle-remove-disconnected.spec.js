@@ -10,6 +10,8 @@ describe('vdom removes component while it is already disconnected', () => {
 
     afterEach(() => {
         // This is an odd edge case for the synthetic lifecycle which triggers this extra connectedCallback
+        // The reason this seems to happen is that the reactivity engine
+        // is still active even though the node is disconnected from the DOM.
         expect(spy).toHaveBeenCalledTimes(1);
         expect(spy.calls.mostRecent().args[0]).toMatch(
             /fired a connectedCallback when it should not have/

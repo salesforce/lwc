@@ -225,7 +225,9 @@ describe('lifecycle', () => {
         // direct children of CustomElementConstructors do not have their disconnected callbacks called correctly
         await Promise.resolve();
         expect(spy).toHaveBeenCalledTimes(1);
-        // expect(spy.calls.mostRecent()[0]).toMatch(/fired a connectedCallback when it should not have/);
+        expect(spy.calls.mostRecent().args[0]).toMatch(
+            /should have fired a disconnectedCallback, but did not/
+        );
     });
 
     it('should call the lifecycle in the right order', () => {
