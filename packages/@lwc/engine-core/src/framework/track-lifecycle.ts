@@ -17,11 +17,6 @@ const ignoredElements = new WeakSet<any>();
 
 export type LifecycleType = 'connected' | 'disconnected';
 
-const qM =
-    typeof queueMicrotask === 'function'
-        ? queueMicrotask
-        : (callback: () => void) => Promise.resolve().then(callback);
-
 let detectionEnabled = false;
 
 function getFriendlyErrorMessage(
@@ -152,7 +147,11 @@ function checkForViolations(elm: any) {
  * @param lifecycleType - connected or disconnected
  * @param native - true if this is a native lifecycle event
  */
-export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, native: boolean) {
+export async function reportLifecycleCallback(
+    elm: any,
+    lifecycleType: LifecycleType,
+    native: boolean
+) {
     if (
         !detectionEnabled ||
         ignoredElements.has(elm) ||
@@ -164,9 +163,11 @@ export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, 
     const counts = getCounts(lifecycleType, native);
     counts.set(elm, (counts.get(elm) ?? 0) + 1);
 
-    qM(() => {
-        checkForViolations(elm);
-    });
+    // Wait a microtask tick before checking, so that we have time to collect all native/synthetic reports.
+    // Note we are deliberately using an async function because it provides async callstacks in DevTools.
+    await Promise.resolve();
+
+    checkForViolations(elm);
 }
 
 function enableDetection() {
