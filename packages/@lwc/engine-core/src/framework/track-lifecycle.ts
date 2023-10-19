@@ -34,7 +34,7 @@ function getFriendlyErrorMessage(
         case ReportingEventId.NativeDisconnectedWithoutSynthetic:
             return 'should have fired a disconnectedCallback, but did not.';
         case ReportingEventId.SyntheticDisconnectedWithoutNative:
-            return 'fired a connectedCallback when it should not have.';
+            return 'fired a disconnectedCallback when it should not have.';
     }
 }
 
@@ -80,7 +80,7 @@ function reportViolation(
 ) {
     // The vm is either for the source, the target, or both. Either one or both must be using synthetic
     // shadow for a violation to be detected.
-    const vm: VM | undefined = getAssociatedVMIfPresent((elm.getRootNode() as ShadowRoot).host);
+    const vm: VM | undefined = getAssociatedVMIfPresent(elm);
     if (isUndefined(vm)) {
         // vm should never be undefined here, but just to be safe, bail out and don't report
         return;
@@ -93,8 +93,7 @@ function reportViolation(
     if (process.env.NODE_ENV !== 'production') {
         // Avoid excessively logging to the console in the case of duplicates.
         logWarnOnce(
-            `Element <${tagName}> rendered by <${StringToLowerCase.call(vm.tagName)}> ` +
-                `${JSON.stringify({ nativeCount, syntheticCount })} ` +
+            `Element <${tagName}> ` +
                 getFriendlyErrorMessage(eventId) +
                 ` For details, see: https://sfdc.co/native-lifecycle`,
             vm

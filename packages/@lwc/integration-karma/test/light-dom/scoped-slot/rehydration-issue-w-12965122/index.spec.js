@@ -2,12 +2,19 @@ import { createElement } from 'lwc';
 import Parent from 'x/parent';
 
 describe('Should clean up content between rehydration', () => {
+    let spy;
+
     beforeEach(() => {
         resetTimingBuffer();
+        spy = spyOn(console, 'warn');
     });
 
     afterEach(() => {
         delete window.timingBuffer;
+        // scoped slots do not seem to call disconnectedCallback correctly
+        expect(spy.calls.allArgs()[0][0]).toMatch(
+            /should have fired a disconnectedCallback, but did not/
+        );
     });
 
     function resetTimingBuffer() {
