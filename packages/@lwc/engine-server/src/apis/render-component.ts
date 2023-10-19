@@ -68,7 +68,7 @@ export function renderComponent(
 
     element[HostParentKey] = FakeRootElement;
 
-    connectRootElement(element);
+    connectRootElement(element, /* native */ false);
 
     return serializeElement(element);
 }
