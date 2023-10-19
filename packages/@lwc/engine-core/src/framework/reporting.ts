@@ -45,12 +45,18 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
+export interface LifecyclePayload extends BasePayload {}
+
 export type ReportingPayloadMapping = {
     [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
     [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
+    [ReportingEventId.NativeConnectedWithoutSynthetic]: LifecyclePayload;
+    [ReportingEventId.NativeDisconnectedWithoutSynthetic]: LifecyclePayload;
+    [ReportingEventId.SyntheticConnectedWithoutNative]: LifecyclePayload;
+    [ReportingEventId.SyntheticDisconnectedWithoutNative]: LifecyclePayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
