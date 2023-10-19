@@ -152,11 +152,7 @@ function checkForViolations(elm: any) {
  * @param lifecycleType - connected or disconnected
  * @param native - true if this is a native lifecycle event
  */
-export async function reportLifecycleCallback(
-    elm: any,
-    lifecycleType: LifecycleType,
-    native: boolean
-) {
+export function reportLifecycleCallback(elm: any, lifecycleType: LifecycleType, native: boolean) {
     if (!detectionEnabled) {
         return;
     }
