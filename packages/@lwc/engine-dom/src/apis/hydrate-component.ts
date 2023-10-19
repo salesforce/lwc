@@ -94,6 +94,6 @@ export function hydrateComponent(
         // we need to recreate the vm with the hydration flag on, so it re-uses the existing shadowRoot.
         createVMWithProps(element, Ctor, props);
 
-        connectRootElement(element);
+        connectRootElement(element, /* native */ false);
     }
 }
