@@ -70,7 +70,7 @@ let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
-    runConnectedCallback(vm);
+    runConnectedCallback(vm, /* native */ false);
     hydrateVM(vm);
 
     if (hasMismatch && process.env.NODE_ENV !== 'production') {
@@ -338,7 +338,7 @@ function hydrateCustomElement(
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
-    runConnectedCallback(vm);
+    runConnectedCallback(vm, /* native */ false);
 
     if (vm.renderMode !== RenderMode.Light) {
         const { getFirstChild } = renderer;
