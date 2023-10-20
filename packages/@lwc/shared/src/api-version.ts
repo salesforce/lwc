@@ -67,6 +67,11 @@ export const enum APIFeature {
      * If enabled, Babel object rest spread polyfills are not applied, and the native format is used instead.
      */
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
+    /**
+     * If enabled, `registerDecorators()` calls will only be added to classes that extend from another class.
+     * This avoids unnecessary decorators on classes that cannot possibly be LightningElements.
+     */
+    SKIP_UNNECESSARY_REGISTER_DECORATORS,
 }
 
 export function isAPIFeatureEnabled(
@@ -79,6 +84,7 @@ export function isAPIFeatureEnabled(
             return apiVersion >= APIVersion.V59_246_WINTER_24;
         case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
         case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
+        case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
     }
 }

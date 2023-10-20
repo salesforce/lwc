@@ -1,5 +1,5 @@
-import { track } from "lwc";
-export default class Test {
+import { track, LightningElement } from "lwc";
+export default class Test extends LightningElement {
   _record;
 
   @track set record(value) {
