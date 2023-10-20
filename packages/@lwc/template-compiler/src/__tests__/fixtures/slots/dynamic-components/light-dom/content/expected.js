@@ -27,8 +27,8 @@ const stc5 = {
   key: "@footer:5",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { dc: api_dynamic_component, s: api_slot, f: api_flatten } = $api;
-  return api_flatten([
+  const { dc: api_dynamic_component, s: api_slot } = $api;
+  return [
     api_slot("head", stc0, [api_dynamic_component($cmp.ctor, stc1)], $slotset),
     api_slot("body", stc2, [api_dynamic_component($cmp.ctor, stc3)], $slotset),
     api_slot(
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_dynamic_component($cmp.ctor, stc5)],
       $slotset
     ),
-  ]);
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
