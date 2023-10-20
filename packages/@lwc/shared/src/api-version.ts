@@ -63,6 +63,10 @@ export const enum APIFeature {
      * If enabled, use fragments for slots in light DOM.
      */
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+    /**
+     * If enabled, Babel object rest spread polyfills are not applied, and the native format is used instead.
+     */
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
 }
 
 export function isAPIFeatureEnabled(
@@ -74,6 +78,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
         case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
     }
 }
