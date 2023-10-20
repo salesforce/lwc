@@ -209,7 +209,7 @@ declare module 'lwc' {
     export function wire<
         Config extends StringKeyedRecord,
         Value,
-        Context extends StringKeyedRecord
+        Context extends StringKeyedRecord = StringKeyedRecord
     >(
         adapter:
             | WireAdapterConstructor<Config, Value, Context>
@@ -259,6 +259,6 @@ declare module 'lwc' {
     export function createContextProvider<
         Config extends StringKeyedRecord,
         Value,
-        Context extends StringKeyedRecord
+        Context extends StringKeyedRecord = StringKeyedRecord
     >(config: WireAdapterConstructor<Config, Value, Context>): Contextualizer<Context>;
 }
