@@ -61,13 +61,6 @@ export interface FeatureFlagMap {
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 
     /**
-     * Flag to remove the ARIA reflection polyfill. When set to true, this flag will avoid the global DOM patching
-     * to polyfill ARIA reflection. Instead, the necessary ARIA properties will only exist on the LightningElement
-     * and HTMLBridgeElement base classes, not on every Element.
-     */
-    DISABLE_ARIA_REFLECTION_POLYFILL: FeatureFlagValue;
-
-    /**
      * If true, render legacy CSS scope tokens in addition to the modern CSS scope tokens. This is designed
      * for cases where backwards compat is required (e.g. global stylesheets using these tokens in their selectors).
      */

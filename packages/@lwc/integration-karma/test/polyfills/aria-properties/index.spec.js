@@ -1,5 +1,6 @@
 import { ariaPropertiesMapping, nonStandardAriaProperties } from 'test-utils';
-import { __unstable__ReportingControl as reportingControl } from 'lwc';
+import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
+import Component from 'x/component';
 
 function testAriaProperty(property, attribute) {
     describe(property, () => {
@@ -189,8 +190,45 @@ function testAriaProperty(property, attribute) {
 }
 
 // These tests don't make sense if the global polyfill is not loaded
-if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
         testAriaProperty(ariaProperty, ariaAttribute);
     }
+
+    describe('non-standard properties do not log/report for LightningElement/BaseBridgeElement', () => {
+        let dispatcher;
+
+        beforeEach(() => {
+            dispatcher = jasmine.createSpy();
+            reportingControl.attachDispatcher(dispatcher);
+        });
+
+        afterEach(() => {
+            reportingControl.detachDispatcher();
+        });
+
+        nonStandardAriaProperties.forEach((prop) => {
+            describe(prop, () => {
+                it('LightningElement (internal)', () => {
+                    const elm = createElement('x-component', { is: Component });
+                    document.body.appendChild(elm);
+
+                    expect(() => {
+                        elm.getProp(prop);
+                    }).not.toLogWarningDev();
+                    expect(dispatcher).not.toHaveBeenCalled();
+                });
+
+                it('BaseBridgeElement (external)', () => {
+                    const elm = createElement('x-component', { is: Component });
+                    document.body.appendChild(elm);
+
+                    expect(() => {
+                        elm[prop] = 'foo';
+                    }).not.toLogWarningDev();
+                    expect(dispatcher).not.toHaveBeenCalled();
+                });
+            });
+        });
+    });
 }

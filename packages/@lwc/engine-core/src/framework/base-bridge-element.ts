@@ -23,7 +23,7 @@ import {
     htmlPropertyToAttribute,
     isNull,
 } from '@lwc/shared';
-import { applyAriaReflection } from '@lwc/aria-reflection';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
@@ -263,15 +263,15 @@ if (process.env.IS_BROWSER) {
     // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
     // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
     // ARIA props outside the LightningElement
-    if (lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
-        // If ARIA reflection is not applied globally to Element.prototype, apply it to HTMLBridgeElement.prototype.
-        // This allows `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*` attrs.
-        // This is especially important because the template compiler compiles aria-* attrs on components to aria* props
-        //
-        // Also note that we apply this to BaseBridgeElement.prototype to avoid excessively redefining property
-        // accessors inside the HTMLBridgeElementFactory.
-        applyAriaReflection(BaseBridgeElement.prototype);
-    }
+    //
+    // Apply ARIA reflection to HTMLBridgeElement.prototype. This allows `elm.aria*` property accessors to work from
+    // outside a component, and to reflect `aria-*` attrs. This is especially important because the template compiler
+    // compiles aria-* attrs on components to aria* props.
+    // Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+    //
+    // Also note that we apply this to BaseBridgeElement.prototype to avoid excessively redefining property
+    // accessors inside the HTMLBridgeElementFactory.
+    applyAriaReflection(BaseBridgeElement.prototype);
 }
 
 freeze(BaseBridgeElement);

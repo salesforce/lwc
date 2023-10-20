@@ -1,5 +1,8 @@
 # @lwc/aria-reflection
 
+> **Note:** use this code at your own risk. It is optimized for backwards-compatibility, not
+> as a forward-looking polyfill that keeps up to date with web standards.
+
 Polyfill for [ARIA string reflection](https://wicg.github.io/aom/spec/aria-reflection.html) on Elements.
 This is part of the [Accessibility Object Model](https://wicg.github.io/aom/explainer.html) (AOM).
 
@@ -21,20 +24,10 @@ npm install @lwc/aria-reflection
 ```
 
 ```js
-import { applyAriaReflection } from '@lwc/aria-reflection';
-
-applyAriaReflection();
+import '@lwc/aria-reflection';
 ```
 
-The polyfill is applied as soon as the function is executed.
-
-Optionally, you can pass in a custom prototype:
-
-```js
-applyAriaReflection(MyCustomElement.prototype);
-```
-
-By default, the polyfill is applied to the global `Element.prototype`.
+The polyfill is applied globally to `Element.prototype` as soon as the module is imported.
 
 ## Implementation
 
