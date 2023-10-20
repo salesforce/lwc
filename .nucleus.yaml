@@ -9,15 +9,12 @@ branches:
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
-        - Guardrails/analyzer-framework
         - LightningMobileRuntime/ui-lmr-components
         - MobilePlatform/lds-debug-app
         - Trailhead-Platform/ui-trailhead-core-components
         - automation-platform/ui-interaction-explorer-components
         - communities/shared-experience-components
-        - communities/ui-feeds-components
         - communities/ui-lightning-community
-        - communities/webruntime
         - lwc/lwc-platform
         - nrkruk/lwc-dev-core
         - ris-gpta/core_via_components
@@ -25,7 +22,6 @@ branches:
         - salesforce-experience-platform-emu/luvio
         - salesforce-experience-platform-emu/lwr
         - salesforce/lwr-lightning-platform
-        - salesforcedevs/doc-framework-monorepo
   release:
     pull-request:
       <<: *branch-definition
@@ -63,14 +59,6 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
-  node-save-dep-cache: &node-save-dep-cache
-    params:
-      paths:
-        # it's necessary to redeclare **/node_modules because this overrides the default behavior
-        - '**/node_modules'
-        # add NX cache
-        - '.nx-cache'
-    after: node-build
   npm-publish-release:
     params:
       access: public

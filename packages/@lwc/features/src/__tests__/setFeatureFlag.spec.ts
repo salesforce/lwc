@@ -23,17 +23,17 @@ describe('setFeatureFlag', () => {
 
             afterEach(() => {
                 process.env.NODE_ENV = originalNodeEnv;
-                lwcRuntimeFlags.DUMMY_TEST_FLAG = undefined; // reset
+                lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG = undefined; // reset
                 info.mockReset();
                 error.mockReset();
             });
 
             it('throws/logs and does nothing when set to a non-boolean', () => {
                 const expectedError =
-                    'Failed to set the value "foo" for the runtime feature flag "DUMMY_TEST_FLAG". Runtime feature flags can only be set to a boolean value.';
+                    'Failed to set the value "foo" for the runtime feature flag "PLACEHOLDER_TEST_FLAG". Runtime feature flags can only be set to a boolean value.';
                 const callback = () => {
                     // @ts-ignore
-                    setFeatureFlag('DUMMY_TEST_FLAG', 'foo');
+                    setFeatureFlag('PLACEHOLDER_TEST_FLAG', 'foo');
                 };
                 if (env === 'production') {
                     callback();
@@ -43,7 +43,7 @@ describe('setFeatureFlag', () => {
                 }
 
                 // value is not changed
-                expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toBeUndefined();
+                expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toBeUndefined();
             });
 
             it('logs and does nothing when the flag is unknown', () => {
@@ -59,17 +59,17 @@ describe('setFeatureFlag', () => {
             });
 
             it('disallows setting a flag more than once', () => {
-                setFeatureFlag('DUMMY_TEST_FLAG', true);
-                expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toEqual(true);
-                setFeatureFlag('DUMMY_TEST_FLAG', false);
+                setFeatureFlag('PLACEHOLDER_TEST_FLAG', true);
+                expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
+                setFeatureFlag('PLACEHOLDER_TEST_FLAG', false);
                 if (env === 'production') {
                     expect(error).toHaveBeenCalledWith(
-                        'Failed to set the value "false" for the runtime feature flag "DUMMY_TEST_FLAG". "DUMMY_TEST_FLAG" has already been set with the value "true".'
+                        'Failed to set the value "false" for the runtime feature flag "PLACEHOLDER_TEST_FLAG". "PLACEHOLDER_TEST_FLAG" has already been set with the value "true".'
                     );
-                    expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toEqual(true);
+                    expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
                 } else {
                     expect(error).not.toHaveBeenCalled();
-                    expect(lwcRuntimeFlags.DUMMY_TEST_FLAG).toEqual(false);
+                    expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(false);
                 }
             });
         });

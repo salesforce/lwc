@@ -130,7 +130,7 @@ describe('Node.getRootNode', () => {
             const elm = host.shadowRoot.querySelector('div.withoutManual');
             const span = document.createElement('span');
 
-            spyOn(console, 'error'); // Ignore the engine warning
+            spyOn(console, 'warn'); // Ignore the engine warning
             elm.appendChild(span);
             expect(span.getRootNode()).toBe(host.shadowRoot);
             expect(span.getRootNode(composedTrueConfig)).toBe(document);
@@ -146,7 +146,7 @@ describe('Node.getRootNode', () => {
             const elm = host.shadowRoot.querySelector('div.withoutManual');
             const nestedElem = createElement('x-text', { is: Text });
 
-            spyOn(console, 'error'); // Ignore the engine warning
+            spyOn(console, 'warn'); // Ignore the engine warning
             elm.appendChild(nestedElem);
             expect(nestedElem.getRootNode()).toBe(host.shadowRoot);
             expect(nestedElem.getRootNode(composedTrueConfig)).toBe(document);
@@ -205,7 +205,7 @@ describe('Node.getRootNode', () => {
                 const div = outerElem.shadowRoot.querySelector('div');
                 div.appendChild(innerElem);
                 // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
-                spyOn(console, 'error');
+                spyOn(console, 'warn');
             });
 
             it("getRootNode() of inner shadow's dynamic element should return inner shadowRoot", () => {

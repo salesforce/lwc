@@ -18,7 +18,9 @@ import {
     defineProperties,
     defineProperty,
     freeze,
+    hasOwnProperty,
     isFunction,
+    isString,
     isNull,
     isObject,
     isUndefined,
@@ -28,7 +30,7 @@ import {
 } from '@lwc/shared';
 import { applyAriaReflection } from '@lwc/aria-reflection';
 
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -135,6 +137,7 @@ export interface LightningElementConstructor {
 
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
+    formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
     stylesheets: TemplateStylesheetFactories;
 }
@@ -144,6 +147,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'attachInternals'
         | 'children'
         | 'childNodes'
         | 'classList'
@@ -191,6 +195,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     disconnectedCallback?(): void;
     renderedCallback?(): void;
     errorCallback?(error: any, stack: string): void;
+    formAssociatedCallback?(): void;
+    formResetCallback?(): void;
+    formDisabledCallback?(): void;
+    formStateRestoreCallback?(): void;
 }
 
 /**
@@ -292,6 +300,92 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             )} because the element is not yet in the DOM or has no children yet.`
         );
     }
+}
+
+// List of properties on ElementInternals that are formAssociated can be found in the spec:
+// https://html.spec.whatwg.org/multipage/custom-elements.html#form-associated-custom-elements
+const formAssociatedProps = new Set([
+    'setFormValue',
+    'form',
+    'setValidity',
+    'willValidate',
+    'validity',
+    'validationMessage',
+    'checkValidity',
+    'reportValidity',
+    'labels',
+]);
+
+// Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
+function verifyPropForFormAssociation(propertyKey: string | symbol, isFormAssociated: boolean) {
+    if (isString(propertyKey) && formAssociatedProps.has(propertyKey) && !isFormAssociated) {
+        //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+        throw new DOMException(
+            `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
+        );
+    }
+}
+
+const elementInternalsAccessorAllowList = new Set(['shadowRoot', 'role', ...formAssociatedProps]);
+
+// Prevent access to properties not defined in the HTML spec in case browsers decide to
+// provide new APIs that provide access to form associated properties.
+// This can be removed along with UpgradeableConstructor.
+function isAllowedElementInternalAccessor(propertyKey: string | symbol) {
+    let isAllowedAccessor = false;
+    // As of this writing all ElementInternal property keys as described in the spec are implemented with strings
+    // in Chrome, Firefox, and Safari
+    if (isString(propertyKey)) {
+        // Allow list is based on HTML spec:
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
+        isAllowedAccessor =
+            elementInternalsAccessorAllowList.has(propertyKey) || /^aria/.test(propertyKey);
+        if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
+            logWarn('Only properties defined in the ElementInternals HTML spec are available.');
+        }
+    }
+
+    return isAllowedAccessor;
+}
+
+// Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
+// This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
+// ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
+// We are doing this to guard against customers taking a dependency on form elements being associated to ElementInternals
+// when 'formAssociated' has not been set on the LWC.
+function createElementInternalsProxy(
+    elementInternals: ElementInternals,
+    isFormAssociated: boolean
+) {
+    const elementInternalsProxy = new Proxy(elementInternals, {
+        set(target, propertyKey, newValue) {
+            if (isAllowedElementInternalAccessor(propertyKey)) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
+                return Reflect.set(target, propertyKey, newValue);
+            }
+            // As of this writing ElementInternals do not have non-string properties that can be set.
+            return false;
+        },
+        get(target, propertyKey) {
+            if (
+                // Pass through Object.prototype methods such as toString()
+                hasOwnProperty.call(Object.prototype, propertyKey) ||
+                // As of this writing, ElementInternals only uses Symbol.toStringTag which is called
+                // on Object.hasOwnProperty invocations
+                Symbol.for('Symbol.toStringTag') === propertyKey ||
+                // ElementInternals allow listed properties
+                isAllowedElementInternalAccessor(propertyKey)
+            ) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
+                const propertyValue = Reflect.get(target, propertyKey);
+                return isFunction(propertyValue) ? propertyValue.bind(target) : propertyValue;
+            }
+        },
+    });
+
+    return elementInternalsProxy;
 }
 
 // @ts-ignore
@@ -457,6 +551,25 @@ LightningElement.prototype = {
         }
 
         return getBoundingClientRect(elm);
+    },
+
+    attachInternals(): ElementInternals {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            def: { formAssociated },
+            renderer: { attachInternals },
+        } = vm;
+
+        if (vm.shadowMode === ShadowMode.Synthetic) {
+            throw new Error(
+                'attachInternals API is not supported in light DOM or synthetic shadow.'
+            );
+        }
+
+        const internals = attachInternals(elm);
+        // #TODO[2970]: remove proxy once `UpgradeableConstructor` has been removed
+        return createElementInternalsProxy(internals, Boolean(formAssociated));
     },
 
     get isConnected(): boolean {

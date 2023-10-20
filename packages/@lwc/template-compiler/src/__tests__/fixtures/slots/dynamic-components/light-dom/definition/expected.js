@@ -22,17 +22,13 @@ const stc4 = {
   key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { s: api_slot, f: api_flatten, dc: api_dynamic_component } = $api;
+  const { s: api_slot, dc: api_dynamic_component } = $api;
   return [
-    api_dynamic_component(
-      $cmp.ctor,
-      stc0,
-      api_flatten([
-        api_slot("head", stc1, stc2, $slotset),
-        api_slot("body", stc3, stc2, $slotset),
-        api_slot("footer", stc4, stc2, $slotset),
-      ])
-    ),
+    api_dynamic_component($cmp.ctor, stc0, [
+      api_slot("head", stc1, stc2, $slotset),
+      api_slot("body", stc3, stc2, $slotset),
+      api_slot("footer", stc4, stc2, $slotset),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -44,6 +44,10 @@ function nextSibling(node: Node): Node | null {
     return node.nextSibling;
 }
 
+function previousSibling(node: Node): Node | null {
+    return node.previousSibling;
+}
+
 function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
     // `shadowRoot` will be non-null in two cases:
     //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
@@ -193,6 +197,20 @@ function getTagName(elm: Element): string {
     return elm.tagName;
 }
 
+function attachInternals(elm: HTMLElement): ElementInternals {
+    return attachInternalsFunc.call(elm);
+}
+
+// Use the attachInternals method from HTMLElement.prototype because access to it is removed
+// in HTMLBridgeElement, ie: elm.attachInternals is undefined.
+// Additionally, cache the attachInternals method to protect against 3rd party monkey-patching.
+const attachInternalsFunc =
+    typeof ElementInternals !== 'undefined'
+        ? HTMLElement.prototype.attachInternals
+        : () => {
+              throw new Error('attachInternals API is not supported in this browser environment.');
+          };
+
 export { registerContextConsumer, registerContextProvider } from './context';
 
 export {
@@ -204,6 +222,7 @@ export {
     createText,
     createComment,
     nextSibling,
+    previousSibling,
     attachShadow,
     getProperty,
     setProperty,
@@ -231,4 +250,5 @@ export {
     isConnected,
     assertInstanceOfHTMLElement,
     ownerDocument,
+    attachInternals,
 };

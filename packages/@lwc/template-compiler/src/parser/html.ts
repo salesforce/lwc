@@ -37,7 +37,7 @@ function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
 }
 
 export function parseHTML(ctx: ParserCtx, source: string) {
-    const onParseError = (err: parse5.ParsingError) => {
+    const onParseError = (err: parse5.ParserError) => {
         const { code, ...location } = err;
 
         const lwcError = getLwcErrorFromParse5Error(ctx, code);

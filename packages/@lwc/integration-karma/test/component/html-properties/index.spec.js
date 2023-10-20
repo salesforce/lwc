@@ -149,7 +149,11 @@ describe('global html properties', () => {
                 case 'lang':
                     return '';
                 case 'role':
-                    return null;
+                    // For role, Firefox returns empty string when supported. Chrome/Safari return null
+                    // https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+                    return 'role' in HTMLElement.prototype
+                        ? document.createElement('div').role
+                        : null;
                 case 'title':
                     return '';
                 default:

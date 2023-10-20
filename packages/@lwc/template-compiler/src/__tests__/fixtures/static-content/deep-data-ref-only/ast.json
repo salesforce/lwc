@@ -1,0 +1,375 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 13,
+            "endColumn": 12,
+            "start": 0,
+            "end": 282,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 13,
+                "startColumn": 1,
+                "endLine": 13,
+                "endColumn": 12,
+                "start": 271,
+                "end": 282
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 270,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 11,
+                        "start": 264,
+                        "end": 270
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 20,
+                            "start": 29,
+                            "end": 40,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 14,
+                                "start": 29,
+                                "end": 34
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 14,
+                                "endLine": 3,
+                                "endColumn": 20,
+                                "start": 34,
+                                "end": 40
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 15,
+                            "start": 49,
+                            "end": 190,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 14,
+                                "start": 49,
+                                "end": 54
+                            },
+                            "endTag": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 15,
+                                "start": 184,
+                                "end": 190
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "div",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 19,
+                                    "start": 67,
+                                    "end": 175,
+                                    "startTag": {
+                                        "startLine": 5,
+                                        "startColumn": 13,
+                                        "endLine": 5,
+                                        "endColumn": 18,
+                                        "start": 67,
+                                        "end": 72
+                                    },
+                                    "endTag": {
+                                        "startLine": 8,
+                                        "startColumn": 13,
+                                        "endLine": 8,
+                                        "endColumn": 19,
+                                        "start": 169,
+                                        "end": 175
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Element",
+                                        "name": "div",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 6,
+                                            "startColumn": 17,
+                                            "endLine": 6,
+                                            "endColumn": 42,
+                                            "start": 89,
+                                            "end": 114,
+                                            "startTag": {
+                                                "startLine": 6,
+                                                "startColumn": 17,
+                                                "endLine": 6,
+                                                "endColumn": 36,
+                                                "start": 89,
+                                                "end": 108
+                                            },
+                                            "endTag": {
+                                                "startLine": 6,
+                                                "startColumn": 36,
+                                                "endLine": 6,
+                                                "endColumn": 42,
+                                                "start": 108,
+                                                "end": 114
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [
+                                            {
+                                                "type": "Directive",
+                                                "name": "Ref",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "foo"
+                                                },
+                                                "location": {
+                                                    "startLine": 6,
+                                                    "startColumn": 22,
+                                                    "endLine": 6,
+                                                    "endColumn": 35,
+                                                    "start": 94,
+                                                    "end": 107
+                                                }
+                                            }
+                                        ],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "div",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 7,
+                                            "startColumn": 17,
+                                            "endLine": 7,
+                                            "endColumn": 42,
+                                            "start": 131,
+                                            "end": 156,
+                                            "startTag": {
+                                                "startLine": 7,
+                                                "startColumn": 17,
+                                                "endLine": 7,
+                                                "endColumn": 36,
+                                                "start": 131,
+                                                "end": 150
+                                            },
+                                            "endTag": {
+                                                "startLine": 7,
+                                                "startColumn": 36,
+                                                "endLine": 7,
+                                                "endColumn": 42,
+                                                "start": 150,
+                                                "end": 156
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [
+                                            {
+                                                "type": "Directive",
+                                                "name": "Ref",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "baz"
+                                                },
+                                                "location": {
+                                                    "startLine": 7,
+                                                    "startColumn": 22,
+                                                    "endLine": 7,
+                                                    "endColumn": 35,
+                                                    "start": 136,
+                                                    "end": 149
+                                                }
+                                            }
+                                        ],
+                                        "listeners": [],
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 9,
+                            "endLine": 10,
+                            "endColumn": 34,
+                            "start": 199,
+                            "end": 224,
+                            "startTag": {
+                                "startLine": 10,
+                                "startColumn": 9,
+                                "endLine": 10,
+                                "endColumn": 28,
+                                "start": 199,
+                                "end": 218
+                            },
+                            "endTag": {
+                                "startLine": 10,
+                                "startColumn": 28,
+                                "endLine": 10,
+                                "endColumn": 34,
+                                "start": 218,
+                                "end": 224
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "Ref",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "bar"
+                                },
+                                "location": {
+                                    "startLine": 10,
+                                    "startColumn": 14,
+                                    "endLine": 10,
+                                    "endColumn": 27,
+                                    "start": 204,
+                                    "end": 217
+                                }
+                            }
+                        ],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 11,
+                            "endColumn": 35,
+                            "start": 233,
+                            "end": 259,
+                            "startTag": {
+                                "startLine": 11,
+                                "startColumn": 9,
+                                "endLine": 11,
+                                "endColumn": 29,
+                                "start": 233,
+                                "end": 253
+                            },
+                            "endTag": {
+                                "startLine": 11,
+                                "startColumn": 29,
+                                "endLine": 11,
+                                "endColumn": 35,
+                                "start": 253,
+                                "end": 259
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "Ref",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "quux"
+                                },
+                                "location": {
+                                    "startLine": 11,
+                                    "startColumn": 14,
+                                    "endLine": 11,
+                                    "endColumn": 28,
+                                    "start": 238,
+                                    "end": 252
+                                }
+                            }
+                        ],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

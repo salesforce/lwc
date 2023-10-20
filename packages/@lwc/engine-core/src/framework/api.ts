@@ -5,11 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    APIFeature,
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
+    isAPIFeatureEnabled,
     isArray,
     isFalse,
     isFunction,
@@ -27,26 +29,27 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
-import { EmptyArray, setRefVNode } from './utils';
+import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    isVScopedSlotFragment,
+    Key,
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
+    VFragment,
     VNode,
     VNodes,
-    VElement,
-    VText,
-    VCustomElement,
-    VComment,
-    VElementData,
     VNodeType,
-    VStatic,
-    Key,
-    VFragment,
-    isVScopedSlotFragment,
     VScopedSlotFragment,
-    VStaticElementData,
+    VStatic,
+    VText,
+    VStaticPart,
+    VStaticPartData,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -54,6 +57,15 @@ const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
+}
+
+// [s]tatic [p]art
+function sp(partId: number, data: VStaticPartData): VStaticPart {
+    return {
+        partId,
+        data,
+        elm: undefined, // elm is defined later
+    };
 }
 
 // [s]coped [s]lot [f]actory
@@ -70,7 +82,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 }
 
 // [st]atic node
-function st(fragment: Element, key: Key, data?: VStaticElementData): VStatic {
+function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
     const owner = getVMBeingRendered()!;
     const vnode: VStatic = {
         type: VNodeType.Static,
@@ -79,14 +91,8 @@ function st(fragment: Element, key: Key, data?: VStaticElementData): VStatic {
         elm: undefined,
         fragment,
         owner,
-        data,
+        parts,
     };
-
-    const ref = data?.ref;
-
-    if (!isUndefined(ref)) {
-        setRefVNode(owner, ref, vnode);
-    }
 
     return vnode;
 }
@@ -147,7 +153,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key, ref } = data;
+    const { key } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -158,10 +164,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         key,
         owner: vmBeingRendered,
     };
-
-    if (!isUndefined(ref)) {
-        setRefVNode(vmBeingRendered, ref, vnode);
-    }
 
     return vnode;
 }
@@ -192,7 +194,7 @@ function s(
     data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VElement | VNodes | VFragment {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -252,11 +254,16 @@ function s(
         children = newChildren;
     }
     const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode } = vmBeingRendered;
+    const { renderMode, shadowMode, apiVersion } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
+        // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+        if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
+            return fr(data.key, children, 0);
+        } else {
+            sc(children);
+            return children;
+        }
     }
     if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
@@ -310,7 +317,7 @@ function c(
             });
         }
     }
-    const { key, ref } = data;
+    const { key } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -327,10 +334,6 @@ function c(
         vm,
     };
     addVNodeToChildLWC(vnode);
-
-    if (!isUndefined(ref)) {
-        setRefVNode(vmBeingRendered, ref, vnode);
-    }
 
     return vnode;
 }
@@ -691,6 +694,7 @@ const api = ObjectFreeze({
     shc,
     ssf,
     ddc,
+    sp,
 });
 
 export default api;

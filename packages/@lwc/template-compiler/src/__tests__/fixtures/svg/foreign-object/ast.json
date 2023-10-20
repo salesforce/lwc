@@ -234,9 +234,9 @@
                                                     "startLine": 6,
                                                     "startColumn": 21,
                                                     "endLine": 8,
-                                                    "endColumn": 21,
+                                                    "endColumn": 37,
                                                     "start": 172,
-                                                    "end": 298,
+                                                    "end": 314,
                                                     "startTag": {
                                                         "startLine": 6,
                                                         "startColumn": 21,
@@ -244,6 +244,14 @@
                                                         "endColumn": 93,
                                                         "start": 172,
                                                         "end": 244
+                                                    },
+                                                    "endTag": {
+                                                        "startLine": 8,
+                                                        "startColumn": 21,
+                                                        "endLine": 8,
+                                                        "endColumn": 37,
+                                                        "start": 298,
+                                                        "end": 314
                                                     }
                                                 },
                                                 "attributes": [

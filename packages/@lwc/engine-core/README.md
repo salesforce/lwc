@@ -96,11 +96,6 @@ This experimental API enables the identification of LWC constructors.
 This experimental API enables the creation of a reactive readonly membrane around any object
 value.
 
-### register()
-
-This experimental API enables the registration of 'services' in LWC by exposing hooks into the
-component life-cycle.
-
 ### setHooks()
 
 This experimental API allows setting overridable hooks with an application specific implementation.
