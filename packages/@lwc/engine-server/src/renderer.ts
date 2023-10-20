@@ -119,7 +119,7 @@ function createComment(content: string): HostNode {
     };
 }
 
-function nextSibling(node: N) {
+function getSibling(node: N, offset: number) {
     const parent = node[HostParentKey];
 
     if (isNull(parent)) {
@@ -127,7 +127,15 @@ function nextSibling(node: N) {
     }
 
     const nodeIndex = parent[HostChildrenKey].indexOf(node);
-    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
+    return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) ?? null;
+}
+
+function nextSibling(node: N) {
+    return getSibling(node, 1);
+}
+
+function previousSibling(node: N) {
+    return getSibling(node, -1);
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
@@ -343,7 +351,11 @@ function createUpgradableElementConstructor(tagName: string): CreateElementAndUp
     };
 }
 
-function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
+function getUpgradableElement(
+    tagName: string,
+    _connectedCallback?: LifecycleCallback,
+    _disconnectedCallback?: LifecycleCallback
+): CreateElementAndUpgrade {
     let ctor = localRegistryRecord.get(tagName);
     if (!isUndefined(ctor)) {
         return ctor;
@@ -428,6 +440,7 @@ export const renderer = {
     createComment,
     createCustomElement,
     nextSibling,
+    previousSibling,
     attachShadow,
     getProperty,
     setProperty,
@@ -458,4 +471,5 @@ export const renderer = {
     ownerDocument,
     registerContextConsumer,
     attachInternals,
+    defineCustomElement: getUpgradableElement,
 };

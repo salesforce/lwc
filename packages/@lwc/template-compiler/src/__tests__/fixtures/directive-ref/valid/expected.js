@@ -4,8 +4,8 @@ const stc0 = {
   ref: "foo",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { st: api_static_fragment } = $api;
-  return [api_static_fragment($fragment1(), 1, stc0)];
+  const { sp: api_static_part, st: api_static_fragment } = $api;
+  return [api_static_fragment($fragment1(), 1, [api_static_part(0, stc0)])];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

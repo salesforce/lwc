@@ -7,6 +7,7 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     b: api_bind,
+    sp: api_static_part,
     st: api_static_fragment,
     k: api_key,
     d: api_dynamic_text,
@@ -16,11 +17,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   const { _m0, _m1 } = $ctx;
   return [
-    api_static_fragment($fragment1(), 1, {
-      on: {
-        click: _m1 || ($ctx._m1 = api_bind($cmp.create)),
-      },
-    }),
+    api_static_fragment($fragment1(), 1, [
+      api_static_part(0, {
+        on: {
+          click: _m1 || ($ctx._m1 = api_bind($cmp.create)),
+        },
+      }),
+    ]),
     api_element(
       "ul",
       stc0,
@@ -32,11 +35,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           },
           [
             api_text(api_dynamic_text(task.title)),
-            api_static_fragment($fragment2(), 5, {
-              on: {
-                click: api_bind(task.delete),
-              },
-            }),
+            api_static_fragment($fragment2(), 5, [
+              api_static_part(0, {
+                on: {
+                  click: api_bind(task.delete),
+                },
+              }),
+            ]),
           ]
         );
       })

@@ -10,7 +10,7 @@ it('throws error when hydrating non DOM element', () => {
 });
 if (process.env.NATIVE_SHADOW) {
     it('should log an error when passing an invalid LightningElement constructor.', () => {
-        const anElement = document.createElement('div');
+        const anElement = document.createElement('x-div');
 
         expect(() => {
             try {

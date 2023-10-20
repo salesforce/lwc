@@ -77,38 +77,20 @@
                     "start": 1,
                     "end": 15,
                     "object": {
-                        "type": "MemberExpression",
-                        "object": {
-                            "type": "Identifier",
-                            "name": "$cmp"
-                        },
-                        "property": {
-                            "type": "Identifier",
-                            "start": 1,
-                            "end": 4,
-                            "name": "val"
-                        },
-                        "computed": false,
-                        "optional": false
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 4,
+                        "name": "val"
                     },
                     "property": {
                         "type": "MemberExpression",
                         "start": 5,
                         "end": 14,
                         "object": {
-                            "type": "MemberExpression",
-                            "object": {
-                                "type": "Identifier",
-                                "name": "$cmp"
-                            },
-                            "property": {
-                                "type": "Identifier",
-                                "start": 5,
-                                "end": 10,
-                                "name": "state"
-                            },
-                            "computed": false,
-                            "optional": false
+                            "type": "Identifier",
+                            "start": 5,
+                            "end": 10,
+                            "name": "state"
                         },
                         "property": {
                             "type": "Identifier",
@@ -167,38 +149,20 @@
                         "start": 1,
                         "end": 15,
                         "object": {
-                            "type": "MemberExpression",
-                            "object": {
-                                "type": "Identifier",
-                                "name": "$cmp"
-                            },
-                            "property": {
-                                "type": "Identifier",
-                                "start": 1,
-                                "end": 4,
-                                "name": "val"
-                            },
-                            "computed": false,
-                            "optional": false
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "val"
                         },
                         "property": {
                             "type": "MemberExpression",
                             "start": 5,
                             "end": 14,
                             "object": {
-                                "type": "MemberExpression",
-                                "object": {
-                                    "type": "Identifier",
-                                    "name": "$cmp"
-                                },
-                                "property": {
-                                    "type": "Identifier",
-                                    "start": 5,
-                                    "end": 10,
-                                    "name": "state"
-                                },
-                                "computed": false,
-                                "optional": false
+                                "type": "Identifier",
+                                "start": 5,
+                                "end": 10,
+                                "name": "state"
                             },
                             "property": {
                                 "type": "Identifier",
@@ -217,19 +181,10 @@
                         "start": 16,
                         "end": 25,
                         "object": {
-                            "type": "MemberExpression",
-                            "object": {
-                                "type": "Identifier",
-                                "name": "$cmp"
-                            },
-                            "property": {
-                                "type": "Identifier",
-                                "start": 16,
-                                "end": 21,
-                                "name": "state"
-                            },
-                            "computed": false,
-                            "optional": false
+                            "type": "Identifier",
+                            "start": 16,
+                            "end": 21,
+                            "name": "state"
                         },
                         "property": {
                             "type": "Identifier",
@@ -325,19 +280,10 @@
                             "start": 1,
                             "end": 11,
                             "object": {
-                                "type": "MemberExpression",
-                                "object": {
-                                    "type": "Identifier",
-                                    "name": "$cmp"
-                                },
-                                "property": {
-                                    "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
-                                    "name": "arr"
-                                },
-                                "computed": false,
-                                "optional": false
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 4,
+                                "name": "arr"
                             },
                             "property": {
                                 "type": "Identifier",
@@ -389,38 +335,20 @@
                             "start": 1,
                             "end": 15,
                             "object": {
-                                "type": "MemberExpression",
-                                "object": {
-                                    "type": "Identifier",
-                                    "name": "$cmp"
-                                },
-                                "property": {
-                                    "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
-                                    "name": "arr"
-                                },
-                                "computed": false,
-                                "optional": false
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 4,
+                                "name": "arr"
                             },
                             "property": {
                                 "type": "MemberExpression",
                                 "start": 5,
                                 "end": 14,
                                 "object": {
-                                    "type": "MemberExpression",
-                                    "object": {
-                                        "type": "Identifier",
-                                        "name": "$cmp"
-                                    },
-                                    "property": {
-                                        "type": "Identifier",
-                                        "start": 5,
-                                        "end": 10,
-                                        "name": "state"
-                                    },
-                                    "computed": false,
-                                    "optional": false
+                                    "type": "Identifier",
+                                    "start": 5,
+                                    "end": 10,
+                                    "name": "state"
                                 },
                                 "property": {
                                     "type": "Identifier",

@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logError, logWarn, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -48,7 +48,7 @@ import {
     VNodeType,
     VBaseElement,
     isVFragment,
-    VStatic,
+    VStaticPart,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
@@ -83,6 +83,7 @@ export const enum ShadowMode {
 export const enum ShadowSupportMode {
     Any = 'any',
     Default = 'reset',
+    Native = 'native',
 }
 
 export const enum LwcDomMode {
@@ -96,6 +97,13 @@ export interface Context {
     hasTokenInClass: boolean | undefined;
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
+    /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken: string | undefined;
+    /** True if a legacyStylesheetToken was added to the host class */
+    hasLegacyTokenInClass: boolean | undefined;
+    /** True if a legacyStylesheetToken was added to the host attributes */
+    hasLegacyTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
@@ -109,7 +117,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VBaseElement | VStatic };
+export type RefVNodes = { [name: string]: VBaseElement | VStaticPart };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
@@ -320,6 +328,9 @@ export function createVM<HostNode, HostElement>(
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
+            legacyStylesheetToken: undefined,
+            hasLegacyTokenInClass: undefined,
+            hasLegacyTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNodes: null,
             tplCache: EmptyObject,
@@ -463,8 +474,14 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE) {
-            if (def.shadowSupportMode === ShadowSupportMode.Any) {
+        } else if (
+            lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
+            def.shadowSupportMode === ShadowSupportMode.Native
+        ) {
+            if (
+                def.shadowSupportMode === ShadowSupportMode.Any ||
+                def.shadowSupportMode === ShadowSupportMode.Native
+            ) {
                 shadowMode = ShadowMode.Native;
             } else {
                 const shadowAncestor = getNearestShadowAncestor(owner);
@@ -530,6 +547,9 @@ function rehydrate(vm: VM) {
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
     const { renderRoot, children: oldCh, renderer } = vm;
+
+    // reset the refs; they will be set during `patchChildren`
+    resetRefVNodes(vm);
 
     // caching the new children collection
     vm.children = newCh;
@@ -808,7 +828,12 @@ export function runWithBoundaryProtection(
             addErrorComponentStack(vm, error);
 
             const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
-            if (isUndefined(errorBoundaryVm)) {
+            // Error boundaries are not in effect when server-side rendering. `errorCallback`
+            // is intended to allow recovery from errors - changing the state of a component
+            // and instigating a re-render. That is at odds with the single-pass, synchronous
+            // nature of SSR. For that reason, all errors bubble up to the `renderComponent`
+            // call site.
+            if (!process.env.IS_BROWSER || isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
             resetComponentRoot(vm); // remove offenders
@@ -839,4 +864,71 @@ export function forceRehydration(vm: VM) {
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
     }
+}
+
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
+    const {
+        renderMode,
+        shadowMode,
+        def: { formAssociated },
+    } = vm;
+
+    // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
+    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
+            );
+        }
+        return;
+    }
+
+    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+        throw new Error(
+            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+        );
+    }
+
+    invokeComponentCallback(vm, faceCb);
+}
+
+export function runFormAssociatedCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formAssociatedCallback } = vm.def;
+
+    if (!isUndefined(formAssociatedCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback);
+    }
+}
+
+export function runFormDisabledCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formDisabledCallback } = vm.def;
+
+    if (!isUndefined(formDisabledCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback);
+    }
+}
+
+export function runFormResetCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formResetCallback } = vm.def;
+
+    if (!isUndefined(formResetCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formResetCallback);
+    }
+}
+
+export function runFormStateRestoreCallback(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    const { formStateRestoreCallback } = vm.def;
+
+    if (!isUndefined(formStateRestoreCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
+    }
+}
+
+export function resetRefVNodes(vm: VM) {
+    const { cmpTemplate } = vm;
+    vm.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
 }
