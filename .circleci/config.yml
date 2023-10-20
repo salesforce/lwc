@@ -299,6 +299,11 @@ jobs:
           disable_synthetic: true
           api_version: 58
       - run_karma:
+          api_version: 59
+      - run_karma:
+          disable_synthetic: true
+          api_version: 59
+      - run_karma:
           enable_aria_reflection_global_polyfill: true
       - run_karma:
           disable_synthetic: true

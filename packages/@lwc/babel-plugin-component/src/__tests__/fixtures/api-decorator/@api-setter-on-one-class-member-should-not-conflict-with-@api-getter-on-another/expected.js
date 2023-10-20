@@ -1,6 +1,6 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
-class Test {
+class Test extends LightningElement {
   set first(value) {}
   get first() {}
   get second() {
@@ -9,6 +9,7 @@ class Test {
   set second(value) {
     this.s = value;
   }
+  /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicProps: {

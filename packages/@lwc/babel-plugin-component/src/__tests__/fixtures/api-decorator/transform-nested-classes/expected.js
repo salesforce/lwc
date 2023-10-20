@@ -1,9 +1,10 @@
-import { registerDecorators as _registerDecorators2, registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators2, registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
-class Outer {
+class Outer extends LightningElement {
   outer;
-  a = _registerDecorators2(class {
+  a = _registerDecorators2(class extends LightningElement {
     innerA;
+    /*LWC compiler vX.X.X*/
   }, {
     publicProps: {
       innerA: {
@@ -11,6 +12,7 @@ class Outer {
       }
     }
   });
+  /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Outer, {
   publicProps: {
