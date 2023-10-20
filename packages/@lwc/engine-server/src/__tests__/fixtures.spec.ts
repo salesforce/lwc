@@ -228,8 +228,4 @@ describe('fixtures', () => {
     describe('native custom element lifecycle', () => {
         testWithFeatureFlagEnabled('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE');
     });
-
-    describe('disable aria reflection polyfill', () => {
-        testWithFeatureFlagEnabled('DISABLE_ARIA_REFLECTION_POLYFILL');
-    });
 });

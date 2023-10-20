@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { SVG_NAMESPACE } from '@lwc/shared';
+import { APIVersion, getAPIVersionFromNumber, SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
@@ -31,6 +31,13 @@ import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindComplexExpression } from './expression';
+
+// structuredClone is only available in Node 17+
+// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
+const doStructuredClone =
+    typeof structuredClone === 'function'
+        ? structuredClone
+        : (obj: any) => JSON.parse(JSON.stringify(obj));
 
 type RenderPrimitive =
     | 'iterator'
@@ -137,6 +144,7 @@ export default class CodeGen {
     slotNames: Set<string> = new Set();
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
+    apiVersion: APIVersion;
 
     constructor({
         root,
@@ -162,6 +170,7 @@ export default class CodeGen {
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
         this.state = state;
+        this.apiVersion = getAPIVersionFromNumber(state.config.apiVersion);
     }
 
     generateKey() {
@@ -482,6 +491,10 @@ export default class CodeGen {
         }
 
         const scope = this;
+
+        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+        // node later during static content optimization
+        expression = doStructuredClone(expression);
         walk(expression, {
             leave(node, parent) {
                 if (

@@ -1,5 +1,6 @@
 import { ariaPropertiesMapping, nonStandardAriaProperties } from 'test-utils';
-import { __unstable__ReportingControl as reportingControl } from 'lwc';
+import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
+import Component from 'x/component';
 
 function testAriaProperty(property, attribute) {
     describe(property, () => {
@@ -13,6 +14,11 @@ function testAriaProperty(property, attribute) {
         afterEach(() => {
             reportingControl.detachDispatcher();
         });
+
+        function getDefaultValue(prop) {
+            const div = document.createElement('div');
+            return div[prop];
+        }
 
         function expectWarningIfNonStandard(callback) {
             // eslint-disable-next-line jest/valid-expect
@@ -65,10 +71,13 @@ function testAriaProperty(property, attribute) {
             expect(Object.prototype.hasOwnProperty.call(Element.prototype, property)).toBe(true);
         });
 
-        it(`should return null if the value is not set`, () => {
+        it(`should return default value if the value is not set`, () => {
             const el = document.createElement('div');
+            // Our polyfill always returns null, Firefox may return undefined
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+            const expectedDefaultValue = isNative ? getDefaultValue(property) : null;
             expectWarningIfNonStandard(() => {
-                expect(el[property]).toBe(null);
+                expect(el[property]).toBe(expectedDefaultValue);
             });
             expectGetterReportIfNonStandard();
         });
@@ -103,7 +112,7 @@ function testAriaProperty(property, attribute) {
         });
 
         // Falsy values that are treated as removing the attribute when set
-        const falsyValuesThatRemove = [null];
+        const falsyValuesThatRemove = [];
 
         // Falsy values that are *not* treated as removing the attribute when set
         const falsyValuesThatDoNotRemove = [0, false, '', NaN];
@@ -114,17 +123,32 @@ function testAriaProperty(property, attribute) {
         const isNative = Object.getOwnPropertyDescriptor(Element.prototype, property)
             .set.toString()
             .includes('[native code]');
-        const settingUndefinedRemoves = () => {
-            // This test is just in case Chromium/WebKit change their behavior, or Firefox ships their version
+
+        // This test is just in case Chromium/WebKit/Firefox change their behavior
+        const settingValueRemoves = (val) => {
             const div = document.createElement('div');
-            div[property] = undefined;
+            div[property] = val;
             return div[property] === null;
         };
-        if (isNative && settingUndefinedRemoves()) {
-            // Native Webkit/Chromium – setting undefined is treated the same as null
-            falsyValuesThatRemove.push(undefined);
+
+        if (isNative) {
+            if (settingValueRemoves(undefined)) {
+                // Native Webkit/Chromium – setting undefined is treated the same as null
+                falsyValuesThatRemove.push(undefined);
+            } else {
+                falsyValuesThatDoNotRemove.push(undefined);
+            }
+            if (settingValueRemoves(null)) {
+                // As of this writing, Firefox is inconsistent with Chromium/WebKit and treats setting undefined/null
+                // as setting a string value: https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+                falsyValuesThatRemove.push(null);
+            } else {
+                falsyValuesThatDoNotRemove.push(null);
+            }
         } else {
-            // Our polyfill or the current spec – setting undefined is not treated like null
+            // Our polyfill - null removes
+            falsyValuesThatRemove.push(null);
+            // Our polyfill – setting undefined is not treated like null
             falsyValuesThatDoNotRemove.push(undefined);
         }
 
@@ -166,8 +190,45 @@ function testAriaProperty(property, attribute) {
 }
 
 // These tests don't make sense if the global polyfill is not loaded
-if (!window.lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
+if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
         testAriaProperty(ariaProperty, ariaAttribute);
     }
+
+    describe('non-standard properties do not log/report for LightningElement/BaseBridgeElement', () => {
+        let dispatcher;
+
+        beforeEach(() => {
+            dispatcher = jasmine.createSpy();
+            reportingControl.attachDispatcher(dispatcher);
+        });
+
+        afterEach(() => {
+            reportingControl.detachDispatcher();
+        });
+
+        nonStandardAriaProperties.forEach((prop) => {
+            describe(prop, () => {
+                it('LightningElement (internal)', () => {
+                    const elm = createElement('x-component', { is: Component });
+                    document.body.appendChild(elm);
+
+                    expect(() => {
+                        elm.getProp(prop);
+                    }).not.toLogWarningDev();
+                    expect(dispatcher).not.toHaveBeenCalled();
+                });
+
+                it('BaseBridgeElement (external)', () => {
+                    const elm = createElement('x-component', { is: Component });
+                    document.body.appendChild(elm);
+
+                    expect(() => {
+                        elm[prop] = 'foo';
+                    }).not.toLogWarningDev();
+                    expect(dispatcher).not.toHaveBeenCalled();
+                });
+            });
+        });
+    });
 }

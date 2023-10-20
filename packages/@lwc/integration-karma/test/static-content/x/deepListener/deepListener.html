@@ -1,0 +1,29 @@
+<template>
+    <!-- 1 level deep -->
+    <div data-id="static1" onfoo={one}></div>
+    <div data-id="dynamic1" data-dynamic={dynamic} onfoo={one}></div>
+    <div>
+        <div data-id="deepStatic1" onfoo={one}></div>
+    </div>
+
+    <!-- 2 levels deep -->
+    <div data-id="static2" onfoo={un.deux}></div>
+    <div data-id="dynamic2" data-dynamic={dynamic} onfoo={un.deux}></div>
+    <div>
+        <div data-id="deepStatic2" onfoo={un.deux}></div>
+    </div>
+
+    <!-- 3 levels deep -->
+    <div data-id="static3" onfoo={uno.dos.tres}></div>
+    <div data-id="dynamic3" data-dynamic={dynamic} onfoo={uno.dos.tres}></div>
+    <div>
+        <div data-id="deepStatic3" onfoo={uno.dos.tres}></div>
+    </div>
+
+    <!-- 4 levels deep -->
+    <div data-id="static4" onfoo={ichi.ni.san.shi}></div>
+    <div data-id="dynamic4" data-dynamic={dynamic} onfoo={ichi.ni.san.shi}></div>
+    <div>
+        <div data-id="deepStatic4" onfoo={ichi.ni.san.shi}></div>
+    </div>
+</template>

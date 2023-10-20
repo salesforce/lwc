@@ -351,7 +351,11 @@ function createUpgradableElementConstructor(tagName: string): CreateElementAndUp
     };
 }
 
-function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
+function getUpgradableElement(
+    tagName: string,
+    _connectedCallback?: LifecycleCallback,
+    _disconnectedCallback?: LifecycleCallback
+): CreateElementAndUpgrade {
     let ctor = localRegistryRecord.get(tagName);
     if (!isUndefined(ctor)) {
         return ctor;
@@ -467,4 +471,5 @@ export const renderer = {
     ownerDocument,
     registerContextConsumer,
     attachInternals,
+    defineCustomElement: getUpgradableElement,
 };

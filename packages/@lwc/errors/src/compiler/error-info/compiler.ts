@@ -198,4 +198,12 @@ export const TransformerErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    JS_TRANSFORMER_DECORATOR_ERROR: {
+        code: 1198,
+        message:
+            'Decorators like @api, @track, and @wire are only supported in LightningElement classes. {0}',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

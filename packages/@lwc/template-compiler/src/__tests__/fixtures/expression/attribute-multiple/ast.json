@@ -64,19 +64,10 @@
                             "start": 1,
                             "end": 6,
                             "object": {
-                                "type": "MemberExpression",
-                                "object": {
-                                    "type": "Identifier",
-                                    "name": "$cmp"
-                                },
-                                "property": {
-                                    "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
-                                    "name": "foo"
-                                },
-                                "computed": false,
-                                "optional": false
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 4,
+                                "name": "foo"
                             },
                             "property": {
                                 "type": "Identifier",
@@ -146,19 +137,10 @@
                                     "start": 1,
                                     "end": 6,
                                     "object": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 4,
-                                            "name": "bar"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "bar"
                                     },
                                     "property": {
                                         "type": "Identifier",

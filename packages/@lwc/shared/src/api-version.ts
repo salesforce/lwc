@@ -10,6 +10,7 @@ import { isNumber } from './language';
 export const enum APIVersion {
     V58_244_SUMMER_23 = 58,
     V59_246_WINTER_24 = 59,
+    V60_248_SPRING_24 = 60,
 }
 
 // These must be updated when the enum is updated.
@@ -17,8 +18,12 @@ export const enum APIVersion {
 // passing the `verify-treeshakeable.js` test.
 
 export const LOWEST_API_VERSION = APIVersion.V58_244_SUMMER_23;
-export const HIGHEST_API_VERSION = APIVersion.V59_246_WINTER_24;
-const allVersions = [APIVersion.V58_244_SUMMER_23, APIVersion.V59_246_WINTER_24];
+export const HIGHEST_API_VERSION = APIVersion.V60_248_SPRING_24;
+const allVersions = [
+    APIVersion.V58_244_SUMMER_23,
+    APIVersion.V59_246_WINTER_24,
+    APIVersion.V60_248_SPRING_24,
+];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 
 export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
@@ -54,6 +59,19 @@ export const enum APIFeature {
      * (for backwards compatibility).
      */
     TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
+    /**
+     * If enabled, use fragments for slots in light DOM.
+     */
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+    /**
+     * If enabled, Babel object rest spread polyfills are not applied, and the native format is used instead.
+     */
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
+    /**
+     * If enabled, `registerDecorators()` calls will only be added to classes that extend from another class.
+     * This avoids unnecessary decorators on classes that cannot possibly be LightningElements.
+     */
+    SKIP_UNNECESSARY_REGISTER_DECORATORS,
 }
 
 export function isAPIFeatureEnabled(
@@ -64,5 +82,9 @@ export function isAPIFeatureEnabled(
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
+        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
+        case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
+            return apiVersion >= APIVersion.V60_248_SPRING_24;
     }
 }

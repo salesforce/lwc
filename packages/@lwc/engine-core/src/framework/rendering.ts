@@ -124,7 +124,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
             break;
 
         case VNodeType.Static:
-            n2.elm = (n1 as VStatic).elm;
+            patchStatic(n1 as VStatic, n2, renderer);
             break;
 
         case VNodeType.Fragment:
@@ -268,6 +268,13 @@ function mountElement(
     mountVNodes(vnode.children, elm, renderer, null);
 }
 
+function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
+    const elm = (n2.elm = n1.elm!);
+
+    // The `refs` object is blown away in every re-render, so we always need to re-apply them
+    applyStaticParts(elm, n2, renderer, false);
+}
+
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
@@ -298,7 +305,7 @@ function mountStatic(
     }
 
     insertNode(elm, parent, anchor, renderer);
-    applyStaticParts(elm, vnode, renderer);
+    applyStaticParts(elm, vnode, renderer, true);
 }
 
 function mountCustomElement(
