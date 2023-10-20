@@ -7,7 +7,6 @@
 import {
     ArrayIndexOf,
     ArrayPush,
-    ArrayReduce,
     ArraySplice,
     create,
     defineProperties,
@@ -115,68 +114,69 @@ function filterMutationRecords(
     mutations: MutationRecord[],
     observer: MutationObserver
 ): MutationRecord[] {
-    return ArrayReduce.call(
-        mutations,
-        (filteredSet, record: MutationRecord) => {
-            const { target, addedNodes, removedNodes, type } = record;
-            // If target is an lwc host,
-            // Determine if the mutations affected the host or the shadowRoot
-            // Mutations affecting host: changes to slot content
-            // Mutations affecting shadowRoot: changes to template content
-            if (type === 'childList' && !isUndefined(getNodeKey(target))) {
-                // In case of added nodes, we can climb up the tree and determine eligibility
-                if (addedNodes.length > 0) {
-                    // Optimization: Peek in and test one node to decide if the MutationRecord qualifies
-                    // The remaining nodes in this MutationRecord will have the same ownerKey
-                    const sampleNode: Node = addedNodes[0];
-                    if (isQualifiedObserver(observer, sampleNode)) {
-                        // If the target was being observed, then return record as-is
-                        // this will be the case for slot content
-                        const nodeObservers = getNodeObservers(target);
-                        if (
-                            nodeObservers &&
-                            (nodeObservers[0] === observer ||
-                                ArrayIndexOf.call(nodeObservers, observer) !== -1)
-                        ) {
-                            ArrayPush.call(filteredSet, record);
-                        } else {
-                            // else, must be observing the shadowRoot
-                            ArrayPush.call(filteredSet, retargetMutationRecord(record));
-                        }
-                    }
-                } else {
-                    // In the case of removed nodes, climbing the tree is not an option as the nodes are disconnected
-                    // We can only check if either the host or shadow root was observed and qualify the record
-                    const shadowRoot = (target as Element).shadowRoot;
-                    const sampleNode = removedNodes[0];
-                    if (
-                        getNodeNearestOwnerKey(target) === getNodeNearestOwnerKey(sampleNode) && // trickery: sampleNode is slot content
-                        isQualifiedObserver(observer, target) // use target as a close enough reference to climb up
-                    ) {
-                        ArrayPush.call(filteredSet, record);
-                    } else if (shadowRoot) {
-                        const shadowRootObservers = getNodeObservers(shadowRoot);
+    const result: MutationRecord[] = [];
 
-                        if (
-                            shadowRootObservers &&
-                            (shadowRootObservers[0] === observer ||
-                                ArrayIndexOf.call(shadowRootObservers, observer) !== -1)
-                        ) {
-                            ArrayPush.call(filteredSet, retargetMutationRecord(record));
-                        }
+    for (const record of mutations) {
+        const { target, type } = record;
+        // If target is an lwc host,
+        // Determine if the mutations affected the host or the shadowRoot
+        // Mutations affecting host: changes to slot content
+        // Mutations affecting shadowRoot: changes to template content
+        if (type === 'childList' && !isUndefined(getNodeKey(target))) {
+            const { addedNodes } = record;
+            // In case of added nodes, we can climb up the tree and determine eligibility
+            if (addedNodes.length > 0) {
+                // Optimization: Peek in and test one node to decide if the MutationRecord qualifies
+                // The remaining nodes in this MutationRecord will have the same ownerKey
+                const sampleNode: Node = addedNodes[0];
+                if (isQualifiedObserver(observer, sampleNode)) {
+                    // If the target was being observed, then return record as-is
+                    // this will be the case for slot content
+                    const nodeObservers = getNodeObservers(target);
+                    if (
+                        nodeObservers &&
+                        (nodeObservers[0] === observer ||
+                            ArrayIndexOf.call(nodeObservers, observer) !== -1)
+                    ) {
+                        ArrayPush.call(result, record);
+                    } else {
+                        // else, must be observing the shadowRoot
+
+                        ArrayPush.call(result, retargetMutationRecord(record));
                     }
                 }
             } else {
-                // Mutation happened under a root node(shadow root or document) and the decision is straighforward
-                // Ascend the tree starting from target and check if observer is qualified
-                if (isQualifiedObserver(observer, target)) {
-                    ArrayPush.call(filteredSet, record);
+                const { removedNodes } = record;
+                // In the case of removed nodes, climbing the tree is not an option as the nodes are disconnected
+                // We can only check if either the host or shadow root was observed and qualify the record
+                const shadowRoot = (target as Element).shadowRoot;
+                const sampleNode = removedNodes[0];
+                if (
+                    getNodeNearestOwnerKey(target) === getNodeNearestOwnerKey(sampleNode) && // trickery: sampleNode is slot content
+                    isQualifiedObserver(observer, target) // use target as a close enough reference to climb up
+                ) {
+                    ArrayPush.call(result, record);
+                } else if (shadowRoot) {
+                    const shadowRootObservers = getNodeObservers(shadowRoot);
+
+                    if (
+                        shadowRootObservers &&
+                        (shadowRootObservers[0] === observer ||
+                            ArrayIndexOf.call(shadowRootObservers, observer) !== -1)
+                    ) {
+                        ArrayPush.call(result, retargetMutationRecord(record));
+                    }
                 }
             }
-            return filteredSet;
-        },
-        []
-    ) as MutationRecord[];
+        } else {
+            // Mutation happened under a root node(shadow root or document) and the decision is straighforward
+            // Ascend the tree starting from target and check if observer is qualified
+            if (isQualifiedObserver(observer, target)) {
+                ArrayPush.call(result, record);
+            }
+        }
+    }
+    return result;
 }
 
 function getWrappedCallback(callback: MutationCallback): MutationCallback {

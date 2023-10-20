@@ -24,6 +24,7 @@ export interface RendererAPI {
     createText: (content: string) => N;
     createComment: (content: string) => N;
     nextSibling: (node: N) => N | null;
+    previousSibling: (node: N) => N | null;
     attachShadow: (element: E, options: ShadowRootInit) => N;
     getProperty: (node: N, key: string) => any;
     setProperty: (node: N, key: string, value: any) => void;
@@ -65,12 +66,22 @@ export interface RendererAPI {
         tagName: string,
         upgradeCallback: LifecycleCallback,
         connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback
+        disconnectedCallback?: LifecycleCallback,
+        formAssociatedCallback?: LifecycleCallback,
+        formDisabledCallback?: LifecycleCallback,
+        formResetCallback?: LifecycleCallback,
+        formStateRestoreCallback?: LifecycleCallback
     ) => E;
+    defineCustomElement: (
+        tagName: string,
+        connectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback
+    ) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,
         adapterContextToken: string,
         subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
+    attachInternals: (elm: E) => ElementInternals;
 }

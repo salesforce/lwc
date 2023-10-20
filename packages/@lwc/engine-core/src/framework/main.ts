@@ -8,10 +8,17 @@
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentHtmlPrototype } from './def';
 export {
-    createVM,
+    RenderMode,
+    ShadowMode,
     connectRootElement,
+    createVM,
     disconnectRootElement,
     getAssociatedVMIfPresent,
+    computeShadowAndRenderMode,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
 } from './vm';
 export { createContextProviderWithRegister } from './wiring';
 
@@ -51,7 +58,6 @@ export type {
 
 // Public APIs -------------------------------------------------------------------------------------
 export { LightningElement } from './base-lightning-element';
-export { register } from './services';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';

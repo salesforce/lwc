@@ -21,7 +21,9 @@ describe('properties', () => {
         document.body.appendChild(elm);
 
         expect(elm.publicProp).toBeDefined();
-        expect(elm.privateProp).toBeUndefined();
+        expect(() => {
+            expect(elm.privateProp).toBeUndefined();
+        }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
     it('should make the public property reactive if used in the template', () => {
@@ -81,7 +83,9 @@ describe('methods', () => {
         const elm = createElement('x-methods', { is: Methods });
 
         expect(elm.publicMethod).toBeDefined();
-        expect(elm.privateMethod).toBeUndefined();
+        expect(() => {
+            expect(elm.privateMethod).toBeUndefined();
+        }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
     it('should invoke the method with the right this value and arguments', () => {

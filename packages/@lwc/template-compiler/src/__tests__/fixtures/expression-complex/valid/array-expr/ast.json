@@ -333,19 +333,19 @@
                             "location": {
                                 "startLine": 4,
                                 "startColumn": 9,
-                                "endLine": 5,
-                                "endColumn": 5,
+                                "endLine": 4,
+                                "endColumn": 37,
                                 "start": 81,
-                                "end": 114
+                                "end": 109
                             }
                         },
                         "location": {
                             "startLine": 4,
                             "startColumn": 9,
-                            "endLine": 5,
-                            "endColumn": 5,
+                            "endLine": 4,
+                            "endColumn": 37,
                             "start": 81,
-                            "end": 114
+                            "end": 109
                         }
                     }
                 ]

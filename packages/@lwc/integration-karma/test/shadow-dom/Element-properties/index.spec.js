@@ -30,7 +30,7 @@ describe('Element.querySelector', () => {
         const divInsideShadow = elm.shadowRoot.querySelector('div');
         const manuallyInsertedElement = document.createElement('span');
 
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+        spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
         divInsideShadow.appendChild(manuallyInsertedElement);
 
         const qsResult = divInsideShadow.querySelector('span');
@@ -77,7 +77,7 @@ describe('Element.querySelectorAll', () => {
         const divInsideShadow = elm.shadowRoot.querySelector('div');
         const manuallyInsertedElement = document.createElement('span');
 
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+        spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
         divInsideShadow.appendChild(manuallyInsertedElement);
 
         const qsResult = divInsideShadow.querySelectorAll('span');
@@ -95,7 +95,7 @@ describe('Element.getElementsByTagName', () => {
         const divInsideShadow = elm.shadowRoot.querySelector('div');
         const manuallyInsertedElement = document.createElement('span');
 
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+        spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
         divInsideShadow.appendChild(manuallyInsertedElement);
 
         const qsResult = divInsideShadow.getElementsByTagName('span');
@@ -114,7 +114,7 @@ describe('Element.getElementsByClassName', () => {
         const manuallyInsertedElement = document.createElement('span');
         manuallyInsertedElement.className = 'test-class';
 
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+        spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
         divInsideShadow.appendChild(manuallyInsertedElement);
 
         const qsResult = divInsideShadow.getElementsByClassName('test-class');

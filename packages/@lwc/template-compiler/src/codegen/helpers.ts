@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIVersion, HTML_NAMESPACE, APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, APIVersion, HTML_NAMESPACE, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
@@ -21,9 +21,9 @@ import {
     isText,
 } from '../shared/ast';
 import {
+    STATIC_SAFE_DIRECTIVES,
     TEMPLATE_FUNCTION_NAME,
     TEMPLATE_PARAMS,
-    STATIC_SAFE_DIRECTIVES,
 } from '../shared/constants';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -69,8 +69,13 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
         return (
             // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
-            // light DOM slots
-            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
+            // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+            (!isAPIFeatureEnabled(
+                APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+                codeGen.apiVersion
+            ) &&
+                isSlot(child) &&
+                codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.
             // Search children to determine if it should be flattened.
             (isIf(child) && shouldFlatten(codeGen, child.children))
@@ -265,16 +270,6 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     return result;
 }
 
-function isSafeStaticChild(childNode: ChildNode) {
-    if (!isBaseElement(childNode)) {
-        // don't need to check non-base-element nodes, because they don't have listeners/directives
-        return true;
-    }
-    // Bail out if any children have event listeners or directives. These are only allowed at the top level of a
-    // static fragment, because the engine currently cannot set listeners/refs/etc. on nodes inside a static fragment.
-    return childNode.listeners.length === 0 && childNode.directives.length === 0;
-}
-
 function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
     let childrenAreStatic = true;
     let nodeIsStatic;
@@ -289,8 +284,6 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
             collectStaticNodes(childNode, staticNodes, state);
 
             childrenAreStatic &&= staticNodes.has(childNode);
-
-            childrenAreStatic &&= isSafeStaticChild(childNode);
         });
 
         // for IfBlock and ElseifBlock, traverse down the else branch

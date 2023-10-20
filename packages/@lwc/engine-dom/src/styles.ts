@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction, isTrue } from '@lwc/shared';
+import { isUndefined, isArray, isFunction } from '@lwc/shared';
 
 //
 // Feature detection
@@ -15,13 +15,7 @@ import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction, isTrue } fr
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStylesheets =
-    isFunction(CSSStyleSheet.prototype.replaceSync) &&
-    isArray(document.adoptedStyleSheets) &&
-    // The original adoptedStylesheet proposal used a frozen array. A follow-up proposal made the array mutable.
-    // Chromium 99+ and Firefox 101+ support mutable arrays. We check if the array is mutable, to ensure backward compat.
-    // (If the length is writable, then the array is mutable.) See: https://chromestatus.com/feature/5638996492288000
-    // TODO [#2828]: Re-evaluate this in the future once we drop support for older browser versions.
-    isTrue(getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable);
+    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
 
 //
 // Style sheet cache

@@ -58,7 +58,7 @@ describe('dynamic nodes', () => {
         it('if parent node does not have lwc:dom="manual", child node is accessible', () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
-            spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual
+            spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual
 
             const h2 = document.createElement('h2');
             h2.classList.add('manual-h2');

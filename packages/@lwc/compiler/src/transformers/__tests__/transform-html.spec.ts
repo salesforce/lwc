@@ -148,7 +148,12 @@ describe('transformSync', () => {
         `;
         const { cssScopeTokens } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
-        expect(cssScopeTokens).toEqual(['lwc-1hl7358i549', 'lwc-1hl7358i549-host']);
+        expect(cssScopeTokens!.sort()).toEqual([
+            'lwc-1hl7358i549',
+            'lwc-1hl7358i549-host',
+            'x-foo_foo',
+            'x-foo_foo-host',
+        ]);
     });
 
     describe('dynamic components', () => {

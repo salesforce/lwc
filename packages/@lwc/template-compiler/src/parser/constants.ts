@@ -104,14 +104,7 @@ export const SUPPORTED_SVG_TAGS = new Set([
     'use',
 ]);
 
-export const DISALLOWED_MATHML_TAGS = new Set([
-    'script',
-    'link',
-    'base',
-    'object',
-    'embed',
-    'meta',
-]);
+export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',

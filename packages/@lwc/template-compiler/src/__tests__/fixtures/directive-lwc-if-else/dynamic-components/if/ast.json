@@ -34,19 +34,10 @@
                     "start": 1,
                     "end": 11,
                     "object": {
-                        "type": "MemberExpression",
-                        "object": {
-                            "type": "Identifier",
-                            "name": "$cmp"
-                        },
-                        "property": {
-                            "type": "Identifier",
-                            "start": 1,
-                            "end": 8,
-                            "name": "visible"
-                        },
-                        "computed": false,
-                        "optional": false
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 8,
+                        "name": "visible"
                     },
                     "property": {
                         "type": "Identifier",
@@ -121,19 +112,10 @@
                                     "start": 1,
                                     "end": 16,
                                     "object": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 12,
-                                            "name": "trackedProp"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 12,
+                                        "name": "trackedProp"
                                     },
                                     "property": {
                                         "type": "Identifier",

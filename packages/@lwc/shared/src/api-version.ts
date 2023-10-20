@@ -60,6 +60,14 @@ export const enum APIFeature {
      */
     TREAT_ALL_PARSE5_ERRORS_AS_ERRORS,
     /**
+     * If enabled, use fragments for slots in light DOM.
+     */
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+    /**
+     * If enabled, Babel object rest spread polyfills are not applied, and the native format is used instead.
+     */
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
+    /**
      * If enabled, `registerDecorators()` calls will only be added to classes that extend from another class.
      * This avoids unnecessary decorators on classes that cannot possibly be LightningElements.
      */
@@ -74,6 +82,8 @@ export function isAPIFeatureEnabled(
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
+        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
         case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
     }
