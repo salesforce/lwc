@@ -519,7 +519,9 @@ function unmount(
         }
 
         case VNodeType.Fragment: {
-            unmountVNodes(vnode.children, elm as ParentNode, renderer, false);
+            if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                unmountVNodes(vnode.children, elm as ParentNode, renderer, false);
+            }
             break;
         }
 
