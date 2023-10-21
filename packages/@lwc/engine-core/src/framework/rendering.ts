@@ -518,6 +518,11 @@ function unmount(
             break;
         }
 
+        case VNodeType.Fragment: {
+            unmountVNodes(vnode.children, elm as ParentNode, renderer, false);
+            break;
+        }
+
         case VNodeType.CustomElement: {
             const { vm } = vnode;
 
