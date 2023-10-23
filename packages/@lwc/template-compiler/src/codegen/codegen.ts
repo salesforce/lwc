@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { SVG_NAMESPACE } from '@lwc/shared';
+import { APIVersion, getAPIVersionFromNumber, SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
@@ -144,6 +144,7 @@ export default class CodeGen {
     slotNames: Set<string> = new Set();
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
+    apiVersion: APIVersion;
 
     constructor({
         root,
@@ -169,6 +170,7 @@ export default class CodeGen {
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
         this.state = state;
+        this.apiVersion = getAPIVersionFromNumber(state.config.apiVersion);
     }
 
     generateKey() {

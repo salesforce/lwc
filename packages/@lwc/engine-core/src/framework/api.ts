@@ -5,11 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    APIFeature,
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
+    isAPIFeatureEnabled,
     isArray,
     isFalse,
     isFunction,
@@ -29,23 +31,23 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    isVScopedSlotFragment,
+    Key,
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
+    VFragment,
     VNode,
     VNodes,
-    VElement,
-    VText,
-    VCustomElement,
-    VComment,
-    VElementData,
     VNodeType,
-    VStatic,
-    Key,
-    VFragment,
-    isVScopedSlotFragment,
     VScopedSlotFragment,
+    VStatic,
+    VText,
     VStaticPart,
     VStaticPartData,
 } from './vnodes';
@@ -192,7 +194,7 @@ function s(
     data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VElement | VNodes | VFragment {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -252,11 +254,16 @@ function s(
         children = newChildren;
     }
     const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode } = vmBeingRendered;
+    const { renderMode, shadowMode, apiVersion } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
+        // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+        if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
+            return fr(data.key, children, 0);
+        } else {
+            sc(children);
+            return children;
+        }
     }
     if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic

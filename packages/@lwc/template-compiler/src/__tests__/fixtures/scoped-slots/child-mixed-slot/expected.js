@@ -13,8 +13,8 @@ const stc3 = {
   key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { s: api_slot, f: api_flatten } = $api;
-  return api_flatten([
+  const { s: api_slot } = $api;
+  return [
     api_slot(
       "slotname1",
       {
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ),
     api_slot("slotname2", stc2, stc1, $slotset),
     api_slot("", stc3, stc1, $slotset),
-  ]);
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

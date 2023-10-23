@@ -28,10 +28,10 @@ import {
     keys,
     setPrototypeOf,
 } from '@lwc/shared';
-import { applyAriaReflection } from '@lwc/aria-reflection';
 
 import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
@@ -816,16 +816,10 @@ for (const propName in HTMLElementOriginalDescriptors) {
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);
 
-function applyAriaReflectionToLightningElement() {
-    // If ARIA reflection is not applied globally to Element.prototype, or if we are running server-side,
-    // apply it to LightningElement.prototype.
-    // This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
-    applyAriaReflection(LightningElement.prototype);
-}
-
-if (!process.env.IS_BROWSER || lwcRuntimeFlags.DISABLE_ARIA_REFLECTION_POLYFILL) {
-    applyAriaReflectionToLightningElement();
-}
+// Apply ARIA reflection to LightningElement.prototype, on both the browser and server.
+// This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
+// Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+applyAriaReflection(LightningElement.prototype);
 
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {

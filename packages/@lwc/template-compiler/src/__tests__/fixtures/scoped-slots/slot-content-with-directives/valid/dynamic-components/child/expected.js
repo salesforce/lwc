@@ -13,11 +13,9 @@ const stc4 = {
   name: "slotname2",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { s: api_slot, dc: api_dynamic_component, f: api_flatten } = $api;
-  return api_flatten([
-    api_dynamic_component(
-      $cmp.ctor1,
-      stc0,
+  const { s: api_slot, dc: api_dynamic_component } = $api;
+  return [
+    api_dynamic_component($cmp.ctor1, stc0, [
       api_slot(
         "slotname1",
         {
@@ -27,11 +25,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         stc2,
         $slotset
-      )
-    ),
-    api_dynamic_component(
-      $cmp.ctor2,
-      stc3,
+      ),
+    ]),
+    api_dynamic_component($cmp.ctor2, stc3, [
       api_slot(
         "slotname2",
         {
@@ -41,8 +37,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         stc2,
         $slotset
-      )
-    ),
+      ),
+    ]),
     api_slot(
       "",
       {
@@ -52,7 +48,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc2,
       $slotset
     ),
-  ]);
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

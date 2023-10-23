@@ -20,7 +20,7 @@ describe('Slotting', () => {
     it('should render properly', () => {
         const nodes = createTestElement('x-default-slot', BasicSlot);
 
-        expect(Array.from(nodes['x-container'].childNodes)).toEqual([
+        expect(Array.from(nodes['x-container'].children)).toEqual([
             nodes['upper-text'],
             nodes['default-text'],
             nodes['lower-text'],
@@ -29,7 +29,7 @@ describe('Slotting', () => {
 
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+        expect(Array.from(nodes['x-light-container'].children)).toEqual([
             nodes['container-upper-slot-default'],
             nodes['1'],
             nodes['2'],
@@ -42,7 +42,7 @@ describe('Slotting', () => {
         nodes.button.click();
         await Promise.resolve();
 
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+        expect(Array.from(nodes['x-light-container'].children)).toEqual([
             nodes['container-upper-slot-default'],
             nodes['5'],
             nodes['4'],
@@ -80,10 +80,10 @@ describe('Slotting', () => {
     it('removes slots properly', async () => {
         const nodes = createTestElement('x-conditional-slot', ConditionalSlot);
         const elm = nodes['x-conditional-slot'];
-        expect(Array.from(elm.childNodes)).toEqual([nodes['default-slotted-text'], nodes.button]);
+        expect(Array.from(elm.children)).toEqual([nodes['default-slotted-text'], nodes.button]);
         nodes.button.click();
         await Promise.resolve();
-        expect(Array.from(elm.childNodes)).toEqual([nodes.button]);
+        expect(Array.from(elm.children)).toEqual([nodes.button]);
     });
 
     it('removes slotted content properly', async () => {
@@ -115,5 +115,20 @@ describe('Slotting', () => {
         expect(elm.innerHTML).toEqual(
             '<x-forwarded-slot><x-light-container><p data-id="container-upper-slot-default">Upper slot default</p>Default slot not yet forwarded<p data-id="container-lower-slot-default">Lower slot default</p></x-light-container></x-forwarded-slot>'
         );
+    });
+
+    it('should only generate empty text nodes for APIVersion >=60', async () => {
+        const elm = createElement('x-default-slot', { is: BasicSlot });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+        const container = elm.querySelector('x-light-container');
+        const emptyTextNodes = [...container.childNodes].filter(
+            (_) => _.nodeType === Node.TEXT_NODE && _.data === ''
+        );
+        if (process.env.API_VERSION <= 59) {
+            expect(emptyTextNodes.length).toBe(0); // old implementation does not use fragments, just flattening
+        } else {
+            expect(emptyTextNodes.length).toBe(6); // 3 slots, so 3*2=6 empty text nodes
+        }
     });
 });

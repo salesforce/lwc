@@ -1,5 +1,5 @@
-import { api } from "lwc";
-export default class Test {
+import { api, LightningElement } from "lwc";
+export default class Test extends LightningElement {
   @api
   get something() {
     return this.s;

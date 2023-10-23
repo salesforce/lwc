@@ -1,9 +1,9 @@
 {
     "message": "LWC1102: Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from \"lwc\"",
     "loc": {
-        "line": 2,
+        "line": 4,
         "column": 2,
-        "start": 30,
+        "start": 96,
         "length": 16
     },
     "filename": "test.js"

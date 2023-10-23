@@ -1,0 +1,111 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 85,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 35,
+                "start": 0,
+                "end": 34
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 74,
+                "end": 85
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "RenderMode",
+                "value": {
+                    "type": "Literal",
+                    "value": "light"
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 34,
+                    "start": 10,
+                    "end": 33
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 39,
+                    "start": 39,
+                    "end": 73,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 32,
+                        "start": 39,
+                        "end": 66
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 32,
+                        "endLine": 2,
+                        "endColumn": 39,
+                        "start": 66,
+                        "end": 73
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "SlotBind",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "name": "item",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 11,
+                                "endLine": 2,
+                                "endColumn": 31,
+                                "start": 45,
+                                "end": 65
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 11,
+                            "endLine": 2,
+                            "endColumn": 31,
+                            "start": 45,
+                            "end": 65
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
