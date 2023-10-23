@@ -11,6 +11,7 @@ env:
   BEST_FRONTEND_HOSTNAME: ${{secrets.BEST_FRONTEND_HOSTNAME}}
   BEST_HUB_CLIENT_TOKEN: ${{secrets.BEST_HUB_CLIENT_TOKEN}}
   BEST_HUB_HOSTNAME: ${{secrets.BEST_HUB_HOSTNAME}}
+  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
 
 jobs:
   run-best-performance-tests:
@@ -27,8 +28,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        # Puppeteer Chromium download is only needed for @best/runner-local, which is unused here
-        run: PUPPETEER_SKIP_DOWNLOAD=true yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
       - name: Build benchmarks
         run: yarn build:performance
