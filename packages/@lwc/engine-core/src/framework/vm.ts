@@ -683,7 +683,7 @@ export function runConnectedCallback(vm: VM) {
                         `fired a \`connectedCallback\` and rendered, but was not connected to the DOM. ` +
                         `Please ensure all components are actually connected to the DOM, e.g. using ` +
                         `\`document.body.appendChild(element)\`. This will not be supported in future versions of ` +
-                        `LWC and could cause breakages to your component.`
+                        `LWC and could cause component errors. For details, see: https://sfdc.co/synthetic-lifecycle`
                 );
             }
             report(ReportingEventId.ConnectedCallbackWhileDisconnected, {
