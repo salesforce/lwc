@@ -32,7 +32,23 @@ function createDisconnectedTestElement() {
     const fragment = document.createDocumentFragment();
     const elm = createElement('x-container', { is: Container });
     elm.setAttribute('data-id', 'x-container');
-    fragment.appendChild(elm);
+
+    const doAppend = () => fragment.appendChild(elm);
+
+    if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        doAppend();
+    } else {
+        // Expected warning, since we are working with disconnected nodes
+        expect(doAppend).toLogWarningDev(
+            Array(4)
+                .fill()
+                .map(
+                    () =>
+                        /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+                )
+        );
+    }
+
     const nodes = extractDataIds(elm);
     // Manually added because document fragments can't have attributes.
     nodes.fragment = fragment;
