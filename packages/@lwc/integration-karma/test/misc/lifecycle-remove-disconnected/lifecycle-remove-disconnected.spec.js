@@ -9,11 +9,13 @@ describe('vdom removes component while it is already disconnected', () => {
     });
 
     afterEach(() => {
-        // expected since the engine calls appendChild to a disconnected DOM node
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy.calls.mostRecent().args[0]).toMatch(
-            /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-        );
+        if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            // expected since the engine calls appendChild to a disconnected DOM node
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(spy.calls.mostRecent().args[0]).toMatch(
+                /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+            );
+        }
     });
 
     it('repro "must have been connected" error W-14037619', async () => {
