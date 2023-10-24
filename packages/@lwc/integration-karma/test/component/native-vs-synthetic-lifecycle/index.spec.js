@@ -18,10 +18,14 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         });
 
         function expectLogs(regexes) {
-            const args = logger.calls.allArgs();
-            expect(args.length).toBe(regexes.length);
-            for (let i = 0; i < args.length; i++) {
-                expect(args[i][0]).toMatch(regexes[i]);
+            if (process.env.NODE_ENV === 'production') {
+                expect(logger).not.toHaveBeenCalled();
+            } else {
+                const args = logger.calls.allArgs();
+                expect(args.length).toBe(regexes.length);
+                for (let i = 0; i < args.length; i++) {
+                    expect(args[i][0]).toMatch(regexes[i]);
+                }
             }
         }
 
