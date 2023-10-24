@@ -15,6 +15,8 @@ describe('vdom removes component while it is already disconnected', () => {
             expect(spy.calls.mostRecent().args[0]).toMatch(
                 /fired a `connectedCallback` and rendered, but was not connected to the DOM/
             );
+        } else {
+            expect(spy).not.toHaveBeenCalled();
         }
     });
 
