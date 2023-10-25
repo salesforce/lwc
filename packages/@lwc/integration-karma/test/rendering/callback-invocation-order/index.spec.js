@@ -6,6 +6,7 @@ import LightParent from 'x/lightParent';
 import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
 import MultiTemplateConditionals from 'x/multiTemplateConditionals';
+import ShadowContainerMultipleConditionals from 'x/ShadowContainerMultipleConditionals';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -297,3 +298,98 @@ it('should invoke callbacks on the right order when multiple templates are used 
             ]);
         });
 });
+
+it('shadow DOM should maintain callback invocation order for duplicate named slots between lwc:if, lwc:elseif, and lwc:else branches', () => {
+    const elm = createElement('x-shadow-container-multiple-conditionals', {
+        is: ShadowContainerMultipleConditionals,
+    });
+    elm.leafName = 'a';
+
+    document.body.appendChild(elm);
+    expect(window.timingBuffer).toEqual(
+        process.env.NATIVE_SHADOW
+            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? [
+                      'shadowContainer:connectedCallback',
+                      'shadowParent:connectedCallback',
+                      'leaf:a:connectedCallback',
+                  ]
+                : [
+                      'shadowContainer:connectedCallback',
+                      'parent:a:connectedCallback',
+                      'leaf:a:connectedCallback',
+                      'parent:b:connectedCallback',
+                      'leaf:b:connectedCallback',
+                      'leaf:before-slot:connectedCallback',
+                      'leaf:after-slot:connectedCallback',
+                  ]
+            : [
+                  'shadowContainer:connectedCallback',
+                  'leaf:before-slot:connectedCallback',
+                  'parent:a:connectedCallback',
+                  'leaf:a:connectedCallback',
+                  'parent:b:connectedCallback',
+                  'leaf:b:connectedCallback',
+                  'leaf:after-slot:connectedCallback',
+              ]
+    );
+
+    // resetTimingBuffer();
+
+    // elm.showIf = true;
+    // return Promise.resolve()
+    //     .then(() => {
+    //         expect(window.timingBuffer).toEqual(
+    //             window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+    //                 ? []
+    //                 : [
+    //                       'shadowContainer:disconnectedCallback',
+    //                       'leaf:after-slot:disconnectedCallback',
+    //                       'leaf:before-slot:disconnectedCallback',
+    //                       'parent:a:disconnectedCallback',
+    //                       'leaf:a:disconnectedCallback',
+    //                       'parent:b:disconnectedCallback',
+    //                       'leaf:b:disconnectedCallback',
+    //                   ]
+    //         );
+    //         resetTimingBuffer();
+    //         elm.showIf = false;
+    //         elm.showElseIf = true;
+    //     })
+    //     .then(() => {
+    //         expect(window.timingBuffer).toEqual(
+    //             window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+    //                 ? []
+    //                 : [
+    //                       'shadowContainer:disconnectedCallback',
+    //                       'leaf:after-slot:disconnectedCallback',
+    //                       'leaf:before-slot:disconnectedCallback',
+    //                       'parent:a:disconnectedCallback',
+    //                       'leaf:a:disconnectedCallback',
+    //                       'parent:b:disconnectedCallback',
+    //                       'leaf:b:disconnectedCallback',
+    //                   ]
+    //         );
+    //     });
+});
+
+// resetTimingBuffer();
+
+// elm.showIf = false;
+// elm.showElseIf = true;
+// return Promise.resolve().then(() => {
+//     expect(window.timingBuffer).toEqual(
+//         window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+//             ? []
+//             : [
+//                   'shadowContainer:disconnectedCallback',
+//                   'leaf:after-slot:disconnectedCallback',
+//                   'leaf:before-slot:disconnectedCallback',
+//                   'parent:a:disconnectedCallback',
+//                   'leaf:a:disconnectedCallback',
+//                   'parent:b:disconnectedCallback',
+//                   'leaf:b:disconnectedCallback',
+//               ]
+//     );
+// });
+// });
