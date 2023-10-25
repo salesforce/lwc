@@ -29,15 +29,11 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             }
         }
 
-        it('disconnected DOM', async () => {
+        it('disconnected DOM', () => {
             const div = document.createElement('div');
-
             const elm = createElement('x-component', { is: Component });
 
             div.appendChild(elm);
-            await Promise.resolve();
-            div.removeChild(elm);
-            await Promise.resolve();
 
             expectLogs([
                 /Element <x-component> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
@@ -47,15 +43,11 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             ]);
         });
 
-        it('disconnected DOM - parent and child', async () => {
+        it('disconnected DOM - parent and child', () => {
             const div = document.createElement('div');
-
             const elm = createElement('x-parent', { is: Parent });
 
             div.appendChild(elm);
-            await Promise.resolve();
-            div.removeChild(elm);
-            await Promise.resolve();
 
             expectLogs([
                 /Element <x-parent> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
