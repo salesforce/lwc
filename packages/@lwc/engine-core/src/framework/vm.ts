@@ -745,6 +745,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 
         if (!isNull(vnode) && !isUndefined(vnode.elm)) {
             switch (vnode.type) {
+                // case VNodeType.Fragment:
                 case VNodeType.Element:
                     recursivelyDisconnectChildren(vnode.children);
                     break;
