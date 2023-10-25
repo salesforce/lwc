@@ -57,6 +57,7 @@ import {
     VStaticPart,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -667,6 +668,28 @@ export function runConnectedCallback(vm: VM) {
         invokeComponentCallback(vm, connectedCallback);
 
         logOperationEnd(OperationId.ConnectedCallback, vm);
+    }
+    // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
+    // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
+    if (
+        process.env.IS_BROWSER &&
+        !lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
+        (process.env.NODE_ENV !== 'production' || isReportingEnabled())
+    ) {
+        if (!vm.renderer.isConnected(vm.elm)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    `Element <${vm.tagName}> ` +
+                        `fired a \`connectedCallback\` and rendered, but was not connected to the DOM. ` +
+                        `Please ensure all components are actually connected to the DOM, e.g. using ` +
+                        `\`document.body.appendChild(element)\`. This will not be supported in future versions of ` +
+                        `LWC and could cause component errors. For details, see: https://sfdc.co/synthetic-lifecycle`
+                );
+            }
+            report(ReportingEventId.ConnectedCallbackWhileDisconnected, {
+                tagName: vm.tagName,
+            });
+        }
     }
 }
 
