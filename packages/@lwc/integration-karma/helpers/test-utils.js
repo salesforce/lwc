@@ -518,6 +518,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         'ariaOwns',
     ];
 
+    // These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
+    // prototypes in https://github.com/salesforce/lwc/pull/3702
+    var nonPolyfilledAriaProperties = [
+        'ariaColIndexText',
+        'ariaBrailleLabel',
+        'ariaBrailleRoleDescription',
+        'ariaDescription',
+        'ariaRowIndexText',
+    ];
+
     var ariaProperties = Object.keys(ariaPropertiesMapping);
 
     // Can't use Object.values because we need to support IE11
@@ -554,6 +564,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
         nonStandardAriaProperties: nonStandardAriaProperties,
+        nonPolyfilledAriaProperties: nonPolyfilledAriaProperties,
         getPropertyDescriptor: getPropertyDescriptor,
     };
 })(LWC, jasmine, beforeAll);
