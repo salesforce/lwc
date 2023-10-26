@@ -1,12 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
-export default class extends LightningElement {
-    @api
-    showIf = false;
-
-    @api
-    showElseIf = false;
-
+export default class ShadowContainerMultipleConditionals extends LightningElement {
     @api
     leafName;
 
@@ -16,5 +10,15 @@ export default class extends LightningElement {
 
     disconnectedCallback() {
         window.timingBuffer.push(`shadowContainer:disconnectedCallback`);
+    }
+
+    @api
+    getSlotCmp() {
+        return this.template.querySelector('x-shadow-slot-conditionals');
+    }
+
+    @api
+    getLeaf() {
+        return this.template.querySelector('x-leaf');
     }
 }

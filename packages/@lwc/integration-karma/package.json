@@ -4,7 +4,7 @@
     "version": "4.0.0",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/test/local.js",
-        "test": "FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
+        "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
         "hydration:start": "karma start ./scripts/karma-configs/hydration/local.js",
         "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",

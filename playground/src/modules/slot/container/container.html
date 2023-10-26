@@ -1,17 +1,20 @@
 <template lwc:render-mode="light">
     <!-- <div lwc:if={isMobile} class="mobile"> -->
     <!-- <div if:true={showMe} class="mobile"> -->
-    <div lwc:if={showMe}>
+    <template lwc:if={showMe}>
         <slot></slot>
         <!-- <slot-child></slot-child> -->
         <!-- <example-adapter-child></example-adapter-child> -->
-    </div>
+    </template>
+    <template lwc:elseif={showMe2}>
+        <slot></slot>
+    </template>
     <!-- <div lwc:else class="desktop"> -->
     <!-- <div if:false={showMe} class="desktop"> -->
-    <div lwc:else>
+    <template lwc:else>
         <slot></slot>
         <!-- <slot-child></slot-child> -->
         <!-- <example-adapter-child></example-adapter-child> -->
-    </div>
+    </template>
     <button onclick={toggle}>Click to toggle</button>
 </template>

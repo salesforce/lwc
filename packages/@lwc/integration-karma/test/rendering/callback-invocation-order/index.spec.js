@@ -6,7 +6,8 @@ import LightParent from 'x/lightParent';
 import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
 import MultiTemplateConditionals from 'x/multiTemplateConditionals';
-import ShadowContainerMultipleConditionals from 'x/ShadowContainerMultipleConditionals';
+import ShadowContainerMultipleConditionals from 'x/shadowContainerMultipleConditionals';
+import LightContainerMultipleConditionals from 'x/lightContainerMultipleConditionals';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -299,97 +300,89 @@ it('should invoke callbacks on the right order when multiple templates are used 
         });
 });
 
-it('shadow DOM should maintain callback invocation order for duplicate named slots between lwc:if, lwc:elseif, and lwc:else branches', () => {
-    const elm = createElement('x-shadow-container-multiple-conditionals', {
-        is: ShadowContainerMultipleConditionals,
+if (process.env.NATIVE_SHADOW) {
+    // #TODO[3827]: These regression tests can be removed once the bug is resolved.
+    it('regression test (#3827) - shadow DOM should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component', () => {
+        const container = createElement('x-shadow-container-multiple-conditionals', {
+            is: ShadowContainerMultipleConditionals,
+        });
+        document.body.appendChild(container);
+
+        const currentLeafName = container.getLeaf().name;
+        expect(window.timingBuffer).toEqual([
+            'shadowContainer:connectedCallback',
+            'shadowSlot:connectedCallback',
+            `leaf:${currentLeafName}:connectedCallback`,
+        ]);
+
+        resetTimingBuffer();
+
+        const slotCmp = container.getSlotCmp();
+        slotCmp.showIf = true;
+
+        return Promise.resolve()
+            .then(() => {
+                expect(window.timingBuffer).toEqual([]);
+
+                slotCmp.showIf = false;
+                slotCmp.showElseIf = true;
+            })
+            .then(() => {
+                expect(window.timingBuffer).toEqual([]);
+                document.body.removeChild(container);
+            });
     });
-    elm.leafName = 'a';
+}
 
-    document.body.appendChild(elm);
-    expect(window.timingBuffer).toEqual(
-        process.env.NATIVE_SHADOW
-            ? window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                ? [
-                      'shadowContainer:connectedCallback',
-                      'shadowParent:connectedCallback',
-                      'leaf:a:connectedCallback',
-                  ]
-                : [
-                      'shadowContainer:connectedCallback',
-                      'parent:a:connectedCallback',
-                      'leaf:a:connectedCallback',
-                      'parent:b:connectedCallback',
-                      'leaf:b:connectedCallback',
-                      'leaf:before-slot:connectedCallback',
-                      'leaf:after-slot:connectedCallback',
-                  ]
-            : [
-                  'shadowContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'parent:a:connectedCallback',
-                  'leaf:a:connectedCallback',
-                  'parent:b:connectedCallback',
-                  'leaf:b:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-              ]
-    );
+it('regression test (#3827) - light DOM should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component', () => {
+    // #TODO[3827]: These regression tests can be removed once the bug is resolved.
+    const container = createElement('x-light-container-multiple-conditionals', {
+        is: LightContainerMultipleConditionals,
+    });
+    document.body.appendChild(container);
 
-    // resetTimingBuffer();
+    let currentLeafName = container.getLeaf().name;
+    expect(window.timingBuffer).toEqual([
+        'lightContainer:connectedCallback',
+        'lightSlot:connectedCallback',
+        `leaf:${currentLeafName}:connectedCallback`,
+    ]);
 
-    // elm.showIf = true;
-    // return Promise.resolve()
-    //     .then(() => {
-    //         expect(window.timingBuffer).toEqual(
-    //             window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-    //                 ? []
-    //                 : [
-    //                       'shadowContainer:disconnectedCallback',
-    //                       'leaf:after-slot:disconnectedCallback',
-    //                       'leaf:before-slot:disconnectedCallback',
-    //                       'parent:a:disconnectedCallback',
-    //                       'leaf:a:disconnectedCallback',
-    //                       'parent:b:disconnectedCallback',
-    //                       'leaf:b:disconnectedCallback',
-    //                   ]
-    //         );
-    //         resetTimingBuffer();
-    //         elm.showIf = false;
-    //         elm.showElseIf = true;
-    //     })
-    //     .then(() => {
-    //         expect(window.timingBuffer).toEqual(
-    //             window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-    //                 ? []
-    //                 : [
-    //                       'shadowContainer:disconnectedCallback',
-    //                       'leaf:after-slot:disconnectedCallback',
-    //                       'leaf:before-slot:disconnectedCallback',
-    //                       'parent:a:disconnectedCallback',
-    //                       'leaf:a:disconnectedCallback',
-    //                       'parent:b:disconnectedCallback',
-    //                       'leaf:b:disconnectedCallback',
-    //                   ]
-    //         );
-    //     });
+    resetTimingBuffer();
+
+    const slotCmp = container.getSlotCmp();
+    slotCmp.showIf = true;
+
+    return Promise.resolve()
+        .then(() => {
+            const previousLeafName = currentLeafName;
+            currentLeafName = container.getLeaf().name;
+
+            expect(window.timingBuffer).toEqual(
+                window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          `leaf:${currentLeafName}:connectedCallback`,
+                          `leaf:${previousLeafName}:disconnectedCallback`,
+                          `leaf:${currentLeafName}:disconnectedCallback`,
+                      ]
+                    : [
+                          `leaf:${currentLeafName}:connectedCallback`,
+                          `leaf:${currentLeafName}:disconnectedCallback`,
+                      ]
+            );
+
+            resetTimingBuffer();
+
+            slotCmp.showElseIf = true;
+            slotCmp.showIf = false;
+        })
+        .then(() => {
+            currentLeafName = container.getLeaf().name;
+            expect(window.timingBuffer).toEqual([
+                `leaf:${currentLeafName}:connectedCallback`,
+                `leaf:${currentLeafName}:disconnectedCallback`,
+            ]);
+
+            document.body.removeChild(container);
+        });
 });
-
-// resetTimingBuffer();
-
-// elm.showIf = false;
-// elm.showElseIf = true;
-// return Promise.resolve().then(() => {
-//     expect(window.timingBuffer).toEqual(
-//         window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-//             ? []
-//             : [
-//                   'shadowContainer:disconnectedCallback',
-//                   'leaf:after-slot:disconnectedCallback',
-//                   'leaf:before-slot:disconnectedCallback',
-//                   'parent:a:disconnectedCallback',
-//                   'leaf:a:disconnectedCallback',
-//                   'parent:b:disconnectedCallback',
-//                   'leaf:b:disconnectedCallback',
-//               ]
-//     );
-// });
-// });

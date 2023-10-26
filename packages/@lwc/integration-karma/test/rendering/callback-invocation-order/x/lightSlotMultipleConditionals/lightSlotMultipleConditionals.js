@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
-export default class LightContainer extends LightningElement {
+export default class LightParentMultipleConditionals extends LightningElement {
     static renderMode = 'light';
 
     @api
@@ -10,10 +10,10 @@ export default class LightContainer extends LightningElement {
     showElseIf = false;
 
     connectedCallback() {
-        window.timingBuffer.push(`lightContainer:connectedCallback`);
+        window.timingBuffer.push(`lightSlot:connectedCallback`);
     }
 
     disconnectedCallback() {
-        window.timingBuffer.push(`lightContainer:disconnectedCallback`);
+        window.timingBuffer.push(`lightSlot:disconnectedCallback`);
     }
 }
