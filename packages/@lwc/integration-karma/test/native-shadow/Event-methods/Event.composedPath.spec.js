@@ -138,7 +138,17 @@ describe('[W-9846457] event access when using native shadow dom', () => {
         const native = document.createElement('div');
 
         native.attachShadow({ mode: 'open' });
-        native.shadowRoot.appendChild(synthetic);
+
+        const doAppend = () => native.shadowRoot.appendChild(synthetic);
+        if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            doAppend();
+        } else {
+            // Expected warning, since we are working with disconnected nodes
+            expect(doAppend).toLogWarningDev(
+                /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+            );
+        }
+
         document.body.appendChild(native);
 
         synthetic.addEventListener('test', (event) => {

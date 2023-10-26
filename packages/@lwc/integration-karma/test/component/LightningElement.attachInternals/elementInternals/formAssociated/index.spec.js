@@ -39,8 +39,8 @@ if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENA
     const createControlElm = () => {
         const form = document.createElement('form');
         const control = createElement('x-form-associated', { is: FormAssociated });
-        form.appendChild(control);
         document.body.appendChild(form);
+        form.appendChild(control);
         return control;
     };
 
