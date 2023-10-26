@@ -247,8 +247,6 @@ function s(
                 } else {
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    // const vnodeCopy = { ...vnode };
-                    // ArrayPush.call(newChildren, vnodeCopy);
                     ArrayPush.call(newChildren, vnode);
                 }
             }
