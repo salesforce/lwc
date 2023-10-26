@@ -22,8 +22,10 @@ const ariaAttributeMapping = [
     ['ariaChecked', 'aria-checked'],
     ['ariaColCount', 'aria-colcount'],
     ['ariaColIndex', 'aria-colindex'],
+    ['ariaColIndexText', 'aria-colindextext'],
     ['ariaColSpan', 'aria-colspan'],
     ['ariaCurrent', 'aria-current'],
+    ['ariaDescription', 'aria-description'],
     ['ariaDisabled', 'aria-disabled'],
     ['ariaExpanded', 'aria-expanded'],
     ['ariaHasPopup', 'aria-haspopup'],
@@ -46,6 +48,7 @@ const ariaAttributeMapping = [
     ['ariaRoleDescription', 'aria-roledescription'],
     ['ariaRowCount', 'aria-rowcount'],
     ['ariaRowIndex', 'aria-rowindex'],
+    ['ariaRowIndexText', 'aria-rowindextext'],
     ['ariaRowSpan', 'aria-rowspan'],
     ['ariaSelected', 'aria-selected'],
     ['ariaSetSize', 'aria-setsize'],
@@ -54,6 +57,8 @@ const ariaAttributeMapping = [
     ['ariaValueMin', 'aria-valuemin'],
     ['ariaValueNow', 'aria-valuenow'],
     ['ariaValueText', 'aria-valuetext'],
+    ['ariaBrailleLabel', 'aria-braillelabel'],
+    ['ariaBrailleRoleDescription', 'aria-brailleroledescription'],
     ['role', 'role'],
 ] as StringPair[];
 

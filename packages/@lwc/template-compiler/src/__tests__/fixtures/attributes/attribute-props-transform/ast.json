@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 67,
+            "endLine": 72,
             "endColumn": 12,
             "start": 0,
-            "end": 2176,
+            "end": 2381,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 67,
+                "startLine": 72,
                 "startColumn": 1,
-                "endLine": 67,
+                "endLine": 72,
                 "endColumn": 12,
-                "start": 2165,
-                "end": 2176
+                "start": 2370,
+                "end": 2381
             }
         },
         "directives": [],
@@ -34,25 +34,25 @@
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 66,
+                    "endLine": 71,
                     "endColumn": 14,
                     "start": 15,
-                    "end": 2164,
+                    "end": 2369,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
-                        "endLine": 66,
+                        "endLine": 71,
                         "endColumn": 6,
                         "start": 15,
-                        "end": 2156
+                        "end": 2361
                     },
                     "endTag": {
-                        "startLine": 66,
+                        "startLine": 71,
                         "startColumn": 6,
-                        "endLine": 66,
+                        "endLine": 71,
                         "endColumn": 14,
-                        "start": 2156,
-                        "end": 2164
+                        "start": 2361,
+                        "end": 2369
                     }
                 },
                 "attributes": [],
@@ -450,8 +450,8 @@
                     },
                     {
                         "type": "Property",
-                        "name": "ariaColSpan",
-                        "attributeName": "aria-colspan",
+                        "name": "ariaColIndexText",
+                        "attributeName": "aria-colindextext",
                         "value": {
                             "type": "Literal",
                             "value": "tranformed"
@@ -460,9 +460,26 @@
                             "startLine": 26,
                             "startColumn": 9,
                             "endLine": 26,
-                            "endColumn": 34,
+                            "endColumn": 39,
                             "start": 765,
-                            "end": 790
+                            "end": 795
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaColSpan",
+                        "attributeName": "aria-colspan",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 27,
+                            "startColumn": 9,
+                            "endLine": 27,
+                            "endColumn": 34,
+                            "start": 804,
+                            "end": 829
                         }
                     },
                     {
@@ -474,12 +491,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 27,
+                            "startLine": 28,
                             "startColumn": 9,
-                            "endLine": 27,
+                            "endLine": 28,
                             "endColumn": 35,
-                            "start": 799,
-                            "end": 825
+                            "start": 838,
+                            "end": 864
                         }
                     },
                     {
@@ -491,12 +508,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 28,
+                            "startLine": 29,
                             "startColumn": 9,
-                            "endLine": 28,
+                            "endLine": 29,
                             "endColumn": 34,
-                            "start": 834,
-                            "end": 859
+                            "start": 873,
+                            "end": 898
                         }
                     },
                     {
@@ -508,12 +525,29 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 29,
+                            "startLine": 30,
                             "startColumn": 9,
-                            "endLine": 29,
+                            "endLine": 30,
                             "endColumn": 38,
-                            "start": 868,
-                            "end": 897
+                            "start": 907,
+                            "end": 936
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaDescription",
+                        "attributeName": "aria-description",
+                        "value": {
+                            "type": "Literal",
+                            "value": "transformed"
+                        },
+                        "location": {
+                            "startLine": 31,
+                            "startColumn": 9,
+                            "endLine": 31,
+                            "endColumn": 39,
+                            "start": 945,
+                            "end": 975
                         }
                     },
                     {
@@ -525,12 +559,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 30,
+                            "startLine": 32,
                             "startColumn": 9,
-                            "endLine": 30,
+                            "endLine": 32,
                             "endColumn": 34,
-                            "start": 906,
-                            "end": 931
+                            "start": 984,
+                            "end": 1009
                         }
                     },
                     {
@@ -542,12 +576,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 31,
+                            "startLine": 33,
                             "startColumn": 9,
-                            "endLine": 31,
+                            "endLine": 33,
                             "endColumn": 35,
-                            "start": 940,
-                            "end": 966
+                            "start": 1018,
+                            "end": 1044
                         }
                     },
                     {
@@ -559,12 +593,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 32,
+                            "startLine": 34,
                             "startColumn": 9,
-                            "endLine": 32,
+                            "endLine": 34,
                             "endColumn": 39,
-                            "start": 975,
-                            "end": 1005
+                            "start": 1053,
+                            "end": 1083
                         }
                     },
                     {
@@ -576,12 +610,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 33,
+                            "startLine": 35,
                             "startColumn": 9,
-                            "endLine": 33,
+                            "endLine": 35,
                             "endColumn": 35,
-                            "start": 1014,
-                            "end": 1040
+                            "start": 1092,
+                            "end": 1118
                         }
                     },
                     {
@@ -593,12 +627,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 34,
+                            "startLine": 36,
                             "startColumn": 9,
-                            "endLine": 34,
+                            "endLine": 36,
                             "endColumn": 33,
-                            "start": 1049,
-                            "end": 1073
+                            "start": 1127,
+                            "end": 1151
                         }
                     },
                     {
@@ -610,12 +644,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 35,
+                            "startLine": 37,
                             "startColumn": 9,
-                            "endLine": 35,
+                            "endLine": 37,
                             "endColumn": 35,
-                            "start": 1082,
-                            "end": 1108
+                            "start": 1160,
+                            "end": 1186
                         }
                     },
                     {
@@ -627,12 +661,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 36,
+                            "startLine": 38,
                             "startColumn": 9,
-                            "endLine": 36,
+                            "endLine": 38,
                             "endColumn": 33,
-                            "start": 1117,
-                            "end": 1141
+                            "start": 1195,
+                            "end": 1219
                         }
                     },
                     {
@@ -644,12 +678,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 37,
+                            "startLine": 39,
                             "startColumn": 9,
-                            "endLine": 37,
+                            "endLine": 39,
                             "endColumn": 34,
-                            "start": 1150,
-                            "end": 1175
+                            "start": 1228,
+                            "end": 1253
                         }
                     },
                     {
@@ -661,12 +695,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 38,
+                            "startLine": 40,
                             "startColumn": 9,
-                            "endLine": 38,
+                            "endLine": 40,
                             "endColumn": 39,
-                            "start": 1184,
-                            "end": 1214
+                            "start": 1262,
+                            "end": 1292
                         }
                     },
                     {
@@ -678,12 +712,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 39,
+                            "startLine": 41,
                             "startColumn": 9,
-                            "endLine": 39,
+                            "endLine": 41,
                             "endColumn": 32,
-                            "start": 1223,
-                            "end": 1246
+                            "start": 1301,
+                            "end": 1324
                         }
                     },
                     {
@@ -695,12 +729,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 40,
+                            "startLine": 42,
                             "startColumn": 9,
-                            "endLine": 40,
+                            "endLine": 42,
                             "endColumn": 37,
-                            "start": 1255,
-                            "end": 1283
+                            "start": 1333,
+                            "end": 1361
                         }
                     },
                     {
@@ -712,12 +746,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 41,
+                            "startLine": 43,
                             "startColumn": 9,
-                            "endLine": 41,
+                            "endLine": 43,
                             "endColumn": 32,
-                            "start": 1292,
-                            "end": 1315
+                            "start": 1370,
+                            "end": 1393
                         }
                     },
                     {
@@ -729,12 +763,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 42,
+                            "startLine": 44,
                             "startColumn": 9,
-                            "endLine": 42,
+                            "endLine": 44,
                             "endColumn": 31,
-                            "start": 1324,
-                            "end": 1346
+                            "start": 1402,
+                            "end": 1424
                         }
                     },
                     {
@@ -746,12 +780,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 43,
+                            "startLine": 45,
                             "startColumn": 9,
-                            "endLine": 43,
+                            "endLine": 45,
                             "endColumn": 32,
-                            "start": 1355,
-                            "end": 1378
+                            "start": 1433,
+                            "end": 1456
                         }
                     },
                     {
@@ -763,12 +797,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 44,
+                            "startLine": 46,
                             "startColumn": 9,
-                            "endLine": 44,
+                            "endLine": 46,
                             "endColumn": 36,
-                            "start": 1387,
-                            "end": 1414
+                            "start": 1465,
+                            "end": 1492
                         }
                     },
                     {
@@ -780,12 +814,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 45,
+                            "startLine": 47,
                             "startColumn": 9,
-                            "endLine": 45,
+                            "endLine": 47,
                             "endColumn": 42,
-                            "start": 1423,
-                            "end": 1456
+                            "start": 1501,
+                            "end": 1534
                         }
                     },
                     {
@@ -797,12 +831,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 46,
+                            "startLine": 48,
                             "startColumn": 9,
-                            "endLine": 46,
+                            "endLine": 48,
                             "endColumn": 38,
-                            "start": 1465,
-                            "end": 1494
+                            "start": 1543,
+                            "end": 1572
                         }
                     },
                     {
@@ -814,12 +848,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 47,
+                            "startLine": 49,
                             "startColumn": 9,
-                            "endLine": 47,
+                            "endLine": 49,
                             "endColumn": 31,
-                            "start": 1503,
-                            "end": 1525
+                            "start": 1581,
+                            "end": 1603
                         }
                     },
                     {
@@ -831,12 +865,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 48,
+                            "startLine": 50,
                             "startColumn": 9,
-                            "endLine": 48,
+                            "endLine": 50,
                             "endColumn": 38,
-                            "start": 1534,
-                            "end": 1563
+                            "start": 1612,
+                            "end": 1641
                         }
                     },
                     {
@@ -848,12 +882,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 49,
+                            "startLine": 51,
                             "startColumn": 9,
-                            "endLine": 49,
+                            "endLine": 51,
                             "endColumn": 35,
-                            "start": 1572,
-                            "end": 1598
+                            "start": 1650,
+                            "end": 1676
                         }
                     },
                     {
@@ -865,12 +899,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 50,
+                            "startLine": 52,
                             "startColumn": 9,
-                            "endLine": 50,
+                            "endLine": 52,
                             "endColumn": 34,
-                            "start": 1607,
-                            "end": 1632
+                            "start": 1685,
+                            "end": 1710
                         }
                     },
                     {
@@ -882,12 +916,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 51,
+                            "startLine": 53,
                             "startColumn": 9,
-                            "endLine": 51,
+                            "endLine": 53,
                             "endColumn": 35,
-                            "start": 1641,
-                            "end": 1667
+                            "start": 1719,
+                            "end": 1745
                         }
                     },
                     {
@@ -899,12 +933,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 52,
+                            "startLine": 54,
                             "startColumn": 9,
-                            "endLine": 52,
+                            "endLine": 54,
                             "endColumn": 35,
-                            "start": 1676,
-                            "end": 1702
+                            "start": 1754,
+                            "end": 1780
                         }
                     },
                     {
@@ -916,12 +950,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 53,
+                            "startLine": 55,
                             "startColumn": 9,
-                            "endLine": 53,
+                            "endLine": 55,
                             "endColumn": 35,
-                            "start": 1711,
-                            "end": 1737
+                            "start": 1789,
+                            "end": 1815
                         }
                     },
                     {
@@ -933,12 +967,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 54,
+                            "startLine": 56,
                             "startColumn": 9,
-                            "endLine": 54,
+                            "endLine": 56,
                             "endColumn": 42,
-                            "start": 1746,
-                            "end": 1779
+                            "start": 1824,
+                            "end": 1857
                         }
                     },
                     {
@@ -950,12 +984,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 55,
+                            "startLine": 57,
                             "startColumn": 9,
-                            "endLine": 55,
+                            "endLine": 57,
                             "endColumn": 35,
-                            "start": 1788,
-                            "end": 1814
+                            "start": 1866,
+                            "end": 1892
                         }
                     },
                     {
@@ -967,12 +1001,29 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 56,
+                            "startLine": 58,
                             "startColumn": 9,
-                            "endLine": 56,
+                            "endLine": 58,
                             "endColumn": 35,
-                            "start": 1823,
-                            "end": 1849
+                            "start": 1901,
+                            "end": 1927
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRowIndexText",
+                        "attributeName": "aria-rowindextext",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 59,
+                            "startColumn": 9,
+                            "endLine": 59,
+                            "endColumn": 39,
+                            "start": 1936,
+                            "end": 1966
                         }
                     },
                     {
@@ -984,12 +1035,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 57,
+                            "startLine": 60,
                             "startColumn": 9,
-                            "endLine": 57,
+                            "endLine": 60,
                             "endColumn": 34,
-                            "start": 1858,
-                            "end": 1883
+                            "start": 1975,
+                            "end": 2000
                         }
                     },
                     {
@@ -1001,12 +1052,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 58,
+                            "startLine": 61,
                             "startColumn": 9,
-                            "endLine": 58,
+                            "endLine": 61,
                             "endColumn": 35,
-                            "start": 1892,
-                            "end": 1918
+                            "start": 2009,
+                            "end": 2035
                         }
                     },
                     {
@@ -1018,12 +1069,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 59,
+                            "startLine": 62,
                             "startColumn": 9,
-                            "endLine": 59,
+                            "endLine": 62,
                             "endColumn": 34,
-                            "start": 1927,
-                            "end": 1952
+                            "start": 2044,
+                            "end": 2069
                         }
                     },
                     {
@@ -1035,12 +1086,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 60,
+                            "startLine": 63,
                             "startColumn": 9,
-                            "endLine": 60,
+                            "endLine": 63,
                             "endColumn": 31,
-                            "start": 1961,
-                            "end": 1983
+                            "start": 2078,
+                            "end": 2100
                         }
                     },
                     {
@@ -1052,12 +1103,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 61,
+                            "startLine": 64,
                             "startColumn": 9,
-                            "endLine": 61,
+                            "endLine": 64,
                             "endColumn": 35,
-                            "start": 1992,
-                            "end": 2018
+                            "start": 2109,
+                            "end": 2135
                         }
                     },
                     {
@@ -1069,12 +1120,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 62,
+                            "startLine": 65,
                             "startColumn": 9,
-                            "endLine": 62,
+                            "endLine": 65,
                             "endColumn": 35,
-                            "start": 2027,
-                            "end": 2053
+                            "start": 2144,
+                            "end": 2170
                         }
                     },
                     {
@@ -1086,12 +1137,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 63,
+                            "startLine": 66,
                             "startColumn": 9,
-                            "endLine": 63,
+                            "endLine": 66,
                             "endColumn": 35,
-                            "start": 2062,
-                            "end": 2088
+                            "start": 2179,
+                            "end": 2205
                         }
                     },
                     {
@@ -1103,12 +1154,46 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 64,
+                            "startLine": 67,
                             "startColumn": 9,
-                            "endLine": 64,
+                            "endLine": 67,
                             "endColumn": 36,
-                            "start": 2097,
-                            "end": 2124
+                            "start": 2214,
+                            "end": 2241
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaBrailleLabel",
+                        "attributeName": "aria-braillelabel",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 68,
+                            "startColumn": 9,
+                            "endLine": 68,
+                            "endColumn": 39,
+                            "start": 2250,
+                            "end": 2280
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaBrailleRoleDescription",
+                        "attributeName": "aria-brailleroledescription",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 69,
+                            "startColumn": 9,
+                            "endLine": 69,
+                            "endColumn": 49,
+                            "start": 2289,
+                            "end": 2329
                         }
                     },
                     {
@@ -1120,12 +1205,12 @@
                             "value": "tranformed"
                         },
                         "location": {
-                            "startLine": 65,
+                            "startLine": 70,
                             "startColumn": 9,
-                            "endLine": 65,
+                            "endLine": 70,
                             "endColumn": 26,
-                            "start": 2133,
-                            "end": 2150
+                            "start": 2338,
+                            "end": 2355
                         }
                     }
                 ],

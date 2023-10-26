@@ -1,4 +1,8 @@
-import { ariaPropertiesMapping, nonStandardAriaProperties } from 'test-utils';
+import {
+    ariaPropertiesMapping,
+    nonStandardAriaProperties,
+    nonPolyfilledAriaProperties,
+} from 'test-utils';
 import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
 import Component from 'x/component';
 
@@ -192,7 +196,13 @@ function testAriaProperty(property, attribute) {
 // These tests don't make sense if the global polyfill is not loaded
 if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
     for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
-        testAriaProperty(ariaProperty, ariaAttribute);
+        // Don't test aria props that we don't globally polyfill, or which aren't supported by this browser
+        if (
+            !nonPolyfilledAriaProperties.includes(ariaProperty) ||
+            ariaProperty in Element.prototype
+        ) {
+            testAriaProperty(ariaProperty, ariaAttribute);
+        }
     }
 
     describe('non-standard properties do not log/report for LightningElement/BaseBridgeElement', () => {
