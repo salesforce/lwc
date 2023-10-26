@@ -36,7 +36,17 @@ describe('Node.getRootNode', () => {
     it('root element in a disconnected DOM tree', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         const frag = document.createDocumentFragment();
-        frag.appendChild(elm);
+        const doAppend = () => frag.appendChild(elm);
+
+        if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            doAppend();
+        } else {
+            // Expected warning, since we are working with disconnected nodes
+            expect(doAppend).toLogWarningDev([
+                /fired a `connectedCallback` and rendered, but was not connected to the DOM/,
+                /fired a `connectedCallback` and rendered, but was not connected to the DOM/,
+            ]);
+        }
 
         expect(elm.getRootNode()).toBe(frag);
         expect(elm.getRootNode(composedTrueConfig)).toBe(frag);

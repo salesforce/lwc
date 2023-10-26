@@ -1,14 +1,16 @@
 {
     "name": "@lwc/integration-karma",
     "private": true,
-    "version": "4.0.0",
+    "version": "4.0.1",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
         "hydration:start": "karma start ./scripts/karma-configs/hydration/local.js",
         "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
+        "hydration:sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
+        "sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
     },
     "//": {
@@ -16,11 +18,11 @@
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
-        "@lwc/compiler": "4.0.0",
-        "@lwc/engine-dom": "4.0.0",
-        "@lwc/engine-server": "4.0.0",
-        "@lwc/rollup-plugin": "4.0.0",
-        "@lwc/synthetic-shadow": "4.0.0",
+        "@lwc/compiler": "4.0.1",
+        "@lwc/engine-dom": "4.0.1",
+        "@lwc/engine-server": "4.0.1",
+        "@lwc/rollup-plugin": "4.0.1",
+        "@lwc/synthetic-shadow": "4.0.1",
         "chokidar": "^3.5.3",
         "istanbul-lib-coverage": "^3.2.0",
         "istanbul-lib-report": "^3.0.1",

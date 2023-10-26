@@ -489,6 +489,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaColCount: 'aria-colcount',
         ariaColSpan: 'aria-colspan',
         ariaColIndex: 'aria-colindex',
+        ariaColIndexText: 'aria-colindextext',
+        ariaDescription: 'aria-description',
         ariaDetails: 'aria-details',
         ariaErrorMessage: 'aria-errormessage',
         ariaKeyShortcuts: 'aria-keyshortcuts',
@@ -497,7 +499,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaRoleDescription: 'aria-roledescription',
         ariaRowCount: 'aria-rowcount',
         ariaRowIndex: 'aria-rowindex',
+        ariaRowIndexText: 'aria-rowindextext',
         ariaRowSpan: 'aria-rowspan',
+        ariaBrailleLabel: 'aria-braillelabel',
+        ariaBrailleRoleDescription: 'aria-brailleroledescription',
         role: 'role',
     };
 
@@ -511,6 +516,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         'ariaFlowTo',
         'ariaLabelledBy',
         'ariaOwns',
+    ];
+
+    // These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
+    // prototypes in https://github.com/salesforce/lwc/pull/3702
+    var nonPolyfilledAriaProperties = [
+        'ariaColIndexText',
+        'ariaBrailleLabel',
+        'ariaBrailleRoleDescription',
+        'ariaDescription',
+        'ariaRowIndexText',
     ];
 
     var ariaProperties = Object.keys(ariaPropertiesMapping);
@@ -549,6 +564,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         ariaProperties: ariaProperties,
         ariaAttributes: ariaAttributes,
         nonStandardAriaProperties: nonStandardAriaProperties,
+        nonPolyfilledAriaProperties: nonPolyfilledAriaProperties,
         getPropertyDescriptor: getPropertyDescriptor,
     };
 })(LWC, jasmine, beforeAll);

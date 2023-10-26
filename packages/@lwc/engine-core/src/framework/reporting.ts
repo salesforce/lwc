@@ -12,6 +12,7 @@ export const enum ReportingEventId {
     NonStandardAriaReflection = 'NonStandardAriaReflection',
     TemplateMutation = 'TemplateMutation',
     StylesheetMutation = 'StylesheetMutation',
+    ConnectedCallbackWhileDisconnected = 'ConnectedCallbackWhileDisconnected',
 }
 
 export interface BasePayload {
@@ -41,12 +42,15 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
+export interface ConnectedCallbackWhileDisconnectedPayload extends BasePayload {}
+
 export type ReportingPayloadMapping = {
     [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
     [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
     [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
     [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
     [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
+    [ReportingEventId.ConnectedCallbackWhileDisconnected]: ConnectedCallbackWhileDisconnectedPayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
@@ -126,4 +130,11 @@ export function report<T extends ReportingEventId>(
     if (enabled) {
         currentDispatcher(reportingEventId, payload);
     }
+}
+
+/**
+ * Return true if reporting is enabled
+ */
+export function isReportingEnabled() {
+    return enabled;
 }
