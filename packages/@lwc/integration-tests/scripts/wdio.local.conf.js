@@ -25,6 +25,7 @@ exports.config = merge(baseConfig.config, {
 
     services: [
         // TODO [#3393]: re-enable once Circle CI can handle CDP again
+        // To re-enable this, we would need to re-install @wdio/devtools-service
         // 'devtools', // exposes browser.cdp, only works locally: https://webdriver.io/docs/devtools-service/
     ],
 });
