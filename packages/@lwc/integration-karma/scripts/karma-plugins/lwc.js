@@ -28,7 +28,7 @@ function createPreprocessor(config, emitter, logger) {
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
 
-    return async (_content, file, done) => {
+    return async (content, file, done) => {
         const input = file.path;
 
         const suiteDir = path.dirname(input);
@@ -108,7 +108,12 @@ function createPreprocessor(config, emitter, logger) {
             const location = path.relative(basePath, file.path);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
 
-            done(error, null);
+            if (process.env.KARMA_MODE === 'watch') {
+                log.error('Ignoring error in watch mode');
+                done(null, content); // just pass the untransformed content in for now
+            } else {
+                done(error, null);
+            }
         }
     };
 }
