@@ -17,10 +17,6 @@ beforeEach(() => {
     resetTimingBuffer();
 });
 
-afterEach(() => {
-    delete window.timingBuffer;
-});
-
 const fixtures = [
     {
         tagName: 'x-shadow-parent',
@@ -300,65 +296,64 @@ it('should invoke callbacks on the right order when multiple templates are used 
         });
 });
 
-if (process.env.NATIVE_SHADOW) {
-    // #TODO[3827]: These regression tests can be removed once the bug is resolved.
-    it('regression test (#3827) - shadow DOM should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component', () => {
-        const container = createElement('x-shadow-container-multiple-conditionals', {
-            is: ShadowContainerMultipleConditionals,
-        });
-        document.body.appendChild(container);
+describe('regression test (#3827)', () => {
+    let originalOnError;
+    function onError(event) {
+        event.preventDefault(); // don't log the error
+    }
 
-        const currentLeafName = container.getLeaf().name;
-        expect(window.timingBuffer).toEqual([
-            'shadowContainer:connectedCallback',
-            'shadowSlot:connectedCallback',
-            `leaf:${currentLeafName}:connectedCallback`,
-        ]);
-
-        resetTimingBuffer();
-
-        const slotCmp = container.getSlotCmp();
-        slotCmp.showIf = true;
-
-        return Promise.resolve()
-            .then(() => {
-                expect(window.timingBuffer).toEqual([]);
-
-                slotCmp.showIf = false;
-                slotCmp.showElseIf = true;
-            })
-            .then(() => {
-                expect(window.timingBuffer).toEqual([]);
-                document.body.removeChild(container);
-            });
+    beforeEach(() => {
+        // These error handlers are here to capture errors thrown in synthetic shadow mode
+        // after the rerendering happens.
+        window.onerror;
+        window.onerror = null;
+        window.addEventListener('error', onError);
     });
-}
 
-it('regression test (#3827) - light DOM should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component', () => {
-    // #TODO[3827]: These regression tests can be removed once the bug is resolved.
-    const container = createElement('x-light-container-multiple-conditionals', {
-        is: LightContainerMultipleConditionals,
+    afterEach(() => {
+        window.onerror = originalOnError;
+        window.removeEventListener('error', onError);
     });
-    document.body.appendChild(container);
 
-    let currentLeafName = container.getLeaf().name;
-    expect(window.timingBuffer).toEqual([
-        'lightContainer:connectedCallback',
-        'lightSlot:connectedCallback',
-        `leaf:${currentLeafName}:connectedCallback`,
-    ]);
-
-    resetTimingBuffer();
-
-    const slotCmp = container.getSlotCmp();
-    slotCmp.showIf = true;
-
-    return Promise.resolve()
-        .then(() => {
-            const previousLeafName = currentLeafName;
-            currentLeafName = container.getLeaf().name;
-
-            expect(window.timingBuffer).toEqual(
+    const fixtures = [
+        {
+            fixtureName: 'shadow DOM',
+            tagName: 'x-shadow-container-multiple-conditionals',
+            ctor: ShadowContainerMultipleConditionals,
+            elseBlock: (currentLeafName) => [
+                'shadowContainer:connectedCallback',
+                'shadowSlot:connectedCallback',
+                `leaf:${currentLeafName}:connectedCallback`,
+            ],
+            ifBlock: (currentLeafName, previousLeafName) =>
+                process.env.NATIVE_SHADOW
+                    ? []
+                    : window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          `leaf:${currentLeafName}:connectedCallback`,
+                          `leaf:${previousLeafName}:disconnectedCallback`,
+                      ]
+                    : [`leaf:${currentLeafName}:connectedCallback`],
+            elseIfBlock: (currentLeafName, previousLeafName) =>
+                process.env.NATIVE_SHADOW
+                    ? []
+                    : window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          `leaf:${currentLeafName}:connectedCallback`,
+                          `leaf:${previousLeafName}:disconnectedCallback`,
+                      ]
+                    : [`leaf:${currentLeafName}:connectedCallback`],
+        },
+        {
+            fixtureName: 'light DOM',
+            tagName: 'x-light-container-multiple-conditionals',
+            ctor: LightContainerMultipleConditionals,
+            elseBlock: (currentLeafName) => [
+                'lightContainer:connectedCallback',
+                'lightSlot:connectedCallback',
+                `leaf:${currentLeafName}:connectedCallback`,
+            ],
+            ifBlock: (currentLeafName, previousLeafName) =>
                 window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                     ? [
                           `leaf:${currentLeafName}:connectedCallback`,
@@ -368,21 +363,48 @@ it('regression test (#3827) - light DOM should maintain callback invocation orde
                     : [
                           `leaf:${currentLeafName}:connectedCallback`,
                           `leaf:${currentLeafName}:disconnectedCallback`,
-                      ]
-            );
+                      ],
+            elseIfBlock: (currentLeafName) => [
+                `leaf:${currentLeafName}:connectedCallback`,
+                `leaf:${currentLeafName}:disconnectedCallback`,
+            ],
+        },
+    ];
+
+    fixtures.forEach(({ fixtureName, tagName, ctor, ifBlock, elseBlock, elseIfBlock }) => {
+        // #TODO[3827]: These regression tests can be removed once the bug is resolved.
+        it(`${fixtureName} should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component`, async () => {
+            const container = createElement(tagName, {
+                is: ctor,
+            });
+            document.body.appendChild(container);
+
+            let currentLeafName = container.getLeaf().name;
+            expect(window.timingBuffer).toEqual(elseBlock(currentLeafName));
 
             resetTimingBuffer();
 
-            slotCmp.showElseIf = true;
-            slotCmp.showIf = false;
-        })
-        .then(() => {
-            currentLeafName = container.getLeaf().name;
-            expect(window.timingBuffer).toEqual([
-                `leaf:${currentLeafName}:connectedCallback`,
-                `leaf:${currentLeafName}:disconnectedCallback`,
-            ]);
+            const slotCmp = container.getSlotCmp();
+            // Note in synthetic shadow an error is thrown after rerender occurs,
+            // we capture this in the beforeEach and afterEach runs
+            slotCmp.showIf = true;
+            await Promise.resolve();
 
-            document.body.removeChild(container);
+            let previousLeafName = currentLeafName;
+            currentLeafName = container.getLeaf().name;
+            expect(window.timingBuffer).toEqual(ifBlock(currentLeafName, previousLeafName));
+
+            resetTimingBuffer();
+
+            // Note in synthetic shadow an error is thrown after rerender occurs,
+            // we capture this in the beforeEach and afterEach runs
+            slotCmp.showIf = false;
+            slotCmp.showElseIf = true;
+            await Promise.resolve();
+
+            previousLeafName = currentLeafName;
+            currentLeafName = container.getLeaf().name;
+            expect(window.timingBuffer).toEqual(elseIfBlock(currentLeafName, previousLeafName));
         });
+    });
 });
