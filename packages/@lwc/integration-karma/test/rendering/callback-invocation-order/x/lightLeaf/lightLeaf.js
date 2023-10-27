@@ -1,6 +1,8 @@
 import { LightningElement, api } from 'lwc';
 
-export default class LeafA extends LightningElement {
+export default class extends LightningElement {
+    static renderMode = 'light';
+
     @api name = Math.random();
 
     connectedCallback() {

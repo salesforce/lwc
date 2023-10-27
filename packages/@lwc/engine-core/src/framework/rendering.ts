@@ -498,17 +498,18 @@ function unmount(
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
-    if (doRemove) {
-        if (type === VNodeType.Fragment) {
-            unmountVNodes(vnode.children, parent, renderer, doRemove);
-        } else {
-            // The vnode might or might not have a data.renderer associated to it
-            // but the removal used here is from the owner instead.
-            removeNode(elm!, parent, renderer);
-        }
+    if (doRemove && type !== VNodeType.Fragment) {
+        // The vnode might or might not have a data.renderer associated to it
+        // but the removal used here is from the owner instead.
+        removeNode(elm!, parent, renderer);
     }
 
     switch (type) {
+        case VNodeType.Fragment: {
+            unmountVNodes(vnode.children, parent, renderer, doRemove);
+            break;
+        }
+
         case VNodeType.Element: {
             // Slot content is removed to trigger slotchange event when removing slot.
             // Only required for synthetic shadow.

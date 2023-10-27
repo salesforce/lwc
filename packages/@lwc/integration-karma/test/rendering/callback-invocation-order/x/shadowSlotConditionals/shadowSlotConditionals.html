@@ -1,0 +1,11 @@
+<template>
+    <div lwc:if={showIf}>
+        <slot></slot>
+    </div>
+    <div lwc:elseif={showElseIf}>
+        <slot></slot>
+    </div>
+    <div lwc:else>
+        <slot></slot>
+    </div>
+</template>
