@@ -47,6 +47,8 @@ export interface RollupLwcOptions {
     disableSyntheticShadowSupport?: boolean;
     /** The API version to associate with the compiled module */
     apiVersion?: APIVersion;
+    /** True if the static content optimization should be enabled. Defaults to true */
+    enableStaticContentOptimization?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -325,6 +327,10 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 scopedStyles: scoped,
                 disableSyntheticShadowSupport,
                 apiVersion: apiVersionToUse,
+                // Only pass this in if it's actually specified – otherwise unspecified becomes undefined becomes false
+                ...('enableStaticContentOptimization' in pluginOptions && {
+                    enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
+                }),
             });
 
             if (warnings) {

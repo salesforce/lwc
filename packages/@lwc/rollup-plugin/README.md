@@ -36,3 +36,4 @@ export default {
 -   `enableLwcSpread` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
 -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
 -   `apiVersion` (type: `number`, default: `undefined`) - Set to a valid API version such as 58, 59, etc. This will be overriden if the component itself overrides the version with a `*.js-meta.xml` file.
+-   `enableStaticContentOptimization` (type: `boolean`, optional) - True if the static content optimization should be enabled. Passed to `@lwc/template-compiler`.

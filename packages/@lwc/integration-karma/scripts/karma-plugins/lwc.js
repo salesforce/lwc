@@ -16,7 +16,11 @@ const path = require('path');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 
-const { DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER, API_VERSION } = require('../shared/options');
+const {
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    API_VERSION,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+} = require('../shared/options');
 const Watcher = require('./Watcher');
 
 function createPreprocessor(config, emitter, logger) {
@@ -52,6 +56,7 @@ function createPreprocessor(config, emitter, logger) {
                 },
                 enableDynamicComponents: true,
                 experimentalComplexExpressions,
+                enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
                 apiVersion: API_VERSION,
             }),
