@@ -138,12 +138,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report-1
-          path: ./coverage
+          path: ./packages/@lwc/integration-karma/coverage
       - name: Download code coverage results - 2
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report-2
-          path: ./coverage
+          path: ./packages/@lwc/integration-karma/coverage
       - run: pwd
       - run: ls -R
       - run: yarn coverage
