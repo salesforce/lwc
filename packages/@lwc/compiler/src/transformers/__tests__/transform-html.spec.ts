@@ -60,7 +60,7 @@ describe('transformSync', () => {
         expect(code).toContain(`tmpl.stylesheetToken = "lwc-143n22jptum";`);
     });
 
-    describe('enableStaticContentOptimization', () => {
+    describe('enableStaticContentOptimization: ', () => {
         const configs = [
             {
                 name: 'undefined',
