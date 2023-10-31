@@ -62,7 +62,7 @@ describe('parse', () => {
         });
     });
 
-    describe('enableStaticContentOptimization', () => {
+    describe('enableStaticContentOptimization: ', () => {
         const configs: { name: string; config: Config; expected: boolean }[] = [
             {
                 name: 'undefined',
