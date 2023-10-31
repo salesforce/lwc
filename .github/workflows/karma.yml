@@ -111,6 +111,9 @@ jobs:
     defaults:
       run:
         working-directory: ./packages/@lwc/integration-karma
+    needs:
+      - run-karma-tests-group-1
+      - run-karma-tests-group-2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
