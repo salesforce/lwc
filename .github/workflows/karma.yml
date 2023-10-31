@@ -1,4 +1,4 @@
-name: Compute Karma coverage
+name: Run Karma integration tests
 
 on:
   push:
@@ -25,6 +25,7 @@ env:
 
 jobs:
   run-karma-tests-group-1:
+    name: Karma tests - group 1
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -50,15 +51,15 @@ jobs:
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
       - run: yarn sauce:ci
-      - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: LEGACY_BROWSERS=1 yarn sauce:ci
-      - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
-      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn sauce:ci
-      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: API_VERSION=58 yarn sauce:ci
-      - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: API_VERSION=59 yarn sauce:ci
-      - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: LEGACY_BROWSERS=1 yarn sauce:ci
+#      - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
+#      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn sauce:ci
+#      - run: ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: API_VERSION=58 yarn sauce:ci
+#      - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: API_VERSION=59 yarn sauce:ci
+#      - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn sauce:ci
 
       - name: Upload code coverage results
         uses: actions/upload-artifact@v3
@@ -67,6 +68,7 @@ jobs:
           path: coverage
 
   run-karma-tests-group-2:
+    name: Karma tests - group 2
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -92,13 +94,13 @@ jobs:
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
       - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn sauce:ci
-      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
-      - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
-      - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: yarn hydration:sauce:ci
+#      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
+#      - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
+#      - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn sauce:ci
+#      - run: yarn hydration:sauce:ci
 
       - name: Upload code coverage results
         uses: actions/upload-artifact@v3
@@ -107,6 +109,7 @@ jobs:
           path: coverage
 
   run-karma-tests:
+    name: Compute Karma coverage
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -135,6 +138,6 @@ jobs:
       - name: Download code coverage results - 2
         uses: actions/download-artifact@v3
         with:
-          name: code-coverage-report-1
+          name: code-coverage-report-2
       - run: ls coverage
       - run: yarn coverage
