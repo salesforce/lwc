@@ -112,7 +112,7 @@ function transformWarningToRollupLog(
     src: string,
     id: string
 ): RollupLog {
-    // For reference on RollupWarnings/RollupLogs, a good example is:
+    // For reference on RollupLogs (f.k.a. RollupWarnings), a good example is:
     // https://github.com/rollup/plugins/blob/53776ee/packages/typescript/src/diagnostics/toWarning.ts
     const pluginCode = `LWC${warning.code}`; // modeled after TypeScript, e.g. TS5055
     const result: RollupLog = {
