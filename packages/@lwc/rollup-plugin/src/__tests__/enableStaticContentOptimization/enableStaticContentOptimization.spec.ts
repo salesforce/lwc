@@ -8,7 +8,7 @@ import path from 'node:path';
 import { rollup, RollupLog } from 'rollup';
 import lwc, { RollupLwcOptions } from '../../index';
 
-describe('enableStaticContentOptimization', () => {
+describe('enableStaticContentOptimization: ', () => {
     async function runRollup(
         pathname: string,
         options: RollupLwcOptions
