@@ -138,9 +138,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report-1
+          path: ./coverage
       - name: Download code coverage results - 2
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report-2
-      - run: ls coverage
+          path: ./coverage
+      - run: pwd
+      - run: ls -R
       - run: yarn coverage
