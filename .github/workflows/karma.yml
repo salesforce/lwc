@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report-1
-          path: coverage
+          path: ./packages/@lwc/integration-karma/coverage
 
   run-karma-tests-group-2:
     name: Karma group 2
@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report-2
-          path: coverage
+          path: ./packages/@lwc/integration-karma/coverage
 
   run-karma-tests:
     name: Compute Karma coverage
