@@ -24,12 +24,13 @@ env:
 
 jobs:
   run-karma-tests-group-1:
-    name: Karma group 1
+    name: Group 1
     runs-on: ubuntu-22.04
     env:
       SAUCE_TUNNEL_ID: github-action-tunnel-integration-${{github.run_id}}-group-1
     defaults:
       run:
+        # note: only applies to "run" steps https://github.com/actions/upload-artifact/issues/196#issuecomment-834291140
         working-directory: ./packages/@lwc/integration-karma
     steps:
       - name: Checkout repository
@@ -69,12 +70,13 @@ jobs:
           path: ./packages/@lwc/integration-karma/coverage
 
   run-karma-tests-group-2:
-    name: Karma group 2
+    name: Group 2
     runs-on: ubuntu-22.04
     env:
       SAUCE_TUNNEL_ID: github-action-tunnel-integration-${{github.run_id}}-group-2
     defaults:
       run:
+        # note: only applies to "run" steps https://github.com/actions/upload-artifact/issues/196#issuecomment-834291140
         working-directory: ./packages/@lwc/integration-karma
     steps:
       - name: Checkout repository
@@ -112,10 +114,11 @@ jobs:
           path: ./packages/@lwc/integration-karma/coverage
 
   run-karma-tests:
-    name: Compute Karma coverage
+    name: Compute coverage
     runs-on: ubuntu-22.04
     defaults:
       run:
+        # note: only applies to "run" steps https://github.com/actions/upload-artifact/issues/196#issuecomment-834291140
         working-directory: ./packages/@lwc/integration-karma
     needs:
       - run-karma-tests-group-1
@@ -134,16 +137,9 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: ./
 
-      - name: Download code coverage results - 1
+      - name: Download code coverage results
         uses: actions/download-artifact@v3
         with:
-          name: code-coverage-report-1
           path: ./packages/@lwc/integration-karma/coverage
-      - name: Download code coverage results - 2
-        uses: actions/download-artifact@v3
-        with:
-          name: code-coverage-report-2
-          path: ./packages/@lwc/integration-karma/coverage
-      - run: pwd
-      - run: ls -R
+      - run: ls coverage
       - run: yarn coverage
