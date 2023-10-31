@@ -60,46 +60,29 @@ describe('transformSync', () => {
         expect(code).toContain(`tmpl.stylesheetToken = "lwc-143n22jptum";`);
     });
 
-    it('should hoist static vnodes when enableStaticContentOptimization is set to true', () => {
-        const template = `
-            <template>
-                <img src="http://www.example.com/image.png" crossorigin="anonymous">
-            </template>
-        `;
-        const { code, warnings } = transformSync(template, 'foo.html', {
-            enableStaticContentOptimization: true,
-            ...TRANSFORMATION_OPTIONS,
+    describe('enableStaticContentOptimization: ', () => {
+        const configs = [
+            {
+                name: 'undefined',
+                config: { enableStaticContentOptimization: undefined },
+                expected: false,
+            },
+            { name: 'false', config: { enableStaticContentOptimization: false }, expected: false },
+            { name: 'true', config: { enableStaticContentOptimization: true }, expected: true },
+            { name: 'unspecified', config: {}, expected: true },
+        ];
+        configs.forEach(({ name, config, expected }) => {
+            it(name, () => {
+                const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
+                const { code, warnings } = transformSync(template, 'foo.html', config);
+                expect(warnings!.length).toBe(0);
+                if (expected) {
+                    expect(code).toContain('<img');
+                } else {
+                    expect(code).not.toContain('<img');
+                }
+            });
         });
-
-        expect(warnings).toHaveLength(0);
-        expect(code).toMatch('<img');
-    });
-
-    it('should not hoist static vnodes when enableStaticContentOptimization is set to false', () => {
-        const template = `
-            <template>
-                <img src="http://www.example.com/image.png" crossorigin="anonymous">
-            </template>
-        `;
-        const { code, warnings } = transformSync(template, 'foo.html', {
-            enableStaticContentOptimization: false,
-            ...TRANSFORMATION_OPTIONS,
-        });
-
-        expect(warnings).toHaveLength(0);
-        expect(code).toMatch(`api_element("img"`);
-    });
-
-    it('should hoist static vnodes by default', () => {
-        const template = `
-            <template>
-                <img src="http://www.example.com/image.png" crossorigin="anonymous">
-            </template>
-        `;
-        const { code, warnings } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
-
-        expect(warnings).toHaveLength(0);
-        expect(code).toMatch('<img');
     });
 
     it('should provide custom renderer hooks when config specified', () => {
