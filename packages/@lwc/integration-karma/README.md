@@ -40,7 +40,7 @@ This set of environment variables applies to the `start` and `test` commands:
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
 -   **`API_VERSION=<version>`:** API version to use when compiling.
 -   **`DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1`:** Disable synthetic shadow in the compiler itself.
--   **`DISABLE_STATIC_CONTENT_OPTIMIZATION=1`:** Disable static content optimization by setting  `enableStaticContentOptimization` to `false`.
+-   **`DISABLE_STATIC_CONTENT_OPTIMIZATION=1`:** Disable static content optimization by setting `enableStaticContentOptimization` to `false`.
 
 ## Examples
 
