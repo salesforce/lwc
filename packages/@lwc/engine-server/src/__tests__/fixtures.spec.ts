@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { rollup, RollupWarning } from 'rollup';
+import { rollup, RollupLog } from 'rollup';
 // @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
@@ -30,7 +30,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
     // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    const warnings: RollupWarning[] = [];
+    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,

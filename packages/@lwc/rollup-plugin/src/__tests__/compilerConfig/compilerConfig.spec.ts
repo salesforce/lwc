@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'path';
-import { rollup, RollupWarning } from 'rollup';
+import { rollup, RollupLog } from 'rollup';
 
 import lwc from '../../index';
 
@@ -64,7 +64,7 @@ describe('templateConfig', () => {
     });
 
     it('should accept experimentalDynamicDirective config flag', async () => {
-        const warnings: RollupWarning[] = [];
+        const warnings: RollupLog[] = [];
         const bundle = await rollup({
             input: path.resolve(__dirname, 'fixtures/experimentalDynamic/experimentalDynamic.js'),
             plugins: [

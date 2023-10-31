@@ -5,30 +5,30 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'path';
-import { rollup, RollupWarning } from 'rollup';
+import { rollup, RollupLog } from 'rollup';
 import { APIVersion } from '@lwc/shared';
 import lwc from '../../index';
 
-function normalizeWarning(warning: RollupWarning) {
+function normalizeLog(log: RollupLog) {
     return {
-        code: warning.code,
-        frame: warning.frame,
-        hook: warning.hook,
-        id: warning.id && path.relative(__dirname, warning.id),
-        message: warning.message,
-        plugin: warning.plugin,
-        pluginCode: warning.pluginCode,
-        loc: warning.loc && {
-            column: warning.loc.column,
-            line: warning.loc.line,
-            file: warning.loc.file && path.relative(__dirname, warning.loc.file),
+        code: log.code,
+        frame: log.frame,
+        hook: log.hook,
+        id: log.id && path.relative(__dirname, log.id),
+        message: log.message,
+        plugin: log.plugin,
+        pluginCode: log.pluginCode,
+        loc: log.loc && {
+            column: log.loc.column,
+            line: log.loc.line,
+            file: log.loc.file && path.relative(__dirname, log.loc.file),
         },
     };
 }
 
 describe('warnings', () => {
     it('should emit a warning for double </template> tags in older API versions', async () => {
-        const warnings: RollupWarning[] = [];
+        const warnings: RollupLog[] = [];
         const bundle = await rollup({
             input: path.resolve(__dirname, 'fixtures/test/test.js'),
             plugins: [
@@ -48,7 +48,7 @@ describe('warnings', () => {
         // Compilation should be successful
         expect(output.length).toEqual(1);
         expect(typeof output[0].code).toEqual('string');
-        expect(warnings.map(normalizeWarning)).toEqual([
+        expect(warnings.map(normalizeLog)).toEqual([
             {
                 code: 'PLUGIN_WARNING',
                 frame: '</template>',
