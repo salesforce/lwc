@@ -25,7 +25,7 @@ env:
 
 jobs:
   run-karma-tests-group-1:
-    name: Karma tests - group 1
+    name: Karma group 1
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -48,7 +48,7 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}-group-1
 
       - run: yarn sauce:ci
 #      - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
@@ -68,7 +68,7 @@ jobs:
           path: coverage
 
   run-karma-tests-group-2:
-    name: Karma tests - group 2
+    name: Karma group 2
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -91,7 +91,7 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}-group-2
 
       - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn sauce:ci
 #      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
