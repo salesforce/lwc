@@ -259,10 +259,9 @@ function s(
     if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
         if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
-            return fr(data.key, children, 0);
+            children = [fr(data.key, children, 0)];
         } else {
             sc(children);
-            return children;
         }
     }
     if (shadowMode === ShadowMode.Synthetic) {
