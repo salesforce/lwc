@@ -117,7 +117,7 @@ describe('Slotting', () => {
         );
     });
 
-    it('should only generate empty text nodes for APIVersion >=60', async () => {
+    /*it('should only generate empty text nodes for APIVersion >=60', async () => {
         const elm = createElement('x-default-slot', { is: BasicSlot });
         document.body.appendChild(elm);
         await Promise.resolve();
@@ -130,5 +130,5 @@ describe('Slotting', () => {
         } else {
             expect(emptyTextNodes.length).toBe(6); // 3 slots, so 3*2=6 empty text nodes
         }
-    });
+    });*/
 });

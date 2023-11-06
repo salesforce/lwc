@@ -225,7 +225,7 @@ function mountFragment(
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
-    vnode.elm = vnode.leading.elm;
+    // vnode.elm = vnode.leading?.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -238,7 +238,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
     }
 
     // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
-    n2.elm = n2.leading.elm;
+    // n2.elm = n2.leading?.elm;
 }
 
 function mountElement(
@@ -767,7 +767,7 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
     // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
     const nodeStack: VNodes = [];
     let fragmentFound = false;
-    for (let i = children.length - 1; i > -1; i -= 1) {
+    for (let i = children.length - 1; i >= 0; i -= 1) {
         const child = children[i];
         ArrayPush.call(nodeStack, child);
         fragmentFound = fragmentFound || !!(child && isVFragment(child));
@@ -782,7 +782,7 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
         if (!isNull(currentNode) && isVFragment(currentNode)) {
             const fChildren = currentNode.children;
             // Ignore the start and end text node delimiters
-            for (let i = fChildren.length - 2; i > 0; i -= 1) {
+            for (let i = fChildren.length - 1; i >= 0; i -= 1) {
                 ArrayPush.call(nodeStack, fChildren[i]);
             }
         } else {
@@ -964,7 +964,8 @@ function updateDynamicChildren(
             // [..., [leading, ...content, trailing], nextSibling, ...]
             let anchor: Node | null;
             if (isVFragment(oldEndVnode)) {
-                anchor = renderer.nextSibling(oldEndVnode.trailing.elm);
+                // Can we ever get here with an empty vfragment?
+                anchor = renderer.nextSibling(oldEndVnode.trailing?.elm);
             } else {
                 anchor = renderer.nextSibling(oldEndVnode.elm!);
             }

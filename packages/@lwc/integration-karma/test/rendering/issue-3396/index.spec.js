@@ -12,6 +12,6 @@ describe('issue-3396', () => {
 
         const childNodes = elm.shadowRoot.childNodes;
         const contents = Array.from(childNodes).map((node) => node.textContent);
-        expect(contents).toEqual(['', '1', '', '', '2', '', '', '3', '']);
+        expect(contents).toEqual(['1', '2', '3']);
     });
 });

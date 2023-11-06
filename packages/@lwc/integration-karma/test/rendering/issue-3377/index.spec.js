@@ -13,6 +13,6 @@ describe('issue-3377', () => {
 
         const childNodes = elm.shadowRoot.childNodes;
         const contents = Array.from(childNodes).map((node) => node.textContent);
-        expect(contents).toEqual(['0', '1', '', 'lwc:if', '']);
+        expect(contents).toEqual(['0', '1', 'lwc:if']);
     });
 });
