@@ -99,19 +99,32 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
-    const leading = t('');
-    const trailing = t('');
+    const leading = firstNonNull(children);
+    const trailing = lastNonNull(children);
     return {
         type: VNodeType.Fragment,
         sel: undefined,
         key,
         elm: undefined,
-        children: [leading, ...children, trailing],
+        children,
         stable,
         owner: getVMBeingRendered()!,
         leading,
         trailing,
     };
+}
+
+function firstNonNull(children: VNodes): VNode | undefined {
+    return children.find((value) => value !== null) || undefined;
+}
+
+function lastNonNull(children: VNodes): VNode | undefined {
+    for (let i = children.length - 1; i >= 0; i -= 1) {
+        if (children[i] !== null) {
+            return children[i]!;
+        }
+    }
+    return undefined;
 }
 
 // [h]tml node

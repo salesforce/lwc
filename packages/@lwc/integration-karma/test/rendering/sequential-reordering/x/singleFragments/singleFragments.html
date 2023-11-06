@@ -1,0 +1,19 @@
+<template>
+    <template lwc:if={items}>
+        <template lwc:if={firstItem}>
+            <div>{firstItem}</div>
+        </template>
+    
+        <template lwc:if={secondItem}>
+            <div>{secondItem}</div>
+        </template>
+        <span>middle</span>
+        <template lwc:if={thirdItem}>
+            <div>{thirdItem}</div>
+        </template>
+    
+        <template lwc:if={fourthItem}>
+            <div>{fourthItem}</div>
+        </template>
+    </template>
+</template>
