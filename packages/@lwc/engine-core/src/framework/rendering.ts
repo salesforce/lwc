@@ -225,7 +225,7 @@ function mountFragment(
 ) {
     const { children } = vnode;
     mountVNodes(children, parent, renderer, anchor);
-    // vnode.elm = vnode.leading?.elm;
+    vnode.elm = vnode.leading?.elm;
 }
 
 function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
@@ -238,7 +238,7 @@ function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, rendere
     }
 
     // Note: not reusing n1.elm, because during patching, it may be patched with another text node.
-    // n2.elm = n2.leading?.elm;
+    n2.elm = n2.leading?.elm;
 }
 
 function mountElement(
