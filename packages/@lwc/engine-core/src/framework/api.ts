@@ -99,8 +99,8 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
-    const leading = t('');
-    const trailing = t('');
+    const leading = co('');
+    const trailing = co('');
     return {
         type: VNodeType.Fragment,
         sel: undefined,
