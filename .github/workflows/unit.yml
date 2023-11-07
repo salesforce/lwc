@@ -32,6 +32,11 @@ jobs:
           node-version: "18.18.0"
           cache: 'yarn'
 
+      - name: Setup chrome v119
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: "119.0.6045.105"
+        id: setup-chrome
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
