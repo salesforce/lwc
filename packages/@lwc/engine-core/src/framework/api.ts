@@ -6,7 +6,6 @@
  */
 import {
     APIFeature,
-    APIVersion,
     ArrayPush,
     assert,
     create as ObjectCreate,
@@ -101,7 +100,10 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
     const owner = getVMBeingRendered()!;
-    const useCommentNodes = owner.apiVersion >= APIVersion.V60_248_SPRING_24;
+    const useCommentNodes = isAPIFeatureEnabled(
+        APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+        owner.apiVersion
+    );
 
     const leading = useCommentNodes ? co('') : t('');
     const trailing = useCommentNodes ? co('') : t('');

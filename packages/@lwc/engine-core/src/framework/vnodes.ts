@@ -74,8 +74,8 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
     // which diffing strategy to use.
     stable: 0 | 1;
-    // The leading and trailing nodes are text nodes <= v59 and comment nodes
-    // in v60+.
+    // The leading and trailing nodes are text nodes when APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS
+    // is disabled and comment nodes when it is enabled.
     leading: VText | VComment;
     trailing: VText | VComment;
 }

@@ -72,6 +72,12 @@ export const enum APIFeature {
      * This avoids unnecessary decorators on classes that cannot possibly be LightningElements.
      */
     SKIP_UNNECESSARY_REGISTER_DECORATORS,
+    /**
+     * If enabled, comment nodes will be added to the beginning and end of each VFragment node, used
+     * as anchors/bookends for efficient DOM operations. If disabled, empty text nodes will be used
+     * instead of comment nodes.
+     */
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
 }
 
 export function isAPIFeatureEnabled(
@@ -85,6 +91,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
         case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
         case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
+        case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
     }
 }

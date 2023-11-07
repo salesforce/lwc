@@ -17,7 +17,8 @@ import {
     isTrue,
     isString,
     StringToLowerCase,
-    APIVersion,
+    APIFeature,
+    isAPIFeatureEnabled,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -388,8 +389,19 @@ function hydrateChildren(
         }
     }
 
+    const useCommentsForBookends = isAPIFeatureEnabled(
+        APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+        owner.apiVersion
+    );
     if (
-        (owner.apiVersion < APIVersion.V60_248_SPRING_24 ? true : !expectAddlSiblings) &&
+        // If 1) comments are used for bookends, and 2) we're not expecting additional siblings,
+        // and 3) there exists an additional sibling, that's a hydration failure.
+        //
+        // This preserves the previous behavior for text-node bookends where mismatches
+        // would incorrectly occur but which is unfortunately baked into the SSR hydration
+        // contract. It also preserves the behavior of valid hydration failures where the server
+        // rendered more nodes than the client.
+        (!useCommentsForBookends || !expectAddlSiblings) &&
         nextNode
     ) {
         hasMismatch = true;
