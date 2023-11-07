@@ -10,6 +10,8 @@ import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
 
+const vFragBookend = process.env.API_VERSION > 59 ? '<!---->' : '';
+
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(
         TypeError,
@@ -127,7 +129,7 @@ describe('non-empty custom element', () => {
             expectWarnings([]);
         }
 
-        expect(elm.innerHTML).toBe('<!----><!---->');
+        expect(elm.innerHTML).toBe(`${vFragBookend}${vFragBookend}`);
     });
 
     it('should log error if slotted synthetic shadow dom custom element has children', () => {

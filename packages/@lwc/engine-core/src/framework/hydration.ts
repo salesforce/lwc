@@ -17,6 +17,7 @@ import {
     isTrue,
     isString,
     StringToLowerCase,
+    APIVersion,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -387,7 +388,10 @@ function hydrateChildren(
         }
     }
 
-    if (!expectAddlSiblings && nextNode) {
+    if (
+        (owner.apiVersion < APIVersion.V60_248_SPRING_24 ? true : !expectAddlSiblings) &&
+        nextNode
+    ) {
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {

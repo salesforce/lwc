@@ -28,7 +28,10 @@ const DISABLE_STATIC_CONTENT_OPTIMIZATION = Boolean(
     process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
 );
 const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
-const API_VERSION = process.env.API_VERSION && parseInt(process.env.API_VERSION, 10);
+const LATEST_API_VERSION = 60;
+const API_VERSION = process.env.API_VERSION
+    ? parseInt(process.env.API_VERSION, 10)
+    : LATEST_API_VERSION;
 
 module.exports = {
     // Test configuration
@@ -40,6 +43,7 @@ module.exports = {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
+    LATEST_API_VERSION,
     API_VERSION,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),

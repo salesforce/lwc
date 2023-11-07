@@ -6,6 +6,7 @@
  */
 import {
     APIFeature,
+    APIVersion,
     ArrayPush,
     assert,
     create as ObjectCreate,
@@ -99,8 +100,12 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
-    const leading = co('');
-    const trailing = co('');
+    const owner = getVMBeingRendered()!;
+    const useCommentNodes = owner.apiVersion >= APIVersion.V60_248_SPRING_24;
+
+    const leading = useCommentNodes ? co('') : t('');
+    const trailing = useCommentNodes ? co('') : t('');
+
     return {
         type: VNodeType.Fragment,
         sel: undefined,
@@ -108,7 +113,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
         elm: undefined,
         children: [leading, ...children, trailing],
         stable,
-        owner: getVMBeingRendered()!,
+        owner,
         leading,
         trailing,
     };
