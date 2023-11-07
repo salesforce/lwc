@@ -73,7 +73,7 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-shadow-consumer', ShadowConsumer);
 
         expect(nodes['x-shadow-consumer'].shadowRoot.innerHTML).toEqual(
-            '<x-light-container><p data-id="container-upper-slot-default">Upper slot default</p><p data-id="shadow-consumer-text">Hello from Shadow DOM</p><p data-id="container-lower-slot-default">Lower slot default</p></x-light-container>'
+            '<x-light-container><!----><p data-id="container-upper-slot-default">Upper slot default</p><!----><!----><p data-id="shadow-consumer-text">Hello from Shadow DOM</p><!----><!----><p data-id="container-lower-slot-default">Lower slot default</p><!----></x-light-container>'
         );
     });
 
@@ -90,7 +90,7 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-conditional-slotted', ConditionalSlotted);
         const elm = nodes['x-conditional-slotted'];
         expect(elm.innerHTML).toEqual(
-            '<x-conditional-slot data-id="conditional-slot"><p data-id="slotted-text">Slotted content</p><button data-id="button">Toggle</button></x-conditional-slot>'
+            '<x-conditional-slot data-id="conditional-slot"><!----><p data-id="slotted-text">Slotted content</p><!----><button data-id="button">Toggle</button></x-conditional-slot>'
         );
         nodes.button.click();
         await Promise.resolve();
@@ -103,7 +103,7 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
         const elm = nodes['x-forwarded-slot-consumer'];
         expect(elm.innerHTML).toEqual(
-            '<x-forwarded-slot><x-light-container><p slot="upper">Upper slot content forwarded</p><p>Default slot forwarded</p><p slot="lower">Lower slot content forwarded</p></x-light-container></x-forwarded-slot>'
+            '<x-forwarded-slot><x-light-container><!----><p slot="upper">Upper slot content forwarded</p><!----><!----><p>Default slot forwarded</p><!----><!----><p slot="lower">Lower slot content forwarded</p><!----></x-light-container></x-forwarded-slot>'
         );
     });
     it('should render default content in forwarded slots', async () => {
@@ -113,7 +113,7 @@ describe('Slotting', () => {
 
         await Promise.resolve();
         expect(elm.innerHTML).toEqual(
-            '<x-forwarded-slot><x-light-container><p data-id="container-upper-slot-default">Upper slot default</p>Default slot not yet forwarded<p data-id="container-lower-slot-default">Lower slot default</p></x-light-container></x-forwarded-slot>'
+            '<x-forwarded-slot><x-light-container><!----><p data-id="container-upper-slot-default">Upper slot default</p><!----><!---->Default slot not yet forwarded<!----><!----><p data-id="container-lower-slot-default">Lower slot default</p><!----></x-light-container></x-forwarded-slot>'
         );
     });
 
@@ -122,13 +122,13 @@ describe('Slotting', () => {
         document.body.appendChild(elm);
         await Promise.resolve();
         const container = elm.querySelector('x-light-container');
-        const emptyTextNodes = [...container.childNodes].filter(
-            (_) => _.nodeType === Node.TEXT_NODE && _.data === ''
+        const commentNodes = [...container.childNodes].filter(
+            (_) => _.nodeType === Node.COMMENT_NODE
         );
         if (process.env.API_VERSION <= 59) {
-            expect(emptyTextNodes.length).toBe(0); // old implementation does not use fragments, just flattening
+            expect(commentNodes.length).toBe(0); // old implementation does not use fragments, just flattening
         } else {
-            expect(emptyTextNodes.length).toBe(6); // 3 slots, so 3*2=6 empty text nodes
+            expect(commentNodes.length).toBe(6); // 3 slots, so 3*2=6 comment nodes
         }
     });
 });

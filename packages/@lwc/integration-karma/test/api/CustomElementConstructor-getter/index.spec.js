@@ -127,7 +127,7 @@ describe('non-empty custom element', () => {
             expectWarnings([]);
         }
 
-        expect(elm.innerHTML).toBe('');
+        expect(elm.innerHTML).toBe('<!----><!---->');
     });
 
     it('should log error if slotted synthetic shadow dom custom element has children', () => {
