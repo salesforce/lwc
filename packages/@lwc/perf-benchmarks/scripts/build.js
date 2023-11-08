@@ -22,6 +22,7 @@ const {
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
     BENCHMARK_AUTO_SAMPLE_CONDITIONS = '1%', // how much difference we want to determine between A and B
+    CHROME_BINARY, // if a custom chrome binary is used eg: in CI
 } = process.env;
 let {
     BENCHMARK_SAMPLE_SIZE = 100, // minimum number of samples to run
@@ -78,6 +79,7 @@ async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) 
                 browser: {
                     name: 'chrome',
                     headless: true,
+                    ...(CHROME_BINARY && { binary: CHROME_BINARY }),
                 },
                 measurement: {
                     mode: 'performance',
