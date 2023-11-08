@@ -32,11 +32,14 @@ jobs:
           node-version: "18.18.0"
           cache: 'yarn'
 
+      # Needed for perf smoke tests, matches the chromedriver version installed by tachometer(https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
+      # version number can be found here https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=Linux_x64/119
       - name: Setup chrome v119
-        uses: browser-actions/setup-chrome@latest
+        uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: "119.0.6045.105"
+          chrome-version: 1194751
         id: setup-chrome
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
