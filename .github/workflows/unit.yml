@@ -60,4 +60,4 @@ jobs:
       - name: Run Jest tests
         run: yarn test:ci
       - name: Run benchmark smoke tests
-        run: BENCHMARK_SMOKE_TEST=1 yarn test:performance
+        run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
