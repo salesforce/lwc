@@ -67,6 +67,8 @@ window.HydrateTest = (function (lwc, testUtils) {
                 Component,
                 hydrateComponent: lwc.hydrateComponent.bind(lwc),
                 consoleSpy,
+                container,
+                selector,
             });
         }
 
