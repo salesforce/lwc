@@ -52,4 +52,5 @@ jobs:
       - name: Run Jest tests
         run: yarn test:ci
       - name: Run benchmark smoke tests
+        if: ${{ false }} # Disabled until a runner-image with Chrome 119 is available
         run: BENCHMARK_SMOKE_TEST=1 yarn test:performance
