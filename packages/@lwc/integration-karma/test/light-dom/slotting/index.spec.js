@@ -103,7 +103,8 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
         const elm = nodes['x-forwarded-slot-consumer'];
         expect(elm.innerHTML).toEqual(
-            '<x-forwarded-slot><x-light-container><p slot="upper">Upper slot content forwarded</p><p>Default slot forwarded</p><p slot="lower">Lower slot content forwarded</p></x-light-container></x-forwarded-slot>'
+            // Note we flip the upper and lower content to verify the slots are correctly mapped to the forwarded slots
+            '<x-forwarded-slot><x-light-container><p slot="lower">Lower slot content forwarded</p><p>Default slot forwarded</p><p slot="upper">Upper slot content forwarded</p></x-light-container></x-forwarded-slot>'
         );
     });
     it('should render default content in forwarded slots', async () => {
