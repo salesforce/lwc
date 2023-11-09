@@ -838,10 +838,8 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         let slotName: unknown = '';
-        if (isVBaseElement(vnode)) {
-            slotName = vnode.data.attrs?.slot ?? '';
-        } else if (isVScopedSlotFragment(vnode)) {
-            slotName = vnode.slotName;
+        if (isVBaseElement(vnode) || isVScopedSlotFragment(vnode)) {
+            slotName = vnode.slotName ?? '';
         }
 
         // Can't use toString here because Symbol(1).toString() is 'Symbol(1)'

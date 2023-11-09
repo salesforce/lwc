@@ -50,6 +50,7 @@ import {
     VText,
     VStaticPart,
     VStaticPartData,
+    isVBaseElement,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -153,7 +154,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key } = data;
+    const { key, attrs } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -162,6 +163,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         children,
         elm: undefined,
         key,
+        slotName: attrs?.slot,
         owner: vmBeingRendered,
     };
 
@@ -245,6 +247,13 @@ function s(
                         setVMBeingRendered(vmBeingRenderedInception);
                     }
                 } else {
+                    if (isVBaseElement(vnode)) {
+                        // Note, light DOM slots directly return the children as the slotted content and skips creating
+                        // a slot vnode.
+                        // In the absence of a slot element, we stamp the slotName of each child to identify which slot
+                        // the children should be slotted into going forward as part of allocateInSlot.
+                        vnode.slotName = data.attrs?.slot;
+                    }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
                     ArrayPush.call(newChildren, vnode);
@@ -259,9 +268,9 @@ function s(
     if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
         if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
-            children = [fr(data.key, children, 0)];
+            return fr(data.key, children, 0);
         } else {
-            sc(children);
+            return sc(children);
         }
     }
     if (shadowMode === ShadowMode.Synthetic) {
@@ -316,7 +325,7 @@ function c(
             });
         }
     }
-    const { key } = data;
+    const { key, attrs } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -325,6 +334,7 @@ function c(
         children,
         elm,
         key,
+        slotName: attrs?.slot,
 
         ctor: Ctor,
         owner: vmBeingRendered,
