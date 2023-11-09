@@ -277,7 +277,8 @@ function s(
         if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
             return fr(data.key, children, 0);
         } else {
-            return sc(children);
+            sc(children);
+            return children;
         }
     }
     if (shadowMode === ShadowMode.Synthetic) {
