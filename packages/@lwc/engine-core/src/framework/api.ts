@@ -100,8 +100,15 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
-    const leading = t('');
-    const trailing = t('');
+    const owner = getVMBeingRendered()!;
+    const useCommentNodes = isAPIFeatureEnabled(
+        APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+        owner.apiVersion
+    );
+
+    const leading = useCommentNodes ? co('') : t('');
+    const trailing = useCommentNodes ? co('') : t('');
+
     return {
         type: VNodeType.Fragment,
         sel: undefined,
@@ -109,7 +116,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
         elm: undefined,
         children: [leading, ...children, trailing],
         stable,
-        owner: getVMBeingRendered()!,
+        owner,
         leading,
         trailing,
     };
