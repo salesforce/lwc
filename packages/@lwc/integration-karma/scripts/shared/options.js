@@ -7,6 +7,8 @@
 
 'use strict';
 
+const { HIGHEST_API_VERSION } = require('@lwc/shared');
+
 // Helpful error. Remove after a few months.
 if (process.env.NATIVE_SHADOW) {
     throw new Error('NATIVE_SHADOW is deprecated. Use DISABLE_SYNTHETIC instead!');
@@ -28,7 +30,9 @@ const DISABLE_STATIC_CONTENT_OPTIMIZATION = Boolean(
     process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
 );
 const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
-const API_VERSION = process.env.API_VERSION && parseInt(process.env.API_VERSION, 10);
+const API_VERSION = process.env.API_VERSION
+    ? parseInt(process.env.API_VERSION, 10)
+    : HIGHEST_API_VERSION;
 
 module.exports = {
     // Test configuration

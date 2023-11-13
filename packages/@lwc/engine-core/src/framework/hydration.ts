@@ -17,6 +17,8 @@ import {
     isTrue,
     isString,
     StringToLowerCase,
+    APIFeature,
+    isAPIFeatureEnabled,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -89,7 +91,7 @@ function hydrateVM(vm: VM) {
         renderRoot: parentNode,
         renderer: { getFirstChild },
     } = vm;
-    hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
+    hydrateChildren(getFirstChild(parentNode), children, parentNode, vm, false);
     runRenderedCallback(vm);
 }
 
@@ -234,7 +236,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): Node | null {
     const { children, owner } = vnode;
 
-    hydrateChildren(elm, children, renderer.getProperty(elm, 'parentNode'), owner);
+    hydrateChildren(elm, children, renderer.getProperty(elm, 'parentNode'), owner, true);
 
     return (vnode.elm = children[children.length - 1]!.elm as Node);
 }
@@ -287,7 +289,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner, false);
     }
 
     return elm;
@@ -344,7 +346,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm, false);
     }
 
     hydrateVM(vm);
@@ -355,7 +357,11 @@ function hydrateChildren(
     node: Node | null,
     children: VNodes,
     parentNode: Element | ShadowRoot,
-    owner: VM
+    owner: VM,
+    // When rendering the children of a VFragment, additional siblings may follow the
+    // last node of the fragment. Hydration should not fail if a trailing sibling is
+    // found in this case.
+    expectAddlSiblings: boolean
 ) {
     let hasWarned = false;
     let nextNode: Node | null = node;
@@ -383,7 +389,21 @@ function hydrateChildren(
         }
     }
 
-    if (nextNode) {
+    const useCommentsForBookends = isAPIFeatureEnabled(
+        APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+        owner.apiVersion
+    );
+    if (
+        // If 1) comments are used for bookends, and 2) we're not expecting additional siblings,
+        // and 3) there exists an additional sibling, that's a hydration failure.
+        //
+        // This preserves the previous behavior for text-node bookends where mismatches
+        // would incorrectly occur but which is unfortunately baked into the SSR hydration
+        // contract. It also preserves the behavior of valid hydration failures where the server
+        // rendered more nodes than the client.
+        (!useCommentsForBookends || !expectAddlSiblings) &&
+        nextNode
+    ) {
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
