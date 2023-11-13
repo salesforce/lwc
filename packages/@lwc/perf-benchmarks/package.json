@@ -23,10 +23,9 @@
         "@lwc/synthetic-shadow": "5.0.0"
     },
     "devDependencies": {
-        "@best/cli": "^9.0.1",
-        "@best/runner-headless": "^9.0.1",
-        "@best/runner-remote": "^9.0.1",
-        "@lwc/rollup-plugin-node-resolve-legacy": "npm:rollup-plugin-node-resolve@5.2.0",
+        "@best/cli": "^10.0.0",
+        "@best/runner-headless": "^10.0.0",
+        "@best/runner-remote": "^10.0.0",
         "folder-hash": "4.0.4",
         "markdown-table": "^3.0.3",
         "tachometer": "0.5.10"
