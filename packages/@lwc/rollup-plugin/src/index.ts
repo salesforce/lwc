@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { URLSearchParams } from 'url';
 
-import { Plugin, SourceMapInput, RollupWarning } from 'rollup';
+import { Plugin, SourceMapInput, RollupLog } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
 import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
@@ -107,15 +107,15 @@ function appendAliasSpecifierQueryParam(id: string, specifier: string): string {
     return `${filename}?${params.toString()}`;
 }
 
-function transformWarningToRollupWarning(
+function transformWarningToRollupLog(
     warning: CompilerDiagnostic,
     src: string,
     id: string
-): RollupWarning {
-    // For reference on RollupWarnings, a good example is:
+): RollupLog {
+    // For reference on RollupLogs (f.k.a. RollupWarnings), a good example is:
     // https://github.com/rollup/plugins/blob/53776ee/packages/typescript/src/diagnostics/toWarning.ts
     const pluginCode = `LWC${warning.code}`; // modeled after TypeScript, e.g. TS5055
-    const result: RollupWarning = {
+    const result: RollupLog = {
         // Replace any newlines in case they exist, just so the Rollup output looks a bit cleaner
         message: `@lwc/rollup-plugin: ${warning.message?.replace(/\n/g, ' ')}`,
         plugin: PLUGIN_NAME,
@@ -335,7 +335,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             if (warnings) {
                 for (const warning of warnings) {
-                    this.warn(transformWarningToRollupWarning(warning, src, filename));
+                    this.warn(transformWarningToRollupLog(warning, src, filename));
                 }
             }
 

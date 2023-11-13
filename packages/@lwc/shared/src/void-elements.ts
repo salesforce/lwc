@@ -11,7 +11,7 @@ import { HTML_NAMESPACE } from './namespaces';
 // e.g. `</tagName>` or `<tagName />`. For instance, `<meta>` closes on its own; no need for a slash.
 // These only come from HTML; there are no void elements in the SVG or MathML namespaces.
 // See: https://html.spec.whatwg.org/multipage/syntax.html#syntax-tags
-const VOID_ELEMENTS = /*@__PURE__*/ [
+const VOID_ELEMENTS = [
     'area',
     'base',
     'br',
@@ -30,7 +30,7 @@ const VOID_ELEMENTS = /*@__PURE__*/ [
 // These elements have been deprecated but preserving their usage for backwards compatibility
 // until we can officially deprecate them from LWC.
 // See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
-const DEPRECATED_VOID_ELEMENTS = /*@__PURE__*/ ['param', 'keygen', 'menuitem'];
+const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
 const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
 
