@@ -8,6 +8,7 @@ import ShadowConsumer from 'x/shadowConsumer';
 import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
 import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
+import forwardedSlotConsumerShadow from './x/forwardedSlotConsumerShadow/forwardedSlotConsumerShadow';
 
 const vFragBookend = process.env.API_VERSION > 59 ? '<!---->' : '';
 
@@ -67,7 +68,7 @@ describe('Slotting', () => {
 
         const expected = process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
             ? '<x-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></x-shadow-container>'
-            : '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>';
+            : '<x-shadow-container><slot name="upper"></slot><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot><slot name="lower"></slot></x-shadow-container>';
         expect(nodes['x-light-consumer'].innerHTML).toEqual(expected);
     });
 
@@ -105,9 +106,10 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
         const elm = nodes['x-forwarded-slot-consumer'];
         expect(elm.innerHTML).toEqual(
-            `<x-forwarded-slot><x-light-container>${vFragBookend}<p slot="lower">Lower slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p slot="upper">Upper slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
+            `<x-forwarded-slot><x-light-container>${vFragBookend}<p>Lower slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p>Upper slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
         );
     });
+
     it('should render default content in forwarded slots', async () => {
         const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
         const elm = nodes['x-forwarded-slot-consumer'];
@@ -117,6 +119,39 @@ describe('Slotting', () => {
         expect(elm.innerHTML).toEqual(
             `<x-forwarded-slot><x-light-container>${vFragBookend}<p data-id="container-upper-slot-default">Upper slot default</p>${vFragBookend}${vFragBookend}Default slot not yet forwarded${vFragBookend}${vFragBookend}<p data-id="container-lower-slot-default">Lower slot default</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
         );
+    });
+
+    it('should forward slots between shadow and light DOM', () => {
+        const nodes = createTestElement(
+            'x-forwarded-slot-consumer-shadow',
+            forwardedSlotConsumerShadow
+        );
+        const elm = nodes['x-forwarded-slot-consumer-shadow'];
+        expect(elm.innerHTML).toEqual(
+            process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
+                ? // innerHTML in native shadow only renders the order of the slotted content but not the slot order
+                  `<x-forward-light-slot-to-shadow><x-shadow-container><p slot="lower">Upper slot content forwarded</p><p>Default slot forwarded</p><p slot="upper">Lower slot content forwarded</p></x-shadow-container></x-forward-light-slot-to-shadow>`
+                : `<x-forward-light-slot-to-shadow><x-shadow-container><slot name="upper"><p slot="upper">Lower slot content forwarded</p></slot><slot><p>Default slot forwarded</p></slot><slot name="lower"><p slot="lower">Upper slot content forwarded</p></slot></x-shadow-container></x-forward-light-slot-to-shadow>`
+        );
+
+        if (process.env.NATIVE_SHADOW) {
+            const nestedShadowSlot = elm.querySelector('x-shadow-container');
+            expect(nestedShadowSlot.shadowRoot.children.length).toBe(3);
+
+            const nestedShadowSlotChildren = extractDataIds(nestedShadowSlot);
+            const upperSlot = nestedShadowSlotChildren['upper-slot'].assignedNodes();
+            const defaultSlot = nestedShadowSlotChildren['default-slot'].assignedNodes();
+            const lowerSlot = nestedShadowSlotChildren['lower-slot'].assignedNodes();
+
+            expect(upperSlot.length).toEqual(1);
+            expect(defaultSlot.length).toEqual(1);
+            expect(lowerSlot.length).toEqual(1);
+
+            // order matches synthetic shadow
+            expect(upperSlot[0].innerHTML).toEqual('Lower slot content forwarded');
+            expect(defaultSlot[0].innerHTML).toEqual('Default slot forwarded');
+            expect(lowerSlot[0].innerHTML).toEqual('Upper slot content forwarded');
+        }
     });
 
     it('should only generate empty text nodes for APIVersion >=60', async () => {

@@ -1,0 +1,7 @@
+<template lwc:render-mode="light">
+    <x-shadow-container>
+        <slot slot="lower" name="upper"></slot>
+        <slot>Default slot not yet forwarded</slot>
+        <slot slot="upper" name="lower"></slot>
+    </x-shadow-container>
+</template>
