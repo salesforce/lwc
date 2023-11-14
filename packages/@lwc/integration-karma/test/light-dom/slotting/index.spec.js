@@ -68,7 +68,7 @@ describe('Slotting', () => {
 
         const expected = process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
             ? '<x-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></x-shadow-container>'
-            : '<x-shadow-container><slot name="upper"></slot><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot><slot name="lower"></slot></x-shadow-container>';
+            : '<x-shadow-container><slot name="upper" data-id="upper-slot"></slot><slot data-id="default-slot"><p data-id="light-consumer-text">Hello from Light DOM</p></slot><slot name="lower" data-id="lower-slot"></slot></x-shadow-container>';
         expect(nodes['x-light-consumer'].innerHTML).toEqual(expected);
     });
 
@@ -131,7 +131,7 @@ describe('Slotting', () => {
             process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
                 ? // innerHTML in native shadow only renders the order of the slotted content but not the slot order
                   `<x-forward-light-slot-to-shadow><x-shadow-container><p slot="lower">Upper slot content forwarded</p><p>Default slot forwarded</p><p slot="upper">Lower slot content forwarded</p></x-shadow-container></x-forward-light-slot-to-shadow>`
-                : `<x-forward-light-slot-to-shadow><x-shadow-container><slot name="upper"><p slot="upper">Lower slot content forwarded</p></slot><slot><p>Default slot forwarded</p></slot><slot name="lower"><p slot="lower">Upper slot content forwarded</p></slot></x-shadow-container></x-forward-light-slot-to-shadow>`
+                : `<x-forward-light-slot-to-shadow><x-shadow-container><slot name="upper" data-id="upper-slot"><p slot="upper">Lower slot content forwarded</p></slot><slot data-id="default-slot"><p>Default slot forwarded</p></slot><slot name="lower" data-id="lower-slot"><p slot="lower">Upper slot content forwarded</p></slot></x-shadow-container></x-forward-light-slot-to-shadow>`
         );
 
         if (process.env.NATIVE_SHADOW) {
