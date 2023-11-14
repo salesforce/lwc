@@ -24,7 +24,7 @@
         "@lwc/rollup-plugin": "5.0.1",
         "@lwc/synthetic-shadow": "5.0.1",
         "chokidar": "^3.5.3",
-        "istanbul-lib-coverage": "^3.2.0",
+        "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",
         "istanbul-reports": "^3.1.6",
         "karma": "^6.4.2",
