@@ -99,7 +99,6 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     data: VElementData;
     elm: Element | undefined;
     key: Key;
-    slotName: string | number | boolean | null | undefined;
 }
 
 export interface VElement extends VBaseElement {

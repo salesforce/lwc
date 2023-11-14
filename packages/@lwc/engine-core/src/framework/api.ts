@@ -161,7 +161,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key, attrs } = data;
+    const { key } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -170,7 +170,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         children,
         elm: undefined,
         key,
-        slotName: attrs?.slot,
         owner: vmBeingRendered,
     };
 
@@ -255,11 +254,21 @@ function s(
                     }
                 } else {
                     if (isVBaseElement(vnode)) {
-                        // Note, light DOM slots directly return the children as the slotted content and skips creating
-                        // a slot vnode.
-                        // In the absence of a slot element, we stamp the slotName of each child to identify which slot
-                        // the children should be slotted into going forward as part of allocateInSlot.
-                        vnode.slotName = data.attrs?.slot;
+                        const { renderMode } = getVMBeingRendered()!;
+                        if (renderMode === RenderMode.Light) {
+                            // Note, light DOM slots directly return the children of the slotted content and skips creating
+                            // a slot vnode/element.
+                            // In the absence of a slot element, we replace the slot attribute on the element with the one identified
+                            // on the slot element in order to preserve the slot mapping across nested slots.
+                            // ex: <slot slot="slotName"></slot>, data.attrs.slot => "slotName"
+                            const slotName = data.attrs?.slot;
+                            if (vnode.data.attrs?.slot !== slotName) {
+                                vnode.data = {
+                                    ...vnode.data,
+                                    attrs: { ...vnode.data.attrs, slot: slotName },
+                                };
+                            }
+                        }
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
@@ -333,7 +342,7 @@ function c(
             });
         }
     }
-    const { key, attrs } = data;
+    const { key } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -342,7 +351,6 @@ function c(
         children,
         elm,
         key,
-        slotName: attrs?.slot,
 
         ctor: Ctor,
         owner: vmBeingRendered,
