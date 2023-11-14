@@ -20,8 +20,7 @@ module.exports = {
     // https://github.com/salesforce/best/commit/6190687cce0559f1ed7678d70763c911a0f96610
     metrics: ['script'],
     plugins: [
-        // Best is currently using an older version of Rollup, so we use an older @rollup/plugin-node-resolve
-        '@lwc/rollup-plugin-node-resolve-legacy',
+        '@rollup/plugin-node-resolve',
         [
             '@rollup/plugin-replace',
             {
