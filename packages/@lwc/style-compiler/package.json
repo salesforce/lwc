@@ -49,6 +49,6 @@
         "string.prototype.matchall": "^4.0.10"
     },
     "devDependencies": {
-        "@types/string.prototype.matchall": "^4.0.0"
+        "@types/string.prototype.matchall": "^4.0.3"
     }
 }
