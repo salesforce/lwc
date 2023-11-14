@@ -307,7 +307,7 @@ export function functionExpression(
 }
 
 export function functionDeclaration(
-    id: null | t.Identifier,
+    id: t.Identifier,
     params: t.FunctionDeclaration['params'],
     body: t.FunctionDeclaration['body'],
     config?: Partial<t.FunctionDeclaration>
