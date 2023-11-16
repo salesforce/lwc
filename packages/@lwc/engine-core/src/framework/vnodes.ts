@@ -17,10 +17,18 @@ export const enum VNodeType {
     CustomElement,
     Static,
     Fragment,
+    ScopedSlotFragment,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement | VStatic | VFragment;
-export type VParentElement = VElement | VCustomElement | VFragment;
+export type VNode =
+    | VText
+    | VComment
+    | VElement
+    | VCustomElement
+    | VStatic
+    | VFragment
+    | VScopedSlotFragment;
+
 export type VNodes = Readonly<Array<VNode | null>>;
 
 export interface BaseVParent {
@@ -35,11 +43,26 @@ export interface BaseVNode {
     owner: VM;
 }
 
+export interface VScopedSlotFragment extends BaseVNode {
+    factory: (value: any, key: any) => VFragment;
+    type: VNodeType.ScopedSlotFragment;
+    slotName: unknown;
+}
+
+export interface VStaticPart {
+    readonly partId: number;
+    readonly data: VStaticPartData;
+    elm: Element | undefined;
+}
+export type VStaticPartData = Pick<VElementData, 'on' | 'ref'>;
+
 export interface VStatic extends BaseVNode {
-    type: VNodeType.Static;
-    sel: undefined;
-    key: Key;
-    fragment: Element;
+    readonly type: VNodeType.Static;
+    readonly sel: undefined;
+    readonly key: Key;
+    readonly fragment: Element;
+    readonly parts: VStaticPart[] | undefined;
+    elm: Element | undefined;
 }
 
 export interface VFragment extends BaseVNode, BaseVParent {
@@ -51,6 +74,10 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
     // which diffing strategy to use.
     stable: 0 | 1;
+    // The leading and trailing nodes are text nodes when APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS
+    // is disabled and comment nodes when it is enabled.
+    leading: VText | VComment;
+    trailing: VText | VComment;
 }
 
 export interface VText extends BaseVNode {
@@ -90,7 +117,7 @@ export interface VNodeData {
     // All props are readonly because VElementData may be shared across VNodes
     // due to hoisting optimizations
     readonly props?: Readonly<Record<string, any>>;
-    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean | null | undefined>>;
     readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
@@ -99,13 +126,14 @@ export interface VNodeData {
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
     readonly renderer?: RendererAPI;
-    readonly spread?: Readonly<Record<string, any>>;
 }
 
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly external?: boolean;
     readonly ref?: string;
+    readonly slotData?: any;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
@@ -117,6 +145,14 @@ export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
     return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
-export function isVCustomElement(vnode: VBaseElement): vnode is VCustomElement {
+export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
     return vnode.type === VNodeType.CustomElement;
+}
+
+export function isVFragment(vnode: VNode): vnode is VFragment {
+    return vnode.type === VNodeType.Fragment;
+}
+
+export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
+    return vnode.type === VNodeType.ScopedSlotFragment;
 }

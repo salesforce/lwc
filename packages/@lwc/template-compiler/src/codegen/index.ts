@@ -6,8 +6,8 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
-import { generateCompilerError, TemplateErrors } from '@lwc/errors';
+import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
+import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
     isComment,
@@ -30,6 +30,10 @@ import {
     isSpreadDirective,
     isElement,
     isElseifBlock,
+    isExternalComponent,
+    isScopedSlotFragment,
+    isSlotBindDirective,
+    isLwcIsDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -47,6 +51,8 @@ import {
     ForOf,
     BaseElement,
     ElseifBlock,
+    ScopedSlotFragment,
+    StaticElement,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -63,7 +69,6 @@ import {
     identifierFromComponentName,
     objectToAST,
     shouldFlatten,
-    memorizeHandler,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -72,24 +77,30 @@ import {
 import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
+    const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
-            return codeGen.genHoistedElement(element, slotParentName);
+            return codeGen.genStaticElement(element as StaticElement, slotParentName);
         }
 
         const children = transformChildren(element);
 
-        // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = element.directives.find(isDynamicDirective);
+        // lwc:dynamic directive
+        const deprecatedDynamicDirective = element.directives.find(isDynamicDirective);
+        // lwc:is directive
+        const dynamicDirective = element.directives.find(isLwcIsDirective);
 
-        if (dynamic) {
-            const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
+        if (deprecatedDynamicDirective) {
+            const expression = codeGen.bindExpression(deprecatedDynamicDirective.value);
+            res = codeGen.genDeprecatedDynamicElement(name, expression, databag, children);
+        } else if (dynamicDirective) {
+            const expression = codeGen.bindExpression(dynamicDirective.value);
+            res = codeGen.genDynamicElement(expression, databag, children);
         } else if (isComponent(element)) {
             res = codeGen.genCustomElement(
                 name,
@@ -159,6 +170,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
                 res.push(transformConditionalParentBlock(child));
+            } else if (isScopedSlotFragment(child)) {
+                res.push(transformScopedSlotFragment(child));
             }
         }
 
@@ -171,6 +184,39 @@ function transform(codeGen: CodeGen): t.Expression {
         } else {
             return t.arrayExpression(res);
         }
+    }
+
+    function transformScopedSlotFragment(scopedSlotFragment: ScopedSlotFragment): t.Expression {
+        const {
+            slotName,
+            slotData: { value: dataIdentifier },
+        } = scopedSlotFragment;
+        codeGen.beginScope();
+        codeGen.declareIdentifier(dataIdentifier);
+
+        // At runtime, the 'key' of the <slot> element will be propagated to the fragment vnode
+        // produced by the ScopedSlotFactory
+        const key = t.identifier('key');
+        codeGen.declareIdentifier(key);
+
+        const fragment = codeGen.genFragment(key, transformChildren(scopedSlotFragment));
+        codeGen.endScope();
+
+        // The factory is invoked with two parameters:
+        // 1. The value of the binding specified in lwc:slot-bind directive
+        // 2. The key to be applied to the fragment vnode, this will be used for diffing
+        const slotFragmentFactory = t.functionExpression(
+            null,
+            [dataIdentifier, key],
+            t.blockStatement([t.returnStatement(fragment)])
+        );
+        let slotNameTransformed: t.Expression | t.SimpleLiteral;
+        if (t.isLiteral(slotName)) {
+            slotNameTransformed = t.literal(slotName.value);
+        } else {
+            slotNameTransformed = codeGen.bindExpression(slotName);
+        }
+        return codeGen.getScopedSlotFactory(slotFragmentFactory, slotNameTransformed);
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
@@ -386,15 +432,18 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(expression);
             }
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    codeGen.genScopedFragId(expression),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        codeGen.genScopedFragId(expression),
+                    ]);
+                }
+                return codeGen.genScopedFragId(expression);
             }
 
             return expression;
@@ -425,17 +474,22 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(attrValue.value);
             }
 
-            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
-                codeGen.usedLwcApis.add('sanitizeAttribute');
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                // apply the fragment id tranformation if necessary
+                const value = isFragmentOnlyUrl(attrValue.value)
+                    ? codeGen.genScopedFragId(attrValue.value)
+                    : t.literal(attrValue.value);
+                if (addLegacySanitizationHook) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                return t.callExpression(t.identifier('sanitizeAttribute'), [
-                    t.literal(elmName),
-                    t.literal(namespace),
-                    t.literal(attrName),
-                    isFragmentOnlyUrl(attrValue.value)
-                        ? codeGen.genScopedFragId(attrValue.value)
-                        : t.literal(attrValue.value),
-                ]);
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.literal(elmName),
+                        t.literal(namespace),
+                        t.literal(attrName),
+                        value,
+                    ]);
+                }
+                return value;
             }
 
             return t.literal(attrValue.value);
@@ -457,6 +511,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const ref = element.directives.find(isRefDirective);
         const spread = element.directives.find(isSpreadDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
+        const slotBindDirective = element.directives.find(isSlotBindDirective);
 
         // Attributes
         if (attributes.length) {
@@ -537,10 +592,15 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Properties: lwc:ref directive
         if (ref) {
-            data.push(t.property(t.identifier('ref'), ref.value));
-            codeGen.hasRefs = true;
+            data.push(codeGen.genRef(ref));
         }
 
+        // Properties: lwc:spread directive
+        if (spread) {
+            // spread goes last, so it can be used to override any other properties
+            propsObj.properties.push(t.spreadElement(codeGen.bindExpression(spread.value)));
+            instrumentation?.incrementCounter(CompilerMetrics.LWCSpreadDirective);
+        }
         if (propsObj.properties.length) {
             data.push(t.property(t.identifier('props'), propsObj));
         }
@@ -554,10 +614,6 @@ function transform(codeGen: CodeGen): t.Expression {
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
-        }
-
-        if (spread) {
-            data.push(t.property(t.identifier('spread'), codeGen.bindExpression(spread.value)));
         }
 
         // Key property on VNode
@@ -583,16 +639,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            const listenerObj = Object.fromEntries(
-                listeners.map((listener) => [listener.name, listener])
-            );
-            const listenerObjAST = objectToAST(listenerObj, (key) => {
-                const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
-                const handler = codeGen.genBind(componentHandler);
-
-                return memorizeHandler(codeGen, componentHandler, handler);
-            });
-            data.push(t.property(t.identifier('on'), listenerObjAST));
+            data.push(codeGen.genEventListeners(listeners));
         }
 
         // SVG handling
@@ -603,6 +650,19 @@ function transform(codeGen: CodeGen): t.Expression {
         if (addSanitizationHook) {
             codeGen.usedLwcApis.add(RENDERER);
             data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
+        }
+
+        if (!isUndefined(slotBindDirective)) {
+            data.push(
+                t.property(
+                    t.identifier('slotData'),
+                    codeGen.bindExpression(slotBindDirective.value)
+                )
+            );
+        }
+
+        if (isExternalComponent(element)) {
+            data.push(t.property(t.identifier('external'), t.literal(true)));
         }
 
         return t.objectExpression(data);

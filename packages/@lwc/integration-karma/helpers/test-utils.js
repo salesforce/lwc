@@ -63,7 +63,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-    function consoleDevMatcherFactory(methodName, internalMethodName) {
+    function consoleDevMatcherFactory(methodName, expectInProd) {
         return function consoleDevMatcher() {
             return {
                 negativeCompare: function negativeCompare(actual) {
@@ -74,7 +74,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (arg) {
                             return '"' + formatConsoleCall(arg) + '"';
@@ -126,16 +126,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var callsArgs = spy.calls[methodName];
                     var formattedCalls = callsArgs
                         .map(function (callArgs) {
                             return '"' + formatConsoleCall(callArgs) + '"';
                         })
                         .join(', ');
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (callsArgs.length !== 0) {
-                            fail(
+                            return fail(
                                 'Expected console.' +
                                     methodName +
                                     ' to never called in production mode, but it was called ' +
@@ -192,7 +192,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
-    function errorMatcherFactory(errorListener) {
+    function errorMatcherFactory(errorListener, expectInProd) {
         return function toThrowError() {
             return {
                 compare: function (actual, expectedErrorCtor, expectedMessage) {
@@ -245,7 +245,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
                     var thrown = errorListener(actual);
 
-                    if (process.env.NODE_ENV === 'production') {
+                    if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
                             return fail(
                                 'Expected function not to throw an error in production mode, but it threw ' +
@@ -320,7 +320,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
     // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
     //    only be caught with window.addEventListener('error')
-    function customElementConnectedErrorListener(callback) {
+    //      - Note native lifecycle callbacks are all thrown asynchronously.
+    function customElementCallbackReactionErrorListener(callback) {
         return window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
             ? windowErrorListener(callback)
             : directErrorListener(callback);
@@ -328,9 +329,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     var customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
+        toLogError: consoleDevMatcherFactory('error', true),
         toLogWarningDev: consoleDevMatcherFactory('warn'),
         toThrowErrorDev: errorMatcherFactory(directErrorListener),
-        toThrowConnectedError: errorMatcherFactory(customElementConnectedErrorListener),
+        toThrowCallbackReactionErrorDev: errorMatcherFactory(
+            customElementCallbackReactionErrorListener
+        ),
+        toThrowCallbackReactionError: errorMatcherFactory(
+            customElementCallbackReactionErrorListener,
+            true
+        ),
     };
 
     beforeAll(function () {
@@ -403,7 +411,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         register = {};
     }
 
-    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
+    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
     // filters this node.
     function getHostChildNodes(host) {
         return Array.prototype.slice.call(host.childNodes).filter(function (n) {
@@ -442,6 +450,103 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         }
     }
 
+    // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
+    var ariaPropertiesMapping = {
+        ariaAutoComplete: 'aria-autocomplete',
+        ariaChecked: 'aria-checked',
+        ariaCurrent: 'aria-current',
+        ariaDisabled: 'aria-disabled',
+        ariaExpanded: 'aria-expanded',
+        ariaHasPopup: 'aria-haspopup',
+        ariaHidden: 'aria-hidden',
+        ariaInvalid: 'aria-invalid',
+        ariaLabel: 'aria-label',
+        ariaLevel: 'aria-level',
+        ariaMultiLine: 'aria-multiline',
+        ariaMultiSelectable: 'aria-multiselectable',
+        ariaOrientation: 'aria-orientation',
+        ariaPressed: 'aria-pressed',
+        ariaReadOnly: 'aria-readonly',
+        ariaRequired: 'aria-required',
+        ariaSelected: 'aria-selected',
+        ariaSort: 'aria-sort',
+        ariaValueMax: 'aria-valuemax',
+        ariaValueMin: 'aria-valuemin',
+        ariaValueNow: 'aria-valuenow',
+        ariaValueText: 'aria-valuetext',
+        ariaLive: 'aria-live',
+        ariaRelevant: 'aria-relevant',
+        ariaAtomic: 'aria-atomic',
+        ariaBusy: 'aria-busy',
+        ariaActiveDescendant: 'aria-activedescendant',
+        ariaControls: 'aria-controls',
+        ariaDescribedBy: 'aria-describedby',
+        ariaFlowTo: 'aria-flowto',
+        ariaLabelledBy: 'aria-labelledby',
+        ariaOwns: 'aria-owns',
+        ariaPosInSet: 'aria-posinset',
+        ariaSetSize: 'aria-setsize',
+        ariaColCount: 'aria-colcount',
+        ariaColSpan: 'aria-colspan',
+        ariaColIndex: 'aria-colindex',
+        ariaColIndexText: 'aria-colindextext',
+        ariaDescription: 'aria-description',
+        ariaDetails: 'aria-details',
+        ariaErrorMessage: 'aria-errormessage',
+        ariaKeyShortcuts: 'aria-keyshortcuts',
+        ariaModal: 'aria-modal',
+        ariaPlaceholder: 'aria-placeholder',
+        ariaRoleDescription: 'aria-roledescription',
+        ariaRowCount: 'aria-rowcount',
+        ariaRowIndex: 'aria-rowindex',
+        ariaRowIndexText: 'aria-rowindextext',
+        ariaRowSpan: 'aria-rowspan',
+        ariaBrailleLabel: 'aria-braillelabel',
+        ariaBrailleRoleDescription: 'aria-brailleroledescription',
+        role: 'role',
+    };
+
+    // See the README for @lwc/aria-reflection
+    var nonStandardAriaProperties = [
+        'ariaActiveDescendant',
+        'ariaControls',
+        'ariaDescribedBy',
+        'ariaDetails',
+        'ariaErrorMessage',
+        'ariaFlowTo',
+        'ariaLabelledBy',
+        'ariaOwns',
+    ];
+
+    // These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
+    // prototypes in https://github.com/salesforce/lwc/pull/3702
+    var nonPolyfilledAriaProperties = [
+        'ariaColIndexText',
+        'ariaBrailleLabel',
+        'ariaBrailleRoleDescription',
+        'ariaDescription',
+        'ariaRowIndexText',
+    ];
+
+    var ariaProperties = Object.keys(ariaPropertiesMapping);
+
+    // Can't use Object.values because we need to support IE11
+    var ariaAttributes = [];
+    for (let i = 0; i < ariaProperties.length; i++) {
+        ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
+    }
+
+    // Keep traversing up the prototype chain until a property descriptor is found
+    function getPropertyDescriptor(object, prop) {
+        do {
+            var descriptor = Object.getOwnPropertyDescriptor(object, prop);
+            if (descriptor) {
+                return descriptor;
+            }
+            object = Object.getPrototypeOf(object);
+        } while (object);
+    }
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -454,6 +559,12 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getHooks: getHooks,
         setHooks: setHooks,
         spyConsole: spyConsole,
-        customElementConnectedErrorListener: customElementConnectedErrorListener,
+        customElementCallbackReactionErrorListener: customElementCallbackReactionErrorListener,
+        ariaPropertiesMapping: ariaPropertiesMapping,
+        ariaProperties: ariaProperties,
+        ariaAttributes: ariaAttributes,
+        nonStandardAriaProperties: nonStandardAriaProperties,
+        nonPolyfilledAriaProperties: nonPolyfilledAriaProperties,
+        getPropertyDescriptor: getPropertyDescriptor,
     };
 })(LWC, jasmine, beforeAll);

@@ -1,0 +1,9 @@
+<template>
+    {title}
+    <x-list>
+        <template lwc:slot-data="item">
+            <div>{label}</div>
+            <span>{item.id} - {item.name}</span>
+        </template>
+    </x-list>
+</template>

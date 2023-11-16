@@ -10,24 +10,26 @@
  */
 import {
     ArraySlice,
+    ArrayIndexOf,
     create,
     defineProperties,
     defineProperty,
     freeze,
     getOwnPropertyNames,
-    isFunction,
+    getOwnPropertyDescriptors,
     isUndefined,
     seal,
-    setPrototypeOf,
     keys,
     htmlPropertyToAttribute,
+    isNull,
 } from '@lwc/shared';
-
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
+import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
-import { HTMLElementConstructor } from './html-element';
+import { HTMLElementConstructor, HTMLElementPrototype } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { isAttributeLocked } from './attributes';
+import { LightningElement } from './base-lightning-element';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -101,16 +103,28 @@ function createAttributeChangedCallback(
             }
             return;
         }
-        if (!isAttributeLocked(this, attrName)) {
-            // Ignore changes triggered by the engine itself during:
-            // * diffing when public props are attempting to reflect to the DOM
-            // * component via `this.setAttribute()`, should never update the prop
-            // Both cases, the setAttribute call is always wrapped by the unlocking of the
-            // attribute to be changed
-            return;
-        }
         // Reflect attribute change to the corresponding property when changed from outside.
         (this as any)[propName] = newValue;
+    };
+}
+
+function createAccessorThatWarns(propName: string) {
+    let prop: any;
+    return {
+        get() {
+            logWarn(
+                `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
+            );
+            return prop;
+        },
+        set(value: any) {
+            logWarn(
+                `The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`
+            );
+            prop = value;
+        },
+        enumerable: true,
+        configurable: true,
     };
 }
 
@@ -121,45 +135,49 @@ export interface HTMLElementConstructor {
 
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
-    props: string[],
-    methods: string[]
+    publicProperties: string[],
+    methods: string[],
+    observedFields: string[],
+    proto: LightningElement | null,
+    hasCustomSuperClass: boolean
 ): HTMLElementConstructor {
-    let HTMLBridgeElement;
-    /**
-     * Modern browsers will have all Native Constructors as regular Classes
-     * and must be instantiated with the new keyword. In older browsers,
-     * specifically IE11, those are objects with a prototype property defined,
-     * since they are not supposed to be extended or instantiated with the
-     * new keyword. This forking logic supports both cases, specifically because
-     * wc.ts relies on the construction path of the bridges to create new
-     * fully qualifying web components.
-     */
-    if (isFunction(SuperClass)) {
-        HTMLBridgeElement = class extends SuperClass {};
-    } else {
-        HTMLBridgeElement = function () {
-            // Bridge classes are not supposed to be instantiated directly in
-            // browsers that do not support web components.
-            throw new TypeError('Illegal constructor');
-        };
-        // prototype inheritance dance
-        setPrototypeOf(HTMLBridgeElement, SuperClass as any);
-        setPrototypeOf(HTMLBridgeElement.prototype, (SuperClass as any).prototype);
-        defineProperty(HTMLBridgeElement.prototype, 'constructor', {
-            writable: true,
-            configurable: true,
-            value: HTMLBridgeElement,
-        });
-    }
+    const HTMLBridgeElement = class extends SuperClass {};
     // generating the hash table for attributes to avoid duplicate fields and facilitate validation
     // and false positives in case of inheritance.
     const attributeToPropMap: Record<string, string> = create(null);
     const { attributeChangedCallback: superAttributeChangedCallback } = SuperClass.prototype as any;
     const { observedAttributes: superObservedAttributes = [] } = SuperClass as any;
     const descriptors: PropertyDescriptorMap = create(null);
+
+    // present a hint message so that developers are aware that they have not decorated property with @api
+    if (process.env.NODE_ENV !== 'production') {
+        // TODO [#3761]: enable for components that don't extend from LightningElement
+        if (!isUndefined(proto) && !isNull(proto) && !hasCustomSuperClass) {
+            const nonPublicPropertiesToWarnOn = new Set(
+                [
+                    // getters, setters, and methods
+                    ...keys(getOwnPropertyDescriptors(proto)),
+                    // class properties
+                    ...observedFields,
+                ]
+                    // we don't want to override HTMLElement props because these are meaningful in other ways,
+                    // and can break tooling that expects it to be iterable or defined, e.g. Jest:
+                    // https://github.com/jestjs/jest/blob/b4c9587/packages/pretty-format/src/plugins/DOMElement.ts#L95
+                    // It also doesn't make sense to override e.g. "constructor".
+                    .filter((propName) => !(propName in HTMLElementPrototype))
+            );
+
+            for (const propName of nonPublicPropertiesToWarnOn) {
+                if (ArrayIndexOf.call(publicProperties, propName) === -1) {
+                    descriptors[propName] = createAccessorThatWarns(propName);
+                }
+            }
+        }
+    }
+
     // expose getters and setters for each public props on the new Element Bridge
-    for (let i = 0, len = props.length; i < len; i += 1) {
-        const propName = props[i];
+    for (let i = 0, len = publicProperties.length; i < len; i += 1) {
+        const propName = publicProperties[i];
         attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
         descriptors[propName] = {
             get: createGetter(propName),
@@ -177,6 +195,7 @@ export function HTMLBridgeElementFactory(
             configurable: true,
         };
     }
+
     // creating a new attributeChangedCallback per bridge because they are bound to the corresponding
     // map of attributes to props. We do this after all other props and methods to avoid the possibility
     // of getting overrule by a class declaration in user-land, and we make it non-writable, non-configurable
@@ -184,6 +203,42 @@ export function HTMLBridgeElementFactory(
     descriptors.attributeChangedCallback = {
         value: createAttributeChangedCallback(attributeToPropMap, superAttributeChangedCallback),
     };
+
+    // To avoid leaking private component details, accessing internals from outside a component is not allowed.
+    descriptors.attachInternals = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
+        get() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'attachInternals cannot be accessed outside of a component. Use this.attachInternals instead.'
+                );
+            }
+        },
+    };
+
+    descriptors.formAssociated = {
+        set() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+                );
+            }
+        },
+        get() {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    'formAssociated cannot be accessed outside of a component. Set the value within the component class.'
+                );
+            }
+        },
+    };
+
     // Specify attributes for which we want to reflect changes back to their corresponding
     // properties via attributeChangedCallback.
     defineProperty(HTMLBridgeElement, 'observedAttributes', {
@@ -198,8 +253,26 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    []
+    [],
+    [],
+    null,
+    false
 );
+
+if (process.env.IS_BROWSER) {
+    // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
+    // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
+    // ARIA props outside the LightningElement
+    //
+    // Apply ARIA reflection to HTMLBridgeElement.prototype. This allows `elm.aria*` property accessors to work from
+    // outside a component, and to reflect `aria-*` attrs. This is especially important because the template compiler
+    // compiles aria-* attrs on components to aria* props.
+    // Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+    //
+    // Also note that we apply this to BaseBridgeElement.prototype to avoid excessively redefining property
+    // accessors inside the HTMLBridgeElementFactory.
+    applyAriaReflection(BaseBridgeElement.prototype);
+}
 
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);

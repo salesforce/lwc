@@ -4,23 +4,27 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { APIFeature, APIVersion, HTML_NAMESPACE, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
+import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
-    isParentNode,
-    isSlot,
-    isForBlock,
     isBaseElement,
-    isIf,
-    isElement,
-    isText,
     isComment,
     isConditionalParentBlock,
+    isElement,
+    isForBlock,
+    isIf,
+    isParentNode,
+    isSlot,
+    isText,
 } from '../shared/ast';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
-
-import { isLiteral } from '../shared/estree';
+import {
+    STATIC_SAFE_DIRECTIVES,
+    TEMPLATE_FUNCTION_NAME,
+    TEMPLATE_PARAMS,
+} from '../shared/constants';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -65,8 +69,13 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
         return (
             // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
-            // light DOM slots
-            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
+            // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+            (!isAPIFeatureEnabled(
+                APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+                codeGen.apiVersion
+            ) &&
+                isSlot(child) &&
+                codeGen.renderMode === LWCDirectiveRenderMode.light) ||
             // If node is only a control flow node and does not map to a stand alone element.
             // Search children to determine if it should be flattened.
             (isIf(child) && shouldFlatten(codeGen, child.children))
@@ -217,13 +226,23 @@ export function parseClassNames(classNames: string): string[] {
         .filter((className) => className.length);
 }
 
-function isStaticNode(node: BaseElement): boolean {
+function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     let result = true;
-    const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+    const { name: nodeName, namespace = '', attributes, directives, properties } = node;
 
+    // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
+    // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
+    if (
+        !isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion) &&
+        namespace !== HTML_NAMESPACE
+    ) {
+        return false;
+    }
+
+    // it is an element
     result &&= isElement(node);
 
-    // it is an element.
+    // all attrs are static-safe
     result &&= attributes.every(({ name, value }) => {
         return (
             isLiteral(value) &&
@@ -240,10 +259,13 @@ function isStaticNode(node: BaseElement): boolean {
                 isFragmentOnlyUrl(value.value as string)
             )
         );
-    }); // all attrs are static
-    result &&= directives.length === 0; // do not have any directive
-    result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
-    result &&= listeners.length === 0; // do not have any event listener
+    });
+
+    // all directives are static-safe
+    result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
+
+    // all properties are static
+    result &&= properties.every((prop) => isLiteral(prop.value));
 
     return result;
 }
@@ -261,7 +283,7 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
         node.children.forEach((childNode) => {
             collectStaticNodes(childNode, staticNodes, state);
 
-            childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+            childrenAreStatic &&= staticNodes.has(childNode);
         });
 
         // for IfBlock and ElseifBlock, traverse down the else branch
@@ -270,7 +292,9 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
         }
 
         nodeIsStatic =
-            isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);
+            isBaseElement(node) &&
+            !isCustomRendererHookRequired(node, state) &&
+            isStaticNode(node, state.config.apiVersion);
     }
 
     if (nodeIsStatic && childrenAreStatic) {

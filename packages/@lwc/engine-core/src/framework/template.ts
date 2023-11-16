@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayIndexOf,
     ArrayUnshift,
     assert,
     create,
@@ -30,7 +29,7 @@ import {
     TemplateCache,
     VM,
 } from './vm';
-import { EmptyArray } from './utils';
+import { assertNotProd } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
@@ -52,6 +51,9 @@ export interface Template {
     stylesheets?: TemplateStylesheetFactories;
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
+    /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
+    // TODO [#3733]: remove support for legacy scope tokens
+    legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
     /** True if this template contains template refs, undefined or false otherwise */
@@ -68,57 +70,50 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-function validateSlots(vm: VM, html: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
+function validateSlots(vm: VM) {
+    assertNotProd(); // this method should never leak to prod
 
     const { cmpSlots } = vm;
-    const { slots = EmptyArray } = html;
 
-    for (const slotName in cmpSlots) {
+    for (const slotName in cmpSlots.slotAssignments) {
         // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
         assert.isTrue(
-            isArray(cmpSlots[slotName]),
+            isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
+                cmpSlots.slotAssignments[slotName]
             )} for slot "${slotName}" in ${vm}.`
         );
-
-        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO [#1297]: this should never really happen because the compiler should always validate
-            // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
-            logError(
-                `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
-                vm
-            );
-        }
     }
 }
 
 function validateLightDomTemplate(template: Template, vm: VM) {
-    if (template === defaultEmptyTemplate) return;
+    assertNotProd(); // should never leak to prod mode
+    if (template === defaultEmptyTemplate) {
+        return;
+    }
     if (vm.renderMode === RenderMode.Light) {
-        assert.isTrue(
-            template.renderMode === 'light',
-            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                vm
-            )}.`
-        );
+        if (template.renderMode !== 'light') {
+            logError(
+                `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
+                    vm
+                )}.`
+            );
+        }
     } else {
-        assert.isTrue(
-            isUndefined(template.renderMode),
-            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                vm
-            )} or set it to 'lwc:render-mode="shadow"`
-        );
+        if (!isUndefined(template.renderMode)) {
+            logError(
+                `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
+                    vm
+                )} or set it to 'lwc:render-mode="shadow"`
+            );
+        }
     }
 }
 
 const enum FragmentCache {
     HAS_SCOPED_STYLE = 1 << 0,
     SHADOW_MODE_SYNTHETIC = 1 << 1,
+    HAS_LEGACY_SCOPE_TOKEN = 1 << 2,
 }
 
 function buildParseFragmentFn(
@@ -129,12 +124,14 @@ function buildParseFragmentFn(
 
         return function (): Element {
             const {
-                context: { hasScopedStyles, stylesheetToken },
+                context: { hasScopedStyles, stylesheetToken, legacyStylesheetToken },
                 shadowMode,
                 renderer,
             } = getVMBeingRendered()!;
             const hasStyleToken = !isUndefined(stylesheetToken);
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
+            const hasLegacyToken =
+                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && !isUndefined(legacyStylesheetToken);
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
@@ -143,15 +140,26 @@ function buildParseFragmentFn(
             if (hasStyleToken && isSyntheticShadow) {
                 cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
             }
+            if (hasLegacyToken) {
+                // This isn't strictly required for prod, but it's required for our karma tests
+                // since the lwcRuntimeFlag may change over time
+                cacheKey |= FragmentCache.HAS_LEGACY_SCOPE_TOKEN;
+            }
 
             if (!isUndefined(cache[cacheKey])) {
                 return cache[cacheKey];
             }
 
-            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
+            // If legacy stylesheet tokens are required, then add them to the rendered string
+            const stylesheetTokenToRender =
+                stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
+
+            const classToken =
+                hasScopedStyles && hasStyleToken ? ' ' + stylesheetTokenToRender : '';
             const classAttrToken =
-                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
-            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
+                hasScopedStyles && hasStyleToken ? ` class="${stylesheetTokenToRender}"` : '';
+            const attrToken =
+                hasStyleToken && isSyntheticShadow ? ' ' + stylesheetTokenToRender : '';
 
             let htmlFragment = '';
             for (let i = 0, n = keys.length; i < n; i++) {
@@ -251,10 +259,13 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.tplCache = create(null);
 
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
-                    context.hasScopedStyles = computeHasScopedStyles(html);
+                    context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
-                    updateStylesheetToken(vm, html);
+                    updateStylesheetToken(vm, html, /* legacy */ false);
+                    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
+                        updateStylesheetToken(vm, html, /* legacy */ true);
+                    }
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
@@ -267,15 +278,10 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                 if (process.env.NODE_ENV !== 'production') {
                     // validating slots in every rendering since the allocated content might change over time
-                    validateSlots(vm, html);
+                    validateSlots(vm);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
                 }
-
-                // reset the refs; they will be set during the tmpl() instantiation
-                const hasRefVNodes = Boolean(html.hasRefs);
-                vm.hasRefVNodes = hasRefVNodes;
-                vm.refVNodes = hasRefVNodes ? create(null) : null;
 
                 // right before producing the vnodes, we clear up all internal references
                 // to custom elements from the template.
@@ -300,17 +306,17 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `Compiler should produce html functions that always return an array.`
-        );
+        if (!isArray(vnodes)) {
+            logError(`Compiler should produce html functions that always return an array.`);
+        }
     }
     return vnodes;
 }
 
-function computeHasScopedStyles(template: Template): boolean {
-    const { stylesheets } = template;
-    if (!isUndefined(stylesheets)) {
+function computeHasScopedStylesInStylesheets(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): boolean {
+    if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
                 return true;
@@ -318,4 +324,20 @@ function computeHasScopedStyles(template: Template): boolean {
         }
     }
     return false;
+}
+
+export function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
+    const { stylesheets } = template;
+    const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
+
+    return (
+        computeHasScopedStylesInStylesheets(stylesheets) ||
+        computeHasScopedStylesInStylesheets(vmStylesheets)
+    );
+}
+
+export function hasStyles(
+    stylesheets: TemplateStylesheetFactories | undefined | null
+): stylesheets is TemplateStylesheetFactories {
+    return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

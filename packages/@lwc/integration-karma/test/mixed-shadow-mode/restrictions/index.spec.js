@@ -12,12 +12,12 @@ describe('restrictions', () => {
         it('innerHTML', () => {
             expect(() => {
                 elm.setInnerHtmlOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set innerHTML on ShadowRoot.');
+            }).toLogErrorDev(/Invalid attempt to set innerHTML on ShadowRoot./);
         });
         it('textContent', () => {
             expect(() => {
                 elm.setTextContentOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set textContent on ShadowRoot.');
+            }).toLogErrorDev(/Invalid attempt to set textContent on ShadowRoot./);
         });
     });
 
@@ -25,17 +25,17 @@ describe('restrictions', () => {
         it('innerHTML', () => {
             expect(() => {
                 elm.innerHTML = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set innerHTML on HTMLElement.');
+            }).toLogErrorDev(/Invalid attempt to set innerHTML on HTMLElement./);
         });
         it('outerHTML', () => {
             expect(() => {
                 elm.outerHTML = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on HTMLElement.');
+            }).toLogErrorDev(/Invalid attempt to set outerHTML on HTMLElement./);
         });
         it('textContent', () => {
             expect(() => {
                 elm.textContent = '<div></div>';
-            }).toThrowError(TypeError, 'Invalid attempt to set textContent on HTMLElement.');
+            }).toLogErrorDev(/Invalid attempt to set textContent on HTMLElement./);
         });
         it('addEventListener', () => {
             expect(() => {
@@ -58,26 +58,53 @@ describe('restrictions', () => {
         it('get className', () => {
             expect(() => {
                 elm.getClassName();
-            }).toLogErrorDev(
-                'Error: [LWC error]: Accessing the global HTML property "className" is disabled.\n' +
-                    'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.\n'
-            );
+            }).not.toLogErrorDev();
         });
 
         it('set accessKeyLabel', () => {
             expect(() => {
                 elm.setAccessKeyLabel('foo');
-            }).toLogErrorDev(
-                'Error: [LWC error]: The global HTML property `accessKeyLabel` is read-only.\n'
-            );
+            }).not.toLogErrorDev();
         });
     });
 
     describe('Element', () => {
+        function throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot() {
+            // As of this writing (late 2022), Firefox does not throw here, but Chrome and Safari do.
+            // https://bugs.chromium.org/p/chromium/issues/detail?id=1403060
+            // https://bugs.webkit.org/show_bug.cgi?id=249737
+            try {
+                const container = document.createElement('div');
+                container.attachShadow({ mode: 'open' }).innerHTML = '<div></div>';
+                container.shadowRoot.querySelector('div').outerHTML = '';
+                return false;
+            } catch (e) {
+                return true;
+            }
+        }
+
         it('should throw on setting outerHTML', () => {
+            // Using two expect()s because one looks for errors, the other looks for logs
             expect(() => {
-                elm.shadowRoot.querySelector('div').outerHTML = '';
-            }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on Element.');
+                // eslint-disable-next-line jest/valid-expect
+                let expected = expect(() => {
+                    elm.shadowRoot.querySelector('div').outerHTML = '';
+                });
+
+                if (
+                    !(
+                        process.env.NATIVE_SHADOW &&
+                        throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot()
+                    )
+                ) {
+                    // Expect this to throw in native shadow when the browser throws an error for this case
+                    expected = expected.not;
+                }
+
+                expected.toThrowError(
+                    /Invalid attempt to set outerHTML on Element|This element's parent is of type '#document-fragment', which is not an element node|Cannot set outerHTML on element because its parent is not an Element/
+                );
+            }).toLogErrorDev(/Invalid attempt to set outerHTML on Element/);
         });
     });
 });

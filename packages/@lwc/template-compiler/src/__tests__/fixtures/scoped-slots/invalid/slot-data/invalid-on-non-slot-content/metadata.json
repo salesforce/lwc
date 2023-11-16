@@ -1,0 +1,59 @@
+{
+    "warnings": [
+        {
+            "code": 1176,
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 14,
+                "start": 24,
+                "length": 20
+            }
+        },
+        {
+            "code": 1176,
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 34,
+                "start": 140,
+                "length": 20
+            }
+        },
+        {
+            "code": 1176,
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
+            "level": 1,
+            "location": {
+                "line": 10,
+                "column": 32,
+                "start": 260,
+                "length": 20
+            }
+        },
+        {
+            "code": 1176,
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
+            "level": 1,
+            "location": {
+                "line": 14,
+                "column": 11,
+                "start": 352,
+                "length": 20
+            }
+        },
+        {
+            "code": 1176,
+            "message": "LWC1176: lwc:slot-data directive can be used on <template> elements only.",
+            "level": 1,
+            "location": {
+                "line": 18,
+                "column": 11,
+                "start": 442,
+                "length": 20
+            }
+        }
+    ]
+}

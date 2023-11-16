@@ -10,6 +10,7 @@ import { ParserDiagnostics, invariant } from '@lwc/errors';
 import * as t from '../shared/estree';
 import { NormalizedConfig } from '../config';
 import { Expression, Identifier, SourceLocation } from '../shared/types';
+import { validateExpressionAst } from './expression-complex';
 
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
@@ -17,12 +18,12 @@ import { isReservedES6Keyword } from './utils/javascript';
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
 
-const VALID_EXPRESSION_RE = /^{.+}$/;
 const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
 const WHITESPACES_RE = /\s/;
 
 export function isExpression(source: string): boolean {
-    return !!source.match(VALID_EXPRESSION_RE);
+    // Issue #3418: Legacy behavior, previous regex treated "{}" attribute value as non expression
+    return source[0] === '{' && source.slice(-1) === '}' && source.length > 2;
 }
 
 export function isPotentialExpression(source: string): boolean {
@@ -33,6 +34,11 @@ function validateExpression(
     node: t.BaseNode,
     config: NormalizedConfig
 ): asserts node is Expression {
+    // TODO [#3370]: remove experimental template expression flag
+    if (config.experimentalComplexExpressions) {
+        return validateExpressionAst(node);
+    }
+
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
@@ -97,9 +103,14 @@ export function parseExpression(
     source: string,
     location: SourceLocation
 ): Expression {
+    const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
         () => {
-            const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
+            const parsed = parseExpressionAt(source, 1, {
+                ecmaVersion,
+                // TODO [#3370]: remove experimental template expression flag
+                allowAwaitOutsideFunction: ctx.config.experimentalComplexExpressions,
+            });
 
             validateSourceIsParsedExpression(source, parsed);
             validateExpression(parsed, ctx.config);

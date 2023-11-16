@@ -1,0 +1,10 @@
+<template>
+    <!-- Custom element -->
+    <x-foo></x-foo>
+
+    <!-- Dynamic component (to be deprecated in 246) -->
+    <x-foo lwc:dynamic={dynamicCtor}></x-foo>
+
+    <!-- Dynamic component -->
+    <lwc:component lwc:is={ctor}></lwc:component>
+</template>

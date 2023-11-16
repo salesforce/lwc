@@ -23,25 +23,13 @@ export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(ElementDirectiveName));
 
-// These attributes take either an ID or a list of IDs as values.
-export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
-    'aria-activedescendant',
-    'aria-controls',
-    'aria-describedby',
-    'aria-details',
-    'aria-errormessage',
-    'aria-flowto',
-    'aria-labelledby',
-    'aria-owns',
-    'for',
-]);
-
 const ATTRIBUTE_NAME_CHAR = [
     ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-',
     '\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD',
     '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
 ].join('');
 
+// eslint-disable-next-line no-misleading-character-class
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
 export const SUPPORTED_SVG_TAGS = new Set([
@@ -116,14 +104,7 @@ export const SUPPORTED_SVG_TAGS = new Set([
     'use',
 ]);
 
-export const DISALLOWED_MATHML_TAGS = new Set([
-    'script',
-    'link',
-    'base',
-    'object',
-    'embed',
-    'meta',
-]);
+export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',
@@ -175,3 +156,6 @@ export const ATTR_NAME = {
     XLINK_HREF: 'xlink:href',
 };
 export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
+
+// TODO [#3370]: remove experimental template expression flag
+export const TMPL_EXPR_ECMASCRIPT_EDITION = 2022;

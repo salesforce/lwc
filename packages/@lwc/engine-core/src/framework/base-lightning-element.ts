@@ -14,12 +14,13 @@
  */
 import {
     AccessibleElementProperties,
-    assert,
     create,
     defineProperties,
     defineProperty,
     freeze,
+    hasOwnProperty,
     isFunction,
+    isString,
     isNull,
     isObject,
     isUndefined,
@@ -28,8 +29,9 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
@@ -45,16 +47,16 @@ import {
 } from './vm';
 import { componentValueObserved } from './mutation-tracker';
 import {
-    patchComponentWithRestrictions,
     patchShadowRootWithRestrictions,
     patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
-import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
+import { TemplateStylesheetFactories } from './stylesheet';
+import { instrumentInstance } from './runtime-instrumentation';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -68,20 +70,14 @@ function createBridgeToElementDescriptor(
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
-            );
-        }
-        throw new TypeError();
+        throw new TypeError(
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
+        );
     }
     if (!isFunction(set)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
-            );
-        }
-        throw new TypeError();
+        throw new TypeError(
+            `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
+        );
     }
     return {
         enumerable,
@@ -104,24 +100,28 @@ function createBridgeToElementDescriptor(
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
-                );
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `Failed to construct '${getComponentTag(
-                        vm
-                    )}': The result must not have attributes.`
-                );
-                assert.invariant(
-                    !isObject(newValue) || isNull(newValue),
-                    `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
-                );
+                if (isInvokingRender) {
+                    logError(
+                        `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
+                    );
+                }
+                if (isUpdatingTemplate) {
+                    logError(
+                        `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
+                    );
+                }
+                if (isBeingConstructed(vm)) {
+                    logError(
+                        `Failed to construct '${getComponentTag(
+                            vm
+                        )}': The result must not have attributes.`
+                    );
+                }
+                if (isObject(newValue) && !isNull(newValue)) {
+                    logError(
+                        `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
+                    );
+                }
             }
 
             updateComponentValue(vm, propName, newValue);
@@ -137,7 +137,9 @@ export interface LightningElementConstructor {
 
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
+    formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
+    stylesheets: TemplateStylesheetFactories;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -145,6 +147,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'attachInternals'
         | 'children'
         | 'childNodes'
         | 'classList'
@@ -166,6 +169,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'lang'
         | 'lastChild'
         | 'lastElementChild'
+        | 'ownerDocument'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
@@ -175,12 +179,11 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'setAttributeNS'
         | 'spellcheck'
         | 'tabIndex'
+        | 'tagName'
         | 'title'
     >;
 
 type RefNodes = { [name: string]: Element };
-
-const EMPTY_REFS: RefNodes = freeze(create(null));
 
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
@@ -192,6 +195,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     disconnectedCallback?(): void;
     renderedCallback?(): void;
     errorCallback?(error: any, stack: string): void;
+    formAssociatedCallback?(): void;
+    formResetCallback?(): void;
+    formDisabledCallback?(): void;
+    formStateRestoreCallback?(): void;
 }
 
 /**
@@ -204,8 +211,13 @@ export const LightningElement: LightningElementConstructor = function (
 ): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
-        throw new ReferenceError('Illegal constructor');
+        // Thrown when doing something like `new LightningElement()` or
+        // `class Foo extends LightningElement {}; new Foo()`
+        throw new TypeError('Illegal constructor');
     }
+
+    // This is a no-op unless Lightning DevTools are enabled.
+    instrumentInstance(this, vmBeingConstructed);
 
     const vm = vmBeingConstructed;
     const { def, elm } = vm;
@@ -250,7 +262,6 @@ export const LightningElement: LightningElementConstructor = function (
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
-        patchComponentWithRestrictions(component);
     }
 
     return this;
@@ -291,6 +302,92 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     }
 }
 
+// List of properties on ElementInternals that are formAssociated can be found in the spec:
+// https://html.spec.whatwg.org/multipage/custom-elements.html#form-associated-custom-elements
+const formAssociatedProps = new Set([
+    'setFormValue',
+    'form',
+    'setValidity',
+    'willValidate',
+    'validity',
+    'validationMessage',
+    'checkValidity',
+    'reportValidity',
+    'labels',
+]);
+
+// Verify that access to a form-associated property of the ElementInternals proxy has formAssociated set in the LWC.
+function verifyPropForFormAssociation(propertyKey: string | symbol, isFormAssociated: boolean) {
+    if (isString(propertyKey) && formAssociatedProps.has(propertyKey) && !isFormAssociated) {
+        //Note this error message mirrors Chrome and Firefox error messages, in Safari the error is slightly different.
+        throw new DOMException(
+            `Failed to execute '${propertyKey}' on 'ElementInternals': The target element is not a form-associated custom element.`
+        );
+    }
+}
+
+const elementInternalsAccessorAllowList = new Set(['shadowRoot', 'role', ...formAssociatedProps]);
+
+// Prevent access to properties not defined in the HTML spec in case browsers decide to
+// provide new APIs that provide access to form associated properties.
+// This can be removed along with UpgradeableConstructor.
+function isAllowedElementInternalAccessor(propertyKey: string | symbol) {
+    let isAllowedAccessor = false;
+    // As of this writing all ElementInternal property keys as described in the spec are implemented with strings
+    // in Chrome, Firefox, and Safari
+    if (isString(propertyKey)) {
+        // Allow list is based on HTML spec:
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#the-elementinternals-interface
+        isAllowedAccessor =
+            elementInternalsAccessorAllowList.has(propertyKey) || /^aria/.test(propertyKey);
+        if (!isAllowedAccessor && process.env.NODE_ENV !== 'production') {
+            logWarn('Only properties defined in the ElementInternals HTML spec are available.');
+        }
+    }
+
+    return isAllowedAccessor;
+}
+
+// Wrap all ElementInternal objects in a proxy to prevent form association when `formAssociated` is not set on an LWC.
+// This is needed because the 1UpgradeableConstructor1 always sets `formAssociated=true`, which means all
+// ElementInternal objects will have form-associated properties set when an LWC is placed in a form.
+// We are doing this to guard against customers taking a dependency on form elements being associated to ElementInternals
+// when 'formAssociated' has not been set on the LWC.
+function createElementInternalsProxy(
+    elementInternals: ElementInternals,
+    isFormAssociated: boolean
+) {
+    const elementInternalsProxy = new Proxy(elementInternals, {
+        set(target, propertyKey, newValue) {
+            if (isAllowedElementInternalAccessor(propertyKey)) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
+                return Reflect.set(target, propertyKey, newValue);
+            }
+            // As of this writing ElementInternals do not have non-string properties that can be set.
+            return false;
+        },
+        get(target, propertyKey) {
+            if (
+                // Pass through Object.prototype methods such as toString()
+                hasOwnProperty.call(Object.prototype, propertyKey) ||
+                // As of this writing, ElementInternals only uses Symbol.toStringTag which is called
+                // on Object.hasOwnProperty invocations
+                Symbol.for('Symbol.toStringTag') === propertyKey ||
+                // ElementInternals allow listed properties
+                isAllowedElementInternalAccessor(propertyKey)
+            ) {
+                // Verify that formAssociated is set for form associated properties
+                verifyPropForFormAssociation(propertyKey, isFormAssociated);
+                const propertyValue = Reflect.get(target, propertyKey);
+                return isFunction(propertyValue) ? propertyValue.bind(target) : propertyValue;
+            }
+        },
+    });
+
+    return elementInternalsProxy;
+}
+
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
@@ -317,18 +414,21 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
-            assert.invariant(
-                !isInvokingRender,
-                `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
-            );
-            assert.invariant(
-                !isUpdatingTemplate,
-                `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
-            );
-            assert.invariant(
-                isFunction(listener),
-                `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
-            );
+            if (isInvokingRender) {
+                logError(
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                );
+            }
+            if (isUpdatingTemplate) {
+                logError(
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
+                );
+            }
+            if (!isFunction(listener)) {
+                logError(
+                    `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
+                );
+            }
         }
 
         const wrappedListener = getWrappedComponentsListener(vm, listener);
@@ -374,9 +474,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = vm;
-        unlockAttribute(elm, name);
         removeAttribute(elm, name);
-        lockAttribute(elm, name);
     },
 
     removeAttributeNS(namespace: string | null, name: string): void {
@@ -384,9 +482,7 @@ LightningElement.prototype = {
             elm,
             renderer: { removeAttribute },
         } = getAssociatedVM(this);
-        unlockAttribute(elm, name);
         removeAttribute(elm, name, namespace);
-        lockAttribute(elm, name);
     },
 
     getAttribute(name: string): string | null {
@@ -411,15 +507,16 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct '${getComponentTag(
+                        vm
+                    )}': The result must not have attributes.`
+                );
+            }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value);
-        lockAttribute(elm, name);
     },
 
     setAttributeNS(namespace: string | null, name: string, value: string): void {
@@ -430,15 +527,16 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct '${getComponentTag(
+                        vm
+                    )}': The result must not have attributes.`
+                );
+            }
         }
 
-        unlockAttribute(elm, name);
         setAttribute(elm, name, value, namespace);
-        lockAttribute(elm, name);
     },
 
     getBoundingClientRect(): ClientRect {
@@ -453,6 +551,25 @@ LightningElement.prototype = {
         }
 
         return getBoundingClientRect(elm);
+    },
+
+    attachInternals(): ElementInternals {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            def: { formAssociated },
+            renderer: { attachInternals },
+        } = vm;
+
+        if (vm.shadowMode === ShadowMode.Synthetic) {
+            throw new Error(
+                'attachInternals API is not supported in light DOM or synthetic shadow.'
+            );
+        }
+
+        const internals = attachInternals(elm);
+        // #TODO[2970]: remove proxy once `UpgradeableConstructor` has been removed
+        return createElementInternalsProxy(internals, Boolean(formAssociated));
     },
 
     get isConnected(): boolean {
@@ -472,12 +589,11 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            // TODO [#1290]: this still fails in dev but works in production, eventually, we should
-            // just throw in all modes
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
-            );
+            if (isBeingConstructed(vm)) {
+                logError(
+                    `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
+                );
+            }
         }
 
         return getClassList(elm);
@@ -519,7 +635,7 @@ LightningElement.prototype = {
             warnIfInvokedDuringConstruction(vm, 'refs');
         }
 
-        const { refVNodes, hasRefVNodes, cmpTemplate } = vm;
+        const { refVNodes, cmpTemplate } = vm;
 
         // If the `cmpTemplate` is null, that means that the template has not been rendered yet. Most likely this occurs
         // if `this.refs` is called during the `connectedCallback` phase. The DOM elements have not been rendered yet,
@@ -543,15 +659,9 @@ LightningElement.prototype = {
         // were introduced, we return undefined if the template has no refs defined
         // anywhere. This fixes components that may want to add an expando called `refs`
         // and are checking if it exists with `if (this.refs)`  before adding it.
-        // Note it is not sufficient to just check if `refVNodes` is null or empty,
-        // because a template may have `lwc:ref` defined within a falsy `if:true` block.
-        if (!hasRefVNodes) {
-            return;
-        }
-        // For templates that are using `lwc:ref`, if there are no refs currently available
-        // (e.g. refs inside of a falsy `if:true` block), we return an empty object.
+        // Note we use a null refVNodes to indicate that the template has no refs defined.
         if (isNull(refVNodes)) {
-            return EMPTY_REFS;
+            return;
         }
 
         // The refNodes can be cached based on the refVNodes, since the refVNodes
@@ -641,6 +751,20 @@ LightningElement.prototype = {
         return renderer.getLastElementChild(vm.elm);
     },
 
+    get ownerDocument() {
+        const vm = getAssociatedVM(this);
+        const renderer = vm.renderer;
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'ownerDocument');
+        }
+        return renderer.ownerDocument(vm.elm);
+    },
+
+    get tagName() {
+        const { elm, renderer } = getAssociatedVM(this);
+        return renderer.getTagName(elm);
+    },
+
     render(): Template {
         const vm = getAssociatedVM(this);
         return vm.def.template;
@@ -691,6 +815,11 @@ for (const propName in HTMLElementOriginalDescriptors) {
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+
+// Apply ARIA reflection to LightningElement.prototype, on both the browser and server.
+// This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
+// Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+applyAriaReflection(LightningElement.prototype);
 
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {

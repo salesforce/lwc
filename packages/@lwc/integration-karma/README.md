@@ -30,12 +30,17 @@ Every time the test suite runs with the `COVERAGE=1` environment variable it pro
 
 This set of environment variables applies to the `start` and `test` commands:
 
--   **`COMPAT=1`:** Compile and deliver tests in COMPAT mode.
+-   **`LEGACY_BROWSERS=1`:** Run SauceLabs tests in legacy browsers.
 -   **`DISABLE_SYNTHETIC=1`:** Run without any synthetic shadow polyfill patches.
 -   **`FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1`:** Force tests to run in native shadow mode with synthetic shadow polyfill patches.
 -   **`ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1`:** Use native custom element lifecycle callbacks.
+-   **`ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1`:** ARIA string reflection as a global polyfill.
+-   **`NODE_ENV_FOR_TEST`**: Set the `NODE_ENV` to be used for the tests (at runtime, in the browser).
 -   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
+-   **`API_VERSION=<version>`:** API version to use when compiling.
+-   **`DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1`:** Disable synthetic shadow in the compiler itself.
+-   **`DISABLE_STATIC_CONTENT_OPTIMIZATION=1`:** Disable static content optimization by setting `enableStaticContentOptimization` to `false`.
 
 ## Examples
 
@@ -76,8 +81,6 @@ You can also pass in `--log-level=debug` to `karma` for debug logging.
     -   `toLogErrorDev(message)`: `expect` a function to log an error with a specific message in DEV only.
     -   `toThrowErrorDev(Error, message)`: `expect` a function to throw an error with a specific Error constructor and a specific message.
 -   Some of the test command options are available in the test suite on the global `process.env` object:
-    -   `process.env.COMPAT`: is set to `false` by default and `true` if the `COMPAT` environment
-        variable is set.
     -   `process.env.DISABLE_SYNTHETIC`: is set to `false` by default and `true` if the
         `DISABLE_SYNTHETIC` environment variable is set.
     -   `FORCE_NATIVE_SHADOW_MODE_FOR_TEST`: is set to `false` by default and `true` if the

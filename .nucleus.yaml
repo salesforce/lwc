@@ -9,47 +9,36 @@ branches:
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
-        - Guardrails/analyzer-framework
         - LightningMobileRuntime/ui-lmr-components
         - MobilePlatform/lds-debug-app
         - Trailhead-Platform/ui-trailhead-core-components
         - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
         - communities/shared-experience-components
-        - communities/talon-template-byo
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-commerce-components
-        - communities/ui-dxp-components
-        - communities/ui-feeds-components
         - communities/ui-lightning-community
-        - communities/webruntime
         - lwc/lwc-platform
         - nrkruk/lwc-dev-core
-        - omnistudio/ui-omniscript-components
         - ris-gpta/core_via_components
         - salesforce/builder-framework
-        - salesforce/lds-lightning-platform
-        - salesforce-experience-platform/luvio
-        - salesforce-experience-platform/lwr
+        - salesforce-experience-platform-emu/luvio
+        - salesforce-experience-platform-emu/lwr
         - salesforce/lwr-lightning-platform
-        - salesforce-experience-platform/lwr-recipes
-        - salesforce/o11y-sample-app
-        - salesforcedevs/doc-framework-monorepo
-        - uiplatform/aura-hotswap-bundle
   release:
     pull-request:
       <<: *branch-definition
       merge-method: force-push # release branch should always be in sync with master branch (linear history)
-  spring22:
+  spring23:
     pull-request:
       <<: *branch-definition
-  summer22:
+  summer23:
     pull-request:
       <<: *branch-definition
-  winter23:
+  winter24:
     pull-request:
       <<: *branch-definition
+  milestone-.*: # used for prerelease testing
+    pull-request:
+      <<: *branch-definition
+      workflow: build-and-test # the default workflow is release, and we just want build+tests
 steps:
   node-conformance:
     run:
@@ -70,11 +59,7 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
-  node-save-dep-cache: &node-save-dep-cache
+  npm-publish-release:
     params:
-      paths:
-        # it's necessary to redeclare **/node_modules because this overrides the default behavior
-        - '**/node_modules'
-        # add NX cache
-        - '.nx-cache'
-    after: node-build
+      access: public
+      tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch

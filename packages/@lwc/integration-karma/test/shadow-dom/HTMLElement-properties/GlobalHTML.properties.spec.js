@@ -39,12 +39,12 @@ describe('global HTML Properties', () => {
         document.body.appendChild(elm);
         const cmp = elm.componentInstance;
         expect(cmp.getAttribute('tabindex')).toBe('0');
-    }),
-        it('should not throw when accessing attribute in root elements', () => {
-            const elm = createElement('x-foo', { is: Test });
-            document.body.appendChild(elm);
-            elm.setAttribute('tabindex', 1);
-        });
+    });
+    it('should not throw when accessing attribute in root elements', () => {
+        const elm = createElement('x-foo', { is: Test });
+        document.body.appendChild(elm);
+        elm.setAttribute('tabindex', 1);
+    });
 
     it('should delete existing attribute prior rendering', () => {
         const elm = createElement('x-foo', { is: Test });
@@ -98,7 +98,7 @@ describe('global HTML Properties', () => {
                 propertyAndValueToSetInConstructor(prop, value);
                 expect(() => {
                     createElement('x-foo', { is: AttributeSetInConstructor });
-                }).toThrowErrorDev(Error, /The result must not have attributes./);
+                }).toLogErrorDev(/The result must not have attributes./);
             });
             describe('attribute custom getter/setter', () => {
                 beforeEach(() => {
@@ -189,13 +189,13 @@ describe('#tabIndex', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInRender });
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowConnectedError(Error, /render\(\) method has side effects on the state of/);
+        }).toLogErrorDev(/render\(\) method has side effects on the state of/);
     });
 
     it('should throw if setting tabIndex during construction', function () {
         expect(() => {
             createElement('x-foo', { is: TabIndexSetInConstructor });
-        }).toThrowErrorDev(Error, /The result must not have attributes./);
+        }).toLogErrorDev(/The result must not have attributes./);
     });
 
     it('should not throw when tabIndex is not reflected to element', () => {

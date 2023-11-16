@@ -15,9 +15,12 @@ const path = require('path');
 
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const compatRollupPlugin = require('rollup-plugin-compat');
 
-const { COMPAT } = require('../shared/options');
+const {
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    API_VERSION,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+} = require('../shared/options');
 const Watcher = require('./Watcher');
 
 function createPreprocessor(config, emitter, logger) {
@@ -29,7 +32,7 @@ function createPreprocessor(config, emitter, logger) {
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
 
-    return async (_content, file, done) => {
+    return async (content, file, done) => {
         const input = file.path;
 
         const suiteDir = path.dirname(input);
@@ -41,26 +44,24 @@ function createPreprocessor(config, emitter, logger) {
             .join('\n');
         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
+        // TODO [#3370]: remove experimental template expression flag
+        const experimentalComplexExpressions = suiteDir.includes('template-expressions');
+
         const plugins = [
             lwcRollupPlugin({
+                sourcemap: true,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
                 },
-                enableLwcSpread: true,
+                enableDynamicComponents: true,
+                experimentalComplexExpressions,
+                enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+                disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+                apiVersion: API_VERSION,
                 parallel: true,
             }),
         ];
-
-        if (COMPAT) {
-            plugins.push(
-                compatRollupPlugin({
-                    // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
-                    // suites.
-                    polyfills: false,
-                })
-            );
-        }
 
         try {
             const bundle = await rollup({
@@ -107,14 +108,18 @@ function createPreprocessor(config, emitter, logger) {
             // also adding the source map inline for browser debugging.
             // eslint-disable-next-line require-atomic-updates
             file.sourceMap = map;
-            code + `\n//# sourceMappingURL=${map.toUrl()}\n`;
 
             done(null, code);
         } catch (error) {
             const location = path.relative(basePath, file.path);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
 
-            done(error, null);
+            if (process.env.KARMA_MODE === 'watch') {
+                log.error('Ignoring error in watch mode');
+                done(null, content); // just pass the untransformed content in for now
+            } else {
+                done(error, null);
+            }
         }
     };
 }

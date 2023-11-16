@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -10,12 +10,12 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
-    create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
     noop,
+    isFunction,
     HTML_NAMESPACE,
 } from '@lwc/shared';
+import { LifecycleCallback } from '@lwc/engine-core';
 
 import {
     HostNode,
@@ -26,13 +26,15 @@ import {
     HostTypeKey,
     HostNamespaceKey,
     HostParentKey,
-    HostEventListenersKey,
     HostShadowRootKey,
     HostAttributesKey,
     HostChildrenKey,
     HostValueKey,
+    HostHostKey,
+    HostContextProvidersKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import { registerContextConsumer } from './context';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -49,33 +51,10 @@ function createElement(tagName: string, namespace?: string): HostElement {
         [HostShadowRootKey]: null,
         [HostChildrenKey]: [],
         [HostAttributesKey]: [],
-        [HostEventListenersKey]: {},
+        [HostContextProvidersKey]: new Map(),
     };
 }
 
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElementImpl {
-    constructor() {
-        const { constructor } = this;
-        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!tagName) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        return createElement(tagName);
-    }
-}
-
-const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
 type N = HostNode;
@@ -103,8 +82,17 @@ function remove(node: N, parent: E) {
     parent[HostChildrenKey].splice(nodeIndex, 1);
 }
 
-function cloneNode(node: N): N {
-    return node;
+function cloneNode(node: HostChildNode): HostChildNode {
+    // Note: no need to deep clone as cloneNode is only used for nodes of type HostNodeType.Raw.
+    if (process.env.NODE_ENV !== 'production') {
+        if (node[HostTypeKey] !== HostNodeType.Raw) {
+            throw new TypeError(
+                `SSR: cloneNode was called with invalid NodeType <${node[HostTypeKey]}>, only HostNodeType.Raw is supported.`
+            );
+        }
+    }
+
+    return { ...node };
 }
 
 function createFragment(html: string): HostChildNode {
@@ -131,7 +119,7 @@ function createComment(content: string): HostNode {
     };
 }
 
-function nextSibling(node: N) {
+function getSibling(node: N, offset: number) {
     const parent = node[HostParentKey];
 
     if (isNull(parent)) {
@@ -139,13 +127,22 @@ function nextSibling(node: N) {
     }
 
     const nodeIndex = parent[HostChildrenKey].indexOf(node);
-    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
+    return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) ?? null;
+}
+
+function nextSibling(node: N) {
+    return getSibling(node, 1);
+}
+
+function previousSibling(node: N) {
+    return getSibling(node, -1);
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
     element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
         [HostChildrenKey]: [],
+        [HostHostKey]: element,
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
@@ -335,25 +332,65 @@ function isConnected(node: HostNode) {
     return !isNull(node[HostParentKey]);
 }
 
+function getTagName(elm: HostElement): string {
+    // tagName is lowercased on the server, but to align with DOM APIs, we always return uppercase
+    return elm.tagName.toUpperCase();
+}
+
+type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
+
+const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
+
+function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
+    return function Ctor(upgradeCallback: LifecycleCallback) {
+        const elm = createElement(tagName);
+        if (isFunction(upgradeCallback)) {
+            upgradeCallback(elm); // nothing to do with the result for now
+        }
+        return elm;
+    };
+}
+
+function getUpgradableElement(
+    tagName: string,
+    _connectedCallback?: LifecycleCallback,
+    _disconnectedCallback?: LifecycleCallback
+): CreateElementAndUpgrade {
+    let ctor = localRegistryRecord.get(tagName);
+    if (!isUndefined(ctor)) {
+        return ctor;
+    }
+
+    ctor = createUpgradableElementConstructor(tagName);
+    localRegistryRecord.set(tagName, ctor);
+    return ctor;
+}
+
+function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
+    const UpgradableConstructor = getUpgradableElement(tagName);
+    return new (UpgradableConstructor as any)(upgradeCallback);
+}
+
+/** Noop in SSR */
+
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
 // synthetic shadow.
 const insertStylesheet = noop as (content: string, target: any) => void;
-
-// Noop on SSR.
 const addEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
     options?: AddEventListenerOptions | boolean
 ) => void;
-
-// Noop on SSR.
 const removeEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
     options?: AddEventListenerOptions | boolean
 ) => void;
+const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+
+/** Unsupported methods in SSR */
 
 const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
 const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
@@ -387,28 +424,13 @@ const getLastChild = unsupportedMethod('getLastChild') as (element: HostElement)
 const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
-
-function defineCustomElement(
-    name: string,
-    constructor: CustomElementConstructor,
-    _options?: ElementDefinitionOptions
-) {
-    registerCustomElement(name, constructor);
-}
-
-function getCustomElement(name: string): CustomElementConstructor | undefined {
-    return registry[name];
-}
-
-const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-
-/* noop */
-const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElement) => Document;
+const attachInternals = unsupportedMethod('attachInternals') as (
+    elm: HTMLElement
+) => ElementInternals;
 
 export const renderer = {
-    isNativeShadowDefined,
     isSyntheticShadowDefined,
-    HTMLElementExported,
     insert,
     remove,
     cloneNode,
@@ -416,7 +438,9 @@ export const renderer = {
     createElement,
     createText,
     createComment,
+    createCustomElement,
     nextSibling,
+    previousSibling,
     attachShadow,
     getProperty,
     setProperty,
@@ -440,9 +464,12 @@ export const renderer = {
     getFirstElementChild,
     getLastChild,
     getLastElementChild,
+    getTagName,
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
-    defineCustomElement,
-    getCustomElement,
+    ownerDocument,
+    registerContextConsumer,
+    attachInternals,
+    defineCustomElement: getUpgradableElement,
 };

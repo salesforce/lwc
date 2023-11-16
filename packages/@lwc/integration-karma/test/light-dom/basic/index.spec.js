@@ -31,12 +31,13 @@ describe('Basic Light DOM', () => {
         expect(template).toBeNull();
     });
 
-    it('should throw error when renderMode is invalid', () => {
+    it('should log error when renderMode is invalid', () => {
         expect(() => {
             const elm = createElement('x-invalid-render-mode', { is: InvalidRenderMode });
             document.body.appendChild(elm);
-        }).toThrowError(
-            `Invariant Violation: Invalid value for static property renderMode: 'sattar'. renderMode must be either 'light' or 'shadow'.`
-        );
+        }).toLogErrorDev([
+            /Invalid value for static property renderMode: 'sattar'\. renderMode must be either 'light' or 'shadow'\./,
+            /Shadow DOM components template can't render light DOM templates/,
+        ]);
     });
 });

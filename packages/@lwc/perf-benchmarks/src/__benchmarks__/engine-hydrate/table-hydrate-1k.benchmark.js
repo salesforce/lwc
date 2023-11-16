@@ -12,10 +12,9 @@ import Table from '@lwc/perf-benchmarks-components/dist/server/benchmark/cardCom
 import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/store.js';
 
 import TableClient from '@lwc/perf-benchmarks-components/dist/dom/benchmark/cardComponent/cardComponent.js';
-import { benchmark, run, before } from '../../utils/benchmark-framework.js';
 import { insertComponent } from '../../utils/utils';
 
-benchmark(`benchmark-table/hydrate/1k`, () => {
+benchmark(`hydrate/table/hydrate/1k`, () => {
     let tableElement;
     let props;
 

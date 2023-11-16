@@ -1,15 +1,20 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
+import BasicDynamic from 'x/basicDynamic';
 import None from 'x/none';
 import NoneActive from 'x/noneActive';
 import Multi from 'x/multi';
 import MultiNoRefsInOne from 'x/multiNoRefsInOne';
+import MultiParent from 'x/multiParent';
 import Overwrite from 'x/overwrite';
 import Conflict from 'x/conflict';
+import ConflictDynamic from 'x/conflictDynamic';
+import ConflictFullyStatic from 'x/conflictFullyStatic';
 import Parent from 'x/parent';
 import Light from 'x/light';
 import Dynamic from 'x/dynamic';
+import LwcDynamic from 'x/lwcDynamic';
 import Conditional from 'x/conditional';
 import Construct from 'x/construct';
 import Connect from 'x/connect';
@@ -20,16 +25,36 @@ import Expando from 'x/expando';
 import ExpandoCheck from 'x/expandoCheck';
 import Slotter from 'x/slotter';
 import AccessDuringRender from 'x/accessDuringRender';
+import RerenderElement from 'x/rerenderElement';
+import RerenderComponent from 'x/rerenderComponent';
+import RerenderElementStaticRef from 'x/rerenderElementStaticRef';
 
 describe('refs', () => {
-    it('basic refs example', () => {
-        const elm = createElement('x-basic', { is: Basic });
-        document.body.appendChild(elm);
+    describe('basic refs example', () => {
+        const scenarios = [
+            {
+                name: 'static',
+                Ctor: Basic,
+                tagName: 'x-basic',
+            },
+            {
+                name: 'dynamic',
+                Ctor: BasicDynamic,
+                tagName: 'x-basic-dynamic',
+            },
+        ];
 
-        expect(elm.getRefTextContent('first')).toEqual('first');
-        expect(elm.getRefTextContent('second')).toEqual('second');
-        expect(elm.getRefTextContent('inner')).toEqual('inner');
-        expect(elm.getRefTextContent('deepInner')).toEqual('deepInner');
+        scenarios.forEach(({ name, Ctor, tagName }) => {
+            it(name, () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+
+                expect(elm.getRefTextContent('first')).toEqual('first');
+                expect(elm.getRefTextContent('second')).toEqual('second');
+                expect(elm.getRefTextContent('inner')).toEqual('inner');
+                expect(elm.getRefTextContent('deepInner')).toEqual('deepInner');
+            });
+        });
     });
 
     it('refs object shape', () => {
@@ -150,15 +175,50 @@ describe('refs', () => {
         expect(elm.refs).toEqual(undefined);
     });
 
-    it('conflict between elements with same ref', () => {
-        const elm = createElement('x-conflict', { is: Conflict });
+    describe('conflicts between elements with the same ref', () => {
+        const scenarios = [
+            {
+                name: 'Basic',
+                tagName: 'x-conflict',
+                Ctor: Conflict,
+            },
+            {
+                name: 'Dynamic',
+                tagName: 'x-dynamic',
+                Ctor: ConflictDynamic,
+            },
+            {
+                name: 'Fully static',
+                tagName: 'x-fully-static',
+                Ctor: ConflictFullyStatic,
+            },
+        ];
+
+        scenarios.forEach(({ name, tagName, Ctor }) => {
+            it(name, () => {
+                const elm = createElement(tagName, { is: Ctor });
+
+                document.body.appendChild(elm);
+
+                expect(elm.getRefTextContent('foo')).toEqual('march');
+                expect(elm.getRefTextContent('bar')).toEqual('april');
+                expect(elm.getRefTextContent('baz')).toEqual('july');
+                expect(elm.getRefTextContent('quux')).toEqual('september');
+            });
+        });
+    });
+
+    it('multiple copies of same component, refs do not collide', () => {
+        const elm = createElement('x-multi-parent', { is: MultiParent });
 
         document.body.appendChild(elm);
 
-        expect(elm.getRefTextContent('foo')).toEqual('march');
-        expect(elm.getRefTextContent('bar')).toEqual('april');
-        expect(elm.getRefTextContent('baz')).toEqual('july');
-        expect(elm.getRefTextContent('quux')).toEqual('september');
+        const expectedDivs = [...elm.shadowRoot.children].map((_) => _.shadowRoot.firstChild);
+        const actualDivs = elm.getAllRefs();
+        expect(expectedDivs.length).toBe(actualDivs.length);
+        expect(expectedDivs[0]).toBe(actualDivs[0]);
+        expect(expectedDivs[1]).toBe(actualDivs[1]);
+        expect(expectedDivs[2]).toBe(actualDivs[2]);
     });
 
     it('ref on a component', () => {
@@ -178,13 +238,40 @@ describe('refs', () => {
         expect(elm.getRefTextContent('foo')).toEqual('foo');
     });
 
-    it('ref on a dynamic component', () => {
+    it('ref on a dynamic component - lwc:dynamic', () => {
+        const elm = createElement('x-dynamic', { is: LwcDynamic });
+        document.body.appendChild(elm);
+
+        // Constructor not set
+        expect(elm.getRef('dynamic')).toBeUndefined();
+
+        // Set the constructor
+        elm.setDynamicConstructor();
+
+        return Promise.resolve().then(() => {
+            const dynamic = elm.getRef('dynamic');
+            // Ref is available after constructor set
+            expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
+            expect(dynamic.getRefTextContent('first')).toEqual('first');
+        });
+    });
+
+    it('ref on a dynamic component - <lwc:component lwc:is={}>', () => {
         const elm = createElement('x-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
-        const dynamic = elm.getRef('dynamic');
-        expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
-        expect(dynamic.getRefTextContent('first')).toEqual('first');
+        // Constructor not set
+        expect(elm.getRef('dynamic')).toBeUndefined();
+
+        // Set the constructor
+        elm.setDynamicConstructor();
+
+        return Promise.resolve().then(() => {
+            const dynamic = elm.getRef('dynamic');
+            // Ref is available after constructor set
+            expect(dynamic.tagName.toLowerCase()).toEqual('x-basic');
+            expect(dynamic.getRefTextContent('first')).toEqual('first');
+        });
     });
 
     it('ref with conditional', () => {
@@ -225,6 +312,54 @@ describe('refs', () => {
 
         expect(ids.slottable.getRefs().beforeSlot).toBe(ids.beforeSlot);
         expect(ids.slottable.getRefs().afterSlot).toBe(ids.afterSlot);
+    });
+
+    describe('re-rendering a vnode with a ref', () => {
+        it('element', async () => {
+            const elm = createElement('x-rerender-element', { is: RerenderElement });
+            document.body.appendChild(elm);
+
+            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
+            for (let i = 0; i < 3; i++) {
+                elm.version = i;
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
+                await Promise.resolve();
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
+            }
+        });
+
+        it('component', async () => {
+            const elm = createElement('x-rerender-component', { is: RerenderComponent });
+            document.body.appendChild(elm);
+
+            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
+            for (let i = 0; i < 3; i++) {
+                elm.version = i;
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
+                await Promise.resolve();
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
+            }
+        });
+
+        it('element with a different static ref', async () => {
+            const elm = createElement('x-rerender-element-static-ref', {
+                is: RerenderElementStaticRef,
+            });
+            document.body.appendChild(elm);
+
+            await Promise.resolve();
+
+            const fooDiv = elm.getRef('foo');
+            expect(fooDiv).not.toBeUndefined();
+
+            await Promise.resolve();
+            for (let i = 0; i < 3; i++) {
+                elm.version = i;
+                expect(elm.getRef('foo')).toBe(fooDiv);
+                await Promise.resolve();
+                expect(elm.getRef('foo')).toBe(fooDiv);
+            }
+        });
     });
 
     describe('lifecycle', () => {

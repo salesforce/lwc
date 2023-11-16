@@ -1,7 +1,6 @@
 import _tmpl from "./test.html";
-import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement } from "lwc";
-
-const Test = _registerDecorators(class {
+import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement, LightningElement } from "lwc";
+const Test = _registerDecorators(class extends LightningElement {
   state;
   foo;
   bar;
@@ -9,10 +8,9 @@ const Test = _registerDecorators(class {
   record = {
     value: "test"
   };
-
   someMethod() {}
-
   wiredProp;
+  /*LWC compiler vX.X.X*/
 }, {
   publicProps: {
     label: {
@@ -34,8 +32,9 @@ const Test = _registerDecorators(class {
   },
   fields: ["state", "record"]
 });
-
 const foo = Test;
 export default _registerComponent(foo, {
-  tmpl: _tmpl
+  tmpl: _tmpl,
+  sel: "lwc-test",
+  apiVersion: 9999999
 });

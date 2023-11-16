@@ -1,19 +1,21 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import type { WireContextSubscriptionPayload } from './wiring';
+
 export type HostNode = any;
 export type HostElement = any;
 
 type N = HostNode;
 type E = HostElement;
 
+export type LifecycleCallback = (elm: E) => void;
+
 export interface RendererAPI {
-    isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
-    HTMLElementExported: typeof HTMLElement;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;
     cloneNode: (node: N, deep: boolean) => N;
@@ -22,6 +24,7 @@ export interface RendererAPI {
     createText: (content: string) => N;
     createComment: (content: string) => N;
     nextSibling: (node: N) => N | null;
+    previousSibling: (node: N) => N | null;
     attachShadow: (element: E, options: ShadowRootInit) => N;
     getProperty: (node: N, key: string) => any;
     setProperty: (node: N, key: string, value: any) => void;
@@ -55,13 +58,30 @@ export interface RendererAPI {
     getFirstElementChild: (element: E) => E | null;
     getLastChild: (element: E) => N | null;
     getLastElementChild: (element: E) => E | null;
+    getTagName: (element: E) => string;
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
+    createCustomElement: (
+        tagName: string,
+        upgradeCallback: LifecycleCallback,
+        connectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback,
+        formAssociatedCallback?: LifecycleCallback,
+        formDisabledCallback?: LifecycleCallback,
+        formResetCallback?: LifecycleCallback,
+        formStateRestoreCallback?: LifecycleCallback
+    ) => E;
     defineCustomElement: (
-        name: string,
-        constructor: CustomElementConstructor,
-        options?: ElementDefinitionOptions
+        tagName: string,
+        connectedCallback?: LifecycleCallback,
+        disconnectedCallback?: LifecycleCallback
     ) => void;
-    getCustomElement: (name: string) => CustomElementConstructor | undefined;
+    ownerDocument(elm: E): Document;
+    registerContextConsumer: (
+        element: E,
+        adapterContextToken: string,
+        subscriptionPayload: WireContextSubscriptionPayload
+    ) => void;
+    attachInternals: (elm: E) => ElementInternals;
 }

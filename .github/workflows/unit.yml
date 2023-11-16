@@ -1,0 +1,63 @@
+name: Run unit tests
+
+on:
+  push:
+    branches:
+      - master
+      - release
+      - 'spring*'
+      - 'summer*'
+      - 'winter*'
+  pull_request:
+    branches:
+      - master
+      - release
+      - 'spring*'
+      - 'summer*'
+      - 'winter*'
+
+env:
+  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
+
+jobs:
+  run-unit-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.18.0"
+          cache: 'yarn'
+
+      # Needed for perf smoke tests, matches the chromedriver version installed by tachometer(https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
+      # version number can be found here https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=Linux_x64/119
+      - name: Setup chrome v119
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 1194751
+        id: setup-chrome
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check missing file headers
+        run: node ./scripts/tasks/check-license-headers.js
+      - name: Check package.json integrity
+        run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+      - name: Verify @lwc/shared is tree-shakable
+        run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+      - name: Verify that dependencies are declared
+        run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
+      - name: Check formatting
+        run: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
+      - name: Run linter
+        run: yarn lint
+      - name: Check the size of the LWC bundle
+        run: yarn bundlesize
+      - name: Run Jest tests
+        run: yarn test:ci
+      - name: Run benchmark smoke tests
+        run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance

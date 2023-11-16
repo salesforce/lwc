@@ -61,24 +61,20 @@ const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescr
     'ownerDocument'
 )!.get!;
 
-const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
+const parentElementGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     nodePrototype,
     'parentElement'
-)
-    ? getOwnPropertyDescriptor(nodePrototype, 'parentElement')!.get!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
+)!.get!;
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
     nodePrototype,
     'textContent'
 )!.set!;
 
-const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnProperty.call(
+const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = getOwnPropertyDescriptor(
     nodePrototype,
     'childNodes'
-)
-    ? getOwnPropertyDescriptor(nodePrototype, 'childNodes')!.get!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
+)!.get!;
 
 const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
     ? getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!

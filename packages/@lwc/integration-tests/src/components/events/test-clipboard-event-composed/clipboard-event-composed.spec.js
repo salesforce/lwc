@@ -17,13 +17,6 @@ function paste() {
 }
 
 describe('clipboard-event-composed polyfill', () => {
-    before(async function () {
-        // This test suite relies on the Selection API which is not supported in ie11
-        if (browser.capabilities.browserName === 'internet explorer') {
-            this.skip();
-        }
-    });
-
     beforeEach(async () => {
         await browser.url(URL);
     });

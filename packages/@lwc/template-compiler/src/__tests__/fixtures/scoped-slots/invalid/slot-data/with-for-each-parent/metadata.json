@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1178,
+            "message": "LWC1178: <template> tag with lwc:slot-data directive must be the direct child of a custom element.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 13,
+                "start": 154,
+                "length": 125
+            }
+        },
+        {
+            "code": 1178,
+            "message": "LWC1178: <template> tag with lwc:slot-data directive must be the direct child of a custom element.",
+            "level": 1,
+            "location": {
+                "line": 12,
+                "column": 13,
+                "start": 404,
+                "length": 182
+            }
+        }
+    ]
+}

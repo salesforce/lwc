@@ -5,27 +5,39 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { SVG_NAMESPACE } from '@lwc/shared';
+import { APIVersion, getAPIVersionFromNumber, SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
     ChildNode,
-    Element,
     Expression,
+    ComplexExpression,
     Literal,
     LWCDirectiveRenderMode,
     Root,
+    EventListener,
+    RefDirective,
+    Text,
+    StaticElement,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
     PARSE_SVG_FRAGMENT_METHOD_NAME,
     TEMPLATE_PARAMS,
 } from '../shared/constants';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import { isElement, isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes } from './helpers';
+import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
+import { bindComplexExpression } from './expression';
+
+// structuredClone is only available in Node 17+
+// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
+const doStructuredClone =
+    typeof structuredClone === 'function'
+        ? structuredClone
+        : (obj: any) => JSON.parse(JSON.stringify(obj));
 
 type RenderPrimitive =
     | 'iterator'
@@ -37,6 +49,7 @@ type RenderPrimitive =
     | 'text'
     | 'dynamicText'
     | 'dynamicCtor'
+    | 'deprecatedDynamicCtor'
     | 'key'
     | 'tabindex'
     | 'scopedId'
@@ -44,7 +57,9 @@ type RenderPrimitive =
     | 'comment'
     | 'sanitizeHtmlContent'
     | 'fragment'
-    | 'staticFragment';
+    | 'staticFragment'
+    | 'scopedSlotFactory'
+    | 'staticPart';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -58,6 +73,8 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
+    // TODO [#3331]: remove usage of lwc:dynamic in 246
+    deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
@@ -69,6 +86,8 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
     fragment: { name: 'fr', alias: 'api_fragment' },
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
+    scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
+    staticPart: { name: 'sp', alias: 'api_static_part' },
 };
 
 interface Scope {
@@ -125,6 +144,7 @@ export default class CodeGen {
     slotNames: Set<string> = new Set();
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
+    apiVersion: APIVersion;
 
     constructor({
         root,
@@ -150,6 +170,7 @@ export default class CodeGen {
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
         this.state = state;
+        this.apiVersion = getAPIVersionFromNumber(state.config.apiVersion);
     }
 
     generateKey() {
@@ -179,7 +200,17 @@ export default class CodeGen {
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
     }
-    genDynamicElement(
+
+    genDynamicElement(ctor: t.Expression, data: t.ObjectExpression, children: t.Expression) {
+        const args: t.Expression[] = [ctor, data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+
+        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+    }
+
+    genDeprecatedDynamicElement(
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
@@ -190,7 +221,7 @@ export default class CodeGen {
             args.push(children); // only generate children if non-empty
         }
 
-        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
+        return this._renderApiCall(RENDER_APIS.deprecatedDynamicCtor, args);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {
@@ -256,6 +287,9 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
+    /**
+     * Generates childs vnodes when slot content is static.
+     */
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         this.slotNames.add(slotName);
 
@@ -265,6 +299,13 @@ export default class CodeGen {
             children,
             t.identifier('$slotset'),
         ]);
+    }
+
+    /**
+     * Generates a factory function that inturn generates child vnodes for scoped slot content.
+     */
+    getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.Expression | t.SimpleLiteral) {
+        return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [slotName, callback]);
     }
 
     genTabIndex(children: [t.Expression]) {
@@ -282,6 +323,25 @@ export default class CodeGen {
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
         return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
+    }
+
+    genEventListeners(listeners: EventListener[]) {
+        const listenerObj = Object.fromEntries(
+            listeners.map((listener) => [listener.name, listener])
+        );
+        const listenerObjectAST = objectToAST(listenerObj, (key) => {
+            const componentHandler = this.bindExpression(listenerObj[key].handler);
+            const handler = this.genBind(componentHandler);
+
+            return memorizeHandler(this, componentHandler, handler);
+        });
+
+        return t.property(t.identifier('on'), listenerObjectAST);
+    }
+
+    genRef(ref: RefDirective) {
+        this.hasRefs = true;
+        return t.property(t.identifier('ref'), ref.value);
     }
 
     /**
@@ -416,7 +476,7 @@ export default class CodeGen {
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
      */
-    bindExpression(expression: Expression | Literal): t.Expression {
+    bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
         if (t.isIdentifier(expression)) {
             if (!this.isLocalIdentifier(expression)) {
                 return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
@@ -425,7 +485,16 @@ export default class CodeGen {
             }
         }
 
+        // TODO [#3370]: remove experimental template expression flag
+        if (this.state.config.experimentalComplexExpressions) {
+            return bindComplexExpression(expression as ComplexExpression, this);
+        }
+
         const scope = this;
+
+        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+        // node later during static content optimization
+        expression = doStructuredClone(expression);
         walk(expression, {
             leave(node, parent) {
                 if (
@@ -443,7 +512,7 @@ export default class CodeGen {
         return expression as t.Expression;
     }
 
-    genHoistedElement(element: Element, slotParentName?: string): t.Expression {
+    genStaticElement(element: StaticElement, slotParentName?: string): t.Expression {
         const key =
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
@@ -481,9 +550,70 @@ export default class CodeGen {
             expr,
         });
 
-        return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.callExpression(identifier, []),
-            t.literal(key),
+        const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
+
+        // Only add the third argument (staticParts) if this element needs it
+        const staticParts = this.genStaticParts(element);
+        if (staticParts) {
+            args.push(staticParts);
+        }
+
+        return this._renderApiCall(RENDER_APIS.staticFragment, args);
+    }
+
+    genStaticParts(element: StaticElement): t.ArrayExpression | undefined {
+        const stack: (StaticElement | Text)[] = [element];
+        const partIdsToDatabagProps = new Map<number, t.Property[]>();
+        let partId = -1;
+
+        const addDatabagProp = (prop: t.Property) => {
+            let databags = partIdsToDatabagProps.get(partId);
+            if (!databags) {
+                databags = [];
+                partIdsToDatabagProps.set(partId, databags);
+            }
+            databags.push(prop);
+        };
+
+        // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
+        while (stack.length > 0) {
+            const node = stack.shift()!;
+            partId++;
+            if (isElement(node)) {
+                // has event listeners
+                if (node.listeners.length) {
+                    addDatabagProp(this.genEventListeners(node.listeners));
+                }
+
+                // see STATIC_SAFE_DIRECTIVES for what's allowed here
+                for (const directive of node.directives) {
+                    if (directive.name === 'Ref') {
+                        addDatabagProp(this.genRef(directive));
+                    }
+                }
+
+                // For depth-first traversal, children must be preprended in order, so that they are processed before
+                // siblings. Note that this is consistent with the order used in the diffing algo as well as
+                // `traverseAndSetElements` in @lwc/engine-core.
+                stack.unshift(...node.children);
+            }
+        }
+
+        if (partIdsToDatabagProps.size === 0) {
+            return undefined; // no databags needed
+        }
+
+        return t.arrayExpression(
+            [...partIdsToDatabagProps.entries()].map(([partId, databagProperties]) => {
+                return this.genStaticPart(partId, databagProperties);
+            })
+        );
+    }
+
+    genStaticPart(partId: number, databagProperties: t.Property[]): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.staticPart, [
+            t.literal(partId),
+            t.objectExpression(databagProperties),
         ]);
     }
 }

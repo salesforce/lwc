@@ -1,5 +1,7 @@
 import { createElement, LightningElement, api } from 'lwc';
+import { getPropertyDescriptor } from 'test-utils';
 
+import GetterSetterAndProp from 'x/getterSetterAndProp';
 import Properties from 'x/properties';
 import Mutate from 'x/mutate';
 import GetterSetter from 'x/getterSetter';
@@ -8,8 +10,10 @@ import Reactivity from 'x/reactivity';
 import Methods from 'x/methods';
 import Inheritance from 'x/inheritance';
 import NullInitialValue from 'x/nullInitialValue';
+import ExtendsMixin from 'x/extendsMixin';
 
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
+import NoSetter from 'x/noSetter';
 
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {
@@ -17,7 +21,9 @@ describe('properties', () => {
         document.body.appendChild(elm);
 
         expect(elm.publicProp).toBeDefined();
-        expect(elm.privateProp).toBeUndefined();
+        expect(() => {
+            expect(elm.privateProp).toBeUndefined();
+        }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
     it('should make the public property reactive if used in the template', () => {
@@ -77,7 +83,9 @@ describe('methods', () => {
         const elm = createElement('x-methods', { is: Methods });
 
         expect(elm.publicMethod).toBeDefined();
-        expect(elm.privateMethod).toBeUndefined();
+        expect(() => {
+            expect(elm.privateMethod).toBeUndefined();
+        }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
     it('should invoke the method with the right this value and arguments', () => {
@@ -91,20 +99,34 @@ describe('methods', () => {
 });
 
 describe('inheritance', () => {
-    it('should inherit the public props from the base class', () => {
-        const elm = createElement('x-inheritance', { is: Inheritance });
+    const cases = [
+        {
+            type: 'normal',
+            Component: Inheritance,
+        },
+        {
+            type: 'mixin',
+            Component: ExtendsMixin,
+        },
+    ];
+    cases.forEach(({ type, Component }) => {
+        describe(type, () => {
+            it('should inherit the public props from the base class', () => {
+                const elm = createElement('x-inheritance', { is: Component });
 
-        expect(elm.base).toBe('base');
-        expect(elm.child).toBe('child');
-        expect(elm.overridden).toBe('overridden - child');
-    });
+                expect(elm.base).toBe('base');
+                expect(elm.child).toBe('child');
+                expect(elm.overridden).toBe('overridden - child');
+            });
 
-    it('should inherit the public methods from the base class', () => {
-        const elm = createElement('x-inheritance', { is: Inheritance });
+            it('should inherit the public methods from the base class', () => {
+                const elm = createElement('x-inheritance', { is: Component });
 
-        expect(elm.baseMethod()).toBe('base');
-        expect(elm.childMethod()).toBe('child');
-        expect(elm.overriddenMethod()).toBe('overridden - child');
+                expect(elm.baseMethod()).toBe('base');
+                expect(elm.childMethod()).toBe('child');
+                expect(elm.overriddenMethod()).toBe('overridden - child');
+            });
+        });
     });
 });
 
@@ -115,7 +137,7 @@ it('should not log an error when initializing api value to null', () => {
 });
 
 describe('restrictions', () => {
-    it('throws a property error when a public field conflicts with a method', () => {
+    it('logs a property error when a public field conflicts with a method', () => {
         expect(() => {
             // The following class is wrapped by the compiler with registerDecorators. We check
             // here if the fields are validated properly.
@@ -125,9 +147,102 @@ describe('restrictions', () => {
                 // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
-        }).toThrowError(
-            'Invalid @api showFeatures field. Found a duplicate method with the same name.'
+        }).toLogErrorDev(
+            /Invalid @api showFeatures field\. Found a duplicate method with the same name\./
         );
+    });
+
+    it('logs an error when an @api field has a setter but no getter', () => {
+        expect(() => {
+            expect(() => {
+                // The following class is wrapped by the compiler with registerDecorators. We check here
+                // if the fields are validated properly.
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                class Invalid extends LightningElement {
+                    @api
+                    set foo(val) {
+                        this._foo = val;
+                    }
+                }
+            }).toThrowError(
+                /Invalid public accessor foo decorated with @api\. The property is missing a getter\./
+            );
+        }).toLogErrorDev(
+            /Missing getter for property foo decorated with @api in (class|function) Invalid/
+        );
+    });
+
+    it('does not throw or log an error when an @api field has a getter but no setter', () => {
+        expect(() => {
+            // The following class is wrapped by the compiler with registerDecorators. We check here
+            // if the fields are validated properly.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            class Invalid extends LightningElement {
+                @api
+                get foo() {
+                    return this._foo;
+                }
+            }
+        }).not.toLogError(); // if it throws an error, that will also fail this test
+    });
+});
+
+describe('non-LightningElement `this` when calling accessor', () => {
+    let elm;
+
+    beforeEach(() => {
+        elm = createElement('x-getter-setter-and-prop', { is: GetterSetterAndProp });
+        document.body.appendChild(elm);
+    });
+
+    const expectedErrorMessage =
+        /(undefined is not an object|Right side of assignment cannot be destructured|vm is undefined|undefined is not a VM|Cannot destructure property '(getHook|setHook)'|Cannot read properties of undefined)/;
+
+    const scenarios = [
+        { type: 'getterSetter', prop: 'getterSetterProp' },
+        { type: 'classProp', prop: 'classProp' },
+    ];
+
+    scenarios.forEach(({ type, prop }) => {
+        describe(type, () => {
+            it('getter - external', () => {
+                const { get } = getPropertyDescriptor(elm, prop);
+                expect(() => {
+                    get.call({});
+                }).toThrowError(TypeError, expectedErrorMessage);
+            });
+
+            it('setter - external', () => {
+                const { set } = getPropertyDescriptor(elm, prop);
+                expect(() => {
+                    set.call({}, 'foo');
+                }).toThrowError(TypeError, expectedErrorMessage);
+            });
+
+            it('getter - internal', () => {
+                const callback = () => {
+                    elm.callGetterInternallyWithWrongThis(prop);
+                };
+                // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
+                if (type === 'classProp') {
+                    expect(callback).toThrowError(TypeError, expectedErrorMessage);
+                } else {
+                    expect(callback).toThrowErrorDev(TypeError, expectedErrorMessage);
+                }
+            });
+
+            it('setter - internal', () => {
+                const callback = () => {
+                    elm.callSetterInternallyWithWrongThis(prop, 'foo');
+                };
+                // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
+                if (type === 'classProp') {
+                    expect(callback).toThrowError(TypeError, expectedErrorMessage);
+                } else {
+                    expect(callback).toThrowErrorDev(TypeError, expectedErrorMessage);
+                }
+            });
+        });
     });
 });
 
@@ -286,5 +401,17 @@ describe('regression [W-9927596]', () => {
                 expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
             });
         });
+    });
+
+    it('logs an error when attempting to set property when there is no setter', () => {
+        const elm = createElement('x-no-setter', { is: NoSetter });
+
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.foo = 'foo';
+        }).toLogErrorDev(
+            /Invalid attempt to set a new value for property "foo" that does not has a setter decorated with @api/
+        );
     });
 });

@@ -20,6 +20,7 @@ import {
     HostChildrenKey,
     HostValueKey,
 } from './types';
+import { validateStyleTextContents } from './utils/validate-style-text-contents';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
@@ -29,12 +30,12 @@ function serializeAttributes(attributes: HostAttribute[]): string {
         .join(' ');
 }
 
-function serializeChildNodes(children: HostChildNode[]): string {
+function serializeChildNodes(children: HostChildNode[], tagName?: string): string {
     return children
         .map((child): string => {
             switch (child[HostTypeKey]) {
                 case HostNodeType.Text:
-                    return child[HostValueKey] === '' ? '\u200D' : htmlEscape(child[HostValueKey]);
+                    return serializeTextContent(child[HostValueKey], tagName);
                 case HostNodeType.Comment:
                     return `<!--${htmlEscape(child[HostValueKey])}-->`;
                 case HostNodeType.Raw:
@@ -84,11 +85,26 @@ export function serializeElement(element: HostElement): string {
         output += serializeShadowRoot(element[HostShadowRootKey]);
     }
 
-    output += serializeChildNodes(element[HostChildrenKey]);
+    output += serializeChildNodes(element[HostChildrenKey], tagName);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         output += `</${tagName}>`;
     }
 
     return output;
+}
+
+function serializeTextContent(contents: string, tagName?: string) {
+    if (contents === '') {
+        return '\u200D'; // Special serialization for empty text nodes
+    }
+    if (tagName === 'style') {
+        // Special validation for <style> tags since their content must be served unescaped, and we need to validate
+        // that the contents are safe to serialize unescaped.
+        // TODO [#3454]: move this validation to compilation
+        validateStyleTextContents(contents);
+        // If we haven't thrown an error during validation, then the content is safe to serialize unescaped
+        return contents;
+    }
+    return htmlEscape(contents);
 }

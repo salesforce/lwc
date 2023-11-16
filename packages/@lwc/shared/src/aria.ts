@@ -15,6 +15,9 @@ import { create, forEach, StringReplace, StringToLowerCase } from './language';
  * The above list of 46 aria attributes is consistent with the following resources:
  * https://github.com/w3c/aria/pull/708/files#diff-eacf331f0ffc35d4b482f1d15a887d3bR11060
  * https://wicg.github.io/aom/spec/aria-reflection.html
+ *
+ * NOTE: If you update this list, please update test files that implicitly reference this list!
+ * Searching the codebase for `aria-flowto` and `ariaFlowTo` should be good enough to find all usages.
  */
 const AriaPropertyNames = [
     'ariaActiveDescendant',
@@ -24,10 +27,12 @@ const AriaPropertyNames = [
     'ariaChecked',
     'ariaColCount',
     'ariaColIndex',
+    'ariaColIndexText',
     'ariaColSpan',
     'ariaControls',
     'ariaCurrent',
     'ariaDescribedBy',
+    'ariaDescription',
     'ariaDetails',
     'ariaDisabled',
     'ariaErrorMessage',
@@ -55,6 +60,7 @@ const AriaPropertyNames = [
     'ariaRoleDescription',
     'ariaRowCount',
     'ariaRowIndex',
+    'ariaRowIndexText',
     'ariaRowSpan',
     'ariaSelected',
     'ariaSetSize',
@@ -63,11 +69,13 @@ const AriaPropertyNames = [
     'ariaValueMin',
     'ariaValueNow',
     'ariaValueText',
+    'ariaBrailleLabel',
+    'ariaBrailleRoleDescription',
     'role',
 ] as const;
 
 export type AccessibleElementProperties = {
-    [prop in typeof AriaPropertyNames[number]]: string | null;
+    [prop in (typeof AriaPropertyNames)[number]]: string | null;
 };
 
 const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (() => {
@@ -89,5 +97,19 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
 export function isAriaAttribute(attrName: string): boolean {
     return attrName in AriaAttrNameToPropNameMap;
 }
+
+// These attributes take either an ID or a list of IDs as values.
+// This includes aria-* attributes as well as the special non-ARIA "for" attribute
+export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = /*@__PURE__*/ new Set([
+    'aria-activedescendant',
+    'aria-controls',
+    'aria-describedby',
+    'aria-details',
+    'aria-errormessage',
+    'aria-flowto',
+    'aria-labelledby',
+    'aria-owns',
+    'for',
+]);
 
 export { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };

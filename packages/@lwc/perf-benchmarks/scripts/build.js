@@ -12,15 +12,17 @@
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
-const glob = promisify(require('glob'));
-const globHash = require('glob-hash');
+const { glob } = require('glob');
+const { hashElement } = require('folder-hash');
 
 const writeFile = promisify(fs.writeFile);
 
 const {
+    BENCHMARK_SMOKE_TEST,
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
     BENCHMARK_AUTO_SAMPLE_CONDITIONS = '1%', // how much difference we want to determine between A and B
+    CHROME_BINARY, // if a custom chrome binary is used eg: in CI
 } = process.env;
 let {
     BENCHMARK_SAMPLE_SIZE = 100, // minimum number of samples to run
@@ -29,8 +31,10 @@ let {
 
 const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
 
-BENCHMARK_SAMPLE_SIZE = toInt(BENCHMARK_SAMPLE_SIZE);
-BENCHMARK_TIMEOUT = toInt(BENCHMARK_TIMEOUT);
+// 2 is the minimum sample size allowed by Tachometer
+BENCHMARK_SAMPLE_SIZE = BENCHMARK_SMOKE_TEST ? 2 : toInt(BENCHMARK_SAMPLE_SIZE);
+// Timeout of 0 means don't auto-sample at all
+BENCHMARK_TIMEOUT = BENCHMARK_SMOKE_TEST ? 0 : toInt(BENCHMARK_TIMEOUT);
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 
@@ -62,10 +66,7 @@ function createHtml(benchmarkFile) {
   `.trim();
 }
 
-async function createTachometerJson(htmlFilename, benchmarkName) {
-    const componentsHash = await globHash({
-        include: [path.join(benchmarkComponentsDir, 'dist/**/*')],
-    });
+async function createTachometerJson(htmlFilename, benchmarkName, directoryHash) {
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
         sampleSize: BENCHMARK_SAMPLE_SIZE,
@@ -78,6 +79,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                 browser: {
                     name: 'chrome',
                     headless: true,
+                    ...(CHROME_BINARY && { binary: CHROME_BINARY }),
                 },
                 measurement: {
                     mode: 'performance',
@@ -87,7 +89,8 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                     {
                         name: `${benchmarkName}-this-change`,
                     },
-                    {
+                    // In the smoke test, don't bother pulling in a comparison branch and testing it
+                    !BENCHMARK_SMOKE_TEST && {
                         name: `${benchmarkName}-tip-of-tree`,
                         packageVersions: {
                             label: 'tip-of-tree',
@@ -109,7 +112,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                                             'rm -fr ./packages/@lwc/perf-benchmarks-components',
                                             `cp -R ${benchmarkComponentsDir} ./packages/@lwc/perf-benchmarks-components`,
                                             // bust the Tachometer cache in case these files change locally
-                                            `echo '${componentsHash}'`,
+                                            `echo '${directoryHash}'`,
                                             'yarn build:performance:components',
                                         ],
                                     },
@@ -117,7 +120,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                             ),
                         },
                     },
-                ],
+                ].filter(Boolean),
             },
         ],
     };
@@ -125,7 +128,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
 
 // Given a benchmark source file, create the necessary HTML file and Tachometer JSON
 // file for running it.
-async function processBenchmarkFile(benchmarkFile) {
+async function processBenchmarkFile(benchmarkFile, directoryHash) {
     const targetDir = path.dirname(benchmarkFile);
     const benchmarkFileBasename = path.basename(benchmarkFile);
     const htmlFilename = path.join(targetDir, benchmarkFileBasename.replace('.js', '.html'));
@@ -138,7 +141,11 @@ async function processBenchmarkFile(benchmarkFile) {
     async function writeTachometerJsonFile() {
         const engineType = benchmarkFile.includes('/engine-server/') ? 'server' : 'dom';
         const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
-        const tachometerJson = await createTachometerJson(htmlFilename, benchmarkName);
+        const tachometerJson = await createTachometerJson(
+            htmlFilename,
+            benchmarkName,
+            directoryHash
+        );
         const jsonFilename = path.join(
             targetDir,
             `${benchmarkFileBasename.split('.')[0]}.tachometer.json`
@@ -150,10 +157,15 @@ async function processBenchmarkFile(benchmarkFile) {
 }
 
 async function main() {
+    const { hash: directoryHash } = await hashElement(path.join(benchmarkComponentsDir, 'dist'), {
+        algo: 'sha256',
+    });
+
     const benchmarkFiles = await glob(
         path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js')
     );
-    await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file)));
+
+    await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file, directoryHash)));
 }
 
 main().catch((err) => {

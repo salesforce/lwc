@@ -1,0 +1,21 @@
+<template>
+    <x-child lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </x-child>
+
+    <lwc:component lwc:is={ctor} lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </lwc:component>
+
+    <x-lazy lwc:dynamic={ctor} lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </x-lazy>
+
+    <span lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </span>
+
+    <slot lwc:slot-data="item">
+        <span>{item.id} - {item.name}</span>
+    </slot>
+</template>

@@ -5,11 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    APIFeature,
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
+    isAPIFeatureEnabled,
     isArray,
     isFalse,
     isFunction,
@@ -26,25 +28,30 @@ import {
 import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
-import { getVMBeingRendered } from './template';
-import { EmptyArray, setRefVNode } from './utils';
+import { getVMBeingRendered, setVMBeingRendered } from './template';
+import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    isVScopedSlotFragment,
+    Key,
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
+    VFragment,
     VNode,
     VNodes,
-    VElement,
-    VText,
-    VCustomElement,
-    VComment,
-    VElementData,
     VNodeType,
+    VScopedSlotFragment,
     VStatic,
-    Key,
-    VFragment,
+    VText,
+    VStaticPart,
+    VStaticPartData,
 } from './vnodes';
+import { getComponentRegisteredName } from './component';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -52,28 +59,65 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
 
-// [st]atic node
-function st(fragment: Element, key: Key): VStatic {
+// [s]tatic [p]art
+function sp(partId: number, data: VStaticPartData): VStaticPart {
     return {
+        partId,
+        data,
+        elm: undefined, // elm is defined later
+    };
+}
+
+// [s]coped [s]lot [f]actory
+function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
+    return {
+        type: VNodeType.ScopedSlotFragment,
+        factory,
+        owner: getVMBeingRendered()!,
+        elm: undefined,
+        sel: undefined,
+        key: undefined,
+        slotName,
+    };
+}
+
+// [st]atic node
+function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
+    const owner = getVMBeingRendered()!;
+    const vnode: VStatic = {
         type: VNodeType.Static,
         sel: undefined,
         key,
         elm: undefined,
         fragment,
-        owner: getVMBeingRendered()!,
+        owner,
+        parts,
     };
+
+    return vnode;
 }
 
 // [fr]agment node
 function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
+    const owner = getVMBeingRendered()!;
+    const useCommentNodes = isAPIFeatureEnabled(
+        APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+        owner.apiVersion
+    );
+
+    const leading = useCommentNodes ? co('') : t('');
+    const trailing = useCommentNodes ? co('') : t('');
+
     return {
         type: VNodeType.Fragment,
         sel: undefined,
         key,
         elm: undefined,
-        children: [t(''), ...children, t('')],
+        children: [leading, ...children, trailing],
         stable,
-        owner: getVMBeingRendered()!,
+        owner,
+        leading,
+        trailing,
     };
 }
 
@@ -116,7 +160,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key, ref } = data;
+    const { key } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -127,10 +171,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         key,
         owner: vmBeingRendered,
     };
-
-    if (!isUndefined(ref)) {
-        setRefVNode(vmBeingRendered, ref, vnode);
-    }
 
     return vnode;
 }
@@ -161,7 +201,7 @@ function s(
     data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VElement | VNodes | VFragment {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -169,17 +209,68 @@ function s(
     }
     if (
         !isUndefined(slotset) &&
-        !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
+        !isUndefined(slotset.slotAssignments) &&
+        !isUndefined(slotset.slotAssignments[slotName]) &&
+        slotset.slotAssignments[slotName].length !== 0
     ) {
-        children = slotset[slotName];
+        const newChildren: VNode[] = [];
+        const slotAssignments = slotset.slotAssignments[slotName];
+        for (let i = 0; i < slotAssignments.length; i++) {
+            const vnode = slotAssignments[i];
+            if (!isNull(vnode)) {
+                const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
+                // The only sniff test for a scoped <slot> element is the presence of `slotData`
+                const isScopedSlotElement = !isUndefined(data.slotData);
+                // Check if slot types of parent and child are matching
+                if (assignedNodeIsScopedSlot !== isScopedSlotElement) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        logError(
+                            `Mismatched slot types for ${
+                                slotName === '' ? '(default)' : slotName
+                            } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
+                            slotset.owner
+                        );
+                    }
+                    // Ignore slot content from parent
+                    continue;
+                }
+                // If the passed slot content is factory, evaluate it and add the produced vnodes
+                if (assignedNodeIsScopedSlot) {
+                    const vmBeingRenderedInception = getVMBeingRendered();
+                    // Evaluate in the scope of the slot content's owner
+                    // if a slotset is provided, there will always be an owner. The only case where owner is
+                    // undefined is for root components, but root components cannot accept slotted content
+                    setVMBeingRendered(slotset.owner!);
+                    try {
+                        // The factory function is a template snippet from the slot set owner's template,
+                        // hence switch over to the slot set owner's template reactive observer
+                        const { tro } = slotset.owner!;
+                        tro.observe(() => {
+                            ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
+                        });
+                    } finally {
+                        setVMBeingRendered(vmBeingRenderedInception);
+                    }
+                } else {
+                    // If the slot content is standard type, the content is static, no additional
+                    // processing needed on the vnode
+                    ArrayPush.call(newChildren, vnode);
+                }
+            }
+        }
+        children = newChildren;
     }
     const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode } = vmBeingRendered;
+    const { renderMode, shadowMode, apiVersion } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
+        // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
+        if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
+            return fr(data.key, children, 0);
+        } else {
+            sc(children);
+            return children;
+        }
     }
     if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
@@ -233,7 +324,7 @@ function c(
             });
         }
     }
-    const { key, ref } = data;
+    const { key } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -250,10 +341,6 @@ function c(
         vm,
     };
     addVNodeToChildLWC(vnode);
-
-    if (!isUndefined(ref)) {
-        setRefVNode(vmBeingRendered, ref, vnode);
-    }
 
     return vnode;
 }
@@ -420,7 +507,7 @@ function k(compilerKey: number, obj: any): string | void {
             return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
-                assert.fail(
+                logError(
                     `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
@@ -477,9 +564,11 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ * [ddc] - create a (deprecated) dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ *
+ * TODO [#3331]: remove usage of lwc:dynamic in 246
  */
-function dc(
+function ddc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
@@ -494,11 +583,50 @@ function dc(
         );
     }
     // null or undefined values should produce a null value in the VNodes
-    if (Ctor == null) {
+    if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
+    }
+
+    return c(sel, Ctor, data, children);
+}
+
+/**
+ * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
+ */
+function dc(
+    Ctor: LightningElementConstructor | null | undefined,
+    data: VElementData,
+    children: VNodes = EmptyArray
+): VCustomElement | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isObject(data), `dc() 2nd argument data must be an object.`);
+        assert.isTrue(
+            arguments.length === 3 || isArray(children),
+            `dc() 3rd argument data must be an array.`
+        );
+    }
+    // Null or undefined values should produce a null value in the VNodes.
+    // This is the only value at compile time as the constructor will not be known.
+    if (isNull(Ctor) || isUndefined(Ctor)) {
+        return null;
+    }
+
+    if (!isComponentConstructor(Ctor)) {
+        throw new Error(
+            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
+        );
+    }
+
+    // Look up the dynamic component's name at runtime once the constructor is available.
+    // This information is only known at runtime and is stored as part of registerComponent.
+    const sel = getComponentRegisteredName(Ctor);
+    if (isUndefined(sel) || sel === '') {
+        throw new Error(
+            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
+        );
     }
 
     return c(sel, Ctor, data, children);
@@ -571,6 +699,9 @@ const api = ObjectFreeze({
     gid,
     fid,
     shc,
+    ssf,
+    ddc,
+    sp,
 });
 
 export default api;

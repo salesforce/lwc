@@ -7,4 +7,4 @@ To make these easier to work with in the tests, they are also wrapped in functio
 
 Don't update the content in this folder unless the ACT compiler's output is updated.
 
-You can find more detail about the strategy in [this document](https://salesforce.quip.com/Pv5GAib0nZLx).
+You can find more detail about the strategy in W-14210248.

@@ -1,0 +1,14 @@
+<template>
+    <x-list>
+        <template lwc:slot-data="item">
+            {item.id}
+            <span>{item.id} - {item.name}</span>
+        </template>
+    </x-list>
+    <x-list>
+        <template lwc:slot-data="item">
+            Text literal
+            <span>{item.id} - {item.name}</span>
+        </template>
+    </x-list>
+</template>

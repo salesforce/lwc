@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { invariant, TemplateErrors } from '@lwc/errors';
 import State from '../state';
-import { BaseElement, ElementDirective } from './types';
+import { BaseElement, ElementDirectiveName } from './types';
 
 /**
  * Config representing criteria for an element match.
@@ -46,36 +45,28 @@ export interface CustomRendererConfig {
     directives: string[];
 }
 
-/**
- * Mapping of Directive.name to string literals used in template
- */
-export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
-    Dom: 'lwc:dom',
-    Dynamic: 'lwc:dynamic',
-    InnerHTML: 'lwc:inner-html',
-    Key: 'key',
-    Ref: 'lwc:ref',
-    Spread: 'lwc:spread',
-};
+function shouldAddCustomRenderer(element: BaseElement, state: State): boolean {
+    // Elements of type `ExternalComponent` (e.g., elements with the lwc:external directive)
+    if (state.crDirectives.has('lwc:external') && element.type === 'ExternalComponent') {
+        return true;
+    }
 
-function checkElement(element: BaseElement, state: State): boolean {
+    // Elements of type `Component` are not allowed to have custom renderer hooks.
+    // The renderer is cascaded down from the owner(custom element) to all its child nodes who
+    // do not have a renderer specified.
+    // lwc:component will resolve to a custom element at runtime.
+    if (element.type === 'Component' || element.name === 'lwc:component') {
+        return false;
+    }
+
     const { attributes, directives } = element;
     if (directives.length) {
         let directiveMatched = false;
         // If any directives require custom renderer
         directiveMatched = directives.some((dir) => {
-            return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
+            return state.crDirectives.has(ElementDirectiveName[dir.name]);
         });
         if (directiveMatched) {
-            // Directives that require custom renderer are not allowed on custom elements
-            // Custom element cannot be allowed to have a custom renderer hook
-            // The renderer is cascaded down from the owner(custom element) to all its child nodes who
-            // do not have a renderer specified.
-            invariant(
-                element.type !== 'Component',
-                TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
-                [element.name, state.config.customRendererConfig!.directives.join(', ')]
-            );
             return true;
         }
     }
@@ -105,7 +96,7 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
         if (cachedResult !== undefined) {
             return cachedResult;
         } else {
-            addCustomRenderer = checkElement(element, state);
+            addCustomRenderer = shouldAddCustomRenderer(element, state);
             state.crCheckedElements.set(element, addCustomRenderer);
         }
     }

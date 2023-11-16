@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -8,15 +8,15 @@ import {
     ArrayFilter,
     assign,
     create,
-    defineProperties,
     defineProperty,
     globalThis,
     isNull,
     isTrue,
     isUndefined,
-    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
+    KEY__NATIVE_GET_ELEMENT_BY_ID,
+    KEY__NATIVE_QUERY_SELECTOR_ALL,
     setPrototypeOf,
     getPrototypeOf,
     isObject,
@@ -24,8 +24,8 @@ import {
 
 import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
-import { DocumentPrototypeActiveElement, createComment } from '../env/document';
-import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
+import { DocumentPrototypeActiveElement, getElementById, querySelectorAll } from '../env/document';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -96,9 +96,22 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
     enumerable: true,
 });
 
-defineProperty(globalThis, KEY__IS_NATIVE_SHADOW_ROOT_DEFINED, {
-    value: isNativeShadowRootDefined,
-});
+// The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
+// would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
+if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
+    defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, {
+        value: getElementById,
+        configurable: true,
+    });
+}
+
+// See note above.
+if (isUndefined(globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
+    defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, {
+        value: querySelectorAll,
+        configurable: true,
+    });
+}
 
 // Function created per shadowRoot instance, it returns the shadowRoot, and is attached
 // into every new element inserted into the shadow via the GetShadowRootFnKey
@@ -647,40 +660,3 @@ defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
         );
     },
 });
-
-/**
- * This method is only intended to be used in non-production mode in IE11
- * and its role is to produce a 1-1 mapping between a shadowRoot instance
- * and a comment node that is intended to use to trick the IE11 DevTools
- * to show the content of the shadowRoot in the DOM Explorer.
- */
-export function getIE11FakeShadowRootPlaceholder(host: Element): Comment {
-    const shadowRoot = getShadowRoot(host);
-    // @ts-ignore this $$placeholder$$ is not a security issue because you must
-    // have access to the shadowRoot in order to extract the fake node, which give
-    // you access to the same childNodes of the shadowRoot, so, who cares.
-    let c = shadowRoot.$$placeholder$$;
-    if (!isUndefined(c)) {
-        return c;
-    }
-    const doc = getOwnerDocument(host);
-    // @ts-ignore $$placeholder$$ is fine, read the node above.
-    c = shadowRoot.$$placeholder$$ = createComment.call(doc, '');
-    defineProperties(c, {
-        childNodes: {
-            get() {
-                return shadowRoot.childNodes;
-            },
-            enumerable: true,
-            configurable: true,
-        },
-        tagName: {
-            get() {
-                return `#shadow-root (${shadowRoot.mode})`;
-            },
-            enumerable: true,
-            configurable: true,
-        },
-    });
-    return c;
-}

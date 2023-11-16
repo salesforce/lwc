@@ -1,0 +1,10 @@
+<template>
+    <div title="static" aria-label="static" class={dynamic}></div>
+    <x-other title="static" prop="static" class={dynamic}></x-other>
+    <x-external-with-static-props lwc:external
+                                  title="static"
+                                  prop="static"
+                                  not-a-prop="static"
+                                  class={dynamic}
+    ></x-external-with-static-props>
+</template>

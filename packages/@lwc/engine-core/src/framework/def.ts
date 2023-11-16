@@ -14,7 +14,6 @@
  */
 
 import {
-    assert,
     assign,
     create,
     defineProperties,
@@ -33,6 +32,8 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 
+import { logError } from '../shared/logger';
+import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -57,12 +58,17 @@ export interface ComponentDef {
     template: Template;
     renderMode: RenderMode;
     shadowSupportMode: ShadowSupportMode;
+    formAssociated: boolean | undefined;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
     disconnectedCallback?: LightningElement['disconnectedCallback'];
     renderedCallback?: LightningElement['renderedCallback'];
     errorCallback?: LightningElement['errorCallback'];
+    formAssociatedCallback?: LightningElement['formAssociatedCallback'];
+    formResetCallback?: LightningElement['formResetCallback'];
+    formDisabledCallback?: LightningElement['formDisabledCallback'];
+    formStateRestoreCallback?: LightningElement['formStateRestoreCallback'];
     render: LightningElement['render'];
 }
 
@@ -95,28 +101,42 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
-    const { shadowSupportMode: ctorShadowSupportMode, renderMode: ctorRenderMode } = Ctor;
+    const {
+        shadowSupportMode: ctorShadowSupportMode,
+        renderMode: ctorRenderMode,
+        formAssociated: ctorFormAssociated,
+    } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
         // assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
-        assert.isTrue(
-            Ctor.constructor,
-            `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
-        );
 
-        if (!isUndefined(ctorShadowSupportMode)) {
-            assert.invariant(
-                ctorShadowSupportMode === ShadowSupportMode.Any ||
-                    ctorShadowSupportMode === ShadowSupportMode.Default,
+        if (!Ctor.constructor) {
+            // This error seems impossible to hit, due to an earlier check in `isComponentConstructor()`.
+            // But we keep it here just in case.
+            logError(
+                `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
+            );
+        }
+
+        if (
+            !isUndefined(ctorShadowSupportMode) &&
+            ctorShadowSupportMode !== ShadowSupportMode.Any &&
+            ctorShadowSupportMode !== ShadowSupportMode.Default &&
+            ctorShadowSupportMode !== ShadowSupportMode.Native
+        ) {
+            logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
 
-        if (!isUndefined(ctorRenderMode)) {
-            assert.invariant(
-                ctorRenderMode === 'light' || ctorRenderMode === 'shadow',
+        if (
+            !isUndefined(ctorRenderMode) &&
+            ctorRenderMode !== 'light' &&
+            ctorRenderMode !== 'shadow'
+        ) {
+            logError(
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }
@@ -127,12 +147,28 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         decoratorsMeta;
     const proto = Ctor.prototype;
 
-    let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
-        proto;
+    let {
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+        formAssociatedCallback,
+        formResetCallback,
+        formDisabledCallback,
+        formStateRestoreCallback,
+        render,
+    } = proto;
     const superProto = getCtorProto(Ctor);
-    const superDef =
-        superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
-    const bridge = HTMLBridgeElementFactory(superDef.bridge, keys(apiFields), keys(apiMethods));
+    const hasCustomSuperClass = superProto !== LightningElement;
+    const superDef = hasCustomSuperClass ? getComponentInternalDef(superProto) : lightingElementDef;
+    const bridge = HTMLBridgeElementFactory(
+        superDef.bridge,
+        keys(apiFields),
+        keys(apiMethods),
+        keys(observedFields),
+        proto,
+        hasCustomSuperClass
+    );
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);
     const methods: PropertyDescriptorMap = assign(create(null), superDef.methods, apiMethods);
@@ -146,6 +182,10 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
     renderedCallback = renderedCallback || superDef.renderedCallback;
     errorCallback = errorCallback || superDef.errorCallback;
+    formAssociatedCallback = formAssociatedCallback || superDef.formAssociatedCallback;
+    formResetCallback = formResetCallback || superDef.formResetCallback;
+    formDisabledCallback = formDisabledCallback || superDef.formDisabledCallback;
+    formStateRestoreCallback = formStateRestoreCallback || superDef.formStateRestoreCallback;
     render = render || superDef.render;
 
     let shadowSupportMode = superDef.shadowSupportMode;
@@ -156,6 +196,11 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     let renderMode = superDef.renderMode;
     if (!isUndefined(ctorRenderMode)) {
         renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
+    }
+
+    let formAssociated = superDef.formAssociated;
+    if (!isUndefined(ctorFormAssociated)) {
+        formAssociated = ctorFormAssociated;
     }
 
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
@@ -175,12 +220,20 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         template,
         renderMode,
         shadowSupportMode,
+        formAssociated,
         connectedCallback,
         disconnectedCallback,
-        renderedCallback,
         errorCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback,
+        renderedCallback,
         render,
     };
+
+    // This is a no-op unless Lightning DevTools are enabled.
+    instrumentDef(def);
 
     if (process.env.NODE_ENV !== 'production') {
         freeze(Ctor.prototype);
@@ -270,6 +323,7 @@ const lightingElementDef: ComponentDef = {
     methods: EmptyObject,
     renderMode: RenderMode.Shadow,
     shadowSupportMode: ShadowSupportMode.Default,
+    formAssociated: undefined,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,

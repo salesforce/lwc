@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1196,
+            "message": "Invalid expression {(one(), two(), three(), iAmTheCount())} - LWC1196: Use of comma operators is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 41,
+                "length": 48
+            }
+        }
+    ]
+}

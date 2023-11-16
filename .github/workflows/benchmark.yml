@@ -1,0 +1,37 @@
+name: Run Best benchmark
+
+# We could run on every PR, but there is not much need right now.
+# By running on every push to master, we get historical Best data for the master branch.
+on:
+  push:
+    branches: [ master ]
+
+env:
+  BEST_FRONTEND_CLIENT_TOKEN: ${{secrets.BEST_FRONTEND_CLIENT_TOKEN}}
+  BEST_FRONTEND_HOSTNAME: ${{secrets.BEST_FRONTEND_HOSTNAME}}
+  BEST_HUB_CLIENT_TOKEN: ${{secrets.BEST_HUB_CLIENT_TOKEN}}
+  BEST_HUB_HOSTNAME: ${{secrets.BEST_HUB_HOSTNAME}}
+  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
+
+jobs:
+  run-best-performance-tests:
+    # It is important to use this image so that we have a consistent IP address that can be allowlisted by Best infra
+    runs-on: salesforce-Ubuntu
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.18.0"
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build benchmarks
+        run: yarn build:performance
+
+      - name: Run benchmarks
+        run: yarn test:performance:best:ci

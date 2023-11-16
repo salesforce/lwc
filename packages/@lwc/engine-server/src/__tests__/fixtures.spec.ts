@@ -8,12 +8,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import { rollup } from 'rollup';
+import { rollup, RollupLog } from 'rollup';
 // @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { FeatureFlagMap } from '@lwc/features';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -28,12 +29,15 @@ jest.setTimeout(10_000 /* 10 seconds */);
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
+    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
+    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
         external: ['lwc'],
         plugins: [
             lwcRollupPlugin({
+                enableDynamicComponents: true,
                 modules: [
                     {
                         dir: modulesDir,
@@ -41,6 +45,9 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 ],
             }),
         ],
+        onwarn(warning) {
+            warnings.push(warning);
+        },
     });
 
     await bundle.write({
@@ -77,6 +84,23 @@ function formatHTML(src: string): string {
         // Consume element tags and comments.
         if (src.charAt(pos) === '<') {
             const tagNameMatch = src.slice(pos).match(/(\w+)/);
+
+            // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
+            // inside the text content. So we just serialize it as-is.
+            if (tagNameMatch![0] === 'style') {
+                const styleMatch = src.slice(pos).match(/<style([\s\S]*?)>([\s\S]*?)<\/style>/);
+                if (styleMatch) {
+                    // opening tag
+                    const [wholeMatch, attrs, textContent] = styleMatch!;
+                    res += getPadding() + `<style${attrs}>` + '\n';
+                    depth++;
+                    res += getPadding() + textContent + '\n';
+                    depth--;
+                    res += getPadding() + '</style>' + '\n';
+                    start = pos = pos + wholeMatch.length;
+                    continue;
+                }
+            }
 
             const isVoid = isVoidElement(tagNameMatch![0], HTML_NAMESPACE);
             const isClosing = src.charAt(pos + 1) === '/';
@@ -159,17 +183,24 @@ function testFixtures() {
                 },
             });
 
-            const result = lwcEngineServer!.renderComponent(
-                module!.tagName,
-                module!.default,
-                config.props || {}
-            );
+            let result;
+            let err;
+            try {
+                result = lwcEngineServer!.renderComponent(
+                    module!.tagName,
+                    module!.default,
+                    config.props || {}
+                );
+            } catch (_err: any) {
+                err = _err.message;
+            }
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });
 
             return {
-                'expected.html': formatHTML(result),
+                'expected.html': result ? formatHTML(result) : undefined,
+                'error.txt': err,
             };
         }
     );
@@ -182,15 +213,19 @@ describe('fixtures', () => {
         testFixtures();
     });
 
-    describe('native custom element lifecycle', () => {
+    function testWithFeatureFlagEnabled(flagName: keyof FeatureFlagMap) {
         beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', true);
+            setFeatureFlagForTest(flagName, true);
         });
 
         afterEach(() => {
-            setFeatureFlagForTest('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', false);
+            setFeatureFlagForTest(flagName, false);
         });
 
         testFixtures();
+    }
+
+    describe('native custom element lifecycle', () => {
+        testWithFeatureFlagEnabled('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE');
     });
 });

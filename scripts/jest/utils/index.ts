@@ -7,9 +7,10 @@
 
 import fs from 'fs';
 import path from 'path';
-import glob from 'glob';
+import * as glob from 'glob';
 import MatcherUtils = jest.MatcherUtils;
 import CustomMatcherResult = jest.CustomMatcherResult;
+const { globSync } = glob;
 
 /**
  * @typedef {Object} TestFixtureConfig
@@ -155,7 +156,7 @@ export function testFixtureDir(
         throw new TypeError(`Expected a "root" and a "pattern" config to be specified`);
     }
 
-    const matches = glob.sync(pattern, {
+    const matches = globSync(pattern, {
         cwd: root,
         absolute: true,
     });

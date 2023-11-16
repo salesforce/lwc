@@ -1,0 +1,12 @@
+{
+    "enableDynamicComponents": true,
+    "experimentalDynamicDirective": true,
+    "customRendererConfig": {
+        "directives": ["lwc:dynamic", "lwc:is"],
+        "elements": [
+            {
+                "tagName": "lwc:component"
+            }
+        ]
+    }
+}

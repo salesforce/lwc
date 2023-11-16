@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -8,9 +9,13 @@ import SvgPath from 'x/svgPath';
 import SvgPathInDiv from 'x/svgPathInDiv';
 import SvgPathInG from 'x/svgPathInG';
 import StaticUnsafeTopLevel from 'x/staticUnsafeTopLevel';
+import OnlyEventListener from 'x/onlyEventListener';
+import OnlyEventListenerChild from 'x/onlyEventListenerChild';
+import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
+import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
+import DeepListener from 'x/deepListener';
 
-// In compat mode, the component will always render in synthetic mode with the scope attribute
-if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
@@ -33,8 +38,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     .shadowRoot.querySelector('x-component')
                     .shadowRoot.querySelector('div');
 
-                expect(syntheticMode.hasAttribute('x-component_component')).toBe(true);
-                expect(nativeMode.hasAttribute('x-component_component')).toBe(false);
+                const token =
+                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc-6a8uqob2ku4';
+                expect(syntheticMode.hasAttribute(token)).toBe(true);
+                expect(nativeMode.hasAttribute(token)).toBe(false);
             });
         });
     });
@@ -45,14 +52,16 @@ describe('static content when stylesheets change', () => {
         const elm = createElement('x-container', { is: MultipleStyles });
 
         const stylesheetsWarning =
-            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./;
+            /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/;
 
         expect(() => {
             elm.updateTemplate({
                 name: 'a',
                 useScopedCss: false,
             });
-        }).toLogErrorDev(stylesheetsWarning);
+        }).toLogWarningDev(stylesheetsWarning);
+
+        window.__lwcResetAlreadyLoggedMessages();
 
         document.body.appendChild(elm);
 
@@ -64,19 +73,24 @@ describe('static content when stylesheets change', () => {
                 name: 'b',
                 useScopedCss: true,
             });
-        }).toLogErrorDev(stylesheetsWarning);
+        }).toLogWarningDev(stylesheetsWarning);
+
+        window.__lwcResetAlreadyLoggedMessages();
 
         return Promise.resolve()
             .then(() => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-                expect(classList).toEqual(['foo', 'x-multipleStyles_b']);
+                expect(classList).toEqual([
+                    'foo',
+                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-6fpm08fjoch',
+                ]);
 
                 expect(() => {
                     elm.updateTemplate({
                         name: 'a',
                         useScopedCss: false,
                     });
-                }).toLogErrorDev(stylesheetsWarning);
+                }).toLogWarningDev(stylesheetsWarning);
             })
             .then(() => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
@@ -260,5 +274,125 @@ describe('template literal escaping', () => {
         expect(
             elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
         ).toBe('Escape \\${me}');
+    });
+});
+
+describe('static optimization with event listeners', () => {
+    // We test an event listener on the self, child, and grandchild, because we currently
+    // cannot optimize event listeners anywhere except at the top level of a static fragment.
+    // So we need to ensure that potentially-static parents/grandparents do not result in
+    // event listeners not being attached incorrectly.
+    const scenarios = [
+        {
+            name: 'self',
+            Component: OnlyEventListener,
+        },
+        {
+            name: 'child',
+            Component: OnlyEventListenerChild,
+        },
+        {
+            name: 'grandchild',
+            Component: OnlyEventListenerGrandchild,
+        },
+    ];
+
+    scenarios.forEach(({ name, Component }) => {
+        describe(name, () => {
+            // CustomEvent is not supported in IE11
+            const CE = typeof CustomEvent === 'function' ? CustomEvent : Event;
+
+            let elm;
+            let button;
+
+            beforeEach(async () => {
+                elm = createElement('x-only-event-listener', { is: Component });
+                document.body.appendChild(elm);
+
+                await Promise.resolve();
+
+                button = elm.shadowRoot.querySelector('button');
+            });
+
+            it('works with element that is static except for event listener', async () => {
+                button.dispatchEvent(new CE('foo'));
+                button.dispatchEvent(new CE('bar'));
+                expect(elm.counts).toEqual({ foo: 1, bar: 1 });
+
+                // trigger re-render
+                elm.dynamic = 'yolo';
+
+                await Promise.resolve();
+
+                button.dispatchEvent(new CE('foo'));
+                button.dispatchEvent(new CE('bar'));
+                expect(elm.counts).toEqual({ foo: 2, bar: 2 });
+            });
+
+            it('can have manual listeners too', async () => {
+                const dispatcher = jasmine.createSpy();
+
+                button.addEventListener('baz', dispatcher);
+                button.dispatchEvent(new CE('baz'));
+                expect(dispatcher.calls.count()).toBe(1);
+
+                // trigger re-render
+                elm.dynamic = 'yolo';
+
+                await Promise.resolve();
+
+                button.dispatchEvent(new CE('baz'));
+                expect(dispatcher.calls.count()).toBe(2);
+            });
+        });
+    });
+});
+
+describe('event listeners on static nodes when other nodes are updated', () => {
+    it('event listeners work after updates', async () => {
+        const elm = createElement('x-listener-static-with-updates', {
+            is: ListenerStaticWithUpdates,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        let expectedCount = 0;
+
+        expect(elm.fooEventCount).toBe(expectedCount);
+        elm.fireFooEvent();
+        expect(elm.fooEventCount).toBe(++expectedCount);
+
+        await Promise.resolve();
+        for (let i = 0; i < 3; i++) {
+            elm.version = i;
+            elm.fireFooEvent();
+            expect(elm.fooEventCount).toBe(++expectedCount);
+            await Promise.resolve();
+            elm.fireFooEvent();
+            expect(elm.fooEventCount).toBe(++expectedCount);
+        }
+    });
+});
+
+describe('event listeners on deep paths', () => {
+    it('handles events correctly', async () => {
+        const elm = createElement('x-deep-listener', {
+            is: DeepListener,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        let count = 0;
+        expect(elm.counter).toBe(count);
+
+        const childElms = Object.values(extractDataIds(elm));
+        expect(childElms.length).toBe(12); // static1, dynamic1, deepStatic1, static2, etc. until 4
+
+        for (const childElm of childElms) {
+            childElm.dispatchEvent(new CustomEvent('foo'));
+            expect(elm.counter).toBe(++count);
+        }
     });
 });

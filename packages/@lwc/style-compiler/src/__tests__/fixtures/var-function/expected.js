@@ -1,8 +1,8 @@
-import varResolver from "custom-properties-resolver";
 function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
-  return "div" + shadowSelector + " {color: " + (varResolver("--lwc-color")) + ";}div" + shadowSelector + " {color: " + (varResolver("--lwc-color","black")) + ";}div" + shadowSelector + " {color: " + (varResolver("--lwc-color")) + " important;}";
+  var suffixToken = token ? ("-" + token) : "";
+  return "div" + shadowSelector + " {color: var(--lwc-color);}div" + shadowSelector + " {color: var(--lwc-color, black);}div" + shadowSelector + " {color: var(--lwc-color) important;}";
   /*LWC compiler vX.X.X*/
 }
 export default [stylesheet];

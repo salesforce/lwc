@@ -4,15 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
-import { assert, isFunction, isUndefined, toString } from '@lwc/shared';
+import { assert, isFunction, isNull, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
-import { createAccessorReactiveObserver } from '../accessor-reactive-observer';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -49,18 +47,22 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
+                if (isInvokingRender) {
+                    logError(
+                        `render() method has side effects on the state of property "${toString(
+                            key
+                        )}"`,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                    );
+                }
+                if (isUpdatingTemplate) {
+                    logError(
+                        `Updating the template has side effects on the state of property "${toString(
+                            key
+                        )}"`,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                    );
+                }
             }
             vm.cmpProps[key] = newValue;
 
@@ -76,15 +78,12 @@ export function createPublicAccessorDescriptor(
     descriptor: PropertyDescriptor
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
-    if (!isFunction(get)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.invariant(
-                isFunction(get),
-                `Invalid compiler output for public accessor ${toString(key)} decorated with @api`
-            );
-        }
-        throw new Error();
-    }
+    assert.invariant(
+        isFunction(get),
+        `Invalid public accessor ${toString(
+            key
+        )} decorated with @api. The property is missing a getter.`
+    );
     return {
         get(this: LightningElement): any {
             if (process.env.NODE_ENV !== 'production') {
@@ -97,41 +96,31 @@ export function createPublicAccessorDescriptor(
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
+                if (isInvokingRender) {
+                    logError(
+                        `render() method has side effects on the state of property "${toString(
+                            key
+                        )}"`,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                    );
+                }
+                if (isUpdatingTemplate) {
+                    logError(
+                        `Updating the template has side effects on the state of property "${toString(
+                            key
+                        )}"`,
+                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                    );
+                }
             }
             if (set) {
-                if (features.ENABLE_REACTIVE_SETTER) {
-                    let ro = vm.oar[key as any];
-                    if (isUndefined(ro)) {
-                        ro = vm.oar[key as any] = createAccessorReactiveObserver(vm, set);
-                    }
-                    // every time we invoke this setter from outside (through this wrapper setter)
-                    // we should reset the value and then debounce just in case there is a pending
-                    // invocation the next tick that is not longer relevant since the value is changing
-                    // from outside.
-                    ro.reset(newValue);
-                    ro.observe(() => {
-                        set.call(this, newValue);
-                    });
-                } else {
-                    set.call(this, newValue);
-                }
+                set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
-                assert.fail(
-                    `Invalid attempt to set a new value for property ${toString(
+                logError(
+                    `Invalid attempt to set a new value for property "${toString(
                         key
-                    )} of ${vm} that does not has a setter decorated with @api.`
+                    )}" that does not has a setter decorated with @api.`,
+                    vm
                 );
             }
         },

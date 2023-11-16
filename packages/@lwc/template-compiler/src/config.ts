@@ -4,8 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { hasOwnProperty } from '@lwc/shared';
+import {
+    TemplateErrors,
+    invariant,
+    generateCompilerError,
+    InstrumentationObject,
+} from '@lwc/errors';
+import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
 
@@ -21,12 +26,38 @@ export interface Config {
      *        {list[0].name}
      *    </template>
      */
-
     experimentalComputedMemberExpression?: boolean;
+
+    // TODO [#3370]: remove experimental template expression flag
     /**
-     * Enable <x-foo lwc:directive={expr}>
+     * Enable use of (a subset of) JavaScript expressions in place of template bindings.
+     *
+     *    <template>
+     *        <input
+     *            attr={complex ?? expressions()}
+     *            onchange={({ target }) => componentMethod(target.value)}
+     *        >
+     *            Hey there {inAustralia ? 'mate' : 'friend'}
+     *        </input>
+     *    </template>
+     */
+    experimentalComplexExpressions?: boolean;
+
+    /**
+     * TODO [#3331]: remove usage of lwc:dynamic in 246
+     *
+     * Enable lwc:dynamic directive - Deprecated
+     *
+     * <x-foo lwc:dynamic={expr}>
      */
     experimentalDynamicDirective?: boolean;
+
+    /**
+     * When true, enables `lwc:is` directive.
+     *
+     * <lwc:component lwc:is={expr}>
+     */
+    enableDynamicComponents?: boolean;
 
     /**
      * When true, HTML comments in the template will be preserved.
@@ -39,21 +70,36 @@ export interface Config {
     enableStaticContentOptimization?: boolean;
 
     /**
-     * When true, enables `lwc:spread` directive.
+     * @deprecated Spread operator is now always enabled.
      */
     enableLwcSpread?: boolean;
+
+    /**
+     * Config to use to collect metrics and logs
+     */
+    instrumentation?: InstrumentationObject;
+
+    /**
+     * The API version to associate with the compiled template
+     */
+    apiVersion?: number;
 }
 
-export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
-    Partial<Pick<Config, 'customRendererConfig'>>;
+export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'instrumentation'>> &
+    Partial<Pick<Config, 'customRendererConfig' | 'instrumentation'>>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
+    'apiVersion',
     'customRendererConfig',
+    'enableLwcSpread',
+    'enableStaticContentOptimization',
+    // TODO [#3370]: remove experimental template expression flag
+    'experimentalComplexExpressions',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
+    'enableDynamicComponents',
     'preserveHtmlComments',
-    'enableStaticContentOptimization',
-    'enableLwcSpread',
+    'instrumentation',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -99,6 +145,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         ? normalizeCustomRendererConfig(config.customRendererConfig)
         : undefined;
 
+    const instrumentation = config.instrumentation || undefined;
+
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
             throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
@@ -107,13 +155,20 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         }
     }
 
+    const apiVersion = getAPIVersionFromNumber(config.apiVersion);
+
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
+        // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions: false,
         experimentalDynamicDirective: false,
+        enableDynamicComponents: false,
         enableStaticContentOptimization: true,
-        enableLwcSpread: false,
+        enableLwcSpread: true,
         ...config,
+        apiVersion, // overrides the config apiVersion
         ...{ customRendererConfig },
+        ...{ instrumentation },
     };
 }

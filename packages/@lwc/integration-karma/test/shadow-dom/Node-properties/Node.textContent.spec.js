@@ -34,19 +34,24 @@ describe('Node.textContent - setter', () => {
 
         expect(() => {
             elm.shadowRoot.textContent = '<span>Hello World!</span>';
-        }).toThrowError();
+        }).toLogErrorDev(/Invalid attempt to set textContent on ShadowRoot/);
     });
 
-    it('should log an error when invoking setter for an element in the shadow', () => {
+    it('should log a warning when invoking setter for an element in the shadow only in synthetic mode', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');
 
-        expect(() => {
+        // eslint-disable-next-line jest/valid-expect
+        let expected = expect(() => {
             div.textContent = '<span>Hello World!</span>';
-        }).toLogErrorDev(
-            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
+        });
+        if (process.env.NATIVE_SHADOW) {
+            expected = expected.not; // no error
+        }
+        expected.toLogWarningDev(
+            /\[LWC warn\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

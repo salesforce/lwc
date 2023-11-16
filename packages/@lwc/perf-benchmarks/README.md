@@ -60,4 +60,24 @@ BENCHMARK_TIMEOUT=5
 
 See the [Tachometer documentation](https://github.com/Polymer/tachometer) for details on what these mean.
 
+You can run a smoke test (to confirm the benchmark tests are working) using:
+
+```shell
+BENCHMARK_SMOKE_TEST=1
+```
+
 If anything gets messed up when comparing to the other branch, add the `--force-clean-npm-install` flag when running `tach`.
+
+Also note that, due to how NX does caching, any environment variables you pass to `build:performance` should also
+be passed to `test:performance`. Otherwise, `test:performance` will use whatever environment variables you give it
+(or don't give it) to re-run `build:performance`.
+
+## Best benchmarks
+
+This package also supports [Best](https://bestjs.dev) as a benchmark runner. To run the Best tests locally:
+
+    yarn test:performance:best
+
+Or for CI:
+
+    yarn test:performance:best:ci

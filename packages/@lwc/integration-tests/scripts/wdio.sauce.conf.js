@@ -16,52 +16,36 @@ require('dotenv').config({
 
 const baseConfig = require('./wdio.conf.js');
 
+// #TODO[3754]: Only Chrome and Edge on Windows platform currently works, all other browser tests fail.
+// Need to investigate why sauce labs fails for all other platforms.
 const browsers = [
     // Note that headless Chrome also needs to be updated in wdio.conf.js for non-SauceLabs runs
     {
         commonName: 'chrome',
         browserName: 'chrome',
         version: 'latest',
+        // Note chrome fails for Linux and macOS
+        platform: 'Windows 11',
     },
     {
         commonName: 'edge',
         browserName: 'MicrosoftEdge',
         version: 'latest',
+        platform: 'Windows 11',
     },
     {
         commonName: 'safari',
         browserName: 'safari',
         version: 'latest',
+        // Note safari fails for macOS
+        platform: 'macOS 13',
     },
     {
         commonName: 'firefox',
         browserName: 'firefox',
         version: 'latest',
-    },
-];
-
-// Browsers that are only expected to work in compat mode
-const compatBrowsers = [
-    {
-        commonName: 'ie11',
-        browserName: 'internet explorer',
-        version: '11',
-    },
-    {
-        commonName: 'safari',
-        browserName: 'safari',
-        platform: 'OS X 10.11',
-        version: '10',
-    },
-    {
-        commonName: 'chrome',
-        browserName: 'chrome',
-        version: '59',
-    },
-    {
-        commonName: 'firefox',
-        browserName: 'firefox',
-        version: '54',
+        // Note firefox is failing for both Linux and Windows 11
+        platform: 'Windows 11',
     },
 ];
 
@@ -94,8 +78,7 @@ const customData = {
 };
 
 function getCapabilities() {
-    const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
-    let filtered = isCompat ? compatBrowsers : browsers;
+    let filtered = browsers;
 
     const args = minimist(process.argv.slice(2));
     const userBrowsers = args.browsers;

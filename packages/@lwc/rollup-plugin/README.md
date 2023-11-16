@@ -27,7 +27,13 @@ export default {
 -   `rootDir` (type: `string`, default: rollup `input` directory) - The LWC root module directory.
 -   `sourcemap` (type: `boolean`, default: `false`) - If `true` the plugin will produce source maps.
 -   `modules` (type: `ModuleRecord[]`, default: `[]`) - The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`.
--   `stylesheetConfig` (type: `object`, default: `{}`) - The stylesheet compiler configuration to pass to the `@lwc/style-compiler`.
+-   `stylesheetConfig` (type: `object`, default: `{}`) - Deprecated. Ignored by compiler.
 -   `preserveHtmlComments` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
--   `experimentalDynamicComponent` (type: `DynamicComponentConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
+-   `experimentalDynamicComponent` (type: `DynamicImportConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
+-   `experimentalDynamicDirective` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable deprecated dynamic components.
+-   `enableDynamicComponents` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable dynamic components.
+-   `enableLightningWebSecurityTransforms` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/compiler`.
 -   `enableLwcSpread` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
+-   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
+-   `apiVersion` (type: `number`, default: `undefined`) - Set to a valid API version such as 58, 59, etc. This will be overriden if the component itself overrides the version with a `*.js-meta.xml` file.
+-   `enableStaticContentOptimization` (type: `boolean`, optional) - True if the static content optimization should be enabled. Passed to `@lwc/template-compiler`. True by default.

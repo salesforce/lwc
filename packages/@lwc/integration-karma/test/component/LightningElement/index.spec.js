@@ -10,7 +10,7 @@ it('should throw when trying to invoke the constructor manually', () => {
     const func = () => {
         new LightningElement();
     };
-    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(TypeError);
     expect(func).toThrowError(/Illegal constructor/);
 });
 
@@ -19,7 +19,7 @@ it('should throw when trying to `new` a subclass of LightningElement manually', 
         class Test extends LightningElement {}
         new Test();
     };
-    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(TypeError);
     expect(func).toThrowError(/Illegal constructor/);
 });
 
@@ -27,7 +27,7 @@ it('should throw when trying to `new` a compiled subclass of LightningElement', 
     const func = () => {
         new UndefinedComponent();
     };
-    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(TypeError);
     expect(func).toThrowError(/Illegal constructor/);
 });
 
@@ -37,7 +37,7 @@ it('should throw when trying to `new` a compiled subclass of LightningElement af
     const func = () => {
         new DefinedComponent();
     };
-    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(TypeError);
     expect(func).toThrowError(/Illegal constructor/);
 });
 
@@ -74,7 +74,7 @@ it('should fail when the constructor return an instance of LightningElement', ()
 it("[W-6981076] shouldn't throw when a component with an invalid child in unmounted", () => {
     const elm = createElement('x-parent-throwing-before-super', { is: ParentThrowingBeforeSuper });
 
-    expect(() => document.body.appendChild(elm)).toThrowConnectedError(
+    expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
         /Throwing before calling super/
     );
     expect(() => document.body.removeChild(elm)).not.toThrow();

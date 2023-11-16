@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1181,
+            "message": "LWC1181: Invalid lwc:external directive usage: <foo-bar>. This directive is a boolean attribute and should not have a value.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 39
+            }
+        }
+    ]
+}

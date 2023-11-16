@@ -1,0 +1,147 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 103,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 92,
+                "end": 103
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " issue #3418 ",
+                "value": " issue #3418 ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 25,
+                    "start": 15,
+                    "end": 35
+                }
+            },
+            {
+                "type": "Element",
+                "name": "h1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 26,
+                    "start": 40,
+                    "end": 61,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 9,
+                        "start": 40,
+                        "end": 44
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 21,
+                        "endLine": 3,
+                        "endColumn": 26,
+                        "start": 56,
+                        "end": 61
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Hello world!",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Hello world!"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 21,
+                            "start": 44,
+                            "end": 56
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 30,
+                    "start": 66,
+                    "end": 91,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 24,
+                        "start": 66,
+                        "end": 85
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 24,
+                        "endLine": 4,
+                        "endColumn": 30,
+                        "start": 85,
+                        "end": 91
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "data-foo",
+                        "value": {
+                            "type": "Literal",
+                            "value": "{}"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 10,
+                            "endLine": 4,
+                            "endColumn": 23,
+                            "start": 71,
+                            "end": 84
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

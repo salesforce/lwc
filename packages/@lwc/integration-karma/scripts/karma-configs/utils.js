@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -76,7 +76,6 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
             // Karma-sauce-launcher uses the browserVersion key to determine if the format is W3C or JWP (deprecated).
             // https://github.com/karma-runner/karma-sauce-launcher/blob/59b0c5c877448e064ad56449cd906743721c6b62/src/utils.ts#L15-L18
             // Standard karma tests need to be in W3C in order to pass the sauce:options.
-            // Compat tests need to be in JWP format to utilize older browser versions.
             // Details about W3C and JWP formats: https://saucelabs.com/platform/platform-configurator
             const {
                 label,
@@ -111,7 +110,7 @@ function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
             ? [...config.reporters, 'dots', 'saucelabs']
             : [...config.reporters, 'progress', 'saucelabs'],
 
-        plugins: [...config.plugins, 'karma-sauce-launcher'],
+        plugins: [...config.plugins, 'karma-sauce-launcher-fix-firefox'],
 
         // Force Karma to run in singleRun mode in order to shutdown the server after the tests finished to run.
         singleRun: true,

@@ -8,7 +8,7 @@
 import path from 'path';
 import vm from 'vm';
 import { parseFragment, serialize } from 'parse5';
-import { rollup, RollupWarning } from 'rollup';
+import { rollup, RollupLog } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
@@ -31,7 +31,7 @@ async function compileComponent(tagName: string, componentName: string) {
         componentName.split('/')[1] + '.js'
     );
 
-    const warnings: RollupWarning[] = [];
+    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input: '__entry__',

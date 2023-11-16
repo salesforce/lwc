@@ -32,7 +32,7 @@ const VOID_ELEMENTS = [
 // See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
 const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
-const VOID_ELEMENTS_SET = new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
+const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
 
 export function isVoidElement(name: string, namespace: string): boolean {
     return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());

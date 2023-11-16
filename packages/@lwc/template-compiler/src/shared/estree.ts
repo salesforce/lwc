@@ -26,6 +26,30 @@ export function isProperty(node: t.BaseNode): node is t.Property {
     return node.type === 'Property';
 }
 
+export function isArrowFunctionExpression(node: t.BaseNode): node is t.ArrowFunctionExpression {
+    return node.type === 'ArrowFunctionExpression';
+}
+
+export function isObjectPattern(node: t.BaseNode): node is t.ObjectPattern {
+    return node.type === 'ObjectPattern';
+}
+
+export function isArrayPattern(node: t.BaseNode): node is t.ArrayPattern {
+    return node.type === 'ArrayPattern';
+}
+
+export function isRestElement(node: t.BaseNode): node is t.RestElement {
+    return node.type === 'RestElement';
+}
+
+export function isAssignmentPattern(node: t.BaseNode): node is t.AssignmentPattern {
+    return node.type === 'AssigmentPattern';
+}
+
+export function isUnaryExpression(node: t.BaseNode): node is t.UnaryExpression {
+    return node.type === 'UnaryExpression';
+}
+
 export function identifier(name: string, config?: Partial<t.Identifier>): t.Identifier {
     return {
         type: 'Identifier',
@@ -169,6 +193,13 @@ export function property(
     };
 }
 
+export function spreadElement(argument: t.Expression): t.SpreadElement {
+    return {
+        type: 'SpreadElement',
+        argument,
+    };
+}
+
 export function assignmentProperty(
     key: t.AssignmentProperty['key'],
     value: t.AssignmentProperty['value'],
@@ -252,6 +283,14 @@ export function templateLiteral(
     };
 }
 
+export function assignmentPattern(left: t.Pattern, right: t.Expression): t.AssignmentPattern {
+    return {
+        type: 'AssignmentPattern',
+        left,
+        right,
+    };
+}
+
 export function functionExpression(
     id: null | t.Identifier,
     params: t.FunctionExpression['params'],
@@ -268,7 +307,7 @@ export function functionExpression(
 }
 
 export function functionDeclaration(
-    id: null | t.Identifier,
+    id: t.Identifier,
     params: t.FunctionDeclaration['params'],
     body: t.FunctionDeclaration['body'],
     config?: Partial<t.FunctionDeclaration>
@@ -398,6 +437,9 @@ export type Identifier = t.Identifier;
 export type MemberExpression = t.MemberExpression;
 export type CallExpression = t.CallExpression;
 export type SimpleLiteral = t.SimpleLiteral;
+export type Literal = t.Literal;
+export type BigIntLiteral = t.BigIntLiteral;
+export type RegExpLiteral = t.RegExpLiteral;
 export type ConditionalExpression = t.ConditionalExpression;
 export type UnaryExpression = t.UnaryExpression;
 export type BinaryExpression = t.BinaryExpression;
@@ -408,10 +450,14 @@ export type Property = t.Property;
 export type ObjectExpression = t.ObjectExpression;
 export type ObjectPattern = t.ObjectPattern;
 export type ArrayExpression = t.ArrayExpression;
+export type ArrayPattern = t.ArrayPattern;
+export type RestElement = t.RestElement;
 export type ExpressionStatement = t.ExpressionStatement;
 export type FunctionExpression = t.FunctionExpression;
 export type Expression = t.Expression;
 export type FunctionDeclaration = t.FunctionDeclaration;
+export type ArrowFunctionExpression = t.ArrowFunctionExpression;
+export type AssignmentPattern = t.AssignmentPattern;
 export type BlockStatement = t.BlockStatement;
 export type ReturnStatement = t.ReturnStatement;
 export type VariableDeclarator = t.VariableDeclarator;

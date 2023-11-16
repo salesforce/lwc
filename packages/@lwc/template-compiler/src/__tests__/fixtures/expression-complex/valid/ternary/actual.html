@@ -1,0 +1,7 @@
+<template>
+    <section>
+        <x-pert attr={foo ? bar : baz}>{foo ? bar : baz}</x-pert>
+        <x-pert attr={foo?bar:baz}>{foo?bar:baz}</x-pert>
+        <x-pert attr={ foo ? bar : baz ? biz : buzz }>{ foo ? bar : baz ? biz : buzz }</x-pert>
+    </section>
+</template>

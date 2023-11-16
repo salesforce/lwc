@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { LightningElement, api, getComponentDef } from 'lwc';
+import { LightningElement, api, getComponentDef, createElement } from 'lwc';
+import { ariaProperties } from 'test-utils';
 
 import PublicProperties from 'x/publicProperties';
 import PublicAccessors from 'x/publicAccessors';
 import PublicMethods from 'x/publicMethods';
 import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
+import PrivateAccessors from 'x/privateAccessors';
+import HtmlElementProps from 'x/htmlElementProps';
 
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
@@ -54,62 +57,21 @@ testInvalidComponentConstructor('Class not extending LightningElement', class Co
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey',
-    'ariaActiveDescendant',
-    'ariaAtomic',
-    'ariaAutoComplete',
-    'ariaBusy',
-    'ariaChecked',
-    'ariaColCount',
-    'ariaColIndex',
-    'ariaColSpan',
-    'ariaControls',
-    'ariaCurrent',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaDisabled',
-    'ariaErrorMessage',
-    'ariaExpanded',
-    'ariaFlowTo',
-    'ariaHasPopup',
-    'ariaHidden',
-    'ariaInvalid',
-    'ariaKeyShortcuts',
-    'ariaLabel',
-    'ariaLabelledBy',
-    'ariaLevel',
-    'ariaLive',
-    'ariaModal',
-    'ariaMultiLine',
-    'ariaMultiSelectable',
-    'ariaOrientation',
-    'ariaOwns',
-    'ariaPlaceholder',
-    'ariaPosInSet',
-    'ariaPressed',
-    'ariaReadOnly',
-    'ariaRelevant',
-    'ariaRequired',
-    'ariaRoleDescription',
-    'ariaRowCount',
-    'ariaRowIndex',
-    'ariaRowSpan',
-    'ariaSelected',
-    'ariaSetSize',
-    'ariaSort',
-    'ariaValueMax',
-    'ariaValueMin',
-    'ariaValueNow',
-    'ariaValueText',
     'dir',
     'draggable',
     'hidden',
     'id',
     'lang',
-    'role',
     'spellcheck',
     'tabIndex',
     'title',
+    // Copy over all aria props supported on Element.prototype. Note that this will vary from browser to browser.
+    // See: https://wicg.github.io/aom/spec/aria-reflection.html
+    ...Object.keys(Element.prototype).filter((prop) => ariaProperties.includes(prop)),
 ].sort();
+
+const message = (propName) =>
+    `Error: [LWC warn]: The property "${propName}" is not publicly accessible. Add the @api annotation to the property declaration or getter/setter in the component to make it accessible.`;
 
 it('it should return the global HTML attributes in props', () => {
     class Component extends LightningElement {}
@@ -194,6 +156,74 @@ describe('@api', () => {
             overriddenInChild: PublicMethodsInheritance.prototype.overriddenInChild,
             childMethod: PublicMethodsInheritance.prototype.childMethod,
         });
+    });
+
+    it('should log warning when accessing a private prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['privateProp'];
+        }).toLogWarningDev(message('privateProp'));
+    });
+
+    it('should log warning when setting a private prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['privateProp'] = 'foo';
+        }).toLogWarningDev(message('privateProp'));
+    });
+
+    it('should not log warning when accessing a public prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['publicProb'];
+        }).not.toLogWarningDev();
+    });
+
+    it('should not log warning when setting a public prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['publicProb'] = 'foo';
+        }).not.toLogWarningDev();
+    });
+
+    it('should log warning when accessing a private prop without a getter', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['nonDecoratedPrivateProp'];
+        }).toLogWarningDev(message('nonDecoratedPrivateProp'));
+    });
+
+    it('should log warning when accessing a tracked private prop', () => {
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm['trackedProp'];
+        }).toLogWarningDev(message('trackedProp'));
+    });
+
+    it('should not log a warning on HTMLElement props', () => {
+        const elm = createElement('x-html-element-props', { is: HtmlElementProps });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.constructor;
+            elm.tabIndex;
+            elm.title;
+            elm.attributes;
+        }).not.toLogWarningDev();
+
+        expect(elm.attributes.length).toBe(0);
     });
 });
 

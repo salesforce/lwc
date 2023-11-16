@@ -1,0 +1,10 @@
+<template>
+    <ul>
+        <template for:each={contacts} for:item="contact">
+            <li key={contact.Id}>
+                <div><span>static</span></div>
+                {contact.Name}
+            </li>
+        </template>
+    </ul>
+</template>

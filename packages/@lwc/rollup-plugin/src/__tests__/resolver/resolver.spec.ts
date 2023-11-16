@@ -83,7 +83,6 @@ describe('resolver', () => {
         expect(warnings).toHaveLength(1);
         expect(warnings[0]).toMatchObject({
             code: 'UNRESOLVED_IMPORT',
-            source: 'some/module',
         });
     });
 
@@ -161,5 +160,75 @@ describe('resolver', () => {
         });
 
         expect(warnings).toHaveLength(0);
+    });
+
+    it('should emit a warning when import stylesheet file is missing', async () => {
+        const warnings: any = [];
+
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/missing-css/missing-css.js'),
+            plugins: [lwc()],
+            onwarn(warning) {
+                warnings.push(warning);
+            },
+        });
+
+        const { output } = await bundle.generate({
+            format: 'esm',
+        });
+
+        expect(warnings).toHaveLength(1);
+        expect(warnings[0].message).toMatch(
+            /The imported CSS file .+\/stylesheet.css does not exist: Importing it as undefined./
+        );
+        expect(output[0].code).toContain('var stylesheet = undefined;');
+    });
+
+    it('should resolve the namespace and name to the alias value', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/namespace/src/index.js'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+
+        const { code } = result.output[0];
+        // Alias name
+        expect(code).toContain(`sel: "alias-bar"`);
+        // Original name
+        expect(code).not.toContain(`sel: "x-foo"`);
+    });
+
+    it('should use directory to resolve the namespace and name for invalid alias specifier', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/namespace/src/invalid.js'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+
+        const { code } = result.output[0];
+
+        // The alias name must be in the format namespace / name.
+        // Otherwise, the folder structure is used to determine the namespace / name.
+
+        // Folder name - no slash
+        expect(code).toContain(`sel: "x-zoo"`);
+        // Alias name
+        expect(code).not.toContain(`sel: "zoo"`);
+
+        // Folder name - trailing slash
+        expect(code).toContain(`sel: "x-baz"`);
+        // Alias name
+        expect(code).not.toContain(`sel: "baz"`);
+
+        // Folder name - multiple slashes
+        expect(code).toContain(`sel: "x-quux"`);
+        // Alias name
+        expect(code).not.toContain(`sel: "foo-bar"`);
     });
 });

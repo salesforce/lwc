@@ -11,11 +11,12 @@ import { logError } from '../shared/logger';
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
 import { LightningElementConstructor } from './base-lightning-element';
+import { report, ReportingEventId } from './reporting';
 
 let warned = false;
 
-// @ts-ignore
-if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
     // @ts-ignore
     window.__lwcResetWarnedOnVersionMismatch = () => {
         warned = false;
@@ -46,6 +47,10 @@ export function checkVersionMismatch(
             logError(
                 `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
             );
+            report(ReportingEventId.CompilerRuntimeVersionMismatch, {
+                compilerVersion: version,
+                runtimeVersion: LWC_VERSION,
+            });
         }
     }
 }

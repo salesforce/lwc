@@ -1,0 +1,9 @@
+{
+    "warnings": [
+        {
+            "code": 1197,
+            "message": "Unexpected compilation error: LWC1197: Use of comments is disallowed within template expressions.",
+            "level": 1
+        }
+    ]
+}

@@ -8,17 +8,17 @@
 'use strict';
 
 const path = require('path');
-const { getModulePath } = require('lwc');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
+const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const { GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
-const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
+const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
@@ -52,6 +52,8 @@ module.exports = (config) => {
         // Transform all the spec files with the hydration-tests karma plugin.
         preprocessors: {
             '**/*.spec.js': ['hydration-tests'],
+            // Transform all framework files with the transform-framework plugin
+            [LWC_ENGINE]: ['transform-framework'],
         },
 
         // Use the env plugin to inject the right environment variables into the app
@@ -59,7 +61,12 @@ module.exports = (config) => {
         frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginHydrationTests, karmaPluginEnv],
+        plugins: [
+            'karma-jasmine',
+            karmaPluginHydrationTests,
+            karmaPluginEnv,
+            karmaPluginTransformFramework,
+        ],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.
@@ -75,7 +82,7 @@ module.exports = (config) => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
-        config.preprocessors[LWC_ENGINE] = ['coverage'];
+        config.preprocessors[LWC_ENGINE].push('coverage');
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

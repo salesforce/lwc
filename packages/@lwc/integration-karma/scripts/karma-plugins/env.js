@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -16,10 +16,12 @@ const fs = require('fs');
 const path = require('path');
 const { LWC_VERSION } = require('@lwc/shared');
 const {
-    COMPAT,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     SYNTHETIC_SHADOW_ENABLED,
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    NODE_ENV_FOR_TEST,
+    API_VERSION,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -39,13 +41,14 @@ function createEnvFile() {
         };
         window.process = {
             env: {
-                NODE_ENV: 'development',
-                COMPAT: ${COMPAT},
+                NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
                 MIXED_SHADOW: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
                 SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
-                LWC_VERSION: ${JSON.stringify(LWC_VERSION)}
+                ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: ${ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL},
+                LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
+                API_VERSION: ${JSON.stringify(API_VERSION)}
             }
         };
     `

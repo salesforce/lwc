@@ -1,0 +1,227 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 10,
+            "endColumn": 12,
+            "start": 0,
+            "end": 256,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 10,
+                "startColumn": 1,
+                "endLine": 10,
+                "endColumn": 12,
+                "start": 245,
+                "end": 256
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Custom element ",
+                "value": " Custom element ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 28,
+                    "start": 15,
+                    "end": 38
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 20,
+                    "start": 43,
+                    "end": 58,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 12,
+                        "start": 43,
+                        "end": 50
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 12,
+                        "endLine": 3,
+                        "endColumn": 20,
+                        "start": 50,
+                        "end": 58
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " Dynamic component (to be deprecated in 246) ",
+                "value": " Dynamic component (to be deprecated in 246) ",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 57,
+                    "start": 64,
+                    "end": 116
+                }
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 46,
+                    "start": 121,
+                    "end": 162,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 38,
+                        "start": 121,
+                        "end": 154
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 38,
+                        "endLine": 6,
+                        "endColumn": 46,
+                        "start": 154,
+                        "end": 162
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Dynamic",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "dynamicCtor",
+                            "location": {
+                                "startLine": 6,
+                                "startColumn": 12,
+                                "endLine": 6,
+                                "endColumn": 37,
+                                "start": 128,
+                                "end": 153
+                            }
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 12,
+                            "endLine": 6,
+                            "endColumn": 37,
+                            "start": 128,
+                            "end": 153
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Comment",
+                "raw": " Dynamic component ",
+                "value": " Dynamic component ",
+                "location": {
+                    "startLine": 8,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 31,
+                    "start": 168,
+                    "end": 194
+                }
+            },
+            {
+                "type": "Lwc",
+                "name": "lwc:component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 9,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 50,
+                    "start": 199,
+                    "end": 244,
+                    "startTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 34,
+                        "start": 199,
+                        "end": 228
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 34,
+                        "endLine": 9,
+                        "endColumn": 50,
+                        "start": 228,
+                        "end": 244
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Is",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "name": "ctor",
+                            "location": {
+                                "startLine": 9,
+                                "startColumn": 20,
+                                "endLine": 9,
+                                "endColumn": 33,
+                                "start": 214,
+                                "end": 227
+                            }
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 20,
+                            "endLine": 9,
+                            "endColumn": 33,
+                            "start": 214,
+                            "end": 227
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

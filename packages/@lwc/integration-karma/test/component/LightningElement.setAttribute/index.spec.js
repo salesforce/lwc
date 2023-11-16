@@ -12,12 +12,11 @@ function testConvertValueToString(type, value) {
     });
 }
 
-it('should throw when invoking setAttribute in constructor', () => {
+it('should log an error when invoking setAttribute in constructor', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
-    }).toThrowErrorDev(
-        Error,
-        /Assert Violation: Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
+    }).toLogErrorDev(
+        /Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
     );
 });
 

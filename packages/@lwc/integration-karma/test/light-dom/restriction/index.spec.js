@@ -13,12 +13,12 @@ describe('restriction', () => {
         expect(elm.querySelector('div span').textContent).toEqual('hello');
     });
 
-    it('should restrict setting outerHTML on light DOM component', () => {
+    it('should log an error when setting outerHTML on light DOM component', () => {
         const elm = createElement('x-component', { is: Component });
         document.body.appendChild(elm);
 
         expect(() => {
             elm.querySelector('div').outerHTML = 'foo';
-        }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on Element.');
+        }).toLogErrorDev(/Invalid attempt to set outerHTML on Element\./);
     });
 });

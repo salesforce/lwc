@@ -4,14 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features from '@lwc/features';
-import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
+import {
+    assert,
+    assign,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    toString,
+    StringToLowerCase,
+} from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getUpgradableConstructor,
+    LifecycleCallback,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -38,7 +50,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
     // Monkey patching Node methods to be able to detect the insertions and removal of root elements
     // created via createElement.
     const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
@@ -97,8 +109,13 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
-    let wasComponentUpgraded: boolean = false;
+    const { createCustomElement } = renderer;
+
+    // tagName must be all lowercase, unfortunately, we have legacy code that is
+    // passing `sel` as a camel-case, which makes them invalid custom elements name
+    // the following line guarantees that this does not leaks beyond this point.
+    const tagName = StringToLowerCase.call(sel);
+
     // the custom element from the registry is expecting an upgrade callback
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -106,23 +123,55 @@ export function createElement(
      * mechanism that only passes that argument if the constructor is known to be
      * an upgradable custom element.
      */
-    const element = new UpgradableConstructor((elm: HTMLElement) => {
+    const upgradeCallback = (elm: HTMLElement) => {
         createVM(elm, Ctor, renderer, {
-            tagName: sel,
+            tagName,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
-        wasComponentUpgraded = true;
-    });
-    if (!wasComponentUpgraded) {
-        /* eslint-disable-next-line no-console */
-        console.error(
-            `Unexpected tag name "${sel}". This name is a registered custom element, preventing LWC to upgrade the element.`
-        );
+    };
+
+    let connectedCallback: LifecycleCallback | undefined;
+    let disconnectedCallback: LifecycleCallback | undefined;
+    let formAssociatedCallback: LifecycleCallback | undefined;
+    let formDisabledCallback: LifecycleCallback | undefined;
+    let formResetCallback: LifecycleCallback | undefined;
+    let formStateRestoreCallback: LifecycleCallback | undefined;
+
+    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        connectedCallback = (elm: HTMLElement) => {
+            connectRootElement(elm);
+        };
+        disconnectedCallback = (elm: HTMLElement) => {
+            disconnectRootElement(elm);
+        };
+        formAssociatedCallback = (elm: HTMLElement) => {
+            runFormAssociatedCallback(elm);
+        };
+        formDisabledCallback = (elm: HTMLElement) => {
+            runFormDisabledCallback(elm);
+        };
+        formResetCallback = (elm: HTMLElement) => {
+            runFormResetCallback(elm);
+        };
+        formStateRestoreCallback = (elm: HTMLElement) => {
+            runFormStateRestoreCallback(elm);
+        };
     }
+
+    const element = createCustomElement(
+        tagName,
+        upgradeCallback,
+        connectedCallback,
+        disconnectedCallback,
+        formAssociatedCallback,
+        formDisabledCallback,
+        formResetCallback,
+        formStateRestoreCallback
+    );
     return element;
 }

@@ -1,0 +1,4 @@
+/* unclosed opening div tag */
+[foo="</style><div"] {
+    color: red;
+}

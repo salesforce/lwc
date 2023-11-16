@@ -1,0 +1,355 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 136,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 125,
+                "end": 136
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 124,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 15,
+                        "start": 114,
+                        "end": 124
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 48,
+                            "start": 33,
+                            "end": 72,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 39,
+                                "start": 33,
+                                "end": 63
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 39,
+                                "endLine": 3,
+                                "endColumn": 48,
+                                "start": 63,
+                                "end": 72
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "foo",
+                                "attributeName": "foo",
+                                "value": {
+                                    "type": "ArrayExpression",
+                                    "start": 1,
+                                    "end": 16,
+                                    "elements": [
+                                        {
+                                            "type": "Literal",
+                                            "start": 2,
+                                            "end": 3,
+                                            "value": 1,
+                                            "raw": "1"
+                                        },
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 5,
+                                                "end": 8,
+                                                "name": "bar"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        {
+                                            "type": "Literal",
+                                            "start": 10,
+                                            "end": 15,
+                                            "value": "baz",
+                                            "raw": "'baz'"
+                                        }
+                                    ],
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 38,
+                                        "start": 41,
+                                        "end": 62
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 38,
+                                    "start": 41,
+                                    "end": 62
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{['flop', floo, 2].join('')}",
+                        "value": {
+                            "type": "CallExpression",
+                            "start": 82,
+                            "end": 108,
+                            "loc": {
+                                "start": {
+                                    "line": 4,
+                                    "column": 9
+                                },
+                                "end": {
+                                    "line": 4,
+                                    "column": 35
+                                }
+                            },
+                            "range": [
+                                82,
+                                108
+                            ],
+                            "callee": {
+                                "type": "MemberExpression",
+                                "start": 82,
+                                "end": 104,
+                                "loc": {
+                                    "start": {
+                                        "line": 4,
+                                        "column": 9
+                                    },
+                                    "end": {
+                                        "line": 4,
+                                        "column": 31
+                                    }
+                                },
+                                "range": [
+                                    82,
+                                    104
+                                ],
+                                "object": {
+                                    "type": "ArrayExpression",
+                                    "start": 82,
+                                    "end": 99,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 9
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 26
+                                        }
+                                    },
+                                    "range": [
+                                        82,
+                                        99
+                                    ],
+                                    "elements": [
+                                        {
+                                            "type": "Literal",
+                                            "start": 83,
+                                            "end": 89,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 10
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 16
+                                                }
+                                            },
+                                            "range": [
+                                                83,
+                                                89
+                                            ],
+                                            "value": "flop",
+                                            "raw": "'flop'"
+                                        },
+                                        {
+                                            "type": "MemberExpression",
+                                            "object": {
+                                                "type": "Identifier",
+                                                "name": "$cmp"
+                                            },
+                                            "property": {
+                                                "type": "Identifier",
+                                                "start": 91,
+                                                "end": 95,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 18
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 22
+                                                    }
+                                                },
+                                                "range": [
+                                                    91,
+                                                    95
+                                                ],
+                                                "name": "floo"
+                                            },
+                                            "computed": false,
+                                            "optional": false
+                                        },
+                                        {
+                                            "type": "Literal",
+                                            "start": 97,
+                                            "end": 98,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 24
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 25
+                                                }
+                                            },
+                                            "range": [
+                                                97,
+                                                98
+                                            ],
+                                            "value": 2,
+                                            "raw": "2"
+                                        }
+                                    ]
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 100,
+                                    "end": 104,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 27
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 31
+                                        }
+                                    },
+                                    "range": [
+                                        100,
+                                        104
+                                    ],
+                                    "name": "join"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "arguments": [
+                                {
+                                    "type": "Literal",
+                                    "start": 105,
+                                    "end": 107,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 32
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 34
+                                        }
+                                    },
+                                    "range": [
+                                        105,
+                                        107
+                                    ],
+                                    "value": "",
+                                    "raw": "''"
+                                }
+                            ],
+                            "optional": false,
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 37,
+                                "start": 81,
+                                "end": 109
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 37,
+                            "start": 81,
+                            "end": 109
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

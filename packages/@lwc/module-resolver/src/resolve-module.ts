@@ -34,6 +34,7 @@ import {
     DirModuleRecord,
     ModuleResolverConfig,
     NpmModuleRecord,
+    RegistryType,
 } from './types';
 
 function resolveModuleFromAlias(
@@ -57,7 +58,7 @@ function resolveModuleFromAlias(
         );
     }
 
-    return createRegistryEntry(entry, specifier, opts);
+    return createRegistryEntry(entry, specifier, RegistryType.alias, opts);
 }
 
 function resolveModuleFromDir(
@@ -94,7 +95,7 @@ function resolveModuleFromDir(
     }
 
     const entry = getModuleEntry(moduleDir, name, opts);
-    return createRegistryEntry(entry, specifier, opts);
+    return createRegistryEntry(entry, specifier, RegistryType.dir, opts);
 }
 
 function resolveModuleFromNpm(
@@ -152,6 +153,7 @@ function resolveModuleFromNpm(
             if (registryEntry) {
                 if (aliasedSpecifier) {
                     registryEntry.specifier = specifier;
+                    registryEntry.type = RegistryType.alias;
                 }
                 return registryEntry;
             }

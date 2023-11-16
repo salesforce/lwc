@@ -1,0 +1,81 @@
+{
+    "warnings": [
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <div>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 39,
+                "length": 32
+            }
+        },
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <x-child>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 76,
+                "length": 40
+            }
+        },
+        {
+            "code": 1145,
+            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: lwc:slot-bind. For more information, please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 121,
+                "length": 78
+            }
+        },
+        {
+            "code": 1153,
+            "message": "LWC1153: Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. For more information please visit https://sfdc.co/template-directives",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 121,
+                "length": 78
+            }
+        },
+        {
+            "code": 1187,
+            "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
+            "level": 2,
+            "location": {
+                "line": 7,
+                "column": 5,
+                "start": 204,
+                "length": 57
+            }
+        },
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <x-lazy>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 5,
+                "start": 204,
+                "length": 57
+            }
+        },
+        {
+            "code": 1171,
+            "message": "LWC1171: Invalid lwc:slot-bind usage on element <lwc:component>. The directive can be used on a <slot> element only.",
+            "level": 1,
+            "location": {
+                "line": 8,
+                "column": 5,
+                "start": 266,
+                "length": 66
+            }
+        }
+    ]
+}

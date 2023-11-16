@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Tests
-import './testFeatureFlag';
+// Patches ---------------------------------------------------------------------------------------
+import './patches/detect-synthetic-cross-root-aria';
+import './patches/detect-non-standard-aria';
 
 export * from './framework/main';

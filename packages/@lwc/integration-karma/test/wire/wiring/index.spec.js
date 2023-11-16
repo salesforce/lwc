@@ -8,8 +8,12 @@ import { BroadcastAdapter } from 'x/broadcastAdapter';
 
 import InheritedMethods from 'x/inheritedMethods';
 
+import ContextAwareConsumer from 'x/contextAwareConsumer';
+import { ContextAwareWireAdapter } from 'x/contextAwareAdapter';
+
 const ComponentClass = AdapterConsumer;
 const AdapterId = EchoWireAdapter;
+const ContextLog = ContextAwareWireAdapter;
 
 function filterCalls(echoAdapterSpy, methodType) {
     return echoAdapterSpy.filter((call) => call.method === methodType);
@@ -374,5 +378,21 @@ describe('wired methods', () => {
         expect(getCallByName('overriddenInChild').args[0].child).toBe(true);
         expect(getCallByName('childMethod').args[0].child).toBe(true);
         expect(getCallByName('parentMethod').args[0].parent).toBe(true);
+    });
+});
+
+describe('context aware', () => {
+    it('should receive the source element tag name when adapter is constructed', () => {
+        const spy = [];
+        ContextLog.setSpy(spy);
+
+        const hostTagNameA = 'x-context-aware-a';
+        const hostTagNameB = 'x-context-aware-b';
+
+        createElement(hostTagNameA, { is: ContextAwareConsumer });
+        createElement(hostTagNameB, { is: ContextAwareConsumer });
+
+        expect(spy[0].hostContext.tagName).toBe(hostTagNameA);
+        expect(spy[1].hostContext.tagName).toBe(hostTagNameB);
     });
 });

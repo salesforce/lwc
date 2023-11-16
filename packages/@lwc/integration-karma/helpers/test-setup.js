@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2023, Salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -48,7 +48,32 @@ afterEach(function () {
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
     window.__lwcResetGlobalStylesheets();
+    // Certain logs only appear once; we want to reset these between tests
+    window.__lwcResetAlreadyLoggedMessages();
 });
+
+var consoleCallCount = 0;
+
+// Patch console.error/console.warn, etc. so if it's called, we throw
+function patchConsole() {
+    ['error', 'warn'].forEach(function (method) {
+        // eslint-disable-next-line no-console
+        var originalMethod = console[method];
+        // eslint-disable-next-line no-console
+        console[method] = function () {
+            consoleCallCount++;
+            return originalMethod.apply(this, arguments);
+        };
+    });
+}
+
+function throwIfConsoleCalled() {
+    if (consoleCallCount) {
+        throw new Error(
+            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)'
+        );
+    }
+}
 
 // Run some logic before all tests have run and after all tests have run to ensure that
 // no test dirtied the DOM with leftover elements
@@ -59,6 +84,7 @@ beforeAll(function () {
     originalHeadChildren = getHeadChildren();
     originalBodyChildren = getBodyChildren();
     originalAdoptedStyleSheets = getAdoptedStyleSheets();
+    patchConsole();
 });
 
 // Throwing an Error in afterAll will cause a non-zero exit code
@@ -86,4 +112,9 @@ afterAll(function () {
             );
         }
     });
+
+    throwIfConsoleCalled();
 });
+
+// The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;

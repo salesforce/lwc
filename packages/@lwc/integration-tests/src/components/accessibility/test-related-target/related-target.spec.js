@@ -39,73 +39,70 @@ function getChildInput() {
     );
 }
 
-// FocusEvent.relatedTarget is always null in IE11
-if (!/compat/.test(process.env.MODE)) {
-    describe('relatedTarget', () => {
-        beforeEach(async () => {
-            await browser.url(URL);
+describe('relatedTarget', () => {
+    beforeEach(async () => {
+        await browser.url(URL);
+    });
+
+    describe('when focus moves downwards in a shadow tree', () => {
+        it('should retarget for blur', async () => {
+            const rootInput = await getRootInput();
+            await rootInput.click();
+            const childInput = await getChildInput();
+            await childInput.click();
+
+            const events = await getRootEvents();
+            const { type, relatedTarget } = events.pop();
+            assert.strictEqual(`${type},${relatedTarget}`, 'blur,INTEGRATION-PARENT');
         });
 
-        describe('when focus moves downwards in a shadow tree', () => {
-            it('should retarget for blur', async () => {
-                const rootInput = await getRootInput();
-                await rootInput.click();
-                const childInput = await getChildInput();
-                await childInput.click();
+        it('should not retarget for focus', async () => {
+            const rootInput = await getRootInput();
+            await rootInput.click();
+            const childInput = await getChildInput();
+            await childInput.click();
 
-                const events = await getRootEvents();
-                const { type, relatedTarget } = events.pop();
-                assert.strictEqual(`${type},${relatedTarget}`, 'blur,INTEGRATION-PARENT');
-            });
-
-            it('should not retarget for focus', async () => {
-                const rootInput = await getRootInput();
-                await rootInput.click();
-                const childInput = await getChildInput();
-                await childInput.click();
-
-                const events = await getChildEvents();
-                const { type, relatedTarget } = events.pop();
-                assert.strictEqual(`${type},${relatedTarget}`, 'focus,INPUT');
-            });
-        });
-
-        describe('when focus moves upwards in a shadow tree', () => {
-            it('should retarget for focus', async () => {
-                const childInput = await getChildInput();
-                await childInput.click();
-                const rootInput = await getRootInput();
-                await rootInput.click();
-
-                const events = await getRootEvents();
-                const { type, relatedTarget } = events.pop();
-                assert.strictEqual(`${type},${relatedTarget}`, 'focus,INTEGRATION-PARENT');
-            });
-
-            it('should not retarget for blur', async () => {
-                const childInput = await getChildInput();
-                await childInput.click();
-                const rootInput = await getRootInput();
-                await rootInput.click();
-
-                const events = await getChildEvents();
-                const { type, relatedTarget } = events.pop();
-                assert.strictEqual(`${type},${relatedTarget}`, 'blur,INPUT');
-            });
-        });
-
-        it('should be `undefined` if the event lacks a relatedTarget getter', async () => {
-            const relatedTarget = await browser.execute(function () {
-                var relatedTarget = null;
-                var container = document.querySelector('integration-related-target');
-                container.addEventListener('foo', function (event) {
-                    relatedTarget = event.relatedTarget;
-                });
-                container.dispatchEvent(new CustomEvent('foo'));
-                return String(relatedTarget);
-            }).value;
-
-            assert.strictEqual(relatedTarget, undefined);
+            const events = await getChildEvents();
+            const { type, relatedTarget } = events.pop();
+            assert.strictEqual(`${type},${relatedTarget}`, 'focus,INPUT');
         });
     });
-}
+
+    describe('when focus moves upwards in a shadow tree', () => {
+        it('should retarget for focus', async () => {
+            const childInput = await getChildInput();
+            await childInput.click();
+            const rootInput = await getRootInput();
+            await rootInput.click();
+
+            const events = await getRootEvents();
+            const { type, relatedTarget } = events.pop();
+            assert.strictEqual(`${type},${relatedTarget}`, 'focus,INTEGRATION-PARENT');
+        });
+
+        it('should not retarget for blur', async () => {
+            const childInput = await getChildInput();
+            await childInput.click();
+            const rootInput = await getRootInput();
+            await rootInput.click();
+
+            const events = await getChildEvents();
+            const { type, relatedTarget } = events.pop();
+            assert.strictEqual(`${type},${relatedTarget}`, 'blur,INPUT');
+        });
+    });
+
+    it('should be `undefined` if the event lacks a relatedTarget getter', async () => {
+        const relatedTarget = await browser.execute(function () {
+            var relatedTarget = null;
+            var container = document.querySelector('integration-related-target');
+            container.addEventListener('foo', function (event) {
+                relatedTarget = event.relatedTarget;
+            });
+            container.dispatchEvent(new CustomEvent('foo'));
+            return String(relatedTarget);
+        }).value;
+
+        assert.strictEqual(relatedTarget, undefined);
+    });
+});

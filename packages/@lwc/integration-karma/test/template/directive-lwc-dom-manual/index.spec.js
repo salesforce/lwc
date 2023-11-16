@@ -5,24 +5,24 @@ import withoutLwcDomManual from 'x/withoutLwcDomManual';
 import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
 
 function waitForStyleToBeApplied() {
-    // Using a timeout instead of a Promise.resolve to wait for the MutationObserver to be triggered.
-    // The Promise polyfill on COMPAT browsers is based on MutationObserver. There are some timing issues between
-    // Promise.resolve and MutationObserver callback invocation.
-    return new Promise((resolve) => {
-        setTimeout(resolve);
-    });
+    return Promise.resolve();
 }
 
 describe('dom mutation without the lwc:dom="manual" directive', () => {
     function testErrorOnDomMutation(method, fn) {
-        it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive`, () => {
+        it(`should log a warning when calling ${method} on an element without the lwc:dom="manual" directive only in synthetic mode`, () => {
             const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
             document.body.appendChild(root);
             const elm = root.shadowRoot.querySelector('div');
 
-            expect(() => fn(elm)).toLogErrorDev(
+            // eslint-disable-next-line jest/valid-expect
+            let expected = expect(() => fn(elm));
+            if (process.env.NATIVE_SHADOW) {
+                expected = expected.not; // no error
+            }
+            expected.toLogWarningDev(
                 new RegExp(
-                    `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
+                    `\\[LWC warn\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
                 )
             );
         });
