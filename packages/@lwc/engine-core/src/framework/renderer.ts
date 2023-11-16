@@ -13,14 +13,6 @@ type N = HostNode;
 type E = HostElement;
 
 export type LifecycleCallback = (elm: E) => void;
-export interface LifecycleCallbacks {
-    connectedCallback: LifecycleCallback;
-    disconnectedCallback: LifecycleCallback;
-    formAssociatedCallback: LifecycleCallback;
-    formDisabledCallback: LifecycleCallback;
-    formResetCallback: LifecycleCallback;
-    formStateRestoreCallback: LifecycleCallback;
-}
 
 export interface RendererAPI {
     isSyntheticShadowDefined: boolean;
@@ -79,5 +71,4 @@ export interface RendererAPI {
         subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
     attachInternals: (elm: E) => ElementInternals;
-    setLifecycleCallbacks: (callbacks: LifecycleCallbacks) => void;
 }
