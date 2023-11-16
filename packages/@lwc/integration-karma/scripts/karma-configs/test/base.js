@@ -24,10 +24,10 @@ const TAGS = require('./tags');
 const BASE_DIR = path.resolve(__dirname, '../../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
-const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
-const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
-const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
-const ARIA_REFLECTION = require.resolve('@lwc/aria-reflection/dist/index.js');
+const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.cjs.js');
+const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.cjs.js');
+const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.cjs.js');
+const ARIA_REFLECTION = require.resolve('@lwc/aria-reflection/dist/index.cjs.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
