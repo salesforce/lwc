@@ -45,6 +45,7 @@ export function patchProps(
     const { getProperty, setProperty } = renderer;
 
     for (const key in props) {
+        if (key === 'lwc:mount') continue;
         const cur = props[key];
 
         // Set the property if it's the first time is is patched or if the previous property is

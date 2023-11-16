@@ -372,6 +372,10 @@ function mountCustomElement(
         formResetCallback,
         formStateRestoreCallback
     );
+    if (vnode.data.props?.['lwc:mount']) {
+        parent = vnode.data.props['lwc:mount'];
+        // elm = proxyElement(elm, vnode.data.props['lwc:mount']);
+    }
 
     vnode.elm = elm;
     vnode.vm = vm;

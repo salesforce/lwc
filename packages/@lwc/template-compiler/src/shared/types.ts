@@ -337,6 +337,7 @@ export enum ElementDirectiveName {
     SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
     Key = 'key',
+    Mount = 'lwc:mount',
 }
 
 export enum RootDirectiveName {
