@@ -35,6 +35,7 @@ import {
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 import { registerContextConsumer } from './context';
+import { setLifecycleCallbacks } from './apis/create-element';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -472,4 +473,5 @@ export const renderer = {
     registerContextConsumer,
     attachInternals,
     defineCustomElement: getUpgradableElement,
+    setLifecycleCallbacks,
 };

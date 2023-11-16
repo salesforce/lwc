@@ -44,7 +44,7 @@ export { freezeTemplate } from './freeze-template';
 export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
-export type { RendererAPI, LifecycleCallback } from './renderer';
+export type { RendererAPI, LifecycleCallback, LifecycleCallbacks } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
     ContextValue as WireContextValue,

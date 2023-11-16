@@ -15,3 +15,9 @@
 export function createElement() {
     throw new Error('createElement is not supported in @lwc/engine-server, only @lwc/engine-dom.');
 }
+
+export function setLifecycleCallbacks() {
+    throw new Error(
+        'setLifecycleCallbacks is not supported in @lwc/engine-server, only @lwc/engine-dom.'
+    );
+}

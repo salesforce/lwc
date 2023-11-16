@@ -19,7 +19,6 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    LifecycleCallback,
     runFormAssociatedCallback,
     runFormDisabledCallback,
     runFormResetCallback,
@@ -109,7 +108,7 @@ export function createElement(
         );
     }
 
-    const { createCustomElement } = renderer;
+    const { createCustomElement, setLifecycleCallbacks } = renderer;
 
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
@@ -135,43 +134,17 @@ export function createElement(
         }
     };
 
-    let connectedCallback: LifecycleCallback | undefined;
-    let disconnectedCallback: LifecycleCallback | undefined;
-    let formAssociatedCallback: LifecycleCallback | undefined;
-    let formDisabledCallback: LifecycleCallback | undefined;
-    let formResetCallback: LifecycleCallback | undefined;
-    let formStateRestoreCallback: LifecycleCallback | undefined;
-
     if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        connectedCallback = (elm: HTMLElement) => {
-            connectRootElement(elm);
-        };
-        disconnectedCallback = (elm: HTMLElement) => {
-            disconnectRootElement(elm);
-        };
-        formAssociatedCallback = (elm: HTMLElement) => {
-            runFormAssociatedCallback(elm);
-        };
-        formDisabledCallback = (elm: HTMLElement) => {
-            runFormDisabledCallback(elm);
-        };
-        formResetCallback = (elm: HTMLElement) => {
-            runFormResetCallback(elm);
-        };
-        formStateRestoreCallback = (elm: HTMLElement) => {
-            runFormStateRestoreCallback(elm);
-        };
+        setLifecycleCallbacks({
+            connectedCallback: connectRootElement,
+            disconnectedCallback: disconnectRootElement,
+            formAssociatedCallback: runFormAssociatedCallback,
+            formDisabledCallback: runFormDisabledCallback,
+            formResetCallback: runFormResetCallback,
+            formStateRestoreCallback: runFormStateRestoreCallback,
+        });
     }
 
-    const element = createCustomElement(
-        tagName,
-        upgradeCallback,
-        connectedCallback,
-        disconnectedCallback,
-        formAssociatedCallback,
-        formDisabledCallback,
-        formResetCallback,
-        formStateRestoreCallback
-    );
+    const element = createCustomElement(tagName, upgradeCallback);
     return element;
 }

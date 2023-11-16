@@ -12,7 +12,7 @@ import {
     getUpgradableConstructor,
 } from './custom-elements/create-custom-element';
 import { rendererFactory } from './renderer-factory';
-
+import { setLifecycleCallbacks } from './lifecycle-callbacks';
 import type { RendererAPI } from '@lwc/engine-core';
 
 /**
@@ -30,6 +30,7 @@ export const renderer: RendererAPI = assign(
         // relies on a shared global cache
         createCustomElement,
         defineCustomElement: getUpgradableConstructor,
+        setLifecycleCallbacks,
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
     }
 );

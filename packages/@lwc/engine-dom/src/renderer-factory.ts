@@ -22,7 +22,11 @@ import type { RendererAPI } from '@lwc/engine-core';
 // are omitted here
 export type SandboxableRendererAPI = Omit<
     RendererAPI,
-    'createCustomElement' | 'insertStylesheet' | 'isSyntheticShadowDefined' | 'defineCustomElement'
+    | 'createCustomElement'
+    | 'insertStylesheet'
+    | 'isSyntheticShadowDefined'
+    | 'defineCustomElement'
+    | 'setLifecycleCallbacks'
 >;
 
 export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : SandboxableRendererAPI;

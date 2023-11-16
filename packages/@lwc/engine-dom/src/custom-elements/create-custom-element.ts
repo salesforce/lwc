@@ -5,31 +5,22 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+import { getLifecycleCallbacks } from '../lifecycle-callbacks';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
 const cachedConstructors = new Map<string, CustomElementConstructor>();
 const elementsUpgradedOutsideLWC = new WeakSet<HTMLElement>();
 let elementBeingUpgradedByLWC = false;
 
-let formAssociatedCallbackToUse: LifecycleCallback | undefined;
-let formDisabledCallbackToUse: LifecycleCallback | undefined;
-let formResetCallbackToUse: LifecycleCallback | undefined;
-let formStateRestoreCallbackToUse: LifecycleCallback | undefined;
-
-const instancesToFormAssociatedCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
-const instancesToFormDisabledCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
-const instancesToFormResetCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
-const instancesToFormStateRestoreCallbacks = new WeakMap<HTMLElement, LifecycleCallback>();
-
 // Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
 // Another benefit is that only LWC can create components that actually do anything – if you do
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
-const createUpgradableConstructor = (
-    connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback
-) => {
+const createUpgradableConstructor = () => {
+    const lifecycleCallbacks = getLifecycleCallbacks();
+    const connectedCallback = lifecycleCallbacks?.connectedCallback;
+    const disconnectedCallback = lifecycleCallbacks?.disconnectedCallback;
     const hasConnectedCallback = !isUndefined(connectedCallback);
     const hasDisconnectedCallback = !isUndefined(disconnectedCallback);
 
@@ -42,11 +33,6 @@ const createUpgradableConstructor = (
             // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
             // then elementBeingUpgraded will be false
             if (elementBeingUpgradedByLWC) {
-                instancesToFormAssociatedCallbacks.set(this, formAssociatedCallbackToUse!);
-                instancesToFormDisabledCallbacks.set(this, formDisabledCallbackToUse!);
-                instancesToFormResetCallbacks.set(this, formResetCallbackToUse!);
-                instancesToFormStateRestoreCallbacks.set(this, formStateRestoreCallbackToUse!);
-
                 upgradeCallback(this);
             } else if (hasConnectedCallback || hasDisconnectedCallback) {
                 // If this element has connected or disconnected callbacks, then we need to keep track of
@@ -60,33 +46,33 @@ const createUpgradableConstructor = (
         }
 
         formAssociatedCallback() {
-            const formAssociatedCallback = instancesToFormAssociatedCallbacks.get(this);
+            const formAssociatedCallback = getLifecycleCallbacks()?.formAssociatedCallback;
             // if element was upgraded outside LWC, this will be undefined
-            if (!isUndefined(formAssociatedCallback)) {
+            if (!isUndefined(formAssociatedCallback) && !elementsUpgradedOutsideLWC.has(this)) {
                 formAssociatedCallback(this);
             }
         }
 
         formResetCallback() {
-            const formResetCallback = instancesToFormResetCallbacks.get(this);
+            const formResetCallback = getLifecycleCallbacks()?.formResetCallback;
             // if element was upgraded outside LWC, this will be undefined
-            if (!isUndefined(formResetCallback)) {
+            if (!isUndefined(formResetCallback) && !elementsUpgradedOutsideLWC.has(this)) {
                 formResetCallback(this);
             }
         }
 
         formDisabledCallback() {
-            const formDisabledCallback = instancesToFormDisabledCallbacks.get(this);
+            const formDisabledCallback = getLifecycleCallbacks()?.formDisabledCallback;
             // if element was upgraded outside LWC, this will be undefined
-            if (!isUndefined(formDisabledCallback)) {
+            if (!isUndefined(formDisabledCallback) && !elementsUpgradedOutsideLWC.has(this)) {
                 formDisabledCallback(this);
             }
         }
 
         formStateRestoreCallback() {
-            const formStateRestoreCallback = instancesToFormStateRestoreCallbacks.get(this);
+            const formStateRestoreCallback = getLifecycleCallbacks()?.formStateRestoreCallback;
             // if element was upgraded outside LWC, this will be undefined
-            if (!isUndefined(formStateRestoreCallback)) {
+            if (!isUndefined(formStateRestoreCallback) && !elementsUpgradedOutsideLWC.has(this)) {
                 formStateRestoreCallback(this);
             }
         }
@@ -113,11 +99,7 @@ const createUpgradableConstructor = (
     return UpgradableConstructor;
 };
 
-export function getUpgradableConstructor(
-    tagName: string,
-    connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback
-) {
+export function getUpgradableConstructor(tagName: string) {
     let UpgradableConstructor = cachedConstructors.get(tagName);
 
     if (isUndefined(UpgradableConstructor)) {
@@ -126,45 +108,20 @@ export function getUpgradableConstructor(
                 `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
             );
         }
-        UpgradableConstructor = createUpgradableConstructor(
-            connectedCallback,
-            disconnectedCallback
-        );
+        UpgradableConstructor = createUpgradableConstructor();
         customElements.define(tagName, UpgradableConstructor);
         cachedConstructors.set(tagName, UpgradableConstructor);
     }
     return UpgradableConstructor;
 }
 
-export const createCustomElement = (
-    tagName: string,
-    upgradeCallback: LifecycleCallback,
-    connectedCallback?: LifecycleCallback,
-    disconnectedCallback?: LifecycleCallback,
-    formAssociatedCallback?: LifecycleCallback,
-    formDisabledCallback?: LifecycleCallback,
-    formResetCallback?: LifecycleCallback,
-    formStateRestoreCallback?: LifecycleCallback
-) => {
-    const UpgradableConstructor = getUpgradableConstructor(
-        tagName,
-        connectedCallback,
-        disconnectedCallback
-    );
-
-    formAssociatedCallbackToUse = formAssociatedCallback;
-    formDisabledCallbackToUse = formDisabledCallback;
-    formResetCallbackToUse = formResetCallback;
-    formStateRestoreCallbackToUse = formStateRestoreCallback;
+export const createCustomElement = (tagName: string, upgradeCallback: LifecycleCallback) => {
+    const UpgradableConstructor = getUpgradableConstructor(tagName);
 
     elementBeingUpgradedByLWC = true;
     try {
         return new UpgradableConstructor(upgradeCallback);
     } finally {
         elementBeingUpgradedByLWC = false;
-        formAssociatedCallbackToUse = undefined;
-        formDisabledCallbackToUse = undefined;
-        formResetCallbackToUse = undefined;
-        formStateRestoreCallbackToUse = undefined;
     }
 };

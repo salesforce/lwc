@@ -13,6 +13,14 @@ type N = HostNode;
 type E = HostElement;
 
 export type LifecycleCallback = (elm: E) => void;
+export interface LifecycleCallbacks {
+    connectedCallback: LifecycleCallback;
+    disconnectedCallback: LifecycleCallback;
+    formAssociatedCallback: LifecycleCallback;
+    formDisabledCallback: LifecycleCallback;
+    formResetCallback: LifecycleCallback;
+    formStateRestoreCallback: LifecycleCallback;
+}
 
 export interface RendererAPI {
     isSyntheticShadowDefined: boolean;
@@ -62,21 +70,8 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    createCustomElement: (
-        tagName: string,
-        upgradeCallback: LifecycleCallback,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback,
-        formAssociatedCallback?: LifecycleCallback,
-        formDisabledCallback?: LifecycleCallback,
-        formResetCallback?: LifecycleCallback,
-        formStateRestoreCallback?: LifecycleCallback
-    ) => E;
-    defineCustomElement: (
-        tagName: string,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback
-    ) => void;
+    createCustomElement: (tagName: string, upgradeCallback: LifecycleCallback) => E;
+    defineCustomElement: (tagName: string) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,
@@ -84,4 +79,5 @@ export interface RendererAPI {
         subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
     attachInternals: (elm: E) => ElementInternals;
+    setLifecycleCallbacks: (callbacks: LifecycleCallbacks) => void;
 }
