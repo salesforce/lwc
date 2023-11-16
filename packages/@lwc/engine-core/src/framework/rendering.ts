@@ -30,19 +30,13 @@ import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
     appendVM,
-    connectRootElement,
     createVM,
-    disconnectRootElement,
     getAssociatedVMIfPresent,
     LwcDomMode,
     removeVM,
     RenderMode,
     rerenderVM,
     runConnectedCallback,
-    runFormAssociatedCallback,
-    runFormDisabledCallback,
-    runFormResetCallback,
-    runFormStateRestoreCallback,
     ShadowMode,
     VM,
     VMState,
@@ -315,7 +309,7 @@ function mountCustomElement(
     renderer: RendererAPI
 ) {
     const { sel, owner } = vnode;
-    const { createCustomElement, setLifecycleCallbacks } = renderer;
+    const { createCustomElement } = renderer;
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -328,17 +322,6 @@ function mountCustomElement(
         // the custom element from the registry is expecting an upgrade callback
         vm = createViewModelHook(elm, vnode, renderer);
     };
-
-    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        setLifecycleCallbacks({
-            connectedCallback: connectRootElement,
-            disconnectedCallback: disconnectRootElement,
-            formAssociatedCallback: runFormAssociatedCallback,
-            formDisabledCallback: runFormDisabledCallback,
-            formResetCallback: runFormResetCallback,
-            formStateRestoreCallback: runFormStateRestoreCallback,
-        });
-    }
 
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java

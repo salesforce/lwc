@@ -19,10 +19,6 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    runFormAssociatedCallback,
-    runFormDisabledCallback,
-    runFormResetCallback,
-    runFormStateRestoreCallback,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -108,7 +104,7 @@ export function createElement(
         );
     }
 
-    const { createCustomElement, setLifecycleCallbacks } = renderer;
+    const { createCustomElement } = renderer;
 
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
@@ -133,17 +129,6 @@ export function createElement(
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
     };
-
-    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        setLifecycleCallbacks({
-            connectedCallback: connectRootElement,
-            disconnectedCallback: disconnectRootElement,
-            formAssociatedCallback: runFormAssociatedCallback,
-            formDisabledCallback: runFormDisabledCallback,
-            formResetCallback: runFormResetCallback,
-            formStateRestoreCallback: runFormStateRestoreCallback,
-        });
-    }
 
     const element = createCustomElement(tagName, upgradeCallback);
     return element;
