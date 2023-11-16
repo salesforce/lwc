@@ -6,18 +6,11 @@
  */
 import fs from 'fs';
 import path from 'path';
-import os from 'os';
 import { URLSearchParams } from 'url';
-import { pool, WorkerPool } from 'workerpool';
+
 import { Plugin, SourceMapInput, RollupLog } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import {
-    transformSync,
-    StylesheetConfig,
-    DynamicImportConfig,
-    TransformOptions,
-    TransformResult,
-} from '@lwc/compiler';
+import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
 import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
@@ -56,8 +49,6 @@ export interface RollupLwcOptions {
     apiVersion?: APIVersion;
     /** True if the static content optimization should be enabled. Defaults to true */
     enableStaticContentOptimization?: boolean;
-    /** If true, run compilation in parallel rather than on one thread */
-    parallel?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -72,8 +63,6 @@ const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
-
-let workerPool: WorkerPool | undefined;
 
 function isImplicitHTMLImport(importee: string, importer: string): boolean {
     return (
@@ -155,25 +144,6 @@ function transformWarningToRollupLog(
     return result;
 }
 
-async function transform(
-    src: string,
-    filename: string,
-    options: TransformOptions,
-    parallel: boolean
-): Promise<TransformResult> {
-    if (parallel) {
-        // initialize worker pool on-demand
-        workerPool =
-            workerPool ??
-            pool(require.resolve('./worker.cjs.js'), {
-                // Default to CPUS-1 so there is one CPU left for Rollup itself
-                maxWorkers: os.cpus().length - 1,
-            });
-        return workerPool.exec('transform', [src, filename, options]);
-    }
-    return transformSync(src, filename, options);
-}
-
 export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
@@ -190,7 +160,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
         apiVersion,
-        parallel,
     } = pluginOptions;
 
     return {
@@ -327,7 +296,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             }
         },
 
-        async transform(src, id) {
+        transform(src, id) {
             const { scoped, filename, specifier } = parseDescriptorFromFilePath(id);
 
             // Filter user-land config and lwc import
@@ -343,32 +312,26 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
-            const { code, map, warnings } = await transform(
-                src,
-                filename,
-                {
-                    name,
-                    namespace,
-                    outputConfig: { sourcemap },
-                    stylesheetConfig,
-                    experimentalDynamicComponent,
-                    experimentalDynamicDirective,
-                    enableDynamicComponents,
-                    enableLightningWebSecurityTransforms,
-                    // TODO [#3370]: remove experimental template expression flag
-                    experimentalComplexExpressions,
-                    preserveHtmlComments,
-                    scopedStyles: scoped,
-                    disableSyntheticShadowSupport,
-                    apiVersion: apiVersionToUse,
-                    // Only pass this in if it's actually specified – otherwise unspecified becomes undefined becomes false
-                    ...('enableStaticContentOptimization' in pluginOptions && {
-                        enableStaticContentOptimization:
-                            pluginOptions.enableStaticContentOptimization,
-                    }),
-                },
-                Boolean(parallel)
-            );
+            const { code, map, warnings } = transformSync(src, filename, {
+                name,
+                namespace,
+                outputConfig: { sourcemap },
+                stylesheetConfig,
+                experimentalDynamicComponent,
+                experimentalDynamicDirective,
+                enableDynamicComponents,
+                enableLightningWebSecurityTransforms,
+                // TODO [#3370]: remove experimental template expression flag
+                experimentalComplexExpressions,
+                preserveHtmlComments,
+                scopedStyles: scoped,
+                disableSyntheticShadowSupport,
+                apiVersion: apiVersionToUse,
+                // Only pass this in if it's actually specified – otherwise unspecified becomes undefined becomes false
+                ...('enableStaticContentOptimization' in pluginOptions && {
+                    enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
+                }),
+            });
 
             if (warnings) {
                 for (const warning of warnings) {

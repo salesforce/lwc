@@ -116,26 +116,11 @@ function injectInlineRenderer() {
     };
 }
 
-const entryPoints = [
-    {
-        input: path.resolve(packageRoot, './src/index.ts'),
-        output: 'index',
-    },
-];
-
-console.log({ packageName });
-if (packageName === '@lwc/rollup-plugin') {
-    entryPoints.push({
-        input: path.resolve(packageRoot, './src/worker.ts'),
-        output: 'worker',
-    });
-}
-
-module.exports = entryPoints.map(({ input, output }) => ({
-    input,
+module.exports = {
+    input: path.resolve(packageRoot, './src/index.ts'),
 
     output: formats.map((format) => ({
-        file: `dist/${output}${format === 'cjs' ? '.cjs' : ''}.js`,
+        file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
         sourcemap: true,
         format,
         banner,
@@ -164,4 +149,4 @@ module.exports = entryPoints.map(({ input, output }) => ({
     onwarn,
 
     external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
-}));
+};
