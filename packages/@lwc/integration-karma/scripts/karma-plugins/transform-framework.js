@@ -94,7 +94,7 @@ function createPreprocessor(config, emitter, logger) {
 
         let code = magicString.toString();
 
-        // Sourcemaps cause an error in the Istanbul coverage report
+        // Sourcemaps don't work with Istanbul coverage
         if (!process.env.COVERAGE) {
             // We need to assign the source to the original file so Karma can source map the error in the console.
             // also adding the source map inline for browser debugging.

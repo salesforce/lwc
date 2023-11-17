@@ -49,6 +49,7 @@ function createPreprocessor(config, emitter, logger) {
 
         const plugins = [
             lwcRollupPlugin({
+                // Sourcemaps don't work with Istanbul coverage
                 sourcemap: !process.env.COVERAGE,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
@@ -87,6 +88,7 @@ function createPreprocessor(config, emitter, logger) {
 
             const { output } = await bundle.generate({
                 format: 'iife',
+                // Sourcemaps don't work with Istanbul coverage
                 sourcemap: process.env.COVERAGE ? false : 'inline',
 
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
