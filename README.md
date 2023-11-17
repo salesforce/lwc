@@ -14,9 +14,24 @@
     <img src="https://img.shields.io/npm/l/lwc.svg" alt="license">
   </a>
 
-  <a href="https://circleci.com/gh/salesforce/lwc">
-    <img src="https://circleci.com/gh/salesforce/lwc.svg?style=svg"
-         alt="build status">
+  <a href="https://github.com/salesforce/lwc/actions/workflows/unit.yml?query=branch%3Amaster">
+    <img src="https://github.com/salesforce/lwc/actions/workflows/unit.yml/badge.svg"
+         alt="unit tests build status">
+  </a>
+
+  <a href="https://github.com/salesforce/lwc/actions/workflows/karma.yml?query=branch%3Amaster">
+    <img src="https://github.com/salesforce/lwc/actions/workflows/karma.yml/badge.svg"
+         alt="karma tests build status">
+  </a>
+
+  <a href="https://github.com/salesforce/lwc/actions/workflows/integration.yml?query=branch%3Amaster">
+    <img src="https://github.com/salesforce/lwc/actions/workflows/integration.yml/badge.svg"
+         alt="integration tests build status">
+  </a>
+
+  <a href="https://github.com/salesforce/lwc/actions/workflows/benchmark.yml?query=branch%3Amaster">
+    <img src="https://github.com/salesforce/lwc/actions/workflows/benchmark.yml/badge.svg"
+         alt="performance tests build status">
   </a>
 </p>
 
