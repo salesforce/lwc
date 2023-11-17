@@ -71,20 +71,18 @@ function createPreprocessor(config, emitter, logger) {
             apiVersion: API_VERSION,
         };
 
-        // return cached content to speed up CI
-        const tmpFile =
-            isCI &&
-            path.join(
-                tmpdir,
-                'lwc-karma-' +
-                    [JSON.stringify(lwcRollupPluginOptions), input, content]
-                        .map(createChecksum)
-                        .join('-')
-            );
-        if (isCI && existsSync(tmpFile)) {
-            const cachedContent = readFileSync(tmpFile, 'utf-8');
-            done(null, cachedContent);
-            return;
+        // Return cached content to speed up CI. In CI the content can never change, so no need to recompile
+        let tmpFile;
+        if (isCI) {
+            const checksum = [JSON.stringify(lwcRollupPluginOptions), input, content]
+                .map(createChecksum)
+                .join('-');
+            tmpFile = path.join(tmpdir, 'lwc-karma-' + checksum);
+            if (existsSync(tmpFile)) {
+                const cachedContent = readFileSync(tmpFile, 'utf-8');
+                done(null, cachedContent);
+                return;
+            }
         }
 
         try {
