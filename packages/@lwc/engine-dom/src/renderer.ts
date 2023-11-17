@@ -12,7 +12,6 @@ import {
     getUpgradableConstructor,
 } from './custom-elements/create-custom-element';
 import { rendererFactory } from './renderer-factory';
-
 import type { RendererAPI } from '@lwc/engine-core';
 
 /**

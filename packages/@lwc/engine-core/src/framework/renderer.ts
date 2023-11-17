@@ -62,21 +62,8 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    createCustomElement: (
-        tagName: string,
-        upgradeCallback: LifecycleCallback,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback,
-        formAssociatedCallback?: LifecycleCallback,
-        formDisabledCallback?: LifecycleCallback,
-        formResetCallback?: LifecycleCallback,
-        formStateRestoreCallback?: LifecycleCallback
-    ) => E;
-    defineCustomElement: (
-        tagName: string,
-        connectedCallback?: LifecycleCallback,
-        disconnectedCallback?: LifecycleCallback
-    ) => void;
+    createCustomElement: (tagName: string, upgradeCallback: LifecycleCallback) => E;
+    defineCustomElement: (tagName: string) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,

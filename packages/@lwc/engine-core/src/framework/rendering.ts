@@ -23,26 +23,20 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { LifecycleCallback, RendererAPI } from './renderer';
+import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
     appendVM,
-    connectRootElement,
     createVM,
-    disconnectRootElement,
     getAssociatedVMIfPresent,
     LwcDomMode,
     removeVM,
     RenderMode,
     rerenderVM,
     runConnectedCallback,
-    runFormAssociatedCallback,
-    runFormDisabledCallback,
-    runFormResetCallback,
-    runFormStateRestoreCallback,
     ShadowMode,
     VM,
     VMState,
@@ -329,49 +323,12 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    let connectedCallback: LifecycleCallback | undefined;
-    let disconnectedCallback: LifecycleCallback | undefined;
-    let formAssociatedCallback: LifecycleCallback | undefined;
-    let formDisabledCallback: LifecycleCallback | undefined;
-    let formResetCallback: LifecycleCallback | undefined;
-    let formStateRestoreCallback: LifecycleCallback | undefined;
-
-    if (lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        connectedCallback = (elm: HTMLElement) => {
-            connectRootElement(elm);
-        };
-        disconnectedCallback = (elm: HTMLElement) => {
-            disconnectRootElement(elm);
-        };
-        formAssociatedCallback = (elm: HTMLElement) => {
-            runFormAssociatedCallback(elm);
-        };
-        formDisabledCallback = (elm: HTMLElement) => {
-            runFormDisabledCallback(elm);
-        };
-        formResetCallback = (elm: HTMLElement) => {
-            runFormResetCallback(elm);
-        };
-        formStateRestoreCallback = (elm: HTMLElement) => {
-            runFormStateRestoreCallback(elm);
-        };
-    }
-
     // Should never get a tag with upper case letter at this point; the compiler
     // should produce only tags with lowercase letters. However, the Java
     // compiler may generate tagnames with uppercase letters so - for backwards
     // compatibility, we lower case the tagname here.
     const normalizedTagname = sel.toLowerCase();
-    const elm = createCustomElement(
-        normalizedTagname,
-        upgradeCallback,
-        connectedCallback,
-        disconnectedCallback,
-        formAssociatedCallback,
-        formDisabledCallback,
-        formResetCallback,
-        formStateRestoreCallback
-    );
+    const elm = createCustomElement(normalizedTagname, upgradeCallback);
 
     vnode.elm = elm;
     vnode.vm = vm;
