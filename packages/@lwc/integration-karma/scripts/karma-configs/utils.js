@@ -28,8 +28,6 @@ function getSauceSection({ suiteName, tags, customData }) {
 
     const buildId = GITHUB_RUN_ID || Date.now();
 
-    console.log({ buildId });
-
     const testName = [suiteName, ...tags].join(' - ');
     const build = [suiteName, buildId, ...tags].join(' - ');
 
