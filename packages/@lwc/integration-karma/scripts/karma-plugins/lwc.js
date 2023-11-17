@@ -11,7 +11,10 @@
  */
 'use strict';
 
-const path = require('path');
+const { existsSync, readFileSync, writeFileSync } = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const { createHash } = require('node:crypto');
 
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
@@ -23,11 +26,20 @@ const {
 } = require('../shared/options');
 const Watcher = require('./Watcher');
 
+function createChecksum(content) {
+    const hashFunc = createHash('md5');
+    hashFunc.update(content);
+    return hashFunc.digest('hex');
+}
+
 function createPreprocessor(config, emitter, logger) {
     const { basePath } = config;
 
     const log = logger.create('preprocessor-lwc');
     const watcher = new Watcher(config, emitter, log);
+
+    const isCI = process.env.CI;
+    const tmpdir = os.tmpdir();
 
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
@@ -47,25 +59,39 @@ function createPreprocessor(config, emitter, logger) {
         // TODO [#3370]: remove experimental template expression flag
         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
 
-        const plugins = [
-            lwcRollupPlugin({
-                sourcemap: true,
-                experimentalDynamicComponent: {
-                    loader: 'test-utils',
-                    strict: true,
-                },
-                enableDynamicComponents: true,
-                experimentalComplexExpressions,
-                enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
-                disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
-                apiVersion: API_VERSION,
-            }),
-        ];
+        const lwcRollupPluginOptions = {
+            sourcemap: true,
+            experimentalDynamicComponent: {
+                loader: 'test-utils',
+                strict: true,
+            },
+            enableDynamicComponents: true,
+            experimentalComplexExpressions,
+            enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+            disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+            apiVersion: API_VERSION,
+        };
+
+        // return cached content to speed up CI
+        const tmpFile =
+            isCI &&
+            path.join(
+                tmpdir,
+                'lwc-karma-' +
+                    [JSON.stringify(lwcRollupPluginOptions), input, content]
+                        .map(createChecksum)
+                        .join('-')
+            );
+        if (isCI && existsSync(tmpFile)) {
+            const cachedContent = readFileSync(tmpFile, 'utf-8');
+            done(null, cachedContent);
+            return;
+        }
 
         try {
             const bundle = await rollup({
                 input,
-                plugins,
+                plugins: [lwcRollupPlugin(lwcRollupPluginOptions)],
                 cache,
 
                 // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
@@ -87,7 +113,7 @@ function createPreprocessor(config, emitter, logger) {
 
             const { output } = await bundle.generate({
                 format: 'iife',
-                sourcemap: 'inline',
+                sourcemap: isCI ? false : 'inline', // sourcemaps are useless and slow in CI
 
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
                 // referenced from the window object.
@@ -103,10 +129,16 @@ function createPreprocessor(config, emitter, logger) {
 
             const { code, map } = output[0];
 
-            // We need to assign the source to the original file so Karma can source map the error in the console. Add
-            // also adding the source map inline for browser debugging.
-            // eslint-disable-next-line require-atomic-updates
-            file.sourceMap = map;
+            if (map) {
+                // We need to assign the source to the original file so Karma can source map the error in the console. Add
+                // also adding the source map inline for browser debugging.
+                // eslint-disable-next-line require-atomic-updates
+                file.sourceMap = map;
+            }
+
+            if (isCI) {
+                writeFileSync(tmpFile, code, 'utf-8');
+            }
 
             done(null, code);
         } catch (error) {
