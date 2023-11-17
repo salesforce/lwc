@@ -32,6 +32,12 @@ jobs:
           node-version: "18.18.0"
           cache: 'yarn'
 
+      - name: NX cache
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: nx-v1-${{ hashFiles('**/package.json', 'yarn.lock') }}
+
       # Needed for perf smoke tests, matches the chromedriver version installed by tachometer(https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
       # version number can be found here https://www.googleapis.com/storage/v1/b/chromium-browser-snapshots/o?delimiter=/&prefix=Linux_x64/119
       - name: Setup chrome v119
