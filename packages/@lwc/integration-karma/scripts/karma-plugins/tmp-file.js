@@ -15,9 +15,12 @@ function createChecksum(content) {
     return hashFunc.digest('hex');
 }
 
-function getTmpFile(cacheKeys) {
-    const checksum = cacheKeys.map(createChecksum).join('-');
+function getTmpFile(...cacheKeys) {
+    const checksum = cacheKeys
+        .map((value) => (typeof value !== 'string' ? JSON.stringify(value) : value))
+        .map(createChecksum)
+        .join('-');
     return path.join(os.tmpdir(), 'lwc-karma-' + checksum);
 }
 
-exports.getTmpFile = getTmpFile();
+exports.getTmpFile = getTmpFile;

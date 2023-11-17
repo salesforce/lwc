@@ -66,7 +66,7 @@ function createPreprocessor(config, emitter, logger) {
         // Return cached content to speed up CI. In CI the content can never change, so no need to recompile
         let tmpFile;
         if (isCI) {
-            tmpFile = getTmpFile([JSON.stringify(lwcRollupPluginOptions), input, content]);
+            tmpFile = getTmpFile(lwcRollupPluginOptions, input, content);
             if (existsSync(tmpFile)) {
                 console.log('using cached content for', input);
                 const cachedContent = readFileSync(tmpFile, 'utf-8');
