@@ -11,10 +11,13 @@
  */
 'use strict';
 
-const path = require('path');
+const path = require('node:path');
+const { existsSync, readFileSync, writeFileSync } = require('node:fs');
 const { rollup } = require('rollup');
 const replace = require('@rollup/plugin-replace');
 const Watcher = require('./Watcher');
+const { getTmpFile } = require('./tmp-file.js');
+const isCI = process.env.CI;
 
 function getIifeName(filename) {
     if (filename.includes('@lwc/engine-dom')) {
@@ -40,8 +43,20 @@ function createPreprocessor(config, emitter, logger) {
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
 
-    return async (_content, file, done) => {
+    return async (content, file, done) => {
         const input = file.path;
+
+        // Return cached content to speed up CI. In CI the content can never change, so no need to recompile
+        let tmpFile;
+        if (isCI) {
+            tmpFile = getTmpFile([input, content]);
+            if (existsSync(tmpFile)) {
+                console.log('using cached content for', input);
+                const cachedContent = readFileSync(tmpFile, 'utf-8');
+                done(null, cachedContent);
+                return;
+            }
+        }
 
         try {
             const bundle = await rollup({
@@ -98,7 +113,8 @@ function createPreprocessor(config, emitter, logger) {
                 format: 'iife',
                 name: iifeName,
                 // Source maps cause an error in coverage mode ("don't know how to turn this value into a node"), so skip it
-                sourcemap: process.env.COVERAGE ? false : 'inline',
+                // They're also slow and useless in CI
+                sourcemap: process.env.COVERAGE || isCI ? false : 'inline',
             });
 
             const { code, map } = output[0];
@@ -108,6 +124,10 @@ function createPreprocessor(config, emitter, logger) {
                 // also adding the source map inline for browser debugging.
                 // eslint-disable-next-line require-atomic-updates
                 file.sourceMap = map;
+            }
+
+            if (isCI) {
+                writeFileSync(tmpFile, code, 'utf-8');
             }
 
             done(null, code);

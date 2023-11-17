@@ -13,8 +13,6 @@
 
 const { existsSync, readFileSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
-const os = require('node:os');
-const { createHash } = require('node:crypto');
 
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
@@ -24,15 +22,9 @@ const {
     API_VERSION,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
 } = require('../shared/options');
+const { getTmpFile } = require('./tmp-file');
 const Watcher = require('./Watcher');
 const isCI = process.env.CI;
-const tmpdir = os.tmpdir();
-
-function createChecksum(content) {
-    const hashFunc = createHash('md5');
-    hashFunc.update(content);
-    return hashFunc.digest('hex');
-}
 
 function createPreprocessor(config, emitter, logger) {
     const { basePath } = config;
@@ -74,10 +66,7 @@ function createPreprocessor(config, emitter, logger) {
         // Return cached content to speed up CI. In CI the content can never change, so no need to recompile
         let tmpFile;
         if (isCI) {
-            const checksum = [JSON.stringify(lwcRollupPluginOptions), input, content]
-                .map(createChecksum)
-                .join('-');
-            tmpFile = path.join(tmpdir, 'lwc-karma-' + checksum);
+            tmpFile = getTmpFile([JSON.stringify(lwcRollupPluginOptions), input, content]);
             if (existsSync(tmpFile)) {
                 console.log('using cached content for', input);
                 const cachedContent = readFileSync(tmpFile, 'utf-8');
