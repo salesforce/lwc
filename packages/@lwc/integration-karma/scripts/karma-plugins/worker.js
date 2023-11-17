@@ -59,6 +59,10 @@ async function transform({ basePath, suiteDir, input, lwcRollupPluginOptions }) 
     }
 }
 
+// noop just so we can require() all the code we need as early as possible
+function warmup() {}
+
 worker({
     transform,
+    warmup,
 });

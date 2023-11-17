@@ -7,8 +7,7 @@
 
 'use strict';
 
-const path = require('path');
-
+const path = require('node:path');
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');

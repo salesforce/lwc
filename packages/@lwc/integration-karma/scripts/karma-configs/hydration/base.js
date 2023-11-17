@@ -7,7 +7,7 @@
 
 'use strict';
 
-const path = require('path');
+const path = require('node:path');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');

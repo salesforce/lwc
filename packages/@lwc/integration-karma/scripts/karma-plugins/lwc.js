@@ -24,6 +24,11 @@ const Watcher = require('./Watcher');
 
 const workerPool = pool(require.resolve('./worker.js'));
 
+// start loading code in the worker as early as possible
+for (let i = 0; i < os.cpus().length; i++) {
+    workerPool.exec('warmup', []);
+}
+
 function createPreprocessor(config, emitter, logger) {
     const { basePath } = config;
 
@@ -49,24 +54,16 @@ function createPreprocessor(config, emitter, logger) {
             enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
             disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             apiVersion: API_VERSION,
-            parallel: true,
         };
 
-        const { code, map, watchFiles, error } = await workerPool.exec(
-            'transform',
-            [
-                {
-                    basePath,
-                    suiteDir,
-                    input,
-                    lwcRollupPluginOptions,
-                },
-            ],
+        const { code, map, watchFiles, error } = await workerPool.exec('transform', [
             {
-                // Default to CPUS-1 so there is one CPU left for Karma itself
-                maxWorkers: os.cpus().length - 1,
-            }
-        );
+                basePath,
+                suiteDir,
+                input,
+                lwcRollupPluginOptions,
+            },
+        ]);
 
         if (error) {
             const location = path.relative(basePath, file.path);
