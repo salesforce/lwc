@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import postcss, { Result } from 'postcss';
-import matchAll from 'string.prototype.matchall';
 import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage } from './utils/message';
@@ -286,7 +285,7 @@ function tokenizeCss(data: string): Token[] {
     const regex = new RegExp(`[[-](${attributes.join('|')})]?`, 'g');
 
     let lastIndex = 0;
-    for (const match of matchAll(data, regex)) {
+    for (const match of data.matchAll(regex)) {
         const index = match.index!;
         const [matchString, substring] = match;
 
