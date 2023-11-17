@@ -42,8 +42,8 @@ function getSauceSection({ suiteName, tags, customData }) {
 
         customData: {
             ...customData,
-
             ci: IS_CI,
+            buildId,
         },
 
         startConnect: false,
