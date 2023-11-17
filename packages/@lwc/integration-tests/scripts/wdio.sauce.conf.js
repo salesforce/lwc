@@ -62,7 +62,9 @@ if (!accessKey) {
 }
 
 const tunnelId = process.env.SAUCE_TUNNEL_ID;
-const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
+const buildId = process.env.GITHUB_RUN_ID || Date.now();
+
+console.log({ buildId });
 
 const name = ['integration-test', mode].join(' - ');
 const build = ['integration-test', buildId, mode].join(' - ');
@@ -70,11 +72,7 @@ const tags = [mode];
 
 const customData = {
     ci: !!process.env.CI,
-    build: process.env.CIRCLE_BUILD_NUM,
-
-    commit: process.env.CIRCLE_SHA1,
-    branch: process.env.CIRCLE_BRANCH,
-    buildUrl: process.env.CIRCLE_BUILD_URL,
+    buildId,
 };
 
 function getCapabilities() {
