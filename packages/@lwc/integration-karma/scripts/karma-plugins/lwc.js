@@ -14,7 +14,6 @@
 const os = require('node:os');
 const path = require('node:path');
 const { pool } = require('workerpool');
-
 const {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     API_VERSION,
@@ -22,10 +21,13 @@ const {
 } = require('../shared/options');
 const Watcher = require('./Watcher');
 
-const workerPool = pool(require.resolve('./worker.js'));
+// The default maxWorkers is cpus.length - 1, but Karma is basically idle while Rollup is running.
+// Plus, we want it to run 2 threads in CI
+const maxWorkers = os.cpus().length;
+const workerPool = pool(require.resolve('./worker.js'), { maxWorkers });
 
 // start loading code in the worker as early as possible
-for (let i = 0; i < os.cpus().length; i++) {
+for (let i = 0; i < maxWorkers; i++) {
     workerPool.exec('warmup', []);
 }
 
