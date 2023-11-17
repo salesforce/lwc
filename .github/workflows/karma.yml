@@ -20,6 +20,7 @@ env:
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
   PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
+  GITHUB_RUN_ID: ${{github.run_id}}
   COVERAGE: "1"
 
 jobs:

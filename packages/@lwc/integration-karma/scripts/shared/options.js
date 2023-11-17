@@ -55,8 +55,5 @@ module.exports = {
 
     // CI
     IS_CI: Boolean(process.env.CI),
-    CIRCLE_BUILD_NUM: process.env.CIRCLE_BUILD_NUM,
-    CIRCLE_SHA1: process.env.CIRCLE_SHA1,
-    CIRCLE_BRANCH: process.env.CIRCLE_BRANCH,
-    CIRCLE_BUILD_URL: process.env.CIRCLE_BUILD_URL,
+    GITHUB_RUN_ID: process.env.GITHUB_RUN_ID,
 };

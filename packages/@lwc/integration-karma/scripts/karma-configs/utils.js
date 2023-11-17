@@ -8,10 +8,7 @@
 'use strict';
 
 const {
-    CIRCLE_BRANCH,
-    CIRCLE_BUILD_NUM,
-    CIRCLE_BUILD_URL,
-    CIRCLE_SHA1,
+    GITHUB_RUN_ID,
     IS_CI,
     SAUCE_ACCESS_KEY,
     SAUCE_TUNNEL_ID,
@@ -29,7 +26,7 @@ function getSauceSection({ suiteName, tags, customData }) {
         throw new TypeError('Missing SAUCE_ACCESS_KEY environment variable');
     }
 
-    const buildId = CIRCLE_BUILD_NUM || Date.now();
+    const buildId = GITHUB_RUN_ID || Date.now();
 
     const testName = [suiteName, ...tags].join(' - ');
     const build = [suiteName, buildId, ...tags].join(' - ');
@@ -45,13 +42,8 @@ function getSauceSection({ suiteName, tags, customData }) {
 
         customData: {
             ...customData,
-
             ci: IS_CI,
-
-            build: CIRCLE_BUILD_NUM,
-            commit: CIRCLE_SHA1,
-            branch: CIRCLE_BRANCH,
-            buildUrl: CIRCLE_BUILD_URL,
+            buildId,
         },
 
         startConnect: false,
