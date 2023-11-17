@@ -49,7 +49,7 @@ function createPreprocessor(config, emitter, logger) {
 
         const plugins = [
             lwcRollupPlugin({
-                sourcemap: true,
+                sourcemap: !process.env.COVERAGE,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
@@ -87,7 +87,7 @@ function createPreprocessor(config, emitter, logger) {
 
             const { output } = await bundle.generate({
                 format: 'iife',
-                sourcemap: 'inline',
+                sourcemap: process.env.COVERAGE ? false : 'inline',
 
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
                 // referenced from the window object.
@@ -103,10 +103,12 @@ function createPreprocessor(config, emitter, logger) {
 
             const { code, map } = output[0];
 
-            // We need to assign the source to the original file so Karma can source map the error in the console. Add
-            // also adding the source map inline for browser debugging.
-            // eslint-disable-next-line require-atomic-updates
-            file.sourceMap = map;
+            if (map) {
+                // We need to assign the source to the original file so Karma can source map the error in the console. Add
+                // also adding the source map inline for browser debugging.
+                // eslint-disable-next-line require-atomic-updates
+                file.sourceMap = map;
+            }
 
             done(null, code);
         } catch (error) {
