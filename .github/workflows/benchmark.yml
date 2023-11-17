@@ -27,6 +27,14 @@ jobs:
           node-version: "18.18.0"
           cache: 'yarn'
 
+      - name: Cache nx
+        uses: actions/cache@v3.3.2
+        with:
+          path: ./.nx-cache
+          key: ${{ runner.os }}-nx
+          restore-key: |
+            ${{ runner.os }}-nx
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
