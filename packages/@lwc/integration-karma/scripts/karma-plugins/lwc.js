@@ -25,6 +25,8 @@ const {
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
 } = require('../shared/options');
 const Watcher = require('./Watcher');
+const isCI = process.env.CI;
+const tmpdir = os.tmpdir();
 
 function createChecksum(content) {
     const hashFunc = createHash('md5');
@@ -37,9 +39,6 @@ function createPreprocessor(config, emitter, logger) {
 
     const log = logger.create('preprocessor-lwc');
     const watcher = new Watcher(config, emitter, log);
-
-    const isCI = process.env.CI;
-    const tmpdir = os.tmpdir();
 
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
