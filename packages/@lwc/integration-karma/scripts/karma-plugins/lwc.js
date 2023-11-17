@@ -79,6 +79,7 @@ function createPreprocessor(config, emitter, logger) {
                 .join('-');
             tmpFile = path.join(tmpdir, 'lwc-karma-' + checksum);
             if (existsSync(tmpFile)) {
+                console.log('using cached content for', input);
                 const cachedContent = readFileSync(tmpFile, 'utf-8');
                 done(null, cachedContent);
                 return;
