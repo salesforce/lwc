@@ -145,8 +145,8 @@ jobs:
 
       - run: yarn coverage
 
-      - name: Upload combined coverage HTML
+      - name: Upload combined coverage
         uses: actions/upload-artifact@v3
         with:
-          name: coverage-report-combined-html
-          path: ./packages/@lwc/integration-karma/coverage/combined/index.html
+          name: coverage-report-combined
+          path: ./packages/@lwc/integration-karma/coverage/combined
