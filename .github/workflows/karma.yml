@@ -152,4 +152,4 @@ jobs:
           path: ./packages/@lwc/integration-karma/coverage/combined
 
       - name: Add markdown summary
-        run: awk '/<table/,/<\/table>/' ./combined/index.html >> $GITHUB_STEP_SUMMARY
+        run: awk '/<table/,/<\/table>/' ./coverage/combined/index.html >> $GITHUB_STEP_SUMMARY
