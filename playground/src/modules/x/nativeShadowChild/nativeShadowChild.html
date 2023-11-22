@@ -1,0 +1,13 @@
+<template>
+  <h2>Slotted content in Native Shadow:</h2>
+  <x-leaf>
+    <slot slot="lower" name="upper"></slot>
+    <slot></slot>
+    <slot slot="upper" name="lower"></slot>
+  </x-leaf>
+  <x-leaf>
+    <slot name="hoes" slot="foo">
+      <p>hoes</p>
+    </slot>
+  </x-leaf>
+</template>
