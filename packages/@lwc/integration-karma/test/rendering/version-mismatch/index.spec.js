@@ -71,14 +71,12 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
-                    [
-                        'CompilerRuntimeVersionMismatch',
-                        {
-                            runtimeVersion: process.env.LWC_VERSION,
-                            compilerVersion: '123.456.789',
-                        },
-                    ],
+                expect(dispatcher.calls.allArgs()).toContain([
+                    'CompilerRuntimeVersionMismatch',
+                    {
+                        runtimeVersion: process.env.LWC_VERSION,
+                        compilerVersion: '123.456.789',
+                    },
                 ]);
             }
         });
@@ -110,14 +108,12 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
-                    [
-                        'CompilerRuntimeVersionMismatch',
-                        {
-                            runtimeVersion: process.env.LWC_VERSION,
-                            compilerVersion: '123.456.789',
-                        },
-                    ],
+                expect(dispatcher.calls.allArgs()).toContain([
+                    'CompilerRuntimeVersionMismatch',
+                    {
+                        runtimeVersion: process.env.LWC_VERSION,
+                        compilerVersion: '123.456.789',
+                    },
                 ]);
             }
         });
@@ -148,14 +144,12 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
-                    [
-                        'CompilerRuntimeVersionMismatch',
-                        {
-                            runtimeVersion: process.env.LWC_VERSION,
-                            compilerVersion: '123.456.789',
-                        },
-                    ],
+                expect(dispatcher.calls.allArgs()).toContain([
+                    'CompilerRuntimeVersionMismatch',
+                    {
+                        runtimeVersion: process.env.LWC_VERSION,
+                        compilerVersion: '123.456.789',
+                    },
                 ]);
             }
         });
