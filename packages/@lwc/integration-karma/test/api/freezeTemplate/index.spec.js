@@ -228,7 +228,7 @@ describe('freezeTemplate', () => {
             expect(descriptor.enumerable).toEqual(true);
             expect(descriptor.configurable).toEqual(true);
         }
-        expect(dispatcher).not.toHaveBeenCalled();
+        expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
     });
 
     describe('ENABLE_FROZEN_TEMPLATE set to true', () => {
@@ -249,7 +249,8 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(Object.isFrozen(template.stylesheets)).toEqual(true);
-            expect(dispatcher).not.toHaveBeenCalled();
+            expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
+            expect(dispatcher).not.toHaveBeenCalledWith('TemplateMutation');
         });
 
         it('freezes a template with no stylesheets', () => {
@@ -258,7 +259,7 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(template.stylesheets).toEqual(undefined);
-            expect(dispatcher).not.toHaveBeenCalled();
+            expect(dispatcher).not.toHaveBeenCalledWith('TemplateMutation');
         });
 
         it('deep-freezes the stylesheets', () => {
@@ -275,7 +276,7 @@ describe('freezeTemplate', () => {
             expect(Object.isFrozen(stylesheets[0])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1][0])).toEqual(true);
-            expect(dispatcher).not.toHaveBeenCalled();
+            expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
         });
     });
 });

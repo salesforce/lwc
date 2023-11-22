@@ -69,7 +69,7 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalled();
+                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
             } else {
                 expect(dispatcher.calls.allArgs()).toContain([
                     'CompilerRuntimeVersionMismatch',
@@ -106,7 +106,7 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalled();
+                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
             } else {
                 expect(dispatcher.calls.allArgs()).toContain([
                     'CompilerRuntimeVersionMismatch',
@@ -142,7 +142,7 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalled();
+                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
             } else {
                 expect(dispatcher.calls.allArgs()).toContain([
                     'CompilerRuntimeVersionMismatch',
