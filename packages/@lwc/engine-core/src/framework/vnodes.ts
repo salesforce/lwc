@@ -63,6 +63,7 @@ export interface VStatic extends BaseVNode {
     readonly fragment: Element;
     readonly parts: VStaticPart[] | undefined;
     elm: Element | undefined;
+    slotAssignment: string | undefined;
 }
 
 export interface VFragment extends BaseVNode, BaseVParent {
@@ -99,6 +100,13 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     data: VElementData;
     elm: Element | undefined;
     key: Key;
+    // The canonical way of listing the slot attribute has been to label it as slotName,
+    // however, I think this is a bit confusing as slotName to me seems like it would refer to the
+    // `slot` element's name attr: <slot name="foo"> rather than <div slot="foo">
+    // However, labeling this property as just `slot` without context also seems confusing as to what it references
+    // I went with slotAssignment to indicate it refers to the slot this element will be assigned to.
+    // Open to suggestions tho! Naming is hard for me :)
+    slotAssignment: string | undefined;
 }
 
 export interface VElement extends VBaseElement {
@@ -134,6 +142,8 @@ export interface VElementData extends VNodeData {
     readonly external?: boolean;
     readonly ref?: string;
     readonly slotData?: any;
+    // Corresponds to the slot attribute of the element and indicates which `slot` element it should be assigned to
+    readonly slotAssignment?: string;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
@@ -155,4 +165,8 @@ export function isVFragment(vnode: VNode): vnode is VFragment {
 
 export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
     return vnode.type === VNodeType.ScopedSlotFragment;
+}
+
+export function isVStatic(vnode: VNode): vnode is VStatic {
+    return vnode.type === VNodeType.Static;
 }

@@ -50,6 +50,8 @@ import {
     VText,
     VStaticPart,
     VStaticPartData,
+    isVBaseElement,
+    isVStatic,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -92,6 +94,7 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
         fragment,
         owner,
         parts,
+        slotAssignment: undefined,
     };
 
     return vnode;
@@ -160,7 +163,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key } = data;
+    const { key, slotAssignment } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -170,6 +173,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         elm: undefined,
         key,
         owner: vmBeingRendered,
+        slotAssignment,
     };
 
     return vnode;
@@ -196,6 +200,8 @@ function ti(value: any): number {
 }
 
 // [s]lot element node
+// jtu-todo: add a to-do here for splitting up the slots behavior and potentially reviewing how the
+// slotName assignment is done
 function s(
     slotName: string,
     data: VElementData,
@@ -207,6 +213,10 @@ function s(
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
+
+    const vmBeingRendered = getVMBeingRendered()!;
+    const { renderMode } = vmBeingRendered;
+
     if (
         !isUndefined(slotset) &&
         !isUndefined(slotset.slotAssignments) &&
@@ -236,7 +246,6 @@ function s(
                 }
                 // If the passed slot content is factory, evaluate it and add the produced vnodes
                 if (assignedNodeIsScopedSlot) {
-                    const vmBeingRenderedInception = getVMBeingRendered();
                     // Evaluate in the scope of the slot content's owner
                     // if a slotset is provided, there will always be an owner. The only case where owner is
                     // undefined is for root components, but root components cannot accept slotted content
@@ -249,9 +258,16 @@ function s(
                             ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
                         });
                     } finally {
-                        setVMBeingRendered(vmBeingRenderedInception);
+                        setVMBeingRendered(vmBeingRendered);
                     }
                 } else {
+                    // jtu-todo: add comments in this block to explain why this is needed
+                    if (
+                        renderMode === RenderMode.Light &&
+                        (isVBaseElement(vnode) || isVStatic(vnode))
+                    ) {
+                        vnode.slotAssignment = data.slotAssignment;
+                    }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
                     ArrayPush.call(newChildren, vnode);
@@ -260,8 +276,7 @@ function s(
         }
         children = newChildren;
     }
-    const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode, apiVersion } = vmBeingRendered;
+    const { shadowMode, apiVersion } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
@@ -324,7 +339,7 @@ function c(
             });
         }
     }
-    const { key } = data;
+    const { key, slotAssignment } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -333,6 +348,7 @@ function c(
         children,
         elm,
         key,
+        slotAssignment,
 
         ctor: Ctor,
         owner: vmBeingRendered,

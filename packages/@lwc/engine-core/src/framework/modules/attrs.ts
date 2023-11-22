@@ -15,7 +15,7 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject } from '../utils';
-import { VBaseElement } from '../vnodes';
+import { VBaseElement, VStatic } from '../vnodes';
 
 const ColonCharCode = 58;
 
@@ -61,5 +61,32 @@ export function patchAttributes(
                 setAttribute(elm, key, cur as string);
             }
         }
+    }
+}
+
+export function patchSlotAssignment(
+    oldVnode: VBaseElement | VStatic | null,
+    vnode: VBaseElement | VStatic,
+    renderer: RendererAPI
+) {
+    if (oldVnode?.slotAssignment === vnode.slotAssignment) {
+        return;
+    }
+
+    const { elm } = vnode;
+    const { setAttribute, removeAttribute } = renderer;
+
+    if (
+        isUndefined(vnode.slotAssignment) ||
+        isNull(vnode.slotAssignment)
+        // jtu-todo: verify if the string check should be used, it could be a breaking change if before it would log the slot attribute without any value
+        // (isString(vnode.slotName) && !vnode.slotName.length)
+        // Empty string assignments should be removed IMO but for backwards compat they will remain as
+        // a stand alone `slot` attribute on the element.
+    ) {
+        // This should also look for an empty string value? Need to verify previous behavior to get an answer
+        removeAttribute(elm, 'slot');
+    } else {
+        setAttribute(elm, 'slot', vnode.slotAssignment);
     }
 }

@@ -47,6 +47,7 @@ import {
     isVCustomElement,
     isVFragment,
     isVScopedSlotFragment,
+    isVStatic,
     Key,
     VBaseElement,
     VComment,
@@ -60,7 +61,7 @@ import {
     VText,
 } from './vnodes';
 
-import { patchAttributes } from './modules/attrs';
+import { patchAttributes, patchSlotAssignment } from './modules/attrs';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -265,6 +266,7 @@ function mountElement(
 function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
+    patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyStaticParts(elm, n2, renderer, false);
 }
@@ -298,6 +300,7 @@ function mountStatic(
         }
     }
 
+    patchSlotAssignment(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
     applyStaticParts(elm, vnode, renderer, true);
 }
@@ -597,6 +600,7 @@ function patchElementPropsAndAttrsAndRefs(
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
+    patchSlotAssignment(oldVnode, vnode, renderer);
 
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyRefs(vnode, vnode.owner);
@@ -781,6 +785,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
+// jtu-todo: add a comment in here about the purpose of this function and when it's run
 function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
     const {
         cmpSlots: { slotAssignments: oldSlotsMapping },
@@ -795,8 +800,8 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         let slotName: unknown = '';
-        if (isVBaseElement(vnode)) {
-            slotName = vnode.data.attrs?.slot ?? '';
+        if (isVBaseElement(vnode) || isVStatic(vnode)) {
+            slotName = vnode.slotAssignment ?? '';
         } else if (isVScopedSlotFragment(vnode)) {
             slotName = vnode.slotName;
         }
