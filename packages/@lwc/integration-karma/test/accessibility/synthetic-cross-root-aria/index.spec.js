@@ -95,18 +95,19 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(true)
-                        );
+
+                        getExpectedDispatcherCalls(true).forEach((dispatch) => {
+                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                        });
                     });
 
                     it('setting id', () => {
                         expect(() => {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(false)
-                        );
+                        getExpectedDispatcherCalls(false).forEach((dispatch) => {
+                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                        });
                     });
 
                     it('linking to an element in global light DOM', () => {
@@ -116,9 +117,9 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessages);
-                        expect(dispatcher.calls.allArgs()).toEqual(
-                            getExpectedDispatcherCalls(true)
-                        );
+                        getExpectedDispatcherCalls(true).forEach((dispatch) => {
+                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                        });
                     });
 
                     it('linking from an element in global light DOM', () => {
@@ -129,43 +130,46 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             targetElm.setId('foo');
                         }).toLogWarningDev(expectedMessageForCrossRootWithTargetAsVM);
-                        expect(dispatcher.calls.allArgs()).toEqual([
-                            [
-                                'CrossRootAriaInSyntheticShadow',
-                                {
-                                    tagName: 'x-aria-target',
-                                    attributeName: 'aria-labelledby',
-                                },
-                            ],
+                        expect(dispatcher.calls.allArgs()).toContain([
+                            'CrossRootAriaInSyntheticShadow',
+                            {
+                                tagName: 'x-aria-target',
+                                attributeName: 'aria-labelledby',
+                            },
                         ]);
                     });
 
                     [null, '', '  '].forEach((value) => {
                         it(`ignores setting id to ${JSON.stringify(value)}`, () => {
                             targetElm.setId(value);
-                            expect(dispatcher).not.toHaveBeenCalled();
+                            expect(dispatcher).not.toHaveBeenCalledWith(
+                                'CrossRootAriaInSyntheticShadow'
+                            );
+                            expect(dispatcher).not.toHaveBeenCalledWith(
+                                'NonStandardAriaReflection'
+                            );
                         });
 
                         it(`ignores setting aria-labelledby to ${JSON.stringify(value)}`, () => {
                             expectWarningForNonStandardPropertyAccess(() => {
                                 sourceElm.setAriaLabelledBy(value);
                             });
-                            expect(dispatcher.calls.allArgs()).toEqual([
-                                ...(usePropertyAccess
-                                    ? [
-                                          [
-                                              'NonStandardAriaReflection',
-                                              {
-                                                  tagName: 'x-aria-source',
-                                                  propertyName: 'ariaLabelledBy',
-                                                  isSetter: true,
-                                                  setValueType:
-                                                      value === null ? 'null' : typeof value,
-                                              },
-                                          ],
-                                      ]
-                                    : []),
-                            ]);
+
+                            const dispatch = [
+                                'NonStandardAriaReflection',
+                                {
+                                    tagName: 'x-aria-source',
+                                    propertyName: 'ariaLabelledBy',
+                                    isSetter: true,
+                                    setValueType: value === null ? 'null' : typeof value,
+                                },
+                            ];
+
+                            if (usePropertyAccess) {
+                                expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                            } else {
+                                expect(dispatcher.calls.allArgs()).not.toContain(dispatch);
+                            }
                         });
                     });
 
@@ -173,21 +177,22 @@ if (!process.env.NATIVE_SHADOW) {
                         expectWarningForNonStandardPropertyAccess(() => {
                             sourceElm.setAriaLabelledBy('does-not-exist-at-all-lol');
                         });
-                        expect(dispatcher.calls.allArgs()).toEqual([
-                            ...(usePropertyAccess
-                                ? [
-                                      [
-                                          'NonStandardAriaReflection',
-                                          {
-                                              tagName: 'x-aria-source',
-                                              propertyName: 'ariaLabelledBy',
-                                              isSetter: true,
-                                              setValueType: 'string',
-                                          },
-                                      ],
-                                  ]
-                                : []),
-                        ]);
+
+                        const dispatch = [
+                            'NonStandardAriaReflection',
+                            {
+                                tagName: 'x-aria-source',
+                                propertyName: 'ariaLabelledBy',
+                                isSetter: true,
+                                setValueType: 'string',
+                            },
+                        ];
+
+                        if (usePropertyAccess) {
+                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                        } else {
+                            expect(dispatcher.calls.allArgs()).not.toContain(dispatch);
+                        }
                     });
 
                     [
@@ -203,9 +208,9 @@ if (!process.env.NATIVE_SHADOW) {
                                 expect(() => {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessages);
-                                expect(dispatcher.calls.allArgs()).toEqual(
-                                    getExpectedDispatcherCalls(true)
-                                );
+                                getExpectedDispatcherCalls(true).forEach((dispatch) => {
+                                    expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                                });
                             });
 
                             it('linking multiple targets', () => {
@@ -215,7 +220,8 @@ if (!process.env.NATIVE_SHADOW) {
                                     ...expectedMessages,
                                     expectedMessageForCrossRootForSecondTarget,
                                 ]);
-                                expect(dispatcher.calls.allArgs()).toEqual([
+
+                                [
                                     ...getExpectedDispatcherCalls(true),
                                     [
                                         'CrossRootAriaInSyntheticShadow',
@@ -224,7 +230,9 @@ if (!process.env.NATIVE_SHADOW) {
                                             attributeName: 'aria-labelledby',
                                         },
                                     ],
-                                ]);
+                                ].forEach((dispatch) => {
+                                    expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                                });
                             });
                         });
                     });
@@ -245,22 +253,16 @@ if (!process.env.NATIVE_SHADOW) {
             }).toLogWarningDev(expectedMessageForCrossRoot);
 
             // dispatcher is still called twice
-            expect(dispatcher.calls.allArgs()).toEqual([
-                [
-                    'CrossRootAriaInSyntheticShadow',
-                    {
-                        tagName: 'x-aria-source',
-                        attributeName: 'aria-labelledby',
-                    },
-                ],
-                [
-                    'CrossRootAriaInSyntheticShadow',
-                    {
-                        tagName: 'x-aria-source',
-                        attributeName: 'aria-labelledby',
-                    },
-                ],
-            ]);
+            expect(
+                dispatcher.calls
+                    .allArgs()
+                    .filter(
+                        (dispatch) =>
+                            dispatch[0] === 'CrossRootAriaInSyntheticShadow' &&
+                            dispatch[1].tagName === 'x-aria-source' &&
+                            dispatch[1].attributeName === 'aria-labelledby'
+                    )
+            ).toHaveSize(2);
         });
 
         [false, true].forEach((reverseOrder) => {
@@ -269,7 +271,14 @@ if (!process.env.NATIVE_SHADOW) {
                     const valid = createElement('x-valid', { is: Valid });
                     document.body.appendChild(valid);
                     valid.linkElements({ reverseOrder });
-                    expect(dispatcher).not.toHaveBeenCalled();
+
+                    expect(dispatcher).not.toContain(
+                        jasmine.arrayContaining('CrossRootAriaInSyntheticShadow')
+                    );
+
+                    expect(dispatcher).not.toContain(
+                        jasmine.arrayContaining('NonStandardAriaReflection')
+                    );
                 });
             });
         });

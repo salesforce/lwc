@@ -376,6 +376,13 @@ export function createVM<HostNode, HostElement>(
     vm.shadowMode = computeShadowMode(def, vm.owner, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
+    if (isReportingEnabled()) {
+        report(ReportingEventId.ShadowModeUsage, {
+            tagName: vm.tagName,
+            mode: vm.shadowMode,
+        });
+    }
+
     if (process.env.NODE_ENV !== 'production') {
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;

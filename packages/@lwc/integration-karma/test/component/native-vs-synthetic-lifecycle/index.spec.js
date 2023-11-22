@@ -38,8 +38,9 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             expectLogs([
                 /Element <x-component> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
-                ['ConnectedCallbackWhileDisconnected', { tagName: 'x-component' }],
+            expect(dispatcher.calls.allArgs()).toContain([
+                'ConnectedCallbackWhileDisconnected',
+                { tagName: 'x-component' },
             ]);
         });
 
@@ -53,9 +54,14 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                 /Element <x-parent> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
                 /Element <x-child> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
-                ['ConnectedCallbackWhileDisconnected', { tagName: 'x-parent' }],
-                ['ConnectedCallbackWhileDisconnected', { tagName: 'x-child' }],
+            expect(dispatcher.calls.allArgs()).toContain([
+                'ConnectedCallbackWhileDisconnected',
+                { tagName: 'x-parent' },
+            ]);
+
+            expect(dispatcher.calls.allArgs()).toContain([
+                'ConnectedCallbackWhileDisconnected',
+                { tagName: 'x-child' },
             ]);
         });
     });
