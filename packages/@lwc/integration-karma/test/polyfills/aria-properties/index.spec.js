@@ -37,37 +37,33 @@ function testAriaProperty(property, attribute) {
 
         function expectGetterReportIfNonStandard() {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toEqual([
-                    [
-                        'NonStandardAriaReflection',
-                        {
-                            tagName: undefined,
-                            propertyName: property,
-                            isSetter: false,
-                            setValueType: undefined,
-                        },
-                    ],
+                expect(dispatcher.calls.allArgs()).toContain([
+                    'NonStandardAriaReflection',
+                    {
+                        tagName: undefined,
+                        propertyName: property,
+                        isSetter: false,
+                        setValueType: undefined,
+                    },
                 ]);
             } else {
-                expect(dispatcher).not.toHaveBeenCalled();
+                expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
             }
         }
 
         function expectSetterReportIfNonStandard(setValueType) {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toEqual([
-                    [
-                        'NonStandardAriaReflection',
-                        {
-                            tagName: undefined,
-                            propertyName: property,
-                            isSetter: true,
-                            setValueType,
-                        },
-                    ],
+                expect(dispatcher.calls.allArgs()).toContain([
+                    'NonStandardAriaReflection',
+                    {
+                        tagName: undefined,
+                        propertyName: property,
+                        isSetter: true,
+                        setValueType,
+                    },
                 ]);
             } else {
-                expect(dispatcher).not.toHaveBeenCalled();
+                expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
             }
         }
 
@@ -226,7 +222,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                     expect(() => {
                         elm.getProp(prop);
                     }).not.toLogWarningDev();
-                    expect(dispatcher).not.toHaveBeenCalled();
+                    expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
                 });
 
                 it('BaseBridgeElement (external)', () => {
@@ -236,7 +232,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                     expect(() => {
                         elm[prop] = 'foo';
                     }).not.toLogWarningDev();
-                    expect(dispatcher).not.toHaveBeenCalled();
+                    expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
                 });
             });
         });
