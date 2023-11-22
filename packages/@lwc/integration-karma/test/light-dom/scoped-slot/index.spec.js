@@ -61,7 +61,7 @@ describe('scoped slots', () => {
         // For standard slot content, "slot" attribute goes directly on the element unlike scoped
         //  slots where the attribute goes on the template tag
         expect(child.querySelector('.slotname3').innerHTML).toBe(
-            `${vFragBookend}<p slot="slotname3">MLB</p>${vFragBookend}`
+            `${vFragBookend}<p>MLB</p>${vFragBookend}`
         );
     });
 

@@ -1,0 +1,62 @@
+<template lwc:render-mode="light">
+    1. Pass slotted content to the elm and observe changes
+    2. Do not pass any slotted content to the children and let the default slotting work
+    3. Use all variations of the slot attribute values here
+    4. Mutate the slot attribute and observe changes
+    <!-- light > light > light -->
+    <x-light-light-slot>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p>Default slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text nodes being forwarded
+        <!-- Comments being forwarded -->
+        <p slot="dynamic">Dynamically slotted content</p>
+    </x-light-light-slot>
+
+    <x-light-light-slot></x-light-light-slot>
+
+    <x-light-light-slot>
+        <p slot={upperSlot}>Upper slot forwarded content</p>
+        <p slot={lowerSlot}>Lower slot forwarded content</p>
+    </x-light-light-slot>
+    
+    <!-- light > light > shadow -->
+    <x-light-shadow-slot>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p>Default slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text nodes being forwarded
+        <!-- Comments being forwarded -->
+        <p slot="dynamic">Dynamically slotted content</p>
+    </x-light-shadow-slot>
+
+    <x-light-shadow-slot></x-light-shadow-slot>
+
+    <x-light-shadow-slot>
+        <p slot={upperSlot}>Upper slot forwarded content</p>
+        <p slot={lowerSlot}>Lower slot forwarded content</p>
+    </x-light-shadow-slot>
+
+    <!-- light > shadow > light -->
+    <x-shadow-light-slot>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p>Default slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text nodes being forwarded
+        <!-- Comments being forwarded -->
+        <p slot="dynamic">Dynamically slotted content</p>
+    </x-shadow-light-slot>
+
+    <x-shadow-light-slot></x-light-light-slot>
+
+    <x-shadow-light-slot>
+        <p slot={upperSlot}>Upper slot forwarded content</p>
+        <p slot={lowerSlot}>Lower slot forwarded content</p>
+    </x-shadow-light-slot>
+</template>
