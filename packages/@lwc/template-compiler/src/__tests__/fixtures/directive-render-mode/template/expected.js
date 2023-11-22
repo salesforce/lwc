@@ -10,9 +10,9 @@ const stc1 = {
   key: 3,
 };
 const stc2 = {
+  slotAssignment: "forward",
   attrs: {
     name: "forwarded",
-    slot: "forward",
   },
   key: 4,
 };
