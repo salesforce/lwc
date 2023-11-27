@@ -1,20 +1,17 @@
-import {
-    registerTemplate,
-    freezeTemplate,
-    setFeatureFlagForTest,
-    __unstable__ReportingControl as reportingControl,
-} from 'lwc';
+import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
+
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 describe('freezeTemplate', () => {
     let dispatcher;
 
     beforeEach(() => {
         dispatcher = jasmine.createSpy();
-        reportingControl.attachDispatcher(dispatcher);
+        attachReportingControlDispatcher(dispatcher, ['StylesheetMutation', 'TemplateMutation']);
     });
 
     afterEach(() => {
-        reportingControl.detachDispatcher();
+        detachReportingControlDispatcher();
     });
 
     it('should warn when setting tmpl.stylesheetToken', () => {
@@ -228,7 +225,7 @@ describe('freezeTemplate', () => {
             expect(descriptor.enumerable).toEqual(true);
             expect(descriptor.configurable).toEqual(true);
         }
-        expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
+        expect(dispatcher).not.toHaveBeenCalled();
     });
 
     describe('ENABLE_FROZEN_TEMPLATE set to true', () => {
@@ -249,8 +246,7 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(Object.isFrozen(template.stylesheets)).toEqual(true);
-            expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
-            expect(dispatcher).not.toHaveBeenCalledWith('TemplateMutation');
+            expect(dispatcher).not.toHaveBeenCalled();
         });
 
         it('freezes a template with no stylesheets', () => {
@@ -259,7 +255,7 @@ describe('freezeTemplate', () => {
 
             expect(Object.isFrozen(template)).toEqual(true);
             expect(template.stylesheets).toEqual(undefined);
-            expect(dispatcher).not.toHaveBeenCalledWith('TemplateMutation');
+            expect(dispatcher).not.toHaveBeenCalled();
         });
 
         it('deep-freezes the stylesheets', () => {
@@ -276,7 +272,7 @@ describe('freezeTemplate', () => {
             expect(Object.isFrozen(stylesheets[0])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1])).toEqual(true);
             expect(Object.isFrozen(stylesheets[1][0])).toEqual(true);
-            expect(dispatcher).not.toHaveBeenCalledWith('StylesheetMutation');
+            expect(dispatcher).not.toHaveBeenCalled();
         });
     });
 });

@@ -345,6 +345,23 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         jasmine.addMatchers(customMatchers);
     });
 
+    /**
+     *
+     * @param {jasmine.Spy} dispatcher
+     * @param {String[]} runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
+     */
+    function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
+        lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
+            if (!runtimeEvents || runtimeEvents.includes(eventName)) {
+                dispatcher(eventName, payload);
+            }
+        });
+    }
+
+    function detachReportingControlDispatcher() {
+        lwc.__unstable__ReportingControl.detachDispatcher();
+    }
+
     function extractDataIds(root) {
         var nodes = {};
 
@@ -566,5 +583,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         nonStandardAriaProperties: nonStandardAriaProperties,
         nonPolyfilledAriaProperties: nonPolyfilledAriaProperties,
         getPropertyDescriptor: getPropertyDescriptor,
+        attachReportingControlDispatcher: attachReportingControlDispatcher,
+        detachReportingControlDispatcher: detachReportingControlDispatcher,
     };
 })(LWC, jasmine, beforeAll);

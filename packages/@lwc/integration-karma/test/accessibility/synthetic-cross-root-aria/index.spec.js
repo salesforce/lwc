@@ -1,4 +1,6 @@
-import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
+import { createElement } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+
 import AriaContainer from 'x/ariaContainer';
 import Valid from 'x/valid';
 
@@ -18,11 +20,14 @@ if (!process.env.NATIVE_SHADOW) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, [
+                'CrossRootAriaInSyntheticShadow',
+                'NonStandardAriaReflection',
+            ]);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         describe('detection', () => {
@@ -95,19 +100,18 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             elm.linkUsingAriaLabelledBy();
                         }).toLogWarningDev(expectedMessages);
-
-                        getExpectedDispatcherCalls(true).forEach((dispatch) => {
-                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                        });
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('setting id', () => {
                         expect(() => {
                             elm.linkUsingId();
                         }).toLogWarningDev(expectedMessages);
-                        getExpectedDispatcherCalls(false).forEach((dispatch) => {
-                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                        });
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(false)
+                        );
                     });
 
                     it('linking to an element in global light DOM', () => {
@@ -117,9 +121,9 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             sourceElm.setAriaLabelledBy('foo');
                         }).toLogWarningDev(expectedMessages);
-                        getExpectedDispatcherCalls(true).forEach((dispatch) => {
-                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                        });
+                        expect(dispatcher.calls.allArgs()).toEqual(
+                            getExpectedDispatcherCalls(true)
+                        );
                     });
 
                     it('linking from an element in global light DOM', () => {
@@ -130,24 +134,21 @@ if (!process.env.NATIVE_SHADOW) {
                         expect(() => {
                             targetElm.setId('foo');
                         }).toLogWarningDev(expectedMessageForCrossRootWithTargetAsVM);
-                        expect(dispatcher.calls.allArgs()).toContain([
-                            'CrossRootAriaInSyntheticShadow',
-                            {
-                                tagName: 'x-aria-target',
-                                attributeName: 'aria-labelledby',
-                            },
+                        expect(dispatcher.calls.allArgs()).toEqual([
+                            [
+                                'CrossRootAriaInSyntheticShadow',
+                                {
+                                    tagName: 'x-aria-target',
+                                    attributeName: 'aria-labelledby',
+                                },
+                            ],
                         ]);
                     });
 
                     [null, '', '  '].forEach((value) => {
                         it(`ignores setting id to ${JSON.stringify(value)}`, () => {
                             targetElm.setId(value);
-                            expect(dispatcher).not.toHaveBeenCalledWith(
-                                'CrossRootAriaInSyntheticShadow'
-                            );
-                            expect(dispatcher).not.toHaveBeenCalledWith(
-                                'NonStandardAriaReflection'
-                            );
+                            expect(dispatcher).not.toHaveBeenCalled();
                         });
 
                         it(`ignores setting aria-labelledby to ${JSON.stringify(value)}`, () => {
@@ -155,20 +156,20 @@ if (!process.env.NATIVE_SHADOW) {
                                 sourceElm.setAriaLabelledBy(value);
                             });
 
-                            const dispatch = [
-                                'NonStandardAriaReflection',
-                                {
-                                    tagName: 'x-aria-source',
-                                    propertyName: 'ariaLabelledBy',
-                                    isSetter: true,
-                                    setValueType: value === null ? 'null' : typeof value,
-                                },
-                            ];
-
                             if (usePropertyAccess) {
-                                expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                                expect(dispatcher.calls.allArgs()).toEqual([
+                                    [
+                                        'NonStandardAriaReflection',
+                                        {
+                                            tagName: 'x-aria-source',
+                                            propertyName: 'ariaLabelledBy',
+                                            isSetter: true,
+                                            setValueType: value === null ? 'null' : typeof value,
+                                        },
+                                    ],
+                                ]);
                             } else {
-                                expect(dispatcher.calls.allArgs()).not.toContain(dispatch);
+                                expect(dispatcher).not.toHaveBeenCalled();
                             }
                         });
                     });
@@ -178,20 +179,20 @@ if (!process.env.NATIVE_SHADOW) {
                             sourceElm.setAriaLabelledBy('does-not-exist-at-all-lol');
                         });
 
-                        const dispatch = [
-                            'NonStandardAriaReflection',
-                            {
-                                tagName: 'x-aria-source',
-                                propertyName: 'ariaLabelledBy',
-                                isSetter: true,
-                                setValueType: 'string',
-                            },
-                        ];
-
                         if (usePropertyAccess) {
-                            expect(dispatcher.calls.allArgs()).toContain(dispatch);
+                            expect(dispatcher.calls.allArgs()).toEqual([
+                                [
+                                    'NonStandardAriaReflection',
+                                    {
+                                        tagName: 'x-aria-source',
+                                        propertyName: 'ariaLabelledBy',
+                                        isSetter: true,
+                                        setValueType: 'string',
+                                    },
+                                ],
+                            ]);
                         } else {
-                            expect(dispatcher.calls.allArgs()).not.toContain(dispatch);
+                            expect(dispatcher).not.toHaveBeenCalled();
                         }
                     });
 
@@ -208,9 +209,9 @@ if (!process.env.NATIVE_SHADOW) {
                                 expect(() => {
                                     elm.linkUsingBoth(options);
                                 }).toLogWarningDev(expectedMessages);
-                                getExpectedDispatcherCalls(true).forEach((dispatch) => {
-                                    expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                                });
+                                expect(dispatcher.calls.allArgs()).toEqual(
+                                    getExpectedDispatcherCalls(true)
+                                );
                             });
 
                             it('linking multiple targets', () => {
@@ -221,7 +222,7 @@ if (!process.env.NATIVE_SHADOW) {
                                     expectedMessageForCrossRootForSecondTarget,
                                 ]);
 
-                                [
+                                expect(dispatcher.calls.allArgs()).toEqual([
                                     ...getExpectedDispatcherCalls(true),
                                     [
                                         'CrossRootAriaInSyntheticShadow',
@@ -230,9 +231,7 @@ if (!process.env.NATIVE_SHADOW) {
                                             attributeName: 'aria-labelledby',
                                         },
                                     ],
-                                ].forEach((dispatch) => {
-                                    expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                                });
+                                ]);
                             });
                         });
                     });
@@ -252,7 +251,7 @@ if (!process.env.NATIVE_SHADOW) {
                 elm2.linkUsingBoth({ idPrefix: 'prefix-2' }); // ids must be globally unique
             }).toLogWarningDev(expectedMessageForCrossRoot);
 
-            // dispatcher is still called twice
+            // dispatcher is still called twice for CrossRootAriaInSyntheticShadow
             expect(
                 dispatcher.calls
                     .allArgs()
@@ -272,13 +271,7 @@ if (!process.env.NATIVE_SHADOW) {
                     document.body.appendChild(valid);
                     valid.linkElements({ reverseOrder });
 
-                    expect(dispatcher).not.toContain(
-                        jasmine.arrayContaining('CrossRootAriaInSyntheticShadow')
-                    );
-
-                    expect(dispatcher).not.toContain(
-                        jasmine.arrayContaining('NonStandardAriaReflection')
-                    );
+                    expect(dispatcher).not.toHaveBeenCalled();
                 });
             });
         });
