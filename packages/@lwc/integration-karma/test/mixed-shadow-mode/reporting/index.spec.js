@@ -1,4 +1,5 @@
-import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
+import { createElement } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 import Component from 'x/component';
 import Parent from 'x/parent';
@@ -14,11 +15,11 @@ describe('', () => {
 
     beforeEach(() => {
         dispatcher = jasmine.createSpy();
-        reportingControl.attachDispatcher(dispatcher);
+        attachReportingControlDispatcher(dispatcher, ['ShadowModeUsage']);
     });
 
     afterEach(() => {
-        reportingControl.detachDispatcher();
+        detachReportingControlDispatcher();
     });
 
     it('should report the shadow mode for the rendered component', () => {

@@ -1,5 +1,9 @@
-import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
-import { nonStandardAriaProperties } from 'test-utils';
+import { createElement } from 'lwc';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+    nonStandardAriaProperties,
+} from 'test-utils';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 
@@ -10,11 +14,11 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         nonStandardAriaProperties.forEach((prop) => {
@@ -42,9 +46,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 elm.getProp(prop);
                             }).not.toLogWarningDev();
 
-                            expect(dispatcher).not.toHaveBeenCalledWith(
-                                'NonStandardAriaReflection'
-                            );
+                            expect(dispatcher).not.toHaveBeenCalled();
                         });
 
                         it('LightningElement - outside component', () => {
@@ -54,9 +56,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 return unused; // remove lint warning
                             }).not.toLogWarningDev();
 
-                            expect(dispatcher).not.toHaveBeenCalledWith(
-                                'NonStandardAriaReflection'
-                            );
+                            expect(dispatcher).not.toHaveBeenCalled();
                         });
 
                         it('regular Element inside LightningElement', () => {
@@ -65,7 +65,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 elm.getPropOnElement(prop);
                             }).toLogWarningDev(inComponentWarning);
 
-                            [
+                            expect(dispatcher.calls.allArgs()).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
@@ -84,9 +84,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                         setValueType: undefined,
                                     },
                                 ],
-                            ].forEach((dispatch) => {
-                                expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                            });
+                            ]);
                         });
 
                         it('regular Element outside LightningElement', () => {
@@ -98,7 +96,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 return unused; // remove lint warning
                             }).toLogWarningDev(outsideComponentWarning);
 
-                            [
+                            expect(dispatcher.calls.allArgs()).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
@@ -117,9 +115,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                         setValueType: undefined,
                                     },
                                 ],
-                            ].forEach((dispatch) => {
-                                expect(dispatcher.calls.allArgs()).toContain(dispatch);
-                            });
+                            ]);
                         });
                     });
                 });

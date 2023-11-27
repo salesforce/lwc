@@ -1,10 +1,6 @@
-import {
-    createElement,
-    LightningElement,
-    registerTemplate,
-    registerComponent,
-    __unstable__ReportingControl as reportingControl,
-} from 'lwc';
+import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
@@ -48,11 +44,11 @@ describe('compiler version mismatch', () => {
         beforeEach(() => {
             window.__lwcResetWarnedOnVersionMismatch();
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, 'CompilerRuntimeVersionMismatch');
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         it('template', () => {
@@ -69,14 +65,16 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
+                expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toContain([
-                    'CompilerRuntimeVersionMismatch',
-                    {
-                        runtimeVersion: process.env.LWC_VERSION,
-                        compilerVersion: '123.456.789',
-                    },
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'CompilerRuntimeVersionMismatch',
+                        {
+                            runtimeVersion: process.env.LWC_VERSION,
+                            compilerVersion: '123.456.789',
+                        },
+                    ],
                 ]);
             }
         });
@@ -106,14 +104,16 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
+                expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toContain([
-                    'CompilerRuntimeVersionMismatch',
-                    {
-                        runtimeVersion: process.env.LWC_VERSION,
-                        compilerVersion: '123.456.789',
-                    },
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'CompilerRuntimeVersionMismatch',
+                        {
+                            runtimeVersion: process.env.LWC_VERSION,
+                            compilerVersion: '123.456.789',
+                        },
+                    ],
                 ]);
             }
         });
@@ -142,14 +142,16 @@ describe('compiler version mismatch', () => {
                 )
             );
             if (process.env.NODE_ENV === 'production') {
-                expect(dispatcher).not.toHaveBeenCalledWith('CompilerRuntimeVersionMismatch');
+                expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toContain([
-                    'CompilerRuntimeVersionMismatch',
-                    {
-                        runtimeVersion: process.env.LWC_VERSION,
-                        compilerVersion: '123.456.789',
-                    },
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'CompilerRuntimeVersionMismatch',
+                        {
+                            runtimeVersion: process.env.LWC_VERSION,
+                            compilerVersion: '123.456.789',
+                        },
+                    ],
                 ]);
             }
         });

@@ -2,8 +2,11 @@ import {
     ariaPropertiesMapping,
     nonStandardAriaProperties,
     nonPolyfilledAriaProperties,
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
 } from 'test-utils';
-import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
+import { createElement } from 'lwc';
+
 import Component from 'x/component';
 
 function testAriaProperty(property, attribute) {
@@ -12,11 +15,11 @@ function testAriaProperty(property, attribute) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         function getDefaultValue(prop) {
@@ -37,33 +40,37 @@ function testAriaProperty(property, attribute) {
 
         function expectGetterReportIfNonStandard() {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toContain([
-                    'NonStandardAriaReflection',
-                    {
-                        tagName: undefined,
-                        propertyName: property,
-                        isSetter: false,
-                        setValueType: undefined,
-                    },
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'NonStandardAriaReflection',
+                        {
+                            tagName: undefined,
+                            propertyName: property,
+                            isSetter: false,
+                            setValueType: undefined,
+                        },
+                    ],
                 ]);
             } else {
-                expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
+                expect(dispatcher).not.toHaveBeenCalled();
             }
         }
 
         function expectSetterReportIfNonStandard(setValueType) {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toContain([
-                    'NonStandardAriaReflection',
-                    {
-                        tagName: undefined,
-                        propertyName: property,
-                        isSetter: true,
-                        setValueType,
-                    },
+                expect(dispatcher.calls.allArgs()).toEqual([
+                    [
+                        'NonStandardAriaReflection',
+                        {
+                            tagName: undefined,
+                            propertyName: property,
+                            isSetter: true,
+                            setValueType,
+                        },
+                    ],
                 ]);
             } else {
-                expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
+                expect(dispatcher).not.toHaveBeenCalled();
             }
         }
 
@@ -206,11 +213,11 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         nonStandardAriaProperties.forEach((prop) => {
@@ -222,7 +229,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                     expect(() => {
                         elm.getProp(prop);
                     }).not.toLogWarningDev();
-                    expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
+                    expect(dispatcher).not.toHaveBeenCalled();
                 });
 
                 it('BaseBridgeElement (external)', () => {
@@ -232,7 +239,7 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                     expect(() => {
                         elm[prop] = 'foo';
                     }).not.toLogWarningDev();
-                    expect(dispatcher).not.toHaveBeenCalledWith('NonStandardAriaReflection');
+                    expect(dispatcher).not.toHaveBeenCalled();
                 });
             });
         });
