@@ -28,8 +28,6 @@ describe('slot forwarding', () => {
         const upperSlotContent = slotContent.slice(0, 4);
         // Lower content is now mapped to upper slot
         expect(upperSlotContent[0]).toEqual(vFragBookend);
-        // jtu-todo: add a check here that the slot attribute has been changed to the correct one after mapping
-        // can you assignedSlot for this
         expect(upperSlotContent[1].tagName.toLowerCase()).toBe('x-shadow-dom-element');
         expect(upperSlotContent[2].innerText).toEqual('Lower slot forwarded content');
         expect(upperSlotContent[3]).toEqual(vFragBookend);
