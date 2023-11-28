@@ -785,7 +785,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-// jtu-todo: add a comment in here about the purpose of this function and when it's run
 function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
     const {
         cmpSlots: { slotAssignments: oldSlotsMapping },

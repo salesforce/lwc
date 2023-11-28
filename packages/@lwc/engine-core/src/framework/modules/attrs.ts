@@ -76,14 +76,7 @@ export function patchSlotAssignment(
     const { elm } = vnode;
     const { setAttribute, removeAttribute } = renderer;
 
-    if (
-        isUndefined(vnode.slotAssignment) ||
-        isNull(vnode.slotAssignment)
-        // jtu-todo: verify if the string check should be used, it could be a breaking change if before it would log the slot attribute without any value
-        // (isString(vnode.slotName) && !vnode.slotName.length)
-        // Empty string assignments should be removed IMO but for backwards compat they will remain as
-        // a stand alone `slot` attribute on the element.
-    ) {
+    if (isUndefined(vnode.slotAssignment) || isNull(vnode.slotAssignment)) {
         // This should also look for an empty string value? Need to verify previous behavior to get an answer
         removeAttribute(elm, 'slot');
     } else {

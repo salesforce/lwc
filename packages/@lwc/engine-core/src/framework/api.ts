@@ -200,8 +200,6 @@ function ti(value: any): number {
 }
 
 // [s]lot element node
-// jtu-todo: add a to-do here for splitting up the slots behavior and potentially reviewing how the
-// slotName assignment is done
 function s(
     slotName: string,
     data: VElementData,
@@ -261,16 +259,23 @@ function s(
                         setVMBeingRendered(vmBeingRendered);
                     }
                 } else {
-                    // jtu-todo: add comments in this block to explain why this is needed
+                    // This block is for standard slots (non-scoped slots)
+                    let clonedVNode;
                     if (
                         renderMode === RenderMode.Light &&
-                        (isVBaseElement(vnode) || isVStatic(vnode))
+                        (isVBaseElement(vnode) || isVStatic(vnode)) &&
+                        vnode.slotAssignment !== data.slotAssignment
                     ) {
-                        vnode.slotAssignment = data.slotAssignment;
+                        // When the light DOM slot assignment (slot attribute) changes we can't use the same reference
+                        // to the vnode because the current way the diffing algo works, it will replace the original reference
+                        // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
+                        // Creating a copy of the vnode to preserve a reference to the previous host element.
+                        clonedVNode = { ...vnode };
+                        clonedVNode.slotAssignment = data.slotAssignment;
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    ArrayPush.call(newChildren, vnode);
+                    ArrayPush.call(newChildren, clonedVNode ?? vnode);
                 }
             }
         }

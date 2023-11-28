@@ -100,12 +100,6 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     data: VElementData;
     elm: Element | undefined;
     key: Key;
-    // The canonical way of listing the slot attribute has been to label it as slotName,
-    // however, I think this is a bit confusing as slotName to me seems like it would refer to the
-    // `slot` element's name attr: <slot name="foo"> rather than <div slot="foo">
-    // However, labeling this property as just `slot` without context also seems confusing as to what it references
-    // I went with slotAssignment to indicate it refers to the slot this element will be assigned to.
-    // Open to suggestions tho! Naming is hard for me :)
     slotAssignment: string | undefined;
 }
 
