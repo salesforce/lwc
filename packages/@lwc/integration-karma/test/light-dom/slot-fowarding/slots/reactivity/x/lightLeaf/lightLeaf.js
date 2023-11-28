@@ -4,10 +4,11 @@ export default class extends LightningElement {
     static renderMode = 'light';
 
     @api
-    dynamicSlotAssignment = 'dynamicSlot';
+    upperSlot = 'upper';
 
     @api
-    assignDefaultSlotUsingVariable = false;
+    lowerSlot = 'lower';
 
-    defaultSlotReassignment = 'default-slot-reassigned';
+    @api
+    defaultSlot = 'default';
 }

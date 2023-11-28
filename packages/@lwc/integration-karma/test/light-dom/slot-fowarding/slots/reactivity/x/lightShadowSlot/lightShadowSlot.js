@@ -3,13 +3,17 @@ import { LightningElement, api } from 'lwc';
 export default class extends LightningElement {
     static renderMode = 'light';
 
+    @api
     upperSlot = 'upper';
+
+    @api
     lowerSlot = 'lower';
 
     @api
-    swapLowerAndUpperSlot() {
-        const originalUpper = this.upperSlot;
-        this.upperSlot = this.lowerSlot;
-        this.lowerSlot = originalUpper;
+    defaultSlot = '';
+
+    @api
+    get leaf() {
+        return this.querySelector('x-shadow-leaf');
     }
 }
