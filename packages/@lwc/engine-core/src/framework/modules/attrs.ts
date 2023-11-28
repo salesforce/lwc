@@ -77,7 +77,6 @@ export function patchSlotAssignment(
     const { setAttribute, removeAttribute } = renderer;
 
     if (isUndefined(vnode.slotAssignment) || isNull(vnode.slotAssignment)) {
-        // This should also look for an empty string value? Need to verify previous behavior to get an answer
         removeAttribute(elm, 'slot');
     } else {
         setAttribute(elm, 'slot', vnode.slotAssignment);
