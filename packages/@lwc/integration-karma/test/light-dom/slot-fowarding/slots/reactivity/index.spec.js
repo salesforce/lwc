@@ -89,7 +89,14 @@ describe('light DOM slot forwarding reactivity', () => {
         },
     ];
 
-    ['lightLight', 'lightShadow', 'shadowLight'].forEach((slotForwardingType) => {
+    const testCases = ['lightLight', 'lightShadow'];
+
+    if (process.env.NATIVE_SHADOW) {
+        // TODO [#3885]: Using expressions on synthetic shadow DOM slots throws an error, only test in native for now
+        testCases.push('shadowLight');
+    }
+
+    testCases.forEach((slotForwardingType) => {
         it(`should update correctly for ${slotForwardingType} slots`, async () => {
             const parent = nodes[slotForwardingType];
             const leaf = parent.leaf;
