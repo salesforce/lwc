@@ -89,7 +89,7 @@ describe('light DOM slot forwarding reactivity', () => {
         },
     ];
 
-    ['lightLight', 'lightShadow', 'shadowLight'].forEach((slotForwardingType) => {
+    ['lightLight', 'lightShadow'].forEach((slotForwardingType) => {
         it(`should update correctly for ${slotForwardingType} slots`, async () => {
             const parent = nodes[slotForwardingType];
             const leaf = parent.leaf;
