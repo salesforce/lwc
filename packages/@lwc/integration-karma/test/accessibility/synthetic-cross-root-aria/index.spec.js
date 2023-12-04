@@ -251,17 +251,23 @@ if (!process.env.NATIVE_SHADOW) {
                 elm2.linkUsingBoth({ idPrefix: 'prefix-2' }); // ids must be globally unique
             }).toLogWarningDev(expectedMessageForCrossRoot);
 
-            // dispatcher is still called twice for CrossRootAriaInSyntheticShadow
-            expect(
-                dispatcher.calls
-                    .allArgs()
-                    .filter(
-                        (dispatch) =>
-                            dispatch[0] === 'CrossRootAriaInSyntheticShadow' &&
-                            dispatch[1].tagName === 'x-aria-source' &&
-                            dispatch[1].attributeName === 'aria-labelledby'
-                    )
-            ).toHaveSize(2);
+            // dispatcher is still called twice
+            expect(dispatcher.calls.allArgs()).toEqual([
+                [
+                    'CrossRootAriaInSyntheticShadow',
+                    {
+                        tagName: 'x-aria-source',
+                        attributeName: 'aria-labelledby',
+                    },
+                ],
+                [
+                    'CrossRootAriaInSyntheticShadow',
+                    {
+                        tagName: 'x-aria-source',
+                        attributeName: 'aria-labelledby',
+                    },
+                ],
+            ]);
         });
 
         [false, true].forEach((reverseOrder) => {

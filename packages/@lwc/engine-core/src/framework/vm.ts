@@ -376,7 +376,8 @@ export function createVM<HostNode, HostElement>(
     vm.shadowMode = computeShadowMode(def, vm.owner, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
-    if (isReportingEnabled()) {
+    // We don't need to report the shadow mode if we're rendering in light DOM
+    if (isReportingEnabled() && vm.renderMode === RenderMode.Shadow) {
         report(ReportingEventId.ShadowModeUsage, {
             tagName: vm.tagName,
             mode: vm.shadowMode,
