@@ -2,8 +2,11 @@ import {
     ariaPropertiesMapping,
     nonStandardAriaProperties,
     nonPolyfilledAriaProperties,
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
 } from 'test-utils';
-import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
+import { createElement } from 'lwc';
+
 import Component from 'x/component';
 
 function testAriaProperty(property, attribute) {
@@ -12,11 +15,11 @@ function testAriaProperty(property, attribute) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         function getDefaultValue(prop) {
@@ -210,11 +213,11 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         nonStandardAriaProperties.forEach((prop) => {
