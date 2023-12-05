@@ -266,6 +266,7 @@ function mountElement(
 function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
+    // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyStaticParts(elm, n2, renderer, false);
@@ -300,6 +301,7 @@ function mountStatic(
         }
     }
 
+    // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
     applyStaticParts(elm, vnode, renderer, true);

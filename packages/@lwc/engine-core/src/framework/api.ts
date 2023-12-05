@@ -264,6 +264,8 @@ function s(
                     if (
                         renderMode === RenderMode.Light &&
                         (isVBaseElement(vnode) || isVStatic(vnode)) &&
+                        // We only need to copy the vnodes when the slot assignment changes, copying every time causes issues with
+                        // disconnected/connected callback firing.
                         vnode.slotAssignment !== data.slotAssignment
                     ) {
                         // When the light DOM slot assignment (slot attribute) changes we can't use the same reference

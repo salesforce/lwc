@@ -63,6 +63,7 @@ export interface VStatic extends BaseVNode {
     readonly fragment: Element;
     readonly parts: VStaticPart[] | undefined;
     elm: Element | undefined;
+    // Corresponds to the slot attribute of the element and indicates which `slot` element it should be assigned to
     slotAssignment: string | undefined;
 }
 
@@ -100,6 +101,7 @@ export interface VBaseElement extends BaseVNode, BaseVParent {
     data: VElementData;
     elm: Element | undefined;
     key: Key;
+    // Corresponds to the slot attribute of the element and indicates which `slot` element it should be assigned to
     slotAssignment: string | undefined;
 }
 
