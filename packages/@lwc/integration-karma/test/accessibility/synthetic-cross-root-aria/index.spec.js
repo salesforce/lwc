@@ -1,4 +1,6 @@
-import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
+import { createElement } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+
 import AriaContainer from 'x/ariaContainer';
 import Valid from 'x/valid';
 
@@ -18,11 +20,14 @@ if (!process.env.NATIVE_SHADOW) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, [
+                'CrossRootAriaInSyntheticShadow',
+                'NonStandardAriaReflection',
+            ]);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         describe('detection', () => {
@@ -150,22 +155,22 @@ if (!process.env.NATIVE_SHADOW) {
                             expectWarningForNonStandardPropertyAccess(() => {
                                 sourceElm.setAriaLabelledBy(value);
                             });
-                            expect(dispatcher.calls.allArgs()).toEqual([
-                                ...(usePropertyAccess
-                                    ? [
-                                          [
-                                              'NonStandardAriaReflection',
-                                              {
-                                                  tagName: 'x-aria-source',
-                                                  propertyName: 'ariaLabelledBy',
-                                                  isSetter: true,
-                                                  setValueType:
-                                                      value === null ? 'null' : typeof value,
-                                              },
-                                          ],
-                                      ]
-                                    : []),
-                            ]);
+
+                            if (usePropertyAccess) {
+                                expect(dispatcher.calls.allArgs()).toEqual([
+                                    [
+                                        'NonStandardAriaReflection',
+                                        {
+                                            tagName: 'x-aria-source',
+                                            propertyName: 'ariaLabelledBy',
+                                            isSetter: true,
+                                            setValueType: value === null ? 'null' : typeof value,
+                                        },
+                                    ],
+                                ]);
+                            } else {
+                                expect(dispatcher).not.toHaveBeenCalled();
+                            }
                         });
                     });
 
@@ -173,21 +178,22 @@ if (!process.env.NATIVE_SHADOW) {
                         expectWarningForNonStandardPropertyAccess(() => {
                             sourceElm.setAriaLabelledBy('does-not-exist-at-all-lol');
                         });
-                        expect(dispatcher.calls.allArgs()).toEqual([
-                            ...(usePropertyAccess
-                                ? [
-                                      [
-                                          'NonStandardAriaReflection',
-                                          {
-                                              tagName: 'x-aria-source',
-                                              propertyName: 'ariaLabelledBy',
-                                              isSetter: true,
-                                              setValueType: 'string',
-                                          },
-                                      ],
-                                  ]
-                                : []),
-                        ]);
+
+                        if (usePropertyAccess) {
+                            expect(dispatcher.calls.allArgs()).toEqual([
+                                [
+                                    'NonStandardAriaReflection',
+                                    {
+                                        tagName: 'x-aria-source',
+                                        propertyName: 'ariaLabelledBy',
+                                        isSetter: true,
+                                        setValueType: 'string',
+                                    },
+                                ],
+                            ]);
+                        } else {
+                            expect(dispatcher).not.toHaveBeenCalled();
+                        }
                     });
 
                     [
@@ -215,6 +221,7 @@ if (!process.env.NATIVE_SHADOW) {
                                     ...expectedMessages,
                                     expectedMessageForCrossRootForSecondTarget,
                                 ]);
+
                                 expect(dispatcher.calls.allArgs()).toEqual([
                                     ...getExpectedDispatcherCalls(true),
                                     [
@@ -269,6 +276,7 @@ if (!process.env.NATIVE_SHADOW) {
                     const valid = createElement('x-valid', { is: Valid });
                     document.body.appendChild(valid);
                     valid.linkElements({ reverseOrder });
+
                     expect(dispatcher).not.toHaveBeenCalled();
                 });
             });
