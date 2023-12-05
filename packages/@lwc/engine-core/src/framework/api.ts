@@ -270,8 +270,7 @@ function s(
                         // to the vnode because the current way the diffing algo works, it will replace the original reference
                         // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
                         // Creating a copy of the vnode to preserve a reference to the previous host element.
-                        clonedVNode = { ...vnode };
-                        clonedVNode.slotAssignment = data.slotAssignment;
+                        clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
