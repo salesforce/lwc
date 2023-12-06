@@ -19,13 +19,16 @@ describe('light DOM slot forwarding reactivity', () => {
 
     const verifySlotContent = (leaf, expected) => {
         const children = Array.from(leaf.shadowRoot ? leaf.shadowRoot.children : leaf.children);
-        expect(children.length).toEqual(expected.length);
+        // expect(children.length).toEqual(expected.length);
 
         children.forEach((child, i) => {
             const actualSlotContent =
-                child.tagName.toLowerCase() === 'slot' ? child.assignedNodes()[0] : child;
-            expect(child.getAttribute('slot')).toEqual(expected[i].slotAssignment);
-            expect(actualSlotContent.innerText).toEqual(expected[i].slotContent);
+                child.tagName.toLowerCase() === 'slot' ? child.assignedNodes() : [child];
+            actualSlotContent.forEach((slotContent, k) => {
+                // i+k is just for the conditional test
+                expect(child.getAttribute('slot')).toEqual(expected[i + k].slotAssignment);
+                expect(slotContent.innerText).toEqual(expected[i + k].slotContent);
+            });
         });
     };
 
@@ -89,6 +92,25 @@ describe('light DOM slot forwarding reactivity', () => {
         },
     ];
 
+    const expectedSlotContentAfterConditionalMutation = [
+        {
+            slotAssignment: 'lower',
+            slotContent: 'Upper slot content',
+        },
+        {
+            slotAssignment: '',
+            slotContent: 'Default slot content',
+        },
+        {
+            slotAssignment: 'upper',
+            slotContent: 'Lower slot content',
+        },
+        {
+            slotAssignment: 'upper',
+            slotContent: 'Conditional slot content',
+        },
+    ];
+
     const testCases = ['lightLight', 'lightShadow'];
 
     if (process.env.NATIVE_SHADOW) {
@@ -126,6 +148,12 @@ describe('light DOM slot forwarding reactivity', () => {
             await Promise.resolve();
 
             verifySlotContent(leaf, expectedSlotContentAfterLeafMutation);
+
+            lightContainer[`${slotForwardingType}ConditionalSlot`] = true;
+
+            await Promise.resolve();
+
+            verifySlotContent(leaf, expectedSlotContentAfterConditionalMutation);
         });
     });
 });

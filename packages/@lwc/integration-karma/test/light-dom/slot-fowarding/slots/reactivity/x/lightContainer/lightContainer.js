@@ -15,4 +15,10 @@ export default class extends LightningElement {
     shadowLightUpper = 'upper';
     @api
     shadowLightLower = 'lower';
+    @api
+    lightLightConditionalSlot = false;
+    @api
+    lightShadowConditionalSlot = false;
+    @api
+    shadowLightConditionalSlot = false;
 }
