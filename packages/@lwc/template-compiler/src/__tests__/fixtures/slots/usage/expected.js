@@ -27,6 +27,14 @@ const stc6 = {
   slotAssignment: "undefined",
   key: 10,
 };
+const stc7 = {
+  slotAssignment: "null",
+  key: 11,
+};
+const stc8 = {
+  slotAssignment: "",
+  key: 12,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
@@ -59,6 +67,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element("p", stc4, [api_text("Header Slot Content")]),
         api_element("p", stc5, [api_text("Default Content")]),
         api_element("p", stc6, [api_text("Undefined Slot Content")]),
+        api_element("p", stc7, [api_text("Null Slot Content")]),
+        api_element("p", stc8, [api_text("Empty slot value")]),
       ]),
     ]),
   ];
