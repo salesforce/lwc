@@ -8,14 +8,16 @@ import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
 
 function testDisconnectSlot(name, fn) {
-    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, (done) => {
-        const elm = createElement('x-test', { is: Test });
-        elm.disconnect = function (context) {
-            expect(context instanceof Test).toBe(true);
-            done();
-        };
+    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {
+        return new Promise((resolve) => {
+            const elm = createElement('x-test', { is: Test });
+            elm.disconnect = function (context) {
+                expect(context instanceof Test).toBe(true);
+                resolve();
+            };
 
-        fn(elm);
+            fn(elm);
+        });
     });
 }
 
