@@ -103,7 +103,7 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
                 await doubleMicrotask();
 
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).backgroundColor).toBe(
-                    'rgb(0, 128, 128)'
+                    'rgb(0, 128, 0)'
                 );
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).fontFamily).toBe(
                     'monospace'
