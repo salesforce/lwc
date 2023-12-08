@@ -62,6 +62,7 @@ function createFreshStyleElement(content: string) {
     const elm = document.createElement('style');
     elm.type = 'text/css';
     elm.textContent = content;
+    elm.setAttribute('data-rendered-by-lwc', '');
     return elm;
 }
 

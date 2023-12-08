@@ -19,10 +19,22 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
-const footer = `/** version: ${version} */`;
+let banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+let footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
+
+if (packageName === '@lwc/synthetic-shadow') {
+    banner += `
+    if (!globalThis.lwcRuntimeFlags) {
+      Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
+    }
+    if (!lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
+    `
+        .replaceAll(/\n {4}/g, '\n')
+        .trimEnd();
+    footer += '\n}';
+}
 
 const onwarn = ({ code, message }) => {
     if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
