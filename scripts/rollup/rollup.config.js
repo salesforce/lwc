@@ -27,7 +27,7 @@ const formats = ['es', 'cjs'];
 if (packageName === '@lwc/synthetic-shadow') {
     banner += `
     if (!globalThis.lwcRuntimeFlags) {
-      Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
+      Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: Object.create(null) });
     }
     if (!lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
     `
