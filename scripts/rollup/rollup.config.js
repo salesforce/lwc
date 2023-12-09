@@ -25,6 +25,9 @@ const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
 
 if (packageName === '@lwc/synthetic-shadow') {
+    // Note that lwcRuntimeFlags must be referenced as a pure global, or else string replacement in ESBuild
+    // will not work. But we also have to check to make sure that lwcRuntimeFlags is defined, so this
+    // `Object.defineProperty` code is copied from @lwc/features itself.
     banner += `
     if (!globalThis.lwcRuntimeFlags) {
       Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: Object.create(null) });
