@@ -72,6 +72,6 @@ export function applyShadowMigrateMode(shadowRoot: ShadowRoot) {
         globalStylesheet = initGlobalStylesheet();
     }
 
-    // (shadowRoot as any).synthetic = true; // pretend to be synthetic mode
+    (shadowRoot as any).synthetic = true; // pretend to be synthetic mode
     shadowRoot.adoptedStyleSheets.push(globalStylesheet);
 }

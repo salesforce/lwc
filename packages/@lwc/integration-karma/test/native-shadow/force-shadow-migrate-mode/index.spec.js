@@ -1,5 +1,4 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { isNativeShadowRootInstance } from 'test-utils';
 import Native from 'x/native';
 import Synthetic from 'x/synthetic';
 import StyledLight from 'x/styledLight';
@@ -7,6 +6,14 @@ import StyledLight from 'x/styledLight';
 function doubleMicrotask() {
     // wait for applyShadowMigrateMode()
     return Promise.resolve().then(() => Promise.resolve());
+}
+
+function isActuallyNativeShadow(shadowRoot) {
+    return shadowRoot.constructor.toString().includes('[native code]');
+}
+
+function isClaimingToBeSyntheticShadow(shadowRoot) {
+    return !!shadowRoot.synthetic;
 }
 
 // This test only makes sense for true native shadow mode, because if ENABLE_FORCE_SHADOW_MIGRATE_MODE is true,
@@ -34,7 +41,8 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
 
                 await doubleMicrotask();
 
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
+                expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
+                expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(true);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
                     'rgb(0, 0, 255)'
                 );
@@ -46,7 +54,8 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
 
                 await doubleMicrotask();
 
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
+                expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
+                expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
                     'rgb(0, 0, 0)'
                 );
@@ -61,9 +70,7 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
 
                 await doubleMicrotask();
 
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).opacity).toBe('1');
-
                 expect(getComputedStyle(light.querySelector('h1')).opacity).toBe('0.5');
             });
 
@@ -73,7 +80,6 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
 
                 await doubleMicrotask();
 
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
                     'rgb(0, 0, 255)'
                 );
@@ -117,7 +123,8 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
+                expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
+                expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
                     'rgb(0, 0, 0)'
                 );
@@ -128,7 +135,8 @@ if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
-                expect(isNativeShadowRootInstance(elm.shadowRoot)).toBe(true);
+                expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
+                expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
                 expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
                     'rgb(0, 0, 0)'
                 );
