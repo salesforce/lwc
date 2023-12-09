@@ -25,6 +25,8 @@ const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
 
 if (packageName === '@lwc/synthetic-shadow') {
+    // Here we wrap all of synthetic shadow in a check for lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE, so
+    // that synthetic shadow is not loaded at all if the flag is in effect.
     // Note that lwcRuntimeFlags must be referenced as a pure global, or else string replacement in ESBuild
     // will not work. But we also have to check to make sure that lwcRuntimeFlags is defined, so this
     // `Object.defineProperty` code is copied from @lwc/features itself.
