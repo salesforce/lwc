@@ -278,9 +278,7 @@ function doAttachShadow(vm: VM): ShadowRoot {
     } = vm;
 
     const shadowRoot = attachShadow(elm, {
-        [KEY__SYNTHETIC_MODE]:
-            shadowMode === ShadowMode.Synthetic &&
-            !lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE,
+        [KEY__SYNTHETIC_MODE]: shadowMode === ShadowMode.Synthetic,
         delegatesFocus: Boolean(ctor.delegatesFocus),
         mode,
     } as any);
