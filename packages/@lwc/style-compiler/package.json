@@ -46,8 +46,5 @@
         "postcss": "~8.4.31",
         "postcss-selector-parser": "~6.0.13",
         "postcss-value-parser": "~4.2.0"
-    },
-    "devDependencies": {
-        "@types/string.prototype.matchall": "^4.0.3"
     }
 }
