@@ -38,7 +38,7 @@ function getWiredParams(
         .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
         .map((path) => {
             // Need to clone deep the observed property to remove the param prefix
-            const clonedProperty = t.cloneDeep(path.node) as types.ObjectProperty;
+            const clonedProperty = t.cloneNode(path.node) as types.ObjectProperty;
             (clonedProperty.value as types.StringLiteral).value = (
                 clonedProperty.value as types.StringLiteral
             ).value.slice(1);
@@ -141,7 +141,8 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             configProps.push(
                 t.objectProperty(
                     (param as types.ObjectProperty).key,
-                    paramConfigValue.configValueExpression
+                    paramConfigValue.configValueExpression,
+                    param.computed
                 )
             );
 
@@ -174,9 +175,10 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
 
             if (wiredValue.params) {
                 const dynamicParamNames = wiredValue.params.map((p) => {
-                    return t.stringLiteral(
-                        t.isIdentifier(p.key) ? p.key.name : (p.key as types.StringLiteral).value
-                    );
+                    const value = t.isIdentifier(p.key)
+                        ? p.key.name
+                        : (p.key as types.StringLiteral).value;
+                    return p.computed ? t.identifier(value) : t.stringLiteral(value);
                 });
                 wireConfig.push(
                     t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
