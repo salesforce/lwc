@@ -44,7 +44,7 @@
     "dependencies": {
         "@lwc/compiler": "5.1.0",
         "@lwc/module-resolver": "5.1.0",
-        "@rollup/pluginutils": "~5.0.4"
+        "@rollup/pluginutils": "~5.1.0"
     },
     "devDependencies": {
         "@lwc/errors": "5.1.0"
