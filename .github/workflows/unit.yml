@@ -43,6 +43,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
+      # See: https://github.com/google/tachometer#on-demand-dependencies
+      - name: Install chromedriver v119
+        run: yarn add -W chromedriver@^119
+
       - name: Check missing file headers
         run: node ./scripts/tasks/check-license-headers.js
       - name: Check package.json integrity
