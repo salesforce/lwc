@@ -20,9 +20,9 @@ import {
     freeze,
     hasOwnProperty,
     isFunction,
-    isString,
     isNull,
     isObject,
+    isString,
     isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
@@ -35,7 +35,7 @@ import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
-import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
+import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import {
     associateVM,
     getAssociatedVM,
@@ -47,16 +47,17 @@ import {
 } from './vm';
 import { componentValueObserved } from './mutation-tracker';
 import {
-    patchShadowRootWithRestrictions,
-    patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
+    patchLightningElementPrototypeWithRestrictions,
+    patchShadowRootWithRestrictions,
 } from './restrictions';
-import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
+import { getVMBeingRendered, isUpdatingTemplate, Template } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 import { TemplateStylesheetFactories } from './stylesheet';
 import { instrumentInstance } from './runtime-instrumentation';
+import { applyShadowMigrateMode } from './shadow-migration-mode';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -287,6 +288,14 @@ function doAttachShadow(vm: VM): ShadowRoot {
 
     if (process.env.NODE_ENV !== 'production') {
         patchShadowRootWithRestrictions(shadowRoot);
+    }
+
+    if (
+        process.env.IS_BROWSER &&
+        lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE &&
+        vm.shadowMigrateMode
+    ) {
+        applyShadowMigrateMode(shadowRoot);
     }
 
     return shadowRoot;

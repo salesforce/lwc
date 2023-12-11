@@ -19,10 +19,27 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-const banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
-const footer = `/** version: ${version} */`;
+let banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+let footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
+
+if (packageName === '@lwc/synthetic-shadow') {
+    // Here we wrap all of synthetic shadow in a check for lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE, so
+    // that synthetic shadow is not loaded at all if the flag is in effect.
+    // Note that lwcRuntimeFlags must be referenced as a pure global, or else string replacement in ESBuild
+    // will not work. But we also have to check to make sure that lwcRuntimeFlags is defined, so this
+    // `Object.defineProperty` code is copied from @lwc/features itself.
+    banner += `
+    if (!globalThis.lwcRuntimeFlags) {
+      Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: Object.create(null) });
+    }
+    if (!lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
+    `
+        .replaceAll(/\n {4}/g, '\n')
+        .trimEnd();
+    footer += '\n}';
+}
 
 const onwarn = ({ code, message }) => {
     if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
