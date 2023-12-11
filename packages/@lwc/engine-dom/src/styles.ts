@@ -62,6 +62,7 @@ function createFreshStyleElement(content: string) {
     const elm = document.createElement('style');
     elm.type = 'text/css';
     elm.textContent = content;
+    // Add an attribute to distinguish global styles added by LWC as opposed to other frameworks/libraries on the page
     elm.setAttribute('data-rendered-by-lwc', '');
     return elm;
 }
