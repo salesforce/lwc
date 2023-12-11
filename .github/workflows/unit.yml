@@ -44,7 +44,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Install chromedriver
-        run: yarn install chromedriver@^119 # pin to same version as chrome above so Tachometer uses the same version
+        run: yarn add -W chromedriver@^119 # pin to same version as chrome above so Tachometer uses the same version
 
       - name: Check missing file headers
         run: node ./scripts/tasks/check-license-headers.js
