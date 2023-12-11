@@ -53,6 +53,9 @@ function initGlobalStylesheet() {
             }
         );
         Promise.all(promises).then((stylesheetTexts) => {
+            // When replaceSync() is called, the entire contents of the constructable stylesheet are replaced
+            // with the copied+concatenated styles. This means that any shadow root's adoptedStyleSheets that
+            // contains this constructable stylesheet will immediately get the new styles.
             stylesheet.replaceSync(stylesheetTexts.join('\n'));
         });
     };
