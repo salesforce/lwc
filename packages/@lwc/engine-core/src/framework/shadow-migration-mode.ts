@@ -61,6 +61,10 @@ function initGlobalStylesheet() {
     };
 
     const headObserver = new MutationObserver(copyToGlobalStylesheet);
+
+    // By observing only the childList, note that we are not covering the case where someone changes an `href`
+    // on an existing <link>`, or the textContent on an existing `<style>`. This is assumed to be an uncommon
+    // case and not worth covering.
     headObserver.observe(document.head, {
         childList: true,
     });
