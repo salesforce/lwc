@@ -2041,11 +2041,6 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
-"@types/string.prototype.matchall@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@types/string.prototype.matchall/-/string.prototype.matchall-4.0.3.tgz#19ab711a23a549fb7579947d70819a5cbb0fceaa"
-  integrity sha512-N7UZ2wK2QY7llJhkG8OsiSW1DgNJ2nkMGamrxHX2nD6V9BvtlKJ2jLxlb4KpzNGDceYLdYKTLRlrbQ359ZsM6g==
-
 "@types/table@^6.0.0":
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/@types/table/-/table-6.3.2.tgz#e18ad2594400d81c3da28c31b342eb5a0d87a8e7"
