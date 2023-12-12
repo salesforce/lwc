@@ -1,16 +1,16 @@
 <x-if-conditional-slot-content>
-  <template shadowroot="open">
+  <template shadowrootmode="open">
     <div class="active-if-blocks">
       <x-conditional-slot-content>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
               <slot>
               </slot>
             </template>
             Testing if:true
             <x-child>
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
@@ -18,13 +18,13 @@
             </x-child>
           </x-slotted>
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
               <slot>
               </slot>
             </template>
             Testing if:false
             <x-child>
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
@@ -36,15 +36,15 @@
     </div>
     <div class="inactive-if-blocks">
       <x-conditional-slot-content>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
               <slot>
               </slot>
             </template>
           </x-slotted>
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
               <slot>
               </slot>
             </template>

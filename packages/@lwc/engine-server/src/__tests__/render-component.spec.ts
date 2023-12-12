@@ -12,7 +12,7 @@ class Test extends LightningElement {}
 describe('renderComponent', () => {
     it('returns the rendered tree as string', () => {
         expect(renderComponent('x-test', Test)).toBe(
-            '<x-test><template shadowroot="open"></template></x-test>'
+            '<x-test><template shadowrootmode="open"></template></x-test>'
         );
     });
 

@@ -12,12 +12,12 @@ window.HydrateTest = (function (lwc, testUtils) {
 
     const browserSupportsDeclarativeShadowDOM = Object.prototype.hasOwnProperty.call(
         HTMLTemplateElement.prototype,
-        'shadowRoot'
+        'shadowRootMode'
     );
 
     function polyfillDeclarativeShadowDom(root) {
         root.querySelectorAll('template[shadowroot]').forEach((template) => {
-            const mode = template.getAttribute('shadowroot');
+            const mode = template.getAttribute('shadowrootmode');
             const shadowRoot = template.parentNode.attachShadow({ mode });
             shadowRoot.appendChild(template.content);
             template.remove();
