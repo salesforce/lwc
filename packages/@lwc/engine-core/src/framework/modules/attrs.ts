@@ -69,16 +69,18 @@ export function patchSlotAssignment(
     vnode: VBaseElement | VStatic,
     renderer: RendererAPI
 ) {
-    if (oldVnode?.slotAssignment === vnode.slotAssignment) {
+    const { slotAssignment } = vnode;
+
+    if (oldVnode?.slotAssignment === slotAssignment) {
         return;
     }
 
     const { elm } = vnode;
     const { setAttribute, removeAttribute } = renderer;
 
-    if (isUndefined(vnode.slotAssignment) || isNull(vnode.slotAssignment)) {
+    if (isUndefined(slotAssignment) || isNull(slotAssignment)) {
         removeAttribute(elm, 'slot');
     } else {
-        setAttribute(elm, 'slot', vnode.slotAssignment);
+        setAttribute(elm, 'slot', slotAssignment);
     }
 }
