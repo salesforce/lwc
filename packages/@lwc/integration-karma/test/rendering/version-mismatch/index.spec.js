@@ -1,10 +1,6 @@
-import {
-    createElement,
-    LightningElement,
-    registerTemplate,
-    registerComponent,
-    __unstable__ReportingControl as reportingControl,
-} from 'lwc';
+import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
@@ -48,11 +44,11 @@ describe('compiler version mismatch', () => {
         beforeEach(() => {
             window.__lwcResetWarnedOnVersionMismatch();
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, 'CompilerRuntimeVersionMismatch');
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         it('template', () => {

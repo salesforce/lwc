@@ -1,4 +1,6 @@
-import { __unstable__ReportingControl as reportingControl, createElement } from 'lwc';
+import { createElement } from 'lwc';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+
 import Component from 'x/component';
 import Parent from 'x/parent';
 
@@ -9,12 +11,12 @@ if (!window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['ConnectedCallbackWhileDisconnected']);
             logger = spyOn(console, 'warn');
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         function expectLogs(regexes) {

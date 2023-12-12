@@ -8,6 +8,7 @@ branches:
       auto-start: true
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
+      validate-optional-downstream-deps: true # temporarily test non-required downstreams
       required-downstream-deps:
         - LightningMobileRuntime/ui-lmr-components
         - MobilePlatform/lds-debug-app

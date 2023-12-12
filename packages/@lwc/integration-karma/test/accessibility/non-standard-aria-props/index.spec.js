@@ -1,5 +1,9 @@
-import { createElement, __unstable__ReportingControl as reportingControl } from 'lwc';
-import { nonStandardAriaProperties } from 'test-utils';
+import { createElement } from 'lwc';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+    nonStandardAriaProperties,
+} from 'test-utils';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 
@@ -10,11 +14,11 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
 
         beforeEach(() => {
             dispatcher = jasmine.createSpy();
-            reportingControl.attachDispatcher(dispatcher);
+            attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
         afterEach(() => {
-            reportingControl.detachDispatcher();
+            detachReportingControlDispatcher();
         });
 
         nonStandardAriaProperties.forEach((prop) => {
@@ -61,7 +65,6 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 elm.getPropOnElement(prop);
                             }).toLogWarningDev(inComponentWarning);
 
-                            expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
                                     'NonStandardAriaReflection',
@@ -93,7 +96,6 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                                 return unused; // remove lint warning
                             }).toLogWarningDev(outsideComponentWarning);
 
-                            expect(dispatcher).toHaveBeenCalledTimes(2);
                             expect(dispatcher.calls.allArgs()).toEqual([
                                 [
                                     'NonStandardAriaReflection',

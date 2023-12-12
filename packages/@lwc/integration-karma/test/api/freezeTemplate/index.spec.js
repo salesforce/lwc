@@ -1,20 +1,17 @@
-import {
-    registerTemplate,
-    freezeTemplate,
-    setFeatureFlagForTest,
-    __unstable__ReportingControl as reportingControl,
-} from 'lwc';
+import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
+
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 describe('freezeTemplate', () => {
     let dispatcher;
 
     beforeEach(() => {
         dispatcher = jasmine.createSpy();
-        reportingControl.attachDispatcher(dispatcher);
+        attachReportingControlDispatcher(dispatcher, ['StylesheetMutation', 'TemplateMutation']);
     });
 
     afterEach(() => {
-        reportingControl.detachDispatcher();
+        detachReportingControlDispatcher();
     });
 
     it('should warn when setting tmpl.stylesheetToken', () => {
