@@ -11,6 +11,7 @@ export const enum APIVersion {
     V58_244_SUMMER_23 = 58,
     V59_246_WINTER_24 = 59,
     V60_248_SPRING_24 = 60,
+    V61_250_SUMMER_24 = 61,
 }
 
 // These must be updated when the enum is updated.
@@ -18,11 +19,12 @@ export const enum APIVersion {
 // passing the `verify-treeshakeable.js` test.
 
 export const LOWEST_API_VERSION = APIVersion.V58_244_SUMMER_23;
-export const HIGHEST_API_VERSION = APIVersion.V60_248_SPRING_24;
+export const HIGHEST_API_VERSION = APIVersion.V61_250_SUMMER_24;
 const allVersions = [
     APIVersion.V58_244_SUMMER_23,
     APIVersion.V59_246_WINTER_24,
     APIVersion.V60_248_SPRING_24,
+    APIVersion.V61_250_SUMMER_24,
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 
@@ -78,6 +80,11 @@ export const enum APIFeature {
      * instead of comment nodes.
      */
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+    /**
+     * If enabled, we use the native custom element lifecycle events: connectedCallback, disconnectedCallback
+     * rather than synthetic events.
+     */
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 }
 
 export function isAPIFeatureEnabled(
@@ -93,5 +100,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
         case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
+        case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
+            return apiVersion >= APIVersion.V61_250_SUMMER_24;
     }
 }

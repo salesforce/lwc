@@ -366,7 +366,12 @@ function getUpgradableElement(
     return ctor;
 }
 
-function createCustomElement(tagName: string, upgradeCallback: LifecycleCallback): HostElement {
+// Note that SSR does not have any concept of native vs synthetic custom element lifecycle
+function createCustomElement(
+    tagName: string,
+    upgradeCallback: LifecycleCallback,
+    _useNativeLifecycle: boolean
+): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
     return new (UpgradableConstructor as any)(upgradeCallback);
 }
