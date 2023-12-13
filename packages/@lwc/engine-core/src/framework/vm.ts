@@ -699,7 +699,13 @@ export function runConnectedCallback(vm: VM) {
     }
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
-    if (process.env.IS_BROWSER && (process.env.NODE_ENV !== 'production' || isReportingEnabled())) {
+    if (
+        process.env.IS_BROWSER &&
+        !shouldUseNativeCustomElementLifecycle(
+            vm.component.constructor as LightningElementConstructor
+        ) &&
+        (process.env.NODE_ENV !== 'production' || isReportingEnabled())
+    ) {
         if (!vm.renderer.isConnected(vm.elm)) {
             if (process.env.NODE_ENV !== 'production') {
                 logWarnOnce(
