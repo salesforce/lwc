@@ -42,7 +42,7 @@ describe('light DOM slot forwarding reactivity', () => {
             slotContent: 'Lower slot content',
         },
         {
-            slotAssignment: 'default',
+            slotAssignment: process.env.API_VERSION > 60 ? 'default' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -57,7 +57,7 @@ describe('light DOM slot forwarding reactivity', () => {
             slotContent: 'Upper slot content',
         },
         {
-            slotAssignment: 'default',
+            slotAssignment: process.env.API_VERSION > 60 ? 'default' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -92,30 +92,46 @@ describe('light DOM slot forwarding reactivity', () => {
         },
     ];
 
-    const expectedSlotContentAfterConditionalMutation = [
-        {
-            slotAssignment: 'lower',
-            slotContent: 'Upper slot content',
-        },
-        {
-            slotAssignment: '',
-            slotContent: 'Default slot content',
-        },
-        {
-            slotAssignment: 'upper',
-            slotContent: 'Lower slot content',
-        },
-        {
-            slotAssignment: 'upper',
-            slotContent: 'Conditional slot content',
-        },
-    ];
+    const expectedSlotContentAfterConditionalMutation =
+        process.env.API_VERSION > 60
+            ? [
+                  {
+                      slotAssignment: 'lower',
+                      slotContent: 'Upper slot content',
+                  },
+                  {
+                      slotAssignment: '',
+                      slotContent: 'Default slot content',
+                  },
+                  {
+                      slotAssignment: 'upper',
+                      slotContent: 'Lower slot content',
+                  },
+                  {
+                      slotAssignment: 'upper',
+                      slotContent: 'Conditional slot content',
+                  },
+              ]
+            : [
+                  expectedSlotContentAfterParentMutation[0],
+                  {
+                      slotAssignment: 'upper',
+                      slotContent: 'Conditional slot content',
+                  },
+                  ...expectedSlotContentAfterParentMutation.slice(1),
+              ];
 
-    const testCases = ['lightLight', 'lightShadow'];
+    let testCases = ['lightLight', 'lightShadow'];
 
     if (process.env.NATIVE_SHADOW) {
         // TODO [#3885]: Using expressions on synthetic shadow DOM slots throws an error, only test in native for now
         testCases.push('shadowLight');
+    }
+
+    if (process.env.API_VERSION < 61) {
+        // Note for api versions < 61 light DOM slot forwarding is disabled.
+        // Testing with just lightLight should be sufficient as a regression test.
+        testCases = testCases.filter((test) => test === 'lightLight');
     }
 
     testCases.forEach((slotForwardingType) => {
@@ -139,7 +155,12 @@ describe('light DOM slot forwarding reactivity', () => {
 
             await Promise.resolve();
 
-            verifySlotContent(leaf, expectedSlotContentAfterForwardedSlotMutation);
+            verifySlotContent(
+                leaf,
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterForwardedSlotMutation
+                    : expectedSlotContentAfterParentMutation
+            );
 
             leaf.upperSlot = 'lower';
             leaf.lowerSlot = '';
@@ -147,7 +168,12 @@ describe('light DOM slot forwarding reactivity', () => {
 
             await Promise.resolve();
 
-            verifySlotContent(leaf, expectedSlotContentAfterLeafMutation);
+            verifySlotContent(
+                leaf,
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterLeafMutation
+                    : expectedSlotContentAfterParentMutation
+            );
 
             lightContainer[`${slotForwardingType}ConditionalSlot`] = true;
 

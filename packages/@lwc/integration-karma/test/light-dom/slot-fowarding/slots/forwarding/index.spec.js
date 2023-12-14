@@ -5,6 +5,43 @@ import LightContainer from './x/lightContainer/lightContainer';
 
 const commentNode = document.createComment(' comments being forwarded ');
 
+const slotAssignmentWithForwarding = {
+    expectedUpperSlot: {
+        tagName: 'x-shadow-dom-element',
+        content: 'Lower slot forwarded content',
+        slotAttr: null,
+    },
+    expectedLowerSlot: {
+        tagName: 'x-light-dom-element',
+        content: 'Upper slot forwarded content',
+        slotAttr: null,
+    },
+    expectedDefaultSlot: {
+        innerText: 'Static vnode default slot forwarded',
+        textContent: 'Text being forwarded',
+    },
+};
+
+const slotAssignmentWithoutForwarding = {
+    expectedUpperSlot: {
+        tagName: 'x-light-dom-element',
+        content: 'Upper slot forwarded content',
+        slotAttr: 'upper',
+    },
+    expectedLowerSlot: {
+        tagName: 'x-shadow-dom-element',
+        content: 'Lower slot forwarded content',
+        slotAttr: 'lower',
+    },
+    expectedDefaultSlot: {
+        innerText: 'Static vnode default slot forwarded',
+        textContent: 'Text being forwarded',
+    },
+};
+
+const expectedSlotAssignment =
+    process.env.API_VERSION > 60 ? slotAssignmentWithForwarding : slotAssignmentWithoutForwarding;
+
 describe('slot forwarding', () => {
     let nodes;
     let lightContainer;
@@ -23,59 +60,77 @@ describe('slot forwarding', () => {
         // Note these include the vFragmentBookend elements
         expect(lightLightLeaf.children.length).toBe(5);
 
+        const { expectedUpperSlot, expectedLowerSlot, expectedDefaultSlot } =
+            expectedSlotAssignment;
+
         const slotContent = Array.from(lightLightLeaf.children);
         const upperSlotContent = slotContent.slice(0, 2);
         // Lower content is now mapped to upper slot
-        expect(upperSlotContent[0].tagName.toLowerCase()).toBe('x-shadow-dom-element');
-        expect(upperSlotContent[1].innerText).toEqual('Lower slot forwarded content');
+        expect(upperSlotContent[0].getAttribute('slot')).toBe(expectedUpperSlot.slotAttr);
+        expect(upperSlotContent[0].tagName.toLowerCase()).toBe(expectedUpperSlot.tagName);
+        expect(upperSlotContent[1].getAttribute('slot')).toBe(expectedUpperSlot.slotAttr);
+        expect(upperSlotContent[1].innerText).toEqual(expectedUpperSlot.content);
 
         // Upper content is now mapped to lower slot
         const lowerSlotContent = slotContent.slice(2, 4);
-        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual('x-light-dom-element');
-        expect(lowerSlotContent[1].innerText).toEqual('Upper slot forwarded content');
+        expect(lowerSlotContent[0].getAttribute('slot')).toBe(expectedLowerSlot.slotAttr);
+        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual(expectedLowerSlot.tagName);
+        expect(lowerSlotContent[1].getAttribute('slot')).toBe(expectedLowerSlot.slotAttr);
+        expect(lowerSlotContent[1].innerText).toEqual(expectedLowerSlot.content);
 
         // Default slot content is mapped to `defaultSlotReassigned` slot
         const remappedDefaultSlotContent = slotContent.slice(4, 5);
-        expect(remappedDefaultSlotContent[0].innerText).toEqual(
-            'Static vnode default slot forwarded'
-        );
+        expect(remappedDefaultSlotContent[0].innerText).toEqual(expectedDefaultSlot.innerText);
 
-        // Text and comments always mapped to the default slot
-        expect(
-            lightLightLeaf.childNodes[process.env.API_VERSION > 59 ? 12 : 5].textContent
-        ).toEqual('Text being forwarded');
-        expect(lightLightLeaf.childNodes[process.env.API_VERSION > 59 ? 13 : 6]).toEqual(
-            commentNode
+        const apiVersion = process.env.API_VERSION;
+        // These are to cover API versions 60, 59 and below
+        const defaultSlotTextIndex = apiVersion > 60 ? 12 : apiVersion > 59 ? 11 : 4;
+        const defaultSlotCommentIndex = apiVersion > 60 ? 13 : apiVersion > 59 ? 12 : 5;
+
+        expect(lightLightLeaf.childNodes[defaultSlotTextIndex].textContent).toEqual(
+            expectedDefaultSlot.textContent
         );
+        expect(lightLightLeaf.childNodes[defaultSlotCommentIndex]).toEqual(commentNode);
     });
 
     it('should correctly forward slot assignments - light > shadow slot', () => {
         const lightShadowLeaf = nodes['light-shadow-leaf'];
         expect(lightShadowLeaf.shadowRoot.children.length).toBe(4);
 
+        const { expectedUpperSlot, expectedLowerSlot, expectedDefaultSlot } =
+            expectedSlotAssignment;
+
         const slots = extractDataIds(lightShadowLeaf);
         const upperSlotContent = slots['upper-slot'].assignedNodes();
         expect(upperSlotContent[0].getAttribute('slot')).toBe('upper');
-        expect(upperSlotContent[0].tagName.toLowerCase()).toBe('x-shadow-dom-element');
+        expect(upperSlotContent[0].tagName.toLowerCase()).toBe(expectedUpperSlot.tagName);
         expect(upperSlotContent[1].getAttribute('slot')).toBe('upper');
-        expect(upperSlotContent[1].innerText).toEqual('Lower slot forwarded content');
+        expect(upperSlotContent[1].innerText).toEqual(expectedUpperSlot.content);
 
         const lowerSlotContent = slots['lower-slot'].assignedNodes();
         expect(lowerSlotContent[0].getAttribute('slot')).toBe('lower');
-        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual('x-light-dom-element');
+        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual(expectedLowerSlot.tagName);
         expect(lowerSlotContent[1].getAttribute('slot')).toBe('lower');
-        expect(lowerSlotContent[1].innerText).toEqual('Upper slot forwarded content');
-
-        const reassginedDefaultSlot = slots['default-slot-reassigned'].assignedNodes();
-        // Verify static vnode `slot` attribute is reassigned
-        expect(reassginedDefaultSlot[0].getAttribute('slot')).toBe('defaultSlotReassigned');
-        expect(reassginedDefaultSlot[0].innerText).toEqual('Static vnode default slot forwarded');
+        expect(lowerSlotContent[1].innerText).toEqual(expectedLowerSlot.content);
 
         const defaultSlotContent = slots['default-slot'].assignedNodes();
-        expect(defaultSlotContent[0].textContent).toEqual('Text being forwarded');
+        expect(defaultSlotContent[0].textContent).toEqual(expectedDefaultSlot.textContent);
         if (!process.env.NATIVE_SHADOW) {
             // Native shadow doesn't slot comments
             expect(defaultSlotContent[1]).toEqual(commentNode);
+        }
+
+        if (process.env.API_VERSION > 60) {
+            // With slot forwarding
+            const reassginedDefaultSlot = slots['default-slot-reassigned'].assignedNodes();
+            // Verify static vnode `slot` attribute is reassigned
+            expect(reassginedDefaultSlot[0].getAttribute('slot')).toBe('defaultSlotReassigned');
+            expect(reassginedDefaultSlot[0].innerText).toEqual(expectedDefaultSlot.innerText);
+        } else {
+            // Without slot forwarding
+            expect(defaultSlotContent[process.env.NATIVE_SHADOW ? 1 : 2].innerText).toEqual(
+                expectedDefaultSlot.innerText
+            );
         }
     });
 
@@ -83,44 +138,48 @@ describe('slot forwarding', () => {
         const shadowLightLeaf = nodes['shadow-light-leaf'];
         expect(shadowLightLeaf.children.length).toBe(3);
 
+        const { expectedUpperSlot, expectedLowerSlot, expectedDefaultSlot } =
+            slotAssignmentWithForwarding;
+
         const slots = extractDataIds(shadowLightLeaf);
         const upperSlot = slots['upper-slot'];
         // In this test, the shadow slot is passed directly to the light DOM slot which will cause the
         // slot attribute to be remapped to the slot attribute on the light DOM slot.
         // Verify the slot attribute was correctly updated.
-        expect(upperSlot.hasAttribute('slot')).toBe(false);
+        // Api versions < 61 slot forwarding is not enabled, so the slot attribute is untouched
+        expect(upperSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
 
         const upperSlotContent = upperSlot.assignedNodes();
         // Note that because the shadow slot is passed, the slot element is what's updated.
         // Verify that the children have not been modified.
         expect(upperSlotContent[0].getAttribute('slot')).toBe('lower');
-        expect(upperSlotContent[0].tagName.toLowerCase()).toBe('x-shadow-dom-element');
+        expect(upperSlotContent[0].tagName.toLowerCase()).toBe(expectedUpperSlot.tagName);
         expect(upperSlotContent[1].getAttribute('slot')).toBe('lower');
-        expect(upperSlotContent[1].innerText).toEqual('Lower slot forwarded content');
+        expect(upperSlotContent[1].innerText).toEqual(expectedUpperSlot.content);
 
         const lowerSlot = slots['lower-slot'];
-        expect(lowerSlot.hasAttribute('slot')).toBe(false);
+        expect(lowerSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
 
         const lowerSlotContent = lowerSlot.assignedNodes();
         expect(lowerSlotContent[0].getAttribute('slot')).toBe('upper');
-        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual('x-light-dom-element');
+        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual(expectedLowerSlot.tagName);
         expect(lowerSlotContent[1].getAttribute('slot')).toBe('upper');
-        expect(lowerSlotContent[1].innerText).toEqual('Upper slot forwarded content');
+        expect(lowerSlotContent[1].innerText).toEqual(expectedLowerSlot.content);
 
         const defaultSlot = slots['default-slot'];
-        expect(defaultSlot.hasAttribute('slot')).toBe(false);
+        expect(defaultSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
 
         // Note since the content forwarded to the default shadow slot are wrapped in an actual slot element,
         // all content inside of it is forwarded together.
         // This is in contrast to the above test where the static element is re-parented to reassginedDefaultSlot
         const defaultSlotContent = defaultSlot.assignedNodes();
-        expect(defaultSlotContent[0].textContent).toEqual('Text being forwarded');
+        expect(defaultSlotContent[0].textContent).toEqual(expectedDefaultSlot.textContent);
         if (!process.env.NATIVE_SHADOW) {
             // Native shadow doesn't slot comments
             expect(defaultSlotContent[1]).toEqual(commentNode);
         }
         expect(defaultSlotContent[process.env.NATIVE_SHADOW ? 1 : 2].innerText).toEqual(
-            'Static vnode default slot forwarded'
+            expectedDefaultSlot.innerText
         );
     });
 
