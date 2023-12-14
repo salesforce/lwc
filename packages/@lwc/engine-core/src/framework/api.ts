@@ -213,7 +213,7 @@ function s(
     }
 
     const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode } = vmBeingRendered;
+    const { renderMode, apiVersion } = vmBeingRendered;
 
     if (
         !isUndefined(slotset) &&
@@ -263,6 +263,7 @@ function s(
                     let clonedVNode;
                     if (
                         renderMode === RenderMode.Light &&
+                        isAPIFeatureEnabled(APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING, apiVersion) &&
                         (isVBaseElement(vnode) || isVStatic(vnode)) &&
                         // We only need to copy the vnodes when the slot assignment changes, copying every time causes issues with
                         // disconnected/connected callback firing.
@@ -282,7 +283,7 @@ function s(
         }
         children = newChildren;
     }
-    const { shadowMode, apiVersion } = vmBeingRendered;
+    const { shadowMode } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
