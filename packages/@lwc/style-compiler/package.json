@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/style-compiler",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "description": "Transform style sheet to be consumed by the LWC engine",
     "keywords": [
         "lwc"
@@ -42,12 +42,9 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "5.1.0",
-        "postcss": "~8.4.31",
+        "@lwc/shared": "5.2.0",
+        "postcss": "~8.4.32",
         "postcss-selector-parser": "~6.0.13",
         "postcss-value-parser": "~4.2.0"
-    },
-    "devDependencies": {
-        "@types/string.prototype.matchall": "^4.0.3"
     }
 }
