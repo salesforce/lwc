@@ -86,13 +86,11 @@
     "resolutions": {
         "//": {
             "http-cache-semantics": "Pinned to 4.1.1 to address security vulnerability",
-            "jasmine-core": "v4 has a breaking change we need to address in our Karma tests: https://github.com/jasmine/jasmine/pull/1742",
             "jsonwebtoken": "Pinned to 9.0.2 to address security vulnerability",
             "semver": "Pinned to 7.5.4 to address security vulnerability",
             "systeminformation": "Pinned to 5.21.13 to address security vulnerability"
         },
         "http-cache-semantics": "4.1.1",
-        "jasmine-core": "3.10.1",
         "jsonwebtoken": "9.0.2",
         "semver": "7.5.4",
         "systeminformation": "5.21.13"
