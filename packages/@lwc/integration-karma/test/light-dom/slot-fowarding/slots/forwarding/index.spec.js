@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
+import { extractDataIds, lightDomSlotForwardingEnabled, vFragBookEndEnabled } from 'test-utils';
 
 import LightContainer from './x/lightContainer/lightContainer';
 
@@ -82,10 +82,17 @@ describe('slot forwarding', () => {
         const remappedDefaultSlotContent = slotContent.slice(4, 5);
         expect(remappedDefaultSlotContent[0].innerText).toEqual(expectedDefaultSlot.innerText);
 
-        const apiVersion = process.env.API_VERSION;
         // These are to cover API versions 60, 59 and below
-        const defaultSlotTextIndex = apiVersion > 60 ? 12 : apiVersion > 59 ? 11 : 4;
-        const defaultSlotCommentIndex = apiVersion > 60 ? 13 : apiVersion > 59 ? 12 : 5;
+        const defaultSlotTextIndex = lightDomSlotForwardingEnabled
+            ? 12
+            : vFragBookEndEnabled
+            ? 11
+            : 4;
+        const defaultSlotCommentIndex = lightDomSlotForwardingEnabled
+            ? 13
+            : vFragBookEndEnabled
+            ? 12
+            : 5;
 
         expect(lightLightLeaf.childNodes[defaultSlotTextIndex].textContent).toEqual(
             expectedDefaultSlot.textContent
@@ -120,7 +127,7 @@ describe('slot forwarding', () => {
             expect(defaultSlotContent[1]).toEqual(commentNode);
         }
 
-        if (process.env.API_VERSION > 60) {
+        if (lightDomSlotForwardingEnabled) {
             // With slot forwarding
             const reassginedDefaultSlot = slots['default-slot-reassigned'].assignedNodes();
             // Verify static vnode `slot` attribute is reassigned
@@ -147,7 +154,7 @@ describe('slot forwarding', () => {
         // slot attribute to be remapped to the slot attribute on the light DOM slot.
         // Verify the slot attribute was correctly updated.
         // Api versions < 61 slot forwarding is not enabled, so the slot attribute is untouched
-        expect(upperSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
+        expect(upperSlot.hasAttribute('slot')).toBe(!lightDomSlotForwardingEnabled);
 
         const upperSlotContent = upperSlot.assignedNodes();
         // Note that because the shadow slot is passed, the slot element is what's updated.
@@ -158,7 +165,7 @@ describe('slot forwarding', () => {
         expect(upperSlotContent[1].innerText).toEqual(expectedUpperSlot.content);
 
         const lowerSlot = slots['lower-slot'];
-        expect(lowerSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
+        expect(lowerSlot.hasAttribute('slot')).toBe(!lightDomSlotForwardingEnabled);
 
         const lowerSlotContent = lowerSlot.assignedNodes();
         expect(lowerSlotContent[0].getAttribute('slot')).toBe('upper');
@@ -167,7 +174,7 @@ describe('slot forwarding', () => {
         expect(lowerSlotContent[1].innerText).toEqual(expectedLowerSlot.content);
 
         const defaultSlot = slots['default-slot'];
-        expect(defaultSlot.hasAttribute('slot')).toBe(process.env.API_VERSION < 61);
+        expect(defaultSlot.hasAttribute('slot')).toBe(!lightDomSlotForwardingEnabled);
 
         // Note since the content forwarded to the default shadow slot are wrapped in an actual slot element,
         // all content inside of it is forwarded together.

@@ -1,6 +1,8 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
+import { vFragBookEndEnabled } from 'test-utils';
+
 import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
 import LightConsumer from 'x/lightConsumer';
@@ -9,7 +11,7 @@ import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
 import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
 
-const vFragBookend = process.env.API_VERSION > 59 ? '<!---->' : '';
+const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });

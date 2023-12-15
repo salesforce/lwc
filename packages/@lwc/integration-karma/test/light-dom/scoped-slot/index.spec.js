@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { vFragBookEndEnabled } from 'test-utils';
 
 import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
@@ -6,7 +7,7 @@ import ParentWNoSlotContent from 'x/parentWNoSlotContent';
 import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
 import NestedSlots from 'x/nestedSlots';
 
-const vFragBookend = process.env.API_VERSION > 59 ? '<!---->' : '';
+const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {

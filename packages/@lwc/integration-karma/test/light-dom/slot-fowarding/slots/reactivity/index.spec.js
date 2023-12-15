@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
+import { extractDataIds, lightDomSlotForwardingEnabled } from 'test-utils';
 
 import LightContainer from './x/lightContainer/lightContainer';
 
@@ -42,7 +42,7 @@ describe('light DOM slot forwarding reactivity', () => {
         },
         {
             slotAssignment:
-                shadowMode.includes('shadow') || process.env.API_VERSION > 60 ? '' : null,
+                shadowMode.includes('shadow') || lightDomSlotForwardingEnabled ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -58,7 +58,7 @@ describe('light DOM slot forwarding reactivity', () => {
         },
         {
             slotAssignment:
-                shadowMode.includes('shadow') || process.env.API_VERSION > 60 ? '' : null,
+                shadowMode.includes('shadow') || lightDomSlotForwardingEnabled ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -82,21 +82,21 @@ describe('light DOM slot forwarding reactivity', () => {
         {
             slotAssignment: 'lower',
             slotContent:
-                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
                     ? 'Lower slot content'
                     : 'Upper slot content',
         },
         {
             slotAssignment: '',
             slotContent:
-                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
                     ? 'Upper slot content'
                     : 'Default slot content',
         },
         {
             slotAssignment: 'upper',
             slotContent:
-                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
                     ? 'Default slot content'
                     : 'Lower slot content',
         },
@@ -126,67 +126,62 @@ describe('light DOM slot forwarding reactivity', () => {
             testName: 'lightLight',
             expectedDefaultSlotContent: expectedDefaultSlotContent('light'),
             expectedSlotContentAfterParentMutation: expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterForwardedSlotMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterForwardedSlotMutation
-                    : expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterLeafMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterLeafMutation('light')
-                    : expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterConditionalMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterConditionalMutation
-                    : [
-                          {
-                              slotAssignment: 'upper',
-                              slotContent: 'Lower slot content',
-                          },
-                          {
-                              slotAssignment: 'upper',
-                              slotContent: 'Conditional slot content',
-                          },
-                          {
-                              slotAssignment: 'lower',
-                              slotContent: 'Upper slot content',
-                          },
-                          {
-                              slotAssignment: null,
-                              slotContent: 'Default slot content',
-                          },
-                      ],
+            expectedSlotContentAfterForwardedSlotMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterForwardedSlotMutation
+                : expectedSlotContentAfterParentMutation('light'),
+            expectedSlotContentAfterLeafMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterLeafMutation('light')
+                : expectedSlotContentAfterParentMutation('light'),
+            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterConditionalMutation
+                : [
+                      {
+                          slotAssignment: 'upper',
+                          slotContent: 'Lower slot content',
+                      },
+                      {
+                          slotAssignment: 'upper',
+                          slotContent: 'Conditional slot content',
+                      },
+                      {
+                          slotAssignment: 'lower',
+                          slotContent: 'Upper slot content',
+                      },
+                      {
+                          slotAssignment: null,
+                          slotContent: 'Default slot content',
+                      },
+                  ],
         },
         {
             testName: 'lightShadow',
             expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
             expectedSlotContentAfterParentMutation:
                 expectedSlotContentAfterParentMutation('shadow'),
-            expectedSlotContentAfterForwardedSlotMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterForwardedSlotMutation
-                    : expectedSlotContentAfterParentMutation('shadow'),
+            expectedSlotContentAfterForwardedSlotMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterForwardedSlotMutation
+                : expectedSlotContentAfterParentMutation('shadow'),
             expectedSlotContentAfterLeafMutation: expectedSlotContentAfterLeafMutation('shadow'),
-            expectedSlotContentAfterConditionalMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterConditionalMutation
-                    : [
-                          {
-                              slotAssignment: 'lower',
-                              slotContent: 'Lower slot content',
-                          },
-                          {
-                              slotAssignment: 'lower',
-                              slotContent: 'Conditional slot content',
-                          },
-                          {
-                              slotAssignment: '',
-                              slotContent: 'Upper slot content',
-                          },
-                          {
-                              slotAssignment: 'upper',
-                              slotContent: 'Default slot content',
-                          },
-                      ],
+            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterConditionalMutation
+                : [
+                      {
+                          slotAssignment: 'lower',
+                          slotContent: 'Lower slot content',
+                      },
+                      {
+                          slotAssignment: 'lower',
+                          slotContent: 'Conditional slot content',
+                      },
+                      {
+                          slotAssignment: '',
+                          slotContent: 'Upper slot content',
+                      },
+                      {
+                          slotAssignment: 'upper',
+                          slotContent: 'Default slot content',
+                      },
+                  ],
         },
     ];
 
@@ -199,27 +194,26 @@ describe('light DOM slot forwarding reactivity', () => {
                 expectedSlotContentAfterParentMutation('shadow'),
             expectedSlotContentAfterForwardedSlotMutation,
             expectedSlotContentAfterLeafMutation: expectedSlotContentAfterForwardedSlotMutation,
-            expectedSlotContentAfterConditionalMutation:
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterConditionalMutation
-                    : [
-                          {
-                              slotAssignment: 'upper',
-                              slotContent: 'Upper slot content',
-                          },
-                          {
-                              slotAssignment: 'lower',
-                              slotContent: 'Default slot content',
-                          },
-                          {
-                              slotAssignment: '',
-                              slotContent: 'Lower slot content',
-                          },
-                          {
-                              slotAssignment: '',
-                              slotContent: 'Conditional slot content',
-                          },
-                      ],
+            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterConditionalMutation
+                : [
+                      {
+                          slotAssignment: 'upper',
+                          slotContent: 'Upper slot content',
+                      },
+                      {
+                          slotAssignment: 'lower',
+                          slotContent: 'Default slot content',
+                      },
+                      {
+                          slotAssignment: '',
+                          slotContent: 'Lower slot content',
+                      },
+                      {
+                          slotAssignment: '',
+                          slotContent: 'Conditional slot content',
+                      },
+                  ],
         });
     }
 
