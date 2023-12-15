@@ -191,7 +191,7 @@ describe('light DOM slot forwarding reactivity', () => {
     ];
 
     if (process.env.NATIVE_SHADOW) {
-        // TODO [#3885]: Using expressions on synthetic shadow DOM slots throws an error, only test in native for now
+        // TODO [#3885]: Using expressions on forwarded synthetic shadow DOM slots throws an error, only test in native for now
         testCases.push({
             testName: 'shadowLight',
             expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
