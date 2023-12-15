@@ -18,21 +18,20 @@ describe('light DOM slot forwarding reactivity', () => {
     });
 
     const verifySlotContent = (leaf, expected) => {
-        const children = Array.from(leaf.shadowRoot ? leaf.shadowRoot.children : leaf.children);
-        // expect(children.length).toEqual(expected.length);
-
-        children.forEach((child, i) => {
+        const children = Array.from(leaf.shadowRoot?.children ?? leaf.children);
+        let expectedIndex = 0;
+        children.forEach((child) => {
             const actualSlotContent =
                 child.tagName.toLowerCase() === 'slot' ? child.assignedNodes() : [child];
-            actualSlotContent.forEach((slotContent, k) => {
-                // i+k is just for the conditional test
-                expect(child.getAttribute('slot')).toEqual(expected[i + k].slotAssignment);
-                expect(slotContent.innerText).toEqual(expected[i + k].slotContent);
+
+            actualSlotContent.forEach((slotContent) => {
+                expect(child.getAttribute('slot')).toEqual(expected[expectedIndex].slotAssignment);
+                expect(slotContent.innerText).toEqual(expected[expectedIndex++].slotContent);
             });
         });
     };
 
-    const expectedDefaultSlotContent = [
+    const expectedDefaultSlotContent = (shadowMode) => [
         {
             slotAssignment: 'upper',
             slotContent: 'Upper slot content',
@@ -42,12 +41,13 @@ describe('light DOM slot forwarding reactivity', () => {
             slotContent: 'Lower slot content',
         },
         {
-            slotAssignment: process.env.API_VERSION > 60 ? 'default' : null,
+            slotAssignment:
+                shadowMode.includes('shadow') || process.env.API_VERSION > 60 ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
 
-    const expectedSlotContentAfterParentMutation = [
+    const expectedSlotContentAfterParentMutation = (shadowMode) => [
         {
             slotAssignment: 'upper',
             slotContent: 'Lower slot content',
@@ -57,7 +57,8 @@ describe('light DOM slot forwarding reactivity', () => {
             slotContent: 'Upper slot content',
         },
         {
-            slotAssignment: process.env.API_VERSION > 60 ? 'default' : null,
+            slotAssignment:
+                shadowMode.includes('shadow') || process.env.API_VERSION > 60 ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -72,12 +73,36 @@ describe('light DOM slot forwarding reactivity', () => {
             slotContent: 'Default slot content',
         },
         {
-            slotAssignment: 'default',
+            slotAssignment: '',
             slotContent: 'Lower slot content',
         },
     ];
 
-    const expectedSlotContentAfterLeafMutation = [
+    const expectedSlotContentAfterLeafMutation = (shadowMode) => [
+        {
+            slotAssignment: 'lower',
+            slotContent:
+                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                    ? 'Lower slot content'
+                    : 'Upper slot content',
+        },
+        {
+            slotAssignment: '',
+            slotContent:
+                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                    ? 'Upper slot content'
+                    : 'Default slot content',
+        },
+        {
+            slotAssignment: 'upper',
+            slotContent:
+                shadowMode.includes('shadow') && process.env.API_VERSION < 61
+                    ? 'Default slot content'
+                    : 'Lower slot content',
+        },
+    ];
+
+    const expectedSlotContentAfterConditionalMutation = [
         {
             slotAssignment: 'lower',
             slotContent: 'Upper slot content',
@@ -90,96 +115,159 @@ describe('light DOM slot forwarding reactivity', () => {
             slotAssignment: 'upper',
             slotContent: 'Lower slot content',
         },
+        {
+            slotAssignment: 'upper',
+            slotContent: 'Conditional slot content',
+        },
     ];
 
-    const expectedSlotContentAfterConditionalMutation =
-        process.env.API_VERSION > 60
-            ? [
-                  {
-                      slotAssignment: 'lower',
-                      slotContent: 'Upper slot content',
-                  },
-                  {
-                      slotAssignment: '',
-                      slotContent: 'Default slot content',
-                  },
-                  {
-                      slotAssignment: 'upper',
-                      slotContent: 'Lower slot content',
-                  },
-                  {
-                      slotAssignment: 'upper',
-                      slotContent: 'Conditional slot content',
-                  },
-              ]
-            : [
-                  expectedSlotContentAfterParentMutation[0],
-                  {
-                      slotAssignment: 'upper',
-                      slotContent: 'Conditional slot content',
-                  },
-                  ...expectedSlotContentAfterParentMutation.slice(1),
-              ];
-
-    let testCases = ['lightLight', 'lightShadow'];
+    const testCases = [
+        {
+            testName: 'lightLight',
+            expectedDefaultSlotContent: expectedDefaultSlotContent('light'),
+            expectedSlotContentAfterParentMutation: expectedSlotContentAfterParentMutation('light'),
+            expectedSlotContentAfterForwardedSlotMutation:
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterForwardedSlotMutation
+                    : expectedSlotContentAfterParentMutation('light'),
+            expectedSlotContentAfterLeafMutation:
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterLeafMutation('light')
+                    : expectedSlotContentAfterParentMutation('light'),
+            expectedSlotContentAfterConditionalMutation:
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterConditionalMutation
+                    : [
+                          {
+                              slotAssignment: 'upper',
+                              slotContent: 'Lower slot content',
+                          },
+                          {
+                              slotAssignment: 'upper',
+                              slotContent: 'Conditional slot content',
+                          },
+                          {
+                              slotAssignment: 'lower',
+                              slotContent: 'Upper slot content',
+                          },
+                          {
+                              slotAssignment: null,
+                              slotContent: 'Default slot content',
+                          },
+                      ],
+        },
+        {
+            testName: 'lightShadow',
+            expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
+            expectedSlotContentAfterParentMutation:
+                expectedSlotContentAfterParentMutation('shadow'),
+            expectedSlotContentAfterForwardedSlotMutation:
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterForwardedSlotMutation
+                    : expectedSlotContentAfterParentMutation('shadow'),
+            expectedSlotContentAfterLeafMutation: expectedSlotContentAfterLeafMutation('shadow'),
+            expectedSlotContentAfterConditionalMutation:
+                process.env.API_VERSION > 60
+                    ? expectedSlotContentAfterConditionalMutation
+                    : [
+                          {
+                              slotAssignment: 'lower',
+                              slotContent: 'Lower slot content',
+                          },
+                          {
+                              slotAssignment: 'lower',
+                              slotContent: 'Conditional slot content',
+                          },
+                          {
+                              slotAssignment: '',
+                              slotContent: 'Upper slot content',
+                          },
+                          {
+                              slotAssignment: 'upper',
+                              slotContent: 'Default slot content',
+                          },
+                      ],
+        },
+    ];
 
     if (process.env.NATIVE_SHADOW) {
         // TODO [#3885]: Using expressions on synthetic shadow DOM slots throws an error, only test in native for now
-        testCases.push('shadowLight');
-    }
-
-    if (process.env.API_VERSION < 61) {
-        // Note for api versions < 61 light DOM slot forwarding is disabled.
-        // Testing with just lightLight should be sufficient as a regression test.
-        testCases = testCases.filter((test) => test === 'lightLight');
-    }
-
-    testCases.forEach((slotForwardingType) => {
-        it(`should update correctly for ${slotForwardingType} slots`, async () => {
-            const parent = nodes[slotForwardingType];
-            const leaf = parent.leaf;
-            expect((leaf.shadowRoot?.children ?? leaf.children).length).toBe(3);
-
-            verifySlotContent(leaf, expectedDefaultSlotContent);
-
-            lightContainer[`${slotForwardingType}Upper`] = 'lower';
-            lightContainer[`${slotForwardingType}Lower`] = 'upper';
-
-            await Promise.resolve();
-
-            verifySlotContent(leaf, expectedSlotContentAfterParentMutation);
-
-            parent.upperSlot = '';
-            parent.lowerSlot = 'upper';
-            parent.defaultSlot = 'lower';
-
-            await Promise.resolve();
-
-            verifySlotContent(
-                leaf,
+        testCases.push({
+            testName: 'shadowLight',
+            expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
+            expectedSlotContentAfterParentMutation:
+                expectedSlotContentAfterParentMutation('shadow'),
+            expectedSlotContentAfterForwardedSlotMutation,
+            expectedSlotContentAfterLeafMutation: expectedSlotContentAfterForwardedSlotMutation,
+            expectedSlotContentAfterConditionalMutation:
                 process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterForwardedSlotMutation
-                    : expectedSlotContentAfterParentMutation
-            );
-
-            leaf.upperSlot = 'lower';
-            leaf.lowerSlot = '';
-            leaf.defaultSlot = 'upper';
-
-            await Promise.resolve();
-
-            verifySlotContent(
-                leaf,
-                process.env.API_VERSION > 60
-                    ? expectedSlotContentAfterLeafMutation
-                    : expectedSlotContentAfterParentMutation
-            );
-
-            lightContainer[`${slotForwardingType}ConditionalSlot`] = true;
-
-            await Promise.resolve();
-
-            verifySlotContent(leaf, expectedSlotContentAfterConditionalMutation);
+                    ? expectedSlotContentAfterConditionalMutation
+                    : [
+                          {
+                              slotAssignment: 'upper',
+                              slotContent: 'Upper slot content',
+                          },
+                          {
+                              slotAssignment: 'lower',
+                              slotContent: 'Default slot content',
+                          },
+                          {
+                              slotAssignment: '',
+                              slotContent: 'Lower slot content',
+                          },
+                          {
+                              slotAssignment: '',
+                              slotContent: 'Conditional slot content',
+                          },
+                      ],
         });
-    });
+    }
+
+    testCases.forEach(
+        ({
+            testName,
+            expectedDefaultSlotContent,
+            expectedSlotContentAfterParentMutation,
+            expectedSlotContentAfterForwardedSlotMutation,
+            expectedSlotContentAfterLeafMutation,
+            expectedSlotContentAfterConditionalMutation,
+        }) => {
+            it(`should update correctly for ${testName} slots`, async () => {
+                const parent = nodes[testName];
+                const leaf = parent.leaf;
+                expect((leaf.shadowRoot?.children ?? leaf.children).length).toBe(3);
+
+                verifySlotContent(leaf, expectedDefaultSlotContent);
+
+                lightContainer[`${testName}Upper`] = 'lower';
+                lightContainer[`${testName}Lower`] = 'upper';
+
+                await Promise.resolve();
+
+                verifySlotContent(leaf, expectedSlotContentAfterParentMutation);
+
+                parent.upperSlot = '';
+                parent.lowerSlot = 'upper';
+                parent.defaultSlot = 'lower';
+
+                await Promise.resolve();
+
+                verifySlotContent(leaf, expectedSlotContentAfterForwardedSlotMutation);
+
+                leaf.upperSlot = 'lower';
+                leaf.lowerSlot = '';
+                leaf.defaultSlot = 'upper';
+
+                await Promise.resolve();
+
+                verifySlotContent(leaf, expectedSlotContentAfterLeafMutation);
+
+                lightContainer[`${testName}ConditionalSlot`] = true;
+
+                await Promise.resolve();
+
+                verifySlotContent(leaf, expectedSlotContentAfterConditionalMutation);
+            });
+        }
+    );
 });
