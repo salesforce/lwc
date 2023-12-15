@@ -39,8 +39,9 @@ const slotAssignmentWithoutForwarding = {
     },
 };
 
-const expectedSlotAssignment =
-    process.env.API_VERSION > 60 ? slotAssignmentWithForwarding : slotAssignmentWithoutForwarding;
+const expectedSlotAssignment = lightDomSlotForwardingEnabled
+    ? slotAssignmentWithForwarding
+    : slotAssignmentWithoutForwarding;
 
 describe('slot forwarding', () => {
     let nodes;
