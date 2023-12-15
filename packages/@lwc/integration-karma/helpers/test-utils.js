@@ -564,6 +564,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         } while (object);
     }
 
+    // These values are based on the API versions in @lwc/shared/api-version
+    var lightDomSlotForwardingEnabled = process.env.API_VERSION > 60;
+    var vFragBookEndEnabled = process.env.API_VERSION > 59;
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -585,5 +589,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getPropertyDescriptor: getPropertyDescriptor,
         attachReportingControlDispatcher: attachReportingControlDispatcher,
         detachReportingControlDispatcher: detachReportingControlDispatcher,
+        lightDomSlotForwardingEnabled: lightDomSlotForwardingEnabled,
+        vFragBookEndEnabled: vFragBookEndEnabled,
     };
 })(LWC, jasmine, beforeAll);

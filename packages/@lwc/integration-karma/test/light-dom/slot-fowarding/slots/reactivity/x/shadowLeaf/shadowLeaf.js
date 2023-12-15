@@ -8,5 +8,5 @@ export default class extends LightningElement {
     lowerSlot = 'lower';
 
     @api
-    defaultSlot = 'default';
+    defaultSlot = '';
 }
