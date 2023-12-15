@@ -9,6 +9,8 @@
 
 const path = require('path');
 
+const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options');
+
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
@@ -18,6 +20,7 @@ const { createPattern } = require('../utils');
 const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
+const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
@@ -32,6 +35,7 @@ process.setMaxListeners(1000);
 
 function getFiles() {
     return [
+        ...(ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION ? [createPattern(SYNTHETIC_SHADOW)] : []),
         createPattern(LWC_ENGINE),
         createPattern(TEST_SETUP),
         createPattern(TEST_UTILS),
@@ -83,6 +87,7 @@ module.exports = (config) => {
     if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
         config.preprocessors[LWC_ENGINE].push('coverage');
+        config.preprocessors[SYNTHETIC_SHADOW].push('coverage');
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');
