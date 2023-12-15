@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
+import { nativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import Container from 'face/container';
 import FormAssociated from 'face/formAssociated';
@@ -72,7 +72,7 @@ const testWarningLoggedWhenFormAssociatedNotSet = (ctor) => {
 };
 
 if (typeof ElementInternals !== 'undefined') {
-    if (isNativeCustomElementLifecycleEnabled()) {
+    if (nativeCustomElementLifecycleEnabled) {
         // native lifecycle enabled
         describe('native lifecycle', () => {
             if (process.env.NATIVE_SHADOW) {

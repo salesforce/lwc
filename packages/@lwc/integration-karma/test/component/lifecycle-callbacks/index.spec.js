@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
+import { nativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import Single from 'x/single';
 import Parent from 'x/parent';
@@ -149,7 +149,7 @@ if (process.env.NATIVE_SHADOW) {
         const elm = createElement('order-container', { is: Container });
         document.body.appendChild(elm);
         expect(window.timingBuffer).toEqual(
-            isNativeCustomElementLifecycleEnabled()
+            nativeCustomElementLifecycleEnabled
                 ? [
                       'foo-a:connectedCallback',
                       'foo-internal-a:connectedCallback',

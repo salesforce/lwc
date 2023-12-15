@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
+import { nativeCustomElementLifecycleEnabled } from 'test-utils';
 import Synthetic from 'x/synthetic';
 
 describe('[W-9846457] event access when using native shadow dom', () => {
@@ -141,7 +141,7 @@ describe('[W-9846457] event access when using native shadow dom', () => {
         native.attachShadow({ mode: 'open' });
 
         const doAppend = () => native.shadowRoot.appendChild(synthetic);
-        if (isNativeCustomElementLifecycleEnabled()) {
+        if (nativeCustomElementLifecycleEnabled) {
             doAppend();
         } else {
             // Expected warning, since we are working with disconnected nodes

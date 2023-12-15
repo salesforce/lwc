@@ -315,9 +315,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return error;
     }
 
-    function isNativeCustomElementLifecycleEnabled() {
-        return process.env.API_VERSION >= 61;
-    }
+    var nativeCustomElementLifecycleEnabled = process.env.API_VERSION >= 61;
 
     // For errors we expect to be thrown in the connectedCallback() phase
     // of a custom element, there are two possibilities:
@@ -326,7 +324,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     //    only be caught with window.addEventListener('error')
     //      - Note native lifecycle callbacks are all thrown asynchronously.
     function customElementCallbackReactionErrorListener(callback) {
-        return isNativeCustomElementLifecycleEnabled()
+        return nativeCustomElementLifecycleEnabled
             ? windowErrorListener(callback)
             : directErrorListener(callback);
     }
@@ -589,6 +587,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getPropertyDescriptor: getPropertyDescriptor,
         attachReportingControlDispatcher: attachReportingControlDispatcher,
         detachReportingControlDispatcher: detachReportingControlDispatcher,
-        isNativeCustomElementLifecycleEnabled: isNativeCustomElementLifecycleEnabled,
+        nativeCustomElementLifecycleEnabled: nativeCustomElementLifecycleEnabled,
     };
 })(LWC, jasmine, beforeAll);

@@ -2,7 +2,7 @@
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
 import { createElement } from 'lwc';
-import { extractDataIds, isNativeCustomElementLifecycleEnabled } from 'test-utils';
+import { extractDataIds, nativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import Container from 'x/container';
 
@@ -35,7 +35,7 @@ function createDisconnectedTestElement() {
 
     const doAppend = () => fragment.appendChild(elm);
 
-    if (isNativeCustomElementLifecycleEnabled()) {
+    if (nativeCustomElementLifecycleEnabled) {
         doAppend();
     } else {
         // Expected warning, since we are working with disconnected nodes
@@ -534,7 +534,7 @@ describe('event propagation', () => {
 
     // This test does not work with native custom element lifecycle because disconnected
     // fragments cannot fire connectedCallback/disconnectedCallback events
-    if (!isNativeCustomElementLifecycleEnabled()) {
+    if (!nativeCustomElementLifecycleEnabled) {
         describe('dispatched within a disconnected tree', () => {
             it('{bubbles: true, composed: true}', () => {
                 const nodes = createDisconnectedTestElement();

@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { isNativeCustomElementLifecycleEnabled } from 'test-utils';
+import { nativeCustomElementLifecycleEnabled } from 'test-utils';
 import Slotted from 'x/slotted';
 import Container from 'x/container';
 import ManualNodes from 'x/manualNodes';
@@ -39,7 +39,7 @@ describe('Node.getRootNode', () => {
         const frag = document.createDocumentFragment();
         const doAppend = () => frag.appendChild(elm);
 
-        if (isNativeCustomElementLifecycleEnabled()) {
+        if (nativeCustomElementLifecycleEnabled) {
             doAppend();
         } else {
             // Expected warning, since we are working with disconnected nodes
