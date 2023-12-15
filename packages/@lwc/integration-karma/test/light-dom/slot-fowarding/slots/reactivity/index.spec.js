@@ -193,7 +193,9 @@ describe('light DOM slot forwarding reactivity', () => {
             expectedSlotContentAfterParentMutation:
                 expectedSlotContentAfterParentMutation('shadow'),
             expectedSlotContentAfterForwardedSlotMutation,
-            expectedSlotContentAfterLeafMutation: expectedSlotContentAfterForwardedSlotMutation,
+            expectedSlotContentAfterLeafMutation: lightDomSlotForwardingEnabled
+                ? expectedSlotContentAfterLeafMutation('shadow')
+                : expectedSlotContentAfterForwardedSlotMutation,
             expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
                 ? expectedSlotContentAfterConditionalMutation
                 : [
