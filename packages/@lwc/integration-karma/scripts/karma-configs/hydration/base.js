@@ -27,6 +27,8 @@ const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
 
+const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE];
+
 // Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
 // This is due to the fact that we are running so many simultaneous rollup commands
 // on so many files. For every `*.spec.js` file, Rollup adds a listener at
@@ -57,7 +59,9 @@ module.exports = (config) => {
         preprocessors: {
             '**/*.spec.js': ['hydration-tests'],
             // Transform all framework files with the transform-framework plugin
-            [LWC_ENGINE]: ['transform-framework'],
+            ...Object.fromEntries(
+                ALL_FRAMEWORK_FILES.map((file) => [file, ['transform-framework']])
+            ),
         },
 
         // Use the env plugin to inject the right environment variables into the app
