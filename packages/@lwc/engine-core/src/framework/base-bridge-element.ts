@@ -257,6 +257,10 @@ export function HTMLBridgeElementFactory(
 // The goal here is to expose `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*`
 // attrs. This is especially important because the template compiler compiles aria-* attrs on components to aria* props.
 // Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+//
+// Also note this ARIA reflection only really makes sense in the browser. On the server, there is no
+// `renderedCallback()`, so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't
+// need to expose ARIA props outside the LightningElement
 const basePublicProperties = [
     ...getOwnPropertyNames(HTMLElementOriginalDescriptors),
     ...(process.env.IS_BROWSER ? getOwnPropertyNames(ariaReflectionPolyfillDescriptors) : []),
