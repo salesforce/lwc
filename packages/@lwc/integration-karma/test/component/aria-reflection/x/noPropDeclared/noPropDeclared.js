@@ -1,4 +1,3 @@
-import Base from '../shared/base.js'
+import Base from '../shared/base.js';
 
-export default class extends Base {
-}
+export default class extends Base {}

@@ -1,31 +1,30 @@
-import { LightningElement, api } from 'lwc'
-import template from './template.html'
+import { LightningElement, api } from 'lwc';
+import template from './template.html';
 
 export default class extends LightningElement {
+    @api
+    renderCount = 0;
 
-  @api
-  renderCount = 0
+    renderedCallback() {
+        this.renderCount++;
+    }
 
-  renderedCallback() {
-    this.renderCount++
-  }
+    render() {
+        return template;
+    }
 
-  render() {
-    return template
-  }
+    @api
+    getPropInternal(propName) {
+        return this[propName];
+    }
 
-  @api
-  getPropInternal(propName) {
-    return this[propName]
-  }
+    @api
+    getAttrInternal(attrName) {
+        return this.getAttribute(attrName);
+    }
 
-  @api
-  getAttrInternal(attrName) {
-    return this.getAttribute(attrName)
-  }
-
-  @api
-  setPropInternal(propName, value) {
-    this[propName] = value
-  }
+    @api
+    setPropInternal(propName, value) {
+        this[propName] = value;
+    }
 }
