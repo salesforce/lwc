@@ -3,6 +3,7 @@ import { ariaPropertiesMapping, extractDataIds } from 'test-utils';
 import NoPropDeclared from 'x/noPropDeclared';
 import PropDeclared from 'x/propDeclared';
 import ApiPropDeclared from 'x/apiPropDeclared';
+import TrackPropDeclared from 'x/trackPropDeclared';
 
 describe('aria reflection', () => {
     const scenarios = [
@@ -23,6 +24,13 @@ describe('aria reflection', () => {
             name: '@api prop declared',
             tagName: 'x-api-prop-declared',
             Ctor: ApiPropDeclared,
+            // declaring a prop in the component results in no attribute reflection
+            expectAttrReflection: false,
+        },
+        {
+            name: '@track prop declared',
+            tagName: 'x-track-prop-declared',
+            Ctor: TrackPropDeclared,
             // declaring a prop in the component results in no attribute reflection
             expectAttrReflection: false,
         },
