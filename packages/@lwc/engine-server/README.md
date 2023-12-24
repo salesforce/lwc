@@ -16,7 +16,7 @@ and an LWC constructor. The output format itself is aligned with the [current le
 proposal][explainer], but is subject to change.
 
 ```js
-import { renderComponent } from 'lwc';
+import { renderComponent } from '@lwc/engine-server';
 import LightningHello from 'lightning/hello';
 
 const componentProps = {};
