@@ -13,9 +13,9 @@ describe('static class attribute', () => {
 });
 
 describe('dynamic class attribute', () => {
-    function createDynamicClass(className) {
+    function createDynamicClass(value) {
         const elm = createElement('x-dynamic', { is: Dynamic });
-        elm.dynamicClass = className;
+        elm.dynamicClass = value;
         document.body.appendChild(elm);
 
         return {
