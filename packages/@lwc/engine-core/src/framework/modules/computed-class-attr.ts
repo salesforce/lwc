@@ -8,6 +8,7 @@ import {
     assign,
     create,
     isArray,
+    isNull,
     isObject,
     isString,
     isUndefined,
@@ -21,19 +22,29 @@ import { VBaseElement, VNodeData } from '../vnodes';
 
 type ClassMap = Record<string, boolean>;
 
-// Cache the classes computed from parsing the className string.
-// This avoid re-parsing the same className value between patches.
-const classMapCache = new Map<string, ClassMap>();
+/**
+ * Stores the computed class map from parsing the className string.
+ * This avoid re-parsing the same className value between patches.
+ */
+const classNameToClassMap = new Map<string, ClassMap>();
 
-function getClassMap(value: VNodeData['className']): ClassMap {
+/**
+ * Store the classes previously applied to the element.
+ *
+ * VElement can objects objects as class, and the same object can be reused between patches, we need
+ * to keep track of that have been previously applied to the element in case the objects has been
+ * mutated between patches.
+ */
+const vnodeToClassMap = new WeakMap<VBaseElement, ClassMap>();
+
+function normalizeClassMap(value: VNodeData['className']): ClassMap {
     // Intentionally using == to match undefined and null values from computed style attribute.
     if (value == null) {
         return EmptyObject;
-    }
-    if (isArray(value)) {
+    } else if (isArray(value)) {
         const result: ClassMap = create(null);
         for (let i = 0; i < value.length; i++) {
-            const item = getClassMap(value[i]);
+            const item = normalizeClassMap(value[i]);
             assign(result, item);
         }
         return result;
@@ -52,7 +63,7 @@ function getClassMap(value: VNodeData['className']): ClassMap {
 }
 
 function parseStringClassName(value: string): ClassMap {
-    let classMap = classMapCache.get(value);
+    let classMap = classNameToClassMap.get(value);
     if (!isUndefined(classMap)) {
         return classMap;
     }
@@ -78,7 +89,7 @@ function parseStringClassName(value: string): ClassMap {
         classMap[StringSlice.call(value, start, current)] = true;
     }
 
-    classMapCache.set(value, classMap);
+    classNameToClassMap.set(value, classMap);
     return classMap;
 }
 
@@ -92,20 +103,21 @@ export function patchClassAttribute(
         data: { className: newValue },
     } = vnode;
 
-    // TODO [#000]: Ensure it works correctly when mutating the property on the same object.
     const oldValue = oldVnode?.data.className;
-    if (oldValue === newValue) {
+
+    // Fast path: If both old value and new value are identical string, skip patch.
+    if (oldValue === newValue && isString(oldValue) && isString(newValue)) {
         return;
     }
 
+    const newClassMap = normalizeClassMap(newValue);
+    const oldClassMap = isNull(oldVnode) ? EmptyObject : vnodeToClassMap.get(oldVnode);
+
     const { getClassList } = renderer;
     const classList = getClassList(elm!);
-    const newClassMap = getClassMap(newValue);
-    const oldClassMap = getClassMap(oldValue);
 
     let name: string;
     for (name in oldClassMap) {
-        // remove only if it is not in the new class collection and it is not set from within the instance
         if (isUndefined(newClassMap[name])) {
             classList.remove(name);
         }
@@ -115,4 +127,6 @@ export function patchClassAttribute(
             classList.add(name);
         }
     }
+
+    vnodeToClassMap.set(vnode, newClassMap);
 }
