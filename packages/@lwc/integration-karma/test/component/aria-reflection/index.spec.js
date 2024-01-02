@@ -13,7 +13,7 @@ describe('aria reflection', () => {
     // Test with and without a custom superclass, since we may set the property accessor differently in each case
     const variants = [
         {
-            name: 'no custom superclass',
+            name: 'has custom superclass',
             components: {
                 NoPropDeclared: {
                     tagName: 'x-no-prop-declared',
@@ -34,7 +34,7 @@ describe('aria reflection', () => {
             },
         },
         {
-            name: 'has custom superclass',
+            name: 'no custom superclass',
             components: {
                 NoPropDeclared: {
                     tagName: 'x-no-prop-declared-no-super',
