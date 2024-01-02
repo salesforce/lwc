@@ -4,121 +4,177 @@ import NoPropDeclared from 'x/noPropDeclared';
 import PropDeclared from 'x/propDeclared';
 import ApiPropDeclared from 'x/apiPropDeclared';
 import TrackPropDeclared from 'x/trackPropDeclared';
+import NoPropDeclaredNoSuper from 'x/noPropDeclaredNoSuper';
+import PropDeclaredNoSuper from 'x/propDeclaredNoSuper';
+import ApiPropDeclaredNoSuper from 'x/apiPropDeclaredNoSuper';
+import TrackPropDeclaredNoSuper from 'x/trackPropDeclaredNoSuper';
 
 describe('aria reflection', () => {
+    // Test with and without a custom superclass, since we may set the property accessor differently in each case
+    const variants = [
+        {
+            name: 'no custom superclass',
+            components: {
+                NoPropDeclared: {
+                    tagName: 'x-no-prop-declared',
+                    Ctor: NoPropDeclared,
+                },
+                PropDeclared: {
+                    tagName: 'x-prop-declared',
+                    Ctor: PropDeclared,
+                },
+                ApiPropDeclared: {
+                    tagName: 'x-api-prop-declared',
+                    Ctor: ApiPropDeclared,
+                },
+                TrackPropDeclared: {
+                    tagName: 'x-track-prop-declared',
+                    Ctor: TrackPropDeclared,
+                },
+            },
+        },
+        {
+            name: 'has custom superclass',
+            components: {
+                NoPropDeclared: {
+                    tagName: 'x-no-prop-declared-no-super',
+                    Ctor: NoPropDeclaredNoSuper,
+                },
+                PropDeclared: {
+                    tagName: 'x-prop-declared-no-super',
+                    Ctor: PropDeclaredNoSuper,
+                },
+                ApiPropDeclared: {
+                    tagName: 'x-api-prop-declared-no-super',
+                    Ctor: ApiPropDeclaredNoSuper,
+                },
+                TrackPropDeclared: {
+                    tagName: 'x-track-prop-declared-no-super',
+                    Ctor: TrackPropDeclaredNoSuper,
+                },
+            },
+        },
+    ];
+
     const scenarios = [
         {
             name: 'No prop declared',
-            tagName: 'x-no-prop-declared',
-            Ctor: NoPropDeclared,
+            componentKey: 'NoPropDeclared',
             expectAttrReflection: true,
         },
         {
             name: 'Prop declared',
-            tagName: 'x-prop-declared',
-            Ctor: PropDeclared,
+            componentKey: 'PropDeclared',
             // declaring a prop in the component results in no attribute reflection
             expectAttrReflection: false,
         },
         {
             name: '@api prop declared',
-            tagName: 'x-api-prop-declared',
-            Ctor: ApiPropDeclared,
+            componentKey: 'ApiPropDeclared',
             // declaring a prop in the component results in no attribute reflection
             expectAttrReflection: false,
         },
         {
             name: '@track prop declared',
-            tagName: 'x-track-prop-declared',
-            Ctor: TrackPropDeclared,
+            componentKey: 'TrackPropDeclared',
             // declaring a prop in the component results in no attribute reflection
             expectAttrReflection: false,
         },
     ];
 
-    scenarios.forEach(({ name, tagName, Ctor, expectAttrReflection }) => {
-        describe(name, () => {
-            Object.entries(ariaPropertiesMapping).forEach(([propName, attrName]) => {
-                function validateAria(elm, expected) {
-                    const dataIds = extractDataIds(elm);
+    scenarios.forEach(({ name: scenarioName, componentKey, expectAttrReflection }) => {
+        describe(scenarioName, () => {
+            variants.forEach(({ name: variantName, components }) => {
+                describe(variantName, () => {
+                    const { tagName, Ctor } = components[componentKey];
 
-                    // rendering the prop works
-                    expect(dataIds[propName].textContent).toBe(expected === null ? '' : expected);
+                    Object.entries(ariaPropertiesMapping).forEach(([propName, attrName]) => {
+                        function validateAria(elm, expected) {
+                            const dataIds = extractDataIds(elm);
 
-                    // the property is correct
-                    expect(elm[propName]).toBe(expected);
-                    expect(elm.getPropInternal(propName)).toBe(expected);
+                            // rendering the prop works
+                            expect(dataIds[propName].textContent).toBe(
+                                expected === null ? '' : expected
+                            );
 
-                    // the attr is reflected (if we expect that to work)
-                    expect(elm.getAttribute(attrName)).toBe(expectAttrReflection ? expected : null);
-                    expect(elm.getAttrInternal(attrName)).toBe(
-                        expectAttrReflection ? expected : null
-                    );
-                }
+                            // the property is correct
+                            expect(elm[propName]).toBe(expected);
+                            expect(elm.getPropInternal(propName)).toBe(expected);
 
-                describe(propName, () => {
-                    it('no initial value', async () => {
-                        const elm = createElement(tagName, { is: Ctor });
+                            // the attr is reflected (if we expect that to work)
+                            expect(elm.getAttribute(attrName)).toBe(
+                                expectAttrReflection ? expected : null
+                            );
+                            expect(elm.getAttrInternal(attrName)).toBe(
+                                expectAttrReflection ? expected : null
+                            );
+                        }
 
-                        document.body.appendChild(elm);
+                        describe(propName, () => {
+                            it('no initial value', async () => {
+                                const elm = createElement(tagName, { is: Ctor });
 
-                        await Promise.resolve();
-                        validateAria(elm, null);
-                        expect(elm.renderCount).toBe(1);
-                    });
+                                document.body.appendChild(elm);
 
-                    it('set externally', async () => {
-                        const elm = createElement(tagName, { is: Ctor });
+                                await Promise.resolve();
+                                validateAria(elm, null);
+                                expect(elm.renderCount).toBe(1);
+                            });
 
-                        // set initial prop before rendering
-                        elm[propName] = 'foo';
+                            it('set externally', async () => {
+                                const elm = createElement(tagName, { is: Ctor });
 
-                        document.body.appendChild(elm);
+                                // set initial prop before rendering
+                                elm[propName] = 'foo';
 
-                        await Promise.resolve();
-                        validateAria(elm, 'foo');
-                        expect(elm.renderCount).toBe(1);
+                                document.body.appendChild(elm);
 
-                        // mutate prop
-                        elm[propName] = 'bar';
+                                await Promise.resolve();
+                                validateAria(elm, 'foo');
+                                expect(elm.renderCount).toBe(1);
 
-                        await Promise.resolve();
-                        validateAria(elm, 'bar');
-                        expect(elm.renderCount).toBe(2);
+                                // mutate prop
+                                elm[propName] = 'bar';
 
-                        // remove
-                        elm[propName] = null;
+                                await Promise.resolve();
+                                validateAria(elm, 'bar');
+                                expect(elm.renderCount).toBe(2);
 
-                        await Promise.resolve();
-                        validateAria(elm, null);
-                        expect(elm.renderCount).toBe(3);
-                    });
+                                // remove
+                                elm[propName] = null;
 
-                    it('set internally', async () => {
-                        const elm = createElement(tagName, { is: Ctor });
+                                await Promise.resolve();
+                                validateAria(elm, null);
+                                expect(elm.renderCount).toBe(3);
+                            });
 
-                        // set initial prop before rendering
-                        elm.setPropInternal(propName, 'foo');
+                            it('set internally', async () => {
+                                const elm = createElement(tagName, { is: Ctor });
 
-                        document.body.appendChild(elm);
+                                // set initial prop before rendering
+                                elm.setPropInternal(propName, 'foo');
 
-                        await Promise.resolve();
-                        validateAria(elm, 'foo');
-                        expect(elm.renderCount).toBe(1);
+                                document.body.appendChild(elm);
 
-                        // mutate prop
-                        elm.setPropInternal(propName, 'bar');
+                                await Promise.resolve();
+                                validateAria(elm, 'foo');
+                                expect(elm.renderCount).toBe(1);
 
-                        await Promise.resolve();
-                        validateAria(elm, 'bar');
-                        expect(elm.renderCount).toBe(2);
+                                // mutate prop
+                                elm.setPropInternal(propName, 'bar');
 
-                        // remove
-                        elm.setPropInternal(propName, null);
+                                await Promise.resolve();
+                                validateAria(elm, 'bar');
+                                expect(elm.renderCount).toBe(2);
 
-                        await Promise.resolve();
-                        validateAria(elm, null);
-                        expect(elm.renderCount).toBe(3);
+                                // remove
+                                elm.setPropInternal(propName, null);
+
+                                await Promise.resolve();
+                                validateAria(elm, null);
+                                expect(elm.renderCount).toBe(3);
+                            });
+                        });
                     });
                 });
             });
