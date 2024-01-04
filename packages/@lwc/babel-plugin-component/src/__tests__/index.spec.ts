@@ -31,7 +31,7 @@ function normalizeError(err: any) {
             // Filter out the stacktrace, just include the error message
             message: err.message.match(/^.*?\.js: ([^\n]+)/)[1],
             loc: err.loc,
-            filename: path.basename(err.filename),
+            filename: err.filename ? path.basename(err.filename) : undefined,
         };
     } else {
         return {

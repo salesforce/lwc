@@ -37,11 +37,14 @@ function createPreprocessor(config, emitter, logger) {
 
         const suiteDir = path.dirname(input);
 
-        // Wrap all the tests into a describe block with the file stricture name
+        // Wrap all the tests into a describe block with the file structure name
+        // This avoids needing to manually write `describe()` for every file.
+        // Also add a dummy test because otherwise Jasmine complains about empty describe()s:
+        // https://github.com/jasmine/jasmine/pull/1742
         const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
-        const intro = ancestorDirectories
-            .map((tag) => `describe("${tag}", function () {`)
-            .join('\n');
+        const intro =
+            ancestorDirectories.map((tag) => `describe("${tag}", function () {`).join('\n') +
+            `\nxit("dummy test", () => { /* empty */ });\n`;
         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
         // TODO [#3370]: remove experimental template expression flag

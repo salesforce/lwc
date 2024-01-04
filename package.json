@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "5.2.0",
+    "version": "5.2.2",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -42,14 +42,14 @@
         "@rollup/plugin-typescript": "^11.1.4",
         "@types/babel__core": "^7.20.5",
         "@types/jest": "^29.5.11",
-        "@types/node": "^20.10.4",
+        "@types/node": "^20.10.5",
         "@types/prettier": "^2.7.3",
-        "@typescript-eslint/eslint-plugin": "^6.14.0",
-        "@typescript-eslint/parser": "^6.14.0",
+        "@typescript-eslint/eslint-plugin": "^6.15.0",
+        "@typescript-eslint/parser": "^6.15.0",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.4.1",
-        "eslint": "^8.55.0",
-        "eslint-plugin-import": "^2.29.0",
+        "eslint": "^8.56.0",
+        "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jest": "^27.6.0",
         "glob": "^10.3.10",
         "husky": "^8.0.2",
@@ -58,9 +58,9 @@
         "jest-environment-jsdom": "^29.7.0",
         "lint-staged": "^15.2.0",
         "magic-string": "^0.30.4",
-        "nx": "17.2.0",
+        "nx": "17.2.6",
         "prettier": "^2.8.8",
-        "rollup": "^4.8.0",
+        "rollup": "^4.9.1",
         "terser": "^5.26.0",
         "ts-jest": "^29.1.1",
         "tslib": "^2.6.1",
@@ -86,13 +86,11 @@
     "resolutions": {
         "//": {
             "http-cache-semantics": "Pinned to 4.1.1 to address security vulnerability",
-            "jasmine-core": "v4 has a breaking change we need to address in our Karma tests: https://github.com/jasmine/jasmine/pull/1742",
             "jsonwebtoken": "Pinned to 9.0.2 to address security vulnerability",
             "semver": "Pinned to 7.5.4 to address security vulnerability",
             "systeminformation": "Pinned to 5.21.13 to address security vulnerability"
         },
         "http-cache-semantics": "4.1.1",
-        "jasmine-core": "3.10.1",
         "jsonwebtoken": "9.0.2",
         "semver": "7.5.4",
         "systeminformation": "5.21.13"
