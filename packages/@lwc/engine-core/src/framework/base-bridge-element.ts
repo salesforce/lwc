@@ -23,7 +23,7 @@ import {
     htmlPropertyToAttribute,
     isNull,
 } from '@lwc/shared';
-import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
+import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
@@ -164,7 +164,11 @@ export function HTMLBridgeElementFactory(
                     // and can break tooling that expects it to be iterable or defined, e.g. Jest:
                     // https://github.com/jestjs/jest/blob/b4c9587/packages/pretty-format/src/plugins/DOMElement.ts#L95
                     // It also doesn't make sense to override e.g. "constructor".
-                    .filter((propName) => !(propName in HTMLElementPrototype))
+                    .filter(
+                        (propName) =>
+                            !(propName in HTMLElementPrototype) &&
+                            !(propName in ariaReflectionPolyfillDescriptors)
+                    )
             );
 
             for (const propName of nonPublicPropertiesToWarnOn) {
@@ -250,29 +254,30 @@ export function HTMLBridgeElementFactory(
     return HTMLBridgeElement as HTMLElementConstructor;
 }
 
+// We do some special handling of non-standard ARIA props like ariaLabelledBy as well as props without (as of this
+// writing) broad cross-browser support like ariaBrailleLabel. This is so the reflection works correctly and preserves
+// backwards compatibility with the previous global polyfill approach.
+//
+// The goal here is to expose `elm.aria*` property accessors to work from outside a component, and to reflect `aria-*`
+// attrs. This is especially important because the template compiler compiles aria-* attrs on components to aria* props.
+// Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
+//
+// Also note this ARIA reflection only really makes sense in the browser. On the server, there is no
+// `renderedCallback()`, so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't
+// need to expose ARIA props outside the LightningElement
+const basePublicProperties = [
+    ...getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    ...(process.env.IS_BROWSER ? getOwnPropertyNames(ariaReflectionPolyfillDescriptors) : []),
+];
+
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElementConstructor,
-    getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    basePublicProperties,
     [],
     [],
     null,
     false
 );
-
-if (process.env.IS_BROWSER) {
-    // This ARIA reflection only really makes sense in the browser. On the server, there is no `renderedCallback()`,
-    // so you cannot do e.g. `this.template.querySelector('x-child').ariaBusy = 'true'`. So we don't need to expose
-    // ARIA props outside the LightningElement
-    //
-    // Apply ARIA reflection to HTMLBridgeElement.prototype. This allows `elm.aria*` property accessors to work from
-    // outside a component, and to reflect `aria-*` attrs. This is especially important because the template compiler
-    // compiles aria-* attrs on components to aria* props.
-    // Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
-    //
-    // Also note that we apply this to BaseBridgeElement.prototype to avoid excessively redefining property
-    // accessors inside the HTMLBridgeElementFactory.
-    applyAriaReflection(BaseBridgeElement.prototype);
-}
 
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);
