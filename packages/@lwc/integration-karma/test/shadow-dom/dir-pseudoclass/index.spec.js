@@ -4,25 +4,24 @@ import Component from 'x/component';
 import ShadowContainer from 'x/shadowContainer';
 import Light from 'x/light';
 
-describe(':dir() pseudoclass', () => {
-    function supportsDirPseudoclass() {
-        const div = document.createElement('div');
-        div.innerHTML = `
+function supportsDirPseudoclass() {
+    const div = document.createElement('div');
+    div.innerHTML = `
           <style>.test-dir-pseudo:dir(rtl){ color: red }</style>
           <div dir="rtl" class="test-dir-pseudo"></div>
         `;
 
-        document.body.appendChild(div);
+    document.body.appendChild(div);
 
-        const supports =
-            getComputedStyle(div.querySelector('.test-dir-pseudo')).color === 'rgb(255, 0, 0)';
-        document.body.removeChild(div);
-        return supports;
-    }
+    const supports =
+        getComputedStyle(div.querySelector('.test-dir-pseudo')).color === 'rgb(255, 0, 0)';
+    document.body.removeChild(div);
+    return supports;
+}
 
-    if (!process.env.NATIVE_SHADOW || supportsDirPseudoclass()) {
-        // In native shadow we delegate to the browser, so it has to support :dir()
-
+// In native shadow we delegate to the browser, so it has to support :dir()
+if (!process.env.NATIVE_SHADOW || supportsDirPseudoclass()) {
+    describe(':dir() pseudoclass', () => {
         it('can apply styles based on :dir()', () => {
             const elm = createElement('x-parent', { is: Component });
             document.body.appendChild(elm);
@@ -86,32 +85,26 @@ describe(':dir() pseudoclass', () => {
                     );
                 });
         });
-    }
+    });
+}
 
-    if (process.env.NATIVE_SHADOW && supportsDirPseudoclass()) {
-        it('can apply styles based on :dir() for light-at-root', () => {
-            const elm = createElement('x-light', { is: Light });
-            document.body.appendChild(elm);
+if (process.env.NATIVE_SHADOW && supportsDirPseudoclass()) {
+    it('can apply styles based on :dir() for light-at-root', () => {
+        const elm = createElement('x-light', { is: Light });
+        document.body.appendChild(elm);
 
-            return Promise.resolve()
-                .then(() => {
-                    // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
-                    );
-                    elm.setAttribute('dir', 'rtl');
-                })
-                .then(() => {
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 2)'
-                    );
-                    elm.setAttribute('dir', 'ltr');
-                })
-                .then(() => {
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 1)'
-                    );
-                });
-        });
-    }
-});
+        return Promise.resolve()
+            .then(() => {
+                // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
+                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
+                elm.setAttribute('dir', 'rtl');
+            })
+            .then(() => {
+                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 2)');
+                elm.setAttribute('dir', 'ltr');
+            })
+            .then(() => {
+                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
+            });
+    });
+}

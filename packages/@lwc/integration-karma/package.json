@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-karma",
     "private": true,
-    "version": "5.2.0",
+    "version": "5.2.2",
     "scripts": {
         "start": "KARMA_MODE=watch karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
@@ -14,15 +14,14 @@
         "coverage": "node ./scripts/merge-coverage.js"
     },
     "//": {
-        "karma-jasmine": "must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11",
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
-        "@lwc/compiler": "5.2.0",
-        "@lwc/engine-dom": "5.2.0",
-        "@lwc/engine-server": "5.2.0",
-        "@lwc/rollup-plugin": "5.2.0",
-        "@lwc/synthetic-shadow": "5.2.0",
+        "@lwc/compiler": "5.2.2",
+        "@lwc/engine-dom": "5.2.2",
+        "@lwc/engine-server": "5.2.2",
+        "@lwc/rollup-plugin": "5.2.2",
+        "@lwc/synthetic-shadow": "5.2.2",
         "chokidar": "^3.5.3",
         "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",
@@ -30,7 +29,7 @@
         "karma": "^6.4.2",
         "karma-chrome-launcher": "^3.2.0",
         "karma-coverage": "^2.2.1",
-        "karma-jasmine": "^4.0.2",
+        "karma-jasmine": "^5.1.0",
         "karma-sauce-launcher-fix-firefox": "3.0.1"
     }
 }
