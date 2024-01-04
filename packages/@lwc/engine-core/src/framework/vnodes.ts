@@ -122,7 +122,7 @@ export interface VNodeData {
     // due to hoisting optimizations
     readonly props?: Readonly<Record<string, any>>;
     readonly attrs?: Readonly<Record<string, string | number | boolean | null | undefined>>;
-    readonly className?: string | Record<string, boolean>;
+    readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
     readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;

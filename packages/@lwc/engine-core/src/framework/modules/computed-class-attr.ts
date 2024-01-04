@@ -5,11 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    assign,
     create,
-    isArray,
+    freeze,
     isNull,
-    isObject,
     isString,
     isUndefined,
     StringCharCodeAt,
@@ -18,79 +16,44 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement, VNodeData } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
-type ClassMap = Record<string, boolean>;
+const classNameToClassMap = create(null);
 
-/**
- * Stores the computed class map from parsing the className string.
- * This avoid re-parsing the same className value between patches.
- */
-const classNameToClassMap = new Map<string, ClassMap>();
-
-/**
- * Store the classes previously applied to the element.
- *
- * VElement can objects objects as class, and the same object can be reused between patches, we need
- * to keep track of that have been previously applied to the element in case the objects has been
- * mutated between patches.
- */
-const vnodeToClassMap = new WeakMap<VBaseElement, ClassMap>();
-
-function normalizeClassMap(value: VNodeData['className']): ClassMap {
-    // Intentionally using == to match undefined and null values from computed style attribute.
-    if (value == null) {
+function getMapFromClassName(className: string | undefined): Record<string, boolean> {
+    // Intentionally using == to match undefined and null values from computed style attribute
+    if (className == null) {
         return EmptyObject;
-    } else if (isArray(value)) {
-        const result: ClassMap = create(null);
-        for (let i = 0; i < value.length; i++) {
-            const item = normalizeClassMap(value[i]);
-            assign(result, item);
-        }
-        return result;
-    } else if (isObject(value)) {
-        const result: ClassMap = create(null);
-        for (const key in value) {
-            if (value[key]) {
-                result[key] = true;
-            }
-        }
-        return result;
-    } else {
-        value = isString(value) ? value : '';
-        return parseStringClassName(value);
     }
-}
+    // computed class names must be string
+    className = isString(className) ? className : className + '';
 
-function parseStringClassName(value: string): ClassMap {
-    let classMap = classNameToClassMap.get(value);
-    if (!isUndefined(classMap)) {
-        return classMap;
+    let map = classNameToClassMap[className];
+    if (map) {
+        return map;
     }
-
-    classMap = create(null) as ClassMap;
-
+    map = create(null);
     let start = 0;
-    let current = start;
-    const len = value.length;
-
-    // Iterate through the string one character at a time and extract class names.
-    for (; current < len; current++) {
-        if (StringCharCodeAt.call(value, current) === SPACE_CHAR) {
-            if (current > start) {
-                classMap[StringSlice.call(value, start, current)] = true;
+    let o;
+    const len = className.length;
+    for (o = 0; o < len; o++) {
+        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
+            if (o > start) {
+                map[StringSlice.call(className, start, o)] = true;
             }
-            start = current + 1;
+            start = o + 1;
         }
     }
 
-    // Extract the last class name from the string (if any).
-    if (current > start) {
-        classMap[StringSlice.call(value, start, current)] = true;
+    if (o > start) {
+        map[StringSlice.call(className, start, o)] = true;
     }
-
-    classNameToClassMap.set(value, classMap);
-    return classMap;
+    classNameToClassMap[className] = map;
+    if (process.env.NODE_ENV !== 'production') {
+        // just to make sure that this object never changes as part of the diffing algo
+        freeze(map);
+    }
+    return map;
 }
 
 export function patchClassAttribute(
@@ -100,24 +63,22 @@ export function patchClassAttribute(
 ) {
     const {
         elm,
-        data: { className: newValue },
+        data: { className: newClass },
     } = vnode;
 
-    const oldValue = oldVnode?.data.className;
-
-    // Fast path: If both old value and new value are identical string, skip patch.
-    if (oldValue === newValue && isString(oldValue) && isString(newValue)) {
+    const oldClass = isNull(oldVnode) ? undefined : oldVnode.data.className;
+    if (oldClass === newClass) {
         return;
     }
 
-    const newClassMap = normalizeClassMap(newValue);
-    const oldClassMap = isNull(oldVnode) ? EmptyObject : vnodeToClassMap.get(oldVnode);
-
     const { getClassList } = renderer;
     const classList = getClassList(elm!);
+    const newClassMap = getMapFromClassName(newClass);
+    const oldClassMap = getMapFromClassName(oldClass);
 
     let name: string;
     for (name in oldClassMap) {
+        // remove only if it is not in the new class collection and it is not set from within the instance
         if (isUndefined(newClassMap[name])) {
             classList.remove(name);
         }
@@ -127,6 +88,4 @@ export function patchClassAttribute(
             classList.add(name);
         }
     }
-
-    vnodeToClassMap.set(vnode, newClassMap);
 }
