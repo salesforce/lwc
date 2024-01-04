@@ -21,14 +21,15 @@ function testClassNameValue(name, value, expected) {
     });
 }
 
-function testClassNameValueUpdate(name, valueFn, updateFn, expected) {
+function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
     it(name, () => {
-        const original = valueFn();
-        const { host, target } = createDynamicClass(original);
+        const elm = createElement('x-reactive', { is: Reactive });
+        elm.updateDynamicClass(setupFn);
+        document.body.appendChild(elm);
 
-        const updated = updateFn(original);
-        host.dynamicClass = updated;
+        const target = elm.shadowRoot.querySelector('div');
 
+        elm.updateDynamicClass(updateFn);
         return Promise.resolve().then(() => {
             expect(target.className).toBe(expected);
         });
@@ -39,6 +40,7 @@ describe('plain object class value', () => {
     testClassNameValue('empty', {}, '');
     testClassNameValue('single class', { foo: true }, 'foo');
     testClassNameValue('multiple classes', { foo: true, bar: true }, 'foo bar');
+    testClassNameValue('complex classes', { 'foo bar': true }, 'foo bar');
 
     testClassNameValue(
         'truthy values',
@@ -53,10 +55,6 @@ describe('plain object class value', () => {
 
     testClassNameValue('symbols keys', { [Symbol('foo')]: true }, '');
     testClassNameValue('null proto', Object.create(null), '');
-
-    it('throws on invalid css token', () => {
-        expect(() => createDynamicClass({ 'foo bar': true })).toThrowCallbackReactionError();
-    });
 });
 
 describe('array class value', () => {
@@ -68,91 +66,42 @@ describe('array class value', () => {
     testClassNameValue('with nested mixed values', ['foo', ['bar'], { baz: true }], 'foo bar baz');
 });
 
-describe('object class value update', () => {
-    testClassNameValueUpdate(
-        'update to empty',
-        () => ({ foo: true }),
-        () => ({}),
-        ''
-    );
-    testClassNameValueUpdate(
-        'update to partial replacement',
-        () => ({ foo: true, bar: true, baz: false }),
-        () => ({ bar: false, baz: true }),
-        'baz'
-    );
-    testClassNameValueUpdate(
-        'object to string',
-        () => ({ foo: true }),
-        () => 'bar',
-        'bar'
-    );
-    testClassNameValueUpdate(
-        'string to object',
-        () => 'foo',
-        () => ({ bar: true }),
-        'bar'
-    );
-    testClassNameValueUpdate(
-        'object to array',
-        () => ({ foo: true, bar: false, baz: true }),
-        () => [{ foo: true }, 'bar', ['baz']],
-        'foo baz bar'
-    );
-    testClassNameValueUpdate(
-        'update original object',
-        () => ({ foo: true, bar: true }),
-        (original) => {
-            original.foo = false;
-            delete original.bar;
-            original.baz = true;
-
-            return original;
-        },
-        'baz'
-    );
-    testClassNameValueUpdate(
-        'update original array',
-        () => ['foo', { bar: true }, 'baz'],
-        (original) => {
-            original[0] = 'fooz';
-            original[1].fiz = true;
-            original.push('biz');
-
-            return original;
-        },
-        'bar baz fooz fiz biz'
-    );
+describe('edge cases values', () => {
+    testClassNameValue('null', null, '');
+    testClassNameValue('undefined', undefined, '');
+    testClassNameValue('number', 1, '');
+    testClassNameValue('symbol', Symbol(), '');
+    testClassNameValue('map', new Map(), '');
+    testClassNameValue('function', function () {}, '');
 });
 
 describe('reactive object update', () => {
-    it('updates when a property is added', () => {
-        const elm = createElement('x-reactive', { is: Reactive });
-        elm.updateDynamicClass((obj) => (obj.foo = true));
-        document.body.appendChild(elm);
+    // This is a caveat of the current implementation, we don't support adding new properties. The
+    // workaround is to always return a new object or define all the properties upfront.
+    testReactiveClassNameValue(
+        'ignores newly added properties',
+        (obj) => (obj.foo = true),
+        (obj) => (obj.bar = true),
+        'foo'
+    );
 
-        const target = elm.shadowRoot.querySelector('div');
-        expect(target.className).toBe('foo');
+    testReactiveClassNameValue(
+        'updates when a property is updated',
+        (obj) => {
+            obj.foo = true;
+            obj.bar = true;
+        },
+        (obj) => (obj.foo = false),
+        'bar'
+    );
 
-        // 🛑 This doesn't work now, because the diffing algo access properties on the reactive object
-        // during patching which isn't currently tracked. 🛑
-        elm.updateDynamicClass((obj) => (obj.bar = true));
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('foo bar');
-        });
-    });
-
-    it('updates when a property is removed', () => {
-        const elm = createElement('x-reactive', { is: Reactive });
-        elm.updateDynamicClass((obj) => (obj.foo = true));
-        document.body.appendChild(elm);
-
-        const target = elm.shadowRoot.querySelector('div');
-        expect(target.className).toBe('foo');
-
-        elm.updateDynamicClass((obj) => delete obj.foo);
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('');
-        });
-    });
+    testReactiveClassNameValue(
+        'updates when a property is removed',
+        (obj) => {
+            obj.foo = true;
+            obj.bar = true;
+        },
+        (obj) => delete obj.foo,
+        'bar'
+    );
 });

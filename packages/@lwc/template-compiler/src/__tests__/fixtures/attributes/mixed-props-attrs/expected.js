@@ -28,6 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
     st: api_static_fragment,
     h: api_element,
+    ncls: api_normalize_class_name,
   } = $api;
   return [
     api_custom_element("ns-foo", _nsFoo, {
@@ -68,7 +69,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ]),
     api_static_fragment($fragment2(), 7),
     api_element("div", {
-      className: $cmp.foo,
+      className: api_normalize_class_name($cmp.foo),
       attrs: stc3,
       key: 8,
     }),

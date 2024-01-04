@@ -4,6 +4,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
+    ncls: api_normalize_class_name,
     k: api_key,
     d: api_dynamic_text,
     t: api_text,
@@ -18,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_element(
           "li",
           {
-            className: item.x,
+            className: api_normalize_class_name(item.x),
             key: api_key(1, item.id),
           },
           [api_text(api_dynamic_text(item))]
