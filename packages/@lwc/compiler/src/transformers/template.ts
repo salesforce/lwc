@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
+import { createHash } from 'crypto';
 import { APIFeature, APIVersion, isAPIFeatureEnabled } from '@lwc/shared';
 import {
     CompilerError,
@@ -16,6 +17,12 @@ import { compile } from '@lwc/template-compiler';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
+
+// Should put this in some shared package
+interface HMRModuleContext {
+    moduleHash: string;
+    modulePath: string;
+}
 
 /**
  * Transforms a HTML template into module exporting a template function.
@@ -40,6 +47,7 @@ export default function templateTransform(
         namespace,
         name,
         apiVersion,
+        enableHmr,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -73,10 +81,25 @@ export default function templateTransform(
     // TODO [#3733]: remove support for legacy scope tokens
     const { scopeToken, legacyScopeToken } = generateScopeTokens(filename, namespace, name);
 
+    let hmrModuleContext: HMRModuleContext | undefined;
+    if (enableHmr) {
+        hmrModuleContext = {
+            moduleHash: createHash('md5').update(src, 'utf8').digest('hex'),
+            modulePath: filename,
+        };
+    }
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: serialize(result.code, filename, scopeToken, legacyScopeToken, apiVersion),
+        code: serialize(
+            result.code,
+            filename,
+            scopeToken,
+            legacyScopeToken,
+            apiVersion,
+            hmrModuleContext
+        ),
         map: { mappings: '' },
         warnings,
         cssScopeTokens: [
@@ -153,13 +176,17 @@ function serialize(
     filename: string,
     scopeToken: string,
     legacyScopeToken: string,
-    apiVersion: APIVersion
+    apiVersion: APIVersion,
+    hmrModuleContext?: HMRModuleContext
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
 
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
+    if (hmrModuleContext) {
+        buffer += `import { hot, swapTemplate } from "lwc";\n\n`;
+    }
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
     buffer += code;
@@ -184,7 +211,19 @@ function serialize(
 
     // Note that `renderMode` and `slots` are already rendered in @lwc/template-compiler and appear
     // as `code` above. At this point, no more expando props should be added to `tmpl`.
-    buffer += 'freezeTemplate(tmpl);\n';
+    buffer += 'freezeTemplate(tmpl);\n\n';
 
+    // Add HMR hooks to handle hot module updates
+    if (hmrModuleContext) {
+        buffer += `tmpl.moduleHash = "${hmrModuleContext.moduleHash}";\n`;
+        buffer += `if (hot) {\n`;
+        buffer += `    hot.register("${hmrModuleContext.modulePath}", "${hmrModuleContext.moduleHash}");\n`;
+        buffer += `    hot.accept("${hmrModuleContext.modulePath}", (mod) => {\n`;
+        buffer += `        if(tmpl.moduleHash != mod.moduleHash) {\n`;
+        buffer += `            swapTemplate(tmpl, mod);\n`;
+        buffer += `        }\n`;
+        buffer += `    }\n`;
+        buffer += `}\n`;
+    }
     return buffer;
 }

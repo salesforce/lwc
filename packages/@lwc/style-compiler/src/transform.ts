@@ -10,6 +10,12 @@ import { getAPIVersionFromNumber } from '@lwc/shared';
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';
 
+// Should put this in some shared package
+interface HMRModuleContext {
+    moduleHash: string;
+    modulePath: string;
+}
+
 export interface Config {
     /**
      * @deprecated - Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
@@ -26,6 +32,7 @@ export interface Config {
     disableSyntheticShadowSupport?: boolean;
     /** The API version to associate with the compiled stylesheet */
     apiVersion?: number;
+    hmrModuleContext?: HMRModuleContext;
 }
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {

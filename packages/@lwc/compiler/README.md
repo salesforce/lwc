@@ -59,6 +59,7 @@ const { code } = transformSync(source, filename, options);
     -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
     -   `instrumentation` (type: `InstrumentationObject`, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
     -   `apiVersion` (type: `number`, optional) - API version to associate with the compiled module.
+    -   `enableHmr` (type: `boolean`, optional) - If enabled, source code will be transformed with hot module reloading capabilities.
 
 **Return**
 

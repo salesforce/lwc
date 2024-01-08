@@ -47,15 +47,19 @@ export default function serialize(result: Result, config: Config): string {
     const importedStylesheets = messages.filter(isImportMessage).map((message) => message.id);
     const disableSyntheticShadow = Boolean(config.disableSyntheticShadowSupport);
     const scoped = Boolean(config.scoped);
+    const { hmrModuleContext } = config;
 
     let buffer = '';
 
     for (let i = 0; i < importedStylesheets.length; i++) {
         buffer += `import ${STYLESHEET_IDENTIFIER + i} from "${importedStylesheets[i]}";\n`;
     }
-
     if (importedStylesheets.length) {
         buffer += '\n';
+    }
+
+    if (hmrModuleContext) {
+        buffer += `import { hot, swapStyle } from "lwc";\n`;
     }
 
     const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
@@ -96,6 +100,19 @@ export default function serialize(result: Result, config: Config): string {
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
+    }
+
+    // Add HMR hooks to handle hot module updates
+    if (hmrModuleContext) {
+        buffer += `${STYLESHEET_IDENTIFIER}.moduleHash = "${hmrModuleContext.moduleHash}";\n`;
+        buffer += `if (hot) {\n`;
+        buffer += `    hot.register("${hmrModuleContext.modulePath}", "${hmrModuleContext.moduleHash}");\n`;
+        buffer += `    hot.accept("${hmrModuleContext.modulePath}", (mod) => {\n`;
+        buffer += `        if(${STYLESHEET_IDENTIFIER}.moduleHash != mod.moduleHash) {\n`;
+        buffer += `            swapStyle(${STYLESHEET_IDENTIFIER}, mod);\n`;
+        buffer += `        }\n`;
+        buffer += `    }\n`;
+        buffer += `}\n`;
     }
 
     // exports

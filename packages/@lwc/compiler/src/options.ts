@@ -31,6 +31,7 @@ const DEFAULT_OPTIONS = {
     experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
+    enableHmr: false,
 };
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -103,6 +104,7 @@ export interface TransformOptions {
     enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
+    enableHmr?: boolean;
 }
 
 type RequiredTransformOptions = Omit<

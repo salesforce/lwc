@@ -4,11 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { createHash } from 'crypto';
 import * as styleCompiler from '@lwc/style-compiler';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
+
+import type { Config } from '@lwc/style-compiler';
 
 export default function styleTransform(
     src: string,
@@ -17,7 +20,7 @@ export default function styleTransform(
 ): TransformResult {
     const { customProperties } = config.stylesheetConfig;
 
-    const styleCompilerConfig = {
+    const styleCompilerConfig: Config = {
         customProperties: {
             resolverModule:
                 customProperties.resolution.type === 'module'
@@ -27,6 +30,12 @@ export default function styleTransform(
         scoped: config.scopedStyles,
         disableSyntheticShadowSupport: config.disableSyntheticShadowSupport,
         apiVersion: config.apiVersion,
+        hmrModuleContext: config.enableHmr
+            ? {
+                  moduleHash: createHash('md5').update(src, 'utf8').digest('hex'),
+                  modulePath: filename,
+              }
+            : undefined,
     };
 
     let res;
