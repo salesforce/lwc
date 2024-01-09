@@ -43,7 +43,8 @@
     },
     "devDependencies": {
         "@lwc/engine-core": "5.2.2",
-        "@lwc/shared": "5.2.2"
+        "@lwc/shared": "5.2.2",
+        "@lwc/hmr-client": "5.2.2"
     },
     "lwc": {
         "modules": [

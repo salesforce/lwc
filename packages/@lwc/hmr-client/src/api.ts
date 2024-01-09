@@ -3,6 +3,7 @@ import type { Module } from './connection';
 export type HotModuleCallback = (mod: Module) => void;
 
 const hotModuleCbs: Map<string, HotModuleCallback[]> = new Map();
+export type HMR_Accept = (modulePath: string, cb: HotModuleCallback) => void;
 export function accept(modulePath: string, cb: HotModuleCallback) {
     if (hotModuleCbs.has(modulePath)) {
         hotModuleCbs.get(modulePath)?.push(cb);
@@ -13,6 +14,7 @@ export function accept(modulePath: string, cb: HotModuleCallback) {
 
 const activeModules: Map<string, string> = new Map<string, string>();
 const staleModules: Map<string, string> = new Map<string, string>();
+export type HMR_Register = (modulePath: string, hash: string) => void;
 export function register(modulePath: string, hash: string) {
     if (activeModules.has(modulePath)) {
         // This is a new version of an existing module
