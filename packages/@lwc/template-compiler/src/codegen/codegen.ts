@@ -25,7 +25,12 @@ import {
     PARSE_SVG_FRAGMENT_METHOD_NAME,
     TEMPLATE_PARAMS,
 } from '../shared/constants';
-import { isElement, isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import {
+    isComment,
+    isElement,
+    isPreserveCommentsDirective,
+    isRenderModeDirective,
+} from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
@@ -578,7 +583,14 @@ export default class CodeGen {
         // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
         while (stack.length > 0) {
             const node = stack.shift()!;
-            partId++;
+
+            if (!(isComment(node) && !this.preserveComments)) {
+                // Skip adding part index for comments when preserveComments is disabled.
+                // The partId represents the nodes in the DOM tree at runtime, comments will be
+                // stripped out when preserveComments is disabled.
+                partId++;
+            }
+
             if (isElement(node)) {
                 // has event listeners
                 if (node.listeners.length) {
