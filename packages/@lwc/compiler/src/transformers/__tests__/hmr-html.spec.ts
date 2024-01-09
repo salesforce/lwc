@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import { transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
 
@@ -47,10 +53,12 @@ describe('transformSync', () => {
             freezeTemplate(tmpl);
 
             tmpl.moduleHash = "ad4a71f9e9ea2ed264ba2ee32654c3f1";
-            hot.register("foo.html", "ad4a71f9e9ea2ed264ba2ee32654c3f1", );
-            hot.accept("foo.html", (mod) => {
-                if(tmpl.moduleHash != mod.moduleHash) {
-                    swapTemplate(tmpl, mod);
+            if (hot) {
+                hot.register("foo.html", "ad4a71f9e9ea2ed264ba2ee32654c3f1");
+                hot.accept("foo.html", (mod) => {
+                    if(tmpl.moduleHash != mod.moduleHash) {
+                        swapTemplate(tmpl, mod);
+                    }
                 }
             }
             "
