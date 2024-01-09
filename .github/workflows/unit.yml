@@ -71,3 +71,9 @@ jobs:
             path: coverage/
       - name: Run benchmark smoke tests
         run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
+      - name: Add step summary
+        # 1. Remove leading/trailing "border" lines from output
+        # 2. Wrap file names in backticks
+        # 3. Convert leading whitespace to non-breaking to approximate plaintext output
+        run: sed -E '$d;1d;4,$s/^(  ?)([^ ]+)/\1`\2`/g;4,$s/^  /  /g' coverage/coverage.txt >> "$GITHUB_STEP_SUMMARY"
+        # ----------------------------------------------------- ^^ non-breaking spaces!
