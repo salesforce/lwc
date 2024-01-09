@@ -399,7 +399,7 @@ describe('event listeners on deep paths', () => {
     });
 });
 
-describe('comments', () => {
+describe('static parts applies to comments correctly', () => {
     it('has correct static parts when lwc:preserve-comments is off', async () => {
         const elm = createElement('x-comments', {
             is: Comments,
