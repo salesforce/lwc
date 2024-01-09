@@ -1,1 +1,1 @@
-export const hot = {};
+export { accept, register } from './api';
