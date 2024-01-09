@@ -413,7 +413,7 @@ describe('comments', () => {
 
         foo.click();
         expect(elm.fooWasClicked).toBe(true);
-        expect(refs.foo).not.toBeFalsy();
+        expect(refs.foo).toBe(foo);
 
         bar.click();
         expect(elm.barWasClicked).toBe(true);
