@@ -437,6 +437,6 @@ describe('comments', () => {
 
         bar.click();
         expect(elm.barWasClicked).toBe(true);
-        expect(refs.bar).not.toBeFalsy();
+        expect(refs.bar).toBe(bar);
     });
 });
