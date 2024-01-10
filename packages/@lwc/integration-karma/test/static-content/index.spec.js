@@ -14,6 +14,8 @@ import OnlyEventListenerChild from 'x/onlyEventListenerChild';
 import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
 import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
 import DeepListener from 'x/deepListener';
+import Comments from 'x/comments';
+import PreserveComments from 'x/preserveComments';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -394,5 +396,47 @@ describe('event listeners on deep paths', () => {
             childElm.dispatchEvent(new CustomEvent('foo'));
             expect(elm.counter).toBe(++count);
         }
+    });
+});
+
+describe('static parts applies to comments correctly', () => {
+    it('has correct static parts when lwc:preserve-comments is off', async () => {
+        const elm = createElement('x-comments', {
+            is: Comments,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        const { foo, bar } = extractDataIds(elm);
+        const refs = elm.getRefs();
+
+        foo.click();
+        expect(elm.fooWasClicked).toBe(true);
+        expect(refs.foo).toBe(foo);
+
+        bar.click();
+        expect(elm.barWasClicked).toBe(true);
+        expect(refs.bar).toBe(bar);
+    });
+
+    it('has correct static parts when lwc:preserve-comments is on', async () => {
+        const elm = createElement('x-preserve-comments', {
+            is: PreserveComments,
+        });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        const { foo, bar } = extractDataIds(elm);
+        const refs = elm.getRefs();
+
+        foo.click();
+        expect(elm.fooWasClicked).toBe(true);
+        expect(refs.foo).toBe(foo);
+
+        bar.click();
+        expect(elm.barWasClicked).toBe(true);
+        expect(refs.bar).toBe(bar);
     });
 });

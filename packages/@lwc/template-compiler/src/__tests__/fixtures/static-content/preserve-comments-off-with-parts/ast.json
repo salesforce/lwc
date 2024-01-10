@@ -1,0 +1,317 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 8,
+            "endColumn": 12,
+            "start": 0,
+            "end": 249,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 8,
+                "startColumn": 1,
+                "endLine": 8,
+                "endColumn": 12,
+                "start": 238,
+                "end": 249
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 237,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 11,
+                        "start": 231,
+                        "end": 237
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " comment ",
+                        "value": " comment ",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 25,
+                            "start": 29,
+                            "end": 45
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "button",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 78,
+                            "start": 54,
+                            "end": 123,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 66,
+                                "start": 54,
+                                "end": 111
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 69,
+                                "endLine": 4,
+                                "endColumn": 78,
+                                "start": 114,
+                                "end": 123
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-id",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "foo"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 30,
+                                    "start": 62,
+                                    "end": 75
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "Ref",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "foo"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 52,
+                                    "endLine": 4,
+                                    "endColumn": 65,
+                                    "start": 97,
+                                    "end": 110
+                                }
+                            }
+                        ],
+                        "listeners": [
+                            {
+                                "type": "EventListener",
+                                "name": "click",
+                                "handler": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 11,
+                                    "name": "onClickFoo",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 31,
+                                        "endLine": 4,
+                                        "endColumn": 51,
+                                        "start": 76,
+                                        "end": 96
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 31,
+                                    "endLine": 4,
+                                    "endColumn": 51,
+                                    "start": 76,
+                                    "end": 96
+                                }
+                            }
+                        ],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "foo",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "foo"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 66,
+                                    "endLine": 4,
+                                    "endColumn": 69,
+                                    "start": 111,
+                                    "end": 114
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " comment ",
+                        "value": " comment ",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 25,
+                            "start": 132,
+                            "end": 148
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "button",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 78,
+                            "start": 157,
+                            "end": 226,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 66,
+                                "start": 157,
+                                "end": 214
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 69,
+                                "endLine": 6,
+                                "endColumn": 78,
+                                "start": 217,
+                                "end": 226
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-id",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "bar"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 17,
+                                    "endLine": 6,
+                                    "endColumn": 30,
+                                    "start": 165,
+                                    "end": 178
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [
+                            {
+                                "type": "Directive",
+                                "name": "Ref",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "bar"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 52,
+                                    "endLine": 6,
+                                    "endColumn": 65,
+                                    "start": 200,
+                                    "end": 213
+                                }
+                            }
+                        ],
+                        "listeners": [
+                            {
+                                "type": "EventListener",
+                                "name": "click",
+                                "handler": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 11,
+                                    "name": "onClickBar",
+                                    "location": {
+                                        "startLine": 6,
+                                        "startColumn": 31,
+                                        "endLine": 6,
+                                        "endColumn": 51,
+                                        "start": 179,
+                                        "end": 199
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 31,
+                                    "endLine": 6,
+                                    "endColumn": 51,
+                                    "start": 179,
+                                    "end": 199
+                                }
+                            }
+                        ],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "bar",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "bar"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 66,
+                                    "endLine": 6,
+                                    "endColumn": 69,
+                                    "start": 214,
+                                    "end": 217
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
