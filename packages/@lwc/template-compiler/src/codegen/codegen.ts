@@ -584,7 +584,7 @@ export default class CodeGen {
         while (stack.length > 0) {
             const node = stack.shift()!;
 
-            // Skip comment nodes in parts count, as they will be stripped in production, unless when `preseveComments` is enabled
+            // Skip comment nodes in parts count, as they will be stripped in production, unless when `lwc:preserve-comments` is enabled
             if (!isComment(node) || this.preserveComments) {
                 partId++;
             }
