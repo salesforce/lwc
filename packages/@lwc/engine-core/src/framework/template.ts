@@ -204,9 +204,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isFunction(html),
-            `evaluateTemplate() second argument must be an imported template instead of ${toString(
-                html
-            )}`
+            `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
+                vm.def.name
+            }.html"\`), instead, it has returned: ${toString(html)}.`
         );
         // in dev-mode, we support hot swapping of templates, which means that
         // the component instance might be attempting to use an old version of
