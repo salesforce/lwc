@@ -65,7 +65,9 @@ const GLOBAL_HTML_ATTRIBUTES = [
     'spellcheck',
     'tabIndex',
     'title',
-    ...ariaProperties,
+    // Copy over all aria props supported on Element.prototype. Note that this will vary from browser to browser.
+    // See: https://wicg.github.io/aom/spec/aria-reflection.html
+    ...Object.keys(Element.prototype).filter((prop) => ariaProperties.includes(prop)),
 ].sort();
 
 const message = (propName) =>
