@@ -585,7 +585,7 @@ export default class CodeGen {
             const node = stack.shift()!;
 
             // Skip comment nodes in parts count, as they will be stripped in production, unless when `preseveComments` is enabled
-            if (!isComment(node) || this.preserveComments)) {
+            if (!isComment(node) || this.preserveComments) {
                 // Skip adding part index for comments when preserveComments is disabled.
                 // The partId represents the nodes in the DOM tree at runtime, comments will be
                 // stripped out when preserveComments is disabled.
