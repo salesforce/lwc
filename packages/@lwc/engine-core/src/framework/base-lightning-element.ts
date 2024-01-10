@@ -17,7 +17,6 @@ import {
     create,
     defineProperties,
     defineProperty,
-    entries,
     freeze,
     hasOwnProperty,
     isFunction,
@@ -32,7 +31,7 @@ import {
 
 import { logError, logWarn } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
+import { applyAriaReflection } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
@@ -815,25 +814,12 @@ for (const propName in HTMLElementOriginalDescriptors) {
     );
 }
 
+defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+
 // Apply ARIA reflection to LightningElement.prototype, on both the browser and server.
 // This allows `this.aria*` property accessors to work from inside a component, and to reflect `aria-*` attrs.
 // Note this works regardless of whether the global ARIA reflection polyfill is applied or not.
-if (process.env.IS_BROWSER) {
-    // In the browser, we use createBridgeToElementDescriptor, so we can get the normal reactivity lifecycle for
-    // aria* properties
-    for (const [propName, descriptor] of entries(ariaReflectionPolyfillDescriptors) as [
-        name: string,
-        descriptor: PropertyDescriptor
-    ][]) {
-        lightningBasedDescriptors[propName] = createBridgeToElementDescriptor(propName, descriptor);
-    }
-} else {
-    // On the server, we cannot use createBridgeToElementDescriptor because getAttribute/setAttribute are
-    // not supported on HTMLElement. So apply the polyfill directly on top of LightningElement
-    defineProperties(LightningElement.prototype, ariaReflectionPolyfillDescriptors);
-}
-
-defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+applyAriaReflection(LightningElement.prototype);
 
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {
