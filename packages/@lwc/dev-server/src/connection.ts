@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import WebSocket from 'ws';
 export type Module = any;
 
 export interface HMR_Data_Fetch {
@@ -28,7 +29,7 @@ export interface HMR_Data_Module_Delete {
 
 export interface HMR_Data_Init {
     type: 'init';
-    data: { url: string; activePaths: string[] };
+    data: { activePaths: string[]; url: string };
 }
 
 export interface HMR_Data_Error {
@@ -49,17 +50,19 @@ export class Connection {
     host: string = 'localhost';
     port: string = '8080';
     socket: WebSocket | undefined;
-    init(protocol: string, host: string, port: string) {
+    init(protocol: string, host: string, port: string): Connection {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
+        return this;
     }
 
-    fetchModule(modulePath: string): void {
-        const fetchData: HMR_Data_Fetch = { type: 'fetch', data: { modulePath } };
-        // fetch the new module from the server
-        // eval it and return the new module
-        this.send(fetchData);
+    sendModule(modulePath: string, src: string): void {
+        const hotModule: HMR_Data_Module_Update = {
+            type: 'module-update',
+            data: [{ modulePath, src }],
+        };
+        this.send(hotModule);
     }
 
     initializeConnection(initCallback: () => void, messageCallback: (data: HMR_Data) => void) {
@@ -68,7 +71,7 @@ export class Connection {
             initCallback();
         });
         this.socket.addEventListener('message', ({ data }) => {
-            if (data) {
+            if (data && typeof data === 'string') {
                 // When there is an update, handle the incoming message and request an updated module
                 messageCallback(JSON.parse(data));
             }

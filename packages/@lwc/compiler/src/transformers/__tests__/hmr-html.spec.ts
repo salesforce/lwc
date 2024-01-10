@@ -59,7 +59,7 @@ describe('transformSync', () => {
                     if(tmpl.moduleHash != mod.moduleHash) {
                         swapTemplate(tmpl, mod);
                     }
-                }
+                });
             }
             "
         `);

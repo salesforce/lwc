@@ -74,7 +74,7 @@ function createRollupInputConfig() {
         },
         plugins: [
             entryPointResolverPlugin(),
-            rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
+            rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}`, enableHmr: true }),
             isProd &&
                 rollupReplacePlugin({
                     'process.env.NODE_ENV': JSON.stringify('production'),

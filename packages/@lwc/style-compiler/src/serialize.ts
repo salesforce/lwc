@@ -111,7 +111,7 @@ export default function serialize(result: Result, config: Config): string {
         buffer += `        if(${STYLESHEET_IDENTIFIER}.moduleHash != mod.moduleHash) {\n`;
         buffer += `            swapStyle(${STYLESHEET_IDENTIFIER}, mod);\n`;
         buffer += `        }\n`;
-        buffer += `    }\n`;
+        buffer += `    });\n`;
         buffer += `}\n`;
     }
 

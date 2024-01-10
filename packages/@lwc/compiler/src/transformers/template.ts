@@ -222,7 +222,7 @@ function serialize(
         buffer += `        if(tmpl.moduleHash != mod.moduleHash) {\n`;
         buffer += `            swapTemplate(tmpl, mod);\n`;
         buffer += `        }\n`;
-        buffer += `    }\n`;
+        buffer += `    });\n`;
         buffer += `}\n`;
     }
     return buffer;

@@ -16,10 +16,13 @@ import {
 
 function initCallback() {
     const activePaths = getActiveModulePaths();
-    const initData: HMR_Data_Init = { type: 'init', data: { activePaths: activePaths } };
+    const initData: HMR_Data_Init = {
+        type: 'init',
+        data: { url: window.location.href, activePaths: activePaths },
+    };
     if (activePaths.length) {
         setInterval(() => {
-            hmrClient.send(initData);
+            hmrClient?.send(initData);
         }, 5000);
     }
 }
@@ -35,7 +38,7 @@ function messageCallback(data: HMR_Data) {
                 if (handler) {
                     // Possibly use the module hash as key and allow overlapping handlers for same path.
                     pendingHandlers.set(modulePath, handler);
-                    hmrClient.fetchModule(modulePath);
+                    hmrClient?.fetchModule(modulePath);
                 }
             });
             break;
@@ -46,7 +49,7 @@ function messageCallback(data: HMR_Data) {
             hotModules.data.forEach(({ modulePath, src }) => {
                 const handler = pendingHandlers.get(modulePath)!;
                 // eslint-disable-next-line no-eval
-                const evaledModule = eval(src);
+                const evaledModule = new Function(src);
                 handler(evaledModule);
             });
             break;
@@ -62,9 +65,14 @@ function messageCallback(data: HMR_Data) {
     }
 }
 
-const hmrClient = new Connection();
-hmrClient.init('http', 'localhost', '8080');
-hmrClient.initializeConnection(initCallback, messageCallback);
-window.addEventListener('onbeforeunload', () => {
-    hmrClient.close();
-});
+let hmrClient: undefined | Connection;
+export function initializeClient() {
+    if (!hmrClient) {
+        hmrClient = new Connection();
+        hmrClient.init('http', 'localhost', '8080');
+        hmrClient.initializeConnection(initCallback, messageCallback);
+        window.addEventListener('onbeforeunload', () => {
+            hmrClient?.close();
+        });
+    }
+}

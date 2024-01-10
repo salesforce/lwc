@@ -49,6 +49,8 @@ export interface RollupLwcOptions {
     apiVersion?: APIVersion;
     /** True if the static content optimization should be enabled. Defaults to true */
     enableStaticContentOptimization?: boolean;
+    /** Enable Hot Module Reloading transforms in the compiler */
+    enableHmr?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -160,6 +162,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
         apiVersion,
+        enableHmr,
     } = pluginOptions;
 
     return {
@@ -331,6 +334,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 ...('enableStaticContentOptimization' in pluginOptions && {
                     enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
                 }),
+                enableHmr,
             });
 
             if (warnings) {
