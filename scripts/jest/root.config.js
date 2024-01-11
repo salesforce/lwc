@@ -30,4 +30,8 @@ module.exports = {
             lines: 90,
         },
     },
+    // Jest's default reporters are [clover, json, lcov, text]. We add the second text reporter to
+    // use the output as the step summary when running tests in GitHub Actions. (Ideally, we'd use
+    // a markdown reporter, but there don't seem to be any...)
+    coverageReporters: ['clover', 'json', 'lcov', 'text', ['text', { file: 'coverage.txt' }]],
 };
