@@ -204,7 +204,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isFunction(html),
-            `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
+            `Invalid template returned by the render() method of ${
+                vm.tagName
+            }. It must return an imported template (e.g.: \`import html from "./${
                 vm.def.name
             }.html"\`), instead, it has returned: ${toString(html)}.`
         );
