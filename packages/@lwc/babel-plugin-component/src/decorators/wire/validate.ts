@@ -15,12 +15,7 @@ import { isWireDecorator } from './shared';
 
 const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
-function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
-    const [id, config] = path.get('expression.arguments') as [
-        NodePath | undefined,
-        NodePath<types.ObjectExpression> | undefined
-    ];
-
+function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabelPluginPass) {
     if (!id) {
         throw generateError(
             path,
@@ -31,10 +26,9 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
         );
     }
 
-    const isIdentifier = id.isIdentifier();
     const isMemberExpression = id.isMemberExpression();
 
-    if (!isIdentifier && !isMemberExpression) {
+    if (!id.isIdentifier() && !isMemberExpression) {
         throw generateError(
             id,
             {
@@ -95,8 +89,10 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             state
         );
     }
+}
 
-    if (config && !config.isObjectExpression()) {
+function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPluginPass) {
+    if (!config.isObjectExpression()) {
         throw generateError(
             config,
             {
@@ -104,6 +100,19 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             },
             state
         );
+    }
+}
+
+function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
+    const expressionArguments = path.get('expression.arguments');
+    if (Array.isArray(expressionArguments)) {
+        // Multiple arguments: should be [id, config]
+        const [id, config] = expressionArguments;
+        validateWireId(id, path, state);
+        if (config) validateWireConfig(config, path, state);
+    } else {
+        // Single argument: should just be id
+        validateWireId(expressionArguments, path, state);
     }
 }
 
