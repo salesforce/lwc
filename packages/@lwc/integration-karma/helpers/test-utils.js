@@ -22,9 +22,9 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
     // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
     function spyConsole() {
-        var originalConsole = window.console;
+        const originalConsole = window.console;
 
-        var calls = {
+        const calls = {
             log: [],
             warn: [],
             error: [],
@@ -67,15 +67,15 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return function consoleDevMatcher() {
             return {
                 negativeCompare: function negativeCompare(actual) {
-                    var spy = spyConsole();
+                    const spy = spyConsole();
                     try {
                         actual();
                     } finally {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[methodName];
-                    var formattedCalls = callsArgs
+                    const callsArgs = spy.calls[methodName];
+                    const formattedCalls = callsArgs
                         .map(function (arg) {
                             return '"' + formatConsoleCall(arg) + '"';
                         })
@@ -118,7 +118,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         );
                     }
 
-                    var spy = spyConsole();
+                    const spy = spyConsole();
 
                     try {
                         actual();
@@ -126,8 +126,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         spy.reset();
                     }
 
-                    var callsArgs = spy.calls[methodName];
-                    var formattedCalls = callsArgs
+                    const callsArgs = spy.calls[methodName];
+                    const formattedCalls = callsArgs
                         .map(function (callArgs) {
                             return '"' + formatConsoleCall(callArgs) + '"';
                         })
@@ -168,10 +168,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                                         ' time(s).'
                                 );
                             }
-                            for (var i = 0; i < callsArgs.length; i++) {
-                                var callsArg = callsArgs[i];
-                                var expectedMessage = expectedMessages[i];
-                                var actualMessage = formatConsoleCall(callsArg);
+                            for (let i = 0; i < callsArgs.length; i++) {
+                                const callsArg = callsArgs[i];
+                                const expectedMessage = expectedMessages[i];
+                                const actualMessage = formatConsoleCall(callsArg);
                                 if (!matchMessage(actualMessage, expectedMessage)) {
                                     return fail(
                                         'Expected console.' +
@@ -243,7 +243,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         );
                     }
 
-                    var thrown = errorListener(actual);
+                    const thrown = errorListener(actual);
 
                     if (!expectInProd && process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
@@ -294,7 +294,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     // Listen for errors using window.addEventListener('error')
     function windowErrorListener(callback) {
-        var error;
+        let error;
         function onError(event) {
             event.preventDefault(); // don't log the error
             error = event.error;
@@ -302,7 +302,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
         // Prevent jasmine from handling the global error. There doesn't seem to be another
         // way to disable this behavior: https://github.com/jasmine/jasmine/pull/1860
-        var originalOnError = window.onerror;
+        const originalOnError = window.onerror;
         window.onerror = null;
         window.addEventListener('error', onError);
 
@@ -329,7 +329,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             : directErrorListener(callback);
     }
 
-    var customMatchers = {
+    const customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
         toLogError: consoleDevMatcherFactory('error', true),
         toLogWarningDev: consoleDevMatcherFactory('warn'),
@@ -365,7 +365,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     function extractDataIds(root) {
-        var nodes = {};
+        const nodes = {};
 
         function processElement(elm) {
             if (elm.hasAttribute('data-id')) {
@@ -383,14 +383,14 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
         // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
         // other browsers don't.
-        var safeFilter = acceptNode;
+        const safeFilter = acceptNode;
         safeFilter.acceptNode = acceptNode;
 
-        var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, safeFilter, false);
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, safeFilter, false);
 
         processElement(root);
 
-        var elm;
+        let elm;
         while ((elm = walker.nextNode())) {
             processElement(elm);
         }
@@ -399,26 +399,26 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     function extractShadowDataIds(shadowRoot) {
-        var nodes = {};
+        const nodes = {};
 
         // Add the shadow root here even if they don't have [data-id] attributes. This reference is
         // subsequently used to add event listeners.
-        var dataId = shadowRoot.host.getAttribute('data-id');
+        const dataId = shadowRoot.host.getAttribute('data-id');
         if (dataId) {
             nodes[dataId + '.shadowRoot'] = shadowRoot;
         }
 
         // We can't use a TreeWalker directly on the ShadowRoot since with synthetic shadow the ShadowRoot is not an
         // actual DOM nodes. So we need to iterate over the children manually and run the tree walker on each child.
-        for (var i = 0; i < shadowRoot.childNodes.length; i++) {
-            var child = shadowRoot.childNodes[i];
+        for (let i = 0; i < shadowRoot.childNodes.length; i++) {
+            const child = shadowRoot.childNodes[i];
             Object.assign(nodes, extractDataIds(child));
         }
 
         return nodes;
     }
 
-    var register = {};
+    let register = {};
     function load(id) {
         return Promise.resolve(register[id]);
     }
@@ -447,7 +447,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     // Providing overridable hooks for tests
-    var sanitizeHtmlContentHook = function () {
+    let sanitizeHtmlContentHook = function () {
         throw new Error('sanitizeHtmlContent hook must be implemented.');
     };
 
@@ -470,7 +470,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
-    var ariaPropertiesMapping = {
+    const ariaPropertiesMapping = {
         ariaAutoComplete: 'aria-autocomplete',
         ariaChecked: 'aria-checked',
         ariaCurrent: 'aria-current',
@@ -526,7 +526,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     };
 
     // See the README for @lwc/aria-reflection
-    var nonStandardAriaProperties = [
+    const nonStandardAriaProperties = [
         'ariaActiveDescendant',
         'ariaControls',
         'ariaDescribedBy',
@@ -539,7 +539,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     // These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
     // prototypes in https://github.com/salesforce/lwc/pull/3702
-    var nonPolyfilledAriaProperties = [
+    const nonPolyfilledAriaProperties = [
         'ariaColIndexText',
         'ariaBrailleLabel',
         'ariaBrailleRoleDescription',
@@ -547,10 +547,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         'ariaRowIndexText',
     ];
 
-    var ariaProperties = Object.keys(ariaPropertiesMapping);
+    const ariaProperties = Object.keys(ariaPropertiesMapping);
 
     // Can't use Object.values because we need to support IE11
-    var ariaAttributes = [];
+    const ariaAttributes = [];
     for (let i = 0; i < ariaProperties.length; i++) {
         ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
     }
@@ -558,13 +558,17 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // Keep traversing up the prototype chain until a property descriptor is found
     function getPropertyDescriptor(object, prop) {
         do {
-            var descriptor = Object.getOwnPropertyDescriptor(object, prop);
+            const descriptor = Object.getOwnPropertyDescriptor(object, prop);
             if (descriptor) {
                 return descriptor;
             }
             object = Object.getPrototypeOf(object);
         } while (object);
     }
+
+    // These values are based on the API versions in @lwc/shared/api-version
+    const lightDomSlotForwardingEnabled = process.env.API_VERSION > 60;
+    const vFragBookEndEnabled = process.env.API_VERSION > 59;
 
     return {
         clearRegister: clearRegister,
@@ -588,5 +592,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         attachReportingControlDispatcher: attachReportingControlDispatcher,
         detachReportingControlDispatcher: detachReportingControlDispatcher,
         nativeCustomElementLifecycleEnabled: nativeCustomElementLifecycleEnabled,
+        lightDomSlotForwardingEnabled: lightDomSlotForwardingEnabled,
+        vFragBookEndEnabled: vFragBookEndEnabled,
     };
 })(LWC, jasmine, beforeAll);

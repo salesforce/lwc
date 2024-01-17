@@ -8,9 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("ns-cmp", _nsCmp, stc0, [
       api_element("p", {
-        attrs: {
-          slot: $cmp.mySlot,
-        },
+        slotAssignment: $cmp.mySlot,
         key: 1,
       }),
     ]),

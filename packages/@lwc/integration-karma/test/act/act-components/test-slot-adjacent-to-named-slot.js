@@ -27,9 +27,7 @@ export default function (define) {
                                 'ui-another',
                                 _uiAnother__default['default'],
                                 {
-                                    attrs: {
-                                        slot: 'adjacent',
-                                    },
+                                    slotAssignment: 'adjacent',
                                     props: {
                                         value: 'Foo',
                                     },

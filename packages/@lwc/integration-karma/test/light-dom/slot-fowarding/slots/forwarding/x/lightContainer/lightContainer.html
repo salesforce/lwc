@@ -1,0 +1,41 @@
+<template lwc:render-mode="light" lwc:preserve-comments>
+    <x-light-light-slot data-id="light-light-slot">
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text being forwarded
+        <!-- comments being forwarded -->
+        <p>Static vnode default slot forwarded</p>
+    </x-light-light-slot>
+    
+    <x-light-shadow-slot data-id="light-shadow-slot">
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text being forwarded
+        <!-- comments being forwarded -->
+        <p>Static vnode default slot forwarded</p>
+    </x-light-shadow-slot>
+
+    <x-shadow-light-slot data-id="shadow-light-slot">
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text being forwarded
+        <!-- comments being forwarded -->
+        <p>Static vnode default slot forwarded</p>
+    </x-shadow-light-slot>
+
+    <x-shadow-shadow-slot>
+        <x-light-dom-element slot="upper"></x-light-dom-element>
+        <x-shadow-dom-element slot="lower"></x-shadow-dom-element>
+        <p slot="upper">Upper slot forwarded content</p>
+        <p slot="lower">Lower slot forwarded content</p>
+        Text being forwarded
+        <!-- comments being forwarded -->
+        <p>Static vnode default slot forwarded</p>
+    </x-shadow-shadow-slot>
+</template>

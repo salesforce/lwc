@@ -81,6 +81,11 @@ export const enum APIFeature {
      */
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
     /**
+     * If enabled, allows slot forwarding for light DOM slots. This will cause the slot attribute of the slotted
+     * content to be updated to match the slot attribute of the light DOM slot it slotted into.
+     */
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+    /**
      * If enabled, we use the native custom element lifecycle events: connectedCallback, disconnectedCallback
      * rather than synthetic events.
      */
@@ -100,6 +105,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
         case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
+        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
     }

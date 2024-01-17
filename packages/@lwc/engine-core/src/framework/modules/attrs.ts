@@ -15,7 +15,7 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject } from '../utils';
-import { VBaseElement } from '../vnodes';
+import { VBaseElement, VStatic } from '../vnodes';
 
 const ColonCharCode = 58;
 
@@ -61,5 +61,26 @@ export function patchAttributes(
                 setAttribute(elm, key, cur as string);
             }
         }
+    }
+}
+
+export function patchSlotAssignment(
+    oldVnode: VBaseElement | VStatic | null,
+    vnode: VBaseElement | VStatic,
+    renderer: RendererAPI
+) {
+    const { slotAssignment } = vnode;
+
+    if (oldVnode?.slotAssignment === slotAssignment) {
+        return;
+    }
+
+    const { elm } = vnode;
+    const { setAttribute, removeAttribute } = renderer;
+
+    if (isUndefined(slotAssignment) || isNull(slotAssignment)) {
+        removeAttribute(elm, 'slot');
+    } else {
+        setAttribute(elm, 'slot', slotAssignment);
     }
 }
