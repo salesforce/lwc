@@ -47,14 +47,6 @@ describe('restrictions', () => {
     });
 
     describe('LightningElement', () => {
-        it('dispatchEvent', () => {
-            expect(() => {
-                elm.dispatchEventWithInvalidName();
-            }).toLogErrorDev(
-                'Error: [LWC error]: Invalid event type "UPPERCASE-AND-HYPHENS" dispatched in element <x-component>. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores\n'
-            );
-        });
-
         it('get className', () => {
             expect(() => {
                 elm.getClassName();

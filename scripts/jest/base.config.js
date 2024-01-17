@@ -8,5 +8,11 @@
 module.exports = {
     preset: 'ts-jest',
     testMatch: ['<rootDir>/**/__tests__/**/*.spec.(js|ts)'],
-    coveragePathIgnorePatterns: ['/node_modules/', '/fixtures/', '/dist/'],
+    coveragePathIgnorePatterns: [
+        '/node_modules/',
+        '/fixtures/',
+        '/dist/',
+        // Ignore helper files like test-utils.ts that might exist alongside spec files
+        '/__tests__/',
+    ],
 };
