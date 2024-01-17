@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DiagnosticLevel } from '../../shared/types';
 
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
+/*
+ * For the next available error code, reference (and update!) the value in ./index.ts
  */
 
 export const GENERIC_COMPILER_ERROR = {
     code: 1001,
     message: 'Unexpected compilation error: {0}',
     level: DiagnosticLevel.Error,
+    url: '',
 };
 
 export const CompilerValidationErrors = {
