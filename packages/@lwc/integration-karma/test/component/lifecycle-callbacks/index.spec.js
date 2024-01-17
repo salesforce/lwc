@@ -1,10 +1,12 @@
 import { createElement } from 'lwc';
+import { nativeCustomElementLifecycleEnabled } from 'test-utils';
 
 import Single from 'x/single';
 import Parent from 'x/parent';
 import ParentIf from 'x/parentIf';
 import ParentProp from 'x/parentProp';
 import Container from 'invocationorder/container';
+import DispatchEvents from 'x/dispatchEvents';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -147,7 +149,7 @@ if (process.env.NATIVE_SHADOW) {
         const elm = createElement('order-container', { is: Container });
         document.body.appendChild(elm);
         expect(window.timingBuffer).toEqual(
-            window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+            nativeCustomElementLifecycleEnabled
                 ? [
                       'foo-a:connectedCallback',
                       'foo-internal-a:connectedCallback',
@@ -222,3 +224,55 @@ if (process.env.NATIVE_SHADOW) {
         ]);
     });
 }
+
+describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
+    // global events behave differently due to element being disconnected from the DOM
+    let globalConnected;
+    let globalDisconnected;
+
+    const onConnected = () => {
+        globalConnected = true;
+    };
+
+    const onDisconnected = () => {
+        globalDisconnected = true;
+    };
+
+    beforeEach(() => {
+        globalConnected = false;
+        globalDisconnected = false;
+        document.addEventListener('customconnected', onConnected);
+        document.addEventListener('customdisconnected', onDisconnected);
+    });
+
+    afterEach(() => {
+        document.removeEventListener('customconnected', onConnected);
+        document.removeEventListener('customdisconnected', onDisconnected);
+    });
+
+    it('behaves the same regardless of native/synthetic lifecycle', () => {
+        const elm = createElement('x-dispatch-events', { is: DispatchEvents });
+
+        let connected = false;
+        let disconnected = false;
+
+        elm.addEventListener('customconnected', () => {
+            connected = true;
+        });
+        elm.addEventListener('customdisconnected', () => {
+            disconnected = true;
+        });
+
+        document.body.appendChild(elm);
+        expect(connected).toBe(true); // received synchronously
+        expect(disconnected).toBe(false);
+        expect(globalConnected).toBe(true); // received synchronously
+        expect(globalDisconnected).toBe(false);
+
+        document.body.removeChild(elm);
+        expect(connected).toBe(true);
+        expect(disconnected).toBe(true); // received synchronously
+        expect(globalConnected).toBe(true);
+        expect(globalDisconnected).toBe(false); // never received due to disconnection
+    });
+});
