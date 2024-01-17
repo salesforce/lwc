@@ -13,12 +13,15 @@ import {
     isUndefined,
     toString,
     StringToLowerCase,
+    isAPIFeatureEnabled,
+    APIFeature,
 } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
+    getComponentAPIVersion,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -45,7 +48,14 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+let monkeyPatched = false;
+
+function monkeyPatchDomAPIs() {
+    if (monkeyPatched) {
+        // don't double-patch
+        return;
+    }
+    monkeyPatched = true;
     // Monkey patching Node methods to be able to detect the insertions and removal of root elements
     // created via createElement.
     const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
@@ -111,6 +121,13 @@ export function createElement(
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
 
+    const apiVersion = getComponentAPIVersion(Ctor);
+
+    const useNativeCustomElementLifecycle =
+        // temporary "kill switch"
+        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
+        isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
+
     // the custom element from the registry is expecting an upgrade callback
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -124,12 +141,14 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (!useNativeCustomElementLifecycle) {
+            // Monkey-patch on-demand, because if there are no components on the page using an old API
+            // version, then we don't want to monkey patch at all
+            monkeyPatchDomAPIs();
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }
     };
 
-    const element = createCustomElement(tagName, upgradeCallback);
-    return element;
+    return createCustomElement(tagName, upgradeCallback, useNativeCustomElementLifecycle);
 }

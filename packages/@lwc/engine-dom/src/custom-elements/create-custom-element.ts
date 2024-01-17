@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, entries } from '@lwc/shared';
+import { isUndefined, entries, isTrue } from '@lwc/shared';
 import {
     LifecycleCallback,
     connectRootElement,
@@ -14,20 +14,20 @@ import {
     runFormResetCallback,
     runFormStateRestoreCallback,
 } from '@lwc/engine-core';
-const cachedConstructors = new Map<string, CustomElementConstructor>();
-const elementsUpgradedOutsideLWC = new WeakSet<HTMLElement>();
-let elementBeingUpgradedByLWC = false;
 
-const lifecycleCallbacks = lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-    ? {
-          connectedCallback: connectRootElement,
-          disconnectedCallback: disconnectRootElement,
-          formAssociatedCallback: runFormAssociatedCallback,
-          formDisabledCallback: runFormDisabledCallback,
-          formResetCallback: runFormResetCallback,
-          formStateRestoreCallback: runFormStateRestoreCallback,
-      }
-    : undefined;
+const LIFECYCLE_CALLBACKS = {
+    connectedCallback: connectRootElement,
+    disconnectedCallback: disconnectRootElement,
+    formAssociatedCallback: runFormAssociatedCallback,
+    formDisabledCallback: runFormDisabledCallback,
+    formResetCallback: runFormResetCallback,
+    formStateRestoreCallback: runFormStateRestoreCallback,
+};
+
+const cachedConstructors = new Map<string, CustomElementConstructor>();
+const nativeLifecycleElementsToUpgradedByLWC = new WeakMap<HTMLElement, boolean>();
+
+let elementBeingUpgradedByLWC = false;
 
 // Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
@@ -39,34 +39,34 @@ const createUpgradableConstructor = () => {
     class UpgradableConstructor extends HTMLElement {
         static formAssociated = true;
 
-        constructor(upgradeCallback: LifecycleCallback) {
+        constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
             super();
+
+            if (useNativeLifecycle) {
+                // When in native lifecycle mode, we need to keep track of instances that were created outside LWC
+                // (i.e. not created by `lwc.createElement()`). If the element uses synthetic lifecycle, then we don't
+                // need to track this.
+                nativeLifecycleElementsToUpgradedByLWC.set(this, elementBeingUpgradedByLWC);
+            }
+
             // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
-            // then elementBeingUpgraded will be false
+            // then elementBeingUpgradedByLWC will be false
             if (elementBeingUpgradedByLWC) {
                 upgradeCallback(this);
-            } else if (!isUndefined(lifecycleCallbacks)) {
-                // If this element has any lifecycle callbacks, then we need to keep track of
-                // instances that were created outside LWC (i.e. not created by `lwc.createElement()`).
-                // If the element has no connected or disconnected callbacks, then we don't need to track this.
-                elementsUpgradedOutsideLWC.add(this);
-
-                // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
-                // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
             }
+            // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
+            // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
         }
     }
 
-    // Do not unnecessarily add a connectedCallback/disconnectedCallback/etc., as it introduces perf overhead
-    // See: https://github.com/salesforce/lwc/pull/3162#issuecomment-1311851174
-    if (!isUndefined(lifecycleCallbacks)) {
-        for (const [propName, callback] of entries(lifecycleCallbacks)) {
-            (UpgradableConstructor.prototype as any)[propName] = function () {
-                if (!elementsUpgradedOutsideLWC.has(this)) {
-                    callback(this);
-                }
-            };
-        }
+    for (const [propName, callback] of entries(LIFECYCLE_CALLBACKS)) {
+        (UpgradableConstructor.prototype as any)[propName] = function () {
+            // If the element is in the WeakMap (i.e. it's marked as native lifecycle), and if it was upgraded by LWC,
+            // then it can use native lifecycle
+            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
+                callback(this);
+            }
+        };
     }
 
     return UpgradableConstructor;
@@ -88,12 +88,16 @@ export function getUpgradableConstructor(tagName: string) {
     return UpgradableConstructor;
 }
 
-export const createCustomElement = (tagName: string, upgradeCallback: LifecycleCallback) => {
+export const createCustomElement = (
+    tagName: string,
+    upgradeCallback: LifecycleCallback,
+    useNativeLifecycle: boolean
+) => {
     const UpgradableConstructor = getUpgradableConstructor(tagName);
 
     elementBeingUpgradedByLWC = true;
     try {
-        return new UpgradableConstructor(upgradeCallback);
+        return new UpgradableConstructor(upgradeCallback, useNativeLifecycle);
     } finally {
         elementBeingUpgradedByLWC = false;
     }
