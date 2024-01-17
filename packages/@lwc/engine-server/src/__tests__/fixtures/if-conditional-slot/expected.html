@@ -1,10 +1,10 @@
 <x-if-conditional-slot>
-  <template shadowroot="open">
+  <template shadowrootmode="open">
     <div class="active-if-blocks">
       <x-parent>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
               Should be active when true === true
               <slot name="trueslot">
               </slot>
@@ -13,14 +13,14 @@
               </slot>
             </template>
             <x-child class="slotted-child" slot="trueslot">
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
               Testing if:true
             </x-child>
             <x-child class="slotted-child" slot="falseslot">
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
@@ -32,19 +32,19 @@
     </div>
     <div class="inactive-if-blocks">
       <x-parent>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <x-slotted>
-            <template shadowroot="open">
+            <template shadowrootmode="open">
             </template>
             <x-child class="slotted-child" slot="trueslot">
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
               Testing if:true
             </x-child>
             <x-child class="slotted-child" slot="falseslot">
-              <template shadowroot="open">
+              <template shadowrootmode="open">
                 <slot>
                 </slot>
               </template>
