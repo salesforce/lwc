@@ -9,7 +9,6 @@ import {
     assert,
     create,
     isArray,
-    isFunction,
     isNull,
     isTrue,
     isUndefined,
@@ -202,14 +201,6 @@ export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
 
 export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isFunction(html),
-            `Invalid template returned by the render() method of ${
-                vm.tagName
-            }. It must return an imported template (e.g.: \`import html from "./${
-                vm.def.name
-            }.html"\`), instead, it has returned: ${toString(html)}.`
-        );
         // in dev-mode, we support hot swapping of templates, which means that
         // the component instance might be attempting to use an old version of
         // the template, while internally, we have a replacement for it.
