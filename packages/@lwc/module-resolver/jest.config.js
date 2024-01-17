@@ -11,5 +11,5 @@ module.exports = {
     displayName: 'lwc-module-resolver',
 
     setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup-test.ts'],
-    coveragePathIgnorePatterns: ['<rootDir>/scripts/'],
+    coveragePathIgnorePatterns: [...BASE_CONFIG.coveragePathIgnorePatterns, '<rootDir>/scripts/'],
 };

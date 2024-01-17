@@ -14,15 +14,11 @@ import {
     getPrototypeOf,
     isUndefined,
     setPrototypeOf,
-    isObject,
-    isNull,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
-import { getComponentTag } from '../shared/format';
 
-import { LightningElement } from './base-lightning-element';
-import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
+import { getAssociatedVMIfPresent } from './vm';
 import { assertNotProd } from './utils';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
@@ -267,41 +263,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
     };
 }
 
-function getLightningElementPrototypeRestrictionsDescriptors(
-    proto: typeof LightningElement.prototype
-): PropertyDescriptorMap {
-    assertNotProd(); // this method should never leak to prod
-
-    const originalDispatchEvent = proto.dispatchEvent;
-
-    return {
-        dispatchEvent: generateDataDescriptor({
-            value(this: LightningElement, event: Event): boolean {
-                const vm = getAssociatedVM(this);
-
-                if (!isNull(event) && isObject(event)) {
-                    const { type } = event;
-
-                    if (!/^[a-z][a-z0-9_]*$/.test(type)) {
-                        logError(
-                            `Invalid event type "${type}" dispatched in element ${getComponentTag(
-                                vm
-                            )}.` +
-                                ` Event name must start with a lowercase letter and followed only lowercase` +
-                                ` letters, numbers, and underscores`,
-                            vm
-                        );
-                    }
-                }
-
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                return originalDispatchEvent.apply(this, arguments);
-            },
-        }),
-    };
-}
-
 // This routine will prevent access to certain properties on a shadow root instance to guarantee
 // that all components will work fine in IE11 and other browsers without shadow dom support.
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
@@ -312,10 +273,4 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
     const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
     const elmProto = getPrototypeOf(elm);
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
-}
-
-export function patchLightningElementPrototypeWithRestrictions(
-    proto: typeof LightningElement.prototype
-) {
-    defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }
