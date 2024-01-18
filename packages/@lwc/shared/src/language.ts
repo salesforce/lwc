@@ -70,6 +70,7 @@ const {
     split: StringSplit,
     slice: StringSlice,
     toLowerCase: StringToLowerCase,
+    trim: StringTrim,
 } = String.prototype;
 
 export {
@@ -117,6 +118,7 @@ export {
     StringSplit,
     StringToLowerCase,
     StringFromCharCode,
+    StringTrim,
 };
 
 export function isUndefined(obj: any): obj is undefined {

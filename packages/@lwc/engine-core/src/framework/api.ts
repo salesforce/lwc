@@ -22,6 +22,7 @@ import {
     isTrue,
     isUndefined,
     StringReplace,
+    StringTrim,
     toString,
 } from '@lwc/shared';
 
@@ -733,7 +734,7 @@ function ncls(value: unknown): string {
         }
     }
 
-    return res.trim();
+    return StringTrim.call(res);
 }
 
 const api = ObjectFreeze({
