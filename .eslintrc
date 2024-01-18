@@ -6,16 +6,8 @@
         "sourceType": "module"
     },
 
-    "plugins": [
-        "jest",
-        "@lwc/lwc-internal",
-        "@typescript-eslint",
-        "import"
-    ],
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
-    ],
+    "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended"],
 
     "env": {
         "es6": true
@@ -23,11 +15,7 @@
 
     "rules": {
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": [
-            "error",
-            { "argsIgnorePattern": "^_" }
-        ],
-
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "block-scoped-var": "error",
         "no-alert": "error",
         "no-buffer-constructor": "error",
@@ -41,77 +29,120 @@
         "no-proto": "error",
         "no-prototype-builtins": "error",
         "no-new-require": "error",
-        "no-restricted-properties": ["error", {
-            "object": "arguments",
-            "property": "callee",
-            "message": "arguments.callee is deprecated"
-        }, {
-            "object": "global",
-            "property": "isFinite",
-            "message": "Please use Number.isFinite instead"
-        }, {
-            "object": "self",
-            "property": "isFinite",
-            "message": "Please use Number.isFinite instead"
-        }, {
-            "object": "window",
-            "property": "isFinite",
-            "message": "Please use Number.isFinite instead"
-        }, {
-            "object": "global",
-            "property": "isNaN",
-            "message": "Please use Number.isNaN instead"
-        }, {
-            "object": "self",
-            "property": "isNaN",
-            "message": "Please use Number.isNaN instead"
-        }, {
-            "object": "window",
-            "property": "isNaN",
-            "message": "Please use Number.isNaN instead"
-        }, {
-            "property": "__defineGetter__",
-            "message": "Please use Object.defineProperty instead."
-        }, {
-            "property": "__defineSetter__",
-            "message": "Please use Object.defineProperty instead."
-        }, {
-            "object": "Math",
-            "property": "pow",
-            "message": "Use the exponentiation operator (**) instead."
-        }, {
-            "object": "globalThis",
-            "property": "lwcRuntimeFlags",
-            "message": "Use the bare global lwcRuntimeFlags instead."
-        }],
+        "no-restricted-properties": [
+            "error",
+            {
+                "object": "arguments",
+                "property": "callee",
+                "message": "arguments.callee is deprecated"
+            },
+            {
+                "object": "global",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "self",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "window",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "global",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "object": "self",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "object": "window",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "property": "__defineGetter__",
+                "message": "Please use Object.defineProperty instead."
+            },
+            {
+                "property": "__defineSetter__",
+                "message": "Please use Object.defineProperty instead."
+            },
+            {
+                "object": "Math",
+                "property": "pow",
+                "message": "Use the exponentiation operator (**) instead."
+            },
+            {
+                "object": "globalThis",
+                "property": "lwcRuntimeFlags",
+                "message": "Use the bare global lwcRuntimeFlags instead."
+            }
+        ],
         "no-self-compare": "error",
         "no-undef-init": "error",
         "no-useless-computed-key": "error",
         "no-useless-return": "error",
-        "prefer-const": ["error", {
-            "destructuring": "any",
-            "ignoreReadBeforeAssign": true
-        }],
+        "prefer-const": [
+            "error",
+            {
+                "destructuring": "any",
+                "ignoreReadBeforeAssign": true
+            }
+        ],
         "template-curly-spacing": "error",
         "yoda": "error",
 
         "@lwc/lwc-internal/no-invalid-todo": "error",
         "import/order": [
             "error",
-            { "groups": ["builtin", "external", "internal", "parent", "index", "sibling", "object", "type"] }
+            {
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    "parent",
+                    "index",
+                    "sibling",
+                    "object",
+                    "type"
+                ]
+            }
         ],
-        "no-restricted-imports": ["error", {
-            "name": "@lwc/features",
-            "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
-            "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
-        }]
+        "no-restricted-imports": [
+            "error",
+            {
+                "name": "@lwc/features",
+                "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
+                "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
+            }
+        ],
+        "header/header": [
+            2,
+            "block",
+            [
+                "",
+                {
+                    "pattern": "^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$",
+                    "template": " * Copyright (c) 2024, Salesforce, Inc."
+                },
+                " * All rights reserved.",
+                " * SPDX-License-Identifier: MIT",
+                " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
+                " "
+            ]
+        ]
     },
 
     "overrides": [
         {
-            "files": [
-                "**/packages/lwc/**"
-            ],
+            "files": ["**/packages/lwc/**"],
             "rules": {
                 "no-restricted-imports": "off"
             }
@@ -129,11 +160,7 @@
             }
         },
         {
-            "files": [
-                "**/__tests__/**",
-                "**/__mocks__/**",
-                "**/@lwc/integration-karma/**"
-            ],
+            "files": ["**/__tests__/**", "**/__mocks__/**", "**/@lwc/integration-karma/**"],
 
             "env": {
                 "jest": true,
@@ -149,9 +176,7 @@
             }
         },
         {
-            "files": [
-                "**/@lwc/integration-tests/**"
-            ],
+            "files": ["**/@lwc/integration-tests/**"],
 
             "globals": {
                 "$": true,
@@ -159,11 +184,7 @@
             }
         },
         {
-            "files": [
-                "./*.js",
-                "**/scripts/**",
-                "**/jest.config.js"
-            ],
+            "files": ["./*.js", "**/scripts/**", "**/jest.config.js"],
 
             "env": {
                 "node": true,
@@ -175,15 +196,27 @@
             }
         },
         {
-            "files": [
-                "**/perf-benchmarks/**"
-            ],
+            "files": ["**/perf-benchmarks/**"],
 
             "globals": {
                 "after": true,
                 "before": true,
                 "benchmark": true,
                 "run": true
+            }
+        },
+        // NOTE: This should match the ignored patterns in /scripts/check-license-headers.js
+        {
+            "files": [
+                "**/playground/**",
+                "**/fixtures/**",
+                "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
+                "packages/@lwc/integration-karma/test/**",
+                "packages/@lwc/integration-karma/test-hydration/**",
+                "packages/@lwc/engine-server/src/__tests__/modules/**"
+            ],
+            "rules": {
+                "header/header": "off"
             }
         }
     ]

@@ -102,6 +102,7 @@ const GENERIC_IGNORED_PATTERNS = [
     '^MANIFEST\\.in$',
 ].map(createRegExp);
 
+// NOTE: Ignored JS files match the overrides for "header/header" in /.eslintrc
 const CUSTOM_IGNORED_PATTERNS = [
     // add anything repo specific here
     'playground/',
