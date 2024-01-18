@@ -1,11 +1,18 @@
 import { wire, LightningElement } from "lwc";
 import { getFoo, getBar } from "data-service";
-const key1 = Symbol.for("key");
-export default class Test extends LightningElement {
-  @wire(getBar, { [key1]: "$prop1", key2: ["fixed", "array"] })
-  wiredBar;
 
-  // eslint-disable-next-line no-useless-computed-key
-  @wire(getFoo, { ["key1"]: "$prop1", key2: ["fixed", "array"] })
-  wiredFoo;
+const symbol = Symbol.for("key");
+export default class Test extends LightningElement {
+  @wire(getFoo, {
+    [symbol]: '$prop'
+  })
+  wiredIdentifier;
+  
+  @wire(getBar, {
+    ['computedStringLiteral']: '$prop',
+    [321]: '$prop',
+    [null]: '$prop',
+    [undefined]: '$prop'
+  })
+  wiredPrimitives;
 }
