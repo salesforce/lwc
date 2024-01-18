@@ -90,6 +90,10 @@ export const enum APIFeature {
      * rather than synthetic events.
      */
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    /**
+     * If enabled, add support for complex class expressions in the template.
+     */
+    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
 }
 
 export function isAPIFeatureEnabled(
@@ -107,6 +111,7 @@ export function isAPIFeatureEnabled(
             return apiVersion >= APIVersion.V60_248_SPRING_24;
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
+        case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
     }
 }
