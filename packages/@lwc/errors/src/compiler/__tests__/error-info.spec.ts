@@ -19,7 +19,7 @@ it('GENERIC_COMPILER_ERROR should be an error info object', () => {
 describe.each(Object.entries(errors))('%s errors', (_key, map) => {
     it('labels should all be UPPER_SNAKE_CASE', () => {
         Object.keys(map).forEach((label) => {
-            expect(label).toMatch(/[A-Z](?:_[A-Z]+?)*?$/);
+            expect(label).toMatch(/^[A-Z]+(?:_[A-Z]+?)*?$/);
         });
     });
     it.each(Object.entries(map))('%s should be an error info object', (_label, info) => {
