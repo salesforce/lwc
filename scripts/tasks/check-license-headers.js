@@ -131,10 +131,8 @@ function needsCopyrightHeader(file) {
     return contents.trim().length > 0 && !COPYRIGHT_HEADER_RE.test(contents);
 }
 
-function check() {
-    const allFiles = execSync('git ls-files', { encoding: 'utf-8' }).trim().split('\n');
-
-    const invalidFiles = allFiles.filter(
+function check(files) {
+    const invalidFiles = files.filter(
         (file) =>
             INCLUDED_PATTERNS.some((pattern) => pattern.test(file)) &&
             !IGNORED_PATTERNS.some((pattern) => pattern.test(file)) &&
@@ -151,4 +149,9 @@ Please include the header or add an exception for the file in \`scripts/check-li
     }
 }
 
-check();
+// Check provided files, if any, otherwise check all files tracked by git
+check(
+    process.argv.length > 2
+        ? process.argv.slice(2)
+        : execSync('git ls-files', { encoding: 'utf-8' }).trim().split('\n')
+);
