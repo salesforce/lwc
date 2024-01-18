@@ -50,6 +50,8 @@ import {
     VText,
     VStaticPart,
     VStaticPartData,
+    isVBaseElement,
+    isVStatic,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -92,6 +94,7 @@ function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
         fragment,
         owner,
         parts,
+        slotAssignment: undefined,
     };
 
     return vnode;
@@ -160,7 +163,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
-    const { key } = data;
+    const { key, slotAssignment } = data;
 
     const vnode: VElement = {
         type: VNodeType.Element,
@@ -170,6 +173,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         elm: undefined,
         key,
         owner: vmBeingRendered,
+        slotAssignment,
     };
 
     return vnode;
@@ -207,6 +211,10 @@ function s(
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
+
+    const vmBeingRendered = getVMBeingRendered()!;
+    const { renderMode, apiVersion } = vmBeingRendered;
+
     if (
         !isUndefined(slotset) &&
         !isUndefined(slotset.slotAssignments) &&
@@ -236,7 +244,6 @@ function s(
                 }
                 // If the passed slot content is factory, evaluate it and add the produced vnodes
                 if (assignedNodeIsScopedSlot) {
-                    const vmBeingRenderedInception = getVMBeingRendered();
                     // Evaluate in the scope of the slot content's owner
                     // if a slotset is provided, there will always be an owner. The only case where owner is
                     // undefined is for root components, but root components cannot accept slotted content
@@ -249,19 +256,34 @@ function s(
                             ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
                         });
                     } finally {
-                        setVMBeingRendered(vmBeingRenderedInception);
+                        setVMBeingRendered(vmBeingRendered);
                     }
                 } else {
+                    // This block is for standard slots (non-scoped slots)
+                    let clonedVNode;
+                    if (
+                        renderMode === RenderMode.Light &&
+                        isAPIFeatureEnabled(APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING, apiVersion) &&
+                        (isVBaseElement(vnode) || isVStatic(vnode)) &&
+                        // We only need to copy the vnodes when the slot assignment changes, copying every time causes issues with
+                        // disconnected/connected callback firing.
+                        vnode.slotAssignment !== data.slotAssignment
+                    ) {
+                        // When the light DOM slot assignment (slot attribute) changes we can't use the same reference
+                        // to the vnode because the current way the diffing algo works, it will replace the original reference
+                        // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
+                        // Creating a copy of the vnode to preserve a reference to the previous host element.
+                        clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
+                    }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    ArrayPush.call(newChildren, vnode);
+                    ArrayPush.call(newChildren, clonedVNode ?? vnode);
                 }
             }
         }
         children = newChildren;
     }
-    const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode, apiVersion } = vmBeingRendered;
+    const { shadowMode } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
@@ -324,7 +346,7 @@ function c(
             });
         }
     }
-    const { key } = data;
+    const { key, slotAssignment } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
@@ -333,6 +355,7 @@ function c(
         children,
         elm,
         key,
+        slotAssignment,
 
         ctor: Ctor,
         owner: vmBeingRendered,

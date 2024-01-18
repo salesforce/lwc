@@ -4,9 +4,7 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  attrs: {
-    slot: "slotname1",
-  },
+  slotAssignment: "slotname1",
   key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {

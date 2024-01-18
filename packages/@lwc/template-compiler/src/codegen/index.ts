@@ -547,6 +547,14 @@ function transform(codeGen: CodeGen): t.Expression {
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
+                } else if (name === 'slot') {
+                    let slotValue;
+                    if (isExpression(value)) {
+                        slotValue = codeGen.bindExpression(value);
+                    } else {
+                        slotValue = isStringLiteral(value) ? t.literal(value.value) : t.literal('');
+                    }
+                    data.push(t.property(t.identifier('slotAssignment'), slotValue));
                 } else {
                     rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
                 }
