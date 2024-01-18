@@ -184,9 +184,8 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                         // RegExp are not primitives, so they are not allowed
                         !t.isRegExpLiteral(p.key)
                     ) {
-                        return t.stringLiteral(
-                            t.isNullLiteral(p.key) ? 'null' : String(p.key.value)
-                        );
+                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
+                        return t.stringLiteral(String(value));
                     }
                     // If it's not an identifier or primitive literal then it's a computed expression
                     throw new TypeError(
