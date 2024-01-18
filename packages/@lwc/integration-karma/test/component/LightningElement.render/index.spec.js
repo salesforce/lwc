@@ -87,6 +87,6 @@ it('supports returning different templates', () => {
 it('throws an error when render() returns an invalid value', () => {
     const elm = createElement('x-render-invalid', { is: RenderInvalid });
     expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-        /Invalid template returned by the render\(\) method of x-render-invalid/
+        /Invalid template returned by the render\(\) method on x-render-invalid/
     );
 });

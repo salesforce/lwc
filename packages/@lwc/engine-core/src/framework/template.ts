@@ -9,6 +9,7 @@ import {
     assert,
     create,
     isArray,
+    isFunction,
     isNull,
     isTrue,
     isUndefined,
@@ -224,6 +225,16 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
+                    if (!isFunction(html)) {
+                        throw new TypeError(
+                            `Invalid template returned by the render() method on ${
+                                vm.tagName
+                            }. It must return an imported template (e.g.: \`import html from "./${
+                                vm.def.name
+                            }.html"\`), instead, it has returned: ${toString(html)}.`
+                        );
+                    }
+
                     if (process.env.NODE_ENV !== 'production') {
                         validateLightDomTemplate(html, vm);
                     }
