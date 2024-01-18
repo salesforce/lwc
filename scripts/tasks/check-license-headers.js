@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -124,7 +124,8 @@ const INCLUDED_PATTERNS = [
     /\.[^/]+$/,
 ];
 
-const COPYRIGHT_HEADER_RE = /Copyright (\(c\))? [0-9]{4}, (s|S)alesforce.com, inc./;
+// In 2022, Salesforce changed from "salesforce.com, inc." to "Salesforce, Inc."
+const COPYRIGHT_HEADER_RE = /Copyright (\(c\))? 20[0-9]{2}, (s|S)alesforce(\.com)?, [iI]nc./;
 
 function needsCopyrightHeader(file) {
     const contents = getFileContents(file);
