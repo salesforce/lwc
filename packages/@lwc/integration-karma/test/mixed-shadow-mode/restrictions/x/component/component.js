@@ -1,8 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
 export default class extends LightningElement {
-    static shadowSupportMode = 'any';
-
     @api
     setInnerHtmlOnShadowRoot() {
         this.template.innerHTML = '<div></div>';

@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
 
 export default class Child extends LightningElement {
-    static shadowSupportMode = 'any';
+    static shadowSupportMode = 'native';
 }

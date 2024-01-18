@@ -24,8 +24,8 @@ describe('ENABLE_MIXED_SHADOW_MODE', () => {
         setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
 
-    it('should be configured as "any" (sanity)', () => {
-        expect(Valid.shadowSupportMode === 'any').toBeTrue();
+    it('should be configured as "native" (sanity)', () => {
+        expect(Valid.shadowSupportMode === 'native').toBeTrue();
     });
 
     it('should enable mixed shadow mode', () => {
