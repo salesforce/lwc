@@ -16,6 +16,7 @@
         "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
+        "check-license-headers": "node ./scripts/tasks/check-license-headers.js",
         "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
         "test": "jest --config ./scripts/jest/root.config.js",
         "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
@@ -70,7 +71,7 @@
     "lint-staged": {
         "**/*.{js,mjs,ts}": [
             "eslint",
-            "node ./scripts/tasks/check-license-headers"
+            "yarn check-license-headers"
         ],
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js"
