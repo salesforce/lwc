@@ -9,7 +9,6 @@ import {
     assert,
     create,
     isArray,
-    isFunction,
     isNull,
     isTrue,
     isUndefined,
@@ -225,7 +224,8 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
-                    if (!isFunction(html)) {
+                    // Check that the template was built by the compiler.
+                    if (!isTemplateRegistered(html)) {
                         throw new TypeError(
                             `Invalid template returned by the render() method on ${
                                 vm.tagName
@@ -246,17 +246,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                         // generated from a different template, because they could have similar IDs,
                         // and snabbdom just rely on the IDs.
                         resetComponentRoot(vm);
-                    }
-
-                    // Check that the template was built by the compiler.
-                    if (!isTemplateRegistered(html)) {
-                        throw new TypeError(
-                            `Invalid template returned by the render() method on ${
-                                vm.tagName
-                            }. It must return an imported template (e.g.: \`import html from "./${
-                                vm.def.name
-                            }.html"\`), instead, it has returned: ${toString(html)}.`
-                        );
                     }
 
                     vm.cmpTemplate = html;
