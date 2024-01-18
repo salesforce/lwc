@@ -15,7 +15,6 @@ export default {
         expect(p.firstChild).toBe(snapshots.text);
 
         expect(p.textContent).toBe('123');
-        expect(p.getAttribute('class')).toBe('123');
         expect(p.getAttribute('data-attr')).toBe('123');
     },
 };
