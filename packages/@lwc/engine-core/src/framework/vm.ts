@@ -508,32 +508,24 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
     const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
-    // If ENABLE_FORCE_SHADOW_MIGRATE_MODE is true, then ShadowMode.Synthetic here will mean "force-migrate" mode.
     if (isSyntheticShadowDefined || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (
-            lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
-            def.shadowSupportMode === ShadowSupportMode.Native
-        ) {
-            if (def.shadowSupportMode === ShadowSupportMode.Native) {
+        } else if (def.shadowSupportMode === ShadowSupportMode.Native) {
+            shadowMode = ShadowMode.Native;
+        } else {
+            const shadowAncestor = getNearestShadowAncestor(owner);
+            if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+                // Transitive support for native Shadow DOM. A component in native mode
+                // transitively opts all of its descendants into native.
                 shadowMode = ShadowMode.Native;
             } else {
-                const shadowAncestor = getNearestShadowAncestor(owner);
-                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
-                    shadowMode = ShadowMode.Native;
-                } else {
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = ShadowMode.Synthetic;
-                }
+                // Synthetic if neither this component nor any of its ancestors are configured
+                // to be native.
+                shadowMode = ShadowMode.Synthetic;
             }
-        } else {
-            shadowMode = ShadowMode.Synthetic;
         }
     } else {
         // Native if the synthetic shadow polyfill is unavailable.
