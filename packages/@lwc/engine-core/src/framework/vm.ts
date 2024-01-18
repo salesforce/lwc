@@ -94,7 +94,6 @@ export const enum ShadowMode {
 }
 
 export const enum ShadowSupportMode {
-    Any = 'any',
     Default = 'reset',
     Native = 'native',
 }
@@ -519,10 +518,7 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
             lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
             def.shadowSupportMode === ShadowSupportMode.Native
         ) {
-            if (
-                def.shadowSupportMode === ShadowSupportMode.Any ||
-                def.shadowSupportMode === ShadowSupportMode.Native
-            ) {
+            if (def.shadowSupportMode === ShadowSupportMode.Native) {
                 shadowMode = ShadowMode.Native;
             } else {
                 const shadowAncestor = getNearestShadowAncestor(owner);
