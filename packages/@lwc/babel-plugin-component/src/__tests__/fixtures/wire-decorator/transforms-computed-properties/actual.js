@@ -10,6 +10,7 @@ export default class Test extends LightningElement {
   
   @wire(getBar, {
     ['computedStringLiteral']: '$prop',
+    [123n]: '$prop',
     [321]: '$prop',
     [null]: '$prop',
     [undefined]: '$prop'

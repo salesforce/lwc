@@ -20,10 +20,11 @@ _registerDecorators(Test, {
     },
     wiredPrimitives: {
       adapter: getBar,
-      dynamic: ["computedStringLiteral", "321", "null", undefined],
+      dynamic: ["computedStringLiteral", "123", "321", "null", undefined],
       config: function ($cmp) {
         return {
           ['computedStringLiteral']: $cmp.prop,
+          [123n]: $cmp.prop,
           [321]: $cmp.prop,
           [null]: $cmp.prop,
           [undefined]: $cmp.prop
