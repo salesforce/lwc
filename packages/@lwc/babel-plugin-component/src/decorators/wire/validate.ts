@@ -111,7 +111,7 @@ function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPlu
         if (key.isIdentifier()) {
             // Only allow identifiers that originated from a `const` declaration
             const binding = key.scope.getBinding(key.node.name);
-            // TODO: Investigate allowing imported constants
+            // TODO [#3956]: Investigate allowing imported constants
             if (binding?.kind === 'const') continue;
             // By default, the identifier `undefined` has no binding (when it's actually undefined),
             // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
@@ -121,7 +121,7 @@ function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPlu
             if (key.isTemplateLiteral()) {
                 // A template literal is not guaranteed to always result in the same value
                 // (e.g. `${Math.random()}`), so we disallow them entirely.
-                // TODO: Investigate allowing template literals
+                // TODO [#3956]: Investigate allowing template literals
                 throw generateError(
                     key,
                     {
