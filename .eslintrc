@@ -10,7 +10,8 @@
         "jest",
         "@lwc/lwc-internal",
         "@typescript-eslint",
-        "import"
+        "import",
+        "header"
     ],
     "extends": [
         "eslint:recommended",
@@ -104,7 +105,22 @@
             "name": "@lwc/features",
             "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
             "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
-        }]
+        }],
+        "header/header": [
+            2,
+            "block",
+            [
+              "",
+              {
+                "pattern": "^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$",
+                "template": " * Copyright (c) 2024, Salesforce, Inc."
+              },
+              " * All rights reserved.",
+              " * SPDX-License-Identifier: MIT",
+              " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
+              " "
+            ]
+          ]
     },
 
     "overrides": [
@@ -185,6 +201,16 @@
                 "benchmark": true,
                 "run": true
             }
-        }
+        },
+        {
+            "files": [
+              "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
+              "packages/@lwc/integration-karma/test/**",
+              "packages/@lwc/integration-karma/test-hydration/**"
+            ],
+            "rules": {
+              "header/header": "off"
+            }
+          }
     ]
 }
