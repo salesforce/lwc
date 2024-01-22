@@ -24,7 +24,7 @@ it('should throw if a component tries to use a template that is not registered',
     // This will always throw synchronously because the component has no API version, and thus defaults
     // to the oldest (i.e. synthetic custom element lifecycle events)
     expect(func).toThrowError(TypeError);
-    expect(func).toThrowError(/Invalid template returned by the render\(\) method on \[.*\]\./);
+    expect(func).toThrowError(/Invalid template returned by the render\(\) method on x-test/);
 });
 
 it('should not throw if the template is registered first', () => {

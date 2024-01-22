@@ -9,7 +9,6 @@ import {
     assert,
     create,
     isArray,
-    isFunction,
     isNull,
     isTrue,
     isUndefined,
@@ -202,12 +201,6 @@ export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
 
 export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isFunction(html),
-            `evaluateTemplate() second argument must be an imported template instead of ${toString(
-                html
-            )}`
-        );
         // in dev-mode, we support hot swapping of templates, which means that
         // the component instance might be attempting to use an old version of
         // the template, while internally, we have a replacement for it.
@@ -231,6 +224,17 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
+                    // Check that the template was built by the compiler.
+                    if (!isTemplateRegistered(html)) {
+                        throw new TypeError(
+                            `Invalid template returned by the render() method on ${
+                                vm.tagName
+                            }. It must return an imported template (e.g.: \`import html from "./${
+                                vm.def.name
+                            }.html"\`), instead, it has returned: ${toString(html)}.`
+                        );
+                    }
+
                     if (process.env.NODE_ENV !== 'production') {
                         validateLightDomTemplate(html, vm);
                     }
@@ -242,15 +246,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                         // generated from a different template, because they could have similar IDs,
                         // and snabbdom just rely on the IDs.
                         resetComponentRoot(vm);
-                    }
-
-                    // Check that the template was built by the compiler.
-                    if (!isTemplateRegistered(html)) {
-                        throw new TypeError(
-                            `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
-                                vm.def.name
-                            }.html"\`), instead, it has returned: ${toString(html)}.`
-                        );
                     }
 
                     vm.cmpTemplate = html;
