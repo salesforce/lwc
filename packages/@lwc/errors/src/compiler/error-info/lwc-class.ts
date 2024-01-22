@@ -189,15 +189,32 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS: {
         code: 1131,
         message: '@wire identifier cannot contain computed properties',
         level: DiagnosticLevel.Error,
         url: '',
     },
+
     FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS: {
         code: 1132,
         message: '@wire identifier cannot contain nested member expressions',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL: {
+        code: 1199,
+        message:
+            'Cannot use a template literal as a computed property key. Instead, use a string or extract the value to a constant.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL: {
+        code: 1200,
+        message: 'Computed property in @wire config must be a constant or primitive literal.',
         level: DiagnosticLevel.Error,
         url: '',
     },

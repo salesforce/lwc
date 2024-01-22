@@ -1,0 +1,10 @@
+{
+    "message": "LWC1199: Cannot use a template literal as a computed property key. Instead, use a string or extract the value to a constant.",
+    "loc": {
+        "line": 4,
+        "column": 19,
+        "start": 157,
+        "length": 6
+    },
+    "filename": "test.js"
+}

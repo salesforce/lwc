@@ -1,33 +1,33 @@
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
 import { getFoo, getBar } from "data-service";
-const key1 = Symbol.for("key");
+const symbol = Symbol.for("key");
 class Test extends LightningElement {
-  wiredBar;
-
-  // eslint-disable-next-line no-useless-computed-key
-  wiredFoo;
+  wiredIdentifier;
+  wiredPrimitives;
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {
-    wiredBar: {
-      adapter: getBar,
-      dynamic: [key1],
+    wiredIdentifier: {
+      adapter: getFoo,
+      dynamic: [symbol],
       config: function ($cmp) {
         return {
-          key2: ["fixed", "array"],
-          [key1]: $cmp.prop1
+          [symbol]: $cmp.prop
         };
       }
     },
-    wiredFoo: {
-      adapter: getFoo,
-      dynamic: ["key1"],
+    wiredPrimitives: {
+      adapter: getBar,
+      dynamic: ["computedStringLiteral", "123", "321", "null", undefined],
       config: function ($cmp) {
         return {
-          key2: ["fixed", "array"],
-          ["key1"]: $cmp.prop1
+          ['computedStringLiteral']: $cmp.prop,
+          [123n]: $cmp.prop,
+          [321]: $cmp.prop,
+          [null]: $cmp.prop,
+          [undefined]: $cmp.prop
         };
       }
     }

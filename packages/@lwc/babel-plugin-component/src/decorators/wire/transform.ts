@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -175,12 +175,22 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
 
             if (wiredValue.params) {
                 const dynamicParamNames = wiredValue.params.map((p) => {
-                    const value = t.isIdentifier(p.key)
-                        ? p.key.name
-                        : (p.key as types.StringLiteral).value;
-                    return p.computed && t.isIdentifier(p.key)
-                        ? t.identifier(value)
-                        : t.stringLiteral(value);
+                    if (t.isIdentifier(p.key)) {
+                        return p.computed ? t.identifier(p.key.name) : t.stringLiteral(p.key.name);
+                    } else if (
+                        t.isLiteral(p.key) &&
+                        // Template literals may contain expressions, so they are not allowed
+                        !t.isTemplateLiteral(p.key) &&
+                        // RegExp are not primitives, so they are not allowed
+                        !t.isRegExpLiteral(p.key)
+                    ) {
+                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
+                        return t.stringLiteral(String(value));
+                    }
+                    // If it's not an identifier or primitive literal then it's a computed expression
+                    throw new TypeError(
+                        `Expected object property key to be an identifier or a literal, but instead saw "${p.key.type}".`
+                    );
                 });
                 wireConfig.push(
                     t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
