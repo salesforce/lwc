@@ -18,7 +18,6 @@ const { LWC_VERSION } = require('@lwc/shared');
 const {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     SYNTHETIC_SHADOW_ENABLED,
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     NODE_ENV_FOR_TEST,
     API_VERSION,
@@ -37,7 +36,6 @@ function createEnvFile() {
         `
         window.lwcRuntimeFlags = {
             ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-            ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: ${ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE}
         };
         window.process = {
             env: {

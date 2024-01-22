@@ -9,12 +9,9 @@ import fs from 'fs';
 import path from 'path';
 
 import { rollup, RollupLog } from 'rollup';
-// @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
-import { setFeatureFlagForTest } from '../index';
-import type { FeatureFlagMap } from '@lwc/features';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -206,26 +203,6 @@ function testFixtures() {
     );
 }
 
-// Run the fixtures with both synthetic and native custom element lifecycle.
-// The expectation is that the fixtures will be exactly the same for both.
 describe('fixtures', () => {
-    describe('synthetic custom element lifecycle', () => {
-        testFixtures();
-    });
-
-    function testWithFeatureFlagEnabled(flagName: keyof FeatureFlagMap) {
-        beforeEach(() => {
-            setFeatureFlagForTest(flagName, true);
-        });
-
-        afterEach(() => {
-            setFeatureFlagForTest(flagName, false);
-        });
-
-        testFixtures();
-    }
-
-    describe('native custom element lifecycle', () => {
-        testWithFeatureFlagEnabled('ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE');
-    });
+    testFixtures();
 });

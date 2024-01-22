@@ -1,8 +1,16 @@
 <template>
     <section>
         <ns-cmp>
+            <p>Default Slot No Slot Attribute</p>
+            <p slot="">Slot Empty String Attribute</p>
+            <p slot=true>Slot Boolean Attribute</p>
+            <p slot={slot.name}>Dynamic Slot Content</p>
+            <p slot={slotVariable}>Variable As Slot Assignment</p>
             <p slot="header">Header Slot Content</p>
             <p slot>Default Content</p>
+            <p slot=undefined>Undefined Slot Content</p>
+            <p slot=null>Null Slot Content</p>
+            <p slot>Empty slot value</p>
         </ns-cmp>
     </section>
 </template>

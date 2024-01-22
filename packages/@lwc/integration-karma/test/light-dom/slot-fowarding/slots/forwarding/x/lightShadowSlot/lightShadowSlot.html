@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <x-shadow-leaf data-id="light-shadow-leaf">
+        <!-- Note upper and lower have mapping swapped here -->
+        <slot slot="lower" name="upper"></slot>
+        <slot slot="upper" name="lower"></slot>
+        <!-- Note default slot is mapped to a new slot name -->
+        <slot slot="defaultSlotReassigned">Default slot not yet forwarded</slot>
+    </x-shadow-leaf>
+</template>

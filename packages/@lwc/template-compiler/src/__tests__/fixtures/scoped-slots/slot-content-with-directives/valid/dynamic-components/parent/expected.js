@@ -4,21 +4,15 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  attrs: {
-    slot: "header",
-  },
+  slotAssignment: "header",
   key: 1,
 };
 const stc2 = {
-  attrs: {
-    slot: "body",
-  },
+  slotAssignment: "body",
   key: 2,
 };
 const stc3 = {
-  attrs: {
-    slot: "footer",
-  },
+  slotAssignment: "footer",
   key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
