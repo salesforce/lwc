@@ -69,7 +69,6 @@
         "typescript": "5.3.3"
     },
     "lint-staged": {
-        "*": "yarn check-license-headers",
         "**/*.{js,mjs,ts}": "eslint",
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js"

@@ -205,7 +205,6 @@
                 "run": true
             }
         },
-        // NOTE: This should match the ignored patterns in /scripts/check-license-headers.js
         {
             "files": [
                 "**/playground/**",
