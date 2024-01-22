@@ -209,8 +209,7 @@
             "files": [
                 "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
                 "packages/@lwc/integration-karma/test/**",
-                "packages/@lwc/integration-karma/test-hydration/**",
-                "packages/@lwc/engine-server/src/__tests__/modules/**"
+                "packages/@lwc/integration-karma/test-hydration/**"
             ],
             "rules": {
                 "header/header": "off"
