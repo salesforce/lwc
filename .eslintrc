@@ -1,219 +1,216 @@
 {
-  "root": true,
+    "root": true,
 
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "sourceType": "module"
-  },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "sourceType": "module"
+    },
 
-  "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended"],
-
-  "env": {
-    "es6": true
-  },
-
-  "rules": {
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "block-scoped-var": "error",
-    "no-alert": "error",
-    "no-buffer-constructor": "error",
-    "no-console": "error",
-    "no-eval": "error",
-    "no-extend-native": "error",
-    "no-extra-bind": "error",
-    "no-extra-label": "error",
-    "no-iterator": "error",
-    "no-lone-blocks": "error",
-    "no-proto": "error",
-    "no-prototype-builtins": "error",
-    "no-new-require": "error",
-    "no-restricted-properties": [
-      "error",
-      {
-        "object": "arguments",
-        "property": "callee",
-        "message": "arguments.callee is deprecated"
-      },
-      {
-        "object": "global",
-        "property": "isFinite",
-        "message": "Please use Number.isFinite instead"
-      },
-      {
-        "object": "self",
-        "property": "isFinite",
-        "message": "Please use Number.isFinite instead"
-      },
-      {
-        "object": "window",
-        "property": "isFinite",
-        "message": "Please use Number.isFinite instead"
-      },
-      {
-        "object": "global",
-        "property": "isNaN",
-        "message": "Please use Number.isNaN instead"
-      },
-      {
-        "object": "self",
-        "property": "isNaN",
-        "message": "Please use Number.isNaN instead"
-      },
-      {
-        "object": "window",
-        "property": "isNaN",
-        "message": "Please use Number.isNaN instead"
-      },
-      {
-        "property": "__defineGetter__",
-        "message": "Please use Object.defineProperty instead."
-      },
-      {
-        "property": "__defineSetter__",
-        "message": "Please use Object.defineProperty instead."
-      },
-      {
-        "object": "Math",
-        "property": "pow",
-        "message": "Use the exponentiation operator (**) instead."
-      },
-      {
-        "object": "globalThis",
-        "property": "lwcRuntimeFlags",
-        "message": "Use the bare global lwcRuntimeFlags instead."
-      }
+    "plugins": [
+        "jest",
+        "@lwc/lwc-internal",
+        "@typescript-eslint",
+        "import",
+        "header"
     ],
-    "no-self-compare": "error",
-    "no-undef-init": "error",
-    "no-useless-computed-key": "error",
-    "no-useless-return": "error",
-    "prefer-const": [
-      "error",
-      {
-        "destructuring": "any",
-        "ignoreReadBeforeAssign": true
-      }
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
     ],
-    "template-curly-spacing": "error",
-    "yoda": "error",
 
-    "@lwc/lwc-internal/no-invalid-todo": "error",
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "index",
-          "sibling",
-          "object",
-          "type"
-        ]
-      }
-    ],
-    "no-restricted-imports": [
-      "error",
-      {
-        "name": "@lwc/features",
-        "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
-        "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
-      }
-    ],
-    "header/header": [
-      2,
-      "block",
-      [
-        "",
+    "env": {
+        "es6": true
+    },
+
+    "rules": {
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            { "argsIgnorePattern": "^_" }
+        ],
+
+        "block-scoped-var": "error",
+        "no-alert": "error",
+        "no-buffer-constructor": "error",
+        "no-console": "error",
+        "no-eval": "error",
+        "no-extend-native": "error",
+        "no-extra-bind": "error",
+        "no-extra-label": "error",
+        "no-iterator": "error",
+        "no-lone-blocks": "error",
+        "no-proto": "error",
+        "no-prototype-builtins": "error",
+        "no-new-require": "error",
+        "no-restricted-properties": ["error", {
+            "object": "arguments",
+            "property": "callee",
+            "message": "arguments.callee is deprecated"
+        }, {
+            "object": "global",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "self",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "window",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "global",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "object": "self",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "object": "window",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "property": "__defineGetter__",
+            "message": "Please use Object.defineProperty instead."
+        }, {
+            "property": "__defineSetter__",
+            "message": "Please use Object.defineProperty instead."
+        }, {
+            "object": "Math",
+            "property": "pow",
+            "message": "Use the exponentiation operator (**) instead."
+        }, {
+            "object": "globalThis",
+            "property": "lwcRuntimeFlags",
+            "message": "Use the bare global lwcRuntimeFlags instead."
+        }],
+        "no-self-compare": "error",
+        "no-undef-init": "error",
+        "no-useless-computed-key": "error",
+        "no-useless-return": "error",
+        "prefer-const": ["error", {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": true
+        }],
+        "template-curly-spacing": "error",
+        "yoda": "error",
+
+        "@lwc/lwc-internal/no-invalid-todo": "error",
+        "import/order": [
+            "error",
+            { "groups": ["builtin", "external", "internal", "parent", "index", "sibling", "object", "type"] }
+        ],
+        "no-restricted-imports": ["error", {
+            "name": "@lwc/features",
+            "importNames": ["lwcRuntimeFlags", "runtimeFlags", "default"],
+            "message": "Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead."
+        }],
+        "header/header": [
+            2,
+            "block",
+            [
+              "",
+              {
+                "pattern": "^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$",
+                "template": " * Copyright (c) 2024, Salesforce, Inc."
+              },
+              " * All rights reserved.",
+              " * SPDX-License-Identifier: MIT",
+              " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
+              " "
+            ]
+          ]
+    },
+
+    "overrides": [
         {
-          "pattern": "^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$",
-          "template": " * Copyright (c) 2024, Salesforce, Inc."
+            "files": [
+                "**/packages/lwc/**"
+            ],
+            "rules": {
+                "no-restricted-imports": "off"
+            }
         },
-        " * All rights reserved.",
-        " * SPDX-License-Identifier: MIT",
-        " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
-        " "
-      ]
+        {
+            "files": [
+                "**/@lwc/engine-core/**",
+                "**/@lwc/engine-dom/**",
+                "**/@lwc/synthetic-shadow/**"
+            ],
+            "rules": {
+                "@lwc/lwc-internal/no-global-node": "error",
+                "prefer-rest-params": "off",
+                "prefer-spread": "off"
+            }
+        },
+        {
+            "files": [
+                "**/__tests__/**",
+                "**/__mocks__/**",
+                "**/@lwc/integration-karma/**"
+            ],
+
+            "env": {
+                "jest": true,
+                "es6": true,
+                "es2017": true,
+                "es2020": true
+            },
+
+            "rules": {
+                "jest/no-focused-tests": "error",
+                "jest/valid-expect": "error",
+                "jest/valid-expect-in-promise": "error"
+            }
+        },
+        {
+            "files": [
+                "**/@lwc/integration-tests/**"
+            ],
+
+            "globals": {
+                "$": true,
+                "browser": true
+            }
+        },
+        {
+            "files": [
+                "./*.js",
+                "**/scripts/**",
+                "**/jest.config.js"
+            ],
+
+            "env": {
+                "node": true,
+                "jest": true
+            },
+
+            "rules": {
+                "no-console": "off"
+            }
+        },
+        {
+            "files": [
+                "**/perf-benchmarks/**"
+            ],
+
+            "globals": {
+                "after": true,
+                "before": true,
+                "benchmark": true,
+                "run": true
+            }
+        },
+        {
+            "files": [
+              "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
+              "packages/@lwc/integration-karma/test/**",
+              "packages/@lwc/integration-karma/test-hydration/**"
+            ],
+            "rules": {
+              "header/header": "off"
+            }
+          }
     ]
-  },
-
-  "overrides": [
-    {
-      "files": ["**/packages/lwc/**"],
-      "rules": {
-        "no-restricted-imports": "off"
-      }
-    },
-    {
-      "files": [
-        "**/@lwc/engine-core/**",
-        "**/@lwc/engine-dom/**",
-        "**/@lwc/synthetic-shadow/**"
-      ],
-      "rules": {
-        "@lwc/lwc-internal/no-global-node": "error",
-        "prefer-rest-params": "off",
-        "prefer-spread": "off"
-      }
-    },
-    {
-      "files": ["**/__tests__/**", "**/__mocks__/**", "**/@lwc/integration-karma/**"],
-
-      "env": {
-        "jest": true,
-        "es6": true,
-        "es2017": true,
-        "es2020": true
-      },
-
-      "rules": {
-        "jest/no-focused-tests": "error",
-        "jest/valid-expect": "error",
-        "jest/valid-expect-in-promise": "error"
-      }
-    },
-    {
-      "files": ["**/@lwc/integration-tests/**"],
-
-      "globals": {
-        "$": true,
-        "browser": true
-      }
-    },
-    {
-      "files": ["./*.js", "**/scripts/**", "**/jest.config.js"],
-
-      "env": {
-        "node": true,
-        "jest": true
-      },
-
-      "rules": {
-        "no-console": "off"
-      }
-    },
-    {
-      "files": ["**/perf-benchmarks/**"],
-
-      "globals": {
-        "after": true,
-        "before": true,
-        "benchmark": true,
-        "run": true
-      }
-    },
-    {
-      "files": [
-        "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
-        "packages/@lwc/integration-karma/test/**",
-        "packages/@lwc/integration-karma/test-hydration/**"
-      ],
-      "rules": {
-        "header/header": "off"
-      }
-    }
-  ]
 }
