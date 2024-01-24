@@ -88,6 +88,12 @@ if (isObjectBindingEnabled) {
             ['foo', ['bar'], { baz: true }],
             'foo bar baz'
         );
+        testClassNameValue('repeated values array', ['foo', ['foo bar'], 'baz foo'], 'foo bar baz');
+        testClassNameValue(
+            'repeated values object',
+            ['foo', { foo: true, baz: true }, 'bar'],
+            'foo baz bar'
+        );
     });
 
     describe('reactive object update', () => {
