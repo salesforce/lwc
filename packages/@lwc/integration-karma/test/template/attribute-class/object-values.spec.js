@@ -36,7 +36,26 @@ function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
     });
 }
 
-if (process.env.API_VERSION >= 61) {
+// Object class binding is enabled starting from API v61.
+const isObjectBindingEnabled = process.env.API_VERSION >= 61;
+
+describe('type coercion', () => {
+    testClassNameValue('object', {}, isObjectBindingEnabled ? '' : '[object Object]');
+    testClassNameValue('true', true, isObjectBindingEnabled ? '' : 'true');
+    testClassNameValue('false', false, isObjectBindingEnabled ? '' : 'false');
+    testClassNameValue('null', null, isObjectBindingEnabled ? '' : '');
+    testClassNameValue('undefined', undefined, isObjectBindingEnabled ? '' : '');
+    testClassNameValue('number', 1, isObjectBindingEnabled ? '' : '1');
+    testClassNameValue('map', new Map(), isObjectBindingEnabled ? '' : '[object Map]');
+    testClassNameValue('function', function () {}, isObjectBindingEnabled ? '' : 'function () {}');
+
+    // Passing a symbol as a class name prior to API v61 would throw an error.
+    if (isObjectBindingEnabled) {
+        testClassNameValue('symbol', Symbol(), '');
+    }
+});
+
+if (isObjectBindingEnabled) {
     describe('plain object class value', () => {
         testClassNameValue('empty', {}, '');
         testClassNameValue('single class', { foo: true }, 'foo');
@@ -69,15 +88,6 @@ if (process.env.API_VERSION >= 61) {
             ['foo', ['bar'], { baz: true }],
             'foo bar baz'
         );
-    });
-
-    describe('edge cases values', () => {
-        testClassNameValue('null', null, '');
-        testClassNameValue('undefined', undefined, '');
-        testClassNameValue('number', 1, '');
-        testClassNameValue('symbol', Symbol(), '');
-        testClassNameValue('map', new Map(), '');
-        testClassNameValue('function', function () {}, '');
     });
 
     describe('reactive object update', () => {
