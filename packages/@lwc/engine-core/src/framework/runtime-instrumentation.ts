@@ -6,5 +6,5 @@
  */
 import { noop } from '@lwc/shared';
 
-export const instrumentDef = globalThis.__lwc_instrument_cmp_def ?? noop;
-export const instrumentInstance = globalThis.__lwc_instrument_cmp_instance ?? noop;
+export const instrumentDef = (globalThis as any).__lwc_instrument_cmp_def ?? noop;
+export const instrumentInstance = (globalThis as any).__lwc_instrument_cmp_instance ?? noop;

@@ -9,9 +9,9 @@ import { ArrayPush } from '@lwc/shared';
 import { LightningElementFormatter } from './component';
 
 function init() {
-    const devtoolsFormatters = globalThis.devtoolsFormatters || [];
+    const devtoolsFormatters = (globalThis as any).devtoolsFormatters || [];
     ArrayPush.call(devtoolsFormatters, LightningElementFormatter);
-    globalThis.devtoolsFormatters = devtoolsFormatters;
+    (globalThis as any).devtoolsFormatters = devtoolsFormatters;
 }
 
 if (process.env.NODE_ENV !== 'production') {
