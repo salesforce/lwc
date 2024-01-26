@@ -10,6 +10,7 @@
 
 /* istanbul ignore next */
 // @ts-ignore
-const _globalThis = typeof globalThis === 'object' ? globalThis : window;
 
-export { _globalThis as globalThis };
+//const _globalThis = typeof globalThis === 'object' ? globalThis : window;
+
+export { globalThis };
