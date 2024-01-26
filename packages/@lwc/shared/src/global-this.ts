@@ -12,5 +12,4 @@
 // @ts-ignore
 
 //const _globalThis = typeof globalThis === 'object' ? globalThis : window;
-
 export { globalThis };
