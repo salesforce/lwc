@@ -11,5 +11,6 @@
 /* istanbul ignore next */
 // @ts-ignore
 
+//removed the polyfill as no longer needed.
 //const _globalThis = typeof globalThis === 'object' ? globalThis : window;
 export { globalThis };

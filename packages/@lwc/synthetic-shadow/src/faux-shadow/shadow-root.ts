@@ -9,7 +9,6 @@ import {
     assign,
     create,
     defineProperty,
-    globalThis,
     isNull,
     isTrue,
     isUndefined,

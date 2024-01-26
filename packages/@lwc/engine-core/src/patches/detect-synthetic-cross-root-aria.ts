@@ -6,7 +6,6 @@
  */
 import {
     assign,
-    globalThis,
     isTrue,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
