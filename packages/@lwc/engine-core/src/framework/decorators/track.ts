@@ -40,8 +40,9 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
     return {
         get(this: LightningElement): any {
             const vm = getAssociatedVM(this);
-            componentValueObserved(vm, key);
-            return vm.cmpFields[key];
+            const val = vm.cmpFields[key];
+            componentValueObserved(vm, key, val);
+            return val;
         },
         set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);

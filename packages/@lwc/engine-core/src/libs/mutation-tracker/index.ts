@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isUndefined, ArraySplice, ArrayIndexOf, ArrayPush } from '@lwc/shared';
+import { OnUpdate, Signal, Unsubscribe } from '../signal';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
@@ -61,6 +62,34 @@ export function valueObserved(target: object, key: PropertyKey) {
     }
     if (ArrayIndexOf.call(reactiveObservers, ro) === -1) {
         ro.link(reactiveObservers);
+    }
+}
+
+// Putting this here for now, the idea is to subscribe to a signal when there is an active template reactive observer.
+// This would indicate that:
+//      1. The template is currently being rendered
+//      2. There was a call to a getter bound to the LWC class
+// With this information we can infer that it is safe to subscribe the re-render callback to the signal, which will
+// mark the VM as dirty and schedule rehydration.
+// The onUpdate function here mirrors the one used in the template reactive observer, which is to mark the
+// VM as dirty and re-render.
+// In a future optimization, rather than re-render the entire VM we could use fine grained reactivity here
+// to only re-render the part of the DOM that has been changed by the signal.
+// jtu-todo: find a better place to put this that doesn't require mutation-tracker to know about the specifics of signals
+export function signalValueObserved(
+    s: Signal<any>,
+    onUpdate: OnUpdate,
+    unsubscribe: Array<Unsubscribe>
+) {
+    if (currentReactiveObserver === null) {
+        return;
+    }
+
+    try {
+        const dispose = s.subscribe(onUpdate);
+        unsubscribe.push(dispose);
+    } catch (e) {
+        // throw away for now
     }
 }
 

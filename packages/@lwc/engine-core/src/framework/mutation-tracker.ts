@@ -10,6 +10,7 @@ import {
     ReactiveObserver,
     valueMutated,
     valueObserved,
+    signalValueObserved,
 } from '../libs/mutation-tracker';
 import { VM } from './vm';
 
@@ -28,10 +29,14 @@ export function componentValueMutated(vm: VM, key: PropertyKey) {
     }
 }
 
-export function componentValueObserved(vm: VM, key: PropertyKey) {
+export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {}) {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     if (process.env.IS_BROWSER) {
         valueObserved(vm.component, key);
+    }
+
+    if (target && typeof target === 'object' && 'value' in target && 'subscribe' in target) {
+        signalValueObserved(target, vm.signalUpdateCallback, vm.signalsToUnsubscribe);
     }
 }
 
