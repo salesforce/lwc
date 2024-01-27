@@ -1,4 +1,4 @@
-import { createElement } from "lwc";
+import { createElement, LWCSignal } from "lwc";
 import App from "x/app";
 
 const elm = createElement("x-app", { is: App });
