@@ -45,7 +45,7 @@ export type HMR_Data =
     | HMR_Data_Init;
 
 export class Connection {
-    protocol: string = 'http';
+    protocol: string = 'ws';
     host: string = 'localhost';
     port: string = '8080';
     socket: WebSocket | undefined;

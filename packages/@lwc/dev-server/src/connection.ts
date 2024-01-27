@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import WebSocket from 'ws';
+import { createServer } from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
 export type Module = any;
 
 export interface HMR_Data_Fetch {
@@ -46,11 +47,11 @@ export type HMR_Data =
     | HMR_Data_Init;
 
 export class Connection {
-    protocol: string = 'http';
+    protocol: string = 'ws';
     host: string = 'localhost';
-    port: string = '8080';
+    port: number = 8080;
     socket: WebSocket | undefined;
-    init(protocol: string, host: string, port: string): Connection {
+    init(protocol: string, host: string, port: number): Connection {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
@@ -66,16 +67,19 @@ export class Connection {
     }
 
     initializeConnection(initCallback: () => void, messageCallback: (data: HMR_Data) => void) {
-        this.socket = new WebSocket(`${this.protocol}://${this.host}:${this.port}`);
-        this.socket.addEventListener('open', () => {
+        const httpServer = createServer();
+        const wss = new WebSocketServer({ server: httpServer });
+        wss.on('connection', (ws) => {
             initCallback();
+            this.socket = ws;
+            this.socket.addEventListener('message', ({ data }) => {
+                if (data && typeof data === 'string') {
+                    // When there is an update, handle the incoming message and request an updated module
+                    messageCallback(JSON.parse(data));
+                }
+            });
         });
-        this.socket.addEventListener('message', ({ data }) => {
-            if (data && typeof data === 'string') {
-                // When there is an update, handle the incoming message and request an updated module
-                messageCallback(JSON.parse(data));
-            }
-        });
+        httpServer.listen(this.port);
     }
 
     send(data: HMR_Data): void {

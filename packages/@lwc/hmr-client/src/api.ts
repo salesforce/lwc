@@ -34,7 +34,10 @@ export type UpdateHandler = (mod: Module) => void;
 export function updateHandler(modulePath: string): UpdateHandler | undefined {
     let callbacks: HotModuleCallback[] = [];
     if (activeModules.has(modulePath)) {
-        callbacks = hotModuleCbs.get(modulePath)!;
+        // Create a copy of the callbacks to retain the current list in a closure for when the hot
+        // module is available. Otherwise, the incoming hot module's callback will also be invoked
+        // and removed. Thus future updates won't have a callback to process.
+        callbacks = [...hotModuleCbs.get(modulePath)!];
         return (hotModule) => {
             callbacks.forEach((cb) => {
                 cb(hotModule);

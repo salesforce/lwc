@@ -16,7 +16,7 @@ import { ModuleGraph } from './moduleGraph';
 
 export interface ServerConfig {
     // Port at which the web socket will communicating from
-    port: string;
+    port: number;
     protocol: string;
     host: string;
     // Component paths to watch
@@ -36,8 +36,8 @@ export class LWCServer {
             this.config.host,
             this.config.port
         );
-        this.connection.initializeConnection(() => {}, this.messageCallback);
-        this.watcher.on('change', this.changeHandler);
+        this.connection.initializeConnection(() => {}, this.messageCallback.bind(this));
+        this.watcher.on('change', this.changeHandler.bind(this));
         this.moduleGraph = new ModuleGraph();
     }
 
@@ -58,7 +58,7 @@ export class LWCServer {
         }
     }
 
-    messageCallback(data: HMR_Data) {
+    async messageCallback(data: HMR_Data) {
         switch (data.type!) {
             case 'init': {
                 const {
@@ -82,14 +82,15 @@ export class LWCServer {
                     };
                     this.connection?.send(error);
                 }
-                const result = compile(fs.readFileSync(moduleFilePath!, 'utf8'), modulePath);
-                if (result.warnings) {
+                const result = await compile(fs.readFileSync(moduleFilePath!, 'utf8'), modulePath);
+                if (result.warnings?.length) {
                     // eslint-disable-next-line no-console
                     console.warn(
                         `Compiling ${moduleFilePath} failed and there are compiler warnings: ${JSON.stringify(
                             result.warnings
                         )}`
                     );
+                    break;
                 }
                 this.connection?.sendModule(modulePath, result.code);
                 break;

@@ -21,9 +21,7 @@ function initCallback() {
         data: { url: window.location.href, activePaths: activePaths },
     };
     if (activePaths.length) {
-        setInterval(() => {
-            hmrClient?.send(initData);
-        }, 5000);
+        hmrClient?.send(initData);
     }
 }
 
@@ -49,7 +47,7 @@ function messageCallback(data: HMR_Data) {
             hotModules.data.forEach(({ modulePath, src }) => {
                 const handler = pendingHandlers.get(modulePath)!;
                 // eslint-disable-next-line no-eval
-                const evaledModule = new Function(src);
+                const evaledModule = (0, eval)(src);
                 handler(evaledModule);
             });
             break;
@@ -69,7 +67,7 @@ let hmrClient: undefined | Connection;
 export function initializeClient() {
     if (!hmrClient) {
         hmrClient = new Connection();
-        hmrClient.init('http', 'localhost', '8080');
+        hmrClient.init('ws', 'localhost', '8080');
         hmrClient.initializeConnection(initCallback, messageCallback);
         window.addEventListener('onbeforeunload', () => {
             hmrClient?.close();

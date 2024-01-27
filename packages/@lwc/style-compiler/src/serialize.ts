@@ -108,8 +108,9 @@ export default function serialize(result: Result, config: Config): string {
         buffer += `if (hot) {\n`;
         buffer += `    hot.register("${hmrModuleContext.modulePath}", "${hmrModuleContext.moduleHash}");\n`;
         buffer += `    hot.accept("${hmrModuleContext.modulePath}", (mod) => {\n`;
-        buffer += `        if(${STYLESHEET_IDENTIFIER}.moduleHash != mod.moduleHash) {\n`;
-        buffer += `            swapStyle(${STYLESHEET_IDENTIFIER}, mod);\n`;
+        buffer += `        const defaultStylesheet = mod.pop();\n`;
+        buffer += `        if(${STYLESHEET_IDENTIFIER}.moduleHash != defaultStylesheet.moduleHash) {\n`;
+        buffer += `            swapStyle(${STYLESHEET_IDENTIFIER}, defaultStylesheet);\n`;
         buffer += `        }\n`;
         buffer += `    });\n`;
         buffer += `}\n`;

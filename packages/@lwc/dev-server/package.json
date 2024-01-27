@@ -42,6 +42,7 @@
         "@lwc/compiler": "5.2.2",
         "chokidar": "^3.5.3",
         "ws": "^8.16.0",
-        "@lwc/shared": "5.2.2"
+        "@lwc/shared": "5.2.2",
+        "@lwc/rollup-plugin": "5.2.2"
     }
 }
