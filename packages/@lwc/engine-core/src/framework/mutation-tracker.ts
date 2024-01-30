@@ -51,6 +51,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
             try {
                 // In a future optimization, rather than re-render the entire VM we could use fine grained reactivity here
                 // to only re-render the part of the DOM that has been changed by the signal.
+                // jtu-todo: this will subscribe multiple functions since the callback is always different, look for a way to deduplicate this
                 const unsubscribe = target.subscribe(() => vm.tro.notify());
                 vm.tro.link(unsubscribe);
             } catch (e) {
