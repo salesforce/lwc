@@ -211,10 +211,6 @@ export interface VM<N = HostNode, E = HostElement> {
      * API version associated with this VM
      */
     apiVersion: APIVersion;
-    // tracks signals to unsubscribe from for a given vm
-    signalsToUnsubscribe: Array<() => void>;
-
-    signalUpdateCallback: () => void;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -279,7 +275,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
         const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        vm.signalsToUnsubscribe.forEach((cb) => cb());
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
@@ -372,14 +367,6 @@ export function createVM<HostNode, HostElement>(
         shadowMode: null!,
         shadowMigrateMode: false,
         stylesheets: null!,
-        signalsToUnsubscribe: [],
-        signalUpdateCallback: () => {
-            if (isFalse(vm.isDirty)) {
-                // forcing the vm to rehydrate in the next tick
-                markComponentAsDirty(vm);
-                scheduleRehydration(vm);
-            }
-        },
 
         // Properties set by the LightningElement constructor.
         component: null!,
