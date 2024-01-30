@@ -10,7 +10,6 @@ import {
     ReactiveObserver,
     valueMutated,
     valueObserved,
-    signalValueObserved,
 } from '../libs/mutation-tracker';
 import { VM } from './vm';
 
@@ -35,8 +34,29 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         valueObserved(vm.component, key);
     }
 
-    if (target && typeof target === 'object' && 'value' in target && 'subscribe' in target) {
-        signalValueObserved(target, vm.signalUpdateCallback, vm.signalsToUnsubscribe);
+    // Putting this here for now, the idea is to subscribe to a signal when there is an active template reactive observer.
+    // This would indicate that:
+    //      1. The template is currently being rendered
+    //      2. There was a call to a getter bound to the LWC class
+    // With this information we can infer that it is safe to subscribe the re-render callback to the signal, which will
+    // mark the VM as dirty and schedule rehydration.
+    if (
+        target &&
+        typeof target === 'object' &&
+        'value' in target &&
+        'subscribe' in target &&
+        typeof target.subscribe === 'function'
+    ) {
+        if (vm.tro.isObserving()) {
+            try {
+                // In a future optimization, rather than re-render the entire VM we could use fine grained reactivity here
+                // to only re-render the part of the DOM that has been changed by the signal.
+                const unsubscribe = target.subscribe(() => vm.tro.notify());
+                vm.tro.link(unsubscribe);
+            } catch (e) {
+                // throw away for now
+            }
+        }
     }
 }
 

@@ -92,7 +92,6 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     vm.tro.reset();
-    vm.signalsToUnsubscribe.forEach((cb) => cb());
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;
