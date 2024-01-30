@@ -70,17 +70,14 @@ export type JobFunction = () => void;
 export class ReactiveObserver {
     private listeners: (ObservedMemberPropertyRecords | CallbackFunction)[] = [];
     private callback: CallbackFunction;
-    private isActive: boolean;
 
     constructor(callback: CallbackFunction) {
         this.callback = callback;
-        this.isActive = false;
     }
 
     observe(job: JobFunction) {
         const inceptionReactiveRecord = currentReactiveObserver;
         currentReactiveObserver = this;
-        this.isActive = true;
         let error;
         try {
             job();
@@ -88,7 +85,6 @@ export class ReactiveObserver {
             error = Object(e);
         } finally {
             currentReactiveObserver = inceptionReactiveRecord;
-            this.isActive = false;
             if (error !== undefined) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
@@ -144,6 +140,6 @@ export class ReactiveObserver {
     }
 
     isObserving() {
-        return this.isActive;
+        return currentReactiveObserver === this;
     }
 }
