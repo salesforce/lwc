@@ -17,16 +17,16 @@
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "6.0.0",
-        "@wdio/cli": "^8.26.3",
-        "@wdio/local-runner": "^8.26.3",
-        "@wdio/mocha-framework": "^8.26.3",
-        "@wdio/sauce-service": "^8.26.3",
-        "@wdio/spec-reporter": "^8.26.3",
-        "@wdio/static-server-service": "^8.26.3",
+        "@wdio/cli": "^8.29.3",
+        "@wdio/local-runner": "^8.29.3",
+        "@wdio/mocha-framework": "^8.29.3",
+        "@wdio/sauce-service": "^8.29.3",
+        "@wdio/spec-reporter": "^8.29.3",
+        "@wdio/static-server-service": "^8.29.1",
         "deepmerge": "^4.3.0",
-        "dotenv": "^16.3.1",
+        "dotenv": "^16.4.1",
         "lwc": "6.0.0",
         "minimist": "^1.2.8",
-        "webdriverio": "^8.26.3"
+        "webdriverio": "^8.29.3"
     }
 }
