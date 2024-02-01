@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
+import { create, defineProperty, isUndefined, isBoolean } from '@lwc/shared';
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
@@ -20,13 +20,11 @@ const features: FeatureFlagMap = {
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
 };
 
-// eslint-disable-next-line no-restricted-properties
-if (!globalThis.lwcRuntimeFlags) {
+if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-// eslint-disable-next-line no-restricted-properties
-const flags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
+const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
