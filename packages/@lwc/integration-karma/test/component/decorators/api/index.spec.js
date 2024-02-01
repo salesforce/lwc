@@ -196,7 +196,7 @@ describe('non-LightningElement `this` when calling accessor', () => {
     });
 
     const expectedErrorMessage =
-        /(undefined is not an object|Right side of assignment cannot be destructured|vm is undefined|undefined is not a VM|Cannot destructure property '(getHook|setHook)'|Cannot read properties of undefined)/;
+        /(undefined has no properties|undefined is not an object|Right side of assignment cannot be destructured|vm is undefined|undefined is not a VM|Cannot destructure property '(getHook|setHook)'|Cannot read properties of undefined)/;
 
     const scenarios = [
         { type: 'getterSetter', prop: 'getterSetterProp' },
