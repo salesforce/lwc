@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
@@ -19,13 +19,6 @@ import PreserveComments from 'x/preserveComments';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
-        beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-        });
-        afterEach(() => {
-            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
-        });
-
         ['native', 'synthetic'].forEach((firstRenderMode) => {
             it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
                 const elm = createElement('x-container', { is: Container });

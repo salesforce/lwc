@@ -122,7 +122,6 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (
             !isUndefined(ctorShadowSupportMode) &&
-            ctorShadowSupportMode !== ShadowSupportMode.Any &&
             ctorShadowSupportMode !== ShadowSupportMode.Default &&
             ctorShadowSupportMode !== ShadowSupportMode.Native
         ) {
