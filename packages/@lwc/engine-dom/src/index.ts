@@ -36,8 +36,6 @@ export {
     getComponentConstructor,
     __unstable__ProfilerControl,
     __unstable__ReportingControl,
-    Signal,
-    SignalBaseClass,
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------

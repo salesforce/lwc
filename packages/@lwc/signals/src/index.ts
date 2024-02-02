@@ -4,17 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;
 
-export interface Signal<ValueShape> {
-    get value(): ValueShape;
+export interface Signal<T> {
+    get value(): T;
     subscribe(onUpdate: OnUpdate): Unsubscribe;
 }
 
-export abstract class SignalBaseClass<ValueShape> implements Signal<ValueShape> {
-    abstract get value(): ValueShape;
+export abstract class SignalBaseClass<T> implements Signal<T> {
+    abstract get value(): T;
 
     private subscribers: Set<OnUpdate> = new Set();
 

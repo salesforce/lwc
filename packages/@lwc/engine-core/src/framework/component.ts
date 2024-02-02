@@ -13,7 +13,11 @@ import {
     LOWEST_API_VERSION,
 } from '@lwc/shared';
 
-import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
+import {
+    createReactiveObserver,
+    ReactiveObserver,
+    unsubscribeFromSignals,
+} from './mutation-tracker';
 
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
@@ -92,6 +96,9 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     vm.tro.reset();
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        unsubscribeFromSignals(vm.component);
+    }
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;

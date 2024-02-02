@@ -69,6 +69,12 @@ export interface FeatureFlagMap {
      * If true, enable experimental shadow DOM migration mode globally.
      */
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: FeatureFlagValue;
+
+    /**
+     * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
+     * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
+     */
+    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

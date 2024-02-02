@@ -42,7 +42,6 @@ export { freezeTemplate } from './freeze-template';
 
 // Experimental or Internal APIs
 export { getComponentConstructor } from './get-component-constructor';
-export { Signal, SignalBaseClass } from '../libs/signal';
 
 // Types -------------------------------------------------------------------------------------------
 export type { RendererAPI, LifecycleCallback } from './renderer';

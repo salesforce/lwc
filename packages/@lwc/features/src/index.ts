@@ -19,6 +19,7 @@ const features: FeatureFlagMap = {
     ENABLE_FROZEN_TEMPLATE: null,
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
+    ENABLE_EXPERIMENTAL_SIGNALS: null,
 };
 
 // eslint-disable-next-line no-restricted-properties
