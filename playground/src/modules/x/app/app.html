@@ -1,4 +1,10 @@
 <template>
-    <h1>Hello world!</h1>
-    <x-counter></x-counter>
+    <h1>Signals Playground</h1>
+    <h3>The signal is publicly exposed through an @api decorator, select this component (x-app) and update the signal through the `.value`</h3>
+    <h3>
+        Usage: <br>
+        const app = document.body.querySelector('x-app');<br>
+        app.signal.value = 'new value';
+    </h3>    
+    <h3>This is the signal value: {signal.value}</h3>
 </template>

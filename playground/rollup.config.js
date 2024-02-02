@@ -19,7 +19,9 @@ export default (args) => {
                 'process.env.NODE_ENV': JSON.stringify(__ENV__),
                 preventAssignment: true,
             }),
-            lwc(),
+            lwc({
+                modules: [{ npm: '@lwc/signals'}]
+            }),
             args.watch &&
                 serve({
                     open: false,
