@@ -1,10 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
 export default class extends LightningElement {
-    @api renderCount = 0;
     @api signal;
-
-    renderedCallback() {
-        this.renderCount++;
-    }
+    items = [1, 2, 3, 4, 5, 6];
 }

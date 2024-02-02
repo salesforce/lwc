@@ -1,5 +1,6 @@
 export class Signal {
     subscribers = new Set();
+    removedSubscribers = [];
 
     constructor(initialValue) {
         this._value = initialValue;
@@ -18,6 +19,7 @@ export class Signal {
         this.subscribers.add(onUpdate);
         return () => {
             this.subscribers.delete(onUpdate);
+            this.removedSubscribers.push(onUpdate);
         };
     }
 
@@ -29,5 +31,9 @@ export class Signal {
 
     getSubscriberCount() {
         return this.subscribers.size;
+    }
+
+    getRemovedSubscriberCount() {
+        return this.removedSubscribers.length;
     }
 }

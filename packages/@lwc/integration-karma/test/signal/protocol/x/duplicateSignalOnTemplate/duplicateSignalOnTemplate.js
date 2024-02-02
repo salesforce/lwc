@@ -3,8 +3,6 @@ import { Signal } from 'x/signal';
 
 export default class extends LightningElement {
     signal = new Signal('initial value');
-
-    @api showChild = false;
     @api renderCount = 0;
 
     renderedCallback() {

@@ -46,6 +46,7 @@ if (process.env.ENABLE_EXPERIMENTAL_SIGNALS) {
 
             expect(elm.shadowRoot.textContent).toBe('initial value');
 
+            // notification happens when value is updated
             signal.value = 'updated value';
             await Promise.resolve();
 
@@ -72,8 +73,8 @@ if (process.env.ENABLE_EXPERIMENTAL_SIGNALS) {
                 'initial value'
             );
             expect(elm.shadowRoot.textContent).toEqual('default');
-            signal.value = 'new value';
 
+            signal.value = 'new value';
             await Promise.resolve();
 
             expect(elm.shadowRoot.textContent).toEqual('new value');
