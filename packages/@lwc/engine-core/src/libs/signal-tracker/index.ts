@@ -60,7 +60,9 @@ class SignalTracker {
     subscribeToSignal(signal: Signal<unknown>, update: CallbackFunction) {
         try {
             const unsubscribe = signal.subscribe(update);
-            this.signalToUnsubscribeMap.set(signal, unsubscribe);
+            if (typeof unsubscribe === 'function') {
+                this.signalToUnsubscribeMap.set(signal, unsubscribe);
+            }
         } catch (err) {
             logWarnOnce(
                 `Attempted to subscribe to an object that has the shape of a signal but received the following error: ${err}`
