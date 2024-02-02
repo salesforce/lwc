@@ -21,6 +21,7 @@ const {
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     NODE_ENV_FOR_TEST,
     API_VERSION,
+    ENABLE_EXPERIMENTAL_SIGNALS,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -45,6 +46,7 @@ function createEnvFile() {
                 NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
                 SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
                 ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: ${ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL},
+                ENABLE_EXPERIMENTAL_SIGNALS: ${ENABLE_EXPERIMENTAL_SIGNALS},
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
                 API_VERSION: ${JSON.stringify(API_VERSION)}
             }

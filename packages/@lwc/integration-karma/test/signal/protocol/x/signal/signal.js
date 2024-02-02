@@ -1,8 +1,7 @@
-import { SignalBaseClass } from 'lwc';
+export class Signal {
+    subscribers = new Set();
 
-export class Signal extends SignalBaseClass {
     constructor(initialValue) {
-        super();
         this._value = initialValue;
     }
 
@@ -13,6 +12,19 @@ export class Signal extends SignalBaseClass {
 
     get value() {
         return this._value;
+    }
+
+    subscribe(onUpdate) {
+        this.subscribers.add(onUpdate);
+        return () => {
+            this.subscribers.delete(onUpdate);
+        };
+    }
+
+    notify() {
+        for (const subscriber of this.subscribers) {
+            subscriber();
+        }
     }
 
     getSubscriberCount() {

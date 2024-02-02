@@ -30,6 +30,7 @@ const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
 const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
+const ENABLE_EXPERIMENTAL_SIGNALS = Boolean(process.env.ENABLE_EXPERIMENTAL_SIGNALS);
 
 module.exports = {
     // Test configuration
@@ -40,6 +41,7 @@ module.exports = {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
+    ENABLE_EXPERIMENTAL_SIGNALS,
     API_VERSION,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),

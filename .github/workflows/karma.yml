@@ -52,6 +52,7 @@ jobs:
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
       - run: yarn sauce:ci
+      - run: ENABLE_EXPERIMENTAL_SIGNALS=1 yarn sauce:ci
       - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: LEGACY_BROWSERS=1 yarn sauce:ci
       - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
