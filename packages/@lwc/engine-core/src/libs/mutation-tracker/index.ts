@@ -68,7 +68,7 @@ export type CallbackFunction = (rp: ReactiveObserver) => void;
 export type JobFunction = () => void;
 
 export class ReactiveObserver {
-    private listeners: (ObservedMemberPropertyRecords | CallbackFunction)[] = [];
+    private listeners: ObservedMemberPropertyRecords[] = [];
     private callback: CallbackFunction;
 
     constructor(callback: CallbackFunction) {
@@ -101,23 +101,14 @@ export class ReactiveObserver {
         if (len > 0) {
             for (let i = 0; i < len; i++) {
                 const set = listeners[i];
-                // jtu-todo: use the .call annotation here instead
-                if (Array.isArray(set)) {
-                    if (set.length === 1) {
-                        // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+splice.
-                        // If the length is 1, we can also be sure that `this` is the first item in the array.
-                        set.length = 0;
-                    } else {
-                        // Slow case
-                        const pos = ArrayIndexOf.call(set, this);
-                        ArraySplice.call(set, pos, 1);
-                    }
-                } else if (typeof set === 'function') {
-                    set.call(undefined, this);
+                if (set.length === 1) {
+                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+splice.
+                    // If the length is 1, we can also be sure that `this` is the first item in the array.
+                    set.length = 0;
                 } else {
-                    throw new Error(
-                        `Unknown listener detected in mutation tracker, expected a set of function but received ${typeof set}`
-                    );
+                    // Slow case
+                    const pos = ArrayIndexOf.call(set, this);
+                    ArraySplice.call(set, pos, 1);
                 }
             }
             listeners.length = 0;
@@ -129,12 +120,8 @@ export class ReactiveObserver {
         this.callback.call(undefined, this);
     }
 
-    // jtu-todo: add some comments here about why CallbackFunction is an acceptable type to link (eg. it's for signals)
-    // technically the CallbackFunction takes a ReactiveObserver argument but we're not passing one in with the subscribe
-    link(reactiveObservers: ReactiveObserver[] | CallbackFunction) {
-        if (Array.isArray(reactiveObservers)) {
-            ArrayPush.call(reactiveObservers, this);
-        }
+    link(reactiveObservers: ReactiveObserver[]) {
+        ArrayPush.call(reactiveObservers, this);
         // we keep track of observing records where the observing record was added to so we can do some clean up later on
         ArrayPush.call(this.listeners, reactiveObservers);
     }
