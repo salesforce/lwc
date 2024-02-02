@@ -1,16 +1,11 @@
 import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { ncls: api_normalize_class_name, h: api_element } = $api;
   return [
-    api_element("section", stc0, [
-      api_element("p", {
-        className: api_normalize_class_name($cmp.bar),
-        key: 1,
-      }),
-    ]),
+    api_element("div", {
+      className: api_normalize_class_name($cmp.computed),
+      key: 0,
+    }),
   ];
   /*LWC compiler vX.X.X*/
 }

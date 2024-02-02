@@ -64,7 +64,8 @@ type RenderPrimitive =
     | 'fragment'
     | 'staticFragment'
     | 'scopedSlotFactory'
-    | 'staticPart';
+    | 'staticPart'
+    | 'normalizeClassName';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -93,6 +94,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     staticFragment: { name: 'st', alias: 'api_static_fragment' },
     scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
     staticPart: { name: 'sp', alias: 'api_static_part' },
+    normalizeClassName: { name: 'ncls', alias: 'api_normalize_class_name' },
 };
 
 interface Scope {
@@ -290,6 +292,10 @@ export default class CodeGen {
             return this._renderApiCall(RENDER_APIS.scopedFragId, [t.literal(id)]);
         }
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
+    }
+
+    genNormalizeClassName(className: t.Expression): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className]);
     }
 
     /**
