@@ -51,7 +51,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         tro.isObserving()
     ) {
         // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
-        subscribeToSignal(component, target, tro.notify.bind(tro));
+        subscribeToSignal(component, target, FunctionBind.call(tro.notify, tro));
     }
 }
 
