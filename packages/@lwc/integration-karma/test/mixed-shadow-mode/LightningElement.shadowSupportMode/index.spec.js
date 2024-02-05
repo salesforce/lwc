@@ -19,18 +19,11 @@ describe('shadowSupportMode static property', () => {
         }).not.toLogErrorDev();
     });
 
-    it('should not log error for deprecated value "any"', () => {
+    // TODO [#3971]: Completely remove shadowSupportMode "any"
+    it('should warn for deprecated value "any"', () => {
         expect(() => {
             createElement('x-any', { is: Any });
-        }).not.toLogErrorDev(/Invalid value for static property shadowSupportMode/);
-    });
-
-    it('should log warning for deprecated value "any"', () => {
-        expect(() => {
-            createElement('x-any', { is: Any });
-        }).toLogWarningDev(
-            /Invalid value 'any' for static property shadowSupportMode\. 'any' is deprecated and will be removed in a future release--use 'native' instead\./
-        );
+        }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
     });
 });
 
