@@ -13,10 +13,13 @@ import {
     seal,
     isAPIFeatureEnabled,
     APIFeature,
+    isUndefined,
+    isNull,
 } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { getComponentAPIVersion } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
+import { VElementData } from './vnodes';
 
 type Callback = () => void;
 
@@ -128,4 +131,24 @@ export function assertNotProd() {
         // this method should never leak to prod
         throw new ReferenceError();
     }
+}
+
+// Temporary fix for when the LWC v5 compiler is used in conjunction with a v6+ engine
+// The old compiler format used the "slot" attribute in the `data` bag, whereas the new
+// format uses the special `slotAssignment` key.
+// This should be removed when the LWC v5 compiler is not used anywhere where it could be mismatched
+// with another LWC engine version.
+export function applyTemporaryCompilerV5SlotFix(data: VElementData) {
+    const { attrs } = data;
+    if (!isUndefined(attrs)) {
+        const { slot } = attrs;
+        if (!isUndefined(slot) && !isNull(slot)) {
+            return {
+                ...data,
+                attrs: cloneAndOmitKey(attrs, 'slot'),
+                slotAssignment: String(slot),
+            };
+        }
+    }
+    return data;
 }

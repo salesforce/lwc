@@ -29,7 +29,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
-import { EmptyArray } from './utils';
+import { applyTemporaryCompilerV5SlotFix, EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -163,6 +163,8 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
+    data = applyTemporaryCompilerV5SlotFix(data);
+
     const { key, slotAssignment } = data;
 
     const vnode: VElement = {
@@ -214,6 +216,8 @@ function s(
 
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, apiVersion } = vmBeingRendered;
+
+    data = applyTemporaryCompilerV5SlotFix(data);
 
     if (
         !isUndefined(slotset) &&
@@ -346,6 +350,8 @@ function c(
             });
         }
     }
+    data = applyTemporaryCompilerV5SlotFix(data);
+
     const { key, slotAssignment } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
