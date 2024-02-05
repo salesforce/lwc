@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
+import Any from 'x/any';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 import NativeOnly from 'x/native';
@@ -16,6 +17,20 @@ describe('shadowSupportMode static property', () => {
         expect(() => {
             createElement('x-valid', { is: Valid });
         }).not.toThrowError();
+    });
+
+    it('should not log error for deprecated value "any"', () => {
+        expect(() => {
+            createElement('x-any', { is: Any });
+        }).not.toLogErrorDev(/Invalid value for static property shadowSupportMode/);
+    });
+
+    it('should log warning for deprecated value "any"', () => {
+        expect(() => {
+            createElement('x-any', { is: Any });
+        }).toLogWarningDev(
+            /Invalid value 'any' for static property shadowSupportMode\. 'any' is deprecated and will be removed in a future release--use 'native' instead\./
+        );
     });
 });
 
