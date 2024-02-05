@@ -16,7 +16,7 @@ describe('shadowSupportMode static property', () => {
     it('should not throw for valid values', () => {
         expect(() => {
             createElement('x-valid', { is: Valid });
-        }).not.toThrowError();
+        }).not.toLogErrorDev();
     });
 
     it('should not log error for deprecated value "any"', () => {
