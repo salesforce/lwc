@@ -11,10 +11,10 @@ import {
     registerTemplate,
     registerDecorators,
 } from '@lwc/engine-dom';
-import { globalThis, LOWEST_API_VERSION } from '@lwc/shared';
+import { LOWEST_API_VERSION } from '@lwc/shared';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
-const LightningElementFormatter = globalThis['devtoolsFormatters'].find((f: any) => {
+const LightningElementFormatter = (globalThis as any)['devtoolsFormatters'].find((f: any) => {
     return f.name === 'LightningElementFormatter';
 });
 

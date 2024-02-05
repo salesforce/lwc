@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -38,7 +38,7 @@ function getWiredParams(
         .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
         .map((path) => {
             // Need to clone deep the observed property to remove the param prefix
-            const clonedProperty = t.cloneDeep(path.node) as types.ObjectProperty;
+            const clonedProperty = t.cloneNode(path.node) as types.ObjectProperty;
             (clonedProperty.value as types.StringLiteral).value = (
                 clonedProperty.value as types.StringLiteral
             ).value.slice(1);
@@ -141,7 +141,8 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             configProps.push(
                 t.objectProperty(
                     (param as types.ObjectProperty).key,
-                    paramConfigValue.configValueExpression
+                    paramConfigValue.configValueExpression,
+                    param.computed
                 )
             );
 
@@ -174,8 +175,21 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
 
             if (wiredValue.params) {
                 const dynamicParamNames = wiredValue.params.map((p) => {
-                    return t.stringLiteral(
-                        t.isIdentifier(p.key) ? p.key.name : (p.key as types.StringLiteral).value
+                    if (t.isIdentifier(p.key)) {
+                        return p.computed ? t.identifier(p.key.name) : t.stringLiteral(p.key.name);
+                    } else if (
+                        t.isLiteral(p.key) &&
+                        // Template literals may contain expressions, so they are not allowed
+                        !t.isTemplateLiteral(p.key) &&
+                        // RegExp are not primitives, so they are not allowed
+                        !t.isRegExpLiteral(p.key)
+                    ) {
+                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
+                        return t.stringLiteral(String(value));
+                    }
+                    // If it's not an identifier or primitive literal then it's a computed expression
+                    throw new TypeError(
+                        `Expected object property key to be an identifier or a literal, but instead saw "${p.key.type}".`
                     );
                 });
                 wireConfig.push(
@@ -284,7 +298,7 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
             const reference = referenceLookup(referenceName);
             wiredValue.adapter = {
                 name: referenceName,
-                expression: t.cloneDeep(id.node),
+                expression: t.cloneNode(id.node),
                 reference: reference.type === 'module' ? reference.value : undefined,
             };
         }

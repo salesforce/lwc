@@ -3,6 +3,7 @@ import { customElementCallbackReactionErrorListener } from 'test-utils';
 
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
+import RenderInvalid from 'x/renderInvalid';
 
 function testInvalidTemplate(type, template) {
     it(`throws an error if returns ${type}`, () => {
@@ -81,4 +82,11 @@ it('supports returning different templates', () => {
     return Promise.resolve().then(() => {
         expect(elm.shadowRoot.textContent).toBe('Template 2');
     });
+});
+
+it('throws an error when render() returns an invalid value', () => {
+    const elm = createElement('x-render-invalid', { is: RenderInvalid });
+    expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
+        /Invalid template returned by the render\(\) method on x-render-invalid/
+    );
 });

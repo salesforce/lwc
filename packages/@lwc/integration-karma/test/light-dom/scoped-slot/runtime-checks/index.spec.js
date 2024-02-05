@@ -1,9 +1,10 @@
 import { createElement } from 'lwc';
+import { vFragBookEndEnabled } from 'test-utils';
 
 import ParentWithScopedSlotContent from 'x/parentWithScopedSlotContent';
 import ParentWithStandardSlotContent from 'x/parentWithStandardSlotContent';
 
-const vFragBookend = process.env.API_VERSION > 59 ? '<!---->' : '';
+const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
 
 describe('runtime validation of slot content and slot', () => {
     it('Ignores content when parent uses scoped slot and child has standard slot', () => {

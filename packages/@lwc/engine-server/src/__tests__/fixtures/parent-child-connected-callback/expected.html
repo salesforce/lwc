@@ -1,10 +1,10 @@
 <x-parent>
-  <template shadowroot="open">
+  <template shadowrootmode="open">
     <div>
       connectedCallback called
     </div>
     <x-child>
-      <template shadowroot="open">
+      <template shadowrootmode="open">
         <div>
           connectedCallback called
         </div>
@@ -12,7 +12,7 @@
         </slot>
       </template>
       <x-slotted>
-        <template shadowroot="open">
+        <template shadowrootmode="open">
           <div>
             connectedCallback called
           </div>

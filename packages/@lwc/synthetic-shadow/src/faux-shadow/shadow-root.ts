@@ -9,7 +9,6 @@ import {
     assign,
     create,
     defineProperty,
-    globalThis,
     isNull,
     isTrue,
     isUndefined,
@@ -98,7 +97,7 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
 
 // The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
 // would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
-if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
+if (isUndefined((globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
     defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, {
         value: getElementById,
         configurable: true,
@@ -106,7 +105,7 @@ if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
 }
 
 // See note above.
-if (isUndefined(globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
+if (isUndefined((globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
     defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, {
         value: querySelectorAll,
         configurable: true,

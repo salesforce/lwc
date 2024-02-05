@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -19,7 +19,8 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-let banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+// This copyright text should match the text in the header/header eslint rule
+let banner = `/**\n * Copyright (c) ${new Date().getFullYear()} Salesforce, Inc.\n */`;
 let footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];

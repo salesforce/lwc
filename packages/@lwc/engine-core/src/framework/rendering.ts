@@ -24,7 +24,7 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
-import { EmptyArray } from './utils';
+import { EmptyArray, shouldUseNativeCustomElementLifecycle } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
@@ -47,6 +47,7 @@ import {
     isVCustomElement,
     isVFragment,
     isVScopedSlotFragment,
+    isVStatic,
     Key,
     VBaseElement,
     VComment,
@@ -60,7 +61,7 @@ import {
     VText,
 } from './vnodes';
 
-import { patchAttributes } from './modules/attrs';
+import { patchAttributes, patchSlotAssignment } from './modules/attrs';
 import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
@@ -69,6 +70,7 @@ import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
 import { applyStaticParts } from './modules/static-parts';
+import { LightningElementConstructor } from './base-lightning-element';
 
 export function patchChildren(
     c1: VNodes,
@@ -265,6 +267,8 @@ function mountElement(
 function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
+    // slotAssignments can only apply to the top level element, never to a static part.
+    patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyStaticParts(elm, n2, renderer, false);
 }
@@ -298,6 +302,8 @@ function mountStatic(
         }
     }
 
+    // slotAssignments can only apply to the top level element, never to a static part.
+    patchSlotAssignment(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
     applyStaticParts(elm, vnode, renderer, true);
 }
@@ -308,7 +314,7 @@ function mountCustomElement(
     anchor: Node | null,
     renderer: RendererAPI
 ) {
-    const { sel, owner } = vnode;
+    const { sel, owner, ctor } = vnode;
     const { createCustomElement } = renderer;
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -328,7 +334,10 @@ function mountCustomElement(
     // compiler may generate tagnames with uppercase letters so - for backwards
     // compatibility, we lower case the tagname here.
     const normalizedTagname = sel.toLowerCase();
-    const elm = createCustomElement(normalizedTagname, upgradeCallback);
+    const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
+        ctor as LightningElementConstructor
+    );
+    const elm = createCustomElement(normalizedTagname, upgradeCallback, useNativeLifecycle);
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -345,7 +354,7 @@ function mountCustomElement(
 
     if (vm) {
         if (process.env.IS_BROWSER) {
-            if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            if (!useNativeLifecycle) {
                 if (process.env.NODE_ENV !== 'production') {
                     // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
                     // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
@@ -597,6 +606,7 @@ function patchElementPropsAndAttrsAndRefs(
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
+    patchSlotAssignment(oldVnode, vnode, renderer);
 
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyRefs(vnode, vnode.owner);
@@ -795,8 +805,8 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         let slotName: unknown = '';
-        if (isVBaseElement(vnode)) {
-            slotName = vnode.data.attrs?.slot ?? '';
+        if (isVBaseElement(vnode) || isVStatic(vnode)) {
+            slotName = vnode.slotAssignment ?? '';
         } else if (isVScopedSlotFragment(vnode)) {
             slotName = vnode.slotName;
         }

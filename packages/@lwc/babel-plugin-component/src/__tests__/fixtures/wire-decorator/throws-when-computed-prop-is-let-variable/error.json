@@ -1,0 +1,10 @@
+{
+    "message": "LWC1200: Computed property in @wire config must be a constant or primitive literal.",
+    "loc": {
+        "line": 5,
+        "column": 19,
+        "start": 175,
+        "length": 4
+    },
+    "filename": "test.js"
+}

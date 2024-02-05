@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/template-compiler",
-    "version": "5.2.0",
+    "version": "6.1.0",
     "description": "Template compiler package",
     "keywords": [
         "lwc"
@@ -42,9 +42,9 @@
         }
     },
     "dependencies": {
-        "@lwc/errors": "5.2.0",
-        "@lwc/shared": "5.2.0",
-        "acorn": "~8.10.0",
+        "@lwc/errors": "6.1.0",
+        "@lwc/shared": "6.1.0",
+        "acorn": "8.10.0",
         "astring": "~1.8.6",
         "estree-walker": "~2.0.2",
         "he": "~1.2.0"

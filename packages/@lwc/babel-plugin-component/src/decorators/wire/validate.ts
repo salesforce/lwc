@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -15,12 +15,7 @@ import { isWireDecorator } from './shared';
 
 const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
-function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
-    const [id, config] = path.get('expression.arguments') as [
-        NodePath | undefined,
-        NodePath<types.ObjectExpression> | undefined
-    ];
-
+function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabelPluginPass) {
     if (!id) {
         throw generateError(
             path,
@@ -31,10 +26,9 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
         );
     }
 
-    const isIdentifier = id.isIdentifier();
     const isMemberExpression = id.isMemberExpression();
 
-    if (!isIdentifier && !isMemberExpression) {
+    if (!id.isIdentifier() && !isMemberExpression) {
         throw generateError(
             id,
             {
@@ -55,7 +49,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
     }
 
     // TODO [#3444]: improve member expression computed typechecking
-    // @ts-ignore
+    // @ts-expect-error type narrowing incorrectly reduces id to `never`
     if (isMemberExpression && !id.get('object').isIdentifier()) {
         throw generateError(
             id,
@@ -68,7 +62,7 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
 
     // TODO [#3444]: improve member expression computed typechecking
     // Ensure wire adapter is imported (check for member expression or identifier)
-    // @ts-ignore
+    // @ts-expect-error type narrowing incorrectly reduces id to `never`
     const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
     if (!path.scope.getBinding(wireBinding)) {
         throw generateError(
@@ -95,8 +89,10 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             state
         );
     }
+}
 
-    if (config && !config.isObjectExpression()) {
+function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPluginPass) {
+    if (!config.isObjectExpression()) {
         throw generateError(
             config,
             {
@@ -104,6 +100,60 @@ function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
             },
             state
         );
+    }
+
+    for (const prop of config.get('properties')) {
+        // Only validate {[computed]: true} object properties; {static: true} props are all valid
+        // and we ignore {...spreads} and {methods(){}}
+        if (!prop.isObjectProperty() || !prop.node.computed) continue;
+
+        const key: NodePath = prop.get('key');
+        if (key.isIdentifier()) {
+            // Only allow identifiers that originated from a `const` declaration
+            const binding = key.scope.getBinding(key.node.name);
+            // TODO [#3956]: Investigate allowing imported constants
+            if (binding?.kind === 'const') continue;
+            // By default, the identifier `undefined` has no binding (when it's actually undefined),
+            // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
+            if (key.node.name === 'undefined' && !binding) continue;
+        } else if (key.isLiteral()) {
+            // A literal can be a regexp, template literal, or primitive; only allow primitives
+            if (key.isTemplateLiteral()) {
+                // A template literal is not guaranteed to always result in the same value
+                // (e.g. `${Math.random()}`), so we disallow them entirely.
+                // TODO [#3956]: Investigate allowing template literals
+                throw generateError(
+                    key,
+                    {
+                        errorInfo: DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL,
+                    },
+                    state
+                );
+            } else if (!key.isRegExpLiteral()) {
+                continue;
+            }
+        }
+
+        throw generateError(
+            key,
+            {
+                errorInfo: DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL,
+            },
+            state
+        );
+    }
+}
+
+function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
+    const expressionArguments = path.get('expression.arguments');
+    if (Array.isArray(expressionArguments)) {
+        // Multiple arguments: should be [id, config?]
+        const [id, config] = expressionArguments;
+        validateWireId(id, path, state);
+        if (config) validateWireConfig(config, path, state);
+    } else {
+        // Single argument: should just be id
+        validateWireId(expressionArguments, path, state);
     }
 }
 

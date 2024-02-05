@@ -48,7 +48,7 @@ function serializeChildNodes(children: HostChildNode[], tagName?: string): strin
 }
 
 function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
-    const attrs = [`shadowroot="${shadowRoot.mode}"`];
+    const attrs = [`shadowrootmode="${shadowRoot.mode}"`];
 
     if (shadowRoot.delegatesFocus) {
         attrs.push('shadowrootdelegatesfocus');

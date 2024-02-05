@@ -27,9 +27,7 @@ export default function (define) {
                                 'ui-something',
                                 _uiSomething__default['default'],
                                 {
-                                    attrs: {
-                                        slot: 'first',
-                                    },
+                                    slotAssignment: 'first',
                                     props: {
                                         text: 'Hello',
                                     },
@@ -40,9 +38,7 @@ export default function (define) {
                                         'ui-another',
                                         _uiAnother__default['default'],
                                         {
-                                            attrs: {
-                                                slot: 'second',
-                                            },
+                                            slotAssignment: 'second',
                                             props: {
                                                 value: 'Foo',
                                             },

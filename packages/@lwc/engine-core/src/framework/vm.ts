@@ -32,7 +32,13 @@ import {
     getTemplateReactiveObserver,
     getComponentAPIVersion,
 } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import {
+    addCallbackToNextTick,
+    EmptyArray,
+    EmptyObject,
+    flattenStylesheets,
+    shouldUseNativeCustomElementLifecycle,
+} from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
@@ -88,7 +94,6 @@ export const enum ShadowMode {
 }
 
 export const enum ShadowSupportMode {
-    Any = 'any',
     Default = 'reset',
     Native = 'native',
 }
@@ -280,7 +285,11 @@ function resetComponentStateWhenRemoved(vm: VM) {
 // old vnode.children is removed from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        if (!lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (
+            !shouldUseNativeCustomElementLifecycle(
+                vm.component.constructor as LightningElementConstructor
+            )
+        ) {
             // With native lifecycle, we cannot be certain that connectedCallback was called before a component
             // was removed from the VDOM. If the component is disconnected, then connectedCallback will not fire
             // in native mode, although it will fire in synthetic mode due to appendChild triggering it.
@@ -510,35 +519,24 @@ function computeShadowMode(
     const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
-    // If ENABLE_FORCE_SHADOW_MIGRATE_MODE is true, then ShadowMode.Synthetic here will mean "force-migrate" mode.
     if (isSyntheticShadowDefined || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (
-            lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
-            def.shadowSupportMode === ShadowSupportMode.Native
-        ) {
-            if (
-                def.shadowSupportMode === ShadowSupportMode.Any ||
-                def.shadowSupportMode === ShadowSupportMode.Native
-            ) {
+        } else if (def.shadowSupportMode === ShadowSupportMode.Native) {
+            shadowMode = ShadowMode.Native;
+        } else {
+            const shadowAncestor = getNearestShadowAncestor(owner);
+            if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+                // Transitive support for native Shadow DOM. A component in native mode
+                // transitively opts all of its descendants into native.
                 shadowMode = ShadowMode.Native;
             } else {
-                const shadowAncestor = getNearestShadowAncestor(owner);
-                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
-                    shadowMode = ShadowMode.Native;
-                } else {
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = ShadowMode.Synthetic;
-                }
+                // Synthetic if neither this component nor any of its ancestors are configured
+                // to be native.
+                shadowMode = ShadowMode.Synthetic;
             }
-        } else {
-            shadowMode = ShadowMode.Synthetic;
         }
     } else {
         // Native if the synthetic shadow polyfill is unavailable.
@@ -702,7 +700,9 @@ export function runConnectedCallback(vm: VM) {
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
     if (
         process.env.IS_BROWSER &&
-        !lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
+        !shouldUseNativeCustomElementLifecycle(
+            vm.component.constructor as LightningElementConstructor
+        ) &&
         (process.env.NODE_ENV !== 'production' || isReportingEnabled())
     ) {
         if (!vm.renderer.isConnected(vm.elm)) {

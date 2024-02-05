@@ -10,14 +10,27 @@ window.HydrateTest = (function (lwc, testUtils) {
         sanitizeHtmlContent: (content) => content,
     });
 
-    const browserSupportsDeclarativeShadowDOM = Object.prototype.hasOwnProperty.call(
-        HTMLTemplateElement.prototype,
-        'shadowRoot'
-    );
+    function parseStringToDom(html) {
+        const fragment = new DOMParser().parseFromString(html, 'text/html', {
+            includeShadowRoots: true,
+        });
+        return fragment.body.firstChild;
+    }
+
+    // As of this writing, Safari does not support programmatic access to serializing/parsing DSD,
+    // e.g. getInnerHTML or DOMParser with includeShadowRoots.
+    // See: https://webkit.org/blog/13851/declarative-shadow-dom/
+    function testSupportsProgrammaticDSD() {
+        const html = '<div><template shadowrootmode="open"></template></div>';
+        const element = parseStringToDom(html);
+        return !!element.shadowRoot;
+    }
+
+    const browserSupportsProgrammaticDSD = testSupportsProgrammaticDSD();
 
     function polyfillDeclarativeShadowDom(root) {
-        root.querySelectorAll('template[shadowroot]').forEach((template) => {
-            const mode = template.getAttribute('shadowroot');
+        root.querySelectorAll('template[shadowrootmode]').forEach((template) => {
+            const mode = template.getAttribute('shadowrootmode');
             const shadowRoot = template.parentNode.attachShadow({ mode });
             shadowRoot.appendChild(template.content);
             template.remove();
@@ -26,14 +39,11 @@ window.HydrateTest = (function (lwc, testUtils) {
         });
     }
 
-    function appendTestTarget(ssrtext) {
+    function appendTestTarget(ssrText) {
         const div = document.createElement('div');
-        const fragment = new DOMParser().parseFromString(ssrtext, 'text/html', {
-            includeShadowRoots: true,
-        });
 
-        const testTarget = fragment.body.firstChild;
-        if (!browserSupportsDeclarativeShadowDOM) {
+        const testTarget = parseStringToDom(ssrText);
+        if (!browserSupportsProgrammaticDSD) {
             polyfillDeclarativeShadowDom(testTarget);
         }
         div.appendChild(testTarget);

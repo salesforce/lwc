@@ -62,7 +62,11 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    createCustomElement: (tagName: string, upgradeCallback: LifecycleCallback) => E;
+    createCustomElement: (
+        tagName: string,
+        upgradeCallback: LifecycleCallback,
+        useNativeLifecycle: boolean
+    ) => E;
     defineCustomElement: (tagName: string) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
