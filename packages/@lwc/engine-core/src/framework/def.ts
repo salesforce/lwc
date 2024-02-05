@@ -131,6 +131,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             );
         }
 
+        // TODO [#3971]: Completely remove shadowSupportMode "any"
         if (
             !isUndefined(ctorShadowSupportMode) &&
             ctorShadowSupportMode === ShadowSupportMode.Any
