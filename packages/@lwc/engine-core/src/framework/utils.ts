@@ -138,6 +138,7 @@ export function assertNotProd() {
 // format uses the special `slotAssignment` key.
 // This should be removed when the LWC v5 compiler is not used anywhere where it could be mismatched
 // with another LWC engine version.
+// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
 export function applyTemporaryCompilerV5SlotFix(data: VElementData) {
     const { attrs } = data;
     if (!isUndefined(attrs)) {

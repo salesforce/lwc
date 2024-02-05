@@ -6,6 +6,7 @@ import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
 
 // This test doesn't make sense if we are explicitly forcing a mismatch for the test
+// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
 if (!process.env.FORCE_LWC_V5_COMPILER_FOR_TEST) {
     describe('compiler version mismatch', () => {
         describe('stamped with version number', () => {

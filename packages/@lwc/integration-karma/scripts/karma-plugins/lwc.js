@@ -49,6 +49,7 @@ function createPreprocessor(config, emitter, logger) {
         // TODO [#3370]: remove experimental template expression flag
         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
 
+        // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
         const lwcRollupPlugin = FORCE_LWC_V5_COMPILER_FOR_TEST
             ? require('@lwc/rollup-plugin-v5')
             : require('@lwc/rollup-plugin');
