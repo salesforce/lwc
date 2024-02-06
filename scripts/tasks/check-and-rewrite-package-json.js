@@ -36,9 +36,6 @@ const LWC_EXPOSED_MODULES = {
         // TODO [#3517]: remove support for deprecated 'wire-service' import
         'wire-service',
     ],
-    // This is an experimental package and is not included by default as part of
-    // @lwc/rollup-plugin/src/index.tx
-    '@lwc/signals': ['@lwc/signals'],
 };
 
 const directories = globSync('./packages/@lwc/*').filter(
