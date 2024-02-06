@@ -132,10 +132,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         }
 
         // TODO [#3971]: Completely remove shadowSupportMode "any"
-        if (
-            !isUndefined(ctorShadowSupportMode) &&
-            ctorShadowSupportMode === ShadowSupportMode.Any
-        ) {
+        if (ctorShadowSupportMode === ShadowSupportMode.Any) {
             logWarn(
                 `Invalid value 'any' for static property shadowSupportMode. 'any' is deprecated and will be removed in a future release--use 'native' instead.`
             );
