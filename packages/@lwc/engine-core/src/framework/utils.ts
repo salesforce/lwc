@@ -140,6 +140,9 @@ export function assertNotProd() {
 // with another LWC engine version.
 // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
 export function applyTemporaryCompilerV5SlotFix(data: VElementData) {
+    if (lwcRuntimeFlags.DISABLE_TEMPORARY_V5_COMPILER_SUPPORT) {
+        return data;
+    }
     const { attrs } = data;
     if (!isUndefined(attrs)) {
         const { slot } = attrs;
