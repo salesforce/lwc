@@ -6,6 +6,9 @@ import Parent from 'x/parent';
 import Child from 'x/child';
 import DuplicateSignalOnTemplate from 'x/duplicateSignalOnTemplate';
 import List from 'x/list';
+
+// Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
+// In production the signal will come from a 3rd party library.
 import { Signal } from 'x/signal';
 
 if (process.env.ENABLE_EXPERIMENTAL_SIGNALS) {
