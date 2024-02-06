@@ -94,6 +94,7 @@ export const enum ShadowMode {
 }
 
 export const enum ShadowSupportMode {
+    Any = 'any',
     Default = 'reset',
     Native = 'native',
 }

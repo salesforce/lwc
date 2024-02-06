@@ -32,7 +32,7 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
@@ -122,11 +122,19 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (
             !isUndefined(ctorShadowSupportMode) &&
+            ctorShadowSupportMode !== ShadowSupportMode.Any &&
             ctorShadowSupportMode !== ShadowSupportMode.Default &&
             ctorShadowSupportMode !== ShadowSupportMode.Native
         ) {
             logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
+            );
+        }
+
+        // TODO [#3971]: Completely remove shadowSupportMode "any"
+        if (ctorShadowSupportMode === ShadowSupportMode.Any) {
+            logWarn(
+                `Invalid value 'any' for static property shadowSupportMode. 'any' is deprecated and will be removed in a future release--use 'native' instead.`
             );
         }
 
