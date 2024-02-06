@@ -21,9 +21,16 @@ describe('shadowSupportMode static property', () => {
 
     // TODO [#3971]: Completely remove shadowSupportMode "any"
     it('should warn for deprecated value "any"', () => {
+        let elm;
+
+        // eslint-disable-next-line jest/valid-expect
         expect(() => {
-            createElement('x-any', { is: Any });
+            elm = createElement('x-any', { is: Any });
         }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
+
+        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(true);
+        }
     });
 });
 
