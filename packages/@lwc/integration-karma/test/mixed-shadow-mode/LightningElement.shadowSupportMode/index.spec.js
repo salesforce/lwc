@@ -28,7 +28,10 @@ describe('shadowSupportMode static property', () => {
         }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
 
         if (process.env.SYNTHETIC_SHADOW_ENABLED && process.env.NATIVE_SHADOW_ROOT_DEFINED) {
-            const elm = createElement('x-any2', { is: Any2 });
+            let elm;
+            expect(() => {
+                elm = createElement('x-any2', { is: Any2 });
+            }).toLogWarningDev();
             expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(true);
         }
     });
