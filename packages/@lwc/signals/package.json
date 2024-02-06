@@ -40,16 +40,5 @@
                 ]
             }
         }
-    },
-    "lwc": {
-        "modules": [
-            {
-                "name": "@lwc/signals",
-                "path": "dist/index.js"
-            }
-        ],
-        "expose": [
-            "@lwc/signals"
-        ]
     }
 }
