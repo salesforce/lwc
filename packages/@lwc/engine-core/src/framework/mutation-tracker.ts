@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isFunction, isNull, isObject } from '@lwc/shared';
+import { Signal } from '@lwc/signals';
 import {
     JobFunction,
     CallbackFunction,
@@ -42,16 +44,16 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
     //  2. There was a call to a getter to access the signal (happens during vnode generation)
     if (
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
-        target &&
-        typeof target === 'object' &&
+        isObject(target) &&
+        !isNull(target) &&
         'value' in target &&
         'subscribe' in target &&
-        typeof target.subscribe === 'function' &&
+        isFunction(target.subscribe) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {
         // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
-        subscribeToSignal(component, target, tro.notify.bind(tro));
+        subscribeToSignal(component, target as Signal<any>, tro.notify.bind(tro));
     }
 }
 

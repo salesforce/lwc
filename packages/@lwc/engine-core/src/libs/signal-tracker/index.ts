@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFalse, isUndefined } from '@lwc/shared';
+import { isFalse, isFunction, isUndefined } from '@lwc/shared';
 import { Signal } from '@lwc/signals';
 import { logWarnOnce } from '../../shared/logger';
 
@@ -12,9 +12,9 @@ import { logWarnOnce } from '../../shared/logger';
  * This map keeps track of objects to signals. There is an assumption that the signal is strongly referenced
  * on the object which allows the SignalTracker to be garbage collected along with the object.
  */
-const TargetToSignalTrackerMap: WeakMap<Object, SignalTracker> = new WeakMap();
+const TargetToSignalTrackerMap = new WeakMap<object, SignalTracker>();
 
-function getSignalTracker(target: Object) {
+function getSignalTracker(target: object) {
     let signalTracker = TargetToSignalTrackerMap.get(target);
     if (isUndefined(signalTracker)) {
         signalTracker = new SignalTracker();
@@ -34,7 +34,7 @@ export function subscribeToSignal(
     }
 }
 
-export function unsubscribeFromSignals(target: Object) {
+export function unsubscribeFromSignals(target: object) {
     if (TargetToSignalTrackerMap.has(target)) {
         const signalTracker = getSignalTracker(target);
         signalTracker.unsubscribeFromSignals();
@@ -60,12 +60,16 @@ class SignalTracker {
     subscribeToSignal(signal: Signal<unknown>, update: CallbackFunction) {
         try {
             const unsubscribe = signal.subscribe(update);
-            if (typeof unsubscribe === 'function') {
+            if (isFunction(unsubscribe)) {
+                // TODO [#3978]: Evaluate how we should handle the case when unsubscribe is not a function.
+                // Long term we should throw an error or log a warning.
                 this.signalToUnsubscribeMap.set(signal, unsubscribe);
             }
-        } catch (err) {
+        } catch (err: any) {
             logWarnOnce(
-                `Attempted to subscribe to an object that has the shape of a signal but received the following error: ${err}`
+                `Attempted to subscribe to an object that has the shape of a signal but received the following error: ${
+                    err?.stack ?? err
+                }`
             );
         }
     }
@@ -73,9 +77,11 @@ class SignalTracker {
     unsubscribeFromSignals() {
         try {
             this.signalToUnsubscribeMap.forEach((unsubscribe) => unsubscribe());
-        } catch (err) {
+        } catch (err: any) {
             logWarnOnce(
-                `Attempted to call a signal's unsubscribe callback but received the following error: ${err}`
+                `Attempted to call a signal's unsubscribe callback but received the following error: ${
+                    err?.stack ?? err
+                }`
             );
         }
     }

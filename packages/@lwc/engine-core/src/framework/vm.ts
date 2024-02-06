@@ -31,6 +31,7 @@ import {
     markComponentAsDirty,
     getTemplateReactiveObserver,
     getComponentAPIVersion,
+    resetTemplateObserverAndUnsubscribe,
 } from './component';
 import {
     addCallbackToNextTick,
@@ -51,7 +52,7 @@ import {
     logGlobalOperationStart,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { ReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
+import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import {
     VNodes,
@@ -272,12 +273,8 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { tro, component } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
-        tro.reset();
-        if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-            unsubscribeFromSignals(component);
-        }
+        resetTemplateObserverAndUnsubscribe(vm);
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
@@ -389,7 +386,7 @@ export function createVM<HostNode, HostElement>(
     }
 
     vm.stylesheets = computeStylesheets(vm, def.ctor);
-    const computedShadowMode = computeShadowMode(def, vm.owner, renderer);
+    const computedShadowMode = computeShadowMode(def, vm.owner, renderer, hydrated);
     if (lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
         vm.shadowMode = ShadowMode.Native;
         vm.shadowMigrateMode = computedShadowMode === ShadowMode.Synthetic;
@@ -494,12 +491,18 @@ export function computeShadowAndRenderMode(
     const { renderMode } = def;
 
     // Assume null `owner` - this is what happens in hydration cases anyway
-    const shadowMode = computeShadowMode(def, /* owner */ null, renderer);
+    // Also assume we are not in hydration mode for this exported API
+    const shadowMode = computeShadowMode(def, /* owner */ null, renderer, false);
 
     return { renderMode, shadowMode };
 }
 
-function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: RendererAPI) {
+function computeShadowMode(
+    def: ComponentDef,
+    owner: VM | null,
+    renderer: RendererAPI,
+    hydrated: boolean | undefined
+) {
     // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
     // on, but components running in actual native shadow mode
     if (
@@ -509,38 +512,32 @@ function computeShadowMode(def: ComponentDef, owner: VM | null, renderer: Render
         return ShadowMode.Native;
     }
 
+    if (isTrue(hydrated)) {
+        // hydration only supports native shadow
+        return ShadowMode.Native;
+    }
+
     const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
-    // If ENABLE_FORCE_SHADOW_MIGRATE_MODE is true, then ShadowMode.Synthetic here will mean "force-migrate" mode.
     if (isSyntheticShadowDefined || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (
-            lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE ||
-            def.shadowSupportMode === ShadowSupportMode.Native
-        ) {
-            if (
-                def.shadowSupportMode === ShadowSupportMode.Any ||
-                def.shadowSupportMode === ShadowSupportMode.Native
-            ) {
+        } else if (def.shadowSupportMode === ShadowSupportMode.Native) {
+            shadowMode = ShadowMode.Native;
+        } else {
+            const shadowAncestor = getNearestShadowAncestor(owner);
+            if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+                // Transitive support for native Shadow DOM. A component in native mode
+                // transitively opts all of its descendants into native.
                 shadowMode = ShadowMode.Native;
             } else {
-                const shadowAncestor = getNearestShadowAncestor(owner);
-                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
-                    shadowMode = ShadowMode.Native;
-                } else {
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = ShadowMode.Synthetic;
-                }
+                // Synthetic if neither this component nor any of its ancestors are configured
+                // to be native.
+                shadowMode = ShadowMode.Synthetic;
             }
-        } else {
-            shadowMode = ShadowMode.Synthetic;
         }
     } else {
         // Native if the synthetic shadow polyfill is unavailable.

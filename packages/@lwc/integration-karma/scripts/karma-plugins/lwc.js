@@ -12,9 +12,8 @@
 'use strict';
 
 const path = require('path');
-
 const { rollup } = require('rollup');
-const lwcRollupPlugin = require('@lwc/rollup-plugin');
+const { FORCE_LWC_V5_COMPILER_FOR_TEST } = require('../shared/options.js');
 
 const {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
@@ -49,6 +48,11 @@ function createPreprocessor(config, emitter, logger) {
 
         // TODO [#3370]: remove experimental template expression flag
         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
+
+        // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
+        const lwcRollupPlugin = FORCE_LWC_V5_COMPILER_FOR_TEST
+            ? require('@lwc/rollup-plugin-v5')
+            : require('@lwc/rollup-plugin');
 
         const plugins = [
             lwcRollupPlugin({

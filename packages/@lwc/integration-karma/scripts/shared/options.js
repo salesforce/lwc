@@ -26,11 +26,17 @@ const DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER = Boolean(
 const DISABLE_STATIC_CONTENT_OPTIMIZATION = Boolean(
     process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
 );
+const ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION = Boolean(
+    process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
+);
 const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
 const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
 const ENABLE_EXPERIMENTAL_SIGNALS = Boolean(process.env.ENABLE_EXPERIMENTAL_SIGNALS);
+
+// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
+const FORCE_LWC_V5_COMPILER_FOR_TEST = Boolean(process.env.FORCE_LWC_V5_COMPILER_FOR_TEST);
 
 module.exports = {
     // Test configuration
@@ -43,6 +49,8 @@ module.exports = {
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
     ENABLE_EXPERIMENTAL_SIGNALS,
     API_VERSION,
+    FORCE_LWC_V5_COMPILER_FOR_TEST,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
 
