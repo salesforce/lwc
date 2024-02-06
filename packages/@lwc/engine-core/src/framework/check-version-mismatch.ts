@@ -35,15 +35,6 @@ export function checkVersionMismatch(
     func: Template | StylesheetFactory | LightningElementConstructor,
     type: 'template' | 'stylesheet' | 'component'
 ) {
-    // Only used in LWC's Karma tests
-    if (process.env.NODE_ENV === 'test-karma-lwc') {
-        // If we are explicitly testing for a compiler/engine version mismatch, then there is no need to warn
-        // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-        if (process.env.FORCE_LWC_V5_COMPILER_FOR_TEST) {
-            return;
-        }
-    }
-
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         const version = versionMatcher[1];
