@@ -103,6 +103,7 @@ export interface TransformOptions {
     enableLightningWebSecurityTransforms?: boolean;
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
+    targetSSR?: boolean;
 }
 
 type RequiredTransformOptions = Omit<
@@ -208,5 +209,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         outputConfig,
         experimentalDynamicComponent,
         apiVersion,
+        targetSSR: !!options.targetSSR,
     };
 }

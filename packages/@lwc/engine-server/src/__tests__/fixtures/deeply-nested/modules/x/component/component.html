@@ -1,0 +1,25 @@
+<template>
+	<div>
+	    <template lwc:if={isPositive}>
+		    <template lwc:if={isDivisibleByThree}>
+				<template for:each={someChildren} for:item="child">
+					<span key={child}>
+						<x-component label={child} remaining={minusOne}></x-component>
+					</span>
+				</template>
+		    </template>
+		    <template lwc:elseif={isDivisibleByTwo}>
+		    	<div>
+		    		<span>two</span>
+		        	<x-component remaining={minusOne}></x-component>
+		        </div>
+		    </template>
+		    <template lwc:else>
+		        <x-component remaining={minusOne}></x-component>
+		    </template>
+	    </template>
+	    <template lwc:else>
+	        terminal node
+	    </template>
+	</div>
+</template>
