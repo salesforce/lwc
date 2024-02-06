@@ -22,12 +22,6 @@ export interface FeatureFlagMap {
     PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
 
     /**
-     * LWC engine flag to enable mixed shadow mode. Setting this flag to `true` enables usage of
-     * native shadow DOM even when the synthetic shadow polyfill is applied.
-     */
-    ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
-
-    /**
      * LWC engine flag to force native shadow mode for mixed shadow mode testing.
      */
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
@@ -75,6 +69,11 @@ export interface FeatureFlagMap {
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+
+    /**
+     * If true, disable temporary support for the LWC v5 compiler format.
+     */
+    DISABLE_TEMPORARY_V5_COMPILER_SUPPORT: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

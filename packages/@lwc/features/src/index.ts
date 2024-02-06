@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
+import { create, defineProperty, isUndefined, isBoolean } from '@lwc/shared';
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
@@ -12,7 +12,6 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
-    ENABLE_MIXED_SHADOW_MODE: null,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
@@ -20,15 +19,14 @@ const features: FeatureFlagMap = {
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
     ENABLE_EXPERIMENTAL_SIGNALS: null,
+    DISABLE_TEMPORARY_V5_COMPILER_SUPPORT: null,
 };
 
-// eslint-disable-next-line no-restricted-properties
-if (!globalThis.lwcRuntimeFlags) {
+if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-// eslint-disable-next-line no-restricted-properties
-const flags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
+const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature

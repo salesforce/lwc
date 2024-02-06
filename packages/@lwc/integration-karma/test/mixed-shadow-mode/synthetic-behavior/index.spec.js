@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds, isNativeShadowRootInstance } from 'test-utils';
 import ParentAnyChildAny from 'x/parentAnyChildAny';
 import ParentAnyChildReset from 'x/parentAnyChildReset';
@@ -17,13 +17,6 @@ import GrandparentResetParentResetChildReset from 'x/grandparentResetParentReset
 
 if (!process.env.NATIVE_SHADOW) {
     describe('synthetic behavior', () => {
-        beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-        });
-        afterEach(() => {
-            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
-        });
-
         const scenarios = [
             {
                 Component: ParentAnyChildAny,

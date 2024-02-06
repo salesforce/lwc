@@ -1,6 +1,8 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
+import Any from 'x/any';
+import Any2 from 'x/any2';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 import NativeOnly from 'x/native';
@@ -15,30 +17,23 @@ describe('shadowSupportMode static property', () => {
     it('should not throw for valid values', () => {
         expect(() => {
             createElement('x-valid', { is: Valid });
-        }).not.toThrowError();
-    });
-});
-
-describe('ENABLE_MIXED_SHADOW_MODE', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+        }).not.toLogErrorDev();
     });
 
-    it('should be configured as "any" (sanity)', () => {
-        expect(Valid.shadowSupportMode === 'any').toBeTrue();
-    });
+    // TODO [#3971]: Completely remove shadowSupportMode "any"
+    it('should warn for deprecated value "any"', () => {
+        // eslint-disable-next-line jest/valid-expect
+        expect(() => {
+            createElement('x-any', { is: Any });
+        }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
 
-    it('should enable mixed shadow mode', () => {
-        const elm = createElement('x-valid', { is: Valid });
-        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
-            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
-        } else {
-            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        if (process.env.SYNTHETIC_SHADOW_ENABLED && !process.env.MIXED_SHADOW) {
+            let elm;
+            expect(() => {
+                elm = createElement('x-any2', { is: Any2 });
+            }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(true);
         }
-    });
-
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
     });
 });
 

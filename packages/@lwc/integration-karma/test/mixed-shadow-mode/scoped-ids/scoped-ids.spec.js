@@ -1,15 +1,7 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Test from 'x/test';
 
 describe('scoped-ids', () => {
-    beforeAll(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-    });
-
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
-    });
-
     it('should entrust id scoping to native shadow (static)', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);

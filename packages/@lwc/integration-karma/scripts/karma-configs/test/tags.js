@@ -13,9 +13,11 @@ const {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     NODE_ENV_FOR_TEST,
     API_VERSION,
+    FORCE_LWC_V5_COMPILER_FOR_TEST,
 } = require('../../shared/options');
 
 // These are used to decide the directory that coverage is written to
@@ -25,9 +27,11 @@ const TAGS = [
     LEGACY_BROWSERS && 'legacy-browsers',
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL && 'aria-polyfill',
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER && 'disable-synthetic-in-compiler',
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION && 'enable-synthetic-in-hydration',
     DISABLE_STATIC_CONTENT_OPTIMIZATION && 'disable-static-content-optimization',
     `NODE_ENV-${NODE_ENV_FOR_TEST}`,
     API_VERSION && `api-version-${API_VERSION}`,
+    FORCE_LWC_V5_COMPILER_FOR_TEST && 'force-lwc-v5-compiler',
 ].filter(Boolean);
 
 module.exports = TAGS;
