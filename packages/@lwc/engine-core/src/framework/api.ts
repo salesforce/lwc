@@ -163,6 +163,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
     data = applyTemporaryCompilerV5SlotFix(data);
 
     const { key, slotAssignment } = data;
@@ -217,6 +218,7 @@ function s(
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, apiVersion } = vmBeingRendered;
 
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
     data = applyTemporaryCompilerV5SlotFix(data);
 
     if (
@@ -350,6 +352,8 @@ function c(
             });
         }
     }
+
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
     data = applyTemporaryCompilerV5SlotFix(data);
 
     const { key, slotAssignment } = data;
