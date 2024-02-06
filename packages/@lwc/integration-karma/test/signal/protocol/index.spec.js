@@ -89,14 +89,12 @@ describe('signal protocol', () => {
         const container = createElement('x-container', { is: Container });
         // append the container first to avoid error message with native lifecycle
         document.body.appendChild(container);
-
         await Promise.resolve();
 
         const signalElm = createElement('x-signal-elm', { is: Child });
         const signal = new Signal('initial value');
         signalElm.signal = signal;
         container.appendChild(signalElm);
-
         await Promise.resolve();
 
         expect(container.renderCount).toBe(1);
