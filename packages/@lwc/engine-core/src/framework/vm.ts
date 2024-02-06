@@ -31,6 +31,7 @@ import {
     markComponentAsDirty,
     getTemplateReactiveObserver,
     getComponentAPIVersion,
+    resetTemplateObserverAndUnsubscribe,
 } from './component';
 import {
     addCallbackToNextTick,
@@ -51,7 +52,7 @@ import {
     logGlobalOperationStart,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { ReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
+import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import {
     VNodes,
@@ -272,12 +273,8 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { tro, component } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
-        tro.reset();
-        if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-            unsubscribeFromSignals(component);
-        }
+        resetTemplateObserverAndUnsubscribe(vm);
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);
