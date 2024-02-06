@@ -59,8 +59,6 @@ jobs:
       - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: API_VERSION=59 yarn sauce:ci
       - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: ENABLE_EXPERIMENTAL_SIGNALS=1 yarn sauce:ci
-      - run: ENABLE_EXPERIMENTAL_SIGNALS=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v3

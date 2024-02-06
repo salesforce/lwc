@@ -18,11 +18,11 @@ module.exports = {
         '<rootDir>/packages/@lwc/module-resolver',
         '<rootDir>/packages/@lwc/rollup-plugin',
         '<rootDir>/packages/@lwc/shared',
+        '<rootDir>/packages/@lwc/signals',
         '<rootDir>/packages/@lwc/style-compiler',
         '<rootDir>/packages/@lwc/synthetic-shadow',
         '<rootDir>/packages/@lwc/template-compiler',
         '<rootDir>/packages/@lwc/wire-service',
-        '<rootDir>/packages/@lwc/signals',
     ],
     coverageThreshold: {
         global: {
