@@ -31,7 +31,7 @@ describe('shadowSupportMode static property', () => {
             let elm;
             expect(() => {
                 elm = createElement('x-any2', { is: Any2 });
-            }).toLogWarningDev();
+            }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
             expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(true);
         }
     });
