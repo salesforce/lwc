@@ -1,0 +1,8 @@
+<template>
+    <span lwc:if={showApiSignal}>{apiSignal.value}</span>
+    <span lwc:if={showGetterSignal}>{getterSignalField.value}</span>
+    <span lwc:if={showTrackedSignal}>{trackSignal.value}</span>
+    <span lwc:if={showObservedFieldSignal}>{observedFieldSignal.value}</span>
+    <span lwc:if={showOnlyUsingSignalNotValue}>{observedFieldSignal}</span>
+    <span lwc:if={showGetterSignalValue}>{getterSignalFieldValue}</span>
+</template>
