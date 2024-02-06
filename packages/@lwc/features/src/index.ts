@@ -18,6 +18,7 @@ const features: FeatureFlagMap = {
     ENABLE_FROZEN_TEMPLATE: null,
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
+    DISABLE_TEMPORARY_V5_COMPILER_SUPPORT: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

@@ -17,6 +17,7 @@ const {
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     NODE_ENV_FOR_TEST,
     API_VERSION,
+    FORCE_LWC_V5_COMPILER_FOR_TEST,
 } = require('../../shared/options');
 
 // These are used to decide the directory that coverage is written to
@@ -30,6 +31,7 @@ const TAGS = [
     DISABLE_STATIC_CONTENT_OPTIMIZATION && 'disable-static-content-optimization',
     `NODE_ENV-${NODE_ENV_FOR_TEST}`,
     API_VERSION && `api-version-${API_VERSION}`,
+    FORCE_LWC_V5_COMPILER_FOR_TEST && 'force-lwc-v5-compiler',
 ].filter(Boolean);
 
 module.exports = TAGS;

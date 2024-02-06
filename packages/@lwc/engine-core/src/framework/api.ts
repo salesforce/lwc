@@ -29,7 +29,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
-import { EmptyArray } from './utils';
+import { applyTemporaryCompilerV5SlotFix, EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -163,6 +163,9 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         });
     }
 
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
+    data = applyTemporaryCompilerV5SlotFix(data);
+
     const { key, slotAssignment } = data;
 
     const vnode: VElement = {
@@ -214,6 +217,9 @@ function s(
 
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, apiVersion } = vmBeingRendered;
+
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
+    data = applyTemporaryCompilerV5SlotFix(data);
 
     if (
         !isUndefined(slotset) &&
@@ -346,6 +352,10 @@ function c(
             });
         }
     }
+
+    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
+    data = applyTemporaryCompilerV5SlotFix(data);
+
     const { key, slotAssignment } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
