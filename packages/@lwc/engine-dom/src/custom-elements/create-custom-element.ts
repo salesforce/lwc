@@ -37,7 +37,8 @@ let elementBeingUpgradedByLWC = false;
 const createUpgradableConstructor = () => {
     // TODO [#2972]: this class should expose observedAttributes as necessary
     class UpgradableConstructor extends HTMLElement {
-        static formAssociated = true;
+        // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+        // static formAssociated = true;
 
         constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
             super();
