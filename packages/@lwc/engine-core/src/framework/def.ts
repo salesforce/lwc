@@ -48,6 +48,7 @@ import {
     HTMLElementConstructor,
 } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 export interface ComponentDef {
     name: string;
@@ -129,6 +130,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
+        }
+
+        if (
+            isReportingEnabled() &&
+            (ctorShadowSupportMode === ShadowSupportMode.Any ||
+                ctorShadowSupportMode === ShadowSupportMode.Native)
+        ) {
+            report(ReportingEventId.ShadowSupportModeUsage, {
+                tagName: ctorName,
+                mode: ctorShadowSupportMode,
+            });
         }
 
         // TODO [#3971]: Completely remove shadowSupportMode "any"
