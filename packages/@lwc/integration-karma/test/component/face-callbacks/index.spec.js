@@ -74,14 +74,17 @@ const testWarningLoggedWhenFormAssociatedNotSet = (ctor) => {
 if (typeof ElementInternals !== 'undefined') {
     if (nativeCustomElementLifecycleEnabled) {
         // native lifecycle enabled
-        describe('native lifecycle', () => {
+        // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+        xdescribe('native lifecycle', () => {
             if (process.env.NATIVE_SHADOW) {
-                describe('native shadow', () => {
+                // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+                xdescribe('native shadow', () => {
                     faceSanityTest(FormAssociated);
                     testWarningLoggedWhenFormAssociatedNotSet(NotFormAssociated);
                 });
             } else {
-                describe('synthetic shadow', () => {
+                // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+                xdescribe('synthetic shadow', () => {
                     it('cannot be used and throws an error', () => {
                         const form = createFormElement();
                         const face = createElement('face-form-associated', { is: FormAssociated });
@@ -92,14 +95,15 @@ if (typeof ElementInternals !== 'undefined') {
                     });
                 });
             }
-
-            describe('light DOM', () => {
+            // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+            xdescribe('light DOM', () => {
                 faceSanityTest(LightDomFormAssociated);
                 testWarningLoggedWhenFormAssociatedNotSet(LightDomNotFormAssociated);
             });
         });
     } else {
-        describe('synthetic lifecycle', () => {
+        // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+        xdescribe('synthetic lifecycle', () => {
             [
                 { name: 'shadow DOM', is: FormAssociated },
                 { name: 'light DOM', is: LightDomFormAssociated },
