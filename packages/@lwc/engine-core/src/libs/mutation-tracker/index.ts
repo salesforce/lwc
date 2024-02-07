@@ -125,4 +125,8 @@ export class ReactiveObserver {
         // we keep track of observing records where the observing record was added to so we can do some clean up later on
         ArrayPush.call(this.listeners, reactiveObservers);
     }
+
+    isObserving() {
+        return currentReactiveObserver === this;
+    }
 }

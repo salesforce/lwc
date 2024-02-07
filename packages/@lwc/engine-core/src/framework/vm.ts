@@ -31,6 +31,7 @@ import {
     markComponentAsDirty,
     getTemplateReactiveObserver,
     getComponentAPIVersion,
+    resetTemplateObserverAndUnsubscribe,
 } from './component';
 import {
     addCallbackToNextTick,
@@ -272,9 +273,8 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
 
     if (state !== VMState.disconnected) {
-        const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
-        tro.reset();
+        resetTemplateObserverAndUnsubscribe(vm);
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runChildNodesDisconnectedCallback(vm);

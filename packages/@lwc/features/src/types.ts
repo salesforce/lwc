@@ -65,6 +65,12 @@ export interface FeatureFlagMap {
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: FeatureFlagValue;
 
     /**
+     * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
+     * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
+     */
+    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+
+    /**
      * If true, disable temporary support for the LWC v5 compiler format.
      */
     DISABLE_TEMPORARY_V5_COMPILER_SUPPORT: FeatureFlagValue;

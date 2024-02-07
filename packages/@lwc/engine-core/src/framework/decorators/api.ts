@@ -40,8 +40,9 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                 }
                 return;
             }
-            componentValueObserved(vm, key);
-            return vm.cmpProps[key];
+            const val = vm.cmpProps[key];
+            componentValueObserved(vm, key, val);
+            return val;
         },
         set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
