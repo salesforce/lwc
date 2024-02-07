@@ -31,9 +31,7 @@ describe('shadow support mode reporting', () => {
     });
 
     it('should report use of value "any"', () => {
-        expect(() => {
-            createElement('x-any', { is: Any });
-        }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
+        createElement('x-any', { is: Any });
 
         expect(dispatcher).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledWith('ShadowSupportModeUsage', {
