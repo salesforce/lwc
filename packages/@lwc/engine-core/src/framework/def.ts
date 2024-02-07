@@ -198,6 +198,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             (shadowSupportMode === ShadowSupportMode.Any ||
                 shadowSupportMode === ShadowSupportMode.Native)
         ) {
+            // tagName is used to avoid having to make o11y schema changes in a patch release.
             report(ReportingEventId.ShadowSupportModeUsage, {
                 tagName: Ctor.name,
                 mode: shadowSupportMode,

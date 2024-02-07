@@ -52,8 +52,6 @@ export interface ShadowModeUsagePayload extends BasePayload {
     mode: ShadowMode;
 }
 
-// TODO [#3981]: Add schema to o11y schema repo so that we can use 'ctorName' or 'name'
-// instead of overloading 'tagName'.
 export interface ShadowSupportModeUsagePayload extends BasePayload {
     mode: ShadowSupportMode;
 }
