@@ -48,6 +48,7 @@ import {
     HTMLElementConstructor,
 } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 export interface ComponentDef {
     name: string;
@@ -198,6 +199,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     let shadowSupportMode = superDef.shadowSupportMode;
     if (!isUndefined(ctorShadowSupportMode)) {
         shadowSupportMode = ctorShadowSupportMode;
+
+        if (
+            isReportingEnabled() &&
+            (shadowSupportMode === ShadowSupportMode.Any ||
+                shadowSupportMode === ShadowSupportMode.Native)
+        ) {
+            report(ReportingEventId.ShadowSupportModeUsage, {
+                tagName: Ctor.name,
+                mode: shadowSupportMode,
+            });
+        }
     }
 
     let renderMode = superDef.renderMode;
