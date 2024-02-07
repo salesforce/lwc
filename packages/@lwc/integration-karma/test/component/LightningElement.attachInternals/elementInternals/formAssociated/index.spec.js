@@ -5,7 +5,8 @@ import FormAssociated from 'x/formAssociated';
 
 if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENABLED) {
     // Verify ElementInternals proxy getter throws error.
-    it('form-related operations and attributes should throw DOMException for non-form-associated custom elements.', () => {
+    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+    xit('form-related operations and attributes should throw DOMException for non-form-associated custom elements.', () => {
         const control = createElement('x-not-form-associated', { is: NotFormAssociated });
         expect(() => control.internals.setFormValue('')).toThrowError(
             /The target element is not a form-associated custom element./
@@ -45,7 +46,8 @@ if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENA
     };
 
     // Verify ElementInternals proxy getter does not throw error.
-    it('form-related operations and attributes should not throw for form-associated custom elements.', () => {
+    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+    xit('form-related operations and attributes should not throw for form-associated custom elements.', () => {
         const control = createControlElm();
         expect(() => control.internals.setFormValue).not.toThrowError();
         expect(() => control.internals.form).not.toThrowError();
@@ -59,7 +61,8 @@ if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENA
     });
 
     // Verify basic functionality works correctly in presence of proxy.
-    it('form-related operations and attributes sanity test', () => {
+    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+    xit('form-related operations and attributes sanity test', () => {
         const control = createControlElm();
         const form = document.body.querySelector('form');
 
