@@ -132,17 +132,6 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             );
         }
 
-        if (
-            isReportingEnabled() &&
-            (ctorShadowSupportMode === ShadowSupportMode.Any ||
-                ctorShadowSupportMode === ShadowSupportMode.Native)
-        ) {
-            report(ReportingEventId.ShadowSupportModeUsage, {
-                tagName: ctorName,
-                mode: ctorShadowSupportMode,
-            });
-        }
-
         // TODO [#3971]: Completely remove shadowSupportMode "any"
         if (ctorShadowSupportMode === ShadowSupportMode.Any) {
             logWarn(
@@ -210,6 +199,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     let shadowSupportMode = superDef.shadowSupportMode;
     if (!isUndefined(ctorShadowSupportMode)) {
         shadowSupportMode = ctorShadowSupportMode;
+
+        if (
+            isReportingEnabled() &&
+            (shadowSupportMode === ShadowSupportMode.Any ||
+                shadowSupportMode === ShadowSupportMode.Native)
+        ) {
+            report(ReportingEventId.ShadowSupportModeUsage, {
+                tagName: Ctor.name,
+                mode: shadowSupportMode,
+            });
+        }
     }
 
     let renderMode = superDef.renderMode;
