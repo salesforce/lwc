@@ -10,7 +10,8 @@ exports.STANDARD_SAUCE_BROWSERS = [
         label: 'sl_chrome_latest',
         browserName: 'chrome',
         // Hydration tests are broken on Chrome 121 due to changes with shadowRoot, but fixed on Chrome 122.
-        // Pinning Chrome version to unblock tests. Should be removed once Chrome 122 becomes latest.
+        // Pinning Chrome version to unblock tests.
+        // TODO [#3987]: Should be removed once Chrome 122 becomes latest.
         browserVersion: '120',
     },
     {
