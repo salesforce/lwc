@@ -9,8 +9,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
 
-    "target": "es2018",
-    "lib": ["es2018"],
+    "target": "es2021",
+    "lib": ["es2021"],
 
     // Disable automatic inclusion of @types packages
     "types": ["node", "jest"],
