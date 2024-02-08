@@ -9,18 +9,18 @@ import fs from 'fs';
 import path from 'path';
 
 import { rollup, RollupLog } from 'rollup';
-// @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
+import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
-import { serverSideRenderComponent } from '../index';
+import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 
 interface FixtureModule {
     tagName: string;
     default: any;
     generateMarkup: any;
     props?: { [key: string]: any };
-    features?: any[];
+    features?: FeatureFlagName[];
 }
 
 jest.setTimeout(10_000 /* 10 seconds */);
@@ -82,13 +82,19 @@ function formatHTML(src: string): string {
         if (src.charAt(pos) === '<') {
             const tagNameMatch = src.slice(pos).match(/(\w+)/);
 
+            if (!tagNameMatch) {
+                throw new Error(
+                    `Expected to find tagname at pos ${pos} but found "${src.slice(pos, 20)}"`
+                );
+            }
+
             // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
             // inside the text content. So we just serialize it as-is.
-            if (tagNameMatch![0] === 'style') {
+            if (tagNameMatch[0] === 'style') {
                 const styleMatch = src.slice(pos).match(/<style([\s\S]*?)>([\s\S]*?)<\/style>/);
                 if (styleMatch) {
                     // opening tag
-                    const [wholeMatch, attrs, textContent] = styleMatch!;
+                    const [wholeMatch, attrs, textContent] = styleMatch;
                     res += getPadding() + `<style${attrs}>` + '\n';
                     depth++;
                     res += getPadding() + textContent + '\n';
@@ -99,12 +105,9 @@ function formatHTML(src: string): string {
                 }
             }
 
-            const isVoid = isVoidElement(tagNameMatch![0], HTML_NAMESPACE);
+            const isVoid = isVoidElement(tagNameMatch[0], HTML_NAMESPACE);
             const isClosing = src.charAt(pos + 1) === '/';
-            const isComment =
-                src.charAt(pos + 1) === '!' &&
-                src.charAt(pos + 2) === '-' &&
-                src.charAt(pos + 3) === '-';
+            const isComment = src.slice(pos, pos + 3) === '!--';
 
             start = pos;
             while (src.charAt(pos++) !== '>') {

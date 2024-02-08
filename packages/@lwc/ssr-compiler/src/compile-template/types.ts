@@ -20,6 +20,8 @@ export interface TransformerContext {
     isLocalVar: (varName: string | null | undefined) => boolean;
     getUniqueVar: () => string;
     templateOptions: TemplateOpts;
+    prevSibling?: IrNode;
+    nextSibling?: IrNode;
 }
 
 export interface TemplateOpts {

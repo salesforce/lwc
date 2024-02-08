@@ -7,7 +7,9 @@
     "version": "6.5.3",
     "description": "Compile component for use during server-side rendering",
     "keywords": [
-        "lwc"
+        "compiler",
+        "lwc",
+        "ssr"
     ],
     "homepage": "https://lwc.dev",
     "repository": {
@@ -30,8 +32,7 @@
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
-        "test-manual": "jest ./src/**/*.spec.ts"
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {
@@ -47,7 +48,7 @@
         "@lwc/sfdc-compiler-utils": "6.5.3-0",
         "@lwc/style-compiler": "6.5.3",
         "@lwc/template-compiler": "6.5.3",
-        "acorn": "~8.10.0",
+        "acorn": "8.10.0",
         "astring": "^1.8.6",
         "estree-toolkit": "^1.7.3",
         "immer": "^10.0.3",

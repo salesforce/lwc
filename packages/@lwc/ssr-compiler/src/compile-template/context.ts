@@ -8,12 +8,6 @@
 import type { ModuleDeclaration as EsModuleDeclaration, Statement as EsStatement } from 'estree';
 import type { TemplateOpts, TransformerContext } from './types';
 
-function* reversed<T>(arr: T[]): Generator<T> {
-    for (let idx = arr.length - 1; idx > -1; idx--) {
-        yield arr[idx];
-    }
-}
-
 const identifierChars = 'abcdefghijklmnopqrstuvwxyz';
 
 function genId(n: number, prevChars = ''): string {
@@ -28,10 +22,6 @@ function* genIds() {
     while (true) {
         yield genId(counter++);
     }
-}
-
-export interface ContextOpts {
-    preserveComments: boolean;
 }
 
 export function createNewContext(templateOptions: TemplateOpts): {
@@ -54,7 +44,7 @@ export function createNewContext(templateOptions: TemplateOpts): {
         if (!varName) {
             return false;
         }
-        for (const stackFrame of reversed(localVarStack)) {
+        for (const stackFrame of localVarStack) {
             if (stackFrame.has(varName)) {
                 return true;
             }

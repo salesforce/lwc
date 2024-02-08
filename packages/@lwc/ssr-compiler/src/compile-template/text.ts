@@ -13,6 +13,7 @@ import { expressionIrToEs } from './expression';
 import type {
     Expression as EsExpression,
     Identifier as EsIdentifier,
+    Literal as EsLiteral,
     Statement as EsStatement,
 } from 'estree';
 import type {
@@ -27,16 +28,26 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 
 const bYieldEscapedString = esTemplateWithYield<
     EsStatement[],
-    [EsIdentifier, EsExpression, EsIdentifier, EsIdentifier, EsIdentifier, EsIdentifier]
+    [
+        EsIdentifier,
+        EsExpression,
+        EsIdentifier,
+        EsLiteral,
+        EsIdentifier,
+        EsIdentifier,
+        EsIdentifier,
+        EsIdentifier,
+        EsIdentifier
+    ]
 >`
     const ${is.identifier} = ${is.expression};
-    yield ${is.identifier} === ''
-        ? '\\u200D'
-        : htmlEscape(
-            typeof ${is.identifier} === 'string'
-                ? ${is.identifier}
-                : (${is.identifier} ?? '__UNEXPECTED_NULLISH_TEXT_CONTENT__').toString()
-        );
+    if (typeof ${is.identifier} === 'string') {
+        yield (${is.literal} && ${is.identifier} === '') ? '\\u200D' : htmlEscape(${is.identifier});
+    } else if (typeof ${is.identifier} === 'number') {
+        yield ${is.identifier}.toString();
+    } else {
+        yield htmlEscape((${is.identifier} ?? '').toString());
+    }
 `;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
@@ -48,6 +59,11 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         return [bYield(b.literal(node.value.value))];
     }
 
+    const isIsolatedTextNode = b.literal(
+        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
+            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
+    );
+
     const valueToYield = expressionIrToEs(node.value, cxt);
     cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
 
@@ -55,6 +71,9 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
     return bYieldEscapedString(
         tempVariable,
         valueToYield,
+        tempVariable,
+        isIsolatedTextNode,
+        tempVariable,
         tempVariable,
         tempVariable,
         tempVariable,

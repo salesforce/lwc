@@ -7,11 +7,9 @@
 
 const MULTI_SPACE = /\s+/g;
 
-type Attributes = Record<string, string>;
+type Attributes = Record<string, string | true>;
 
-type LightningElementConstructor = typeof LightningElement & {
-    renderMode?: 'light' | 'shadow';
-};
+type LightningElementConstructor = typeof LightningElement;
 
 class ClassList {
     el: LightningElement;
@@ -71,10 +69,12 @@ class ClassList {
 }
 
 export class LightningElement {
+    static renderMode?: 'light' | 'shadow';
+
     isConnected = false;
     className = '';
     // TODO [W-14977927]: protect internals from userland
-    __attrs?: Record<string, string>;
+    __attrs?: Attributes;
     __classList: ClassList | null = null;
 
     constructor(propsAvailableAtConstruction: Record<string, any>) {
@@ -95,7 +95,7 @@ export class LightningElement {
         for (const reflectedPropName of reflectedProps) {
             Object.defineProperty(this, reflectedPropName, {
                 get() {
-                    return props[reflectedPropName];
+                    return props[reflectedPropName] ?? null;
                 },
                 set(newValue) {
                     props[reflectedPropName] = newValue;
@@ -122,8 +122,9 @@ export class LightningElement {
         return (this.__classList = new ClassList(this));
     }
 
-    getAttribute(attrName: string) {
-        return this.__attrs?.[attrName] ?? null;
+    getAttribute(attrName: string): string | null {
+        const value = this.__attrs?.[attrName];
+        return value === true ? '' : value ?? null;
     }
 }
 
@@ -153,9 +154,27 @@ export function* fallbackTmpl(
     _instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
-        yield '<template shadowrootmode="open">';
+        yield '<template shadowrootmode="open"></template>';
     }
-    if (Cmp.renderMode !== 'light') {
-        yield '</template>';
+}
+
+export type GenerateMarkupFn = (
+    tagName: string,
+    props: Record<string, any> | null,
+    attrs: Attributes | null,
+    slotted: Record<number | string, AsyncGenerator<string>> | null
+) => AsyncGenerator<string>;
+
+export async function serverSideRenderComponent(
+    tagName: string,
+    compiledGenerateMarkup: GenerateMarkupFn,
+    props: Record<string, any>
+): Promise<string> {
+    let markup = '';
+
+    for await (const segment of compiledGenerateMarkup(tagName, props, null, null)) {
+        markup += segment;
     }
+
+    return markup;
 }

@@ -35,19 +35,22 @@ const visitors: Visitors = {
         catalogTmplImport(path, state);
         catalogStyleImport(path, state);
     },
-    ExportDefaultDeclaration(_path, _state) {},
     ClassDeclaration(path, state) {
+        if (!path.node?.superClass) {
+            return;
+        }
+
         if (
-            path.node?.superClass?.type === 'Identifier' &&
+            path.node.superClass.type === 'Identifier' &&
             // It is possible to inherit from something that inherits from
             // LightningElement, so the detection here needs additional work.
-            path.node?.superClass?.name === 'LightningElement'
+            path.node.superClass.name === 'LightningElement'
         ) {
             state.isLWC = true;
-            if (path.node!.id) {
-                state.lwcClassName = path.node!.id.name;
+            if (path.node.id) {
+                state.lwcClassName = path.node.id.name;
             } else {
-                path.node!.id = b.identifier('DefaultComponentName');
+                path.node.id = b.identifier('DefaultComponentName');
                 state.lwcClassName = 'DefaultComponentName';
             }
         }
@@ -128,7 +131,6 @@ export default function compileJS(src: string, filename: string) {
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        props: [],
         reflectedPropsInPlay: new Set(),
     };
 

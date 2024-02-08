@@ -44,10 +44,6 @@ if (packageName === '@lwc/synthetic-shadow') {
 }
 
 const onwarn = ({ code, message }) => {
-    if (code === 'INVALID_ANNOTATION') {
-        // Not sure why the PURE annotations are broken.
-        return;
-    }
     if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
         throw new Error(message);
     }

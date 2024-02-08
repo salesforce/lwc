@@ -63,7 +63,7 @@ export default function compileTemplate(src: string, _filename: string) {
         'shadow';
     const astShadowModeBool = tmplRenderMode === 'light' ? b.literal(true) : b.literal(false);
 
-    const preserveComments = !!root!.directives.find(
+    const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
 

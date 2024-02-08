@@ -7,7 +7,9 @@
     "version": "6.5.3",
     "description": "Runtime complement to @lwc/ssr-compiler",
     "keywords": [
-        "lwc"
+        "lwc",
+        "runtime",
+        "ssr"
     ],
     "homepage": "https://lwc.dev",
     "repository": {
@@ -30,8 +32,7 @@
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
-        "test": "jest ./src/**/*.spec.ts"
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {

@@ -81,8 +81,6 @@ for (const dir of directories) {
         scripts: {
             build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
             dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
-            test: name === '@lwc/ssr-compiler' ? undefined : 'jest ./src/**/*.spec.ts',
-            'test-manual': name === '@lwc/ssr-compiler' ? 'jest ./src/**/*.spec.ts' : undefined,
         },
         nx: {
             targets: {

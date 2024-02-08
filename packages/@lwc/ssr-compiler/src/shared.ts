@@ -55,12 +55,3 @@ export interface IHoistImport {
 export interface IHoistInstantiation {
     kind: 'hoistInstantiation';
 }
-
-export type GenerateMarkupFn = (
-    tagName: string,
-    props: Record<string, any> | null,
-    attrs: Record<string, any> | null,
-    slotted: Record<number | string, AsyncGenerator<string>> | null
-) => AsyncGenerator<string>;
-
-export type TemplateFn = (Ctor: any, instance: any | null) => AsyncGenerator<string>;

@@ -8,18 +8,23 @@
 import { traverse, Visitors } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import type { Node, Program, FunctionDeclaration } from 'estree';
+import type {
+    Node as EsNode,
+    Program as EsProgram,
+    FunctionDeclaration as EsFunctionDeclaration,
+} from 'estree';
 
 export const placeholder = false;
+type ReplacementNode = EsNode | EsNode[] | null;
 
-type ReturnsBool = (node: Node | null) => boolean;
+type ReturnsBool = (node: EsNode | null) => boolean;
 export type Validator = ReturnsBool | typeof placeholder;
 
 const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
 
 interface TraversalState {
     placeholderToValidator: Map<string, Validator>;
-    replacementNodes: (Node | Node[] | null)[];
+    replacementNodes: ReplacementNode[];
 }
 
 const visitors: Visitors<TraversalState> = {
@@ -62,7 +67,7 @@ const visitors: Visitors<TraversalState> = {
         ) {
             const key = path.node.value.slice(PLACEHOLDER_PREFIX.length);
             const validateReplacement = state.placeholderToValidator.get(key)!;
-            const replacementNode = state.replacementNodes[key as unknown as number] as Node;
+            const replacementNode = state.replacementNodes[key as unknown as number] as EsNode;
 
             if (validateReplacement && !validateReplacement(replacementNode)) {
                 throw new Error(`Validation failed for templated node of type ${path.node.type}`);
@@ -73,15 +78,12 @@ const visitors: Visitors<TraversalState> = {
     },
 };
 
-function esTemplateImpl<
-    ReturnType = Node,
-    ArgTypes extends (Node | Node[] | null)[] = (Node | Node[] | null)[]
->(
+function esTemplateImpl<RetType = EsNode, ArgTypes extends ReplacementNode[] = ReplacementNode[]>(
     javascriptSegments: TemplateStringsArray,
     validatorFns: Validator[],
     wrap?: (code: string) => string,
-    unwrap?: (node: ReturnType) => any
-): (...replacementNodes: ArgTypes) => ReturnType {
+    unwrap?: (node: RetType) => any
+): (...replacementNodes: ArgTypes) => RetType {
     let placeholderCount = 0;
     let parsableCode = javascriptSegments[0];
     validatorFns.reverse();
@@ -100,68 +102,66 @@ function esTemplateImpl<
         parsableCode = wrap(parsableCode);
     }
 
-    let originalAst = parse(parsableCode, {
+    const originalAstProgram = parse(parsableCode, {
         ecmaVersion: 2022,
         allowAwaitOutsideFunction: true,
         allowReturnOutsideFunction: true,
         allowSuperOutsideMethod: true,
         allowImportExportEverywhere: true,
         locations: false,
-    }) as Node;
+    }) as EsNode as EsProgram;
 
-    const originalAstProgram = originalAst as Program;
+    let originalAst: EsNode | EsNode[];
+
     const finalCharacter = javascriptSegments.at(-1)?.trimEnd()?.at(-1);
-    if (
-        originalAstProgram.body.length === 1 &&
-        originalAstProgram.body[0].type === 'ExpressionStatement' &&
-        finalCharacter !== ';'
-    ) {
-        originalAst = originalAstProgram.body[0].expression;
+    if (originalAstProgram.body.length === 1) {
+        originalAst =
+            finalCharacter === ';' && originalAstProgram.body[0].type === 'ExpressionStatement'
+                ? (originalAst = originalAstProgram.body[0].expression)
+                : (originalAst = originalAstProgram.body[0]);
     } else {
-        originalAst = originalAstProgram.body[0];
+        originalAst = originalAstProgram.body;
     }
 
     // Turns Acorn AST objects into POJOs, for use with Immer.
     originalAst = JSON.parse(JSON.stringify(originalAst));
 
-    return function templatedAst(...replacementNodes: ArgTypes): ReturnType {
+    return function templatedAst(...replacementNodes: ArgTypes): RetType {
         const result = produce(originalAst, (astDraft) =>
             traverse(astDraft, visitors, {
                 placeholderToValidator,
                 replacementNodes,
             })
-        ) as ReturnType;
+        ) as RetType;
         return unwrap ? unwrap(result) : result;
     };
 }
 
 export function esTemplate<
-    ReturnType = Node,
-    ArgTypes extends (Node | Node[] | null)[] = (Node | Node[] | null)[]
+    RetType = EsNode,
+    ArgTypes extends ReplacementNode[] = ReplacementNode[]
 >(
     javascriptSegments: TemplateStringsArray,
     ...validatorFns: Validator[]
-): (...replacementNodes: ArgTypes) => ReturnType {
+): (...replacementNodes: ArgTypes) => RetType {
     return esTemplateImpl(javascriptSegments, validatorFns);
 }
 
 export function esTemplateWithYield<
-    ReturnType = Node,
-    ArgTypes extends (Node | Node[] | null)[] = (Node | Node[] | null)[]
+    RetType = EsNode,
+    ArgTypes extends ReplacementNode[] = ReplacementNode[]
 >(
     javascriptSegments: TemplateStringsArray,
     ...validatorFns: Validator[]
-): (...replacementNodes: ArgTypes) => ReturnType {
+): (...replacementNodes: ArgTypes) => RetType {
     const wrap = (code: string) => `function* placeholder() {${code}}`;
-    const unwrap = (node: FunctionDeclaration) =>
-        node.body.body.length === 1
-            ? (node.body.body[0] as ReturnType)
-            : (node.body.body as ReturnType);
+    const unwrap = (node: EsFunctionDeclaration) =>
+        node.body.body.length === 1 ? (node.body.body[0] as RetType) : (node.body.body as RetType);
 
-    return esTemplateImpl<FunctionDeclaration>(
+    return esTemplateImpl<EsFunctionDeclaration>(
         javascriptSegments,
         validatorFns,
         wrap,
         unwrap
-    ) as unknown as (...replacementNodes: ArgTypes) => ReturnType;
+    ) as unknown as (...replacementNodes: ArgTypes) => RetType;
 }

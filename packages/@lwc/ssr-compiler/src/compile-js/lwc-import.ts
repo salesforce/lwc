@@ -11,13 +11,18 @@ import type { ImportDeclaration } from 'estree';
 import type { NodePath } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
 
+/**
+ * This accomplishes two things:
+ *
+ *  1. it replaces "lwc" with "@lwc/ssr-runtime" in an import specifier
+ *  2. it makes note of the local var name associated with the `LightningElement` import
+ */
 export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
-    if (path.node!.source.value !== 'lwc') {
+    if (!path.node || path.node.source.value !== 'lwc') {
         return;
     }
 
-    const node = path.node!;
-    for (const specifier of node.specifiers) {
+    for (const specifier of path.node.specifiers) {
         if (
             specifier.type === 'ImportSpecifier' &&
             specifier.imported.type === 'Identifier' &&
@@ -28,5 +33,5 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
         }
     }
 
-    path.replaceWith(b.importDeclaration(node.specifiers, b.literal('@lwc/ssr-runtime')));
+    path.replaceWith(b.importDeclaration(path.node.specifiers, b.literal('@lwc/ssr-runtime')));
 }

@@ -8,7 +8,7 @@
 import { builders as b, is } from 'estree-toolkit';
 import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { esTemplateWithYield } from '../estemplate';
-import { irToEs } from './ir-to-es';
+import { irChildrenToEs } from './ir-to-es';
 import { bImportHtmlEscape, importHtmlEscapeKey, cleanStyleAttrVal } from './shared';
 
 import type {
@@ -70,9 +70,7 @@ function reorderAttributes(attrs: (IrAttribute | IrProperty)[]): (IrAttribute | 
         return true;
     });
 
-    return [classAttr, styleAttr, ...boringAttrs].filter(
-        (el): el is NonNullable<IrAttribute> => el !== null
-    );
+    return [classAttr, styleAttr, ...boringAttrs].filter((el): el is IrAttribute => el !== null);
 }
 
 export const Element: Transformer<IrElement> = function Element(node, cxt): EsStatement[] {
@@ -81,16 +79,14 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
         ...node.properties,
     ]);
 
-    const yieldAttrsAndProps = attrsAndProps
-        .map((attr) => {
-            cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-            if (attr.value.type === 'Literal') {
-                return yieldAttrOrPropLiteralValue(attr.name, attr.value);
-            } else {
-                return yieldAttrOrPropLiveValue(attr.name, attr.value);
-            }
-        })
-        .flat();
+    const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
+        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+        if (attr.value.type === 'Literal') {
+            return yieldAttrOrPropLiteralValue(attr.name, attr.value);
+        } else {
+            return yieldAttrOrPropLiveValue(attr.name, attr.value);
+        }
+    });
 
     if (isVoidElement(node.name, HTML_NAMESPACE)) {
         return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];
@@ -100,7 +96,7 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
         bYield(b.literal(`<${node.name}`)),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
-        ...node.children.map((child) => irToEs(child, cxt)).flat(),
+        ...irChildrenToEs(node.children, cxt),
         bYield(b.literal(`</${node.name}>`)),
     ].filter(Boolean);
 };
