@@ -34,8 +34,7 @@
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
-        "test": "jest ./src/**/*.spec.ts"
+        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {

@@ -20,12 +20,10 @@ import type {
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const isNullableExpressionStatement = isNullableOf(is.expressionStatement);
-
 const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
-        ${isNullableExpressionStatement};
+        ${isNullableOf(is.expressionStatement)};
         const instance = new ${is.identifier}({
             tagName: tagName.toUpperCase(),
         });
@@ -75,12 +73,15 @@ function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttr
         )
     );
 
-    // attrs = {
-    //   ...attrs,
-    //   get ['aria-checked']() {
-    //     return props.ariaChecked;
+    // This mutates the `attrs` object, adding the reflected aria attributes that have been
+    // detected. Example:
+    //
+    //   attrs = {
+    //     ...attrs,
+    //     get ['aria-checked']() {
+    //       return props.ariaChecked;
+    //     }
     //   }
-    // }
     return b.expressionStatement(
         b.assignmentExpression(
             '=',
@@ -90,6 +91,18 @@ function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttr
     );
 }
 
+/**
+ * This builds a generator function `generateMarkup` and adds it to the component JS's
+ * compilation output. `generateMarkup` acts as the glue between component JS and its
+ * template(s), including:
+ *
+ *  - managing reflection of attrs & props
+ *  - instantiating the component instance
+ *  - setting the internal state of that component instance
+ *  - invoking component lifecycle methods
+ *  - yielding the tag name & attributes
+ *  - deferring to the template function for yielding child content
+ */
 export function addGenerateMarkupExport(
     program: Program,
     state: ComponentMetaState,

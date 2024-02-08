@@ -8,8 +8,6 @@
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
 
-import type { GenerateMarkupFn } from './shared';
-
 interface TransformOptions {}
 
 export interface CompilationResult {
@@ -32,22 +30,5 @@ export function compileTemplateForSSR(
     _options: TransformOptions
 ): CompilationResult {
     const { code } = compileTemplate(src, filename);
-    return {
-        code,
-        map: undefined,
-    };
-}
-
-export async function serverSideRenderComponent(
-    tagName: string,
-    compiledGenerateMarkup: GenerateMarkupFn,
-    props: Record<string, any>
-): Promise<string> {
-    let markup = '';
-
-    for await (const segment of compiledGenerateMarkup(tagName, props, null, null)) {
-        markup += segment;
-    }
-
-    return markup;
+    return { code, map: undefined };
 }

@@ -70,9 +70,7 @@ function reorderAttributes(attrs: (IrAttribute | IrProperty)[]): (IrAttribute | 
         return true;
     });
 
-    return [classAttr, styleAttr, ...boringAttrs].filter(
-        (el): el is NonNullable<IrAttribute> => el !== null
-    );
+    return [classAttr, styleAttr, ...boringAttrs].filter((el): el is IrAttribute => el !== null);
 }
 
 export const Element: Transformer<IrElement> = function Element(node, cxt): EsStatement[] {
@@ -81,16 +79,14 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
         ...node.properties,
     ]);
 
-    const yieldAttrsAndProps = attrsAndProps
-        .map((attr) => {
-            cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-            if (attr.value.type === 'Literal') {
-                return yieldAttrOrPropLiteralValue(attr.name, attr.value);
-            } else {
-                return yieldAttrOrPropLiveValue(attr.name, attr.value);
-            }
-        })
-        .flat();
+    const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
+        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+        if (attr.value.type === 'Literal') {
+            return yieldAttrOrPropLiteralValue(attr.name, attr.value);
+        } else {
+            return yieldAttrOrPropLiveValue(attr.name, attr.value);
+        }
+    });
 
     if (isVoidElement(node.name, HTML_NAMESPACE)) {
         return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];

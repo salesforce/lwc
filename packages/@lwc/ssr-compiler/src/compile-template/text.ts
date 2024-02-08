@@ -35,7 +35,7 @@ const bYieldEscapedString = esTemplateWithYield<
         : htmlEscape(
             typeof ${is.identifier} === 'string'
                 ? ${is.identifier}
-                : (${is.identifier} ?? '__UNEXPECTED_NULLISH_TEXT_CONTENT__').toString()
+                : (${is.identifier} ?? '').toString()
         );
 `;
 

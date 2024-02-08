@@ -6,6 +6,7 @@
  */
 
 import { is } from 'estree-toolkit';
+import { reservedKeywords } from '@lwc/shared';
 import { esTemplate } from '../estemplate';
 
 import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
@@ -22,58 +23,11 @@ export function cleanStyleAttrVal(styleAttrVal: string): string {
     return styleAttrVal.trim();
 }
 
-const reservedKeywords = new Set([
-    'NaN',
-    'arguments',
-    'break',
-    'case',
-    'catch',
-    'class',
-    'const',
-    'continue',
-    'debugger',
-    'default',
-    'delete',
-    'do',
-    'else',
-    'enum',
-    'eval',
-    'export',
-    'extends',
-    'false',
-    'finally',
-    'for',
-    'function',
-    'if',
-    'implements',
-    'import',
-    'in',
-    'instanceof',
-    'interface',
-    'let',
-    'new',
-    'null',
-    'package',
-    'private',
-    'protected',
-    'public',
-    'return',
-    'static',
-    'super',
-    'switch',
-    'this',
-    'throw',
-    'true',
-    'try',
-    'typeof',
-    'undefined',
-    'var',
-    'void',
-    'while',
-    'with',
-    'yield',
-]);
-
+// This is a mostly-correct regular expression will only match if the entire string
+// provided is a valid ECMAScript identifier. Its imperfections lie in the fact that
+// it will match strings like "export" when "export" is actually a reserved keyword
+// and therefore not a valid identifier. When combined with a check against reserved
+// keywords, it is a reliable test for whether a provided string is a valid identifier.
 const imperfectIdentifierMatcher = /^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*$/;
 
 export const isValidIdentifier = (str: string) =>
