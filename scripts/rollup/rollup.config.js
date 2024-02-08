@@ -58,7 +58,6 @@ function sharedPlugins() {
 
     return [
         typescript({
-            target: 'es2021',
             tsconfig: path.join(packageRoot, 'tsconfig.json'),
             noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
             ...(watchMode && {
