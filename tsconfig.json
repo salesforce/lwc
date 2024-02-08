@@ -9,7 +9,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
 
-    "target": "es2021",
     "lib": ["es2021"],
 
     // Disable automatic inclusion of @types packages
