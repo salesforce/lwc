@@ -342,7 +342,8 @@ const supportsFACE =
     'setFormValue' in window.ElementInternals.prototype;
 
 if (supportsFACE) {
-    describe('form-associated custom element (FACE) lifecycle callbacks', () => {
+    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
+    xdescribe('form-associated custom element (FACE) lifecycle callbacks', () => {
         function testFormAssociated(shouldBeFormAssociated, tagName, Ctor) {
             const calls = [];
 
