@@ -23,9 +23,7 @@ const browsers = [
     {
         commonName: 'chrome',
         browserName: 'chrome',
-        // Hydration tests are broken on Chrome 121 due to changes with shadowRoot, but fixed on Chrome 122.
-        // Pinning Chrome version to unblock tests. Should be removed once Chrome 122 becomes latest.
-        version: '120',
+        version: 'latest',
         // Note chrome fails for Linux and macOS
         platform: 'Windows 11',
     },
