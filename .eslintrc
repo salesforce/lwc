@@ -14,9 +14,7 @@
     },
 
     "rules": {
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-
         "block-scoped-var": "error",
         "no-alert": "error",
         "no-buffer-constructor": "error",
@@ -28,7 +26,6 @@
         "no-iterator": "error",
         "no-lone-blocks": "error",
         "no-proto": "error",
-        "no-prototype-builtins": "error",
         "no-new-require": "error",
         "no-restricted-properties": [
             "error",
