@@ -25,6 +25,7 @@
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
+        "typecheck": "nx run-many --target=typecheck",
         "release:version": "./scripts/release/version.js"
     },
     "//": {
