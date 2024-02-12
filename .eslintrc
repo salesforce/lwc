@@ -3,11 +3,12 @@
 
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": true
     },
 
     "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
-    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended-type-checked"],
 
     "env": {
         "es6": true
@@ -139,8 +140,14 @@
             ]
         ],
         // TODO: Address violations and re-enable these rules
+        "@typescript-eslint/ban-ts-comment": "off",
+        // Complaints about `any`
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/ban-ts-comment": "off"
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off"
     },
 
     "overrides": [
