@@ -139,11 +139,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
             configProps.push(
-                t.objectProperty(
-                    (param as types.ObjectProperty).key,
-                    paramConfigValue.configValueExpression,
-                    param.computed
-                )
+                t.objectProperty(param.key, paramConfigValue.configValueExpression, param.computed)
             );
 
             if (paramConfigValue.varDeclaration) {

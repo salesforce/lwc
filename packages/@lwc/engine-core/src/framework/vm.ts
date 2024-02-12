@@ -426,7 +426,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
     const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
         if (isArray(arrayOrStylesheet)) {
             for (let i = 0; i < arrayOrStylesheet.length; i++) {
-                validate((arrayOrStylesheet as TemplateStylesheetFactories)[i]);
+                validate(arrayOrStylesheet[i]);
             }
         } else if (!isFunction(arrayOrStylesheet)) {
             // function assumed to be a stylesheet factory

@@ -294,7 +294,7 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         let leftExpression: t.Expression;
-        const modifier = ifNode.modifier!;
+        const modifier = ifNode.modifier;
 
         /* istanbul ignore else */
         if (modifier === 'true') {

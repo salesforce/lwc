@@ -348,7 +348,7 @@ function isTabbableFrom(fromRoot: Node, toElm: HTMLElement): boolean {
     let root = toElm.getRootNode();
     while (root !== ownerDocument && root !== fromRoot) {
         const sr = root as ShadowRoot;
-        const host = sr.host!;
+        const host = sr.host;
         if (getAttribute.call(host, 'tabindex') === '-1') {
             return false;
         }

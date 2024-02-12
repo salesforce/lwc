@@ -257,7 +257,7 @@ function patchedObserve(
 
     // SyntheticShadowRoot instances are not actually a part of the DOM so observe the host instead.
     if (isSyntheticShadowRoot(target)) {
-        target = (target as ShadowRoot).host;
+        target = target.host;
     }
 
     // maintain a list of all nodes observed by this observer

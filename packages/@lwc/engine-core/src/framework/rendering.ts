@@ -298,7 +298,7 @@ function mountStatic(
 
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            (elm as any)[KEY__SHADOW_STATIC] = true;
+            elm[KEY__SHADOW_STATIC] = true;
         }
     }
 
@@ -535,7 +535,7 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    setText(elm, text!);
+    setText(elm, text);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }

@@ -89,7 +89,7 @@ function validateImportedLwcDecoratorUsage(
             //   - an identifier @track : the decorator is the parent of the identifier
             //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
             const decorator = reference.parentPath!.isDecorator()
-                ? reference.parentPath!
+                ? reference.parentPath
                 : reference.parentPath!.parentPath!;
 
             if (!decorator.isDecorator()) {

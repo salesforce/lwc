@@ -114,7 +114,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
 
     parseTemplateExpression() {
         const expressionStart: number = this.preprocessor.pos;
-        const html = this.preprocessor.html as string;
+        const html = this.preprocessor.html;
 
         const leadingWhitespaceLen = getWhitespaceLen(html.slice(expressionStart + 1));
         const javascriptExprStart = expressionStart + leadingWhitespaceLen + OPENING_CURLY_LEN;
@@ -159,10 +159,10 @@ class TemplateHtmlTokenizer extends Tokenizer {
     _stateAttributeValueUnquoted(codePoint: number) {
         if (codePoint === OPENING_CURLY_BRACKET && !this.checkedAttrs.has(this.currentAttr)) {
             this.checkedAttrs.add(this.currentAttr);
-            this.currentAttr!.value = this.parseTemplateExpression();
+            this.currentAttr.value = this.parseTemplateExpression();
 
-            this._advanceBy(this.currentAttr!.value.length - 1);
-            this.consumedAfterSnapshot = this.currentAttr!.value.length;
+            this._advanceBy(this.currentAttr.value.length - 1);
+            this.consumedAfterSnapshot = this.currentAttr.value.length;
         } else {
             // If the first character in an unquoted-attr-value is not an opening
             // curly brace, it isn't a template expression. Opening curly braces

@@ -685,7 +685,7 @@ LightningElement.prototype = {
             refsCache.set(refVNodes, refs);
         }
 
-        return refs!;
+        return refs;
     },
 
     // For backwards compat, we allow component authors to set `refs` as an expando
