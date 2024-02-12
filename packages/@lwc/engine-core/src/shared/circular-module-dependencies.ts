@@ -18,7 +18,7 @@ interface MaybeModule {
  * issue, the module loader returns a factory with a symbol attached to it.
  */
 
-interface CircularModuleDependency<M extends Object> {
+interface CircularModuleDependency<M extends object> {
     (): M;
     __circular__: boolean;
 }

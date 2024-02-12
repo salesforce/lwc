@@ -77,6 +77,7 @@ export class ReactiveObserver {
 
     observe(job: JobFunction) {
         const inceptionReactiveRecord = currentReactiveObserver;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         currentReactiveObserver = this;
         let error;
         try {

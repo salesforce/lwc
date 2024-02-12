@@ -24,7 +24,7 @@ function getSignalTracker(target: object) {
 }
 
 export function subscribeToSignal(
-    target: Object,
+    target: object,
     signal: Signal<unknown>,
     update: CallbackFunction
 ) {

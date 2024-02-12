@@ -143,46 +143,45 @@ export interface LightningElementConstructor {
     stylesheets: TemplateStylesheetFactories;
 }
 
-type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
-    Pick<
-        HTMLElement,
-        | 'accessKey'
-        | 'addEventListener'
-        | 'attachInternals'
-        | 'children'
-        | 'childNodes'
-        | 'classList'
-        | 'dir'
-        | 'dispatchEvent'
-        | 'draggable'
-        | 'firstChild'
-        | 'firstElementChild'
-        | 'getAttribute'
-        | 'getAttributeNS'
-        | 'getBoundingClientRect'
-        | 'getElementsByClassName'
-        | 'getElementsByTagName'
-        | 'hasAttribute'
-        | 'hasAttributeNS'
-        | 'hidden'
-        | 'id'
-        | 'isConnected'
-        | 'lang'
-        | 'lastChild'
-        | 'lastElementChild'
-        | 'ownerDocument'
-        | 'querySelector'
-        | 'querySelectorAll'
-        | 'removeAttribute'
-        | 'removeAttributeNS'
-        | 'removeEventListener'
-        | 'setAttribute'
-        | 'setAttributeNS'
-        | 'spellcheck'
-        | 'tabIndex'
-        | 'tagName'
-        | 'title'
-    >;
+type HTMLElementTheGoodParts = { toString: () => string } & Pick<
+    HTMLElement,
+    | 'accessKey'
+    | 'addEventListener'
+    | 'attachInternals'
+    | 'children'
+    | 'childNodes'
+    | 'classList'
+    | 'dir'
+    | 'dispatchEvent'
+    | 'draggable'
+    | 'firstChild'
+    | 'firstElementChild'
+    | 'getAttribute'
+    | 'getAttributeNS'
+    | 'getBoundingClientRect'
+    | 'getElementsByClassName'
+    | 'getElementsByTagName'
+    | 'hasAttribute'
+    | 'hasAttributeNS'
+    | 'hidden'
+    | 'id'
+    | 'isConnected'
+    | 'lang'
+    | 'lastChild'
+    | 'lastElementChild'
+    | 'ownerDocument'
+    | 'querySelector'
+    | 'querySelectorAll'
+    | 'removeAttribute'
+    | 'removeAttributeNS'
+    | 'removeEventListener'
+    | 'setAttribute'
+    | 'setAttributeNS'
+    | 'spellcheck'
+    | 'tabIndex'
+    | 'tagName'
+    | 'title'
+>;
 
 type RefNodes = { [name: string]: Element };
 
@@ -232,7 +231,6 @@ export const LightningElement: LightningElementConstructor = function (
         );
     }
 
-    const component = this;
     setPrototypeOf(elm, bridge.prototype);
 
     vm.component = this;
@@ -251,7 +249,7 @@ export const LightningElement: LightningElementConstructor = function (
     markLockerLiveObject(this);
 
     // Linking elm, shadow root and component with the VM.
-    associateVM(component, vm);
+    associateVM(this, vm);
     associateVM(elm, vm);
 
     if (vm.renderMode === RenderMode.Shadow) {

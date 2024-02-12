@@ -44,7 +44,7 @@ interface StyleElementCacheData extends CacheData {
     element: HTMLStyleElement;
 }
 
-const stylesheetCache: Map<String, CacheData> = new Map();
+const stylesheetCache: Map<string, CacheData> = new Map();
 
 //
 // Test utilities

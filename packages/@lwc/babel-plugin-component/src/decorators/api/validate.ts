@@ -126,7 +126,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(
     state: LwcBabelPluginPass
 ) {
     // keep track of visited class methods
-    const visitedMethods = new Set<String>();
+    const visitedMethods = new Set<string>();
 
     decorators.forEach((decorator) => {
         const { path, decoratedNodeType } = decorator;

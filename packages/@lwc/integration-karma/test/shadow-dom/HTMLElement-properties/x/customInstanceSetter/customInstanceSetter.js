@@ -8,6 +8,7 @@ export default class MyComponent extends LightningElement {
 
     @api
     setFoo() {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
         Object.defineProperty(this, 'foo', {
             set(value) {

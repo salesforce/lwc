@@ -7,7 +7,7 @@
     },
 
     "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
-    "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
 
     "env": {
         "es6": true
@@ -136,10 +136,24 @@
                 " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
                 " "
             ]
-        ]
+        ],
+        // TODO: Address violations and re-enable these rules
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
     },
 
     "overrides": [
+        {
+            // Some tooling still uses CommonJS...
+            "files": [
+                "**/scripts/**",
+                "**/jest.config.js",
+                "packages/@lwc/integration-tests/src/components/**/*.spec.js"
+            ],
+            "rules": {
+                "@typescript-eslint/no-var-requires": "off"
+            }
+        },
         {
             "files": ["**/packages/lwc/**"],
             "rules": {

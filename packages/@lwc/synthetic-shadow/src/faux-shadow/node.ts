@@ -192,6 +192,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
 )
     ? nativeGetRootNode
     : function (this: Node): Node {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           let node = this;
           let nodeParent: Node | null;
           while (!isNull((nodeParent = parentNodeGetter.call(node)))) {

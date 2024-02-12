@@ -215,7 +215,7 @@ function muteEvent(event: Event) {
     event.preventDefault();
     event.stopPropagation();
 }
-function muteFocusEventsDuringExecution(win: Window, func: Function) {
+function muteFocusEventsDuringExecution(win: Window, func: (...args: any[]) => any) {
     windowAddEventListener.call(win, 'focusin', muteEvent, true);
     windowAddEventListener.call(win, 'focusout', muteEvent, true);
     func();
