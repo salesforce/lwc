@@ -8,7 +8,7 @@
 import { builders as b, is } from 'estree-toolkit';
 import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { esTemplateWithYield } from '../estemplate';
-import { irToEs } from './ir-to-es';
+import { irChildrenToEs } from './ir-to-es';
 import { bImportHtmlEscape, importHtmlEscapeKey, cleanStyleAttrVal } from './shared';
 
 import type {
@@ -96,7 +96,7 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
         bYield(b.literal(`<${node.name}`)),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
-        ...node.children.map((child) => irToEs(child, cxt)).flat(),
+        ...irChildrenToEs(node.children, cxt),
         bYield(b.literal(`</${node.name}>`)),
     ].filter(Boolean);
 };

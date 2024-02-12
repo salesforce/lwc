@@ -74,7 +74,7 @@ export class LightningElement {
     isConnected = false;
     className = '';
     // TODO [W-14977927]: protect internals from userland
-    __attrs?: Record<string, string>;
+    __attrs?: Record<string, string | true>;
     __classList: ClassList | null = null;
 
     constructor(propsAvailableAtConstruction: Record<string, any>) {
@@ -122,8 +122,9 @@ export class LightningElement {
         return (this.__classList = new ClassList(this));
     }
 
-    getAttribute(attrName: string) {
-        return this.__attrs?.[attrName] ?? null;
+    getAttribute(attrName: string): string | null {
+        const value = this.__attrs?.[attrName];
+        return value === true ? '' : value ?? null;
     }
 }
 

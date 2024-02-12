@@ -111,17 +111,16 @@ function esTemplateImpl<RetType = EsNode, ArgTypes extends ReplacementNode[] = R
         locations: false,
     }) as EsNode as EsProgram;
 
-    let originalAst: EsNode;
+    let originalAst: EsNode | EsNode[];
 
     const finalCharacter = javascriptSegments.at(-1)?.trimEnd()?.at(-1);
-    if (
-        originalAstProgram.body.length === 1 &&
-        originalAstProgram.body[0].type === 'ExpressionStatement' &&
-        finalCharacter !== ';'
-    ) {
-        originalAst = originalAstProgram.body[0].expression;
+    if (originalAstProgram.body.length === 1) {
+        originalAst =
+            finalCharacter === ';' && originalAstProgram.body[0].type === 'ExpressionStatement'
+                ? (originalAst = originalAstProgram.body[0].expression)
+                : (originalAst = originalAstProgram.body[0]);
     } else {
-        originalAst = originalAstProgram.body[0];
+        originalAst = originalAstProgram.body;
     }
 
     // Turns Acorn AST objects into POJOs, for use with Immer.

@@ -15,12 +15,16 @@ import { If, IfBlock } from './if';
 import { Text } from './text';
 import { createNewContext } from './context';
 
-import type { Node as IrNode, Root as IrRoot } from '@lwc/template-compiler';
+import type {
+    ChildNode as IrChildNode,
+    Node as IrNode,
+    Root as IrRoot,
+} from '@lwc/template-compiler';
 import type { Statement as EsStatement } from 'estree';
 import type { TemplateOpts, Transformer, TransformerContext } from './types';
 
 const Root: Transformer<IrRoot> = function Root(node, cxt): EsStatement[] {
-    return node.children.map((child) => irToEs(child, cxt)).flat();
+    return irChildrenToEs(node.children, cxt);
 };
 
 const transformers: Record<string, Transformer> = {
@@ -37,6 +41,17 @@ const transformers: Record<string, Transformer> = {
 const defaultTransformer: Transformer = (node: IrNode) => {
     throw new Error(`Unimplemented IR node: ${inspect(node)}`);
 };
+
+export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext): EsStatement[] {
+    const result = children.flatMap((child, idx) => {
+        cxt.prevSibling = children[idx - 1];
+        cxt.nextSibling = children[idx + 1];
+        return irToEs(child, cxt);
+    });
+    cxt.prevSibling = undefined;
+    cxt.nextSibling = undefined;
+    return result;
+}
 
 export function irToEs(node: IrNode, cxt: TransformerContext): EsStatement[] {
     const transformer = transformers[node.type] ?? defaultTransformer;

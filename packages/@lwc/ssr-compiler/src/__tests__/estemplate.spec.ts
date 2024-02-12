@@ -116,6 +116,7 @@ Object.entries({
                         b.property('init', b.literal('config'), b.literal('someConfig')),
                     ])
                 );
+
                 expect(replacedAst).toMatchObject([
                     {
                         declarations: [
