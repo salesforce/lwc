@@ -37,3 +37,4 @@ export default {
 -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
 -   `apiVersion` (type: `number`, default: `undefined`) - Set to a valid API version such as 58, 59, etc. This will be overriden if the component itself overrides the version with a `*.js-meta.xml` file.
 -   `enableStaticContentOptimization` (type: `boolean`, optional) - True if the static content optimization should be enabled. Passed to `@lwc/template-compiler`. True by default.
+-   `targetSSR` (type: `boolean`) - Utilize the experimental SSR compilation mode. False by default. Do not use unless you know what you're doing.
