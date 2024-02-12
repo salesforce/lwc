@@ -48,6 +48,7 @@
         "@lwc/sfdc-compiler-utils": "6.1.0-0",
         "@lwc/style-compiler": "6.1.1",
         "@lwc/template-compiler": "6.1.1",
+        "acorn": "8.10.0",
         "astring": "^1.8.6",
         "estree-toolkit": "^1.7.3",
         "immer": "^10.0.3",
