@@ -673,7 +673,7 @@ function flushRehydrationQueue() {
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
-            throw error; // eslint-disable-line no-unsafe-finally
+            throw error;
         }
     }
 

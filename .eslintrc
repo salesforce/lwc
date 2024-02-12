@@ -13,6 +13,7 @@
         "es6": true
     },
 
+    "reportUnusedDisableDirectives": true,
     "rules": {
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "block-scoped-var": "error",

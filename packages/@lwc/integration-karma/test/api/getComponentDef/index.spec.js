@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LightningElement, api, getComponentDef, createElement } from 'lwc';
 import { ariaProperties } from 'test-utils';
 

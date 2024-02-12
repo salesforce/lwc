@@ -75,7 +75,6 @@ function validateSlots(vm: VM) {
     const { cmpSlots } = vm;
 
     for (const slotName in cmpSlots.slotAssignments) {
-        // eslint-disable-next-line @lwc/lwc-internal/no-production-assert
         assert.isTrue(
             isArray(cmpSlots.slotAssignments[slotName]),
             `Slots can only be set to an array, instead received ${toString(
