@@ -35,7 +35,6 @@ const visitors: Visitors = {
         catalogTmplImport(path, state);
         catalogStyleImport(path, state);
     },
-    ExportDefaultDeclaration(_path, _state) {},
     ClassDeclaration(path, state) {
         if (!path.node?.superClass) {
             return;
