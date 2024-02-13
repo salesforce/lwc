@@ -191,16 +191,16 @@
             }
         },
         {
-            "files": ["**/packages/lwc/**"],
+            "files": ["packages/lwc/**"],
             "rules": {
                 "no-restricted-imports": "off"
             }
         },
         {
             "files": [
-                "**/@lwc/engine-core/**",
-                "**/@lwc/engine-dom/**",
-                "**/@lwc/synthetic-shadow/**"
+                "packages/@lwc/engine-core/**",
+                "packages/@lwc/engine-dom/**",
+                "packages/@lwc/synthetic-shadow/**"
             ],
             "rules": {
                 "@lwc/lwc-internal/no-global-node": "error",
@@ -209,7 +209,7 @@
             }
         },
         {
-            "files": ["**/__tests__/**", "**/__mocks__/**", "**/@lwc/integration-karma/**"],
+            "files": ["**/__tests__/**", "**/__mocks__/**", "packages/@lwc/integration-karma/**"],
 
             "env": {
                 "jest": true,
@@ -225,7 +225,7 @@
             }
         },
         {
-            "files": ["**/@lwc/integration-tests/**"],
+            "files": ["packages/@lwc/integration-tests/**"],
 
             "globals": {
                 "$": true,
@@ -233,7 +233,7 @@
             }
         },
         {
-            "files": ["./*.js", "**/scripts/**", "**/jest.config.js"],
+            "files": ["./*.js", "**/scripts/**", "jest.config.js"],
 
             "env": {
                 "node": true,
@@ -245,7 +245,7 @@
             }
         },
         {
-            "files": ["**/perf-benchmarks/**"],
+            "files": ["packages/@lwc/perf-benchmarks/**"],
 
             "globals": {
                 "after": true,
