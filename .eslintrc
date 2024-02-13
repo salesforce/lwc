@@ -141,6 +141,7 @@
         ],
         // TODO: Address violations and re-enable these rules
         "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/unbound-method": "off",
         // Complaints about `any`
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unsafe-member-access": "off",
