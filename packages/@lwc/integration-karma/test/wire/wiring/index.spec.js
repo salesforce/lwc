@@ -237,7 +237,7 @@ describe('wiring', () => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
-            Promise.resolve()
+            void Promise.resolve()
                 .then(() => Promise.resolve()) // In this tick, the config is injected.
                 .then(() => {
                     // Now the component have re-rendered.

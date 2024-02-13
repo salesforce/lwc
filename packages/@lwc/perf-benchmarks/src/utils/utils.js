@@ -31,6 +31,7 @@ export function nextTick(cb) {
 
 /** Wait for the next frame */
 export function nextFrame(cb) {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     setTimeout(cb, 0);
 }
 
