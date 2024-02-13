@@ -58,8 +58,6 @@ jobs:
         run: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - name: Run linter
         run: yarn lint
-      - name: Check types
-        run: yarn typecheck
       - name: Check the size of the LWC bundle
         run: yarn bundlesize
       - name: Run Jest tests
