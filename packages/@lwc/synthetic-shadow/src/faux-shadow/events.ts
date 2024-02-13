@@ -241,7 +241,9 @@ export function addCustomElementEventListener(
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
                     this
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${toString(
+                    listener
+                )}.`
             );
         }
     }
@@ -274,7 +276,9 @@ export function addShadowRootEventListener(
             throw new TypeError(
                 `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
                     sr
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${toString(
+                    listener
+                )}.`
             );
         }
     }

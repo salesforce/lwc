@@ -128,6 +128,8 @@ declare global {
 // Register jest matcher.
 expect.extend({ toMatchFile });
 
+type TestFixtureOutput = { [filename: string]: unknown };
+
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
  * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
@@ -142,7 +144,11 @@ expect.extend({ toMatchFile });
  */
 export function testFixtureDir(
     config: { pattern: string; root: string },
-    testFn: (options: { src: string; filename: string; dirname: string }) => object
+    testFn: (options: {
+        src: string;
+        filename: string;
+        dirname: string;
+    }) => TestFixtureOutput | Promise<TestFixtureOutput>
 ) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
