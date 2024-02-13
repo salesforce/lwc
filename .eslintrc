@@ -163,6 +163,12 @@
             }
         },
         {
+            // __tests__ is explicitly excluded in the root tsconfig, so can't use typed lint rules
+            // TODO: Enable type linting in __tests__
+            "files": ["**/__tests__/**"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"]
+        },
+        {
             "files": ["**/packages/lwc/**"],
             "rules": {
                 "no-restricted-imports": "off"
