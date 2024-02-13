@@ -148,6 +148,10 @@
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
         // We might just want to leave this one disabled
         "@typescript-eslint/unbound-method": "off",
+        // We use objects in template strings (e.g. `${vm}`) a lot - that's not that helpful for
+        // the user because it all just becomes "[object Object]"
+        "@typescript-eslint/no-base-to-string": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
         // The following all derive from our liberal use of `any`
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-redundant-type-constituents": "off",
