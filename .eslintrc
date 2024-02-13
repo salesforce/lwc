@@ -153,21 +153,31 @@
 
     "overrides": [
         {
-            // Some tooling still uses CommonJS...
+            "files": [
+                "**/__tests__/**",
+                "packages/@lwc/*/scripts/**",
+                // Just a weird edge case of a file...
+                "packages/@lwc/synthetic-shadow/index.js"
+            ],
+            "parserOptions": {
+                "project": "./tsconfig.eslint.json"
+            }
+        },
+        {
+            // Not covered by any tsconfig, so typed rules won't work, but we don't need them anyway
+            "files": ["jest.config.js"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"]
+        },
+        {
+            // Some tooling still uses require...
             "files": [
                 "**/scripts/**",
-                "**/jest.config.js",
+                "jest.config.js",
                 "packages/@lwc/integration-tests/src/components/**/*.spec.js"
             ],
             "rules": {
                 "@typescript-eslint/no-var-requires": "off"
             }
-        },
-        {
-            // __tests__ is explicitly excluded in the root tsconfig, so can't use typed lint rules
-            // TODO: Enable type linting in __tests__
-            "files": ["**/__tests__/**"],
-            "extends": ["plugin:@typescript-eslint/disable-type-checked"]
         },
         {
             "files": ["**/packages/lwc/**"],
