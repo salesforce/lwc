@@ -20,7 +20,7 @@ function isClaimingToBeSyntheticShadow(shadowRoot) {
 // then the polyfill should not be loaded at all.
 if (process.env.NATIVE_SHADOW && !process.env.MIXED_SHADOW) {
     describe('shadow migrate mode', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
             const style = document.createElement('style');
             style.textContent = 'h1 { color: blue }';
             document.head.appendChild(style);

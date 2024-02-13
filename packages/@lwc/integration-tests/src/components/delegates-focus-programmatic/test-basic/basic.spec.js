@@ -9,7 +9,7 @@ const assert = require('assert');
 const URL = '/basic';
 
 describe('basic invocation', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
         browser.url(URL);
     });
 

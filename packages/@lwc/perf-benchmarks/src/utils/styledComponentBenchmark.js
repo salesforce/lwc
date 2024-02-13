@@ -21,7 +21,7 @@ export function styledComponentBenchmark(
 
         const isArray = Array.isArray(componentOrComponents);
 
-        run(async () => {
+        run(() => {
             for (let i = 0; i < numComponents; i++) {
                 const elm = createElement(isArray ? `styled-component${i}` : 'styled-component', {
                     is: isArray ? componentOrComponents[i] : componentOrComponents,

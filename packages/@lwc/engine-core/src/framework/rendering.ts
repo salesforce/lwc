@@ -815,6 +815,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         // but elm.setAttribute('slot', Symbol(1)) is an error.
         // the following line also throws same error for symbols
         // Similar for Object.create(null)
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const normalizedSlotName = '' + slotName;
 
         const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =

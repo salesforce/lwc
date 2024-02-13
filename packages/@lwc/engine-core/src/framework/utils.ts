@@ -53,6 +53,7 @@ export function addCallbackToNextTick(callback: Callback) {
         }
     }
     if (nextTickCallbackQueue.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.resolve().then(flushCallbackQueue);
     }
     ArrayPush.call(nextTickCallbackQueue, callback);
