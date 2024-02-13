@@ -139,7 +139,7 @@ export function isBoolean(obj: any): obj is boolean {
     return typeof obj === 'boolean';
 }
 
-// TODO: `Function` is too broad, but changing the type breaks our usage of the type guard
+// Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function isFunction(obj: any): obj is Function {
     return typeof obj === 'function';
