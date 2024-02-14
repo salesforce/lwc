@@ -7,6 +7,7 @@
 export {}; // required to have a module with just `declare global` in it
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace jest {
         interface Matchers<R> {
             __type: R; // unused, but makes TypeScript happy

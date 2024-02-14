@@ -90,7 +90,6 @@ function createPreprocessor(config, emitter, logger) {
 
             watcher.watchSuite(input, bundle.watchFiles);
 
-            // eslint-disable-next-line require-atomic-updates
             cache = bundle.cache;
 
             const { output } = await bundle.generate({
@@ -115,7 +114,7 @@ function createPreprocessor(config, emitter, logger) {
             if (map) {
                 // We need to assign the source to the original file so Karma can source map the error in the console. Add
                 // also adding the source map inline for browser debugging.
-                // eslint-disable-next-line require-atomic-updates
+
                 file.sourceMap = map;
             }
 

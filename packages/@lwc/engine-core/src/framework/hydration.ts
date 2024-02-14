@@ -330,7 +330,7 @@ function hydrateCustomElement(
         hydrated: true,
     });
 
-    vnode.elm = elm as Element;
+    vnode.elm = elm;
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
@@ -346,7 +346,7 @@ function hydrateCustomElement(
         const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, vm, false);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm, false);
     }
 
     hydrateVM(vm);

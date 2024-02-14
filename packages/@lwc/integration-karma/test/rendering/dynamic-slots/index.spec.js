@@ -7,7 +7,7 @@ import EmptyObject from 'x/emptyobject';
 import BigintCmp from 'x/bigint';
 
 describe('dynamic slotting', () => {
-    it('should render all slots', async function () {
+    it('should render all slots', function () {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(

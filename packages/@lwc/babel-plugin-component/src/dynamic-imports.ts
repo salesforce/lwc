@@ -51,7 +51,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
         }
 
         if (!state.dynamicImports.includes(dependency)) {
-            state.dynamicImports!.push(dependency);
+            state.dynamicImports.push(dependency);
         }
     }
 

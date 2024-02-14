@@ -124,12 +124,12 @@ function transformHost(selector: Selector) {
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
         const contextualSelectors = hostNode.nodes.map((contextSelectors) => {
-            const clonedSelector = selector.clone({}) as Selector;
+            const clonedSelector = selector.clone({});
             const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
             // Add to the compound selector previously containing the :host pseudo class
             // the contextual selectors.
-            (contextSelectors as Selector).each((node) => {
+            contextSelectors.each((node) => {
                 trimNodeWhitespaces(node);
                 clonedSelector.insertAfter(clonedHostNode, node);
             });

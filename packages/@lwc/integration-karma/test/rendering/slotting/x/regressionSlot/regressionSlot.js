@@ -6,7 +6,7 @@ export default class FocusTrap extends LightningElement {
     handleContentChange() {
         // trigger rehydration.
         // triggering the rehydration on the next tick throws.
-        Promise.resolve().then(() => this.counter++);
+        void Promise.resolve().then(() => this.counter++);
         // triggering the rehydration on this tick is fine:
         // this.counter++;
     }

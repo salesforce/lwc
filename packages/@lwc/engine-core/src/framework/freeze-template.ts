@@ -236,7 +236,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
             // If the value is null or some other exotic object, you would be broken anyway in the past
             // because the engine would try to access hostAttribute/shadowAttribute, which would throw an error.
             // However it may be undefined in newer versions of LWC, so we need to guard against that case.
-            this.stylesheetToken = isUndefined(value) ? undefined : (value as any).shadowAttribute;
+            this.stylesheetToken = isUndefined(value) ? undefined : value.shadowAttribute;
         },
     });
 }

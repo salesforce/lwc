@@ -1,0 +1,7 @@
+{
+    // This tsconfig is used to enable typed linting rules for files that are not covered by the
+    // "build" tsconfigs, primarily tests and scripts.
+    "extends": "./tsconfig.json",
+    "exclude": [],
+    "include": ["."]
+}

@@ -100,7 +100,7 @@ function createPreprocessor(config, emitter, logger) {
             // also adding the source map inline for browser debugging.
             const map = magicString.generateMap();
             code += '\n//# sourceMappingURL=' + map.toUrl();
-            // eslint-disable-next-line require-atomic-updates
+
             file.sourceMap = map;
         }
 

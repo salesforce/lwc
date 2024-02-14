@@ -298,7 +298,7 @@ function mountStatic(
 
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            (elm as any)[KEY__SHADOW_STATIC] = true;
+            elm[KEY__SHADOW_STATIC] = true;
         }
     }
 
@@ -535,7 +535,7 @@ function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    setText(elm, text!);
+    setText(elm, text);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -815,6 +815,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         // but elm.setAttribute('slot', Symbol(1)) is an error.
         // the following line also throws same error for symbols
         // Similar for Object.create(null)
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const normalizedSlotName = '' + slotName;
 
         const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =

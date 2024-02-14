@@ -52,6 +52,7 @@ function initGlobalStylesheet() {
                 return promise;
             }
         );
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.all(promises).then((stylesheetTexts) => {
             // When replaceSync() is called, the entire contents of the constructable stylesheet are replaced
             // with the copied+concatenated styles. This means that any shadow root's adoptedStyleSheets that

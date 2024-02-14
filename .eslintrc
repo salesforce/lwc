@@ -3,20 +3,20 @@
 
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": true
     },
 
     "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
-    "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended-type-checked"],
 
     "env": {
         "es6": true
     },
 
+    "reportUnusedDisableDirectives": true,
     "rules": {
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-
         "block-scoped-var": "error",
         "no-alert": "error",
         "no-buffer-constructor": "error",
@@ -28,7 +28,6 @@
         "no-iterator": "error",
         "no-lone-blocks": "error",
         "no-proto": "error",
-        "no-prototype-builtins": "error",
         "no-new-require": "error",
         "no-restricted-properties": [
             "error",
@@ -139,21 +138,69 @@
                 " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT",
                 " "
             ]
-        ]
+        ],
+        /*
+         * TODO: Address violations and re-enable these rules
+         */
+        // All @ts-ignore should either be refactored or changed to @ts-expect-error <reason>
+        "@typescript-eslint/ban-ts-comment": "off",
+        // Enums are a pain to deal with...
+        "@typescript-eslint/no-unsafe-enum-comparison": "off",
+        // We might just want to leave this one disabled
+        "@typescript-eslint/unbound-method": "off",
+        // We use objects in template strings (e.g. `${vm}`) a lot - that's not that helpful for
+        // the user because it all just becomes "[object Object]"
+        "@typescript-eslint/no-base-to-string": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        // The following all derive from our liberal use of `any`
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-redundant-type-constituents": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off"
     },
 
     "overrides": [
         {
-            "files": ["**/packages/lwc/**"],
+            "files": [
+                "**/__tests__/**",
+                "packages/@lwc/*/scripts/**",
+                // Just a weird edge case of a file...
+                "packages/@lwc/synthetic-shadow/index.js"
+            ],
+            "parserOptions": {
+                "project": "./tsconfig.eslint.json"
+            }
+        },
+        {
+            // Not covered by any tsconfig, so typed rules won't work, but we don't need them anyway
+            "files": ["jest.config.js"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"]
+        },
+        {
+            // Some tooling still uses require...
+            "files": [
+                "**/scripts/**",
+                "jest.config.js",
+                "packages/@lwc/integration-tests/src/components/**/*.spec.js"
+            ],
+            "rules": {
+                "@typescript-eslint/no-var-requires": "off"
+            }
+        },
+        {
+            "files": ["packages/lwc/**"],
             "rules": {
                 "no-restricted-imports": "off"
             }
         },
         {
             "files": [
-                "**/@lwc/engine-core/**",
-                "**/@lwc/engine-dom/**",
-                "**/@lwc/synthetic-shadow/**"
+                "packages/@lwc/engine-core/**",
+                "packages/@lwc/engine-dom/**",
+                "packages/@lwc/synthetic-shadow/**"
             ],
             "rules": {
                 "@lwc/lwc-internal/no-global-node": "error",
@@ -162,7 +209,7 @@
             }
         },
         {
-            "files": ["**/__tests__/**", "**/__mocks__/**", "**/@lwc/integration-karma/**"],
+            "files": ["**/__tests__/**", "**/__mocks__/**", "packages/@lwc/integration-karma/**"],
 
             "env": {
                 "jest": true,
@@ -178,7 +225,7 @@
             }
         },
         {
-            "files": ["**/@lwc/integration-tests/**"],
+            "files": ["packages/@lwc/integration-tests/**"],
 
             "globals": {
                 "$": true,
@@ -186,7 +233,7 @@
             }
         },
         {
-            "files": ["./*.js", "**/scripts/**", "**/jest.config.js"],
+            "files": ["./*.js", "**/scripts/**", "jest.config.js"],
 
             "env": {
                 "node": true,
@@ -198,7 +245,7 @@
             }
         },
         {
-            "files": ["**/perf-benchmarks/**"],
+            "files": ["packages/@lwc/perf-benchmarks/**"],
 
             "globals": {
                 "after": true,

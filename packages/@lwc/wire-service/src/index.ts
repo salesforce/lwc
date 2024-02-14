@@ -209,7 +209,7 @@ class LegacyWireAdapterBridge implements WireAdapter {
 
         if (
             isUndefined(this.currentConfig) ||
-            isDifferentConfig(config, this.currentConfig!, this.dynamicParamsNames)
+            isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
         ) {
             this.currentConfig = config;
             forEach.call(this.configuring, (listener) => {

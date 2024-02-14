@@ -197,6 +197,7 @@ export function getLwcConfig(dirname: string): LwcConfig {
     if (fs.existsSync(lwcConfigPath)) {
         return require(lwcConfigPath);
     } else {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         return require(packageJsonPath).lwc ?? {};
     }
 }

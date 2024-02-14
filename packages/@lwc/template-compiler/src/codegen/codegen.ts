@@ -495,6 +495,8 @@ export default class CodeGen {
             return bindComplexExpression(expression as ComplexExpression, this);
         }
 
+        // We need access to both this `this` and the walker's `this` in the walker
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const scope = this;
 
         // Cloning here is necessary because `this.replace()` is destructive, and we might use the

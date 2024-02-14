@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default function (define) {
     return define(
         'records/recordLayout2',

@@ -62,6 +62,7 @@ function createConfigWatcher(
         if (hasPendingConfig === false) {
             hasPendingConfig = true;
             // collect new config in the micro-task
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             Promise.resolve().then(() => {
                 hasPendingConfig = false;
                 // resetting current reactive params
@@ -265,6 +266,7 @@ export function installWireAdapters(vm: VM) {
                 connector.connect();
                 if (!lwcRuntimeFlags.ENABLE_WIRE_SYNC_EMIT) {
                     if (hasDynamicParams) {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
                         Promise.resolve().then(computeConfigAndUpdate);
                         return;
                     }

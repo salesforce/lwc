@@ -426,7 +426,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFac
     const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
         if (isArray(arrayOrStylesheet)) {
             for (let i = 0; i < arrayOrStylesheet.length; i++) {
-                validate((arrayOrStylesheet as TemplateStylesheetFactories)[i]);
+                validate(arrayOrStylesheet[i]);
             }
         } else if (!isFunction(arrayOrStylesheet)) {
             // function assumed to be a stylesheet factory
@@ -673,7 +673,7 @@ function flushRehydrationQueue() {
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
-            throw error; // eslint-disable-line no-unsafe-finally
+            throw error;
         }
     }
 

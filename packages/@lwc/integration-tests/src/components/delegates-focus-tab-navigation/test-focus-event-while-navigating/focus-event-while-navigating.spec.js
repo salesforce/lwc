@@ -29,7 +29,7 @@ describe('Focus event while sequential focus navigation', () => {
     });
 
     // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
-    describe.skip('delegatesFocus: true, tabindex: -1', async () => {
+    describe.skip('delegatesFocus: true, tabindex: -1', () => {
         beforeEach(async () => {
             await resetCounts();
         });

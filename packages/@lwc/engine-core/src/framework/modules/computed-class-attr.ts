@@ -26,6 +26,8 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
         return EmptyObject;
     }
     // computed class names must be string
+    // This will throw if className is a symbol or null-prototype object
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     className = isString(className) ? className : className + '';
 
     let map = classNameToClassMap[className];

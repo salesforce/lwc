@@ -35,7 +35,7 @@ function run(callback) {
         throw error;
     }
     runs.push(callback);
-    Promise.resolve().then(runBenchmark);
+    void Promise.resolve().then(runBenchmark);
 }
 
 async function runBenchmark() {

@@ -63,7 +63,7 @@ function getShadowParent(node: Node, value: ParentNode & Node): (Node & ParentNo
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner!);
+        return getShadowRoot(owner);
     } else if (value instanceof Element) {
         if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -192,6 +192,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
 )
     ? nativeGetRootNode
     : function (this: Node): Node {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           let node = this;
           let nodeParent: Node | null;
           while (!isNull((nodeParent = parentNodeGetter.call(node)))) {

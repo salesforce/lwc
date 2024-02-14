@@ -14,6 +14,7 @@ describe('enumerable properties', () => {
         const properties = [];
 
         const array = ['x', 'y'];
+        // eslint-disable-next-line @typescript-eslint/no-for-in-array
         for (const property in array) {
             properties.push(property);
         }

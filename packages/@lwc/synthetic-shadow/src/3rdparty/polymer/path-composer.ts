@@ -61,7 +61,7 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     if (startNode instanceof Window) {
         doc = startNode.document;
     } else {
-        doc = getOwnerDocument(startNode as Node);
+        doc = getOwnerDocument(startNode);
     }
 
     // event composedPath includes window when startNode's ownerRoot is document

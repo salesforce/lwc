@@ -77,7 +77,7 @@ interface SiblingScope {
 }
 
 export default class ParserCtx {
-    private readonly source: String;
+    private readonly source: string;
 
     readonly config: NormalizedConfig;
     readonly warnings: CompilerDiagnostic[] = [];
@@ -129,7 +129,7 @@ export default class ParserCtx {
     preserveComments: boolean;
     apiVersion: APIVersion;
 
-    constructor(source: String, config: NormalizedConfig) {
+    constructor(source: string, config: NormalizedConfig) {
         this.source = source;
         this.config = config;
         this.renderMode = LWCDirectiveRenderMode.shadow;

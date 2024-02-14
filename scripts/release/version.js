@@ -13,7 +13,7 @@ const { globSync } = require('glob');
 (async () => {
     const newVersion = await promptVersion();
     updatePackages(newVersion);
-})();
+})().catch(console.error);
 
 async function promptVersion() {
     const rl = readline.createInterface({

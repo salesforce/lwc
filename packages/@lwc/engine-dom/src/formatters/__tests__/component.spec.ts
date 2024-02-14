@@ -59,6 +59,7 @@ describe('Lightning Element formatter', () => {
             class Foo extends LightningElement {
                 constructor() {
                     super();
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },
@@ -87,6 +88,7 @@ describe('Lightning Element formatter', () => {
             class Foo extends LightningElement {
                 constructor() {
                     super();
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },
@@ -108,6 +110,7 @@ describe('Lightning Element formatter', () => {
                 constructor() {
                     super();
                     this.foo = void 0;
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },
