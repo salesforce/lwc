@@ -33,7 +33,3 @@ describe('default exports are not forgotten', () => {
         }
     });
 });
-
-test('test', () => {
-    expect(true).toBeTruthy();
-});
