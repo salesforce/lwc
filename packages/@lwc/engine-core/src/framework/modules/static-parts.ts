@@ -90,9 +90,8 @@ export function applyStaticParts(
         return;
     }
 
-    // This adds `part.elm` to each `part`. We have to do this on every mount/patch because the `parts`
+    // This adds `part.elm` to each `part`. We have to do this on every mount because the `parts`
     // array is recreated from scratch every time, so each `part.elm` is now undefined.
-    // TODO [#3800]: avoid calling traverseAndSetElements on every re-render
     traverseAndSetElements(root, parts, renderer);
 
     // Currently only event listeners and refs are supported for static vnodes
@@ -103,5 +102,41 @@ export function applyStaticParts(
         }
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
+    }
+}
+
+/**
+ * Reapplies static parts mounting to newly generated vnodes.
+ *
+ * @param n1 - the previous VStatic vnode
+ * @param n2 - the current VStatic vnode
+ * @param root - the root element
+ * @param renderer - the renderer to use
+ */
+export function patchStaticParts(n1: VStatic, n2: VStatic, root: Element, renderer: RendererAPI) {
+    if (!process.env.IS_BROWSER) {
+        return;
+    }
+
+    const { parts: currParts, owner: currPartsOwner } = n2;
+    if (isUndefined(currParts)) {
+        return;
+    }
+
+    const { parts: prevParts } = n1;
+    if (currParts.length !== prevParts?.length) {
+        // It should not be possible to reach this point as patching only occurs when the vnode is the same.
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error('Expected static parts to be the same for the same element');
+        }
+        // Recover from patching issue
+        return applyStaticParts(root, n2, renderer, false);
+    }
+
+    for (const [i, part] of currParts.entries()) {
+        // Patch only occurs if the vnode is newly generated, which means the part.elm is always undefined
+        part.elm = prevParts[i].elm;
+        // Refs must be updated after every render due to refVNodes getting reset before every render
+        applyRefs(part, currPartsOwner);
     }
 }
