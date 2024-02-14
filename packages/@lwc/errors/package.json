@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/errors",
-    "version": "5.0.8",
+    "version": "5.0.9",
     "description": "LWC Error Utilities",
     "keywords": [
         "lwc"
