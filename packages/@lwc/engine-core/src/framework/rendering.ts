@@ -69,7 +69,7 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
-import { applyStaticParts, patchStaticParts } from './modules/static-parts';
+import { mountStaticParts, patchStaticParts } from './modules/static-parts';
 import { LightningElementConstructor } from './base-lightning-element';
 
 export function patchChildren(
@@ -265,12 +265,12 @@ function mountElement(
 }
 
 function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
-    const elm = (n2.elm = n1.elm!);
+    n2.elm = n1.elm!;
 
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    patchStaticParts(n1, n2, elm, renderer);
+    patchStaticParts(n1, n2);
 }
 
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
@@ -305,7 +305,7 @@ function mountStatic(
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
-    applyStaticParts(elm, vnode, renderer, true);
+    mountStaticParts(elm, vnode, renderer);
 }
 
 function mountCustomElement(
