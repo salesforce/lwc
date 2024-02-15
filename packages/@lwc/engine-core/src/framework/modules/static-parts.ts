@@ -74,12 +74,7 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
  * @param renderer - the renderer to use
  * @param mount - true this is a first (mount) render as opposed to a subsequent (patch) render
  */
-export function applyStaticParts(
-    root: Element,
-    vnode: VStatic,
-    renderer: RendererAPI,
-    mount: boolean
-): void {
+export function mountStaticParts(root: Element, vnode: VStatic, renderer: RendererAPI): void {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we
     // support event listeners (no interactivity), so traversing parts makes no sense
     if (!process.env.IS_BROWSER) {
@@ -90,18 +85,51 @@ export function applyStaticParts(
         return;
     }
 
-    // This adds `part.elm` to each `part`. We have to do this on every mount/patch because the `parts`
+    // This adds `part.elm` to each `part`. We have to do this on every mount because the `parts`
     // array is recreated from scratch every time, so each `part.elm` is now undefined.
-    // TODO [#3800]: avoid calling traverseAndSetElements on every re-render
     traverseAndSetElements(root, parts, renderer);
 
     // Currently only event listeners and refs are supported for static vnodes
     for (const part of parts) {
-        if (mount) {
-            // Event listeners only need to be applied once when mounting
-            applyEventListeners(part, renderer);
-        }
+        // Event listeners only need to be applied once when mounting
+        applyEventListeners(part, renderer);
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
+    }
+}
+
+/**
+ * Mounts elements to the newly generated VStatic node
+ *
+ * @param n1 - the previous VStatic vnode
+ * @param n2 - the current VStatic vnode
+ */
+export function patchStaticParts(n1: VStatic, n2: VStatic) {
+    // On the server, we don't support ref (because it relies on renderedCallback), nor do we
+    // support event listeners (no interactivity), so traversing parts makes no sense
+    if (!process.env.IS_BROWSER) {
+        return;
+    }
+
+    const { parts: currParts, owner: currPartsOwner } = n2;
+    if (isUndefined(currParts)) {
+        return;
+    }
+
+    const { parts: prevParts } = n1;
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(
+            currParts.length === prevParts?.length,
+            'Expected static parts to be the same for the same element. This is an error with the LWC framework itself.'
+        );
+    }
+
+    for (let i = 0; i < currParts.length; i++) {
+        const part = currParts[i];
+        // Patch only occurs if the vnode is newly generated, which means the part.elm is always undefined
+        // Since the vnode and elements are the same we can safely assume that prevParts[i].elm is defined.
+        part.elm = prevParts![i].elm;
+        // Refs must be updated after every render due to refVNodes getting reset before every render
+        applyRefs(part, currPartsOwner);
     }
 }

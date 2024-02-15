@@ -52,7 +52,7 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
-import { applyStaticParts } from './modules/static-parts';
+import { mountStaticParts } from './modules/static-parts';
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
@@ -228,7 +228,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 
     vnode.elm = elm;
 
-    applyStaticParts(elm, vnode, renderer, true);
+    mountStaticParts(elm, vnode, renderer);
 
     return elm;
 }
