@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-describe('package exports', () => {
+describe('packaged dependencies are re-exported', () => {
     const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
     test.each(Object.keys(pkg.dependencies))(`%s is exported`, (name) => {
         const relative = name.replace('@lwc', '.');
