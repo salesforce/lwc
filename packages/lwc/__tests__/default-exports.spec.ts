@@ -21,7 +21,9 @@ const expectExportDefaultFromPackageInFile = (pkgName: string, ext: string) => {
 
 describe('default exports are not forgotten', () => {
     const allFiles = fs.readdirSync(PACKAGE_ROOT);
-    const packages = allFiles.filter((f) => f.endsWith('.js')).map((f) => f.slice(0, -3));
+    const packages = allFiles
+        .filter((f) => f.endsWith('.js') && f !== 'index.js')
+        .map((f) => f.slice(0, -3));
     test.each(packages)('@lwc/%s', async (pkg) => {
         const realModule = await import(`@lwc/${pkg}`);
         // When jest properly supports ESM, this will be a lot simpler
