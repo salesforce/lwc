@@ -20,8 +20,9 @@ const expectExportDefaultFromPackageInFile = (pkgName: string, ext: string) => {
 };
 
 /**
- * Packages with no exports (e.g. polyfill packages) have a "default" export of {default: {}}. The
- * placeholder object is an empty object whose prototype is an empty object with null prototype.
+ * Jest uses CommonJS, which means that packages with no explicit export statements actually export
+ * the default `module.exports` empty object. That export is an empty object with the prototype set
+ * to an empty object with null prototype.
  */
 const hasExplicitDefaultExport = (mod: object) => {
     // No default export = self explanatory
