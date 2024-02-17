@@ -23,6 +23,9 @@ export * from './shared/types';
 export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
 export { Config } from './config';
 
+export { toPropertyName } from './shared/utils';
+export { kebabcaseToCamelcase } from './shared/naming';
+
 export function parse(source: string, config: Config = {}): TemplateParseResult {
     const options = normalizeConfig(config);
     const state = new State(options);

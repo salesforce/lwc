@@ -8,6 +8,7 @@ export { transform, transformSync } from './transformers/transformer';
 
 export { TransformResult } from './transformers/transformer';
 export {
+    NormalizedTransformOptions,
     TransformOptions,
     StylesheetConfig,
     CustomPropertiesResolution,

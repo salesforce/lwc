@@ -51,6 +51,7 @@
         "@lwc/babel-plugin-component": "6.1.1",
         "@lwc/errors": "6.1.1",
         "@lwc/shared": "6.1.1",
+        "@lwc/ssr-compiler": "6.1.1",
         "@lwc/style-compiler": "6.1.1",
         "@lwc/template-compiler": "6.1.1"
     }

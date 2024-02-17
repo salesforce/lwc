@@ -13,6 +13,7 @@ import {
     invariant,
     CompilerDiagnostic,
 } from '@lwc/errors';
+import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
@@ -76,7 +77,7 @@ function transformFile(
 
     switch (path.extname(filename)) {
         case '.html':
-            transformer = templateTransformer;
+            transformer = options.targetSSR ? compileTemplateForSSR : templateTransformer;
             break;
 
         case '.css':
@@ -85,7 +86,7 @@ function transformFile(
 
         case '.ts':
         case '.js':
-            transformer = scriptTransformer;
+            transformer = options.targetSSR ? compileComponentForSSR : scriptTransformer;
             break;
 
         default:
