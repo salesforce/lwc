@@ -15,6 +15,7 @@ import { If, IfBlock } from './if';
 import { Text } from './text';
 import { createNewContext } from './context';
 
+import { LwcDynamic } from './lwc-dynamic';
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
@@ -36,6 +37,7 @@ const transformers: Record<string, Transformer> = {
     ForEach: ForEach as Transformer<IrNode>,
     If: If as Transformer<IrNode>,
     IfBlock: IfBlock as Transformer<IrNode>,
+    Lwc: LwcDynamic as Transformer<IrNode>,
 };
 
 const defaultTransformer: Transformer = (node: IrNode) => {

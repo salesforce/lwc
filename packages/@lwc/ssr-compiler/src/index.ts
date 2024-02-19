@@ -8,7 +8,13 @@
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
 
-interface TransformOptions {}
+export interface JsTransformOptions {
+    name: string;
+    namespace: string;
+}
+export interface TemplateTransformOptions {
+    enableDynamicComponents?: boolean;
+}
 
 export interface CompilationResult {
     code: string;
@@ -18,17 +24,17 @@ export interface CompilationResult {
 export function compileComponentForSSR(
     src: string,
     filename: string,
-    _options: TransformOptions
+    options: JsTransformOptions
 ): CompilationResult {
-    const { code } = compileJS(src, filename);
+    const { code } = compileJS(src, filename, options);
     return { code, map: undefined };
 }
 
 export function compileTemplateForSSR(
     src: string,
     filename: string,
-    _options: TransformOptions
+    { enableDynamicComponents }: TemplateTransformOptions
 ): CompilationResult {
-    const { code } = compileTemplate(src, filename);
+    const { code } = compileTemplate(src, filename, { enableDynamicComponents });
     return { code, map: undefined };
 }

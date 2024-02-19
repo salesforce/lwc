@@ -13,8 +13,10 @@ import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
 
 import type {
+    Statement as EsStatement,
     BlockStatement as EsBlockStatement,
     ObjectExpression as EsObjectExpression,
+    Expression,
 } from 'estree';
 import type {
     Attribute as IrAttribute,
@@ -28,7 +30,7 @@ const bYieldFromChildGenerator = esTemplateWithYield<EsBlockStatement>`
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
         const childSlottedContentGenerators = {};
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerators);
+        yield* ${is.expression}(${is.expression}, childProps, childAttrs, childSlottedContentGenerators);
     }
 `;
 
@@ -75,6 +77,24 @@ function reflectAriaPropsAsAttrs(props: IrProperty[]): IrAttribute[] {
         .filter((el): el is NonNullable<IrAttribute> => el !== null);
 }
 
+export function ImportedComponent(
+    node: IrComponent,
+    childGenerator: Expression,
+    tagName: Expression,
+    cxt: TransformerContext
+): EsStatement[] {
+    const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
+
+    return [
+        bYieldFromChildGenerator(
+            getChildAttrsOrProps(node.properties, cxt),
+            getChildAttrsOrProps(attributes, cxt),
+            childGenerator,
+            tagName
+        ),
+    ];
+}
+
 export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.
     const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
@@ -83,14 +103,10 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.hoist(componentImport, childGeneratorLocalName);
     const childTagName = node.name;
 
-    const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
-
-    return [
-        bYieldFromChildGenerator(
-            getChildAttrsOrProps(node.properties, cxt),
-            getChildAttrsOrProps(attributes, cxt),
-            b.identifier(childGeneratorLocalName),
-            b.literal(childTagName)
-        ),
-    ];
+    return ImportedComponent(
+        node,
+        b.identifier(childGeneratorLocalName),
+        b.literal(childTagName),
+        cxt
+    );
 };

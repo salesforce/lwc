@@ -9,6 +9,7 @@ import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
+import { TemplateTransformOptions } from '../index';
 import { templateIrToEsTree } from './ir-to-es';
 import { optimizeAdjacentYieldStmts } from './shared';
 
@@ -48,8 +49,12 @@ const bExportTemplate = esTemplate<
     }
 `;
 
-export default function compileTemplate(src: string, _filename: string) {
-    const { root, warnings } = parse(src);
+export default function compileTemplate(
+    src: string,
+    _filename: string,
+    options: TemplateTransformOptions
+) {
+    const { root, warnings } = parse(src, options);
     if (!root || warnings.length) {
         for (const warning of warnings) {
             // eslint-disable-next-line no-console

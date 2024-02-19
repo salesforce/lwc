@@ -10,11 +10,13 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 
+import { JsTransformOptions } from '..';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { addStylesheetImports, catalogStaticStylesheets, catalogStyleImport } from './stylesheets';
 import { addGenerateMarkupExport } from './generate-markup';
 
+import { addSelector } from './sel';
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 
@@ -112,7 +114,11 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string) {
+export default function compileJS(
+    src: string,
+    filename: string,
+    { name, namespace }: JsTransformOptions
+) {
     const ast = parseModule(src, {
         module: true,
         next: true,
@@ -147,6 +153,7 @@ export default function compileJS(src: string, filename: string) {
 
     addGenerateMarkupExport(ast, state, filename);
     addStylesheetImports(ast, state, filename);
+    addSelector(ast, state, name, namespace);
 
     return {
         code: generate(ast, {}),
