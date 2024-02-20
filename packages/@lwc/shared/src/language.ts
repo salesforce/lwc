@@ -145,7 +145,7 @@ export function isBoolean(obj: unknown): obj is boolean {
 export function isFunction(obj: unknown): obj is Function {
     return typeof obj === 'function';
 }
-export function isObject(obj: unknown): obj is object {
+export function isObject(obj: unknown): obj is object | null {
     return typeof obj === 'object';
 }
 
