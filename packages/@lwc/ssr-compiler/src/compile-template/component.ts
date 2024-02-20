@@ -6,7 +6,7 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import { kebabcaseToCamelcase } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { cleanStyleAttrVal, isValidIdentifier } from './shared';
 import { TransformerContext } from './types';
@@ -95,9 +95,10 @@ export function ImportedComponent(
     ];
 }
 
+let generateMarkupId = 0;
 export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.
-    const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
+    const childGeneratorLocalName = `generateMarkup_${generateMarkupId++}`;
     const importPath = kebabcaseToCamelcase(node.name);
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
