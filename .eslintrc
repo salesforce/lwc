@@ -304,8 +304,7 @@
                 // TODO [W-13278716]: All JSDOC should be valid
                 "jsdoc/require-param": "off",
                 "jsdoc/require-param-description": "off",
-                "jsdoc/require-returns": "off",
-                "jsdoc/require-yields": "off"
+                "jsdoc/require-returns": "off"
             }
         }
     ]

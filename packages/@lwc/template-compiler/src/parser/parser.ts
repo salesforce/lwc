@@ -158,6 +158,7 @@ export default class ParserCtx {
 
     /**
      * This method flattens the scopes into a single array for traversal.
+     * @yields Each node in the scope and its parent.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
         const ancestors = this.elementScopes.flat();
