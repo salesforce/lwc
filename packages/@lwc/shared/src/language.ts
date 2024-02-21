@@ -168,11 +168,21 @@ export function toString(obj: unknown): string {
         // Array.prototype.toString directly will cause an error Iterate through
         // all the items and handle individually.
         if (isArray(obj)) {
+            // This behavior is slightly different from Array#toString:
+            // 1. Array#toString calls `this.join`, rather than Array#join
+            // Ex: arr = []; arr.join = () => 1; arr.toString() === 1; toString(arr) === ''
+            // 2. Array#toString delegates to Object#toString if `this.join` is not a function
+            // Ex: arr = []; arr.join = 'no'; arr.toString() === '[object Array]; toString(arr) = ''
+            // 3. Array#toString converts null/undefined to ''
+            // Ex: arr = [null, undefined]; arr.toString() === ','; toString(arr) === '[object Null],undefined'
+            // 4. Array#toString converts recursive references to arrays to ''
+            // Ex: arr = [1]; arr.push(arr, 2); arr.toString() === '1,,2'; toString(arr) throws
+            // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
             return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
         }
         return obj.toString();
     } else if (typeof obj === 'object') {
-        // Oops! This catches null and returns "[object Null]"
+        // This catches null and returns "[object Null]". Weird, but kept for backwards compatibility.
         return OtS.call(obj);
     } else {
         return String(obj);
