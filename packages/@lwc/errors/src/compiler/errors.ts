@@ -43,7 +43,6 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  * info about the error's code and its origin (filename, line, column) when applicable.
  * @param errorInfo The object holding the error metadata.
  * @param config A config object providing any message arguments and origin info needed to create the error.
- * @returns
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
@@ -70,7 +69,6 @@ export function generateCompilerDiagnostic(
  * the error's code and its origin (filename, line, column) when applicable.
  * @param errorInfo The object holding the error metadata.
  * @param config A config object providing any message arguments and origin info needed to create the error.
- * @returns
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
@@ -100,7 +98,6 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
  * @param errorInfo
  * @param error
  * @param origin
- * @returns
  */
 export function normalizeToCompilerError(
     errorInfo: LWCErrorInfo,
@@ -128,9 +125,9 @@ export function normalizeToCompilerError(
 
 /**
  * Normalizes a received error into a CompilerDiagnostic. Adds any provided additional origin info.
+ * @param errorInfo
  * @param error
  * @param origin
- * @returns
  */
 export function normalizeToDiagnostic(
     errorInfo: LWCErrorInfo,

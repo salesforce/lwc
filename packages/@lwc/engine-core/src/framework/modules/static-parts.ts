@@ -71,7 +71,6 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
  * @param root - the root element
  * @param vnode - the parent VStatic
  * @param renderer - the renderer to use
- * @param mount - true this is a first (mount) render as opposed to a subsequent (patch) render
  */
 export function mountStaticParts(root: Element, vnode: VStatic, renderer: RendererAPI): void {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we

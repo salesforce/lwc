@@ -13,7 +13,7 @@ import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
- * @api decorator to mark public fields and public methods in
+ * The @api decorator marks public fields and public methods in
  * LWC Components. This function implements the internals of this
  * decorator.
  */

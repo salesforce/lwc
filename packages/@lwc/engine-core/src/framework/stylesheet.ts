@@ -28,8 +28,8 @@ export type StylesheetFactory = (
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
- * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via the
- * @import CSS declaration).
+ * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via
+ * the @import CSS declaration).
  */
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 

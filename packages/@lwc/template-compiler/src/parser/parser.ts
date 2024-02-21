@@ -172,10 +172,10 @@ export default class ParserCtx {
      * This method returns an iterator over ancestor nodes, starting at the parent and ending at the root node.
      *
      * Note: There are instances when we want to terminate the traversal early, such as searching for a ForBlock parent.
-     * @param startNode - Starting node to begin search, defaults to the tail of the current scope.
      * @param predicate - This callback is called once for each ancestor until it finds one where predicate returns true.
      * @param traversalCond - This callback is called after predicate and will terminate the traversal if it returns false.
      * traversalCond is ignored if no value is provided.
+     * @param startNode - Starting node to begin search, defaults to the tail of the current scope.
      */
     findAncestor<A extends ParentNode>(
         predicate: (node: ParentNode) => node is A,

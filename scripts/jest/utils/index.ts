@@ -13,11 +13,9 @@ import CustomMatcherResult = jest.CustomMatcherResult;
 const { globSync } = glob;
 
 /**
- * src - the fixture content
- * @param receivedContent
- * @param filename
- * filename - the fixture absolute path
- * dirname - the fixture directory absolute path
+ * @param receivedContent - the fixture content
+ * @param filename - the fixture absolute path
+ * @returns matcher result
  */
 function toMatchFile(
     this: MatcherUtils,
@@ -137,7 +135,7 @@ type TestFixtureOutput = { [filename: string]: unknown };
  * expected to return an object representing the fixture outputs. The key represents the output
  * file name and the value, its associated content. An `undefined` or `null` value represents a
  * non existing file.
- * @param config
+ * @param config - The config object
  * @param config.pattern - The glob pattern to locate each individual fixture.
  * @param config.root - The directory from where the pattern is executed.
  * @param testFn - The test function executed for each fixture.
