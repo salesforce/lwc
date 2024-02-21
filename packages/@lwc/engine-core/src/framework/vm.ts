@@ -547,8 +547,8 @@ function computeShadowMode(
     return shadowMode;
 }
 
-function assertIsVM(obj: any): asserts obj is VM {
-    if (isNull(obj) || !isObject(obj) || !('renderRoot' in obj)) {
+function assertIsVM(obj: unknown): asserts obj is VM {
+    if (!isObject(obj) || isNull(obj) || !('renderRoot' in obj)) {
         throw new TypeError(`${obj} is not a VM.`);
     }
 }
