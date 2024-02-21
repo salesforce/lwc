@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -144,6 +144,11 @@ function transformWarningToRollupLog(
     return result;
 }
 
+/**
+ * Rollup plugin for bundling LWC components
+ * @param pluginOptions LWC rollup plugin options
+ * @returns LWC rollup plugin
+ */
 export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
