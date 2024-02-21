@@ -71,6 +71,11 @@ function getDecoratedNodeType(
     }
 }
 
+/**
+ *
+ * @param engineImportSpecifiers
+ * @param state
+ */
 function validateImportedLwcDecoratorUsage(
     engineImportSpecifiers: ImportSpecifier[],
     state: LwcBabelPluginPass
@@ -256,6 +261,11 @@ function getMetadataObjectPropertyList(
     return list;
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.types
+ */
 function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     function createRegisterDecoratorsCallExpression(
         path: NodePath<types.Class>,
