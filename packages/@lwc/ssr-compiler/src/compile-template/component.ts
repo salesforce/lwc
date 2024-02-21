@@ -77,6 +77,14 @@ function reflectAriaPropsAsAttrs(props: IrProperty[]): IrAttribute[] {
         .filter((el): el is NonNullable<IrAttribute> => el !== null);
 }
 
+/**
+ * Reusable function for dynamic (lwc:component) and regular children components
+ * @param node the node to be transformed to yield statements
+ * @param childGenerator generateMarkup of child
+ * @param tagName tagName of the child
+ * @param cxt TransformerContext
+ * @returns SSR'd strings
+ */
 export function ImportedComponent(
     node: IrComponent,
     childGenerator: Expression,
