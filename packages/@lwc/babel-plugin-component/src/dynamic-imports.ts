@@ -28,7 +28,7 @@ function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginP
     }
 }
 
-/*
+/**
  * Expected API for this plugin:
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
