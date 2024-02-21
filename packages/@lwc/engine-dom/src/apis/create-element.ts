@@ -86,7 +86,6 @@ function monkeyPatchDomAPIs() {
  * difference that in the options, you can pass the `is` property set to a Constructor instead of
  * just a string value. The intent is to allow the creation of an element controlled by LWC without
  * having to register the element as a custom element.
- *
  * @example
  * ```
  * const el = createElement('x-foo', { is: FooCtor });

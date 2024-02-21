@@ -208,7 +208,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
  *  Fallback to using the native getRootNode() to discover the root node.
  *  This is because, it is not possible to inspect the node and decide if it is part
  *  of a native shadow or the synthetic shadow.
- * @param {Node} node
+ * @param node
  */
 function getNearestRoot(node: Node): Node {
     const ownerNode: HTMLElement | null = getNodeOwner(node);
@@ -239,7 +239,7 @@ function getNearestRoot(node: Node): Node {
  *
  * _Spec_: https://dom.spec.whatwg.org/#dom-node-getrootnode
  *
- **/
+ */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
     return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);

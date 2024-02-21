@@ -41,10 +41,9 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  * Generates a compiler diagnostic. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent diagnostic object. Diagnostic contains
  * info about the error's code and its origin (filename, line, column) when applicable.
- *
- * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
- * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
- * @return {CompilerDiagnostic}
+ * @param errorInfo The object holding the error metadata.
+ * @param config A config object providing any message arguments and origin info needed to create the error.
+ * @returns
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
@@ -69,10 +68,9 @@ export function generateCompilerDiagnostic(
  * Generates a compiler error. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent error object. Error object contains info about
  * the error's code and its origin (filename, line, column) when applicable.
- *
- * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
- * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
- * @return {CompilerError}
+ * @param errorInfo The object holding the error metadata.
+ * @param config A config object providing any message arguments and origin info needed to create the error.
+ * @returns
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
@@ -102,8 +100,7 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
  * @param errorInfo
  * @param error
  * @param origin
- *
- * @return {CompilerError}
+ * @returns
  */
 export function normalizeToCompilerError(
     errorInfo: LWCErrorInfo,
@@ -133,8 +130,7 @@ export function normalizeToCompilerError(
  * Normalizes a received error into a CompilerDiagnostic. Adds any provided additional origin info.
  * @param error
  * @param origin
- *
- * @return {CompilerDiagnostic}
+ * @returns
  */
 export function normalizeToDiagnostic(
     errorInfo: LWCErrorInfo,

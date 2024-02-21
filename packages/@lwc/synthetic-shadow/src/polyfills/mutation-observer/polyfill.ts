@@ -41,7 +41,7 @@ function setNodeObservers(node: Node, observers: MutationObserver[]) {
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
- * @param {MutationRecord} originalRecord
+ * @param originalRecord
  */
 function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord {
     const { addedNodes, removedNodes, target, type } = originalRecord;
@@ -82,8 +82,8 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 /**
  * Utility to identify if a target node is being observed by the given observer
  * Start at the current node, if the observer is registered to observe the current node, the mutation qualifies
- * @param {MutationObserver} observer
- * @param {Node} target
+ * @param observer
+ * @param target
  */
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
@@ -107,8 +107,8 @@ function isQualifiedObserver(observer: MutationObserver, target: Node): boolean 
  * The key logic here is to determine if a given observer has been registered to observe any nodes
  * between the target node of a mutation record to the target's root node.
  * This function also retargets records when mutations occur directly under the shadow root
- * @param {MutationRecords[]} mutations
- * @param {MutationObserver} observer
+ * @param mutations
+ * @param observer
  */
 function filterMutationRecords(
     mutations: MutationRecord[],
@@ -202,7 +202,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  * Patched MutationObserver constructor.
  * 1. Wrap the callback to filter out MutationRecords based on dom ownership
  * 2. Add a property field to track all observed targets of the observer instance
- * @param {MutationCallback} callback
+ * @param callback
  */
 function PatchedMutationObserver(
     this: MutationObserver,
@@ -235,8 +235,8 @@ function patchedDisconnect(this: MutationObserver): void {
 /**
  * A single mutation observer can observe multiple nodes(target).
  * Maintain a list of all targets that the observer chooses to observe
- * @param {Node} target
- * @param {Object} options
+ * @param target
+ * @param options
  */
 function patchedObserve(
     this: MutationObserver,

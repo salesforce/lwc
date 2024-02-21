@@ -122,8 +122,10 @@ export interface Context {
     hasScopedStyles: boolean | undefined;
     /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
     styleVNodes: VNode[] | null;
-    /** Object used by the template function to store information that can be reused between
-     *  different render cycle of the same template. */
+    /**
+     * Object used by the template function to store information that can be reused between
+     *  different render cycle of the same template.
+     */
     tplCache: TemplateCache;
     /** List of wire hooks that are invoked when the component gets connected. */
     wiredConnecting: Array<() => void>;
@@ -162,14 +164,18 @@ export interface VM<N = HostNode, E = HostElement> {
     children: VNodes;
     /** The list of adopted children VNodes. */
     aChildren: VNodes;
-    /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
+    /**
+     * The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
      * those elements to efficiently unmount them when the parent component is disconnected without
-     * having to traverse the VNode tree. */
+     * having to traverse the VNode tree.
+     */
     velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** Contains information about the mapping between the slot names and the slotted VNodes, and
-     *  the owner of the slot content. */
+    /**
+     * Contains information about the mapping between the slot names and the slotted VNodes, and
+     *  the owner of the slot content.
+     */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
@@ -185,28 +191,39 @@ export interface VM<N = HostNode, E = HostElement> {
     component: LightningElement;
     /** The custom element shadow root. */
     shadowRoot: ShadowRoot | null;
-    /** The component render root. If the component is a shadow DOM component, it is its shadow
-     * root. If the component is a light DOM component it the element itself. */
+    /**
+     * The component render root. If the component is a shadow DOM component, it is its shadow
+     * root. If the component is a light DOM component it the element itself.
+     */
     renderRoot: ShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
-    /** Hook invoked whenever a property is accessed on the host element. This hook is used by
-     *  Locker only. */
+    /**
+     * Hook invoked whenever a property is accessed on the host element. This hook is used by
+     *  Locker only.
+     */
     setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
-    /** Hook invoked whenever a property is set on the host element. This hook is used by Locker
-     *  only. */
+    /**
+     * Hook invoked whenever a property is set on the host element. This hook is used by Locker
+     *  only.
+     */
     getHook: (cmp: LightningElement, prop: PropertyKey) => any;
-    /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
-     *  properties and event handlers). This hook is used by Locker. */
+    /**
+     * Hook invoked whenever a method is called on the component (life-cycle hooks, public
+     *  properties and event handlers). This hook is used by Locker.
+     */
     callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     /**
-     * Renderer API */
+     * Renderer API
+     */
     renderer: RendererAPI;
     /**
-     * Debug info bag. Stores useful debug information about the component. */
+     * Debug info bag. Stores useful debug information about the component.
+     */
     debugInfo?: Record<string, any>;
     /**
-     * Any stylesheets associated with the component */
+     * Any stylesheets associated with the component
+     */
     stylesheets: TemplateStylesheetFactories | null;
     /**
      * API version associated with this VM

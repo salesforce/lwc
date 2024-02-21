@@ -23,7 +23,7 @@ export function setLegacyShadowToken(node: Node, shadowToken: string | undefined
 /**
  * Patching Element.prototype.$legacyShadowToken$ to mark elements a portal:
  * Same as $shadowToken$ but for legacy CSS scope tokens.
- **/
+ */
 defineProperty(Element.prototype, KEY__LEGACY_SHADOW_TOKEN, {
     set(this: Element, shadowToken: string | undefined) {
         const oldShadowToken = (this as any)[KEY__LEGACY_SHADOW_TOKEN_PRIVATE];

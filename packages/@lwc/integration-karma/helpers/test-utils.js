@@ -349,8 +349,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     /**
      *
-     * @param {jasmine.Spy} dispatcher
-     * @param {String[]} runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
+     * @param dispatcher
+     * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
      */
     function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
         lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {

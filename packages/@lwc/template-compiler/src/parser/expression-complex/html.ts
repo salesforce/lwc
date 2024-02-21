@@ -285,11 +285,9 @@ interface ParseFragmentConfig {
 /**
  * Parse the LWC template using a customized parser & lexer that allow
  * for template expressions to be parsed correctly.
- *
- * @param      {string}               source  raw template markup
- * @param      {ParseFragmentConfig}  config
- *
- * @return     {DocumentFragment}     the parsed document
+ * @param               source  raw template markup
+ * @param  config
+ * @returns     the parsed document
  */
 export function parseFragment(source: string, config: ParseFragmentConfig): DocumentFragment {
     const { ctx, sourceCodeLocationInfo = true, onParseError } = config;

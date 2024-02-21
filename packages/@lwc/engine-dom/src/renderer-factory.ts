@@ -34,7 +34,6 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * Example usage:
  * import { renderer, rendererFactory } from 'lwc';
  * const customRenderer = rendererFactory(renderer);
- *
  * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
 export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {

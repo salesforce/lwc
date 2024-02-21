@@ -122,7 +122,7 @@ describe('disconnectedCallback for host with slots', () => {
      * Automation for issue #1090
      * In this scenario the slot content from the parent's template is unrendered.
      * disconnecting the slot receiver was causing errors
-     **/
+     */
     it('should invoke disconnectedCallback on child that has unrendered slot content', () => {
         parent.hideChildIgnoresSlots = true;
 

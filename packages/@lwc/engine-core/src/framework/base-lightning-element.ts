@@ -204,7 +204,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
 /**
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
- **/
+ */
 // @ts-ignore
 export const LightningElement: LightningElementConstructor = function (
     this: LightningElement

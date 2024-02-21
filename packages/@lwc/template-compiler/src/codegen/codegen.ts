@@ -353,7 +353,6 @@ export default class CodeGen {
      * This routine generates an expression that avoids
      * computing the sanitized html of a raw html if it does not change
      * between renders.
-     *
      * @param expr
      * @returns sanitizedHtmlExpr
      */

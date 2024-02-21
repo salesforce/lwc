@@ -135,7 +135,7 @@ function markElementAsPortal(elm: Element) {
  *  - at the moment, there is no way to undo this operation, once the element is
  *    marked as $domManual$, setting it to false does nothing.
  *
- **/
+ */
 // TODO [#1306]: rename this to $observerConnection$
 defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
