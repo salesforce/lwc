@@ -288,7 +288,6 @@
                 "packages/@lwc/engine-core/**",
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
-                "packages/@lwc/errors/**",
                 "packages/@lwc/features/**",
                 "packages/@lwc/module-resolver/**",
                 "packages/@lwc/style-compiler/**",
