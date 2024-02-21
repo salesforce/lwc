@@ -6,15 +6,17 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import { kebabcaseToCamelcase } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { cleanStyleAttrVal, isValidIdentifier } from './shared';
 import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
 
 import type {
+    Statement as EsStatement,
     BlockStatement as EsBlockStatement,
     ObjectExpression as EsObjectExpression,
+    Expression,
 } from 'estree';
 import type {
     Attribute as IrAttribute,
@@ -28,7 +30,7 @@ const bYieldFromChildGenerator = esTemplateWithYield<EsBlockStatement>`
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
         const childSlottedContentGenerators = {};
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerators);
+        yield* ${is.expression}(${is.expression}, childProps, childAttrs, childSlottedContentGenerators);
     }
 `;
 
@@ -75,22 +77,45 @@ function reflectAriaPropsAsAttrs(props: IrProperty[]): IrAttribute[] {
         .filter((el): el is NonNullable<IrAttribute> => el !== null);
 }
 
-export const Component: Transformer<IrComponent> = function Component(node, cxt) {
-    // Import the custom component's generateMarkup export.
-    const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
-    const importPath = kebabcaseToCamelcase(node.name);
-    const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
-    cxt.hoist(componentImport, childGeneratorLocalName);
-    const childTagName = node.name;
-
+/**
+ * Reusable function for dynamic (lwc:component) and regular children components
+ * @param node the node to be transformed to yield statements
+ * @param childGenerator generateMarkup of child
+ * @param tagName tagName of the child
+ * @param cxt TransformerContext
+ * @returns SSR'd strings
+ */
+export function ImportedComponent(
+    node: IrComponent,
+    childGenerator: Expression,
+    tagName: Expression,
+    cxt: TransformerContext
+): EsStatement[] {
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
     return [
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
-            b.identifier(childGeneratorLocalName),
-            b.literal(childTagName)
+            childGenerator,
+            tagName
         ),
     ];
+}
+
+let generateMarkupId = 0;
+export const Component: Transformer<IrComponent> = function Component(node, cxt) {
+    // Import the custom component's generateMarkup export.
+    const childGeneratorLocalName = `generateMarkup_${generateMarkupId++}`;
+    const importPath = kebabcaseToCamelcase(node.name);
+    const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
+    cxt.hoist(componentImport, childGeneratorLocalName);
+    const childTagName = node.name;
+
+    return ImportedComponent(
+        node,
+        b.identifier(childGeneratorLocalName),
+        b.literal(childTagName),
+        cxt
+    );
 };

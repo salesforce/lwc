@@ -133,4 +133,13 @@ export function addGenerateMarkupExport(
     program.body.push(
         bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall, classIdentifier)
     );
+    program.body.push(
+        b.expressionStatement(
+            b.assignmentExpression(
+                '=',
+                b.memberExpression(classIdentifier, b.identifier('__LWC_GENERATE_MARKUP__')),
+                b.identifier('generateMarkup')
+            )
+        )
+    );
 }
