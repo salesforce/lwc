@@ -193,6 +193,7 @@ shared.isBoolean;
 shared.isObject;
 shared.isString;
 shared.isNumber;
+shared.isFunction;
 shared.noop;
 shared.toString;
 shared.getPropertyDescriptor;
