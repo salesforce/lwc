@@ -31,6 +31,8 @@ const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
  * flag. It is meant to be used during the app initialization.
+ * @param name
+ * @param value
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
     if (!isBoolean(value)) {
@@ -71,6 +73,8 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
 /**
  * Set the value at runtime of a given feature flag. This method should only be used for testing
  * purposes. It is a no-op when invoked in production mode.
+ * @param name
+ * @param value
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
     // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests

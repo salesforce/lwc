@@ -12,6 +12,7 @@ import { getAssociatedVMIfPresent } from './vm';
 /**
  * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.
  * This API is subject to change or being removed.
+ * @param elm
  */
 export function getComponentConstructor(elm: HTMLElement): typeof LightningElement | null {
     let ctor: typeof LightningElement | null = null;

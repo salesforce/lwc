@@ -726,6 +726,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
  * With the delimiters removed, the contents are marked dynamic so they are diffed correctly.
  *
  * This function is used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
+ * @param children
  */
 function flattenFragmentsInChildren(children: VNodes): VNodes {
     const flattenedChildren: VNodes = [];

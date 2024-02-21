@@ -15,6 +15,8 @@ import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
 /**
  * This methods filters out elements that are not in the same shadow root of context.
  * It does not enforce shadow dom semantics if $context is not managed by LWC
+ * @param context
+ * @param unfilteredNodes
  */
 export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
     context: Element,

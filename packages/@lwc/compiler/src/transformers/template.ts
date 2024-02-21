@@ -21,6 +21,9 @@ import { TransformResult } from './transformer';
  * Transforms a HTML template into module exporting a template function.
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
+ * @param src
+ * @param filename
+ * @param options
  */
 export default function templateTransform(
     src: string,

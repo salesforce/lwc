@@ -34,12 +34,19 @@ function isLwcDecoratorName(name: string) {
     return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
 }
 
-/** Returns a list of all the references to an identifier */
+/**
+ * Returns a list of all the references to an identifier
+ * @param identifier
+ */
 function getReferences(identifier: NodePath<types.Identifier>) {
     return identifier.scope.getBinding(identifier.node.name)!.referencePaths;
 }
 
-/** Returns the type of decorator depdending on the property or method if get applied to */
+/**
+ * Returns the type of decorator depdending on the property or method if get applied to
+ * @param decoratorPath
+ * @param state
+ */
 function getDecoratedNodeType(
     decoratorPath: NodePath<types.Decorator>,
     state: LwcBabelPluginPass
@@ -125,7 +132,11 @@ function isImportedFromLwcSource(decoratorBinding: Binding) {
     );
 }
 
-/** Validate the usage of decorator by calling each validation function */
+/**
+ * Validate the usage of decorator by calling each validation function
+ * @param decorators
+ * @param state
+ */
 function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
@@ -136,7 +147,10 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
 }
 
-/** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
+/**
+ * Remove import specifiers. It also removes the import statement if the specifier list becomes empty
+ * @param engineImportSpecifiers
+ */
 function removeImportedDecoratorSpecifiers(
     engineImportSpecifiers: { name: any; path: NodePath<Node> }[]
 ) {

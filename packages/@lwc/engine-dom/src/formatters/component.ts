@@ -10,7 +10,6 @@ import { isUndefined, keys } from '@lwc/shared';
 
 /**
  * Displays the header for a custom element.
- *
  * @param ce the custom element
  * @param componentInstance component instance associated with the custom element.
  */

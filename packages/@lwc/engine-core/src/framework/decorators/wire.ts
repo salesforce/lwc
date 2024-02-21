@@ -12,9 +12,11 @@ import { WireAdapterConstructor } from '../wiring';
 import { updateComponentValue } from '../update-component-value';
 
 /**
- * @wire decorator to wire fields and methods to a wire adapter in
+ * The @wire decorator wires fields and methods to a wire adapter in
  * LWC Components. This function implements the internals of this
  * decorator.
+ * @param _adapter
+ * @param _config
  */
 export default function wire(
     _adapter: WireAdapterConstructor,

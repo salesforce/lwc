@@ -469,6 +469,7 @@ function i(
 
 /**
  * [f]lattening
+ * @param items
  */
 function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
     if (process.env.NODE_ENV !== 'production') {
@@ -600,6 +601,10 @@ function fid(url: string | undefined | null): string | null | undefined {
  * [ddc] - create a (deprecated) dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  *
  * TODO [#3331]: remove usage of lwc:dynamic in 246
+ * @param sel
+ * @param Ctor
+ * @param data
+ * @param children
  */
 function ddc(
     sel: string,
@@ -628,6 +633,9 @@ function ddc(
 
 /**
  * [dc] - create a dynamic component via `<lwc:component lwc:is={Ctor}>`
+ * @param Ctor
+ * @param data
+ * @param children
  */
 function dc(
     Ctor: LightningElementConstructor | null | undefined,
@@ -670,13 +678,13 @@ function dc(
  * to the engine that a particular collection of children must be diffed using the slow
  * algo based on keys due to the nature of the list. E.g.:
  *
- *   - slot element's children: the content of the slot has to be dynamic when in synthetic
- *                              shadow mode because the `vnode.children` might be the slotted
- *                              content vs default content, in which case the size and the
- *                              keys are not matching.
- *   - children that contain dynamic components
- *   - children that are produced by iteration
- *
+ * - slot element's children: the content of the slot has to be dynamic when in synthetic
+ * shadow mode because the `vnode.children` might be the slotted
+ * content vs default content, in which case the size and the
+ * keys are not matching.
+ * - children that contain dynamic components
+ * - children that are produced by iteration
+ * @param vnodes
  */
 function sc(vnodes: VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
@@ -704,6 +712,7 @@ export type SanitizeHtmlContentHook = (content: unknown) => string;
 
 /**
  * Sets the sanitizeHtmlContentHook.
+ * @param newHookImpl
  */
 export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook) {
     sanitizeHtmlContentHook = newHookImpl;

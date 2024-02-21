@@ -74,7 +74,7 @@ export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> =
     payload: ReportingPayloadMapping[T]
 ) => void;
 
-/** Callbacks to invoke when reporting is enabled **/
+/** Callbacks to invoke when reporting is enabled */
 type OnReportingEnabledCallback = () => void;
 const onReportingEnabledCallbacks: OnReportingEnabledCallback[] = [];
 
@@ -92,7 +92,6 @@ let enabled = false;
 export const reportingControl = {
     /**
      * Attach a new reporting control (aka dispatcher).
-     *
      * @param dispatcher - reporting control
      */
     attachDispatcher(dispatcher: ReportingDispatcher): void {

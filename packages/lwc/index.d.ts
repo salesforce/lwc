@@ -207,7 +207,6 @@ declare module 'lwc' {
      *
      * in which 'GetRecordConfig' is the adapter config object type and 'RecordRepresentation'
      * is the returned value.
-     *
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
      */

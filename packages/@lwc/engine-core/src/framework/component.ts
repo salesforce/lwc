@@ -37,6 +37,8 @@ const registeredComponentMap: Map<LightningElementConstructor, ComponentConstruc
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
+ * @param Ctor
+ * @param metadata
  */
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
