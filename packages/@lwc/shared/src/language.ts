@@ -75,6 +75,10 @@ const {
 //
 // Exposing this helper function is the closest we can get to preserving the usage patterns
 // of Array.prototype methods used elsewhere in the codebase.
+/**
+ * Wrapper for {@linkcode Array.prototype.every} that correctly preserves the type predicate in the
+ * return value; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every MDN Reference}.
+ */
 function arrayEvery<T>(
     arr: unknown[],
     predicate: (value: any, index: number, array: typeof arr) => value is T
@@ -185,48 +189,63 @@ export {
     StringToLowerCase,
 };
 
+/** Determines whether the argument is `undefined`. */
 export function isUndefined(obj: unknown): obj is undefined {
     return obj === undefined;
 }
 
+/** Determines whether the argument is `null`. */
 export function isNull(obj: unknown): obj is null {
     return obj === null;
 }
 
+/** Determines whether the argument is `true`. */
 export function isTrue(obj: unknown): obj is true {
     return obj === true;
 }
 
+/** Determines whether the argument is `false`. */
 export function isFalse(obj: unknown): obj is false {
     return obj === false;
 }
 
+/** Determines whether the argument is a boolean. */
 export function isBoolean(obj: unknown): obj is boolean {
     return typeof obj === 'boolean';
 }
 
+/** Determines whether the argument is a function. */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function isFunction(obj: unknown): obj is Function {
     return typeof obj === 'function';
 }
+
+/** Determines whether the argument is an object or null. */
 export function isObject(obj: unknown): obj is object | null {
     return typeof obj === 'object';
 }
 
+/** Determines whether the argument is a string. */
 export function isString(obj: unknown): obj is string {
     return typeof obj === 'string';
 }
 
+/** Determines whether the argument is a number. */
 export function isNumber(obj: unknown): obj is number {
     return typeof obj === 'number';
 }
 
+/** Does nothing! 🚀 */
 export function noop(): void {
     /* Do nothing */
 }
 
 const OtS = {}.toString;
+/**
+ * Converts the argument to a string, safely accounting for objects with "null" prototype.
+ * Note that `toString(null)` returns `"[object Null]"` rather than `"null"`.
+ */
 export function toString(obj: unknown): string {
     if (obj?.toString) {
         // Arrays might hold objects with "null" prototype So using
@@ -254,6 +273,9 @@ export function toString(obj: unknown): string {
     }
 }
 
+/** Gets the property descriptor for the given object and property key. Similar to
+ * {@linkcode Object.getOwnPropertyDescriptor}, but looks up the prototype chain.
+ */
 export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
     do {
         const d = getOwnPropertyDescriptor(o, p);
