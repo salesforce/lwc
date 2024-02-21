@@ -34,6 +34,11 @@ const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
 const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
 
+/**
+ *
+ * @param name
+ * @param namespace
+ */
 export function isVoidElement(name: string, namespace: string): boolean {
     return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
 }

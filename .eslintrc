@@ -293,7 +293,6 @@
                 "packages/@lwc/features/**",
                 "packages/@lwc/module-resolver/**",
                 "packages/@lwc/rollup-plugin/**",
-                "packages/@lwc/shared/**",
                 "packages/@lwc/style-compiler/**",
                 "packages/@lwc/synthetic-shadow/**",
                 "packages/@lwc/template-compiler/**",

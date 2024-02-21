@@ -28,6 +28,10 @@ const allVersions = [
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 
+/**
+ *
+ * @param version
+ */
 export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
     if (!isNumber(version)) {
         // if version is unspecified, default to latest
@@ -92,6 +96,11 @@ export const enum APIFeature {
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 }
 
+/**
+ *
+ * @param apiVersionFeature
+ * @param apiVersion
+ */
 export function isAPIFeatureEnabled(
     apiVersionFeature: APIFeature,
     apiVersion: APIVersion
