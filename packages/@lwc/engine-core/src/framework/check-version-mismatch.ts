@@ -27,6 +27,8 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
  * Validate a template, stylesheet, or component to make sure that its compiled version matches
  * the version used by the LWC engine at runtime. Note that this only works in dev mode because
  * it relies on code comments, which are stripped in production due to minification.
+ * @param func
+ * @param type
  */
 export function checkVersionMismatch(func: Template, type: 'template'): void;
 export function checkVersionMismatch(func: StylesheetFactory, type: 'stylesheet'): void;

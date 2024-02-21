@@ -808,6 +808,7 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
  * need to continue into its children because by attempting to disconnect the
  * custom element itself will trigger the removal of anything slotted or anything
  * defined on its shadow.
+ * @param vnodes
  */
 function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {

@@ -29,6 +29,9 @@ export interface TransformResult {
 /**
  * Transforms the passed code. Returning a Promise of an object with the generated code, source map
  * and gathered metadata.
+ * @param src
+ * @param filename
+ * @param options
  * @deprecated Use transformSync instead.
  */
 export function transform(
@@ -50,6 +53,9 @@ export function transform(
 /**
  * Transform the passed source code. Returning an object with the generated code, source map and
  * gathered metadata.
+ * @param src
+ * @param filename
+ * @param options
  */
 export function transformSync(
     src: string,

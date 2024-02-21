@@ -176,6 +176,10 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5Tools.Element): Root {
  *
  * Note: Not every node in the hierarchy is guaranteed to be created, for example,
  * <div></div> will only create an Element node.
+ * @param ctx
+ * @param parse5Elm
+ * @param parentNode
+ * @param parse5ParentLocation
  */
 function parseElement(
     ctx: ParserCtx,

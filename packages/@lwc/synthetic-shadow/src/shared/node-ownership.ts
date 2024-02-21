@@ -72,6 +72,7 @@ export function getNodeKey(node: Node): number | undefined {
  * This function does not traverse up for performance reasons, but is sufficient for most use
  * cases. If we need to traverse up and verify those nodes that don't have owner key, use
  * isNodeDeepShadowed instead.
+ * @param node
  */
 export function isNodeShadowed(node: Node): boolean {
     return !isUndefined(getNodeOwnerKey(node));

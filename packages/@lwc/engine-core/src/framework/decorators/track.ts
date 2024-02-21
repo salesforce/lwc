@@ -18,6 +18,9 @@ import { logError } from '../../shared/logger';
  * The @track decorator function marks field values as reactive in
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
+ * @param target
+ * @param propertyKey
+ * @param descriptor
  */
 export default function track(
     target: any,

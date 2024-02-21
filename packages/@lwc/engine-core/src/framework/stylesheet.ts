@@ -233,6 +233,8 @@ function getNearestShadowComponent(vm: VM): VM | null {
  * If the component that is currently being rendered uses scoped styles,
  * this returns the unique token for that scoped stylesheet. Otherwise
  * it returns null.
+ * @param owner
+ * @param legacy
  */
 // TODO [#3733]: remove support for legacy scope tokens
 export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
@@ -249,6 +251,7 @@ export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
  * exists. Otherwise it returns null.
  *
  * A host style token is applied to the component if scoped styles are used.
+ * @param vnode
  */
 export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
     const { template } = getComponentInternalDef(vnode.ctor);

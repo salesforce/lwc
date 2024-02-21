@@ -263,6 +263,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 /**
  * EXPERIMENTAL: This function allows for the identification of LWC constructors. This API is
  * subject to change or being removed.
+ * @param ctor
  */
 export function isComponentConstructor(ctor: unknown): ctor is LightningElementConstructor {
     if (!isFunction(ctor)) {
@@ -369,6 +370,7 @@ interface PublicComponentDef {
 /**
  * EXPERIMENTAL: This function allows for the collection of internal component metadata. This API is
  * subject to change or being removed.
+ * @param Ctor
  */
 export function getComponentDef(Ctor: any): PublicComponentDef {
     const def = getComponentInternalDef(Ctor);

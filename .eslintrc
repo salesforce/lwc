@@ -301,8 +301,7 @@
             ],
             "rules": {
                 "jsdoc/require-jsdoc": "off",
-                // TODO [W-13278716]: All JSDOC should be valid
-                "jsdoc/require-param": "off",
+                // TODO [W-13278716]: All JSDOC should describe all params and returns
                 "jsdoc/require-param-description": "off",
                 "jsdoc/require-returns": "off"
             }

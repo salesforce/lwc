@@ -294,6 +294,9 @@ export default class CodeGen {
 
     /**
      * Generates childs vnodes when slot content is static.
+     * @param slotName
+     * @param data
+     * @param children
      */
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         this.slotNames.add(slotName);
@@ -308,6 +311,8 @@ export default class CodeGen {
 
     /**
      * Generates a factory function that inturn generates child vnodes for scoped slot content.
+     * @param callback
+     * @param slotName
      */
     getScopedSlotFactory(callback: t.FunctionExpression, slotName: t.Expression | t.SimpleLiteral) {
         return this._renderApiCall(RENDER_APIS.scopedSlotFactory, [slotName, callback]);
@@ -460,6 +465,7 @@ export default class CodeGen {
 
     /**
      * Searches the scopes to find an identifier with a matching name.
+     * @param identifier
      */
     isLocalIdentifier(identifier: t.Identifier): boolean {
         let scope: Scope | null = this.scope;
@@ -479,6 +485,7 @@ export default class CodeGen {
      * Bind the passed expression to the component instance. It applies the following transformation to the expression:
      * - {value} --> {$cmp.value}
      * - {value[index]} --> {$cmp.value[$cmp.index]}
+     * @param expression
      */
     bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
         if (t.isIdentifier(expression)) {

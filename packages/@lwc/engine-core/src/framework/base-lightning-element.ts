@@ -64,6 +64,8 @@ import { applyShadowMigrateMode } from './shadow-migration-mode';
  * that a Custom Element can support (including AOM properties), which
  * determines what kind of capabilities the Base Lightning Element should support. When producing the new descriptors
  * for the Base Lightning Element, it also include the reactivity bit, so the standard property is reactive.
+ * @param propName
+ * @param descriptor
  */
 function createBridgeToElementDescriptor(
     propName: string,

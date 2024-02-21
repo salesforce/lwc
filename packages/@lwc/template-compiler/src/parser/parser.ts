@@ -158,6 +158,7 @@ export default class ParserCtx {
 
     /**
      * This method flattens the scopes into a single array for traversal.
+     * @param element
      * @yields Each node in the scope and its parent.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
@@ -380,6 +381,9 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error with the node's location.
+     * @param errorInfo
+     * @param node
+     * @param messageArgs
      */
     throwOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): never {
         this.throw(errorInfo, messageArgs, node.location);
@@ -387,6 +391,9 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error with location information.
+     * @param errorInfo
+     * @param location
+     * @param messageArgs
      */
     throwAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): never {
         this.throw(errorInfo, messageArgs, location);
@@ -394,6 +401,9 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error and will immediately exit the current routine.
+     * @param errorInfo
+     * @param messageArgs
+     * @param location
      */
     throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
         throw generateCompilerError(errorInfo, {
@@ -406,6 +416,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning with the node's location.
+     * @param errorInfo
+     * @param node
+     * @param messageArgs
      */
     warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
         this.warn(errorInfo, messageArgs, node.location);
@@ -413,6 +426,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning with location information.
+     * @param errorInfo
+     * @param location
+     * @param messageArgs
      */
     warnAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): void {
         this.warn(errorInfo, messageArgs, location);
@@ -420,6 +436,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning and will continue execution of the current routine.
+     * @param errorInfo
+     * @param messageArgs
+     * @param location
      */
     warn(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): void {
         this.addDiagnostic(

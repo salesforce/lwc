@@ -38,6 +38,7 @@ import * as t from '../shared/estree';
  *   };
  * }
  * ```
+ * @param templateFn
  */
 export function optimizeStaticExpressions(
     templateFn: t.FunctionDeclaration

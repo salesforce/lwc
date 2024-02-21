@@ -16,6 +16,9 @@ import { isUpdatingTemplate, getVMBeingRendered } from '../template';
  * The @api decorator marks public fields and public methods in
  * LWC Components. This function implements the internals of this
  * decorator.
+ * @param target
+ * @param propertyKey
+ * @param descriptor
  */
 export default function api(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
 export default function api() {

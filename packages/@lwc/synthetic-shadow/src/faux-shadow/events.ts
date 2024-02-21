@@ -75,6 +75,7 @@ function getEventMap(elm: EventTarget): ListenerMap {
  * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
  * property of events dispatched on shadow roots always resolve to their host. This function understands this
  * abstraction and properly returns a reference to the shadow root when appropriate.
+ * @param event
  */
 export function getActualTarget(event: Event): EventTarget {
     return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
