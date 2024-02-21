@@ -290,12 +290,12 @@
                 "packages/@lwc/engine-server/**",
                 "packages/@lwc/module-resolver/**",
                 "packages/@lwc/style-compiler/**",
-                "packages/@lwc/synthetic-shadow/**",
                 "packages/@lwc/template-compiler/**",
                 // Package-level exports are documented, but not all file-level exports are, so we
                 // should keep these disabled for now
                 "packages/@lwc/babel-plugin-component/**",
-                "packages/@lwc/shared/**"
+                "packages/@lwc/shared/**",
+                "packages/@lwc/synthetic-shadow/**"
             ],
             "rules": {
                 "jsdoc/require-jsdoc": "off",
