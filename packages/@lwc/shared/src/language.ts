@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 const {
     assign,
     create,
@@ -56,7 +57,7 @@ const {
 // Exposing this helper function is the closest we can get to preserving the usage patterns
 // of Array.prototype methods used elsewhere in the codebase.
 function arrayEvery<T>(
-    arr: any[],
+    arr: unknown[],
     predicate: (value: any, index: number, array: typeof arr) => value is T
 ): arr is T[] {
     return ArrayEvery.call(arr, predicate);
@@ -119,40 +120,40 @@ export {
     StringFromCharCode,
 };
 
-export function isUndefined(obj: any): obj is undefined {
+export function isUndefined(obj: unknown): obj is undefined {
     return obj === undefined;
 }
 
-export function isNull(obj: any): obj is null {
+export function isNull(obj: unknown): obj is null {
     return obj === null;
 }
 
-export function isTrue(obj: any): obj is true {
+export function isTrue(obj: unknown): obj is true {
     return obj === true;
 }
 
-export function isFalse(obj: any): obj is false {
+export function isFalse(obj: unknown): obj is false {
     return obj === false;
 }
 
-export function isBoolean(obj: any): obj is boolean {
+export function isBoolean(obj: unknown): obj is boolean {
     return typeof obj === 'boolean';
 }
 
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function isFunction(obj: any): obj is Function {
+export function isFunction(obj: unknown): obj is Function {
     return typeof obj === 'function';
 }
-export function isObject(obj: any): obj is object {
+export function isObject(obj: unknown): obj is object | null {
     return typeof obj === 'object';
 }
 
-export function isString(obj: any): obj is string {
+export function isString(obj: unknown): obj is string {
     return typeof obj === 'string';
 }
 
-export function isNumber(obj: any): obj is number {
+export function isNumber(obj: unknown): obj is number {
     return typeof obj === 'number';
 }
 
@@ -161,23 +162,34 @@ export function noop(): void {
 }
 
 const OtS = {}.toString;
-export function toString(obj: any): string {
-    if (obj && obj.toString) {
+export function toString(obj: unknown): string {
+    if (obj?.toString) {
         // Arrays might hold objects with "null" prototype So using
         // Array.prototype.toString directly will cause an error Iterate through
         // all the items and handle individually.
         if (isArray(obj)) {
+            // This behavior is slightly different from Array#toString:
+            // 1. Array#toString calls `this.join`, rather than Array#join
+            // Ex: arr = []; arr.join = () => 1; arr.toString() === 1; toString(arr) === ''
+            // 2. Array#toString delegates to Object#toString if `this.join` is not a function
+            // Ex: arr = []; arr.join = 'no'; arr.toString() === '[object Array]; toString(arr) = ''
+            // 3. Array#toString converts null/undefined to ''
+            // Ex: arr = [null, undefined]; arr.toString() === ','; toString(arr) === '[object Null],undefined'
+            // 4. Array#toString converts recursive references to arrays to ''
+            // Ex: arr = [1]; arr.push(arr, 2); arr.toString() === '1,,2'; toString(arr) throws
+            // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
             return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
         }
         return obj.toString();
     } else if (typeof obj === 'object') {
+        // This catches null and returns "[object Null]". Weird, but kept for backwards compatibility.
         return OtS.call(obj);
     } else {
-        return obj + '';
+        return String(obj);
     }
 }
 
-export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescriptor | undefined {
+export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
     do {
         const d = getOwnPropertyDescriptor(o, p);
         if (!isUndefined(d)) {
