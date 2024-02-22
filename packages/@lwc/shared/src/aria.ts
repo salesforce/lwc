@@ -78,7 +78,7 @@ export type AccessibleElementProperties = {
     [prop in (typeof AriaPropertyNames)[number]]: string | null;
 };
 
-const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (() => {
+const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /**@__PURE__*/ (() => {
     const AriaAttrNameToPropNameMap: Record<string, string> = create(null);
     const AriaPropNameToAttrNameMap: Record<string, string> = create(null);
 
@@ -104,7 +104,7 @@ export function isAriaAttribute(attrName: string): boolean {
 
 // These attributes take either an ID or a list of IDs as values.
 // This includes aria-* attributes as well as the special non-ARIA "for" attribute
-export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = /*@__PURE__*/ new Set([
+export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = /**@__PURE__*/ new Set([
     'aria-activedescendant',
     'aria-controls',
     'aria-describedby',

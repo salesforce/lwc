@@ -32,7 +32,7 @@ const VOID_ELEMENTS = [
 // See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
 const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
-const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
+const VOID_ELEMENTS_SET = /**@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
 
 /**
  *
