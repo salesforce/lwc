@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/**
+/*
  * Note: This module cannot import any modules because it is meant to be a self-contained function.
  * This is to allow external libraries to access the rendererFactory, toString it and recreate it.
- * @example
+ * For example:
  * import { rendererFactory } from 'lwc';
  * import sanitize from 'sanitizeLibrary';
- *
  * const sandboxedRendererFactory = sanitize(rendererFactory.toString());
  *
  * Type-Only imports are allowed.
  */
+
 import type { RendererAPI } from '@lwc/engine-core';
 
 // Properties that are either not required to be sandboxed or rely on a globally shared information
