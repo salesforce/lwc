@@ -171,7 +171,7 @@
         "jsdoc/informative-docs": "error",
         "jsdoc/no-bad-blocks": [
             "error",
-            { "ignore": ["__PURE__@", "ts-expect-error", "ts-ignore"] }
+            { "ignore": ["__PURE__", "__PURE__@", "ts-expect-error", "ts-ignore"] }
         ],
         "jsdoc/no-blank-blocks": "error",
         "jsdoc/no-defaults": "error",
