@@ -144,63 +144,61 @@ orderings. For any given component, the invariants are:
 
 It's ok to update the orderings below after a refactor, as long as these invariants hold!
 */
-if (process.env.NATIVE_SHADOW) {
-    it(`should invoke connectedCallback and renderedCallback in the expected order (native shadow)`, () => {
-        const elm = createElement('order-container', { is: Container });
-        document.body.appendChild(elm);
-        expect(window.timingBuffer).toEqual(
-            nativeCustomElementLifecycleEnabled
-                ? [
-                      'foo-a:connectedCallback',
-                      'foo-internal-a:connectedCallback',
-                      'foo-internal-a:renderedCallback',
-                      'foo-a:renderedCallback',
-                      'foo-b:connectedCallback',
-                      'foo-internal-b:connectedCallback',
-                      'foo-internal-b:renderedCallback',
-                      'foo-b:renderedCallback',
-                      'foo-c:connectedCallback',
-                      'foo-internal-c:connectedCallback',
-                      'foo-internal-c:renderedCallback',
-                      'foo-c:renderedCallback',
-                      'foo-d:connectedCallback',
-                      'foo-internal-d:connectedCallback',
-                      'foo-internal-d:renderedCallback',
-                      'foo-d:renderedCallback',
-                      'foo-e:connectedCallback',
-                      'foo-internal-e:connectedCallback',
-                      'foo-internal-e:renderedCallback',
-                      'foo-e:renderedCallback',
-                  ]
-                : [
-                      'foo-a:connectedCallback',
-                      'foo-b:connectedCallback',
-                      'foo-c:connectedCallback',
-                      'foo-internal-c:connectedCallback',
-                      'foo-internal-c:renderedCallback',
-                      'foo-c:renderedCallback',
-                      'foo-internal-b:connectedCallback',
-                      'foo-internal-b:renderedCallback',
-                      'foo-b:renderedCallback',
-                      'foo-d:connectedCallback',
-                      'foo-internal-d:connectedCallback',
-                      'foo-internal-d:renderedCallback',
-                      'foo-d:renderedCallback',
-                      'foo-internal-a:connectedCallback',
-                      'foo-internal-a:renderedCallback',
-                      'foo-a:renderedCallback',
-                      'foo-e:connectedCallback',
-                      'foo-internal-e:connectedCallback',
-                      'foo-internal-e:renderedCallback',
-                      'foo-e:renderedCallback',
-                  ]
-        );
-    });
-} else {
-    it(`should invoke connectedCallback and renderedCallback in the expected order (synthetic shadow)`, () => {
-        const elm = createElement('order-container', { is: Container });
-        document.body.appendChild(elm);
-        expect(window.timingBuffer).toEqual([
+it('should invoke connectedCallback and renderedCallback in the expected order', () => {
+    const elm = createElement('order-container', { is: Container });
+    document.body.appendChild(elm);
+
+    let expected;
+    if (process.env.NATIVE_SHADOW) {
+        if (nativeCustomElementLifecycleEnabled) {
+            expected = [
+                'foo-a:connectedCallback',
+                'foo-internal-a:connectedCallback',
+                'foo-internal-a:renderedCallback',
+                'foo-a:renderedCallback',
+                'foo-b:connectedCallback',
+                'foo-internal-b:connectedCallback',
+                'foo-internal-b:renderedCallback',
+                'foo-b:renderedCallback',
+                'foo-c:connectedCallback',
+                'foo-internal-c:connectedCallback',
+                'foo-internal-c:renderedCallback',
+                'foo-c:renderedCallback',
+                'foo-d:connectedCallback',
+                'foo-internal-d:connectedCallback',
+                'foo-internal-d:renderedCallback',
+                'foo-d:renderedCallback',
+                'foo-e:connectedCallback',
+                'foo-internal-e:connectedCallback',
+                'foo-internal-e:renderedCallback',
+                'foo-e:renderedCallback',
+            ];
+        } else {
+            expected = [
+                'foo-a:connectedCallback',
+                'foo-b:connectedCallback',
+                'foo-c:connectedCallback',
+                'foo-internal-c:connectedCallback',
+                'foo-internal-c:renderedCallback',
+                'foo-c:renderedCallback',
+                'foo-internal-b:connectedCallback',
+                'foo-internal-b:renderedCallback',
+                'foo-b:renderedCallback',
+                'foo-d:connectedCallback',
+                'foo-internal-d:connectedCallback',
+                'foo-internal-d:renderedCallback',
+                'foo-d:renderedCallback',
+                'foo-internal-a:connectedCallback',
+                'foo-internal-a:renderedCallback',
+                'foo-a:renderedCallback',
+                'foo-e:connectedCallback',
+                'foo-internal-e:connectedCallback',
+                'foo-internal-e:renderedCallback',
+                'foo-e:renderedCallback',
+            ];
+        }
+    } else {
+        expected = [
             'foo-a:connectedCallback',
             'foo-internal-a:connectedCallback',
             'foo-internal-a:renderedCallback',
@@ -221,9 +219,34 @@ if (process.env.NATIVE_SHADOW) {
             'foo-internal-e:connectedCallback',
             'foo-internal-e:renderedCallback',
             'foo-e:renderedCallback',
-        ]);
-    });
-}
+        ];
+    }
+
+    expect(window.timingBuffer).toEqual(expected);
+});
+
+it(`should invoke disconnectedCallback in the expected order`, () => {
+    const elm = createElement('order-container', { is: Container });
+    document.body.appendChild(elm);
+
+    resetTimingBuffer();
+    document.body.removeChild(elm);
+
+    const expected = [
+        'foo-e:disconnectedCallback',
+        'foo-internal-e:disconnectedCallback',
+        'foo-a:disconnectedCallback',
+        'foo-internal-a:disconnectedCallback',
+        'foo-b:disconnectedCallback',
+        'foo-internal-b:disconnectedCallback',
+        'foo-c:disconnectedCallback',
+        'foo-internal-c:disconnectedCallback',
+        'foo-d:disconnectedCallback',
+        'foo-internal-d:disconnectedCallback',
+    ];
+
+    expect(window.timingBuffer).toEqual(expected);
+});
 
 describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
     // global events behave differently due to element being disconnected from the DOM
