@@ -23,6 +23,7 @@ interface LegacyAdapterDataCallback extends DataCallback {
  * Registers a wire adapter factory for Lightning Platform.
  * @param adapterId Adapter ID object
  * @param adapterEventTargetCallback Adapter factory function
+ * @throws when parameters are not valid
  * @deprecated
  */
 export function register(

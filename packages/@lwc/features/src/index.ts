@@ -33,6 +33,8 @@ const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
  * flag. It is meant to be used during the app initialization.
  * @param name Name of the feature flag to set
  * @param value Whether the feature flag should be enabled
+ * @throws Will throw if a non-boolean value is provided when running in production.
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
     if (!isBoolean(value)) {
@@ -75,6 +77,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
  * purposes. It is a no-op when invoked in production mode.
  * @param name Name of the feature flag to enable or disable
  * @param value Whether the feature flag should be enabled
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
     // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests

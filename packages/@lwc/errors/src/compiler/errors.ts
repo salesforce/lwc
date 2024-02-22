@@ -94,10 +94,11 @@ export function generateCompilerError(
 }
 
 /**
- * Throws a compiler error if the provided condition is falsy.
+ * Validates that the provided condition is truthy.
  * @param condition Condition to check.
  * @param errorInfo The object holding the error metadata.
  * @param args Values used to fill the error message template.
+ * @throws Throws a compiler error if the provided condition is falsy.
  */
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {

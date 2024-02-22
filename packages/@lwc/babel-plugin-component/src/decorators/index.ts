@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -261,11 +261,6 @@ function getMetadataObjectPropertyList(
     return list;
 }
 
-/**
- *
- * @param root0
- * @param root0.types
- */
 function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
     function createRegisterDecoratorsCallExpression(
         path: NodePath<types.Class>,
