@@ -317,10 +317,10 @@
                 "packages/@lwc/engine-core/**",
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
-                "packages/@lwc/module-resolver/**",
                 // Package-level exports are documented, but not all file-level exports are, so we
                 // should keep these disabled for now
                 "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/module-resolver/**",
                 "packages/@lwc/shared/**",
                 "packages/@lwc/style-compiler/**",
                 "packages/@lwc/synthetic-shadow/**",
