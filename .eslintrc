@@ -177,7 +177,7 @@
         "jsdoc/no-defaults": "error",
         "jsdoc/no-types": "error",
         "jsdoc/require-description": "error",
-        "jsdoc/require-example": "error",
+        "jsdoc/require-example": "off",
         "jsdoc/require-hyphen-before-param-description": ["error", "never"],
         "jsdoc/require-throws": "error",
         "jsdoc/sort-tags": "error"
@@ -318,11 +318,11 @@
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
                 "packages/@lwc/module-resolver/**",
-                "packages/@lwc/style-compiler/**",
                 // Package-level exports are documented, but not all file-level exports are, so we
                 // should keep these disabled for now
                 "packages/@lwc/babel-plugin-component/**",
                 "packages/@lwc/shared/**",
+                "packages/@lwc/style-compiler/**",
                 "packages/@lwc/synthetic-shadow/**",
                 "packages/@lwc/template-compiler/**"
             ],
