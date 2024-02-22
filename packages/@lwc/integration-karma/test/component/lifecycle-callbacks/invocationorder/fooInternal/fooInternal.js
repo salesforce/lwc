@@ -11,6 +11,8 @@ export default class FooInternal extends LightningElement {
         window.timingBuffer.push(`${this.externalClassName}:renderedCallback`);
     }
     disconnectedCallback() {
-        window.timingBuffer.push(`${this.externalClassName}:disconnectedCallback`);
+        if (window.timingBuffer) {
+            window.timingBuffer.push(`${this.externalClassName}:disconnectedCallback`);
+        }
     }
 }
