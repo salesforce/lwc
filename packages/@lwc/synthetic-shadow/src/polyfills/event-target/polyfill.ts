@@ -10,11 +10,12 @@ import {
     eventTargetPrototype,
     removeEventListener as nativeRemoveEventListener,
 } from '../../env/event-target';
+import { Node } from '../../env/node';
 import {
     addCustomElementEventListener,
     removeCustomElementEventListener,
 } from '../../faux-shadow/events';
-import { isSyntheticShadowHost } from '../../faux-shadow/shadow-root';
+import { isSyntheticShadowHost, isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
 function patchedAddEventListener(
@@ -28,6 +29,23 @@ function patchedAddEventListener(
         // @ts-expect-error type-mismatch
         return addCustomElementEventListener.apply(this, arguments);
     }
+
+    // TODO [#4011]: Due to a bug and how the synthetic shadow polyfill currently caches the composed path of events,
+    // events originating from native shadow components can incorrectly use a cached composed path from
+    // a context it shouldn't have access to. One solution is to avoid patching the addEventListener
+    // for event targets inside a component using native shadow. This avoids applying our synthetic
+    // shadow polyfill behavior unnecessarily.
+    //
+    // Open Questions:
+    //  - Some targets are not instances of Node (e.g., an instance of XMLHttpRequest)
+    //    Do we need fallback behavior for non-Node instances?
+    if (this instanceof Node) {
+        const rootNode = this.getRootNode();
+        if (!isSyntheticShadowRoot(rootNode)) {
+            return nativeAddEventListener.call(this, type, listener, optionsOrCapture);
+        }
+    }
+
     if (arguments.length < 2) {
         // Slow path, unlikely to be called frequently. We expect modern browsers to throw:
         // https://googlechrome.github.io/samples/event-listeners-mandatory-arguments/
