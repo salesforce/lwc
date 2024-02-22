@@ -68,9 +68,9 @@ function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: R
 
 /**
  * Given an array of static parts, do all the mounting required for these parts.
- * @param root - the root element
- * @param vnode - the parent VStatic
- * @param renderer - the renderer to use
+ * @param root the root element
+ * @param vnode the parent VStatic
+ * @param renderer the renderer to use
  */
 export function mountStaticParts(root: Element, vnode: VStatic, renderer: RendererAPI): void {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we
@@ -98,8 +98,8 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
 
 /**
  * Mounts elements to the newly generated VStatic node
- * @param n1 - the previous VStatic vnode
- * @param n2 - the current VStatic vnode
+ * @param n1 the previous VStatic vnode
+ * @param n2 the current VStatic vnode
  */
 export function patchStaticParts(n1: VStatic, n2: VStatic) {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we

@@ -194,7 +194,7 @@ export {
 
 /**
  * Determines whether the argument is `undefined`.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is `undefined`.
  */
 export function isUndefined(obj: unknown): obj is undefined {
@@ -203,7 +203,7 @@ export function isUndefined(obj: unknown): obj is undefined {
 
 /**
  * Determines whether the argument is `null`.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is `null`.
  */
 export function isNull(obj: unknown): obj is null {
@@ -212,7 +212,7 @@ export function isNull(obj: unknown): obj is null {
 
 /**
  * Determines whether the argument is `true`.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is `true`.
  */
 export function isTrue(obj: unknown): obj is true {
@@ -221,7 +221,7 @@ export function isTrue(obj: unknown): obj is true {
 
 /**
  * Determines whether the argument is `false`.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is `false`.
  */
 export function isFalse(obj: unknown): obj is false {
@@ -230,7 +230,7 @@ export function isFalse(obj: unknown): obj is false {
 
 /**
  * Determines whether the argument is a boolean.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is a boolean.
  */
 export function isBoolean(obj: unknown): obj is boolean {
@@ -239,7 +239,7 @@ export function isBoolean(obj: unknown): obj is boolean {
 
 /**
  * Determines whether the argument is a function.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is a function.
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
@@ -250,7 +250,7 @@ export function isFunction(obj: unknown): obj is Function {
 
 /**
  * Determines whether the argument is an object or null.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is an object or null.
  */
 export function isObject(obj: unknown): obj is object | null {
@@ -259,7 +259,7 @@ export function isObject(obj: unknown): obj is object | null {
 
 /**
  * Determines whether the argument is a string.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is a string.
  */
 export function isString(obj: unknown): obj is string {
@@ -268,7 +268,7 @@ export function isString(obj: unknown): obj is string {
 
 /**
  * Determines whether the argument is a number.
- * @param obj - Value to test
+ * @param obj Value to test
  * @returns `true` if the value is a number.
  */
 export function isNumber(obj: unknown): obj is number {
@@ -284,7 +284,7 @@ const OtS = {}.toString;
 /**
  * Converts the argument to a string, safely accounting for objects with "null" prototype.
  * Note that `toString(null)` returns `"[object Null]"` rather than `"null"`.
- * @param obj - Value to convert to a string.
+ * @param obj Value to convert to a string.
  * @returns String representation of the value.
  */
 export function toString(obj: unknown): string {

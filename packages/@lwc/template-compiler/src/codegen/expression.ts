@@ -19,19 +19,19 @@ type VariableNames = Set<string>;
 /**
  * Bind the passed expression to the component instance. It applies the following
  * transformation to the expression:
- *    {value} --> {$cmp.value}
- *    {value[index]} --> {$cmp.value[$cmp.index]}
- *    {foo ?? bar} --> {$cmp.foo ?? $cmp.bar}
- *    {foo?.bar} --> {$cmp.foo?.bar}
+ * - `{value}` --> `{$cmp.value}`
+ * - `{value[index]}` --> `{$cmp.value[$cmp.index]}`
+ * - `{foo ?? bar}` --> `{$cmp.foo ?? $cmp.bar}`
+ * - `{foo?.bar}` --> `{$cmp.foo?.bar}`
  *
  * However, parameter variables are not be transformed in this way. For example,
  * the following transformations do not happen:
- *    {(foo) => foo && bar} -> {(foo) => $cmp.foo && $cmp.bar}
- *    {(foo) => foo && bar} -> {($cmp.foo) => foo && $cmp.bar}
- *    {(foo) => foo && bar} -> {($cmp.foo) => $cmp.foo && $cmp.bar}
+ * - `{(foo) => foo && bar}` --> `{(foo) => $cmp.foo && $cmp.bar}`
+ * - `{(foo) => foo && bar}` --> `{($cmp.foo) => foo && $cmp.bar}`
+ * - `{(foo) => foo && bar}` --> `{($cmp.foo) => $cmp.foo && $cmp.bar}`
  *
  * Instead, the scopes are respected:
- *    {(foo) => foo && $cmp.bar}
+ * - `{(foo) => foo && $cmp.bar}`
  *
  * Similar checks occur for local identifiers introduced via for:each or similar.
  * @param expression

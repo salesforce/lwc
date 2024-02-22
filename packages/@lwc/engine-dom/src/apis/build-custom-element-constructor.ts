@@ -25,7 +25,6 @@ type HTMLElementConstructor = typeof HTMLElement;
  * This function builds a Web Component class from a LWC constructor so it can be
  * registered as a new element via customElements.define() at any given time.
  * @param Ctor
- * @deprecated since version 1.3.11
  * @example
  * ```
  * import { buildCustomElementConstructor } from 'lwc';
@@ -34,6 +33,7 @@ type HTMLElementConstructor = typeof HTMLElement;
  * customElements.define('x-foo', WC);
  * const elm = document.createElement('x-foo');
  * ```
+ * @deprecated since version 1.3.11
  */
 export function deprecatedBuildCustomElementConstructor(
     Ctor: ComponentConstructor

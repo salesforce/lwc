@@ -165,7 +165,22 @@
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-unsafe-argument": "off",
 
-        "jsdoc/require-jsdoc": ["warn", { "publicOnly": true }]
+        "jsdoc/require-jsdoc": ["warn", { "publicOnly": true }],
+        "jsdoc/check-indentation": "error",
+        "jsdoc/check-syntax": "error",
+        "jsdoc/informative-docs": "error",
+        "jsdoc/no-bad-blocks": [
+            "error",
+            { "ignore": ["__PURE__@", "ts-expect-error", "ts-ignore"] }
+        ],
+        "jsdoc/no-blank-blocks": "error",
+        "jsdoc/no-defaults": "error",
+        "jsdoc/no-types": "error",
+        "jsdoc/require-description": "error",
+        "jsdoc/require-example": "error",
+        "jsdoc/require-hyphen-before-param-description": ["error", "never"],
+        "jsdoc/require-throws": "error",
+        "jsdoc/sort-tags": "error"
     },
 
     "overrides": [
@@ -269,10 +284,24 @@
             }
         },
         {
-            // We don't control the 3rd party license, so don't complain about it
+            // Don't complain about 3rd party JSDoc
             "files": ["packages/@lwc/synthetic-shadow/src/3rdparty/**"],
             "rules": {
-                "jsdoc/check-values": "off"
+                "jsdoc/check-alignment": "off",
+                "jsdoc/check-indentation": "off",
+                "jsdoc/check-syntax": "off",
+                "jsdoc/check-values": "off",
+                "jsdoc/informative-docs": "off",
+                "jsdoc/no-bad-blocks": "off",
+                "jsdoc/no-blank-blocks": "off",
+                "jsdoc/no-defaults": "off",
+                "jsdoc/no-types": "off",
+                "jsdoc/require-description": "off",
+                "jsdoc/require-hyphen-before-param-description": "off",
+                "jsdoc/require-jsdoc": "off",
+                "jsdoc/require-param": "off",
+                "jsdoc/require-throws": "off",
+                "jsdoc/sort-tags": "off"
             }
         },
         {
@@ -284,24 +313,41 @@
                 "packages/@lwc/perf-benchmarks-components/**",
                 "packages/@lwc/perf-benchmarks/**",
                 // TODO [W-13278716]: All top-level exports should have JSDOC enforced
+                "packages/@lwc/babel-plugin-component/**",
                 "packages/@lwc/compiler/**",
                 "packages/@lwc/engine-core/**",
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
+                "packages/@lwc/errors/**",
+                "packages/@lwc/features/**",
                 "packages/@lwc/module-resolver/**",
-                "packages/@lwc/style-compiler/**",
-                // Package-level exports are documented, but not all file-level exports are, so we
-                // should keep these disabled for now
-                "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/rollup-plugin/**",
                 "packages/@lwc/shared/**",
+                "packages/@lwc/style-compiler/**",
                 "packages/@lwc/synthetic-shadow/**",
-                "packages/@lwc/template-compiler/**"
+                "packages/@lwc/template-compiler/**",
+                "packages/@lwc/wire-service/**"
+                // "packages/@lwc/compiler/**",
+                // "packages/@lwc/engine-core/**",
+                // "packages/@lwc/engine-dom/**",
+                // "packages/@lwc/engine-server/**",
+                // "packages/@lwc/module-resolver/**",
+                // "packages/@lwc/style-compiler/**",
+                // // Package-level exports are documented, but not all file-level exports are, so we
+                // // should keep these disabled for now
+                // "packages/@lwc/babel-plugin-component/**",
+                // "packages/@lwc/shared/**",
+                // "packages/@lwc/synthetic-shadow/**",
+                // "packages/@lwc/template-compiler/**"
             ],
             "rules": {
                 "jsdoc/require-jsdoc": "off",
-                // TODO [W-13278716]: All JSDOC should describe all params and returns
+                // TODO [W-13278716]: All JSDoc should fully describe functions
+                "jsdoc/require-description": "off",
+                "jsdoc/require-example": "off",
                 "jsdoc/require-param-description": "off",
-                "jsdoc/require-returns": "off"
+                "jsdoc/require-returns": "off",
+                "jsdoc/require-throws": "off"
             }
         }
     ]

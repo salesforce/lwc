@@ -92,7 +92,7 @@ let enabled = false;
 export const reportingControl = {
     /**
      * Attach a new reporting control (aka dispatcher).
-     * @param dispatcher - reporting control
+     * @param dispatcher reporting control
      */
     attachDispatcher(dispatcher: ReportingDispatcher): void {
         enabled = true;
@@ -136,7 +136,7 @@ export function onReportingEnabled(callback: OnReportingEnabledCallback) {
 /**
  * Report to the current dispatcher, if there is one.
  * @param reportingEventId
- * @param payload - data to report
+ * @param payload data to report
  */
 export function report<T extends ReportingEventId>(
     reportingEventId: T,

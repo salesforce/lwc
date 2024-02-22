@@ -174,10 +174,10 @@ export default class ParserCtx {
      * This method returns an iterator over ancestor nodes, starting at the parent and ending at the root node.
      *
      * Note: There are instances when we want to terminate the traversal early, such as searching for a ForBlock parent.
-     * @param predicate - This callback is called once for each ancestor until it finds one where predicate returns true.
-     * @param traversalCond - This callback is called after predicate and will terminate the traversal if it returns false.
+     * @param predicate This callback is called once for each ancestor until it finds one where predicate returns true.
+     * @param traversalCond This callback is called after predicate and will terminate the traversal if it returns false.
      * traversalCond is ignored if no value is provided.
-     * @param startNode - Starting node to begin search, defaults to the tail of the current scope.
+     * @param startNode Starting node to begin search, defaults to the tail of the current scope.
      */
     findAncestor<A extends ParentNode>(
         predicate: (node: ParentNode) => node is A,
@@ -199,7 +199,7 @@ export default class ParserCtx {
 
     /**
      * This method searchs the current scope and returns the value that satisfies the predicate.
-     * @param predicate - This callback is called once for each sibling in the current scope
+     * @param predicate This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */
     findInCurrentElementScope<A extends ParentNode>(
@@ -339,7 +339,7 @@ export default class ParserCtx {
     /**
      * This method recovers from diagnostic errors that are encountered when fn is invoked.
      * All other errors are considered compiler errors and can not be recovered from.
-     * @param fn - method to be invoked.
+     * @param fn method to be invoked.
      */
     withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
