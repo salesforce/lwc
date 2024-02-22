@@ -9,8 +9,6 @@ import { pathComposer } from './path-composer';
 import { isSyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
- * @param refNode
- * @param path
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
