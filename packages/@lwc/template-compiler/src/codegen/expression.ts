@@ -34,6 +34,8 @@ type VariableNames = Set<string>;
  *    {(foo) => foo && $cmp.bar}
  *
  * Similar checks occur for local identifiers introduced via for:each or similar.
+ * @param expression
+ * @param codeGen
  */
 export function bindComplexExpression(
     expression: ComplexExpression,

@@ -63,6 +63,8 @@ export function objectToAST(
  *
  * This function searches through the children to determine if flattening needs to occur in the runtime.
  * Children should be flattened if they contain an iterator, a dynamic directive or a slot inside a light dom element.
+ * @param codeGen
+ * @param children
  */
 export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
     return children.some((child) => {
@@ -85,6 +87,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
 
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
+ * @param node
  */
 export function hasIdAttribute(node: Node): boolean {
     if (isBaseElement(node)) {

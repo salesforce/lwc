@@ -57,6 +57,8 @@ function getTrailingChars(str: string): string {
  * Notably, no examples of extraneous leading parens could be found - these result in a
  * parsing error in Acorn. However, this function still checks, in case there is an
  * unknown expression that would parse with an extraneous leading paren.
+ * @param leadingChars
+ * @param trailingChars
  */
 function validateMatchingExtraParens(leadingChars: string, trailingChars: string) {
     const numLeadingParens = leadingChars.split('(').length - 1;
@@ -285,11 +287,9 @@ interface ParseFragmentConfig {
 /**
  * Parse the LWC template using a customized parser & lexer that allow
  * for template expressions to be parsed correctly.
- *
- * @param      {string}               source  raw template markup
- * @param      {ParseFragmentConfig}  config
- *
- * @return     {DocumentFragment}     the parsed document
+ * @param               source  raw template markup
+ * @param  config
+ * @returns     the parsed document
  */
 export function parseFragment(source: string, config: ParseFragmentConfig): DocumentFragment {
     const { ctx, sourceCodeLocationInfo = true, onParseError } = config;

@@ -47,6 +47,7 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
 /**
  * This utility should be used to convert NodeList and HTMLCollection into an array before we
  * perform array operations on them. See issue #1545 for more details.
+ * @param collection
  */
 export function arrayFromCollection<T extends NodeList>(
     collection: T

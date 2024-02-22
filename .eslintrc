@@ -7,8 +7,12 @@
         "project": true
     },
 
-    "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header"],
-    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended-type-checked"],
+    "plugins": ["jest", "@lwc/lwc-internal", "@typescript-eslint", "import", "header", "jsdoc"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:jsdoc/recommended-typescript"
+    ],
 
     "env": {
         "es6": true
@@ -159,7 +163,9 @@
         "@typescript-eslint/no-unsafe-call": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-argument": "off"
+        "@typescript-eslint/no-unsafe-argument": "off",
+
+        "jsdoc/require-jsdoc": ["warn", { "publicOnly": true }]
     },
 
     "overrides": [
@@ -213,9 +219,7 @@
 
             "env": {
                 "jest": true,
-                "es6": true,
-                "es2017": true,
-                "es2020": true
+                "es2021": true
             },
 
             "rules": {
@@ -262,6 +266,44 @@
             ],
             "rules": {
                 "header/header": "off"
+            }
+        },
+        {
+            // We don't control the 3rd party license, so don't complain about it
+            "files": ["packages/@lwc/synthetic-shadow/src/3rdparty/**"],
+            "rules": {
+                "jsdoc/check-values": "off"
+            }
+        },
+        {
+            "files": [
+                "packages/lwc/**",
+                // Private packages - documentation isn't required (but should still be good, if present)
+                "packages/@lwc/integration-karma/**",
+                "packages/@lwc/integration-tests/**",
+                "packages/@lwc/perf-benchmarks-components/**",
+                "packages/@lwc/perf-benchmarks/**",
+                // TODO [W-13278716]: All top-level exports should have JSDOC enforced
+                "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/compiler/**",
+                "packages/@lwc/engine-core/**",
+                "packages/@lwc/engine-dom/**",
+                "packages/@lwc/engine-server/**",
+                "packages/@lwc/errors/**",
+                "packages/@lwc/features/**",
+                "packages/@lwc/module-resolver/**",
+                "packages/@lwc/rollup-plugin/**",
+                "packages/@lwc/shared/**",
+                "packages/@lwc/style-compiler/**",
+                "packages/@lwc/synthetic-shadow/**",
+                "packages/@lwc/template-compiler/**",
+                "packages/@lwc/wire-service/**"
+            ],
+            "rules": {
+                "jsdoc/require-jsdoc": "off",
+                // TODO [W-13278716]: All JSDOC should describe all params and returns
+                "jsdoc/require-param-description": "off",
+                "jsdoc/require-returns": "off"
             }
         }
     ]

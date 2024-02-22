@@ -62,7 +62,6 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
  * This is a replacement for Prettier HTML formatting. Prettier formatting is too aggressive for
  * fixture testing. It not only indent the HTML code but also fixes HTML issues. For testing we want
  * to make sure that the fixture file is as close as possible to what the engine produces.
- *
  * @param src the original HTML fragment.
  * @returns the formatter HTML fragment.
  */

@@ -63,6 +63,7 @@ function getFiles() {
 /**
  * More details here:
  * https://karma-runner.github.io/3.0/config/configuration-file.html
+ * @param config
  */
 module.exports = (config) => {
     config.set({

@@ -47,7 +47,8 @@ function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
  * Generate an ES module AST from a template ESTree AST. The generated module imports the dependent
  * LWC components via import statements and expose the template function via a default export
  * statement.
- *
+ * @param templateFn
+ * @param codeGen
  * @example
  * ```js
  * import { registerTemplate } from 'lwc';

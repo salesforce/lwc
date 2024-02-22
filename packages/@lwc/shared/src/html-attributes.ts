@@ -44,6 +44,11 @@ const BOOLEAN_ATTRIBUTES = /*@__PURE__@*/ new Map([
     ['selected', /*@__PURE__@*/ new Set(['option'])],
 ]);
 
+/**
+ *
+ * @param attrName
+ * @param tagName
+ */
 export function isBooleanAttribute(attrName: string, tagName: string): boolean {
     const allowedTagNames = BOOLEAN_ATTRIBUTES.get(attrName);
     return (
@@ -84,6 +89,10 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'translate',
 ]);
 
+/**
+ *
+ * @param attrName
+ */
 export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
@@ -113,6 +122,10 @@ const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
  */
 const CACHED_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map<string, string>();
 
+/**
+ *
+ * @param propName
+ */
 export function htmlPropertyToAttribute(propName: string): string {
     const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
     if (!isUndefined(ariaAttributeName)) {
@@ -151,6 +164,10 @@ export function htmlPropertyToAttribute(propName: string): string {
  */
 const CACHED_KEBAB_CAMEL_MAPPING = /*@__PURE__@*/ new Map<string, string>();
 
+/**
+ *
+ * @param attrName
+ */
 export function kebabCaseToCamelCase(attrName: string): string {
     let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
 

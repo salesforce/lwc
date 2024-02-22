@@ -24,6 +24,7 @@ const rawContentElements = new Set([
 /**
  * Escape all the characters that could break a JavaScript template string literal: "`" (backtick),
  * "${" (dollar + open curly) and "\" (backslash).
+ * @param str
  */
 function templateStringEscape(str: string): string {
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
