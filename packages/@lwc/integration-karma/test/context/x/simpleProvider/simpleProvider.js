@@ -70,7 +70,7 @@ const contextualizer = createContextProvider(WireAdapter);
 
 /**
  * Note: spy and skipInitialProvision parameters (and all code related to them) are meant for test purposes only,
- *       and should not be part of other implementations based on this reference implementation.
+ * and should not be part of other implementations based on this reference implementation.
  * @param target
  * @param spy
  * @param skipInitialProvision

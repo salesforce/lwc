@@ -33,12 +33,11 @@ function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementCon
 
 /**
  * This static getter builds a Web Component class from a LWC constructor so it can be registered
- * as a new element via customElements.define() at any given time. E.g.:
- *
- *      import Foo from 'ns/foo';
- *      customElements.define('x-foo', Foo.CustomElementConstructor);
- *      const elm = document.createElement('x-foo');
- *
+ * as a new element via customElements.define() at any given time.
+ * @example
+ * import Foo from 'ns/foo';
+ * customElements.define('x-foo', Foo.CustomElementConstructor);
+ * const elm = document.createElement('x-foo');
  */
 defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {

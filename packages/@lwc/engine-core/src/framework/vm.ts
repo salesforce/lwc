@@ -124,7 +124,7 @@ export interface Context {
     styleVNodes: VNode[] | null;
     /**
      * Object used by the template function to store information that can be reused between
-     *  different render cycle of the same template.
+     * different render cycle of the same template.
      */
     tplCache: TemplateCache;
     /** List of wire hooks that are invoked when the component gets connected. */
@@ -174,7 +174,7 @@ export interface VM<N = HostNode, E = HostElement> {
     cmpProps: { [name: string]: any };
     /**
      * Contains information about the mapping between the slot names and the slotted VNodes, and
-     *  the owner of the slot content.
+     * the owner of the slot content.
      */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
@@ -200,17 +200,17 @@ export interface VM<N = HostNode, E = HostElement> {
     tro: ReactiveObserver;
     /**
      * Hook invoked whenever a property is accessed on the host element. This hook is used by
-     *  Locker only.
+     * Locker only.
      */
     setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
     /**
      * Hook invoked whenever a property is set on the host element. This hook is used by Locker
-     *  only.
+     * only.
      */
     getHook: (cmp: LightningElement, prop: PropertyKey) => any;
     /**
      * Hook invoked whenever a method is called on the component (life-cycle hooks, public
-     *  properties and event handlers). This hook is used by Locker.
+     * properties and event handlers). This hook is used by Locker.
      */
     callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     /**

@@ -359,7 +359,7 @@ export default class CodeGen {
      * computing the sanitized html of a raw html if it does not change
      * between renders.
      * @param expr
-     * @returns sanitizedHtmlExpr
+     * @returns The generated expression
      */
     genSanitizedHtmlExpr(expr: t.Expression) {
         const instance = this.innerHtmlInstances++;
