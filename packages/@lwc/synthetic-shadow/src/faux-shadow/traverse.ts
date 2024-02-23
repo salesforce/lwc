@@ -71,7 +71,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
             // have different owner key. for slotted elements, this is possible
             // if the parent happens to be a slot.
             if (isSlotElement(parent)) {
-                /**
+                /*
                  * the slot parent might be allocated inside another slot, think of:
                  * <x-root> (<--- root element)
                  *    <x-parent> (<--- own by x-root)

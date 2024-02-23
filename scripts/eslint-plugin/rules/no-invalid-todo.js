@@ -12,9 +12,9 @@ const VALID_TODO_REGEX = /\*?\s+(TODO|todo) \[((#\d+)|(\S+\/\S+#\d+)|(W-\d+))\]:
  * bug.
  *
  * Valid comment formats:
- *   - `// TODO [#1234]: This is a todo`
- *   - `// TODO [salesforce/observable-membrane#1234]: This is a todo`
- *   - `// TODO [W-123456]: this is a todo`
+ * - `// TODO [#1234]: This is a todo`
+ * - `// TODO [salesforce/observable-membrane#1234]: This is a todo`
+ * - `// TODO [W-123456]: this is a todo`
  */
 module.exports = {
     meta: {

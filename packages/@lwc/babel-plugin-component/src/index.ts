@@ -24,8 +24,8 @@ export type { LwcBabelPluginOptions } from './types';
 
 /**
  * The transform is done in 2 passes:
- *    - First, apply in a single AST traversal the decorators and the component transformation.
- *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
+ * - First, apply in a single AST traversal the decorators and the component transformation.
+ * - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  * @param api
  */
 export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {

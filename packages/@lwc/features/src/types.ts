@@ -9,9 +9,9 @@
  * A feature flag can have three different values:
  * - `null`: The feature is **present** and **disabled** by default. It can be enabled at runtime.
  * - `true`: The feature is **present** and **enabled**. The flag is enabled in the generated output
- *           and can't be disabled at runtime.
+ * and can't be disabled at runtime.
  * - `false`: The feature is entirely **disabled**. The code behind the flag is stripped away from
- *            the generated output.
+ * the generated output.
  */
 export type FeatureFlagValue = boolean | null;
 

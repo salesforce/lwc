@@ -206,9 +206,9 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
  * Get the shadow root
  * getNodeOwner() returns the host element that owns the given node
  * Note: getNodeOwner() returns null when running in native-shadow mode.
- *  Fallback to using the native getRootNode() to discover the root node.
- *  This is because, it is not possible to inspect the node and decide if it is part
- *  of a native shadow or the synthetic shadow.
+ * Fallback to using the native getRootNode() to discover the root node.
+ * This is because, it is not possible to inspect the node and decide if it is part
+ * of a native shadow or the synthetic shadow.
  * @param node
  */
 function getNearestRoot(node: Node): Node {

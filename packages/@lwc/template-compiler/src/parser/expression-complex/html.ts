@@ -41,18 +41,18 @@ function getTrailingChars(str: string): string {
  * This function checks for "unbalanced" extraneous parentheses surrounding the expression.
  *
  * Examples of balanced extraneous parentheses (validation passes):
- *   {(foo.bar)}        <-- the MemberExpressions does not account for the surrounding parens
- *   {(foo())}          <-- the CallExpression does not account for the surrounding parens
- *   {((foo ?? bar)())} <-- the CallExpression does not account for the surrounding parens
+ * - `{(foo.bar)}`        <-- the MemberExpressions does not account for the surrounding parens
+ * - `{(foo())}`          <-- the CallExpression does not account for the surrounding parens
+ * - `{((foo ?? bar)())}` <-- the CallExpression does not account for the surrounding parens
  *
  * Examples of unbalanced extraneous parentheses (validation fails):
- *   {(foo.bar))}       <-- there is an extraneous trailing paren
- *   {foo())}           <-- there is an extraneous trailing paren
+ * - `{(foo.bar))}`       <-- there is an extraneous trailing paren
+ * - `{foo())}`           <-- there is an extraneous trailing paren
  *
  * Examples of no extraneous parentheses (validation passes):
- *   {foo()}            <-- the CallExpression accounts for the trailing paren
- *   {(foo ?? bar).baz} <-- the outer MemberExpression accounts for the leading paren
- *   {(foo).bar}        <-- the outer MemberExpression accounts for the leading paren
+ * - `{foo()}`            <-- the CallExpression accounts for the trailing paren
+ * - `{(foo ?? bar).baz}` <-- the outer MemberExpression accounts for the leading paren
+ * - `{(foo).bar}`        <-- the outer MemberExpression accounts for the leading paren
  *
  * Notably, no examples of extraneous leading parens could be found - these result in a
  * parsing error in Acorn. However, this function still checks, in case there is an
@@ -75,8 +75,8 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
  *
  * Its behavior diverges from that specified in the WHATWG HTML spec
  * in two places:
- *   - 13.2.5.38 - unquoted attribute values
- *   - 13.2.5.1 - the "data" state, which corresponds to parsing outside of tags
+ * - 13.2.5.38 - unquoted attribute values
+ * - 13.2.5.1 - the "data" state, which corresponds to parsing outside of tags
  *
  * Specifically, this tokenizer defers to Acorn's JavaScript parser when
  * encountering a `{` character for an attribute value or within a text
