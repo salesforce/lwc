@@ -58,7 +58,7 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
 }
 
 // This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
-const GLOBAL_ATTRIBUTE = /**@__PURE__*/ new Set([
+const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'accesskey',
     'autocapitalize',
     'autofocus',
