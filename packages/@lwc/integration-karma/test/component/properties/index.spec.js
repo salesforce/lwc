@@ -43,6 +43,7 @@ const expectedEnumerableProps = [
     'spellcheck',
     'tabIndex',
     'tagName',
+    'hostStyle',
     'template',
     'title',
     'toString',

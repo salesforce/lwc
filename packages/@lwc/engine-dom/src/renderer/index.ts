@@ -197,6 +197,10 @@ function getTagName(elm: Element): string {
     return elm.tagName;
 }
 
+function getHostStyle(elm: HTMLElement): CSSStyleDeclaration {
+    return elm.style;
+}
+
 function attachInternals(elm: HTMLElement): ElementInternals {
     return attachInternalsFunc.call(elm);
 }
@@ -247,6 +251,7 @@ export {
     getLastChild,
     getLastElementChild,
     getTagName,
+    getHostStyle,
     isConnected,
     assertInstanceOfHTMLElement,
     ownerDocument,
