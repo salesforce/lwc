@@ -171,13 +171,13 @@
         "jsdoc/informative-docs": "error",
         "jsdoc/no-bad-blocks": [
             "error",
-            { "ignore": ["__PURE__@", "ts-expect-error", "ts-ignore"] }
+            { "ignore": ["__PURE__", "__PURE__@", "ts-expect-error", "ts-ignore"] }
         ],
         "jsdoc/no-blank-blocks": "error",
         "jsdoc/no-defaults": "error",
         "jsdoc/no-types": "error",
         "jsdoc/require-description": "error",
-        "jsdoc/require-example": "off",
+        "jsdoc/require-example": "error",
         "jsdoc/require-hyphen-before-param-description": ["error", "never"],
         "jsdoc/require-throws": "error",
         "jsdoc/sort-tags": "error"

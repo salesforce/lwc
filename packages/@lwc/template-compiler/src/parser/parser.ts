@@ -340,8 +340,6 @@ export default class ParserCtx {
      * This method recovers from diagnostic errors that are encountered when fn is invoked.
      * All other errors are considered compiler errors and can not be recovered from.
      * @param fn method to be invoked.
-     * @returns the result of invoking the method.
-     * @throws Errors that are not diagnostic errors.
      */
     withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
