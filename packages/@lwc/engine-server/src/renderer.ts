@@ -337,6 +337,10 @@ function getTagName(elm: HostElement): string {
     return elm.tagName.toUpperCase();
 }
 
+function getHostStyle(elm : HTMLElement): CSSStyleDeclaration {
+    return elm.style;
+}
+
 type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
 
 const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
@@ -470,6 +474,7 @@ export const renderer = {
     getLastChild,
     getLastElementChild,
     getTagName,
+    getHostStyle,
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
