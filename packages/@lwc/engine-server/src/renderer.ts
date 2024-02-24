@@ -337,7 +337,7 @@ function getTagName(elm: HostElement): string {
     return elm.tagName.toUpperCase();
 }
 
-function getHostStyle(elm : HTMLElement): CSSStyleDeclaration {
+function getStyle(elm : HTMLElement): CSSStyleDeclaration {
     return elm.style;
 }
 
@@ -474,7 +474,7 @@ export const renderer = {
     getLastChild,
     getLastElementChild,
     getTagName,
-    getHostStyle,
+    getStyle,
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,

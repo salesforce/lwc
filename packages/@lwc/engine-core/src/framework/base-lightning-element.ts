@@ -184,6 +184,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'tabIndex'
     | 'tagName'
     | 'title'
+    | 'style'
 >;
 
 type RefNodes = { [name: string]: Element };
@@ -775,7 +776,7 @@ LightningElement.prototype = {
         return renderer.getTagName(elm);
     },
 
-    get hostStyle() {
+    get style() {
         const { elm } = getAssociatedVM(this);
         return elm.style;
     },

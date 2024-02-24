@@ -197,7 +197,7 @@ function getTagName(elm: Element): string {
     return elm.tagName;
 }
 
-function getHostStyle(elm: HTMLElement): CSSStyleDeclaration {
+function getStyle(elm: HTMLElement): CSSStyleDeclaration {
     return elm.style;
 }
 
@@ -251,7 +251,7 @@ export {
     getLastChild,
     getLastElementChild,
     getTagName,
-    getHostStyle,
+    getStyle,
     isConnected,
     assertInstanceOfHTMLElement,
     ownerDocument,
