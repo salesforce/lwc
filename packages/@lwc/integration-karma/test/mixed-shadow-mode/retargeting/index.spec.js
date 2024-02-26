@@ -17,13 +17,13 @@ function test(name, selector) {
     });
 }
 
-describe('retargeting should resolve to the outermost host element', () => {
+describe('should resolve to the outermost host element', () => {
     describe('when event dispatched on an element slotted into a native shadow root', () => {
         test('lwc component native shadow', '.lwc-slotted-button');
-        test('native web component', '.native-wc-slotted');
+        test('native web component', '.native-wc-slotted-button');
     });
     describe('when event dispatched on an element inside a native shadow root', () => {
-        test('lwc component native shadow', 'x-native-child-button');
+        test('lwc component native shadow', 'x-native-child');
         test('native web component', 'mixed-shadow-mode-retargeting');
     });
 });
