@@ -61,7 +61,7 @@ export class CompilerError extends Error implements CompilerDiagnostic {
 /**
  * Extracts an error code from the given error.
  * @param error The error to check.
- * @returns The found error code.
+ * @returns The error code, if found.
  */
 export function getCodeFromError(error: any): number | undefined {
     if (error.lwcCode && typeof error.lwcCode === 'number') {
