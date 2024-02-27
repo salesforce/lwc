@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 import ParentSpecialized from 'x/parentSpecialized';
 
-/**
+/*
  <div>
      <x-container>
          <p>ctx first text</p>

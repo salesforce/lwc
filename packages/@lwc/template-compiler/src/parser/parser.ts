@@ -404,6 +404,7 @@ export default class ParserCtx {
      * @param errorInfo
      * @param messageArgs
      * @param location
+     * @throws
      */
     throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
         throw generateCompilerError(errorInfo, {

@@ -313,20 +313,18 @@
                 "packages/@lwc/perf-benchmarks-components/**",
                 "packages/@lwc/perf-benchmarks/**",
                 // TODO [W-13278716]: All top-level exports should have JSDOC enforced
-                "packages/@lwc/babel-plugin-component/**",
                 "packages/@lwc/compiler/**",
                 "packages/@lwc/engine-core/**",
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
-                "packages/@lwc/errors/**",
-                "packages/@lwc/features/**",
+                // Package-level exports are documented, but not all file-level exports are, so we
+                // should keep these disabled for now
+                "packages/@lwc/babel-plugin-component/**",
                 "packages/@lwc/module-resolver/**",
-                "packages/@lwc/rollup-plugin/**",
                 "packages/@lwc/shared/**",
                 "packages/@lwc/style-compiler/**",
                 "packages/@lwc/synthetic-shadow/**",
-                "packages/@lwc/template-compiler/**",
-                "packages/@lwc/wire-service/**"
+                "packages/@lwc/template-compiler/**"
             ],
             "rules": {
                 "jsdoc/require-jsdoc": "off",
@@ -336,6 +334,19 @@
                 "jsdoc/require-param-description": "off",
                 "jsdoc/require-returns": "off",
                 "jsdoc/require-throws": "off"
+            }
+        },
+        // TODO [W-13278716]: Not everything *needs* an example, so I'll probably disable the rule
+        // when the ticket is complete, but for now I want to enable by default and disable as I go.
+        {
+            "files": [
+                "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/errors/**",
+                "packages/@lwc/rollup-plugin/**",
+                "packages/@lwc/wire-service/**"
+            ],
+            "rules": {
+                "jsdoc/require-example": "off"
             }
         }
     ]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -186,6 +186,25 @@ function resolveModuleRecordType(
     });
 }
 
+/**
+ * Resolves LWC modules using a custom resolution algorithm, using the configuration from your
+ * project's `lwc.config.json` or the `"lwc"` key in the `package.json`. The resolver iterates
+ * through the modules provided in the config and returns the first module that matches the
+ * requested module specifier. There are three types of module record:
+ * - Alias module record: A file path where an LWC module can be resolved.
+ * - Directory module record: A folder path where LWC modules can be resolved.
+ * - NPM package module record: An NPM package that exposes one or more LWC modules.
+ * @param importee The module specifier to resolve
+ * @param dirname The directory to resolve relative to
+ * @param config Root directory and additional modules to
+ * @param config.rootDir Root dir use for module resolution, defaults to `process.cwd()`
+ * @param config.modules Array of additional modules to check, takes precedence over the project config
+ * @returns A registry entry for the resolved module
+ * @throws If the resolver processes an invalid configuration, it throws an error with the
+ * LWC_CONFIG_ERROR error code. If the resolver can't locate the module, it throws an error with the
+ * NO_LWC_MODULE_FOUND error code.
+ * @example resolveModule('x/foo', './index.js')
+ */
 export function resolveModule(
     importee: string,
     dirname: string,
