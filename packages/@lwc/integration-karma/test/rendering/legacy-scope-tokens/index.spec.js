@@ -11,6 +11,9 @@ describe('legacy scope tokens', () => {
 
             afterEach(() => {
                 setFeatureFlagForTest('ENABLE_LEGACY_SCOPE_TOKENS', false);
+                // We keep a cache of parsed static fragments; these need to be reset
+                // since they can vary based on whether we use the legacy scope token or not.
+                window.__lwcResetFragmentCaches();
             });
 
             function getAttributes(elm) {
