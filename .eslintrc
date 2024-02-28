@@ -312,7 +312,6 @@
                 "packages/@lwc/perf-benchmarks-components/**",
                 "packages/@lwc/perf-benchmarks/**",
                 // TODO [W-13278716]: All top-level exports should have JSDOC enforced
-                "packages/@lwc/compiler/**",
                 "packages/@lwc/engine-core/**",
                 "packages/@lwc/engine-dom/**",
                 "packages/@lwc/engine-server/**",
@@ -340,6 +339,7 @@
         {
             "files": [
                 "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/compiler/**",
                 "packages/@lwc/errors/**",
                 "packages/@lwc/rollup-plugin/**",
                 "packages/@lwc/wire-service/**"
