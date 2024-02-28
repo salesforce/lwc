@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -31,8 +31,10 @@ const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
  * flag. It is meant to be used during the app initialization.
- * @param name
- * @param value
+ * @param name Name of the feature flag to set
+ * @param value Whether the feature flag should be enabled
+ * @throws Will throw if a non-boolean value is provided when running in production.
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
     if (!isBoolean(value)) {
@@ -73,8 +75,9 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
 /**
  * Set the value at runtime of a given feature flag. This method should only be used for testing
  * purposes. It is a no-op when invoked in production mode.
- * @param name
- * @param value
+ * @param name Name of the feature flag to enable or disable
+ * @param value Whether the feature flag should be enabled
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
     // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests

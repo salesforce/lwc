@@ -1,6 +1,7 @@
 import { LightningElement } from 'lwc';
 
 export default class Foo extends LightningElement {
+    static renderMode = 'light';
     get externalClassName() {
         return this.getAttribute('class');
     }
