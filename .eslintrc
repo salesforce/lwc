@@ -306,7 +306,6 @@
         },
         {
             "files": [
-                "packages/lwc/**",
                 // Private packages - documentation isn't required (but should still be good, if present)
                 "packages/@lwc/integration-karma/**",
                 "packages/@lwc/integration-tests/**",
