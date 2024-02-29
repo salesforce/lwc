@@ -31,12 +31,15 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * A factory function that produces a renderer.
  * Renderer encapsulates operations that are required to render an LWC component into the underlying
  * runtime environment. In the case of @lwc/enigne-dom, it is meant to be used in a DOM environment.
- * Example usage:
+ * @param baseRenderer Either null or the base renderer imported from 'lwc'.
+ * @returns The created renderer
+ * @example
  * import { renderer, rendererFactory } from 'lwc';
  * const customRenderer = rendererFactory(renderer);
- * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  */
 export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
+    // `process.env.RENDERER` is replaced by rollup with an object, not a string. Gross!
+    // See `injectInlineRenderer` in /scripts/rollup/rollup.config.js
     const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
     Object.setPrototypeOf(renderer, baseRenderer);

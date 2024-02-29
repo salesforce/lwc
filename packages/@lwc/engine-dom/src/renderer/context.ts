@@ -33,6 +33,11 @@ export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
     }
 }
 
+/**
+ * Creates a context provider, given a wire adapter constructor.
+ * @param adapter The wire adapter to create a context provider for.
+ * @returns A new context provider.
+ */
 export function createContextProvider(adapter: WireAdapterConstructor) {
     return createContextProviderWithRegister(adapter, registerContextProvider);
 }
