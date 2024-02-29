@@ -99,19 +99,10 @@
                                     "start": 1,
                                     "end": 25,
                                     "tag": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 4,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
                                     },
                                     "quasi": {
                                         "type": "TemplateLiteral",
@@ -119,19 +110,10 @@
                                         "end": 25,
                                         "expressions": [
                                             {
-                                                "type": "MemberExpression",
-                                                "object": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "property": {
-                                                    "type": "Identifier",
-                                                    "start": 18,
-                                                    "end": 23,
-                                                    "name": "bizzy"
-                                                },
-                                                "computed": false,
-                                                "optional": false
+                                                "type": "Identifier",
+                                                "start": 18,
+                                                "end": 23,
+                                                "name": "bizzy"
                                             }
                                         ],
                                         "quasis": [
@@ -201,33 +183,24 @@
                                         98
                                     ],
                                     "tag": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 74,
-                                            "end": 77,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 49
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 52
-                                                }
+                                        "type": "Identifier",
+                                        "start": 74,
+                                        "end": 77,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 49
                                             },
-                                            "range": [
-                                                74,
-                                                77
-                                            ],
-                                            "name": "foo"
+                                            "end": {
+                                                "line": 3,
+                                                "column": 52
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            74,
+                                            77
+                                        ],
+                                        "name": "foo"
                                     },
                                     "quasi": {
                                         "type": "TemplateLiteral",
@@ -249,33 +222,24 @@
                                         ],
                                         "expressions": [
                                             {
-                                                "type": "MemberExpression",
-                                                "object": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "property": {
-                                                    "type": "Identifier",
-                                                    "start": 91,
-                                                    "end": 96,
-                                                    "loc": {
-                                                        "start": {
-                                                            "line": 3,
-                                                            "column": 66
-                                                        },
-                                                        "end": {
-                                                            "line": 3,
-                                                            "column": 71
-                                                        }
+                                                "type": "Identifier",
+                                                "start": 91,
+                                                "end": 96,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 3,
+                                                        "column": 66
                                                     },
-                                                    "range": [
-                                                        91,
-                                                        96
-                                                    ],
-                                                    "name": "bizzy"
+                                                    "end": {
+                                                        "line": 3,
+                                                        "column": 71
+                                                    }
                                                 },
-                                                "computed": false,
-                                                "optional": false
+                                                "range": [
+                                                    91,
+                                                    96
+                                                ],
+                                                "name": "bizzy"
                                             }
                                         ],
                                         "quasis": [
