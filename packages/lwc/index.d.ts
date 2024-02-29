@@ -107,7 +107,7 @@ declare module 'lwc' {
         role: string | null;
     }
 
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
         readonly activeElement: Element | null;

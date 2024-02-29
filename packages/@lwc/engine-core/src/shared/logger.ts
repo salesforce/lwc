@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -13,8 +13,7 @@ const alreadyLoggedMessages = new Set();
 
 // Only used in LWC's Karma tests
 if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // @ts-ignore
-    window.__lwcResetAlreadyLoggedMessages = () => {
+    (window as any).__lwcResetAlreadyLoggedMessages = () => {
         alreadyLoggedMessages.clear();
     };
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -207,10 +207,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  */
-// @ts-ignore
-export const LightningElement: LightningElementConstructor = function (
-    this: LightningElement
-): LightningElement {
+export const LightningElement = function (this: LightningElement): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         // Thrown when doing something like `new LightningElement()` or
@@ -267,6 +264,8 @@ export const LightningElement: LightningElementConstructor = function (
 
     return this;
 };
+
+export const x: LightningElementConstructor = LightningElement;
 
 function doAttachShadow(vm: VM): ShadowRoot {
     const {
@@ -397,8 +396,7 @@ function createElementInternalsProxy(
     return elementInternalsProxy;
 }
 
-// @ts-ignore
-LightningElement.prototype = {
+const proto: LightningElement = {
     constructor: LightningElement,
 
     dispatchEvent(event: Event): boolean {
@@ -622,6 +620,8 @@ LightningElement.prototype = {
         return vm.shadowRoot;
     },
 
+    // TODO: fix
+    // @ts-expect-error Returning `undefined` is not compatible with the base type
     get refs(): RefNodes | undefined {
         const vm = getAssociatedVM(this);
 
@@ -850,3 +850,6 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
     },
     configurable: true,
 });
+
+// @ts-expect-error TypeScript doesn't like modifying the prototype
+LightningElement.prototype = proto;

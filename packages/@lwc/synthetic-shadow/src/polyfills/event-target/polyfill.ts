@@ -25,7 +25,7 @@ function patchedAddEventListener(
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return addCustomElementEventListener.apply(this, arguments);
     }
     if (arguments.length < 2) {
@@ -36,7 +36,7 @@ function patchedAddEventListener(
             args[1] = getEventListenerWrapper(args[1]);
         }
         // Ignore types because we're passing through to native method
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, args);
     }
     // Fast path. This function is optimized to avoid ArraySlice because addEventListener is called
@@ -55,7 +55,7 @@ function patchedRemoveEventListener(
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return removeCustomElementEventListener.apply(this, arguments);
     }
     const args = ArraySlice.call(arguments);
@@ -63,11 +63,11 @@ function patchedRemoveEventListener(
         args[1] = getEventListenerWrapper(args[1]);
     }
     // Ignore types because we're passing through to native method
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     nativeRemoveEventListener.apply(this, args);
     // Account for listeners that were added before this polyfill was applied
     // Typescript does not like it when you treat the `arguments` object as an array
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     nativeRemoveEventListener.apply(this, arguments);
 }
 

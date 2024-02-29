@@ -75,7 +75,7 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     return ArrayReduce.call(
         childNodes,
         (seed, child) => {
