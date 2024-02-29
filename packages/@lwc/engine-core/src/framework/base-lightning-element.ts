@@ -624,7 +624,7 @@ function createElementInternalsProxy(
 
     // TODO: fix?
     // @ts-expect-error base type doesn't allow returning undefined
-    get refs(): RefNodes | undefined {
+    get refs(): RefNodes {
         const vm = getAssociatedVM(this);
 
         if (isUpdatingTemplate) {
@@ -719,15 +719,16 @@ function createElementInternalsProxy(
         return renderer.getChildren(vm.elm);
     },
 
-    // TODO: fix?
-    // @ts-expect-error base type doesn't allow returning undefined
     get childNodes() {
         const vm = getAssociatedVM(this);
         const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'childNodes');
         }
-        return renderer.getChildNodes(vm.elm);
+        // getChildNodes returns a NodeList, which has `item(index: number): Node | null`.
+        // NodeListOf<T> extends NodeList, but claims to not return null. That seems inaccurate,
+        // but these are built-in types, so ultimately not our problem.
+        return renderer.getChildNodes(vm.elm) as NodeListOf<ChildNode>;
     },
 
     get firstChild() {
