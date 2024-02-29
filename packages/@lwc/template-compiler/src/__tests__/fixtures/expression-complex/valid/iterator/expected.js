@@ -20,8 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_static_fragment($fragment1(), 2, [
           api_static_part(0, {
             on: {
-              click:
-                _m1 || ($ctx._m1 = api_bind(() => $cmp.$cmp.taberu(okazu))),
+              click: _m1 || ($ctx._m1 = api_bind(() => $cmp.taberu(okazu))),
             },
           }),
         ]),
