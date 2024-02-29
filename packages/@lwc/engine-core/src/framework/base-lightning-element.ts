@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -207,7 +207,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  */
-export const LightningElement = function (this: LightningElement): LightningElement {
+// @ts-expect-error When exported, it will conform, but we need to build it first!
+export const LightningElement: LightningElementConstructor = function (
+    this: LightningElement
+): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         // Thrown when doing something like `new LightningElement()` or
@@ -264,8 +267,6 @@ export const LightningElement = function (this: LightningElement): LightningElem
 
     return this;
 };
-
-export const x: LightningElementConstructor = LightningElement;
 
 function doAttachShadow(vm: VM): ShadowRoot {
     const {
@@ -396,7 +397,8 @@ function createElementInternalsProxy(
     return elementInternalsProxy;
 }
 
-const proto: LightningElement = {
+// Type assertion because the prototype is readonly, but we need to initialize it
+(LightningElement as { prototype: LightningElement }).prototype = {
     constructor: LightningElement,
 
     dispatchEvent(event: Event): boolean {
@@ -620,8 +622,8 @@ const proto: LightningElement = {
         return vm.shadowRoot;
     },
 
-    // TODO: fix
-    // @ts-expect-error Returning `undefined` is not compatible with the base type
+    // TODO: fix?
+    // @ts-expect-error base type doesn't allow returning undefined
     get refs(): RefNodes | undefined {
         const vm = getAssociatedVM(this);
 
@@ -691,6 +693,8 @@ const proto: LightningElement = {
     },
 
     // For backwards compat, we allow component authors to set `refs` as an expando
+    // TODO: fix?
+    // @ts-expect-error base type doesn't allow returning undefined in the getter
     set refs(value: any) {
         defineProperty(this, 'refs', {
             configurable: true,
@@ -715,6 +719,8 @@ const proto: LightningElement = {
         return renderer.getChildren(vm.elm);
     },
 
+    // TODO: fix?
+    // @ts-expect-error base type doesn't allow returning undefined
     get childNodes() {
         const vm = getAssociatedVM(this);
         const renderer = vm.renderer;
@@ -850,6 +856,3 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
     },
     configurable: true,
 });
-
-// @ts-expect-error TypeScript doesn't like modifying the prototype
-LightningElement.prototype = proto;
