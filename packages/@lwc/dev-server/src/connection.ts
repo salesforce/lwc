@@ -85,6 +85,7 @@ export class Connection {
     send(data: HMR_Data): void {
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             this.socket.send(JSON.stringify(data));
+            console.log('SENT', data);
         }
     }
 

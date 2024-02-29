@@ -20,8 +20,8 @@ import { TransformResult } from './transformer';
 
 // Should put this in some shared package
 interface HMRModuleContext {
-    moduleHash: string;
-    modulePath: string;
+    hash: string;
+    path: string;
 }
 
 /**
@@ -84,8 +84,8 @@ export default function templateTransform(
     let hmrModuleContext: HMRModuleContext | undefined;
     if (enableHmr) {
         hmrModuleContext = {
-            moduleHash: createHash('md5').update(src, 'utf8').digest('hex'),
-            modulePath: filename,
+            hash: createHash('md5').update(src, 'utf8').digest('hex'),
+            path: filename,
         };
     }
 
@@ -184,9 +184,6 @@ function serialize(
 
     let buffer = '';
     buffer += `import { freezeTemplate } from "lwc";\n\n`;
-    if (hmrModuleContext) {
-        buffer += `import { hot, swapTemplate } from "lwc";\n\n`;
-    }
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
     buffer += code;
@@ -215,15 +212,7 @@ function serialize(
 
     // Add HMR hooks to handle hot module updates
     if (hmrModuleContext) {
-        buffer += `tmpl.moduleHash = "${hmrModuleContext.moduleHash}";\n`;
-        buffer += `if (hot) {\n`;
-        buffer += `    hot.register("${hmrModuleContext.modulePath}", "${hmrModuleContext.moduleHash}");\n`;
-        buffer += `    hot.accept("${hmrModuleContext.modulePath}", (mod) => {\n`;
-        buffer += `        if(tmpl.moduleHash != mod.moduleHash) {\n`;
-        buffer += `            swapTemplate(tmpl, mod);\n`;
-        buffer += `        }\n`;
-        buffer += `    });\n`;
-        buffer += `}\n`;
+        buffer += `tmpl.hmr = ${JSON.stringify(hmrModuleContext)};\n`;
     }
     return buffer;
 }

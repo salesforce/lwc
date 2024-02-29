@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { initializeClient } from './client';
-export { accept, register } from './api';
+export { accept } from './api';
 export type { HMR_Register, HMR_Accept } from './api';
 
 // May be this can be exported and lazily initialized

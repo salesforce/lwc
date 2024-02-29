@@ -58,10 +58,6 @@ export default function serialize(result: Result, config: Config): string {
         buffer += '\n';
     }
 
-    if (hmrModuleContext) {
-        buffer += `import { hot, swapStyle } from "lwc";\n`;
-    }
-
     const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
     const serializedStyle = serializeCss(result).trim();
 
@@ -104,16 +100,7 @@ export default function serialize(result: Result, config: Config): string {
 
     // Add HMR hooks to handle hot module updates
     if (hmrModuleContext) {
-        buffer += `${STYLESHEET_IDENTIFIER}.moduleHash = "${hmrModuleContext.moduleHash}";\n`;
-        buffer += `if (hot) {\n`;
-        buffer += `    hot.register("${hmrModuleContext.modulePath}", "${hmrModuleContext.moduleHash}");\n`;
-        buffer += `    hot.accept("${hmrModuleContext.modulePath}", (mod) => {\n`;
-        buffer += `        const defaultStylesheet = mod.pop();\n`;
-        buffer += `        if(${STYLESHEET_IDENTIFIER}.moduleHash != defaultStylesheet.moduleHash) {\n`;
-        buffer += `            swapStyle(${STYLESHEET_IDENTIFIER}, defaultStylesheet);\n`;
-        buffer += `        }\n`;
-        buffer += `    });\n`;
-        buffer += `}\n`;
+        buffer += `${STYLESHEET_IDENTIFIER}.hmr = ${JSON.stringify(hmrModuleContext)};\n`;
     }
 
     // exports

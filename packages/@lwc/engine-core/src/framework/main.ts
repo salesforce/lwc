@@ -26,7 +26,7 @@ export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
-export { registerComponent, getComponentAPIVersion } from './component';
+export { registerComponent, getComponentAPIVersion, events, ComponentMetadata } from './component';
 export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
 

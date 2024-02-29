@@ -22,13 +22,19 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 
-type ComponentConstructorMetadata = {
+interface ComponentConstructorMetadata {
     tmpl: Template;
     sel: string;
     apiVersion: APIVersion;
-};
+}
 const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
     new Map();
+export const events = new EventTarget();
+
+export interface ComponentMetadata {
+    Ctor: any;
+    metadata: ComponentConstructorMetadata;
+}
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -48,6 +54,9 @@ export function registerComponent(
         // TODO [#3331]: add validation to check the value of metadata.sel is not an empty string.
         registeredComponentMap.set(Ctor, metadata);
     }
+    events.dispatchEvent(
+        new CustomEvent<ComponentMetadata>('component_registered', { detail: { Ctor, metadata } })
+    );
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
     return Ctor;

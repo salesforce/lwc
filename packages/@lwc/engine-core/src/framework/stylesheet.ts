@@ -20,12 +20,14 @@ import { getComponentInternalDef } from './def';
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type StylesheetFactory = (
-    stylesheetToken: string | undefined,
-    useActualHostSelector: boolean,
-    useNativeDirPseudoclass: boolean
-) => string;
-
+export interface StylesheetFactory {
+    (
+        stylesheetToken: string | undefined,
+        useActualHostSelector: boolean,
+        useNativeDirPseudoclass: boolean
+    ): string;
+    hmr?: { path: string; hash: string };
+}
 /**
  * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
  * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via the

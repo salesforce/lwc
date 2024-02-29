@@ -26,8 +26,8 @@
         "dist"
     ],
     "scripts": {
-        "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
-        "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
+        "build": "rollup --config rollup.config.js",
+        "dev": "rollup  --config rollup.config.js --watch --no-watch.clearScreen"
     },
     "nx": {
         "targets": {

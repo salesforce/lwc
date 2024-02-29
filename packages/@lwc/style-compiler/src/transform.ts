@@ -12,8 +12,8 @@ import postcssLwc from './postcss-lwc-plugin';
 
 // Should put this in some shared package
 interface HMRModuleContext {
-    moduleHash: string;
-    modulePath: string;
+    hash: string;
+    path: string;
 }
 
 export interface Config {

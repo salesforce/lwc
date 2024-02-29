@@ -32,8 +32,8 @@ export default function styleTransform(
         apiVersion: config.apiVersion,
         hmrModuleContext: config.enableHmr
             ? {
-                  moduleHash: createHash('md5').update(src, 'utf8').digest('hex'),
-                  modulePath: filename,
+                  hash: createHash('md5').update(src, 'utf8').digest('hex'),
+                  path: filename,
               }
             : undefined,
     };

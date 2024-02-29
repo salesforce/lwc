@@ -12,7 +12,5 @@ new LWCServer().startServer({
     protocol: 'ws',
     host: 'localhost',
     // Component paths to watch
-    paths: [
-        '/Users/ravi.jayaramappa/dev/raptor/lwc/packages/@lwc/integration-tests/src/components/',
-    ],
+    paths: ['/Users/abdulsattarmohammed/work/lwc/packages/@lwc/integration-tests/src/components/'],
 });

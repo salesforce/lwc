@@ -14,6 +14,8 @@ import './formatters';
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     api,
+    events,
+    ComponentMetadata,
     track,
     wire,
     readonly,
@@ -38,7 +40,7 @@ export {
     __unstable__ReportingControl,
 } from '@lwc/engine-core';
 
-export { hot } from './hmr';
+import '@lwc/hmr-client';
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';

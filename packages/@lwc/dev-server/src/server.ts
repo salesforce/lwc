@@ -65,6 +65,7 @@ export class LWCServer {
                     data: { activePaths },
                 } = data as HMR_Data_Init;
                 this.moduleGraph?.registerActivePaths(activePaths);
+                console.log('INIT');
                 break;
             }
             // In coming hot module
@@ -92,6 +93,7 @@ export class LWCServer {
                     );
                     break;
                 }
+                console.log('Compiled module ', modulePath);
                 this.connection?.sendModule(modulePath, result.code);
                 break;
             }

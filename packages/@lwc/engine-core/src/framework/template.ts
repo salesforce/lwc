@@ -58,6 +58,8 @@ export interface Template {
     renderMode?: 'light';
     /** True if this template contains template refs, undefined or false otherwise */
     hasRefs?: boolean;
+    /** holds HMR context */
+    hmr?: { path: string; hash: string };
 }
 
 export let isUpdatingTemplate: boolean = false;
