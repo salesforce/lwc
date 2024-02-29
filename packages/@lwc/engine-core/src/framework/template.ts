@@ -126,8 +126,7 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
         fragmentCaches.push(fragmentCache);
     };
 
-    // @ts-ignore
-    window.__lwcResetFragmentCaches = () => {
+    (window as any).__lwcResetFragmentCaches = () => {
         for (const fragmentCache of fragmentCaches) {
             for (const key of keys(fragmentCache)) {
                 delete fragmentCache[key];
