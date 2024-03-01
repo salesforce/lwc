@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -21,9 +21,12 @@ import { TransformResult } from './transformer';
  * Transforms a HTML template into module exporting a template function.
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
- * @param src
- * @param filename
- * @param options
+ * @param src HTML source
+ * @param filename Source filename, with extension.
+ * @param options Transformation options
+ * @returns Transformed code, source map, and metadata
+ * @throws Compiler errors, when compilation fails.
+ * @example
  */
 export default function templateTransform(
     src: string,

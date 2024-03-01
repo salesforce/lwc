@@ -19,11 +19,10 @@ const expectExportDefaultFromPackageInFile = (pkgName: string, ext: string) => {
     expect(contents).toMatch(exportDefaultFromPackage);
 };
 
-/**
+/*
  * Jest uses CommonJS, which means that packages with no explicit export statements actually export
  * the default `module.exports` empty object. That export is an empty object with the prototype set
  * to an empty object with null prototype.
- * @param mod
  */
 const hasExplicitDefaultExport = (mod: object) => {
     // No default export = self explanatory

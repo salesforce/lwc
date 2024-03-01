@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -59,6 +59,11 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
     )}</template>`;
 }
 
+/**
+ * Serializes an element into a string
+ * @param element The element to serialize
+ * @returns A string representation of the element
+ */
 export function serializeElement(element: HostElement): string {
     let output = '';
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -24,13 +24,20 @@ function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
     return textNode.nodeName === '#text';
 }
 
-// The text content inside `<style>` is a special case. It is _only_ rendered by the LWC engine itself; <style> tags
-// are disallowed inside of templates. Also, we want to avoid over-escaping, since CSS containing strings like
-// `&amp;` and `&quot;` is not valid CSS (even when inside a `<style>` element).
-//
-// However, to avoid XSS attacks, we still need to check for things like `</style><script>alert("pwned")</script>`,
-// since a user could use that inside of a *.css file to break out of a <style> element.
-// See: https://github.com/salesforce/lwc/issues/3439
+/**
+ * The text content inside `<style>` is a special case. It is _only_ rendered by the LWC engine itself; <style> tags
+ * are disallowed inside of templates. Also, we want to avoid over-escaping, since CSS containing strings like
+ * `&amp;` and `&quot;` is not valid CSS (even when inside a `<style>` element).
+ *
+ * However, to avoid XSS attacks, we still need to check for things like `</style><script>alert("pwned")</script>`,
+ * since a user could use that inside of a *.css file to break out of a <style> element.
+ * @param contents CSS source to validate
+ * @throws Throws if the contents provided are not valid.
+ * @see https://github.com/salesforce/lwc/issues/3439
+ * @example
+ * validateStyleTextContents('div { color: red }') // Ok
+ * validateStyleTextContents('</style><script>alert("pwned")</script>') // Throws
+ */
 export function validateStyleTextContents(contents: string): void {
     // If parse5 parses this as more than one `<style>` tag, then it is unsafe to be rendered as-is
     const fragment = parse5.parseFragment(`<style>${contents}</style>`);
