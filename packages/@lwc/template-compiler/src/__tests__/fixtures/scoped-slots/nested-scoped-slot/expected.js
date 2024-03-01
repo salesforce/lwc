@@ -47,8 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                             "Coordinates: " +
                               api_dynamic_text(row.number) +
                               " - " +
-                              api_dynamic_text(column.number) +
-                              " "
+                              api_dynamic_text(column.number)
                           ),
                         ]),
                       ],

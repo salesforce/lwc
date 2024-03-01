@@ -26,7 +26,7 @@ describe('fixtures', () => {
                 config = require(configPath);
             }
 
-            const compiled = compiler(src, config);
+            const compiled = compiler(src, { ...config, experimentalComplexExpressions: true });
             const { warnings, root } = compiled;
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change

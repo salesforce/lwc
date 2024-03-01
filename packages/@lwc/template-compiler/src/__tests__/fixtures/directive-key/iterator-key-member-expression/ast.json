@@ -183,18 +183,60 @@
                                         "raw": "{x.value}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 8,
+                                            "start": 95,
+                                            "end": 102,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 32
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 39
+                                                }
+                                            },
+                                            "range": [
+                                                95,
+                                                102
+                                            ],
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 2,
+                                                "start": 95,
+                                                "end": 96,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 32
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 33
+                                                    }
+                                                },
+                                                "range": [
+                                                    95,
+                                                    96
+                                                ],
                                                 "name": "x"
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 3,
-                                                "end": 8,
+                                                "start": 97,
+                                                "end": 102,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 34
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 39
+                                                    }
+                                                },
+                                                "range": [
+                                                    97,
+                                                    102
+                                                ],
                                                 "name": "value"
                                             },
                                             "computed": false,

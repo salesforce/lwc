@@ -98,18 +98,60 @@
                                 "raw": "{obj.sub}",
                                 "value": {
                                     "type": "MemberExpression",
-                                    "start": 1,
-                                    "end": 8,
+                                    "start": 37,
+                                    "end": 44,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 12
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 19
+                                        }
+                                    },
+                                    "range": [
+                                        37,
+                                        44
+                                    ],
                                     "object": {
                                         "type": "Identifier",
-                                        "start": 1,
-                                        "end": 4,
+                                        "start": 37,
+                                        "end": 40,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 12
+                                            },
+                                            "end": {
+                                                "line": 3,
+                                                "column": 15
+                                            }
+                                        },
+                                        "range": [
+                                            37,
+                                            40
+                                        ],
                                         "name": "obj"
                                     },
                                     "property": {
                                         "type": "Identifier",
-                                        "start": 5,
-                                        "end": 8,
+                                        "start": 41,
+                                        "end": 44,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 16
+                                            },
+                                            "end": {
+                                                "line": 3,
+                                                "column": 19
+                                            }
+                                        },
+                                        "range": [
+                                            41,
+                                            44
+                                        ],
                                         "name": "sub"
                                     },
                                     "computed": false,

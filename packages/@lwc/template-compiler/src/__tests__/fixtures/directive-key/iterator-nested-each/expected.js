@@ -25,7 +25,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           [
             api_text(
               api_dynamic_text(feature.value.label) +
-                " " +
                 api_dynamic_text(feature.label)
             ),
           ]
