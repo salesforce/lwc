@@ -193,7 +193,7 @@ const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     constructor: LightningElementConstructor;
     template: ShadowRoot | null;
-    refs: RefNodes;
+    refs: RefNodes | undefined;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
