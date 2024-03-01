@@ -190,6 +190,8 @@ type RefNodes = { [name: string]: Element };
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
+    constructor: LightningElementConstructor;
+    shadowRoot: ShadowRoot | null;
     template: ShadowRoot | null;
     refs: RefNodes;
     render(): Template;
@@ -397,8 +399,8 @@ function createElementInternalsProxy(
     return elementInternalsProxy;
 }
 
-// Type assertion because the prototype is readonly, but we need to initialize it
-(LightningElement as { prototype: LightningElement }).prototype = {
+// Type assertion because we need to build the prototype before it satisfies the interface.
+(LightningElement as { prototype: Partial<LightningElement> }).prototype = {
     constructor: LightningElement,
 
     dispatchEvent(event: Event): boolean {
@@ -622,9 +624,7 @@ function createElementInternalsProxy(
         return vm.shadowRoot;
     },
 
-    // TODO: fix?
-    // @ts-expect-error base type doesn't allow returning undefined
-    get refs(): RefNodes {
+    get refs() {
         const vm = getAssociatedVM(this);
 
         if (isUpdatingTemplate) {
@@ -693,8 +693,6 @@ function createElementInternalsProxy(
     },
 
     // For backwards compat, we allow component authors to set `refs` as an expando
-    // TODO: fix?
-    // @ts-expect-error base type doesn't allow returning undefined in the getter
     set refs(value: any) {
         defineProperty(this, 'refs', {
             configurable: true,
