@@ -624,7 +624,7 @@ function createElementInternalsProxy(
         return vm.shadowRoot;
     },
 
-    get refs() {
+    get refs(): RefNodes | undefined {
         const vm = getAssociatedVM(this);
 
         if (isUpdatingTemplate) {
