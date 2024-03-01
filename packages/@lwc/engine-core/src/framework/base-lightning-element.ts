@@ -179,6 +179,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'removeEventListener'
     | 'setAttribute'
     | 'setAttributeNS'
+    | 'shadowRoot'
     | 'spellcheck'
     | 'tabIndex'
     | 'tagName'
@@ -191,7 +192,6 @@ const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     constructor: LightningElementConstructor;
-    shadowRoot: ShadowRoot | null;
     template: ShadowRoot | null;
     refs: RefNodes;
     render(): Template;
