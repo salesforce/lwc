@@ -38,7 +38,7 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * const customRenderer = rendererFactory(renderer);
  */
 export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
-    // `process.env.RENDERER` is replaced by rollup with an object, not a string. Gross!
+    // Type assertion because this is replaced by rollup with an object, not a string.
     // See `injectInlineRenderer` in /scripts/rollup/rollup.config.js
     const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
