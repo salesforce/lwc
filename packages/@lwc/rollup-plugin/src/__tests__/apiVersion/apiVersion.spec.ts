@@ -50,7 +50,7 @@ describe('API versioning', () => {
 
     it('handles apiVersion lower than lower bound', async () => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
-            // @ts-ignore
+            // @ts-expect-error Explicitly testing JS behavior that violates TS types
             apiVersion: 0,
         });
         expect(code).toContain(`apiVersion: ${LOWEST_API_VERSION}`);
@@ -59,7 +59,6 @@ describe('API versioning', () => {
 
     it('handles apiVersion higher than high bound', async () => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
-            // @ts-ignore
             apiVersion: Number.MAX_SAFE_INTEGER,
         });
         expect(code).toContain(`apiVersion: ${HIGHEST_API_VERSION}`);
@@ -68,7 +67,7 @@ describe('API versioning', () => {
 
     it('if within bounds, finds the lowest known version matching the specification', async () => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
-            // @ts-ignore`
+            // @ts-expect-error Explicitly testing JS behavior that violates TS types
             apiVersion: 58.5,
         });
         expect(code).toContain(`apiVersion: 58`);

@@ -141,7 +141,7 @@ function focusPatched(this: HTMLElement) {
     }
 
     // Typescript does not like it when you treat the `arguments` object as an array
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     focus.apply(this, arguments);
 
     // Restore state by enabling if originally enabled
@@ -183,7 +183,7 @@ defineProperties(HTMLElement.prototype, {
     focus: {
         value(this: HTMLElement) {
             // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-ignore type-mismatch
+            // @ts-expect-error type-mismatch
             focusPatched.apply(this, arguments);
         },
         enumerable: true,

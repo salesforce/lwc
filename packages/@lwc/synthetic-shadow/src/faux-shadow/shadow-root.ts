@@ -353,7 +353,7 @@ const NodePatchDescriptors = {
         value(this: ShadowRoot, evt: Event): boolean {
             eventToShadowRootMap.set(evt, this);
             // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-ignore type-mismatch
+            // @ts-expect-error type-mismatch
             return dispatchEvent.apply(getHost(this), arguments);
         },
     },

@@ -77,7 +77,7 @@ function createConfigWatcher(
         ro.observe(() => (config = configCallback(component)));
         // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
-        // @ts-ignore it is assigned in the observe() callback
+        // @ts-expect-error it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
     };
     return {
@@ -191,7 +191,7 @@ function createConnector(
         });
     }
     return {
-        // @ts-ignore the boundary protection executes sync, connector is always defined
+        // @ts-expect-error the boundary protection executes sync, connector is always defined
         connector,
         computeConfigAndUpdate,
         resetConfigWatcher: () => ro.reset(),

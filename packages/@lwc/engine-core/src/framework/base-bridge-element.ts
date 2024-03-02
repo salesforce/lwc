@@ -98,7 +98,7 @@ function createAttributeChangedCallback(
             if (!isUndefined(superAttributeChangedCallback)) {
                 // delegate unknown attributes to the super.
                 // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
+                // @ts-expect-error type-mismatch
                 superAttributeChangedCallback.apply(this, arguments);
             }
             return;

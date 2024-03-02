@@ -118,7 +118,7 @@ function warnOnArrayMutation(stylesheets: TemplateStylesheetFactories) {
         const originalArrayMethod = getOriginalArrayMethod(prop);
         stylesheets[prop] = function arrayMutationWarningWrapper() {
             reportTemplateViolation('stylesheets');
-            // @ts-ignore
+            // @ts-expect-error can't properly determine the right `this`
             return originalArrayMethod.apply(this, arguments);
         };
     }

@@ -303,11 +303,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
 // old vnode.children is removed from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        if (
-            !shouldUseNativeCustomElementLifecycle(
-                vm.component.constructor as LightningElementConstructor
-            )
-        ) {
+        if (!shouldUseNativeCustomElementLifecycle(vm.component.constructor)) {
             // With native lifecycle, we cannot be certain that connectedCallback was called before a component
             // was removed from the VDOM. If the component is disconnected, then connectedCallback will not fire
             // in native mode, although it will fire in synthetic mode due to appendChild triggering it.
@@ -718,9 +714,7 @@ export function runConnectedCallback(vm: VM) {
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
     if (
         process.env.IS_BROWSER &&
-        !shouldUseNativeCustomElementLifecycle(
-            vm.component.constructor as LightningElementConstructor
-        ) &&
+        !shouldUseNativeCustomElementLifecycle(vm.component.constructor) &&
         (process.env.NODE_ENV !== 'production' || isReportingEnabled())
     ) {
         if (!vm.renderer.isConnected(vm.elm)) {

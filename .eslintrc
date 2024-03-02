@@ -146,8 +146,6 @@
         /*
          * TODO: Address violations and re-enable these rules
          */
-        // All @ts-ignore should either be refactored or changed to @ts-expect-error <reason>
-        "@typescript-eslint/ban-ts-comment": "off",
         // Enums are a pain to deal with...
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
         // We might just want to leave this one disabled
