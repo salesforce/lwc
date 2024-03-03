@@ -778,7 +778,7 @@ LightningElement.prototype = {
 
     get style() {
         const { elm } = getAssociatedVM(this);
-        return elm.style;
+        return elm.getStyle();
     },
 
     render(): Template {

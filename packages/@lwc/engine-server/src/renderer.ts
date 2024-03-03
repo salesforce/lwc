@@ -337,10 +337,6 @@ function getTagName(elm: HostElement): string {
     return elm.tagName.toUpperCase();
 }
 
-function getStyle(elm : HTMLElement): CSSStyleDeclaration {
-    return elm.style;
-}
-
 type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;
 
 const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
@@ -437,6 +433,9 @@ const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElemen
 const attachInternals = unsupportedMethod('attachInternals') as (
     elm: HTMLElement
 ) => ElementInternals;
+const getStyle = unsupportedMethod('getStyle') as (
+    element : HTMLElement
+) => CSSStyleDeclaration;
 
 export const renderer = {
     isSyntheticShadowDefined,
