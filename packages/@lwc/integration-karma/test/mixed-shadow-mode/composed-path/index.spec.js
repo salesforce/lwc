@@ -24,11 +24,12 @@ describe('event.composedPath() of event dispatched from closed shadow root', () 
     });
 
     it('should not have shadowed elements when invoked outside the shadow root', () => {
-        const elm = createElement('x-parent', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
             elm.clickShadowedButton();
+
             expect(elm.getComposedPath()).toEqual([
                 elm.child,
                 elm.shadowRoot,
