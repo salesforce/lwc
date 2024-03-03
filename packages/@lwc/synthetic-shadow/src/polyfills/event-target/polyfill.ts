@@ -30,20 +30,20 @@ function patchedAddEventListener(
         return addCustomElementEventListener.apply(this, arguments);
     }
 
-    // TODO [#4011]: Due to a bug and how the synthetic shadow polyfill currently caches the composed path of events,
-    // events originating from native shadow components can incorrectly use a cached composed path from
-    // a context it shouldn't have access to. One solution is to avoid patching the addEventListener
-    // for event targets inside a component using native shadow. This avoids applying our synthetic
-    // shadow polyfill behavior unnecessarily.
-    //
-    // Open Questions:
-    //  - Some targets are not instances of Node (e.g., an instance of XMLHttpRequest)
-    //    Do we need fallback behavior for non-Node instances?
     if (this instanceof Node) {
         const rootNode = this.getRootNode();
         if (!isSyntheticShadowRoot(rootNode)) {
-            return nativeAddEventListener.call(this, type, listener, optionsOrCapture);
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-expect-error type-mismatch
+            return nativeAddEventListener.apply(this, arguments);
         }
+    } else {
+        // No need to wrap listeners for `EventTarget`s that are not also `Node`s (e.g.,
+        // XMLHttpRequest) because they are not part of the DOM. Note that the purpose of wrapping
+        // listeners is to simulate shadow DOM encapsulation during event propagation.
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-expect-error type-mismatch
+        return nativeAddEventListener.apply(this, arguments);
     }
 
     if (arguments.length < 2) {
