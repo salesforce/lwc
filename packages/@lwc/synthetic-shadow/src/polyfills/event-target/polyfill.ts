@@ -31,16 +31,7 @@ function patchedAddEventListener(
         return addCustomElementEventListener.apply(this, arguments);
     }
 
-    if (this instanceof Node) {
-        if (isInstanceOfNativeShadowRoot(this.getRootNode())) {
-            // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-expect-error type-mismatch
-            return nativeAddEventListener.apply(this, arguments);
-        }
-    } else {
-        // No need to wrap listeners for `EventTarget`s that are not also `Node`s (e.g.,
-        // XMLHttpRequest) because they are not part of the DOM. Note that the purpose of wrapping
-        // listeners is to simulate shadow DOM encapsulation during event propagation.
+    if (this instanceof Node && isInstanceOfNativeShadowRoot(this.getRootNode())) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, arguments);
