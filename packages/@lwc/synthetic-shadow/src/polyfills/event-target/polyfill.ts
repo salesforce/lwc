@@ -11,11 +11,12 @@ import {
     removeEventListener as nativeRemoveEventListener,
 } from '../../env/event-target';
 import { Node } from '../../env/node';
+import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import {
     addCustomElementEventListener,
     removeCustomElementEventListener,
 } from '../../faux-shadow/events';
-import { isSyntheticShadowHost, isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { isSyntheticShadowHost } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
 function patchedAddEventListener(
@@ -31,8 +32,7 @@ function patchedAddEventListener(
     }
 
     if (this instanceof Node) {
-        const rootNode = this.getRootNode();
-        if (!isSyntheticShadowRoot(rootNode)) {
+        if (isInstanceOfNativeShadowRoot(this.getRootNode())) {
             // Typescript does not like it when you treat the `arguments` object as an array
             // @ts-expect-error type-mismatch
             return nativeAddEventListener.apply(this, arguments);
