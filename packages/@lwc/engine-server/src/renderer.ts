@@ -398,6 +398,9 @@ const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 /** Unsupported methods in SSR */
 
 const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
+const getStyle = unsupportedMethod('getStyle') as (
+    element : HTMLElement
+) => CSSStyleDeclaration;
 const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;
@@ -433,9 +436,6 @@ const ownerDocument = unsupportedMethod('ownerDocument') as (element: HostElemen
 const attachInternals = unsupportedMethod('attachInternals') as (
     elm: HTMLElement
 ) => ElementInternals;
-const getStyle = unsupportedMethod('getStyle') as (
-    element : HTMLElement
-) => CSSStyleDeclaration;
 
 export const renderer = {
     isSyntheticShadowDefined,
