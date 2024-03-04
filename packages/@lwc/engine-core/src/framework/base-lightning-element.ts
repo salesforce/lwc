@@ -185,6 +185,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'tabIndex'
     | 'tagName'
     | 'title'
+    | 'style'
 >;
 
 type RefNodes = { [name: string]: Element };
