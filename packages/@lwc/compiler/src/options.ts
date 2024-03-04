@@ -64,9 +64,10 @@ export interface StylesheetConfig {
 export interface OutputConfig {
     /**
      * If `true` a source map is generated for the transformed file.
+     * If `inline`, an inline source map is generated and appended to the end of the transformed file.
      * @default false
      */
-    sourcemap?: boolean;
+    sourcemap?: boolean | 'inline';
 
     /**
      * @deprecated The minify property has no effect on the generated output.
@@ -202,7 +203,7 @@ function isUndefinedOrBoolean(property: any): boolean {
 
 function validateOutputConfig(config: OutputConfig) {
     invariant(
-        isUndefinedOrBoolean(config.sourcemap),
+        isUndefinedOrBoolean(config.sourcemap) || config.sourcemap === 'inline',
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
         [config.sourcemap]
     );

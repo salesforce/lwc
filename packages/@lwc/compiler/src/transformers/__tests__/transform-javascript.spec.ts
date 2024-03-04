@@ -209,3 +209,40 @@ describe('unnecessary registerDecorators', () => {
         expect(code).toContain('registerDecorators');
     });
 });
+
+describe('sourcemaps', () => {
+    it("should generate inline sourcemaps when the output config includes the 'inline' option for sourcemaps", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        const { code, map } = transformSync(source, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            outputConfig: {
+                sourcemap: 'inline',
+            },
+        });
+        expect(code).toContain('//# sourceMappingURL=data:application/json;');
+        expect(map).toBeNull();
+    });
+
+    it("should fail to validate options if sourcemap is a string other than 'inline'.", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        expect(() =>
+            transformSync(source, 'foo.js', {
+                ...TRANSFORMATION_OPTIONS,
+                outputConfig: {
+                    // @ts-expect-error Property can be passed from JS environments with no type checking.
+                    sourcemap: 'invalid',
+                },
+            })
+        ).toThrow(
+            'LWC1021: Expected a boolean value or \'inline\' for outputConfig.sourcemap, received "invalid".'
+        );
+    });
+});
