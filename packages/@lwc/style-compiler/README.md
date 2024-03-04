@@ -20,7 +20,7 @@ yarn add --dev @lwc/style-compiler
 ## Usage
 
 ```js
-const compile = require('@lwc/style-compiler');
+const { transform } = require('@lwc/style-compiler');
 
 const source = `
     :host {
@@ -32,12 +32,12 @@ const source = `
     }
 `;
 
-const { code } = compile(source, 'example.css');
+const { code } = transform(source, 'example.css');
 ```
 
 ### API
 
-#### `compile(source, id, options)`
+#### `transform(source, id, options)`
 
 **Options:**
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -10,10 +10,11 @@ import { getAPIVersionFromNumber } from '@lwc/shared';
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';
 
+/** Configuration options for CSS transforms. */
 export interface Config {
     /**
-     * @deprecated - Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
      * CSS custom properties configuration
+     * @deprecated Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
      */
     // TODO [#3266]: Remove StylesheetConfig as part of breaking change wishlist
     customProperties?: {
@@ -28,6 +29,23 @@ export interface Config {
     apiVersion?: number;
 }
 
+/**
+ * Transforms CSS for use with LWC components.
+ * @param src Contents of the CSS source file
+ * @param id Filename of the CSS source file
+ * @param config Transformation options
+ * @returns Transformed CSS
+ * @example
+ * const {transform} = require('@lwc/style-compiler');
+ * const source = `
+ *  :host {
+ *    opacity: 0.4;
+ *  }
+ *  span {
+ *    text-transform: uppercase;
+ *  }`;
+ * const { code } = transform(source, 'example.css');
+ */
 export function transform(src: string, id: string, config: Config = {}): { code: string } {
     if (src === '') {
         return { code: 'export default undefined' };
