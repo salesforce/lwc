@@ -99,35 +99,17 @@
                                     "start": 1,
                                     "end": 11,
                                     "left": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 4,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
                                     },
                                     "operator": "||",
                                     "right": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 8,
-                                            "end": 11,
-                                            "name": "bar"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 8,
+                                        "end": 11,
+                                        "name": "bar"
                                     },
                                     "location": {
                                         "startLine": 3,
@@ -173,63 +155,45 @@
                                         70
                                     ],
                                     "left": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 60,
-                                            "end": 63,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 35
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 38
-                                                }
+                                        "type": "Identifier",
+                                        "start": 60,
+                                        "end": 63,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 35
                                             },
-                                            "range": [
-                                                60,
-                                                63
-                                            ],
-                                            "name": "foo"
+                                            "end": {
+                                                "line": 3,
+                                                "column": 38
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            60,
+                                            63
+                                        ],
+                                        "name": "foo"
                                     },
                                     "operator": "||",
                                     "right": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 67,
-                                            "end": 70,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 42
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 45
-                                                }
+                                        "type": "Identifier",
+                                        "start": 67,
+                                        "end": 70,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 42
                                             },
-                                            "range": [
-                                                67,
-                                                70
-                                            ],
-                                            "name": "bar"
+                                            "end": {
+                                                "line": 3,
+                                                "column": 45
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            67,
+                                            70
+                                        ],
+                                        "name": "bar"
                                     },
                                     "location": {
                                         "startLine": 3,
@@ -290,35 +254,17 @@
                                     "start": 1,
                                     "end": 11,
                                     "left": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 4,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
                                     },
                                     "operator": "&&",
                                     "right": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 8,
-                                            "end": 11,
-                                            "name": "bar"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 8,
+                                        "end": 11,
+                                        "name": "bar"
                                     },
                                     "location": {
                                         "startLine": 4,
@@ -364,63 +310,45 @@
                                         126
                                     ],
                                     "left": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 116,
-                                            "end": 119,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 4,
-                                                    "column": 35
-                                                },
-                                                "end": {
-                                                    "line": 4,
-                                                    "column": 38
-                                                }
+                                        "type": "Identifier",
+                                        "start": 116,
+                                        "end": 119,
+                                        "loc": {
+                                            "start": {
+                                                "line": 4,
+                                                "column": 35
                                             },
-                                            "range": [
-                                                116,
-                                                119
-                                            ],
-                                            "name": "foo"
+                                            "end": {
+                                                "line": 4,
+                                                "column": 38
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            116,
+                                            119
+                                        ],
+                                        "name": "foo"
                                     },
                                     "operator": "&&",
                                     "right": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 123,
-                                            "end": 126,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 4,
-                                                    "column": 42
-                                                },
-                                                "end": {
-                                                    "line": 4,
-                                                    "column": 45
-                                                }
+                                        "type": "Identifier",
+                                        "start": 123,
+                                        "end": 126,
+                                        "loc": {
+                                            "start": {
+                                                "line": 4,
+                                                "column": 42
                                             },
-                                            "range": [
-                                                123,
-                                                126
-                                            ],
-                                            "name": "bar"
+                                            "end": {
+                                                "line": 4,
+                                                "column": 45
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            123,
+                                            126
+                                        ],
+                                        "name": "bar"
                                     },
                                     "location": {
                                         "startLine": 4,

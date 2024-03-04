@@ -146,8 +146,6 @@
         /*
          * TODO: Address violations and re-enable these rules
          */
-        // All @ts-ignore should either be refactored or changed to @ts-expect-error <reason>
-        "@typescript-eslint/ban-ts-comment": "off",
         // Enums are a pain to deal with...
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
         // We might just want to leave this one disabled
@@ -306,20 +304,19 @@
         },
         {
             "files": [
-                "packages/lwc/**",
                 // Private packages - documentation isn't required (but should still be good, if present)
                 "packages/@lwc/integration-karma/**",
                 "packages/@lwc/integration-tests/**",
                 "packages/@lwc/perf-benchmarks-components/**",
                 "packages/@lwc/perf-benchmarks/**",
                 // TODO [W-13278716]: All top-level exports should have JSDOC enforced
-                "packages/@lwc/compiler/**",
                 "packages/@lwc/engine-core/**",
-                "packages/@lwc/engine-dom/**",
-                "packages/@lwc/engine-server/**",
+                // "packages/@lwc/engine-server/**",
                 // Package-level exports are documented, but not all file-level exports are, so we
                 // should keep these disabled for now
                 "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/engine-dom/**",
+                "packages/@lwc/engine-server/**",
                 "packages/@lwc/module-resolver/**",
                 "packages/@lwc/shared/**",
                 "packages/@lwc/style-compiler/**",
@@ -341,7 +338,9 @@
         {
             "files": [
                 "packages/@lwc/babel-plugin-component/**",
+                "packages/@lwc/compiler/**",
                 "packages/@lwc/errors/**",
+                "packages/@lwc/engine-dom/**",
                 "packages/@lwc/rollup-plugin/**",
                 "packages/@lwc/wire-service/**"
             ],

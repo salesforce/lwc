@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -19,6 +19,15 @@ import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
 import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 
+/**
+ * Transforms a JavaScript file.
+ * @param code The source code to transform
+ * @param filename The source filename, with extension.
+ * @param options Transformation options.
+ * @returns Compiled code
+ * @throws Compilation errors
+ * @example
+ */
 export default function scriptTransform(
     code: string,
     filename: string,

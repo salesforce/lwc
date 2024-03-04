@@ -101,19 +101,10 @@
                                     "operator": "~",
                                     "prefix": true,
                                     "argument": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 2,
-                                            "end": 5,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 2,
+                                        "end": 5,
+                                        "name": "foo"
                                     },
                                     "location": {
                                         "startLine": 3,
@@ -161,33 +152,24 @@
                                     "operator": "~",
                                     "prefix": true,
                                     "argument": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 55,
-                                            "end": 58,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 30
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 33
-                                                }
+                                        "type": "Identifier",
+                                        "start": 55,
+                                        "end": 58,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 30
                                             },
-                                            "range": [
-                                                55,
-                                                58
-                                            ],
-                                            "name": "bar"
+                                            "end": {
+                                                "line": 3,
+                                                "column": 33
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            55,
+                                            58
+                                        ],
+                                        "name": "bar"
                                     },
                                     "location": {
                                         "startLine": 3,

@@ -89,7 +89,7 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
  * specified by the HTML spec.
  */
 class TemplateHtmlTokenizer extends Tokenizer {
-    // @ts-ignore
+    // @ts-expect-error This Preprocessor is an incomplete customization of parse5's Preprocessor
     preprocessor!: Preprocessor;
 
     parser: TemplateHtmlParser;
@@ -171,7 +171,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
             // coming later in an unquoted attr value should not be considered
             // the beginning of a template expression.
             this.checkedAttrs.add(this.currentAttr);
-            // @ts-ignore
+            // @ts-expect-error private method
             super._stateAttributeValueUnquoted(codePoint);
         }
     }
@@ -210,7 +210,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
             this.currentToken = null;
             this.currentCharacterToken = null;
         } else {
-            // @ts-ignore
+            // @ts-expect-error private method
             super._stateData(codePoint);
         }
     }

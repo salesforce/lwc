@@ -10,7 +10,7 @@ import compile, { Config, parse } from '../index';
 describe('option validation', () => {
     it('validated presence of options', () => {
         expect(() => {
-            // @ts-ignore
+            // @ts-expect-error Explicitly testing JS behavior that violates TS types
             compile(`<template></template>`);
         }).toThrow(/Compiler options must be an object/);
     });

@@ -16,7 +16,7 @@ describe('features', () => {
     });
 
     it('unknown flags in the features map are undefined', () => {
-        // @ts-ignore
+        // @ts-expect-error explicitly testing JS behavior that violates TS types
         expect(features.DOES_NOT_EXIST).toBeUndefined();
     });
 });

@@ -10,6 +10,8 @@ import {
     eventTargetPrototype,
     removeEventListener as nativeRemoveEventListener,
 } from '../../env/event-target';
+import { Node } from '../../env/node';
+import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import {
     addCustomElementEventListener,
     removeCustomElementEventListener,
@@ -25,9 +27,16 @@ function patchedAddEventListener(
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return addCustomElementEventListener.apply(this, arguments);
     }
+
+    if (this instanceof Node && isInstanceOfNativeShadowRoot(this.getRootNode())) {
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-expect-error type-mismatch
+        return nativeAddEventListener.apply(this, arguments);
+    }
+
     if (arguments.length < 2) {
         // Slow path, unlikely to be called frequently. We expect modern browsers to throw:
         // https://googlechrome.github.io/samples/event-listeners-mandatory-arguments/
@@ -36,7 +45,7 @@ function patchedAddEventListener(
             args[1] = getEventListenerWrapper(args[1]);
         }
         // Ignore types because we're passing through to native method
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, args);
     }
     // Fast path. This function is optimized to avoid ArraySlice because addEventListener is called
@@ -55,7 +64,7 @@ function patchedRemoveEventListener(
 ) {
     if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
+        // @ts-expect-error type-mismatch
         return removeCustomElementEventListener.apply(this, arguments);
     }
     const args = ArraySlice.call(arguments);
@@ -63,11 +72,11 @@ function patchedRemoveEventListener(
         args[1] = getEventListenerWrapper(args[1]);
     }
     // Ignore types because we're passing through to native method
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     nativeRemoveEventListener.apply(this, args);
     // Account for listeners that were added before this polyfill was applied
     // Typescript does not like it when you treat the `arguments` object as an array
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     nativeRemoveEventListener.apply(this, arguments);
 }
 

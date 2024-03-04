@@ -107,7 +107,7 @@ declare module 'lwc' {
         role: string | null;
     }
 
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
         readonly activeElement: Element | null;
@@ -209,6 +209,12 @@ declare module 'lwc' {
      * is the returned value.
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
+     * @returns A decorator function
+     * @example
+     * export default class WireExample extends LightningElement {
+     *   \@api bookId;
+     *   \@wire(getBook, { id: '$bookId'}) book;
+     * }
      */
     export function wire<
         Config extends StringKeyedRecord,

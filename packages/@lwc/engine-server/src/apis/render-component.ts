@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -32,6 +32,18 @@ const FakeRootElement: HostElement = {
     [HostContextProvidersKey]: new Map(),
 };
 
+/**
+ * Renders a string representation of a serialized component tree.
+ * @param tagName The name of the tag to render.
+ * @param Ctor The LWC constructor to render with.
+ * @returns A string representation of the serialized component tree.
+ * @throws Throws when called with invalid parameters.
+ * @example
+ * import { renderComponent } from '@lwc/engine-server';
+ * import LightningHello from 'lightning/hello';
+ * const componentProps = {};
+ * const serialized = renderComponent('lightning-hello', LightningHello, componentProps);
+ */
 export function renderComponent(
     tagName: string,
     Ctor: typeof LightningElement,

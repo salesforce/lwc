@@ -100,34 +100,16 @@
                                     "end": 25,
                                     "expressions": [
                                         {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 4,
-                                                "end": 8,
-                                                "name": "name"
-                                            },
-                                            "computed": false,
-                                            "optional": false
+                                            "type": "Identifier",
+                                            "start": 4,
+                                            "end": 8,
+                                            "name": "name"
                                         },
                                         {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 13,
-                                                "end": 23,
-                                                "name": "occupation"
-                                            },
-                                            "computed": false,
-                                            "optional": false
+                                            "type": "Identifier",
+                                            "start": 13,
+                                            "end": 23,
+                                            "name": "occupation"
                                         }
                                     ],
                                     "quasis": [
@@ -207,62 +189,44 @@
                                     ],
                                     "expressions": [
                                         {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 77,
-                                                "end": 81,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 52
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 56
-                                                    }
+                                            "type": "Identifier",
+                                            "start": 77,
+                                            "end": 81,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 52
                                                 },
-                                                "range": [
-                                                    77,
-                                                    81
-                                                ],
-                                                "name": "name"
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 56
+                                                }
                                             },
-                                            "computed": false,
-                                            "optional": false
+                                            "range": [
+                                                77,
+                                                81
+                                            ],
+                                            "name": "name"
                                         },
                                         {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 86,
-                                                "end": 96,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 61
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 71
-                                                    }
+                                            "type": "Identifier",
+                                            "start": 86,
+                                            "end": 96,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 61
                                                 },
-                                                "range": [
-                                                    86,
-                                                    96
-                                                ],
-                                                "name": "occupation"
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 71
+                                                }
                                             },
-                                            "computed": false,
-                                            "optional": false
+                                            "range": [
+                                                86,
+                                                96
+                                            ],
+                                            "name": "occupation"
                                         }
                                     ],
                                     "quasis": [

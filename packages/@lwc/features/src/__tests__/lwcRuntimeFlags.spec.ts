@@ -13,7 +13,7 @@ describe('lwcRuntimeFlags', () => {
     });
 
     it('unknown flags default to undefined', () => {
-        // @ts-ignore
+        // @ts-expect-error Explicitly testing JS behavior that violates TS types
         expect(lwcRuntimeFlags.DOES_NOT_EXIST).toBeUndefined();
     });
 });

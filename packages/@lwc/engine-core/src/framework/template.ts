@@ -13,6 +13,8 @@ import {
     isTrue,
     isUndefined,
     KEY__SCOPED_CSS,
+    keys,
+    noop,
     toString,
 } from '@lwc/shared';
 
@@ -111,7 +113,26 @@ function validateLightDomTemplate(template: Template, vm: VM) {
 const enum FragmentCache {
     HAS_SCOPED_STYLE = 1 << 0,
     SHADOW_MODE_SYNTHETIC = 1 << 1,
-    HAS_LEGACY_SCOPE_TOKEN = 1 << 2,
+}
+
+// This should be a no-op outside of LWC's Karma tests, where it's not needed
+let registerFragmentCache: (fragmentCache: any) => void = noop;
+
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
+    // Keep track of fragmentCaches, so we can clear them in LWC's Karma tests
+    const fragmentCaches: any[] = [];
+    registerFragmentCache = (fragmentCache: any) => {
+        fragmentCaches.push(fragmentCache);
+    };
+
+    (window as any).__lwcResetFragmentCaches = () => {
+        for (const fragmentCache of fragmentCaches) {
+            for (const key of keys(fragmentCache)) {
+                delete fragmentCache[key];
+            }
+        }
+    };
 }
 
 function buildParseFragmentFn(
@@ -119,6 +140,8 @@ function buildParseFragmentFn(
 ): (strings: string[], ...keys: number[]) => () => Element {
     return (strings: string[], ...keys: number[]) => {
         const cache = create(null);
+
+        registerFragmentCache(cache);
 
         return function (): Element {
             const {
@@ -137,11 +160,6 @@ function buildParseFragmentFn(
             }
             if (hasStyleToken && isSyntheticShadow) {
                 cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
-            }
-            if (hasLegacyToken) {
-                // This isn't strictly required for prod, but it's required for our karma tests
-                // since the lwcRuntimeFlag may change over time
-                cacheKey |= FragmentCache.HAS_LEGACY_SCOPE_TOKEN;
             }
 
             if (!isUndefined(cache[cacheKey])) {

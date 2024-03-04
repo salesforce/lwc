@@ -9,6 +9,7 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
 // example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
+/** List of all feature flags available, with the default value `null`. */
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
@@ -26,6 +27,7 @@ if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
+/** Feature flags that have been set. */
 const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 
 /**
@@ -96,5 +98,6 @@ export {
 export type { FeatureFlagMap };
 
 declare global {
+    /** Feature flags that have been set. */
     const lwcRuntimeFlags: Partial<FeatureFlagMap>;
 }

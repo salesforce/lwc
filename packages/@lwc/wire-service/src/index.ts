@@ -78,6 +78,10 @@ type ConfigListener = (config: ConfigListenerArgument) => void;
 
 type WireEventTargetListener = NoArgumentListener | ConfigListener;
 
+/**
+ * An implementation of the {@linkcode https://developer.mozilla.org/en-US/docs/Web/API/EventTarget EventTarget}
+ * interface for the wire adapter.
+ */
 export interface WireEventTarget {
     addEventListener: (type: string, listener: WireEventTargetListener) => void;
     removeEventListener: (type: string, listener: WireEventTargetListener) => void;

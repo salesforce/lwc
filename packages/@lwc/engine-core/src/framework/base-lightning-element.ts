@@ -180,6 +180,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'removeEventListener'
     | 'setAttribute'
     | 'setAttributeNS'
+    | 'shadowRoot'
     | 'spellcheck'
     | 'tabIndex'
     | 'tagName'
@@ -191,8 +192,9 @@ type RefNodes = { [name: string]: Element };
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
+    constructor: LightningElementConstructor;
     template: ShadowRoot | null;
-    refs: RefNodes;
+    refs: RefNodes | undefined;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -208,7 +210,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  */
-// @ts-ignore
+// @ts-expect-error When exported, it will conform, but we need to build it first!
 export const LightningElement: LightningElementConstructor = function (
     this: LightningElement
 ): LightningElement {
@@ -398,8 +400,8 @@ function createElementInternalsProxy(
     return elementInternalsProxy;
 }
 
-// @ts-ignore
-LightningElement.prototype = {
+// Type assertion because we need to build the prototype before it satisfies the interface.
+(LightningElement as { prototype: Partial<LightningElement> }).prototype = {
     constructor: LightningElement,
 
     dispatchEvent(event: Event): boolean {
@@ -722,7 +724,10 @@ LightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'childNodes');
         }
-        return renderer.getChildNodes(vm.elm);
+        // getChildNodes returns a NodeList, which has `item(index: number): Node | null`.
+        // NodeListOf<T> extends NodeList, but claims to not return null. That seems inaccurate,
+        // but these are built-in types, so ultimately not our problem.
+        return renderer.getChildNodes(vm.elm) as NodeListOf<ChildNode>;
     },
 
     get firstChild() {

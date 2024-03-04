@@ -17,8 +17,7 @@ let warned = false;
 
 // Only used in LWC's Karma tests
 if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // @ts-ignore
-    window.__lwcResetWarnedOnVersionMismatch = () => {
+    (window as any).__lwcResetWarnedOnVersionMismatch = () => {
         warned = false;
     };
 }

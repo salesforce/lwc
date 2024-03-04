@@ -15,9 +15,14 @@
  */
 export type FeatureFlagValue = boolean | null;
 
+/**
+ * Map of feature flags to whether each feature is enabled. Feature flags can be toggled to change
+ * the behavior of LWC components.
+ */
 export interface FeatureFlagMap {
     /**
      * This is only used to test that feature flags are actually working
+     * @internal
      */
     PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
 

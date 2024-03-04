@@ -101,19 +101,10 @@
                                     "operator": "!",
                                     "prefix": true,
                                     "argument": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 2,
-                                            "end": 5,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 2,
+                                        "end": 5,
+                                        "name": "foo"
                                     },
                                     "location": {
                                         "startLine": 3,

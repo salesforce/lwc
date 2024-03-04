@@ -498,6 +498,9 @@ export default class CodeGen {
 
         // TODO [#3370]: remove experimental template expression flag
         if (this.state.config.experimentalComplexExpressions) {
+            // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+            // node later during static content optimization
+            expression = doStructuredClone(expression);
             return bindComplexExpression(expression as ComplexExpression, this);
         }
 
