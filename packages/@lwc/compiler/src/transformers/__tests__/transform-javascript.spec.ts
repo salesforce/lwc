@@ -227,6 +227,21 @@ describe('sourcemaps', () => {
         expect(map).toBeNull();
     });
 
+    it("should generate sourcemaps when the sourcemap configuration value is 'true'", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        const { map } = transformSync(source, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            outputConfig: {
+                sourcemap: true,
+            },
+        });
+        expect(map).not.toBeNull();
+    });
+
     describe("should fail validation of options if sourcemap configuration value is neither boolean nor 'inline'.", () => {
         const source = `
             import { LightningElement } from 'lwc';
