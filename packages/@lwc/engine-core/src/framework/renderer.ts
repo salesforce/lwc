@@ -59,7 +59,7 @@ export interface RendererAPI {
     getLastChild: (element: E) => N | null;
     getLastElementChild: (element: E) => E | null;
     getTagName: (element: E) => string;
-    getStyle: (element: E) => CSSStyleDeclaration;
+    getStyle: (elm: E) => CSSStyleDeclaration;
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;

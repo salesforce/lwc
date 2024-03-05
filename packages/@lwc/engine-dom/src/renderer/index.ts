@@ -198,7 +198,7 @@ function getTagName(elm: Element): string {
 }
 
 function getStyle(elm: HTMLElement): CSSStyleDeclaration {
-    return elm.style;
+    return elm.style; 
 }
 
 function attachInternals(elm: HTMLElement): ElementInternals {
