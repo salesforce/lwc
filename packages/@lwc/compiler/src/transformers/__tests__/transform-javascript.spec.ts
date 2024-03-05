@@ -227,22 +227,30 @@ describe('sourcemaps', () => {
         expect(map).toBeNull();
     });
 
-    it("should fail to validate options if sourcemap is a string other than 'inline'.", () => {
+    describe("should fail validation of options if sourcemap configuration value is neither boolean nor 'inline'.", () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Foo extends LightningElement {}
         `;
 
-        expect(() =>
-            transformSync(source, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
-                outputConfig: {
-                    // @ts-expect-error Property can be passed from JS environments with no type checking.
-                    sourcemap: 'invalid',
-                },
-            })
-        ).toThrow(
-            'LWC1021: Expected a boolean value or \'inline\' for outputConfig.sourcemap, received "invalid".'
-        );
+        [
+            { name: 'invalid string', sourcemap: 'invalid' },
+            { name: 'object', sourcemap: {} },
+            { name: 'numbers', sourcemap: 123 },
+        ].forEach(({ name, sourcemap }) => {
+            it(name, () => {
+                expect(() =>
+                    transformSync(source, 'foo.js', {
+                        ...TRANSFORMATION_OPTIONS,
+                        outputConfig: {
+                            // @ts-expect-error Property can be passed from JS environments with no type checking.
+                            sourcemap,
+                        },
+                    })
+                ).toThrow(
+                    `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
+                );
+            });
+        });
     });
 });
