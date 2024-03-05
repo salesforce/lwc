@@ -22,8 +22,8 @@ export interface RollupLwcOptions {
     exclude?: FilterPattern;
     /** The LWC root module directory. */
     rootDir?: string;
-    /** If `true` the plugin will produce source maps. */
-    sourcemap?: boolean;
+    /** If `true` the plugin will produce source maps. If `'inline'`, the plugin will produce inlined source maps and append them to the end of the generated file. */
+    sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
