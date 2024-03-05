@@ -467,7 +467,23 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     // Extract the raw source to avoid HTML entity decoding done by parse5
     const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
 
-    if (!rawText.trim().length) {
+    /*
+    The original job of this if-block was to discard the whitespace between HTML tags, HTML
+    comments, and HTML tags and HTML comments. The whitespace inside the text content of HTML tags
+    would never be considered here because they would not be parsed into individual text nodes until
+    later (several lines below).
+
+    ["Hello {first} {last}!"] => ["Hello ", "{first}", " ", "{last}", "!"]
+
+    With the implementation of complex template expressions, whitespace that shouldn't be discarded
+    has already been parsed into individual text nodes at this point so we only discard when
+    experimentalComplexExpressions is disabled.
+
+    When removing the experimentalComplexExpressions flag, we need to figure out how to best discard
+    the HTML whitespace while preserving text content whitespace, while also taking into account how
+    comments are sometimes preserved (in which case we need to keep the HTML whitespace).
+    */
+    if (!rawText.trim().length && !ctx.config.experimentalComplexExpressions) {
         return parsedTextNodes;
     }
 
