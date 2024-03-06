@@ -2,90 +2,31 @@ import { createElement } from 'lwc';
 
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
+import FormAssociatedFalse from 'x/formAssociatedFalse';
 
 if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENABLED) {
-    // Verify ElementInternals proxy getter throws error.
-    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-    xit('form-related operations and attributes should throw DOMException for non-form-associated custom elements.', () => {
-        const control = createElement('x-not-form-associated', { is: NotFormAssociated });
-        expect(() => control.internals.setFormValue('')).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.form).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.setValidity({})).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.willValidate).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.validity).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.validationMessage).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.checkValidity()).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.reportValidity()).toThrowError(
-            /The target element is not a form-associated custom element./
-        );
-        expect(() => control.internals.labels).toThrowError(
-            /The target element is not a form-associated custom element./
+    it('should throw an error when duplicate tag name used with different formAssociated value', () => {
+        // Register tag with formAssociated = true
+        createElement('x-form-associated', { is: FormAssociated });
+        // Try to register again with formAssociated = false
+        expect(() => createElement('x-form-associated', { is: FormAssociatedFalse })).toThrowError(
+            /<x-form-associated> was already registered with formAssociated=true. It cannot be re-registered with formAssociated=false. Please rename your component to have a different name than <x-form-associated>/
         );
     });
 
-    const createControlElm = () => {
-        const form = document.createElement('form');
-        const control = createElement('x-form-associated', { is: FormAssociated });
-        document.body.appendChild(form);
-        form.appendChild(control);
-        return control;
-    };
-
-    // Verify ElementInternals proxy getter does not throw error.
-    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-    xit('form-related operations and attributes should not throw for form-associated custom elements.', () => {
-        const control = createControlElm();
-        expect(() => control.internals.setFormValue).not.toThrowError();
-        expect(() => control.internals.form).not.toThrowError();
-        expect(() => control.internals.setValidity).not.toThrowError();
-        expect(() => control.internals.willValidate).not.toThrowError();
-        expect(() => control.internals.validity).not.toThrowError();
-        expect(() => control.internals.validationMessage).not.toThrowError();
-        expect(() => control.internals.checkValidity).not.toThrowError();
-        expect(() => control.internals.reportValidity).not.toThrowError();
-        expect(() => control.internals.labels).not.toThrowError();
-    });
-
-    // Verify basic functionality works correctly in presence of proxy.
-    // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-    xit('form-related operations and attributes sanity test', () => {
-        const control = createControlElm();
-        const form = document.body.querySelector('form');
-
-        // form association
-        expect(control.internals.form).toEqual(form);
-        expect(() => control.internals.setFormValue('on', 'checked')).not.toThrowError();
-
-        // form validation
+    it('should not throw when duplicate tag name used with the same formAssociated value', () => {
+        // formAssociated = true
+        createElement('x-form-associated', { is: FormAssociated });
+        expect(() => createElement('x-form-associated', { is: FormAssociated })).not.toThrow();
+        // formAssociated = false
+        createElement('x-form-associated-false', { is: FormAssociatedFalse });
         expect(() =>
-            control.internals.setValidity({ valueMissing: true }, 'value missing')
-        ).not.toThrowError();
-        expect(control.internals.validity.valueMissing).toBe(true);
-        expect(control.internals.willValidate).toBe(true);
-        expect(control.internals.validationMessage).toEqual('value missing');
-        expect(control.internals.checkValidity()).toBe(false);
-        expect(control.internals.reportValidity()).toBe(false);
-
-        // label association
-        const label = document.createElement('label');
-        label.setAttribute('for', 'mc');
-        control.setAttribute('id', 'mc');
-        document.body.appendChild(label);
-        expect(label.control).toEqual(control);
-        expect(label.form).toEqual(control.internals.form);
+            createElement('x-form-associated-false', { is: FormAssociatedFalse })
+        ).not.toThrow();
+        // formAssociated = undefined
+        createElement('x-not-form-associated', { is: NotFormAssociated });
+        expect(() =>
+            createElement('x-not-form-associated', { is: NotFormAssociated })
+        ).not.toThrow();
     });
 }

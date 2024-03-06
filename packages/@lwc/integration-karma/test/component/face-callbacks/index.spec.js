@@ -10,8 +10,7 @@ import LightDomNotFormAssociated from 'face/lightDomNotFormAssociated';
 const createFormElement = () => {
     const container = createElement('face-container', { is: Container });
     document.body.appendChild(container);
-    const form = container.shadowRoot.querySelector('form');
-    return form;
+    return container.shadowRoot.querySelector('form');
 };
 
 const faceSanityTest = (ctor) => {
@@ -58,33 +57,40 @@ const faceSanityTest = (ctor) => {
     });
 };
 
-const testWarningLoggedWhenFormAssociatedNotSet = (ctor) => {
-    it(`logs a dev warning if 'static formAssociated' is not set`, () => {
+const notFormAssociatedSanityTest = (ctor) => {
+    it(`doesn't call face lifecycle methods when not form associated`, () => {
         const form = createFormElement();
         const notFormAssociated = createElement('face-not-form-associated', {
             is: ctor,
         });
+        form.appendChild(notFormAssociated);
 
-        expect(() => form.appendChild(notFormAssociated)).toLogWarningDev(
-            /Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain./
-        );
+        // formAssociatedCallback
+        expect(notFormAssociated.formAssociatedCallbackHasBeenCalled).toBeFalsy();
+
+        // formDisabledCallback
+        notFormAssociated.setAttribute('disabled', true);
+        expect(notFormAssociated.formDisabledCallbackHasBeenCalled).toBeFalsy();
+
+        // formResetCallback
+        form.reset();
+        expect(notFormAssociated.formResetCallbackHasBeenCalled).toBeFalsy();
+
+        // Note there is no good way to test formStateRestoreCallback in karma tests
     });
 };
 
 if (typeof ElementInternals !== 'undefined') {
     if (nativeCustomElementLifecycleEnabled) {
         // native lifecycle enabled
-        // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-        xdescribe('native lifecycle', () => {
+        describe('native lifecycle', () => {
             if (process.env.NATIVE_SHADOW) {
-                // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-                xdescribe('native shadow', () => {
+                describe('native shadow', () => {
                     faceSanityTest(FormAssociated);
-                    testWarningLoggedWhenFormAssociatedNotSet(NotFormAssociated);
+                    notFormAssociatedSanityTest(NotFormAssociated);
                 });
             } else {
-                // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-                xdescribe('synthetic shadow', () => {
+                describe('synthetic shadow', () => {
                     it('cannot be used and throws an error', () => {
                         const form = createFormElement();
                         const face = createElement('face-form-associated', { is: FormAssociated });
@@ -95,15 +101,13 @@ if (typeof ElementInternals !== 'undefined') {
                     });
                 });
             }
-            // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-            xdescribe('light DOM', () => {
+            describe('light DOM', () => {
                 faceSanityTest(LightDomFormAssociated);
-                testWarningLoggedWhenFormAssociatedNotSet(LightDomNotFormAssociated);
+                notFormAssociatedSanityTest(LightDomNotFormAssociated);
             });
         });
     } else {
-        // TODO [#3983]: Re-enable formAssociated once there is a solution for the observable behavior it introduces.
-        xdescribe('synthetic lifecycle', () => {
+        describe('synthetic lifecycle', () => {
             [
                 { name: 'shadow DOM', is: FormAssociated },
                 { name: 'light DOM', is: LightDomFormAssociated },
