@@ -337,7 +337,13 @@ function mountCustomElement(
     const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
         ctor as LightningElementConstructor
     );
-    const elm = createCustomElement(normalizedTagname, upgradeCallback, useNativeLifecycle);
+    const isFormAssociated = ctor.formAssociated;
+    const elm = createCustomElement(
+        normalizedTagname,
+        upgradeCallback,
+        useNativeLifecycle,
+        isFormAssociated
+    );
 
     vnode.elm = elm;
     vnode.vm = vm;

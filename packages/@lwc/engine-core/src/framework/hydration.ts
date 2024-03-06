@@ -321,7 +321,7 @@ function hydrateCustomElement(
 
     const { sel, mode, ctor, owner } = vnode;
     const { defineCustomElement, getTagName } = renderer;
-    defineCustomElement(StringToLowerCase.call(getTagName(elm)));
+    defineCustomElement(StringToLowerCase.call(getTagName(elm)), ctor.formAssociated);
 
     const vm = createVM(elm, ctor, renderer, {
         mode,
