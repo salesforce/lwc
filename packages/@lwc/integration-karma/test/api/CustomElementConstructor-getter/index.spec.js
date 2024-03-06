@@ -10,6 +10,9 @@ import AttrChanged from 'x/attrChanged';
 import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
+import AttachInternal from 'x/attachInternal';
+import FormAssociated from 'x/formAssociated';
+import NotFormAssociated from 'x/notFormAssociated';
 
 const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
 
@@ -344,4 +347,68 @@ describe('attribute reflection', () => {
         expect(elm.api).toBe('bar');
         expect(elm.apiSetterCallCounts).toEqual(2);
     });
+});
+
+// See https://web.dev/more-capable-form-controls/#feature-detection
+const supportsFACE =
+    'FormDataEvent' in window &&
+    'ElementInternals' in window &&
+    'setFormValue' in window.ElementInternals.prototype;
+
+describe('form-associated and ElementInternal', () => {
+    if (typeof ElementInternals !== 'undefined') {
+        it('should be able to use attachInternals API', () => {
+            customElements.define('x-element-internal', AttachInternal.CustomElementConstructor);
+            const elm = document.createElement('x-element-internal');
+            document.body.appendChild(elm);
+
+            expect(elm.internals).toBeTruthy();
+        });
+    }
+
+    if (supportsFACE) {
+        it('should be able to use face when formAssociated=true', () => {
+            customElements.define(
+                'x-custom-form-associated',
+                FormAssociated.CustomElementConstructor
+            );
+            const control = document.createElement('x-custom-form-associated');
+            const form = document.createElement('form');
+            form.appendChild(control);
+            document.body.appendChild(form);
+
+            // formAssociatedCallback
+            expect(control.formAssociatedCallbackHasBeenCalled).toBeTruthy();
+
+            // formDisabledCallback
+            control.setAttribute('disabled', true);
+            expect(control.formDisabledCallbackHasBeenCalled).toBeTruthy();
+
+            // formResetCallback
+            form.reset();
+            expect(control.formResetCallbackHasBeenCalled).toBeTruthy();
+        });
+
+        it('should not be able to use face when formAssociated=false', () => {
+            customElements.define(
+                'x-custom-not-form-associated',
+                NotFormAssociated.CustomElementConstructor
+            );
+            const control = document.createElement('x-custom-not-form-associated');
+            const form = document.createElement('form');
+            form.appendChild(control);
+            document.body.appendChild(form);
+
+            // formAssociatedCallback
+            expect(control.formAssociatedCallbackHasBeenCalled).toBeFalsy();
+
+            // formDisabledCallback
+            control.setAttribute('disabled', true);
+            expect(control.formDisabledCallbackHasBeenCalled).toBeFalsy();
+
+            // formResetCallback
+            form.reset();
+            expect(control.formResetCallbackHasBeenCalled).toBeFalsy();
+        });
+    }
 });
