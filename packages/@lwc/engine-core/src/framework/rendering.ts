@@ -337,7 +337,7 @@ function mountCustomElement(
     const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
         ctor as LightningElementConstructor
     );
-    const isFormAssociated = ctor.formAssociated;
+    const isFormAssociated = Boolean(ctor.formAssociated);
     const elm = createCustomElement(
         normalizedTagname,
         upgradeCallback,

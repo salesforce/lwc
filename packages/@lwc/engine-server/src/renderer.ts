@@ -370,7 +370,7 @@ function createCustomElement(
     tagName: string,
     upgradeCallback: LifecycleCallback,
     _useNativeLifecycle: boolean,
-    _isFormAssociated: boolean | undefined
+    _isFormAssociated: boolean
 ): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
     return new (UpgradableConstructor as any)(upgradeCallback);

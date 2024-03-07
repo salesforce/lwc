@@ -140,6 +140,7 @@ if (typeof ElementInternals !== 'undefined') {
             ].forEach(({ name, tagName, ctor }) => {
                 const [face, cecFace] = createFaces(tagName, ctor);
                 it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
+                    // TODO [#3929]: Face should log a dev warning when used with synthetic lifecycle
                     testFaceLifecycleMethodsNotCallable(face);
                 });
 

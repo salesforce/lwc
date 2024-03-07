@@ -135,7 +135,7 @@ export function createElement(
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
         isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 
-    const isFormAssociated = Ctor.formAssociated;
+    const isFormAssociated = Boolean(Ctor.formAssociated);
 
     // the custom element from the registry is expecting an upgrade callback
     /*

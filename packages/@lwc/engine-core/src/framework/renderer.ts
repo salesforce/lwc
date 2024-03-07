@@ -66,9 +66,9 @@ export interface RendererAPI {
         tagName: string,
         upgradeCallback: LifecycleCallback,
         useNativeLifecycle: boolean,
-        isFormAssociated: boolean | undefined
+        isFormAssociated: boolean
     ) => E;
-    defineCustomElement: (tagName: string, isFormAssociated: boolean | undefined) => void;
+    defineCustomElement: (tagName: string, isFormAssociated: boolean) => void;
     ownerDocument(elm: E): Document;
     registerContextConsumer: (
         element: E,

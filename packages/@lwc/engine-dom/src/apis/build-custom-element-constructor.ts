@@ -141,6 +141,6 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
 
         static observedAttributes = observedAttributes;
-        static formAssociated = Ctor.formAssociated;
+        static formAssociated = Boolean(Ctor.formAssociated);
     };
 }

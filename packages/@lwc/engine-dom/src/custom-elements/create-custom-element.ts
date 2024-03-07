@@ -34,7 +34,7 @@ let elementBeingUpgradedByLWC = false;
 // Another benefit is that only LWC can create components that actually do anything – if you do
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
-const createUpgradableConstructor = (isFormAssociated: boolean | undefined) => {
+const createUpgradableConstructor = (isFormAssociated: boolean) => {
     // TODO [#2972]: this class should expose observedAttributes as necessary
     class UpgradableConstructor extends HTMLElement {
         static formAssociated = isFormAssociated;
@@ -72,7 +72,7 @@ const createUpgradableConstructor = (isFormAssociated: boolean | undefined) => {
     return UpgradableConstructor;
 };
 
-export function getUpgradableConstructor(tagName: string, isFormAssociated: boolean | undefined) {
+export function getUpgradableConstructor(tagName: string, isFormAssociated: boolean) {
     let UpgradableConstructor = cachedConstructors.get(tagName);
 
     if (isUndefined(UpgradableConstructor)) {
@@ -92,7 +92,7 @@ export const createCustomElement = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
     useNativeLifecycle: boolean,
-    isFormAssociated: boolean | undefined
+    isFormAssociated: boolean
 ) => {
     const UpgradableConstructor = getUpgradableConstructor(tagName, isFormAssociated);
 

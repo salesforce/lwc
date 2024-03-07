@@ -44,7 +44,12 @@ const attachInternalsSanityTest = (tagName, ctor) => {
 
         it('should throw an error when called twice on the same element', () => {
             // The error type is different between browsers
-            expect(() => elm.callAttachInternals()).toThrow();
+            const chrome = 'ElementInternals for the specified element was already attached';
+            const safari = 'There is already an existing ElementInternals';
+            const firefox = 'AttachInternals() has already been called';
+            expect(() => elm.callAttachInternals()).toThrowError(
+                new RegExp(`(${chrome}|${safari}|${firefox})`)
+            );
         });
     });
 };
@@ -94,7 +99,7 @@ it('should not be callable outside a component', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(elm.attachInternals).toBeUndefined();
             } else {
-                expect(() => elm.attachInternals).toLogWarningDev(
+                expect(() => expect(elm.attachInternals).toBeUndefined()).toLogWarningDev(
                     /attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
                 );
             }
