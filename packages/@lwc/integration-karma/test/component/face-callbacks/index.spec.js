@@ -13,71 +13,93 @@ const createFormElement = () => {
     return container.shadowRoot.querySelector('form');
 };
 
-const faceSanityTest = (ctor) => {
-    let form;
-    let face;
+const createFaces = (tagName, ctor) => [
+    createElement(`face-${tagName}`, { is: ctor }),
+    createFaceUsingCec(`cec-face-${tagName}`, ctor.CustomElementConstructor),
+];
 
-    beforeEach(() => {
-        form = createFormElement();
-        face = createElement('face-form-associated', { is: ctor });
-        form.appendChild(face);
-    });
+const createFaceUsingCec = (tagName, ctor) => {
+    if (!customElements.get(tagName)) {
+        customElements.define(tagName, ctor);
+    }
+    return document.createElement(tagName);
+};
 
-    it('cannot access formAssociated outside of a component', () => {
-        expect(() => face.formAssociated).toLogWarningDev(
-            /formAssociated cannot be accessed outside of a component. Set the value within the component class./
-        );
-    });
+const faceSanityTest = (tagName, ctor) => {
+    createFaces(`${tagName}-form-associated`, ctor).forEach((face) => {
+        let form;
 
-    it('calls face lifecycle methods', () => {
-        // formAssociatedCallback
-        expect(face.formAssociatedCallbackHasBeenCalled).toBeTruthy();
+        beforeEach(() => {
+            form = createFormElement();
+            form.appendChild(face);
+        });
 
-        // formDisabledCallback
-        face.setAttribute('disabled', true);
-        expect(face.formDisabledCallbackHasBeenCalled).toBeTruthy();
+        it('cannot access formAssociated outside of a component', () => {
+            expect(() => face.formAssociated).toLogWarningDev(
+                /formAssociated cannot be accessed outside of a component. Set the value within the component class./
+            );
+        });
 
-        // formResetCallback
-        form.reset();
-        expect(face.formResetCallbackHasBeenCalled).toBeTruthy();
+        it('calls face lifecycle methods', () => {
+            testFaceLifecycleMethodsCallable(face);
+        });
 
-        // Note there is no good way to test formStateRestoreCallback in karma tests
-    });
+        it('is associated with the correct form', () => {
+            const form2 = document.createElement('form');
+            form2.setAttribute('class', 'form2');
+            const face2 = createElement('face-form-associated-2', { is: ctor });
+            form2.appendChild(face2);
+            const container = document.body.querySelector('face-container');
+            container.shadowRoot.appendChild(form2);
 
-    it('is associated with the correct form', () => {
-        const form2 = document.createElement('form');
-        form2.setAttribute('class', 'form2');
-        const face2 = createElement('face-form-associated-2', { is: ctor });
-        form2.appendChild(face2);
-        const container = document.body.querySelector('face-container');
-        container.shadowRoot.appendChild(form2);
-
-        expect(face.internals.form.className).toEqual('form1');
-        expect(face2.internals.form.className).toEqual('form2');
+            expect(face.internals.form.className).toEqual('form1');
+            expect(face2.internals.form.className).toEqual('form2');
+        });
     });
 };
 
-const notFormAssociatedSanityTest = (ctor) => {
+const testFaceLifecycleMethodsCallable = (face) => {
+    const form = createFormElement();
+    form.appendChild(face);
+
+    // formAssociatedCallback
+    expect(face.formAssociatedCallbackHasBeenCalled).toBeTruthy();
+
+    // formDisabledCallback
+    face.setAttribute('disabled', true);
+    expect(face.formDisabledCallbackHasBeenCalled).toBeTruthy();
+
+    // formResetCallback
+    form.reset();
+    expect(face.formResetCallbackHasBeenCalled).toBeTruthy();
+
+    // Note there is no good way to test formStateRestoreCallback in karma tests
+};
+
+const notFormAssociatedSanityTest = (tagName, ctor) => {
     it(`doesn't call face lifecycle methods when not form associated`, () => {
-        const form = createFormElement();
-        const notFormAssociated = createElement('face-not-form-associated', {
-            is: ctor,
+        createFaces(`${tagName}-not-form-associated`, ctor).forEach((face) => {
+            testFaceLifecycleMethodsNotCallable(face);
         });
-        form.appendChild(notFormAssociated);
-
-        // formAssociatedCallback
-        expect(notFormAssociated.formAssociatedCallbackHasBeenCalled).toBeFalsy();
-
-        // formDisabledCallback
-        notFormAssociated.setAttribute('disabled', true);
-        expect(notFormAssociated.formDisabledCallbackHasBeenCalled).toBeFalsy();
-
-        // formResetCallback
-        form.reset();
-        expect(notFormAssociated.formResetCallbackHasBeenCalled).toBeFalsy();
-
-        // Note there is no good way to test formStateRestoreCallback in karma tests
     });
+};
+
+const testFaceLifecycleMethodsNotCallable = (face) => {
+    const form = createFormElement();
+    form.appendChild(face);
+
+    // formAssociatedCallback
+    expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
+
+    // formDisabledCallback
+    face.setAttribute('disabled', true);
+    expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
+
+    // formResetCallback
+    form.reset();
+    expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
+
+    // Note there is no good way to test formStateRestoreCallback in karma tests
 };
 
 if (typeof ElementInternals !== 'undefined') {
@@ -86,48 +108,48 @@ if (typeof ElementInternals !== 'undefined') {
         describe('native lifecycle', () => {
             if (process.env.NATIVE_SHADOW) {
                 describe('native shadow', () => {
-                    faceSanityTest(FormAssociated);
-                    notFormAssociatedSanityTest(NotFormAssociated);
+                    faceSanityTest('native-shadow', FormAssociated);
+                    notFormAssociatedSanityTest('native-shadow', NotFormAssociated);
                 });
             } else {
                 describe('synthetic shadow', () => {
                     it('cannot be used and throws an error', () => {
                         const form = createFormElement();
-                        const face = createElement('face-form-associated', { is: FormAssociated });
-
-                        expect(() => form.appendChild(face)).toThrowCallbackReactionError(
-                            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-                        );
+                        createFaces('synthetic-shadow', FormAssociated).forEach((face) => {
+                            expect(() => form.appendChild(face)).toThrowCallbackReactionError(
+                                'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+                            );
+                        });
                     });
                 });
             }
             describe('light DOM', () => {
-                faceSanityTest(LightDomFormAssociated);
-                notFormAssociatedSanityTest(LightDomNotFormAssociated);
+                faceSanityTest('light-dom', LightDomFormAssociated);
+                notFormAssociatedSanityTest('light-dom', LightDomNotFormAssociated);
             });
         });
     } else {
         describe('synthetic lifecycle', () => {
             [
-                { name: 'shadow DOM', is: FormAssociated },
-                { name: 'light DOM', is: LightDomFormAssociated },
-            ].forEach(({ name, is }) => {
-                it(`${name} does not call face lifecycle methods`, () => {
-                    const face = createElement('face-form-associated', { is });
-                    const form = createFormElement();
-                    form.appendChild(face);
-
-                    // formAssociatedCallback
-                    expect(face.formAssociatedCallbackHasBeenCalled).toBeFalsy();
-
-                    // formDisabledCallback
-                    face.setAttribute('disabled', true);
-                    expect(face.formDisabledCallbackHasBeenCalled).toBeFalsy();
-
-                    // formResetCallback
-                    form.reset();
-                    expect(face.formResetCallbackHasBeenCalled).toBeFalsy();
+                { name: 'shadow DOM', tagName: 'synthetic-lifecycle-shadow', ctor: FormAssociated },
+                {
+                    name: 'light DOM',
+                    tagName: 'synthetic-lifecycle-light',
+                    ctor: LightDomFormAssociated,
+                },
+            ].forEach(({ name, tagName, ctor }) => {
+                const [face, cecFace] = createFaces(tagName, ctor);
+                it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
+                    testFaceLifecycleMethodsNotCallable(face);
                 });
+
+                // Face throws error message when synthetic shadow is enabled
+                if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
+                    it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
+                        // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
+                        testFaceLifecycleMethodsCallable(cecFace);
+                    });
+                }
             });
         });
     }

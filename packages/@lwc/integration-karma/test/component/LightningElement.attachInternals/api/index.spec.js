@@ -13,74 +13,91 @@ const testConnectedCallbackError = (elm, msg) => {
     expect(error.message).toBe(msg);
 };
 
-const createTestElement = (name, def) => {
-    const elm = createElement(name, { is: def });
-    document.body.appendChild(elm);
-    return elm;
+const createElementsThroughLwcAndCustomElementConstructor = (tagName, ctor) => [
+    createElement(`ai-${tagName}`, { is: ctor }),
+    createCustomElementUsingCec(`cec-ai-${tagName}`, ctor.CustomElementConstructor),
+];
+
+const createCustomElementUsingCec = (tagName, ctor) => {
+    if (!customElements.get(tagName)) {
+        customElements.define(tagName, ctor);
+    }
+    return document.createElement(tagName);
 };
 
-const attachInternalsSanityTest = (cmp) => {
-    let elm;
-    beforeEach(() => {
-        elm = createTestElement('ai-component', cmp);
-    });
+const attachInternalsSanityTest = (tagName, ctor) => {
+    createElementsThroughLwcAndCustomElementConstructor(
+        `${tagName}-element-internal-enabled`,
+        ctor
+    ).forEach((elm) => {
+        beforeAll(() => {
+            document.body.appendChild(elm);
+        });
 
-    afterEach(() => {
-        document.body.removeChild(elm);
-    });
+        afterAll(() => {
+            document.body.removeChild(elm);
+        });
 
-    it('should be able to create ElementInternals object', () => {
-        expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
-    });
+        it('should be able to create ElementInternals object', () => {
+            expect(elm.hasElementInternalsBeenSet()).toBeTruthy();
+        });
 
-    it('should throw an error when called twice on the same element', () => {
-        // The error type is different between browsers
-        expect(() => elm.callAttachInternals()).toThrowError();
+        it('should throw an error when called twice on the same element', () => {
+            // The error type is different between browsers
+            expect(() => elm.callAttachInternals()).toThrow();
+        });
     });
 };
 
 if (typeof ElementInternals !== 'undefined') {
     if (process.env.NATIVE_SHADOW) {
         describe('native shadow', () => {
-            attachInternalsSanityTest(ShadowDomCmp);
+            attachInternalsSanityTest('native-shadow', ShadowDomCmp);
         });
     } else {
         describe('synthetic shadow', () => {
             it('should throw error when used inside a component', () => {
-                const elm = createElement('ai-synthetic-shadow-component', { is: ShadowDomCmp });
+                const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
                 testConnectedCallbackError(
                     elm,
-                    'attachInternals API is not supported in light DOM or synthetic shadow.'
+                    'attachInternals API is not supported in synthetic shadow.'
                 );
             });
         });
     }
 
     describe('light DOM', () => {
-        attachInternalsSanityTest(LightDomCmp);
+        attachInternalsSanityTest('light-dom', LightDomCmp);
     });
 } else {
     // Because of the order error messages are thrown, this error only appears when synthetic shadow
-    // is disabled. Otherwise, 'attachInternals API is not supported in light DOM or synthetic shadow.'
+    // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
     // is thrown instead.
     if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
         it('should throw an error when used with unsupported browser environments', () => {
-            const elm = createElement('ai-unsupported-env-component', { is: ShadowDomCmp });
-            testConnectedCallbackError(
-                elm,
-                'attachInternals API is not supported in this browser environment.'
-            );
+            createElementsThroughLwcAndCustomElementConstructor(
+                'unsupported-env-component',
+                ShadowDomCmp
+            ).forEach((elm) => {
+                testConnectedCallbackError(
+                    elm,
+                    'attachInternals API is not supported in this browser environment.'
+                );
+            });
         });
     }
 }
 
 it('should not be callable outside a component', () => {
-    const elm = createTestElement('ai-component', BasicCmp);
-    if (process.env.NODE_ENV === 'production') {
-        expect(elm.attachInternals).toBeUndefined();
-    } else {
-        expect(() => elm.attachInternals).toLogWarningDev(
-            /attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
-        );
-    }
+    createElementsThroughLwcAndCustomElementConstructor('element-internal', BasicCmp).forEach(
+        (elm) => {
+            if (process.env.NODE_ENV === 'production') {
+                expect(elm.attachInternals).toBeUndefined();
+            } else {
+                expect(() => elm.attachInternals).toLogWarningDev(
+                    /attachInternals cannot be accessed outside of a component\. Use this.attachInternals instead\./
+                );
+            }
+        }
+    );
 });

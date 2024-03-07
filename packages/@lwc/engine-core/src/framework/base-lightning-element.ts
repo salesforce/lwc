@@ -484,9 +484,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         } = vm;
 
         if (vm.shadowMode === ShadowMode.Synthetic) {
-            throw new Error(
-                'attachInternals API is not supported in light DOM or synthetic shadow.'
-            );
+            throw new Error('attachInternals API is not supported in synthetic shadow.');
         }
 
         return attachInternals(elm);
