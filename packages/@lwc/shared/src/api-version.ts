@@ -94,6 +94,10 @@ export const enum APIFeature {
      * rather than synthetic events.
      */
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    /**
+     * If enabled, allows usage of the `attachInternals` and `ElementInternals` API
+     */
+    ENABLE_ELEMENT_INTERNALS,
 }
 
 /**
@@ -116,6 +120,7 @@ export function isAPIFeatureEnabled(
             return apiVersion >= APIVersion.V60_248_SPRING_24;
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
+        case APIFeature.ENABLE_ELEMENT_INTERNALS:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
     }
 }

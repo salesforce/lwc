@@ -52,8 +52,10 @@ const faceSanityTest = (tagName, ctor) => {
             const container = document.body.querySelector('face-container');
             container.shadowRoot.appendChild(form2);
 
-            expect(face.internals.form.className).toEqual('form1');
-            expect(face2.internals.form.className).toEqual('form2');
+            if (process.env.API_VERSION >= 61) {
+                expect(face.internals.form.className).toEqual('form1');
+                expect(face2.internals.form.className).toEqual('form2');
+            }
         });
     });
 };

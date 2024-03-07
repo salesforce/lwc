@@ -54,43 +54,56 @@ const attachInternalsSanityTest = (tagName, ctor) => {
     });
 };
 
-if (typeof ElementInternals !== 'undefined') {
-    if (process.env.NATIVE_SHADOW) {
-        describe('native shadow', () => {
-            attachInternalsSanityTest('native-shadow', ShadowDomCmp);
+if (process.env.API_VERSION >= 61) {
+    if (typeof ElementInternals !== 'undefined') {
+        // ElementInternals API is supported in the browser
+        if (process.env.NATIVE_SHADOW) {
+            describe('native shadow', () => {
+                attachInternalsSanityTest('native-shadow', ShadowDomCmp);
+            });
+        } else {
+            describe('synthetic shadow', () => {
+                it('should throw error when used inside a component', () => {
+                    const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
+                    testConnectedCallbackError(
+                        elm,
+                        'attachInternals API is not supported in synthetic shadow.'
+                    );
+                });
+            });
+        }
+
+        describe('light DOM', () => {
+            attachInternalsSanityTest('light-dom', LightDomCmp);
         });
     } else {
-        describe('synthetic shadow', () => {
-            it('should throw error when used inside a component', () => {
-                const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
-                testConnectedCallbackError(
-                    elm,
-                    'attachInternals API is not supported in synthetic shadow.'
-                );
+        // ElementInternals API is not supported in the browser
+        // Because of the order error messages are thrown, this error only appears when synthetic shadow
+        // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
+        // is thrown instead.
+        if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
+            it('should throw an error when used with unsupported browser environments', () => {
+                createElementsThroughLwcAndCustomElementConstructor(
+                    'unsupported-env-component',
+                    ShadowDomCmp
+                ).forEach((elm) => {
+                    testConnectedCallbackError(
+                        elm,
+                        'attachInternals API is not supported in this browser environment.'
+                    );
+                });
             });
-        });
+        }
     }
-
-    describe('light DOM', () => {
-        attachInternalsSanityTest('light-dom', LightDomCmp);
-    });
 } else {
-    // Because of the order error messages are thrown, this error only appears when synthetic shadow
-    // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
-    // is thrown instead.
-    if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
-        it('should throw an error when used with unsupported browser environments', () => {
-            createElementsThroughLwcAndCustomElementConstructor(
-                'unsupported-env-component',
-                ShadowDomCmp
-            ).forEach((elm) => {
-                testConnectedCallbackError(
-                    elm,
-                    'attachInternals API is not supported in this browser environment.'
-                );
-            });
-        });
-    }
+    it(`should throw an error when api version < 61`, () => {
+        const elm = createElement('unsupported-api-version-component', { is: ShadowDomCmp });
+        // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
+        // attachInternals API.
+        expect(() => document.body.appendChild(elm)).toThrowError(
+            /The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version./
+        );
+    });
 }
 
 it('should not be callable outside a component', () => {

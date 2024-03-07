@@ -14,11 +14,13 @@
  */
 import {
     AccessibleElementProperties,
+    APIFeature,
     create,
     defineProperties,
     defineProperty,
     entries,
     freeze,
+    isAPIFeatureEnabled,
     isFunction,
     isNull,
     isObject,
@@ -480,8 +482,15 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         const vm = getAssociatedVM(this);
         const {
             elm,
+            apiVersion,
             renderer: { attachInternals },
         } = vm;
+
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_ELEMENT_INTERNALS, apiVersion)) {
+            throw new Error(
+                `The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version.`
+            );
+        }
 
         if (vm.shadowMode === ShadowMode.Synthetic) {
             throw new Error('attachInternals API is not supported in synthetic shadow.');

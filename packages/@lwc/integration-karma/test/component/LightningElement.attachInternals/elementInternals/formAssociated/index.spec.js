@@ -4,7 +4,11 @@ import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
 import FormAssociatedFalse from 'x/formAssociatedFalse';
 
-if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENABLED) {
+if (
+    process.env.API_VERSION >= 61 &&
+    typeof ElementInternals !== 'undefined' &&
+    !process.env.SYNTHETIC_SHADOW_ENABLED
+) {
     it('should throw an error when duplicate tag name used with different formAssociated value', () => {
         // Register tag with formAssociated = true
         createElement('x-form-associated', { is: FormAssociated });

@@ -141,6 +141,8 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
 
         static observedAttributes = observedAttributes;
+        // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
+        // attachInternals API.
         static formAssociated = Boolean(Ctor.formAssociated);
     };
 }
