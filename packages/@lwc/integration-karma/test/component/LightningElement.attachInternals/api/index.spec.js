@@ -46,7 +46,7 @@ const attachInternalsSanityTest = (tagName, ctor) => {
             // The error type is different between browsers
             const chrome = 'ElementInternals for the specified element was already attached';
             const safari = 'There is already an existing ElementInternals';
-            const firefox = 'AttachInternals() has already been called';
+            const firefox = 'AttachInternals\\(\\) has already been called';
             expect(() => elm.callAttachInternals()).toThrowError(
                 new RegExp(`(${chrome}|${safari}|${firefox})`)
             );
