@@ -89,7 +89,10 @@ export function hydrateComponent(
 
     try {
         const { defineCustomElement, getTagName } = renderer;
-        defineCustomElement(StringToLowerCase.call(getTagName(element)));
+        defineCustomElement(
+            StringToLowerCase.call(getTagName(element)),
+            Boolean(Ctor.formAssociated)
+        );
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

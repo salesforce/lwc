@@ -14,6 +14,10 @@ import {
     createVM,
     disconnectRootElement,
     getComponentHtmlPrototype,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -120,6 +124,25 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             attributeChangedCallback.call(this, name, oldValue, newValue);
         }
 
+        formAssociatedCallback() {
+            runFormAssociatedCallback(this);
+        }
+
+        formDisabledCallback() {
+            runFormDisabledCallback(this);
+        }
+
+        formResetCallback() {
+            runFormResetCallback(this);
+        }
+
+        formStateRestoreCallback() {
+            runFormStateRestoreCallback(this);
+        }
+
         static observedAttributes = observedAttributes;
+        // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
+        // attachInternals API.
+        static formAssociated = Boolean(Ctor.formAssociated);
     };
 }

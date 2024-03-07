@@ -23,7 +23,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarn, logWarnOnce } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 
 import { HostNode, HostElement, RendererAPI } from './renderer';
 import {
@@ -944,21 +944,7 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
-    const {
-        renderMode,
-        shadowMode,
-        def: { formAssociated },
-    } = vm;
-
-    // Technically the UpgradableConstructor always sets `static formAssociated = true` but silently fail here to match browser behavior.
-    if (isUndefined(formAssociated) || isFalse(formAssociated)) {
-        if (process.env.NODE_ENV !== 'production') {
-            logWarn(
-                `Form associated lifecycle methods must have the 'static formAssociated' value set in the component's prototype chain.`
-            );
-        }
-        return;
-    }
+    const { renderMode, shadowMode } = vm;
 
     if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
         throw new Error(

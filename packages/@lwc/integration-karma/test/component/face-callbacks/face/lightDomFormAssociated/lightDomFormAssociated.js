@@ -5,9 +5,6 @@ export default class extends LightningElement {
     static formAssociated = true;
 
     @api
-    internals;
-
-    @api
     formAssociatedCallbackHasBeenCalled = false;
 
     @api
@@ -16,9 +13,12 @@ export default class extends LightningElement {
     @api
     formResetCallbackHasBeenCalled = false;
 
-    constructor() {
-        super();
-        this.internals = this.attachInternals();
+    @api
+    get internals() {
+        if (!this._internals) {
+            this._internals = this.attachInternals();
+        }
+        return this._internals;
     }
 
     formAssociatedCallback() {
