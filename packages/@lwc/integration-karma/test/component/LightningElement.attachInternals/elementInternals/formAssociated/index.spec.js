@@ -1,11 +1,12 @@
 import { createElement } from 'lwc';
+import { ENABLE_ELEMENT_INTERNALS } from 'test-utils';
 
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
 import FormAssociatedFalse from 'x/formAssociatedFalse';
 
 if (
-    process.env.API_VERSION >= 61 &&
+    ENABLE_ELEMENT_INTERNALS &&
     typeof ElementInternals !== 'undefined' &&
     !process.env.SYNTHETIC_SHADOW_ENABLED
 ) {

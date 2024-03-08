@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
 
 import Container from 'face/container';
 import FormAssociated from 'face/formAssociated';
@@ -52,7 +52,7 @@ const faceSanityTest = (tagName, ctor) => {
             const container = document.body.querySelector('face-container');
             container.shadowRoot.appendChild(form2);
 
-            if (process.env.API_VERSION >= 61) {
+            if (ENABLE_ELEMENT_INTERNALS) {
                 expect(face.internals.form.className).toEqual('form1');
                 expect(face2.internals.form.className).toEqual('form2');
             }
@@ -105,7 +105,7 @@ const testFaceLifecycleMethodsNotCallable = (face) => {
 };
 
 if (typeof ElementInternals !== 'undefined') {
-    if (nativeCustomElementLifecycleEnabled) {
+    if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         // native lifecycle enabled
         describe('native lifecycle', () => {
             if (process.env.NATIVE_SHADOW) {
