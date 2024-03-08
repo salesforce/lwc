@@ -145,7 +145,6 @@ export interface LightningElementConstructor {
     stylesheets: TemplateStylesheetFactories;
 }
 
-
 type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     HTMLElement,
     | 'accessKey'
