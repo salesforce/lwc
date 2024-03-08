@@ -4,6 +4,9 @@ import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
 import FormAssociatedFalse from 'x/formAssociatedFalse';
+import NotFormAssociatedNoAttachInternals from 'x/notFormAssociatedNoAttachInternals';
+import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
+import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
 
 if (
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&
@@ -36,8 +39,48 @@ if (
     });
 }
 
+const isFormAssociated = (elm) => {
+    const form = document.createElement('form');
+    document.body.appendChild(form);
+    form.appendChild(elm);
+    const result = elm.formAssociatedCallbackCalled;
+    document.body.removeChild(form); // cleanup
+    return result;
+};
+
+it('disallows form association on older API versions', () => {
+    let elm;
+    // formAssociated = true
+    const createFormAssociatedTrue = () => {
+        elm = createElement('x-form-associated-no-attach-internals', {
+            is: FormAssociatedNoAttachInternals,
+        });
+    };
+    if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
+        createFormAssociatedTrue();
+    } else {
+        expect(createFormAssociatedTrue).toLogWarningDev(
+            /Component <x-form-associated-no-attach-internals> set static formAssociated to true, but form association is not enabled/
+        );
+    }
+
+    expect(isFormAssociated(elm)).toBe(!!ENABLE_ELEMENT_INTERNALS_AND_FACE);
+
+    // formAssociated = false
+    elm = createElement('x-form-associated-false-no-attach-internals', {
+        is: FormAssociatedFalseNoAttachInternals,
+    });
+    expect(isFormAssociated(elm)).toBe(false);
+
+    // formAssociated = undefined
+    elm = createElement('x-not-form-associated-no-attach-internals', {
+        is: NotFormAssociatedNoAttachInternals,
+    });
+    expect(isFormAssociated(elm)).toBe(false);
+});
+
 if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
-    it('should log when attempting to use form association on an older API version', () => {
+    it('warns for attachInternals on older API versions', () => {
         // formAssociated = true
         expect(() => {
             expect(() => createElement('x-form-associated', { is: FormAssociated })).toThrowError(
@@ -46,8 +89,12 @@ if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         }).toLogWarningDev(
             /Component <x-form-associated> set static formAssociated to true, but form association is not enabled/
         );
+
         // formAssociated = false
-        createElement('x-form-associated-false', { is: FormAssociatedFalse });
+        expect(() =>
+            createElement('x-form-associated-false', { is: FormAssociatedFalse })
+        ).toThrowError(/The attachInternals API is only supported in API version 61 and above/);
+
         // formAssociated = undefined
         expect(() =>
             createElement('x-not-form-associated', { is: NotFormAssociated })

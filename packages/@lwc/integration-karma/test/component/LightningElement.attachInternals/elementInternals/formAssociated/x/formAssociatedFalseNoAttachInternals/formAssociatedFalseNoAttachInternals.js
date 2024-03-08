@@ -4,10 +4,9 @@ export default class extends LightningElement {
     static formAssociated = false;
 
     @api
-    internals;
+    formAssociatedCallbackCalled = false;
 
-    constructor() {
-        super();
-        this.internals = this.attachInternals();
+    formAssociatedCallback() {
+        this.formAssociatedCallbackCalled = true;
     }
 }
