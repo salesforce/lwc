@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import { vFragBookEndEnabled } from 'test-utils';
+import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import MixedSlotParent from 'x/mixedSlotParent';
 
-const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
+const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('if-block', () => {
     it('should work when parent and child have matching slot types', () => {

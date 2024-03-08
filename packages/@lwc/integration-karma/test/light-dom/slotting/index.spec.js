@@ -1,7 +1,11 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
-import { vFragBookEndEnabled, lightDomSlotForwardingEnabled } from 'test-utils';
+import {
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+} from 'test-utils';
 
 import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
@@ -11,7 +15,7 @@ import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
 import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
 
-const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
+const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });
@@ -97,7 +101,7 @@ describe('Slotting', () => {
         const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
         const elm = nodes['x-forwarded-slot-consumer'];
         expect(elm.innerHTML).toEqual(
-            lightDomSlotForwardingEnabled
+            USE_LIGHT_DOM_SLOT_FORWARDING
                 ? `<x-forwarded-slot><x-light-container>${vFragBookend}<p>Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p>Lower slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
                 : `<x-forwarded-slot><x-light-container>${vFragBookend}<p slot="upper">Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p slot="lower">Lower slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
         );
@@ -121,10 +125,10 @@ describe('Slotting', () => {
         const commentNodes = [...container.childNodes].filter(
             (_) => _.nodeType === Node.COMMENT_NODE
         );
-        if (process.env.API_VERSION <= 59) {
-            expect(commentNodes.length).toBe(0); // old implementation does not use fragments, just flattening
-        } else {
+        if (USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS) {
             expect(commentNodes.length).toBe(6); // 3 slots, so 3*2=6 comment nodes
+        } else {
+            expect(commentNodes.length).toBe(0); // old implementation does not use fragments, just flattening
         }
     });
 

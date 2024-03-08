@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 
@@ -36,7 +37,7 @@ describe('legacy scope tokens', () => {
                 return [
                     ...new Set(
                         [
-                            process.env.API_VERSION <= 58 ? legacy : modern,
+                            LOWERCASE_SCOPE_TOKENS ? modern : legacy,
                             enableLegacyScopeTokens && legacy,
                         ].filter(Boolean)
                     ),

@@ -2,13 +2,13 @@ import { createElement } from 'lwc';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-    nativeCustomElementLifecycleEnabled,
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 } from 'test-utils';
 
 import Component from 'x/component';
 import Parent from 'x/parent';
 
-if (!nativeCustomElementLifecycleEnabled) {
+if (!ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
     describe('ConnectedCallbackWhileDisconnected reporting', () => {
         let logger;
         let dispatcher;

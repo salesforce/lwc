@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { vFragBookEndEnabled } from 'test-utils';
+import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
@@ -11,7 +11,7 @@ import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
 
-const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
+const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(

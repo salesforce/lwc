@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 
 import Single from 'x/single';
 import Parent from 'x/parent';
@@ -167,7 +167,7 @@ describe('invocation order', () => {
 
                 let expected;
                 if (testName === 'shadow' && process.env.NATIVE_SHADOW) {
-                    if (nativeCustomElementLifecycleEnabled) {
+                    if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                         expected = [
                             'foo-a:connectedCallback',
                             'foo-internal-a:connectedCallback',

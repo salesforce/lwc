@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { customElementCallbackReactionErrorListener } from 'test-utils';
+import { customElementCallbackReactionErrorListener, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
 
 import ShadowDomCmp from 'ai/shadowDom';
 import LightDomCmp from 'ai/lightDom';
@@ -54,7 +54,7 @@ const attachInternalsSanityTest = (tagName, ctor) => {
     });
 };
 
-if (process.env.API_VERSION >= 61) {
+if (ENABLE_ELEMENT_INTERNALS) {
     if (typeof ElementInternals !== 'undefined') {
         // ElementInternals API is supported in the browser
         if (process.env.NATIVE_SHADOW) {

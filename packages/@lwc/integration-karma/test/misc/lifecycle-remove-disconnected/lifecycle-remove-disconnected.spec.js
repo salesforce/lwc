@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 import Parent from 'x/parent';
 
 describe('vdom removes component while it is already disconnected', () => {
@@ -10,7 +10,7 @@ describe('vdom removes component while it is already disconnected', () => {
     });
 
     afterEach(() => {
-        if (nativeCustomElementLifecycleEnabled || process.env.NODE_ENV === 'production') {
+        if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE || process.env.NODE_ENV === 'production') {
             expect(spy).not.toHaveBeenCalled();
         } else {
             // expected since the engine calls appendChild to a disconnected DOM node

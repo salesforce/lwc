@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 
 import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
 import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
@@ -372,7 +372,7 @@ describe('errorCallback throws after value mutation', () => {
         'when child throws in connectedCallback',
         'x-parent-throws-on-mutate-child-connected-throws',
         XParentThrowsOnMutateChildConnectedThrows,
-        nativeCustomElementLifecycleEnabled
+        ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
     );
     testStub(
         'when child throws in constructor',
@@ -390,6 +390,6 @@ describe('errorCallback throws after value mutation', () => {
         'when child throws in renderedCallback',
         'x-parent-throws-on-mutate-child-rendered-throws',
         XParentThrowsOnMutateChildRenderedThrows,
-        nativeCustomElementLifecycleEnabled
+        ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
     );
 });

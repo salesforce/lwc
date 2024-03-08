@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
+import { extractDataIds, LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -33,8 +33,7 @@ if (!process.env.NATIVE_SHADOW) {
                     .shadowRoot.querySelector('x-component')
                     .shadowRoot.querySelector('div');
 
-                const token =
-                    process.env.API_VERSION <= 58 ? 'x-component_component' : 'lwc-6a8uqob2ku4';
+                const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
                 expect(syntheticMode.hasAttribute(token)).toBe(true);
                 expect(nativeMode.hasAttribute(token)).toBe(false);
             });
@@ -77,7 +76,7 @@ describe('static content when stylesheets change', () => {
                 const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
                 expect(classList).toEqual([
                     'foo',
-                    process.env.API_VERSION <= 58 ? 'x-multipleStyles_b' : 'lwc-6fpm08fjoch',
+                    LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'x-multipleStyles_b',
                 ]);
 
                 expect(() => {
