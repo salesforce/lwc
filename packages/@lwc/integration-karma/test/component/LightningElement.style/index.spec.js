@@ -1,20 +1,32 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
 
-it (
-    'should return the CSSStyleDeclaration and make the appropriate changes', 
-    async () => {
+fit('should return the CSSStyleDeclaration of host element via the style property', async () => {
     const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
-    // add the element to the dom
+    document.body.appendChild(elm)
 
-    expect(elm.style).not.toBe(null);
-    // CSSStyleDeclaration must be returned and hence not be null
+    const assertColor = async (color) => {
+        expect(elm.thisDotStyle.color).toEqual(color);
+        expect(elm.style.color).toEqual(color);
 
-    elm.style.setProperty("color", "red");
-    // change the color
+        await Promise.resolve();
+        expect(getComputedStyle(elm).color).toBe(color || 'rgb(0, 0, 0)');
+    }
 
-     await Promise.resolve();
-     expect(getComputedStyle(elm).color).toBe('rgb(255, 0, 0)');
-     // check if the color was actually changed
+    await assertColor('')
+
+    elm.setAttribute('style', 'color: rgb(255, 0, 0)');
+    await assertColor('rgb(255, 0, 0)')
+
+    elm.thisDotStyle.color = 'rgb(0, 0, 255)';
+    await assertColor('rgb(0, 0, 255)')
+
+    elm.style.color = 'rgb(0, 128, 0)';
+    await assertColor('rgb(0, 128, 0)')
+
+    elm.thisDotStyle.setProperty('color', 'rgb(255, 255, 0)')
+    await assertColor('rgb(255, 255, 0)')
+
+    elm.style.setProperty('color', 'rgb(128, 0, 128)')
+    await assertColor('rgb(128, 0, 128)')
 });
