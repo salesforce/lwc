@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import { ariaProperties, ariaAttributes, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
+import { ariaProperties, ariaAttributes, ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 
 import ElementInternal from 'ei/component';
 
 if (
-    ENABLE_ELEMENT_INTERNALS &&
+    ENABLE_ELEMENT_INTERNALS_AND_FACE &&
     process.env.NATIVE_SHADOW &&
     typeof ElementInternals !== 'undefined'
 ) {

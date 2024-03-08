@@ -486,9 +486,9 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             renderer: { attachInternals },
         } = vm;
 
-        if (!isAPIFeatureEnabled(APIFeature.ENABLE_ELEMENT_INTERNALS, apiVersion)) {
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE, apiVersion)) {
             throw new Error(
-                `The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version.`
+                `The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version. https://lwc.dev/guide/versioning`
             );
         }
 

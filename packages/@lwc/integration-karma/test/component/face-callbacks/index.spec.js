@@ -1,5 +1,8 @@
 import { createElement } from 'lwc';
-import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
+import {
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+} from 'test-utils';
 
 import Container from 'face/container';
 import FormAssociated from 'face/formAssociated';
@@ -13,10 +16,38 @@ const createFormElement = () => {
     return container.shadowRoot.querySelector('form');
 };
 
-const createFaces = (tagName, ctor) => [
-    createElement(`face-${tagName}`, { is: ctor }),
-    createFaceUsingCec(`cec-face-${tagName}`, ctor.CustomElementConstructor),
-];
+const createFaceTests = (tagName, ctor, callback) => {
+    const scenarios = ['lwc.createElement', 'CustomElementConstructor'];
+
+    scenarios.forEach((scenario) => {
+        describe(scenario, () => {
+            const createFaceElm = () => {
+                if (scenario === 'lwc.createElement') {
+                    return createFaceUsingLwcCreateElement(`face-${tagName}`, ctor);
+                } else {
+                    return createFaceUsingCec(`cec-face-${tagName}`, ctor.CustomElementConstructor);
+                }
+            };
+
+            callback(createFaceElm, scenario);
+        });
+    });
+};
+
+const createFaceUsingLwcCreateElement = (tagName, ctor) => {
+    let elm;
+    const doCreate = () => {
+        elm = createElement(tagName, { is: ctor });
+    };
+    if (ENABLE_ELEMENT_INTERNALS_AND_FACE && process.env.NATIVE_SHADOW) {
+        doCreate();
+    } else {
+        expect(doCreate).toLogWarningDev(
+            /set static formAssociated to true, but form association is not enabled/
+        );
+    }
+    return elm;
+};
 
 const createFaceUsingCec = (tagName, ctor) => {
     if (!customElements.get(tagName)) {
@@ -26,10 +57,12 @@ const createFaceUsingCec = (tagName, ctor) => {
 };
 
 const faceSanityTest = (tagName, ctor) => {
-    createFaces(`${tagName}-form-associated`, ctor).forEach((face) => {
+    createFaceTests(`${tagName}-form-associated`, ctor, (createFaceElm) => {
         let form;
+        let face;
 
         beforeEach(() => {
+            face = createFaceElm();
             form = createFormElement();
             form.appendChild(face);
         });
@@ -52,7 +85,7 @@ const faceSanityTest = (tagName, ctor) => {
             const container = document.body.querySelector('face-container');
             container.shadowRoot.appendChild(form2);
 
-            if (ENABLE_ELEMENT_INTERNALS) {
+            if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
                 expect(face.internals.form.className).toEqual('form1');
                 expect(face2.internals.form.className).toEqual('form2');
             }
@@ -79,9 +112,9 @@ const testFaceLifecycleMethodsCallable = (face) => {
 };
 
 const notFormAssociatedSanityTest = (tagName, ctor) => {
-    it(`doesn't call face lifecycle methods when not form associated`, () => {
-        createFaces(`${tagName}-not-form-associated`, ctor).forEach((face) => {
-            testFaceLifecycleMethodsNotCallable(face);
+    createFaceTests(`${tagName}-not-form-associated`, ctor, (createFaceElm) => {
+        it(`doesn't call face lifecycle methods when not form associated`, () => {
+            testFaceLifecycleMethodsNotCallable(createFaceElm);
         });
     });
 };
@@ -115,9 +148,10 @@ if (typeof ElementInternals !== 'undefined') {
                 });
             } else {
                 describe('synthetic shadow', () => {
-                    it('cannot be used and throws an error', () => {
-                        const form = createFormElement();
-                        createFaces('synthetic-shadow', FormAssociated).forEach((face) => {
+                    createFaceTests('synthetic-shadow', FormAssociated).forEach((createFaceElm) => {
+                        it('cannot be used and throws an error', () => {
+                            const face = createFaceElm();
+                            const form = createFormElement();
                             expect(() => form.appendChild(face)).toThrowCallbackReactionError(
                                 'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
                             );
@@ -140,19 +174,23 @@ if (typeof ElementInternals !== 'undefined') {
                     ctor: LightDomFormAssociated,
                 },
             ].forEach(({ name, tagName, ctor }) => {
-                const [face, cecFace] = createFaces(tagName, ctor);
-                it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
-                    // TODO [#3929]: Face should log a dev warning when used with synthetic lifecycle
-                    testFaceLifecycleMethodsNotCallable(face);
+                createFaceTests(tagName, ctor, (createFaceElm, scenario) => {
+                    if (scenario === 'lwc.createElement') {
+                        it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
+                            const face = createFaceElm();
+                            testFaceLifecycleMethodsNotCallable(face);
+                        });
+                    } else {
+                        // Face throws error message when synthetic shadow is enabled
+                        if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
+                            it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
+                                const cecFace = createFaceElm();
+                                // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
+                                testFaceLifecycleMethodsCallable(cecFace);
+                            });
+                        }
+                    }
                 });
-
-                // Face throws error message when synthetic shadow is enabled
-                if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
-                    it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
-                        // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
-                        testFaceLifecycleMethodsCallable(cecFace);
-                    });
-                }
             });
         });
     }

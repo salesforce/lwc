@@ -11,6 +11,7 @@ import {
     hydrateRoot,
     connectRootElement,
     getAssociatedVMIfPresent,
+    shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -89,10 +90,8 @@ export function hydrateComponent(
 
     try {
         const { defineCustomElement, getTagName } = renderer;
-        defineCustomElement(
-            StringToLowerCase.call(getTagName(element)),
-            Boolean(Ctor.formAssociated)
-        );
+        const isFormAssociated = shouldBeFormAssociated(Ctor);
+        defineCustomElement(StringToLowerCase.call(getTagName(element)), isFormAssociated);
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

@@ -22,6 +22,7 @@ import {
     disconnectRootElement,
     LightningElement,
     getComponentAPIVersion,
+    shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -135,7 +136,7 @@ export function createElement(
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
         isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 
-    const isFormAssociated = Boolean(Ctor.formAssociated);
+    const isFormAssociated = shouldBeFormAssociated(Ctor);
 
     // the custom element from the registry is expecting an upgrade callback
     /*

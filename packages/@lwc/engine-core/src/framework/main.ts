@@ -26,7 +26,7 @@ export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
-export { registerComponent, getComponentAPIVersion } from './component';
+export { registerComponent } from './component';
 export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
 
@@ -39,6 +39,8 @@ export { reportingControl as __unstable__ReportingControl } from './reporting';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 export { freezeTemplate } from './freeze-template';
+export { getComponentAPIVersion } from './component';
+export { shouldBeFormAssociated } from './utils';
 
 // Experimental or Internal APIs
 export { getComponentConstructor } from './get-component-constructor';

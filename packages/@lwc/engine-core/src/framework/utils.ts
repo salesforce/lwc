@@ -16,8 +16,9 @@ import {
     isUndefined,
     isNull,
 } from '@lwc/shared';
+import { logWarnOnce } from '../shared/logger';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-import { getComponentAPIVersion } from './component';
+import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
 import { VElementData } from './vnodes';
 
@@ -156,4 +157,24 @@ export function applyTemporaryCompilerV5SlotFix(data: VElementData) {
         }
     }
     return data;
+}
+
+export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
+    const ctorFormAssociated = Boolean(Ctor.formAssociated);
+    const apiVersion = getComponentAPIVersion(Ctor);
+    const apiFeatureEnabled = isAPIFeatureEnabled(
+        APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE,
+        apiVersion
+    );
+
+    if (process.env.NODE_ENV !== 'production' && ctorFormAssociated && !apiFeatureEnabled) {
+        const tagName = getComponentRegisteredName(Ctor);
+        logWarnOnce(
+            `Component <${tagName}> set static formAssociated to true, but form ` +
+                `association is not enabled because the API version is ${apiVersion}. To enable form association, ` +
+                `please update the LWC component API version. https://lwc.dev/guide/versioning`
+        );
+    }
+
+    return ctorFormAssociated && apiFeatureEnabled;
 }

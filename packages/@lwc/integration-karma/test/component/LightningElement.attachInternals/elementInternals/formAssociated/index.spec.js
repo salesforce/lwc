@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import { ENABLE_ELEMENT_INTERNALS } from 'test-utils';
+import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
 import FormAssociatedFalse from 'x/formAssociatedFalse';
 
 if (
-    ENABLE_ELEMENT_INTERNALS &&
+    ENABLE_ELEMENT_INTERNALS_AND_FACE &&
     typeof ElementInternals !== 'undefined' &&
     !process.env.SYNTHETIC_SHADOW_ENABLED
 ) {
@@ -33,5 +33,24 @@ if (
         expect(() =>
             createElement('x-not-form-associated', { is: NotFormAssociated })
         ).not.toThrow();
+    });
+}
+
+if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
+    it('should log when attempting to use form association on an older API version', () => {
+        // formAssociated = true
+        expect(() => {
+            expect(() => {
+                createElement('x-form-associated', { is: FormAssociated });
+            }).toThrowError(
+                /The attachInternals API is only supported in API version 61 and above/
+            );
+        }).toLogWarningDev(
+            /Component <x-form-associated> set static formAssociated to true, but form association is not enabled/
+        );
+        // formAssociated = false
+        createElement('x-form-associated-false', { is: FormAssociatedFalse });
+        // formAssociated = undefined
+        createElement('x-not-form-associated', { is: NotFormAssociated });
     });
 }
