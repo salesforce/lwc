@@ -104,7 +104,7 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
         // attachInternals API.
         expect(() => document.body.appendChild(elm)).toThrowError(
-            /The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version./
+            /The attachInternals API is only supported in API version 61 and above/
         );
     });
 }
