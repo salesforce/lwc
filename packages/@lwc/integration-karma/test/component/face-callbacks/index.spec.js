@@ -191,7 +191,16 @@ if (typeof ElementInternals !== 'undefined') {
                         } else {
                             // synthetic shadow mode
                             it(`${name} cannot call face lifecycle methods when using CustomElementConstructor`, () => {
-                                testFaceLifecycleMethodsNotCallable(createFace);
+                                // this is always a callback reaction error, even in "synthetic lifecycle" mode,
+                                // because synthetic lifecycle mode only includes connected/disconnected callbacks,
+                                // not the FACE callbacks
+                                expect(() => {
+                                    const face = createFace();
+                                    const form = createFormElement();
+                                    form.appendChild(face);
+                                }).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
+                                    'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+                                );
                             });
                         }
                     }

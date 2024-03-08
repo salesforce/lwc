@@ -84,7 +84,7 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         // Because of the order error messages are thrown, this error only appears when synthetic shadow
         // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
         // is thrown instead.
-        if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
+        if (!process.env.NATIVE_SHADOW) {
             it('should throw an error when used with unsupported browser environments', () => {
                 createElementsThroughLwcAndCustomElementConstructor(
                     'unsupported-env-component',

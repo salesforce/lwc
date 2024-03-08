@@ -339,6 +339,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             customElementCallbackReactionErrorListener,
             true
         ),
+        toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode: errorMatcherFactory(
+            windowErrorListener,
+            true
+        ),
     };
 
     beforeAll(function () {
