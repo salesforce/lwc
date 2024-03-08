@@ -188,6 +188,8 @@ if (typeof ElementInternals !== 'undefined') {
                                 // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
                                 testFaceLifecycleMethodsCallable(cecFace);
                             });
+                        } else {
+                            xit('empty test since jasmine demands every describe() has an it', () => {});
                         }
                     }
                 });

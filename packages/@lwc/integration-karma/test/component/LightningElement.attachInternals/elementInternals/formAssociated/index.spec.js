@@ -40,9 +40,7 @@ if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
     it('should log when attempting to use form association on an older API version', () => {
         // formAssociated = true
         expect(() => {
-            expect(() => {
-                createElement('x-form-associated', { is: FormAssociated });
-            }).toThrowError(
+            expect(() => createElement('x-form-associated', { is: FormAssociated })).toThrowError(
                 /The attachInternals API is only supported in API version 61 and above/
             );
         }).toLogWarningDev(
@@ -51,6 +49,8 @@ if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         // formAssociated = false
         createElement('x-form-associated-false', { is: FormAssociatedFalse });
         // formAssociated = undefined
-        createElement('x-not-form-associated', { is: NotFormAssociated });
+        expect(() =>
+            createElement('x-not-form-associated', { is: NotFormAssociated })
+        ).toThrowError(/The attachInternals API is only supported in API version 61 and above/);
     });
 }

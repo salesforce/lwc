@@ -172,7 +172,7 @@ export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
         logWarnOnce(
             `Component <${tagName}> set static formAssociated to true, but form ` +
                 `association is not enabled because the API version is ${apiVersion}. To enable form association, ` +
-                `please update the LWC component API version. https://lwc.dev/guide/versioning`
+                `update the LWC component API version to 61 or above. https://lwc.dev/guide/versioning`
         );
     }
 
