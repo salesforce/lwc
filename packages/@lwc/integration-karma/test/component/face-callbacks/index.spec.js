@@ -10,6 +10,9 @@ import NotFormAssociated from 'face/notFormAssociated';
 import LightDomFormAssociated from 'face/lightDomFormAssociated';
 import LightDomNotFormAssociated from 'face/lightDomNotFormAssociated';
 
+// set to true to indicate we're testing a light DOM component
+let isLightDom = false;
+
 const createFormElement = () => {
     const container = createElement('face-container', { is: Container });
     document.body.appendChild(container);
@@ -39,7 +42,7 @@ const createFaceUsingLwcCreateElement = (tagName, ctor) => {
     const doCreate = () => {
         elm = createElement(tagName, { is: ctor });
     };
-    if (ENABLE_ELEMENT_INTERNALS_AND_FACE && process.env.NATIVE_SHADOW) {
+    if (ENABLE_ELEMENT_INTERNALS_AND_FACE && (!process.env.NATIVE_SHADOW || isLightDom)) {
         doCreate();
     } else {
         expect(doCreate).toLogWarningDev(
@@ -150,7 +153,7 @@ if (typeof ElementInternals !== 'undefined') {
                 });
             } else {
                 describe('synthetic shadow', () => {
-                    createFaceTests('synthetic-shadow', FormAssociated).forEach((createFace) => {
+                    createFaceTests('synthetic-shadow', FormAssociated, (createFace) => {
                         it('cannot be used and throws an error', () => {
                             const face = createFace();
                             const form = createFormElement();
@@ -162,6 +165,12 @@ if (typeof ElementInternals !== 'undefined') {
                 });
             }
             describe('light DOM', () => {
+                beforeEach(() => {
+                    isLightDom = true;
+                });
+                afterEach(() => {
+                    isLightDom = false;
+                });
                 faceSanityTest('light-dom', LightDomFormAssociated);
                 notFormAssociatedSanityTest('light-dom', LightDomNotFormAssociated);
             });
