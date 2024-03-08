@@ -189,7 +189,10 @@ if (typeof ElementInternals !== 'undefined') {
                                 testFaceLifecycleMethodsCallable(createFace);
                             });
                         } else {
-                            xit('empty test since jasmine demands every describe() has an it', () => {});
+                            // synthetic shadow mode
+                            it(`${name} cannot call face lifecycle methods when using CustomElementConstructor`, () => {
+                                testFaceLifecycleMethodsNotCallable(createFace);
+                            });
                         }
                     }
                 });
