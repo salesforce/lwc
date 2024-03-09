@@ -19,7 +19,7 @@ import {
     defineProperty,
     entries,
     freeze,
-    hasOwnProperty,
+    hasOwnProperty, isAPIFeatureEnabled,
     isFunction,
     isNull,
     isObject,
@@ -28,6 +28,7 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    APIFeature
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -35,7 +36,7 @@ import { getComponentTag } from '../shared/format';
 import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { getWrappedComponentsListener } from './component';
+import {getComponentAPIVersion, getWrappedComponentsListener} from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import {
     associateVM,
@@ -781,7 +782,12 @@ function createElementInternalsProxy(
     },
 
     get style() {
-        const { elm, renderer } = getAssociatedVM(this);
+        const { elm, renderer, def } = getAssociatedVM(this);
+        const apiVersion = getComponentAPIVersion(def.ctor)
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_STYLE, apiVersion)) {
+            // Simulate the old behavior for `this.style` to avoid a breaking change
+            return undefined
+        }
         return renderer.getStyle(elm);
     },
 
