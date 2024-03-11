@@ -2,7 +2,8 @@ import { createElement } from 'lwc';
 import { ENABLE_THIS_DOT_STYLE } from 'test-utils';
 import Test from 'x/test';
 
-if (ENABLE_THIS_DOT_STYLE) {
+// in "force v5" mode, this.style will not be supported because the API version is too low
+if (ENABLE_THIS_DOT_STYLE && !process.env.FORCE_LWC_V5_COMPILER_FOR_TEST) {
     it('this.style should return the CSSStyleDeclaration of host element', async () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
