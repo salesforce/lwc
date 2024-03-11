@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         );
       }),
       api_element("span", stc2, [api_text("Willy Wonka")]),
-      api_static_fragment($fragment1(), 4),
+      api_static_fragment($fragment1(), 3),
     ]),
   ];
   /*LWC compiler vX.X.X*/

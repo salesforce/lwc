@@ -16,7 +16,7 @@ const stc2 = {
   attrs: {
     focusable: "true",
   },
-  key: 4,
+  key: 3,
   svg: true,
 };
 const stc3 = {
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    api_static_fragment($fragment1(), 2),
+    api_static_fragment($fragment1(), 1),
     api_custom_element("ns-bar", _nsBar, {
       classMap: stc0,
       attrs: stc1,
@@ -50,7 +50,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         tabIndex: "0",
         bgColor: "blue",
       },
-      key: 3,
+      key: 2,
     }),
     api_element("svg", stc2, [
       api_element("use", {
@@ -62,15 +62,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "xx"
           ),
         },
-        key: 5,
+        key: 4,
         svg: true,
       }),
     ]),
-    api_static_fragment($fragment2(), 7),
+    api_static_fragment($fragment2(), 5),
     api_element("div", {
       className: $cmp.foo,
       attrs: stc3,
-      key: 8,
+      key: 6,
     }),
   ];
   /*LWC compiler vX.X.X*/

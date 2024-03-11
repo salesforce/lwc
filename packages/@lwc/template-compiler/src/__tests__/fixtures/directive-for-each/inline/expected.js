@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [api_static_fragment($fragment1(), 3)]
+          [api_static_fragment($fragment1(), 2)]
         );
       })
     ),

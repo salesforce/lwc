@@ -26,18 +26,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [
-        api_static_fragment($fragment1(), 2),
+        api_static_fragment($fragment1(), 1),
         api_dynamic_component(
           $cmp.ctor2,
           {
             classMap: stc0,
             props: stc1,
-            key: 3,
+            key: 2,
             on: {
               click: _m1 || ($ctx._m1 = api_bind($cmp.handleOuterClick)),
             },
           },
-          [api_static_fragment($fragment2(), 5)]
+          [api_static_fragment($fragment2(), 3)]
         ),
       ]
     ),

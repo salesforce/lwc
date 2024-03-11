@@ -11,7 +11,7 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 4,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, s: api_slot, h: api_element } = $api;
@@ -20,10 +20,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot(
         "other",
         stc1,
-        [api_static_fragment($fragment1(), "@other:3")],
+        [api_static_fragment($fragment1(), "@other:2")],
         $slotset
       ),
-      api_slot("", stc2, [api_static_fragment($fragment2(), "@:6")], $slotset),
+      api_slot("", stc2, [api_static_fragment($fragment2(), "@:4")], $slotset),
     ]),
   ];
   /*LWC compiler vX.X.X*/

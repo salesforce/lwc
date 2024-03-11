@@ -11,16 +11,16 @@ const stc1 = {
   attrs: {
     name: "header",
   },
-  key: 3,
+  key: 2,
 };
 const stc2 = {
-  key: 8,
+  key: 5,
 };
 const stc3 = {
   attrs: {
     name: "footer",
   },
-  key: 11,
+  key: 7,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -31,15 +31,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_element("section", stc0, [
-      api_static_fragment($fragment1(), 2),
+      api_static_fragment($fragment1(), 1),
       api_slot("header", stc1, [api_text("Default header")], $slotset),
-      api_static_fragment($fragment2(), 5),
-      api_static_fragment($fragment3(), 7),
-      api_slot("", stc2, [api_static_fragment($fragment4(), "@:10")], $slotset),
+      api_static_fragment($fragment2(), 3),
+      api_static_fragment($fragment3(), 4),
+      api_slot("", stc2, [api_static_fragment($fragment4(), "@:6")], $slotset),
       api_slot(
         "footer",
         stc3,
-        [api_static_fragment($fragment5(), "@footer:13")],
+        [api_static_fragment($fragment5(), "@footer:8")],
         $slotset
       ),
     ]),

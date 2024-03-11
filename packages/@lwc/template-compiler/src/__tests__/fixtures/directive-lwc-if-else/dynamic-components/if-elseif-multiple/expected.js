@@ -3,7 +3,7 @@ const $fragment1 = parseFragment`<h1${3}>if condition</h1>`;
 const $fragment2 = parseFragment`<h1${3}>elseif condition</h1>`;
 const $fragment3 = parseFragment`<h1${3}>else condition</h1>`;
 const stc0 = {
-  key: 5,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -13,12 +13,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     $cmp.visible.if
-      ? api_fragment(0, [api_static_fragment($fragment1(), 2)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment1(), 1)], 0)
       : $cmp.visible.elseif
-      ? api_fragment(0, [api_static_fragment($fragment2(), 4)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment2(), 2)], 0)
       : $cmp.visible.elseif2
       ? api_fragment(0, [api_dynamic_component($cmp.trackedProp.foo, stc0)], 0)
-      : api_fragment(0, [api_static_fragment($fragment3(), 7)], 0),
+      : api_fragment(0, [api_static_fragment($fragment3(), 4)], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

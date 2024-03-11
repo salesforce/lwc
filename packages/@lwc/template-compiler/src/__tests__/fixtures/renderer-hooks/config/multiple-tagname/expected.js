@@ -6,7 +6,7 @@ const stc0 = {
   city: true,
 };
 const stc1 = {
-  key: 3,
+  key: 2,
 };
 const stc2 = [["color", "blue", false]];
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -20,14 +20,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         renderer: renderer,
       },
       [
-        api_static_fragment($fragment1(), 2),
+        api_static_fragment($fragment1(), 1),
         api_element("p", stc1, [
           api_text("London is the capital of "),
           api_element(
             "span",
             {
               styleDecls: stc2,
-              key: 4,
+              key: 3,
               renderer: renderer,
             },
             [api_text("England.")]
@@ -39,12 +39,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         classMap: stc0,
-        key: 5,
+        key: 4,
         renderer: renderer,
       },
       [
-        api_static_fragment($fragment2(), 7),
-        api_static_fragment($fragment3(), 9),
+        api_static_fragment($fragment2(), 5),
+        api_static_fragment($fragment3(), 6),
       ]
     ),
   ];

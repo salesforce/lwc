@@ -14,13 +14,13 @@ const stc2 = {
 };
 const stc3 = [];
 const stc4 = {
-  key: 5,
+  key: 4,
 };
 const stc5 = {
   attrs: {
     name: "conditional-slot",
   },
-  key: 6,
+  key: 5,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot, h: api_element, st: api_static_fragment } = $api;
@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_slot("conditional-slot", stc2, stc3, $slotset),
       ]),
     ]),
-    api_static_fragment($fragment1(), 4),
+    api_static_fragment($fragment1(), 3),
     api_element("div", stc4, [
       api_slot("conditional-slot", stc5, stc3, $slotset),
     ]),
