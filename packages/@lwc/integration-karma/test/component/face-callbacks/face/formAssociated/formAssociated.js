@@ -14,7 +14,10 @@ export default class extends LightningElement {
 
     @api
     get internals() {
-        return this.attachInternals();
+        if (!this._internals) {
+            this._internals = this.attachInternals();
+        }
+        return this._internals;
     }
 
     formAssociatedCallback() {

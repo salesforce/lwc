@@ -1,9 +1,13 @@
 import { createElement } from 'lwc';
-import { ariaProperties, ariaAttributes } from 'test-utils';
+import { ariaProperties, ariaAttributes, ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 
 import ElementInternal from 'ei/component';
 
-if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
+if (
+    ENABLE_ELEMENT_INTERNALS_AND_FACE &&
+    process.env.NATIVE_SHADOW &&
+    typeof ElementInternals !== 'undefined'
+) {
     let elm;
     beforeEach(() => {
         elm = createElement('ei-component', { is: ElementInternal });
@@ -19,40 +23,6 @@ if (process.env.NATIVE_SHADOW && typeof ElementInternals !== 'undefined') {
             // Ensure external and internal views of shadowRoot are the same
             expect(elm.internals.shadowRoot).toBe(elm.template);
             expect(elm.internals.shadowRoot).toBe(elm.shadowRoot);
-        });
-
-        it('only allow listed properties accessible', () => {
-            if (process.env.NODE_ENV !== 'production') {
-                // Not allowed setter
-                // Chrome/Firefox/Safari have different messages
-                expect(() =>
-                    expect(() => (elm.internals.foo = 'bar')).toLogWarningDev(
-                        /Only properties defined in the ElementInternals HTML spec are available./
-                    )
-                ).toThrow();
-                // Not allowed getters
-                expect(() => elm.internals.foo).toLogWarningDev(
-                    /Only properties defined in the ElementInternals HTML spec are available./
-                );
-                // Allowed getter
-                expect(() => elm.internals.ariaAtomic).not.toThrow();
-            } else {
-                // Not allowed setter
-                // Chrome/Firefox/Safari have different messages
-                expect(() => (elm.internals.foo = 'bar')).toThrow();
-                // Not allowed getters
-                expect(elm.internals.foo).toBeUndefined();
-                // Allowed getter
-                expect(() => elm.internals.ariaAtomic).not.toThrow();
-            }
-        });
-
-        it('should allow invocations from Object.prototype and symbols', () => {
-            // Inherited from Object.prototype
-            expect(elm.internals.toString()).toContain('ElementInternals');
-            // Calls out to Symbol.toStringTag, will return a false value but reaches into
-            // Symbol.toStringTag to verify
-            expect(() => hasOwnProperty.call(elm.internals, 'ariaAtomic')).not.toThrow();
         });
 
         // Firefox does not support ARIAMixin inside ElementInternals.

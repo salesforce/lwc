@@ -97,10 +97,15 @@ export const enum APIFeature {
      */
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     /**
+     * If enabled, allows usage of the `attachInternals` and `ElementInternals` APIs, as well as
+     * Form-Associated Custom Elements (FACE).
+     */
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    /**
      * If enabled, allow this.style within a LightningElement to return the CSSStyleDeclaration
      * for that element
      */
-    ENABLE_THIS_DOT_STYLE
+    ENABLE_THIS_DOT_STYLE,
 }
 
 /**
@@ -116,13 +121,14 @@ export function isAPIFeatureEnabled(
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return apiVersion >= APIVersion.V59_246_WINTER_24;
-        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
         case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
         case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
         case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
+        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
-        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
+        case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
+        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
         case APIFeature.ENABLE_THIS_DOT_STYLE:
             return apiVersion >= APIVersion.V62_252_WINTER_25;

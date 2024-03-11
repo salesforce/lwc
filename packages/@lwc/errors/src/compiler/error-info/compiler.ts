@@ -62,7 +62,8 @@ export const CompilerValidationErrors = {
 
     INVALID_SOURCEMAP_PROPERTY: {
         code: 1021,
-        message: 'Expected a boolean value for outputConfig.sourcemap, received "{0}".',
+        message:
+            'Expected a boolean value or \'inline\' for outputConfig.sourcemap, received "{0}".',
         level: DiagnosticLevel.Error,
         url: '',
     },

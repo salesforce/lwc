@@ -209,3 +209,63 @@ describe('unnecessary registerDecorators', () => {
         expect(code).toContain('registerDecorators');
     });
 });
+
+describe('sourcemaps', () => {
+    it("should generate inline sourcemaps when the output config includes the 'inline' option for sourcemaps", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        const { code, map } = transformSync(source, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            outputConfig: {
+                sourcemap: 'inline',
+            },
+        });
+        expect(code).toContain('//# sourceMappingURL=data:application/json;');
+        expect(map).toBeNull();
+    });
+
+    it("should generate sourcemaps when the sourcemap configuration value is 'true'", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        const { map } = transformSync(source, 'foo.js', {
+            ...TRANSFORMATION_OPTIONS,
+            outputConfig: {
+                sourcemap: true,
+            },
+        });
+        expect(map).not.toBeNull();
+    });
+
+    describe("should fail validation of options if sourcemap configuration value is neither boolean nor 'inline'.", () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+
+        [
+            { name: 'invalid string', sourcemap: 'invalid' },
+            { name: 'object', sourcemap: {} },
+            { name: 'numbers', sourcemap: 123 },
+        ].forEach(({ name, sourcemap }) => {
+            it(name, () => {
+                expect(() =>
+                    transformSync(source, 'foo.js', {
+                        ...TRANSFORMATION_OPTIONS,
+                        outputConfig: {
+                            // @ts-expect-error Property can be passed from JS environments with no type checking.
+                            sourcemap,
+                        },
+                    })
+                ).toThrow(
+                    `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
+                );
+            });
+        });
+    });
+});

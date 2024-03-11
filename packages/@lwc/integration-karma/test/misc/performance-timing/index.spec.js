@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 
 import Child from 'x/child';
 import Parent from 'x/parent';
@@ -164,7 +164,7 @@ if (isUserTimingSupported && process.env.NODE_ENV !== 'production') {
 
         // Timing is slightly different with native custom element lifecycle callbacks
         testNestedTree(
-            nativeCustomElementLifecycleEnabled
+            ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                 ? [
                       { label: '<x-parent> - constructor', children: [] },
                       {
