@@ -8,7 +8,7 @@
         "url": "https://github.com/salesforce/lwc.git"
     },
     "scripts": {
-        "prepare": "husky install && yarn build",
+        "prepare": "husky && yarn build",
         "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
         "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
