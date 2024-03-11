@@ -30,7 +30,7 @@ import {
     APIFeature,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 
@@ -702,6 +702,12 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         const { elm, renderer, def } = getAssociatedVM(this);
         const apiVersion = getComponentAPIVersion(def.ctor);
         if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_STYLE, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.style` API within LightningElement returning the CSSStyleDeclaration is' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
             // Simulate the old behavior for `this.style` to avoid a breaking change
             return undefined;
         }
