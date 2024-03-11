@@ -33,7 +33,7 @@
     Remove the incorrect item from the list.
 -->
 
--   🤐 No, it does not introduce an observable change.
+-   🤞 No, it does not introduce an observable change.
 -   🔬 Yes, it does include an observable change.
 
 <!-- If yes, please describe the anticipated observable changes. -->
