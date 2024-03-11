@@ -12,6 +12,7 @@ export const enum APIVersion {
     V59_246_WINTER_24 = 59,
     V60_248_SPRING_24 = 60,
     V61_250_SUMMER_24 = 61,
+    V62_252_WINTER_25 = 62,
 }
 
 // These must be updated when the enum is updated.
@@ -19,12 +20,13 @@ export const enum APIVersion {
 // passing the `verify-treeshakeable.js` test.
 
 export const LOWEST_API_VERSION = APIVersion.V58_244_SUMMER_23;
-export const HIGHEST_API_VERSION = APIVersion.V61_250_SUMMER_24;
+export const HIGHEST_API_VERSION = APIVersion.V62_252_WINTER_25;
 const allVersions = [
     APIVersion.V58_244_SUMMER_23,
     APIVersion.V59_246_WINTER_24,
     APIVersion.V60_248_SPRING_24,
     APIVersion.V61_250_SUMMER_24,
+    APIVersion.V62_252_WINTER_25,
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 
