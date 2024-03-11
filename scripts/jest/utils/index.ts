@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -130,6 +130,57 @@ declare global {
 expect.extend({ toMatchFile });
 
 type TestFixtureOutput = { [filename: string]: unknown };
+type TestFixtureFileData = { filename: string; src: string; tester: jest.It };
+
+const LwcTestDirectives = {
+    Only: '/* LWC test only */',
+    Skip: '/* LWC test skip */',
+} as const;
+
+/**
+ * Parses fixtures for LWC test directives, which enable file-based tests to make use of jest's
+ * `xit`/`test.skip` and `fit`/`test.only`.
+ * @param filenames Test fixture filenames to parse for directives
+ * @returns Parsed test fixture file data
+ * @example // See usage below
+ */
+function getFilesToTest(filenames: string[]): TestFixtureFileData[] {
+    // Matches comments at the start of a file
+    const leadingComment = /^(\/\/.*?\n|\/\*[\s\S]*?\*\/)/;
+    return filenames.map((filename) => {
+        const src = fs.readFileSync(filename, 'utf-8');
+        let remainingSrc = src.trim();
+        let match = leadingComment.exec(remainingSrc);
+        while (match) {
+            const comment = match[0];
+            switch (comment) {
+                case LwcTestDirectives.Only: {
+                    return {
+                        filename,
+                        // Strip the directive so we don't need to mess with the output file
+                        src: src.replace(comment, ''),
+                        tester: test.only,
+                    };
+                }
+                case LwcTestDirectives.Skip: {
+                    return {
+                        filename,
+                        // Strip the directive so we don't need to mess with the output file
+                        src: src.replace(comment, ''),
+                        tester: test.skip,
+                    };
+                }
+                default: {
+                    // Strip leading comment so we can check again
+                    remainingSrc = remainingSrc.slice(comment.length).trim();
+                    match = leadingComment.exec(remainingSrc);
+                    break;
+                }
+            }
+        }
+        return { filename, src, tester: test };
+    });
+}
 
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
@@ -178,13 +229,13 @@ export function testFixtureDir(
         absolute: true,
     });
 
-    for (const filename of matches) {
-        const src = fs.readFileSync(filename, 'utf-8');
-        const dirname = path.dirname(filename);
+    const filesToTest = getFilesToTest(matches);
 
+    for (const { filename, src, tester } of filesToTest) {
+        const dirname = path.dirname(filename);
         const fixtureName = path.relative(root, filename);
 
-        test(fixtureName, async () => {
+        tester(fixtureName, async () => {
             const outputs = await testFn({
                 src,
                 filename,
