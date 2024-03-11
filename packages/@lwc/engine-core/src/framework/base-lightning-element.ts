@@ -704,7 +704,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_STYLE, apiVersion)) {
             if (process.env.NODE_ENV !== 'production') {
                 logWarnOnce(
-                    'The `this.style` API within LightningElement returning the CSSStyleDeclaration is' +
+                    'The `this.style` API within LightningElement returning the CSSStyleDeclaration is ' +
                         'only supported in API version 62 and above. Increase the API version to use it.'
                 );
             }
