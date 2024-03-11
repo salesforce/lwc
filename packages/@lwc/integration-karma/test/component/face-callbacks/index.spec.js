@@ -1,5 +1,8 @@
 import { createElement } from 'lwc';
-import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
+import {
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+} from 'test-utils';
 
 import Container from 'face/container';
 import FormAssociated from 'face/formAssociated';
@@ -13,10 +16,38 @@ const createFormElement = () => {
     return container.shadowRoot.querySelector('form');
 };
 
-const createFaces = (tagName, ctor) => [
-    createElement(`face-${tagName}`, { is: ctor }),
-    createFaceUsingCec(`cec-face-${tagName}`, ctor.CustomElementConstructor),
-];
+const createFaceTests = (tagName, ctor, callback) => {
+    const scenarios = ['lwc.createElement', 'CustomElementConstructor'];
+
+    scenarios.forEach((scenario) => {
+        describe(scenario, () => {
+            const createFace = () => {
+                if (scenario === 'lwc.createElement') {
+                    return createFaceUsingLwcCreateElement(`face-${tagName}`, ctor);
+                } else {
+                    return createFaceUsingCec(`cec-face-${tagName}`, ctor.CustomElementConstructor);
+                }
+            };
+
+            callback(createFace, scenario);
+        });
+    });
+};
+
+const createFaceUsingLwcCreateElement = (tagName, ctor) => {
+    let elm;
+    const doCreate = () => {
+        elm = createElement(tagName, { is: ctor });
+    };
+    if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
+        doCreate();
+    } else {
+        expect(doCreate).toLogWarningDev(
+            /set static formAssociated to true, but form association is not enabled/
+        );
+    }
+    return elm;
+};
 
 const createFaceUsingCec = (tagName, ctor) => {
     if (!customElements.get(tagName)) {
@@ -26,10 +57,12 @@ const createFaceUsingCec = (tagName, ctor) => {
 };
 
 const faceSanityTest = (tagName, ctor) => {
-    createFaces(`${tagName}-form-associated`, ctor).forEach((face) => {
+    createFaceTests(`${tagName}-form-associated`, ctor, (createFace) => {
         let form;
+        let face;
 
         beforeEach(() => {
+            face = createFace();
             form = createFormElement();
             form.appendChild(face);
         });
@@ -41,7 +74,7 @@ const faceSanityTest = (tagName, ctor) => {
         });
 
         it('calls face lifecycle methods', () => {
-            testFaceLifecycleMethodsCallable(face);
+            testFaceLifecycleMethodsCallable(() => face);
         });
 
         it('is associated with the correct form', () => {
@@ -52,7 +85,7 @@ const faceSanityTest = (tagName, ctor) => {
             const container = document.body.querySelector('face-container');
             container.shadowRoot.appendChild(form2);
 
-            if (ENABLE_ELEMENT_INTERNALS) {
+            if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
                 expect(face.internals.form.className).toEqual('form1');
                 expect(face2.internals.form.className).toEqual('form2');
             }
@@ -60,7 +93,8 @@ const faceSanityTest = (tagName, ctor) => {
     });
 };
 
-const testFaceLifecycleMethodsCallable = (face) => {
+const testFaceLifecycleMethodsCallable = (createFace) => {
+    const face = createFace();
     const form = createFormElement();
     form.appendChild(face);
 
@@ -79,14 +113,15 @@ const testFaceLifecycleMethodsCallable = (face) => {
 };
 
 const notFormAssociatedSanityTest = (tagName, ctor) => {
-    it(`doesn't call face lifecycle methods when not form associated`, () => {
-        createFaces(`${tagName}-not-form-associated`, ctor).forEach((face) => {
-            testFaceLifecycleMethodsNotCallable(face);
+    createFaceTests(`${tagName}-not-form-associated`, ctor, (createFace) => {
+        it(`doesn't call face lifecycle methods when not form associated`, () => {
+            testFaceLifecycleMethodsNotCallable(createFace);
         });
     });
 };
 
-const testFaceLifecycleMethodsNotCallable = (face) => {
+const testFaceLifecycleMethodsNotCallable = (createFace) => {
+    const face = createFace();
     const form = createFormElement();
     form.appendChild(face);
 
@@ -115,9 +150,10 @@ if (typeof ElementInternals !== 'undefined') {
                 });
             } else {
                 describe('synthetic shadow', () => {
-                    it('cannot be used and throws an error', () => {
-                        const form = createFormElement();
-                        createFaces('synthetic-shadow', FormAssociated).forEach((face) => {
+                    createFaceTests('synthetic-shadow', FormAssociated, (createFace) => {
+                        it('cannot be used and throws an error', () => {
+                            const face = createFace();
+                            const form = createFormElement();
                             expect(() => form.appendChild(face)).toThrowCallbackReactionError(
                                 'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
                             );
@@ -140,19 +176,35 @@ if (typeof ElementInternals !== 'undefined') {
                     ctor: LightDomFormAssociated,
                 },
             ].forEach(({ name, tagName, ctor }) => {
-                const [face, cecFace] = createFaces(tagName, ctor);
-                it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
-                    // TODO [#3929]: Face should log a dev warning when used with synthetic lifecycle
-                    testFaceLifecycleMethodsNotCallable(face);
+                createFaceTests(tagName, ctor, (createFace, scenario) => {
+                    if (scenario === 'lwc.createElement') {
+                        it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
+                            testFaceLifecycleMethodsNotCallable(createFace);
+                        });
+                    } else {
+                        // Face throws error message when synthetic shadow is enabled
+                        if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
+                            it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
+                                // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
+                                testFaceLifecycleMethodsCallable(createFace);
+                            });
+                        } else {
+                            // synthetic shadow mode
+                            it(`${name} cannot call face lifecycle methods when using CustomElementConstructor`, () => {
+                                // this is always a callback reaction error, even in "synthetic lifecycle" mode,
+                                // because synthetic lifecycle mode only includes connected/disconnected callbacks,
+                                // not the FACE callbacks
+                                expect(() => {
+                                    const face = createFace();
+                                    const form = createFormElement();
+                                    form.appendChild(face);
+                                }).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
+                                    'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+                                );
+                            });
+                        }
+                    }
                 });
-
-                // Face throws error message when synthetic shadow is enabled
-                if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
-                    it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
-                        // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
-                        testFaceLifecycleMethodsCallable(cecFace);
-                    });
-                }
             });
         });
     }

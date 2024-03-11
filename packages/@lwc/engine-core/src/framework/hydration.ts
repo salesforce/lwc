@@ -24,7 +24,7 @@ import {
 import { logError, logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
-import { cloneAndOmitKey, parseStyleText } from './utils';
+import { cloneAndOmitKey, parseStyleText, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
@@ -321,7 +321,8 @@ function hydrateCustomElement(
 
     const { sel, mode, ctor, owner } = vnode;
     const { defineCustomElement, getTagName } = renderer;
-    defineCustomElement(StringToLowerCase.call(getTagName(elm)), Boolean(ctor.formAssociated));
+    const isFormAssociated = shouldBeFormAssociated(ctor);
+    defineCustomElement(StringToLowerCase.call(getTagName(elm)), isFormAssociated);
 
     const vm = createVM(elm, ctor, renderer, {
         mode,

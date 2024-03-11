@@ -95,9 +95,10 @@ export const enum APIFeature {
      */
     ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     /**
-     * If enabled, allows usage of the `attachInternals` and `ElementInternals` API
+     * If enabled, allows usage of the `attachInternals` and `ElementInternals` APIs, as well as
+     * Form-Associated Custom Elements (FACE).
      */
-    ENABLE_ELEMENT_INTERNALS,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
 }
 
 /**
@@ -118,7 +119,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
         case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
-        case APIFeature.ENABLE_ELEMENT_INTERNALS:
+        case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;

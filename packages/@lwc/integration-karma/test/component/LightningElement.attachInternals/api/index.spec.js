@@ -1,5 +1,8 @@
 import { createElement } from 'lwc';
-import { customElementCallbackReactionErrorListener, ENABLE_ELEMENT_INTERNALS } from 'test-utils';
+import {
+    customElementCallbackReactionErrorListener,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+} from 'test-utils';
 
 import ShadowDomCmp from 'ai/shadowDom';
 import LightDomCmp from 'ai/lightDom';
@@ -54,7 +57,7 @@ const attachInternalsSanityTest = (tagName, ctor) => {
     });
 };
 
-if (ENABLE_ELEMENT_INTERNALS) {
+if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
     if (typeof ElementInternals !== 'undefined') {
         // ElementInternals API is supported in the browser
         if (process.env.NATIVE_SHADOW) {
@@ -101,7 +104,7 @@ if (ENABLE_ELEMENT_INTERNALS) {
         // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
         // attachInternals API.
         expect(() => document.body.appendChild(elm)).toThrowError(
-            /The attachInternals API is only supported in API version 61 and above. To use this API please update the LWC component API version./
+            /The attachInternals API is only supported in API version 61 and above/
         );
     });
 }
