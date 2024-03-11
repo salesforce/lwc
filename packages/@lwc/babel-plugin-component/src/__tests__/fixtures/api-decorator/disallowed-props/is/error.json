@@ -1,10 +1,10 @@
 {
     "message": "LWC1110: Invalid property name \"is\". \"is\" is a reserved attribute.",
     "loc": {
-        "line": 3,
+        "line": 4,
         "column": 2,
-        "start": 100,
-        "length": 8
+        "start": 95,
+        "length": 7
     },
     "filename": "test.js"
 }
