@@ -43,9 +43,6 @@ const globalHtmlProperties = {
     spellcheck: {
         attribute: 'spellcheck',
     },
-    style: {
-        attribute: 'style',
-    },
     tabIndex: {
         attribute: 'tabindex',
     },
@@ -122,8 +119,6 @@ describe('global html properties', () => {
                     return 'numeric';
                 case 'lang':
                     return 'en';
-                case 'style':
-                    return 'display: block;';
                 case 'translate':
                     return 'yes';
                 default:

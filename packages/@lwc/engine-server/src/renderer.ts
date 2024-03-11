@@ -398,6 +398,7 @@ const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 /** Unsupported methods in SSR */
 
 const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
+const getStyle = unsupportedMethod('style') as (element: HTMLElement) => CSSStyleDeclaration;
 const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;
@@ -470,6 +471,7 @@ export const renderer = {
     getLastChild,
     getLastElementChild,
     getTagName,
+    getStyle,
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
