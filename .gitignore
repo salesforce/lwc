@@ -27,3 +27,7 @@ packages/@lwc/integration-tests/.env
 # dev mode caches
 tsconfig.tsbuildinfo
 .rollup.cache
+
+# Helper files used in test fixtures as a proxy for jest's only/skip directives
+.only
+.skip
