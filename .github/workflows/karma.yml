@@ -22,6 +22,7 @@ env:
   PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
   GITHUB_RUN_ID: ${{github.run_id}}
   COVERAGE: '1'
+  NODE_VERSION: '18.18.0'
 
 jobs:
   run-karma-tests-group-1:
@@ -38,7 +39,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.18.0'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
       - name: Install dependencies
@@ -80,7 +81,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.18.0'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
       - name: Install dependencies
@@ -121,7 +122,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.18.0'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
       - name: Install dependencies
@@ -165,7 +166,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.18.0'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
       - name: Install dependencies
