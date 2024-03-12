@@ -162,6 +162,8 @@
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-unsafe-argument": "off",
+        // This rule returns false positives with ! assertions, even with strictNullChecks(https://github.com/typescript-eslint/typescript-eslint/issues/1618) on it was complaining
+        "@typescript-eslint/no-unnecessary-type-assertion": "off",
 
         "jsdoc/require-jsdoc": ["warn", { "publicOnly": true }],
         "jsdoc/check-indentation": "error",

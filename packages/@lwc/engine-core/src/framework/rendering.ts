@@ -24,7 +24,7 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
-import { EmptyArray, shouldUseNativeCustomElementLifecycle } from './utils';
+import { EmptyArray, shouldBeFormAssociated, shouldUseNativeCustomElementLifecycle } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
@@ -337,7 +337,7 @@ function mountCustomElement(
     const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
         ctor as LightningElementConstructor
     );
-    const isFormAssociated = Boolean(ctor.formAssociated);
+    const isFormAssociated = shouldBeFormAssociated(ctor);
     const elm = createCustomElement(
         normalizedTagname,
         upgradeCallback,

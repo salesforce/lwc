@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Container from 'x/container';
 
 // This test only matters for synthetic shadow
@@ -11,7 +12,7 @@ if (!process.env.NATIVE_SHADOW) {
 
             // shadow grandparent
             expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-container_container' : 'lwc-7c9hba002d8'
+                LOWERCASE_SCOPE_TOKENS ? 'lwc-7c9hba002d8' : 'x-container_container'
             );
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
                 'rgb(0, 128, 0)'
@@ -27,7 +28,7 @@ if (!process.env.NATIVE_SHADOW) {
             // shadow grandchild
             const grandchild = child.querySelector('x-grandchild');
             expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-                process.env.API_VERSION <= 58 ? 'x-grandchild_grandchild' : 'lwc-42b236sbaik'
+                LOWERCASE_SCOPE_TOKENS ? 'lwc-42b236sbaik' : 'x-grandchild_grandchild'
             );
             expect(
                 getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor

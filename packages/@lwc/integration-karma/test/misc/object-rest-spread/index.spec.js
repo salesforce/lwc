@@ -1,3 +1,5 @@
+import { DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION } from 'test-utils';
+
 // It's useful to have Karma tests for this, so that we confirm legacy browsers still work
 describe('object rest spread transformation', () => {
     it('applies the correct transformation based on API version', () => {
@@ -10,12 +12,12 @@ describe('object rest spread transformation', () => {
 
         expect(test()).toEqual({ foo: 'foo', bar: 'bar' });
 
-        if (process.env.API_VERSION <= 59) {
-            // babel polyfill format
-            expect(test.toString()).not.toContain('...');
-        } else {
+        if (DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION) {
             // native format
             expect(test.toString()).toContain('...');
+        } else {
+            // babel polyfill format
+            expect(test.toString()).not.toContain('...');
         }
     });
 });
