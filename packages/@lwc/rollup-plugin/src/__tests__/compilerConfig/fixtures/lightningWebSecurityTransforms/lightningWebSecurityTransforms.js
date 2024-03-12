@@ -10,6 +10,7 @@ export default class extends LightningElement {
             break;
         }
     }
+    // eslint-disable-next-line @typescript-eslint/require-await
     async * baz() {
         yield 1;
         yield 2;

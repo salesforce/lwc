@@ -5,6 +5,7 @@ export default class Rehydration extends LightningElement {
     @track reactive = 0;
 
     connectedCallback() {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.resolve().then(() => {
             this.reactive = 1;
         });

@@ -3,6 +3,8 @@ export default class Text extends LightningElement {
   foo = 1;
 
   @api
-  get foo() {}
+  get foo() {
+    return undefined
+  }
   set foo(value) {}
 }

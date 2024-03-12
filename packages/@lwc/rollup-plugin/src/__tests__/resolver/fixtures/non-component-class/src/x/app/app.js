@@ -9,7 +9,6 @@ class AlsoNotALightningElement {
 
 export default class App extends LightningElement {
     renderedCallback() {
-        // eslint-disable-next-line no-console
         console.log(NotALightningElement, AlsoNotALightningElement)
     }
 }

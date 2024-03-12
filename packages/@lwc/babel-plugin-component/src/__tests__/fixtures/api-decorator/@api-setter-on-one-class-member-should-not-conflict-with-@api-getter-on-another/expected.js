@@ -2,7 +2,9 @@ import { registerDecorators as _registerDecorators, registerComponent as _regist
 import _tmpl from "./test.html";
 class Test extends LightningElement {
   set first(value) {}
-  get first() {}
+  get first() {
+    return undefined;
+  }
   get second() {
     return this.s;
   }
