@@ -1,5 +1,6 @@
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
+/* eslint-disable no-useless-computed-key */
 import { getFoo, getBar } from "data-service";
 const symbol = Symbol.for("key");
 class Test extends LightningElement {

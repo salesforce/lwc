@@ -2,7 +2,6 @@ node_modules/
 dist/
 lib/
 coverage/
-fixtures/
 public/
 __benchmarks_results__/
 playground/

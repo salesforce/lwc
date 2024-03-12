@@ -2,7 +2,9 @@ import { api, LightningElement } from "lwc";
 export default class Test extends LightningElement {
   @api
   set first(value) {}
-  get first() {}
+  get first() {
+    return undefined
+  }
 
   @api
   get second() {

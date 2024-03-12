@@ -3,11 +3,13 @@ import _tmpl from "./test.html";
 class Text extends LightningElement {
   publicProp;
   privateProp;
-  get aloneGet() {}
-  get myget() {}
-  set myget(x) {
-    return 1;
+  get aloneGet() {
+    return undefined;
   }
+  get myget() {
+    return undefined;
+  }
+  set myget(x) {}
   m1() {}
   m2() {}
   static ctor = "ctor";

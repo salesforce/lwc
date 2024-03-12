@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-computed-key */
 import { wire, LightningElement } from "lwc";
 import { getFoo, getBar } from "data-service";
 

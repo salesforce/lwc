@@ -185,6 +185,8 @@
 
     "overrides": [
         {
+            // The main tsconfig used for this repo excludes tests/scripts, so we must use a second
+            // tsconfig to enable typed linting of those files.
             "files": [
                 "**/__tests__/**",
                 "packages/@lwc/*/scripts/**",
@@ -230,6 +232,7 @@
             }
         },
         {
+            // Add jest-specific rules only to test files
             "files": ["**/__tests__/**", "**/__mocks__/**", "packages/@lwc/integration-karma/**"],
 
             "env": {
@@ -274,6 +277,7 @@
             }
         },
         {
+            // Test files aren't exported, so don't need headers
             "files": [
                 "packages/@lwc/integration-tests/src/**/!(*.spec.js)",
                 "packages/@lwc/integration-karma/test/**",
@@ -281,6 +285,22 @@
             ],
             "rules": {
                 "header/header": "off"
+            }
+        },
+        {
+            // Test fixtures aren't real code, so don't need all the rules
+            "files": ["packages/@lwc/*/src/__tests__/**/fixtures/**"],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": "off",
+                "@typescript-eslint/restrict-plus-operands": "off",
+                "header/header": "off",
+                "import/order": "off",
+                "no-console": "off",
+                // This has a lot of false positives for getters/setters
+                "no-dupe-class-members": "off",
+                "no-prototype-builtins": "off",
+                "no-undef": "off",
+                "prefer-const": "off"
             }
         },
         {
