@@ -133,9 +133,22 @@ type TestFixtureOutput = { [filename: string]: unknown };
 type TestFixtureFileData = { filename: string; src: string; tester: jest.It };
 
 const LwcTestDirectives = {
-    Only: '/* LWC test only */',
-    Skip: '/* LWC test skip */',
+    Only: 'LWC test only',
+    Skip: 'LWC test skip',
 } as const;
+
+// Matches comments at the start of a file; should use first capture group for comment content
+const leadingComments = [
+    /^\/\/(.*)\n/, // Single-line JS comment
+    /^\/\*(.*?)\*\/\n?/s, // JS block comment / CSS comment
+    /^<!--(.*?)-->\n?/s, // HTML comment
+];
+const findMatch = (str: string) => {
+    for (const regex of leadingComments) {
+        const match = regex.exec(str);
+        if (match) return match;
+    }
+};
 
 /**
  * Parses fixtures for LWC test directives, which enable file-based tests to make use of jest's
@@ -145,15 +158,14 @@ const LwcTestDirectives = {
  * @example // See usage below
  */
 function getFilesToTest(filenames: string[]): TestFixtureFileData[] {
-    // Matches comments at the start of a file
-    const leadingComment = /^(\/\/.*?\n|\/\*[\s\S]*?\*\/)/;
     return filenames.map((filename) => {
         const src = fs.readFileSync(filename, 'utf-8');
         let remainingSrc = src.trim();
-        let match = leadingComment.exec(remainingSrc);
+        let match = findMatch(remainingSrc);
         while (match) {
-            const comment = match[0];
-            switch (comment) {
+            // `comment` includes "//", `content` excludes it
+            const [comment, content] = match;
+            switch (content.trim()) {
                 case LwcTestDirectives.Only: {
                     return {
                         filename,
@@ -173,7 +185,7 @@ function getFilesToTest(filenames: string[]): TestFixtureFileData[] {
                 default: {
                     // Strip leading comment so we can check again
                     remainingSrc = remainingSrc.slice(comment.length).trim();
-                    match = leadingComment.exec(remainingSrc);
+                    match = findMatch(remainingSrc);
                     break;
                 }
             }
