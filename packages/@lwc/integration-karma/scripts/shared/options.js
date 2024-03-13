@@ -34,9 +34,6 @@ const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
 
-// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-const FORCE_LWC_V5_COMPILER_FOR_TEST = Boolean(process.env.FORCE_LWC_V5_COMPILER_FOR_TEST);
-
 module.exports = {
     // Test configuration
     LEGACY_BROWSERS,
@@ -47,7 +44,6 @@ module.exports = {
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
     API_VERSION,
-    FORCE_LWC_V5_COMPILER_FOR_TEST,
     ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),

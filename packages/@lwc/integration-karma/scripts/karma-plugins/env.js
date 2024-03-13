@@ -22,7 +22,6 @@ const {
     ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     NODE_ENV_FOR_TEST,
     API_VERSION,
-    FORCE_LWC_V5_COMPILER_FOR_TEST,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -50,7 +49,6 @@ function createEnvFile() {
                 ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: ${ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION},
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
                 API_VERSION: ${JSON.stringify(API_VERSION)},
-                FORCE_LWC_V5_COMPILER_FOR_TEST: ${JSON.stringify(FORCE_LWC_V5_COMPILER_FOR_TEST)}
             }
         };
     `
