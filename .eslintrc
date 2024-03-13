@@ -349,6 +349,16 @@
             "rules": {
                 "jsdoc/require-example": "off"
             }
+        },
+        {
+            // These aren't JS files, but we leverage eslint to warn if we accidentally try to commit
+            // them. (We don't .gitignore them because we want to be loud about their presence.)
+            "files": ["**/.only", "**/.skip"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"],
+            "rules": {
+                "header/header": "off",
+                "@lwc/lwc-internal/forbidden-filename": "error"
+            }
         }
     ]
 }
