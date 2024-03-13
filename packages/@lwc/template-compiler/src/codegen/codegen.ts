@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { APIVersion, getAPIVersionFromNumber, SVG_NAMESPACE } from '@lwc/shared';
+import { APIVersion, getAPIVersionFromNumber, isUndefined, SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
@@ -19,6 +19,7 @@ import {
     RefDirective,
     Text,
     StaticElement,
+    Attribute,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -28,6 +29,7 @@ import {
 import {
     isComment,
     isElement,
+    isExpression,
     isPreserveCommentsDirective,
     isRenderModeDirective,
 } from '../shared/ast';
@@ -35,7 +37,7 @@ import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
-import { bindComplexExpression } from './expression';
+import { bindAttributeExpression, bindComplexExpression } from './expression';
 
 // structuredClone is only available in Node 17+
 // https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
@@ -150,6 +152,8 @@ export default class CodeGen {
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
+
+    staticExpressionMap = new WeakMap<Attribute, string>();
 
     constructor({
         root,
@@ -533,7 +537,9 @@ export default class CodeGen {
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
                 : this.generateKey();
-        const html = serializeStaticElement(element, this.preserveComments);
+        const staticParts = this.genStaticParts(element);
+        // Generate static parts prior to serialization to inject the corresponding static part Id into the serialized output.
+        const html = serializeStaticElement(element, this.preserveComments, this);
 
         const parseMethod =
             element.name !== 'svg' && element.namespace === SVG_NAMESPACE
@@ -569,7 +575,6 @@ export default class CodeGen {
         const args: t.Expression[] = [identifier, t.literal(key)];
 
         // Only add the third argument (staticParts) if this element needs it
-        const staticParts = this.genStaticParts(element);
         if (staticParts) {
             args.push(staticParts);
         }
@@ -613,6 +618,26 @@ export default class CodeGen {
                     }
                 }
 
+                const attributeExpressions = [];
+                for (const attribute of node.attributes) {
+                    const { name, value } = attribute;
+                    if (isExpression(value)) {
+                        this.staticExpressionMap.set(attribute, `a${partId}:${name}`);
+                        attributeExpressions.push(
+                            t.property(
+                                t.literal(name),
+                                bindAttributeExpression(attribute, node, this, false)
+                            )
+                        );
+                    }
+                }
+
+                if (attributeExpressions.length) {
+                    addDatabagProp(
+                        t.property(t.identifier('attrs'), t.objectExpression(attributeExpressions))
+                    );
+                }
+
                 // For depth-first traversal, children must be preprended in order, so that they are processed before
                 // siblings. Note that this is consistent with the order used in the diffing algo as well as
                 // `traverseAndSetElements` in @lwc/engine-core.
@@ -636,5 +661,16 @@ export default class CodeGen {
             t.literal(partId),
             t.objectExpression(databagProperties),
         ]);
+    }
+
+    getStaticExpressionToken(node: Attribute): string {
+        const token = this.staticExpressionMap.get(node);
+        if (isUndefined(token)) {
+            // It should not be possible to hit this code path
+            throw new Error(
+                `Template compiler internal error, unable to map ${node.name} to a static expression.`
+            );
+        }
+        return token;
     }
 }

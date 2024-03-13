@@ -6,7 +6,8 @@
  */
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
-import { isElement, isText, isComment } from '../shared/ast';
+import { isElement, isText, isComment, isExpression } from '../shared/ast';
+import CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
 
@@ -30,7 +31,7 @@ function templateStringEscape(str: string): string {
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
 
-function serializeAttrs(element: Element): string {
+function serializeAttrs(element: Element, codeGen: CodeGen): string {
     /**
      * 0: styleToken in existing class attr
      * 1: styleToken for added class attr
@@ -39,7 +40,15 @@ function serializeAttrs(element: Element): string {
     const attrs: string[] = [];
     let hasClassAttr = false;
 
-    const collector = ({ name, value }: { name: string; value: string | boolean }) => {
+    const collector = ({
+        name,
+        value,
+        hasExpression,
+    }: {
+        name: string;
+        value: string | boolean;
+        hasExpression?: boolean;
+    }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
         if (name === 'class') {
@@ -47,17 +56,23 @@ function serializeAttrs(element: Element): string {
             v += '${0}';
         }
         if (typeof v === 'string') {
-            attrs.push(`${name}="${htmlEscape(v, true)}"`);
+            // Inject a placeholder where the staticPartId will go when an expression occurs.
+            // This is only needed for SSR to inject the expression value during serialization.
+            attrs.push(hasExpression ? `\${"${v}"}` : ` ${name}="${htmlEscape(v, true)}"`);
         } else {
-            attrs.push(name);
+            attrs.push(` ${name}`);
         }
     };
 
     element.attributes
         .map((attr) => {
+            const hasExpression = isExpression(attr.value);
             return {
+                hasExpression,
                 name: attr.name,
-                value: (attr.value as Literal).value,
+                value: hasExpression
+                    ? codeGen.getStaticExpressionToken(attr)
+                    : (attr.value as Literal).value,
             };
         })
         .forEach(collector);
@@ -74,20 +89,21 @@ function serializeAttrs(element: Element): string {
         })
         .forEach(collector);
 
-    return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${3}');
+    return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 
 function serializeChildren(
     children: ChildNode[],
     parentTagName: string,
-    preserveComments: boolean
+    preserveComments: boolean,
+    codeGen: CodeGen
 ): string {
     let html = '';
 
     children.forEach((child) => {
         /* istanbul ignore else  */
         if (isElement(child)) {
-            html += serializeStaticElement(child, preserveComments);
+            html += serializeStaticElement(child, preserveComments, codeGen);
         } else if (isText(child)) {
             html += serializeTextNode(child, rawContentElements.has(parentTagName.toUpperCase()));
         } else if (isComment(child)) {
@@ -117,13 +133,17 @@ function serializeTextNode(text: Text, useRawContent: boolean): string {
     return templateStringEscape(content);
 }
 
-export function serializeStaticElement(element: Element, preserveComments: boolean): string {
+export function serializeStaticElement(
+    element: Element,
+    preserveComments: boolean,
+    codeGen: CodeGen
+): string {
     const { name: tagName, namespace } = element;
 
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    let html = `<${tagName}${serializeAttrs(element)}`;
+    let html = `<${tagName}${serializeAttrs(element, codeGen)}`;
 
     if (isForeignElement && !hasChildren) {
         html += '/>';
@@ -131,7 +151,7 @@ export function serializeStaticElement(element: Element, preserveComments: boole
     }
 
     html += '>';
-    html += serializeChildren(element.children, tagName, preserveComments);
+    html += serializeChildren(element.children, tagName, preserveComments, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;

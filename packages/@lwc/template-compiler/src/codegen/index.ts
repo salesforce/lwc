@@ -75,6 +75,7 @@ import {
     styleMapToStyleDeclsAST,
 } from './helpers';
 import { format as formatModule } from './formatters/module';
+import { bindAttributeExpression } from './expression';
 
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
@@ -410,41 +411,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const isUsedAsAttribute = isAttribute(element, attrName);
 
         if (isExpression(attrValue)) {
-            const expression = codeGen.bindExpression(attrValue);
-
-            // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
-            if (isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
-                // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
-                // without handling special cases at runtime.
-                return codeGen.genBooleanAttributeExpr(expression);
-            }
-            if (attrName === 'tabindex') {
-                return codeGen.genTabIndex([expression]);
-            }
-            if (attrName === 'id' || isIdReferencingAttribute(attrName)) {
-                return codeGen.genScopedId(expression);
-            }
-            if (
-                codeGen.scopeFragmentId &&
-                isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace)
-            ) {
-                return codeGen.genScopedFragId(expression);
-            }
-            if (isSvgUseHref(elmName, attrName, namespace)) {
-                if (addLegacySanitizationHook) {
-                    codeGen.usedLwcApis.add('sanitizeAttribute');
-
-                    return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(elmName),
-                        t.literal(namespace),
-                        t.literal(attrName),
-                        codeGen.genScopedFragId(expression),
-                    ]);
-                }
-                return codeGen.genScopedFragId(expression);
-            }
-
-            return expression;
+            return bindAttributeExpression(attr, element, codeGen, addLegacySanitizationHook);
         } else if (isStringLiteral(attrValue)) {
             if (attrName === 'id') {
                 return codeGen.genScopedId(attrValue.value);
