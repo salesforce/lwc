@@ -370,7 +370,7 @@
             "extends": ["plugin:@typescript-eslint/disable-type-checked"],
             "rules": {
                 "header/header": "off",
-                "@lwc/lwc-internal/forbidden-filename": "skip"
+                "@lwc/lwc-internal/forbidden-filename": "off"
             }
         }
     ]
