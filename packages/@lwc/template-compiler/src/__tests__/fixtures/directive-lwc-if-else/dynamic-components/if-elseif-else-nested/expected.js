@@ -6,7 +6,7 @@ const $fragment4 = parseFragment`<h1${3}>inner elseif</h1>`;
 const $fragment5 = parseFragment`<h1${3}>inner else</h1>`;
 const $fragment6 = parseFragment`<h1${3}>outer else</h1>`;
 const stc0 = {
-  key: 6,
+  key: 10,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -16,28 +16,28 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     $cmp.outer.if
-      ? api_fragment(0, [api_static_fragment($fragment1, 1)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment1, 2)], 0)
       : $cmp.outer.elseif1
-      ? api_fragment(0, [api_static_fragment($fragment2, 2)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment2, 4)], 0)
       : $cmp.outer.elseif2
       ? api_fragment(
           0,
           [
             $cmp.inner.if
-              ? api_fragment(3, [api_static_fragment($fragment3, 4)], 0)
+              ? api_fragment(5, [api_static_fragment($fragment3, 7)], 0)
               : $cmp.inner.elseif
-              ? api_fragment(3, [api_static_fragment($fragment4, 5)], 0)
+              ? api_fragment(5, [api_static_fragment($fragment4, 9)], 0)
               : $cmp.inner.elseif2
               ? api_fragment(
-                  3,
+                  5,
                   [api_dynamic_component($cmp.trackedProp.foo, stc0)],
                   0
                 )
-              : api_fragment(3, [api_static_fragment($fragment5, 7)], 0),
+              : api_fragment(5, [api_static_fragment($fragment5, 12)], 0),
           ],
           0
         )
-      : api_fragment(0, [api_static_fragment($fragment6, 8)], 0),
+      : api_fragment(0, [api_static_fragment($fragment6, 14)], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

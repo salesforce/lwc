@@ -19,7 +19,7 @@ const stc0 = {
     reversed: "true",
     selected: "true",
   },
-  key: 1,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_static_fragment($fragment1, 0),
+    api_static_fragment($fragment1, 1),
     api_custom_element("x-foo", _xFoo, stc0),
     api_element("input", {
       attrs: {
@@ -36,7 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         disabled: "",
         title: "foo",
       },
-      key: 2,
+      key: 3,
     }),
   ];
   /*LWC compiler vX.X.X*/

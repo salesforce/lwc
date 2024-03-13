@@ -6,10 +6,10 @@ const stc0 = {
   key: 1,
 };
 const stc1 = {
-  key: 3,
+  key: 4,
 };
 const stc2 = {
-  key: 5,
+  key: 7,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_dynamic_component($cmp.ctor1, stc0, [
-              api_static_fragment($fragment1, 2),
+              api_static_fragment($fragment1, 3),
             ]),
           ],
           0
@@ -33,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_dynamic_component($cmp.ctor2, stc1, [
-              api_static_fragment($fragment2, 4),
+              api_static_fragment($fragment2, 6),
             ]),
           ],
           0
@@ -42,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_dynamic_component($cmp.ctor3, stc2, [
-              api_static_fragment($fragment3, 6),
+              api_static_fragment($fragment3, 9),
             ]),
           ],
           0

@@ -5,19 +5,19 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 2,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, dc: api_dynamic_component } = $api;
   return [
     $cmp.isTrue
       ? api_dynamic_component($cmp.ctor, stc0, [
-          api_static_fragment($fragment1, 1),
+          api_static_fragment($fragment1, 2),
         ])
       : null,
     !$cmp.isTrue2
       ? api_dynamic_component($cmp.ctor, stc1, [
-          api_static_fragment($fragment2, 3),
+          api_static_fragment($fragment2, 5),
         ])
       : null,
   ];

@@ -9,31 +9,31 @@ const stc1 = {
 };
 const stc2 = {
   slotAssignment: "",
-  key: 3,
+  key: 4,
 };
 const stc3 = {
   slotAssignment: "true",
-  key: 4,
+  key: 5,
 };
 const stc4 = {
   slotAssignment: "header",
-  key: 7,
+  key: 8,
 };
 const stc5 = {
   slotAssignment: "",
-  key: 8,
+  key: 9,
 };
 const stc6 = {
   slotAssignment: "undefined",
-  key: 9,
+  key: 10,
 };
 const stc7 = {
   slotAssignment: "null",
-  key: 10,
+  key: 11,
 };
 const stc8 = {
   slotAssignment: "",
-  key: 11,
+  key: 12,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -45,14 +45,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_custom_element("ns-cmp", _nsCmp, stc1, [
-        api_static_fragment($fragment1, 2),
+        api_static_fragment($fragment1, 3),
         api_element("p", stc2, [api_text("Slot Empty String Attribute")]),
         api_element("p", stc3, [api_text("Slot Boolean Attribute")]),
         api_element(
           "p",
           {
             slotAssignment: $cmp.slot.name,
-            key: 5,
+            key: 6,
           },
           [api_text("Dynamic Slot Content")]
         ),
@@ -60,7 +60,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "p",
           {
             slotAssignment: $cmp.slotVariable,
-            key: 6,
+            key: 7,
           },
           [api_text("Variable As Slot Assignment")]
         ),

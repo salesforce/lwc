@@ -79,14 +79,15 @@ import { format as formatModule } from './formatters/module';
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
+        const databag = elementDataBag(element, slotParentName);
+
         if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
             return codeGen.genStaticElement(element as StaticElement, slotParentName);
         }
 
-        let res: t.Expression;
-        const databag = elementDataBag(element, slotParentName);
         const children = transformChildren(element);
+        let res: t.Expression;
 
         const { name } = element;
         // lwc:dynamic directive

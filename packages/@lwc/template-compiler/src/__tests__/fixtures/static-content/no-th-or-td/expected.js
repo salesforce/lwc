@@ -8,7 +8,7 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 4,
+  key: 5,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(2, row.id),
             },
-            [api_static_fragment($fragment1, 3)]
+            [api_static_fragment($fragment1, 4)]
           );
         })
       ),
@@ -39,9 +39,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_element(
             "tr",
             {
-              key: api_key(5, row.id),
+              key: api_key(6, row.id),
             },
-            [api_static_fragment($fragment2, 6)]
+            [api_static_fragment($fragment2, 8)]
           );
         })
       ),
