@@ -16,6 +16,8 @@ import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
 import DeepListener from 'x/deepListener';
 import Comments from 'x/comments';
 import PreserveComments from 'x/preserveComments';
+import AttributeExpression from 'x/attributeExpression';
+import DeepAttributeExpression from 'x/DeepAttributeExpression';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -430,5 +432,53 @@ describe('static parts applies to comments correctly', () => {
         bar.click();
         expect(elm.barWasClicked).toBe(true);
         expect(refs.bar).toBe(bar);
+    });
+});
+
+describe('static optimization with attributes', () => {
+    it('applies expressions on mount', async () => {
+        const elm = createElement('x-attribute-expression', { is: AttributeExpression });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        const nodes = extractDataIds(elm);
+        expect(nodes['loaded-on-mount'].getAttribute('data-mount')).toEqual('loaded on mount');
+        expect(nodes['loaded-on-mount-nested'].getAttribute('data-mount')).toEqual(
+            'loaded on mount'
+        );
+    });
+
+    it('updates expressions when data changes', async () => {
+        const elm = createElement('x-attribute-expression', { is: AttributeExpression });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        const nodes = extractDataIds(elm);
+        expect(nodes['loaded-on-update'].getAttribute('data-update')).toBe(null);
+        expect(nodes['loaded-on-update-nested'].getAttribute('data-update')).toBe(null);
+
+        elm.update = 'expression updated';
+        await Promise.resolve();
+
+        expect(nodes['loaded-on-update'].getAttribute('data-update')).toEqual('expression updated');
+        expect(nodes['loaded-on-update-nested'].getAttribute('data-update')).toEqual(
+            'expression updated'
+        );
+    });
+
+    it('applies expression from deeply nested data structure', async () => {
+        const elm = createElement('x-deep-attribute-expression', { is: DeepAttributeExpression });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        const nodes = extractDataIds(elm);
+        expect(nodes['deep1'].getAttribute('data-dynamic')).toEqual('1');
+        expect(nodes['deep1nested'].getAttribute('data-dynamic')).toEqual('1');
+        expect(nodes['deep2'].getAttribute('data-dynamic')).toEqual('2');
+        expect(nodes['deep2nested'].getAttribute('data-dynamic')).toEqual('2');
+        expect(nodes['deep3'].getAttribute('data-dynamic')).toEqual('3');
+        expect(nodes['deep3nested'].getAttribute('data-dynamic')).toEqual('3');
+        expect(nodes['deep4'].getAttribute('data-dynamic')).toEqual('4');
+        expect(nodes['deep4nested'].getAttribute('data-dynamic')).toEqual('4');
     });
 });

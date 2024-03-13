@@ -1,0 +1,25 @@
+<template>
+    <!-- 1 level deep -->
+    <div data-id="deep1" data-dynamic={one}></div>
+    <div>
+        <div data-id="deep1nested" data-dynamic={one}></div>
+    </div>
+
+    <!-- 2 levels deep -->
+    <div data-id="deep2" data-dynamic={un.deux}></div>
+    <div>
+        <div data-id="deep2nested" data-dynamic={un.deux}></div>
+    </div>
+
+    <!-- 3 levels deep -->
+    <div data-id="deep3" data-dynamic={uno.dos.tres}></div>
+    <div>
+        <div data-id="deep3nested" data-dynamic={uno.dos.tres}></div>
+    </div>
+
+    <!-- 4 levels deep -->
+    <div data-id="deep4" data-dynamic={ichi.ni.san.shi}></div>
+    <div>
+        <div data-id="deep4nested" data-dynamic={ichi.ni.san.shi}></div>
+    </div>
+</template>
