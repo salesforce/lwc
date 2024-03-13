@@ -1,0 +1,197 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 219,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 208,
+                "end": 219
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 12,
+                    "start": 15,
+                    "end": 207,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 201
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 6,
+                        "endLine": 8,
+                        "endColumn": 12,
+                        "start": 201,
+                        "end": 207
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "aria-described-by",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "scoped",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 35,
+                                "start": 29,
+                                "end": 55
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 35,
+                            "start": 29,
+                            "end": 55
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-active-descendant",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "scoped",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 40,
+                                "start": 64,
+                                "end": 95
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 40,
+                            "start": 64,
+                            "end": 95
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-error-message",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "scoped",
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 36,
+                                "start": 104,
+                                "end": 131
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 36,
+                            "start": 104,
+                            "end": 131
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-flow-to",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "scoped",
+                            "location": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 30,
+                                "start": 140,
+                                "end": 161
+                            }
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 30,
+                            "start": 140,
+                            "end": 161
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-labelled-by",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "scoped",
+                            "location": {
+                                "startLine": 7,
+                                "startColumn": 9,
+                                "endLine": 7,
+                                "endColumn": 34,
+                                "start": 170,
+                                "end": 195
+                            }
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 34,
+                            "start": 170,
+                            "end": 195
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

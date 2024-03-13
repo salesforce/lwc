@@ -3,7 +3,7 @@ const $fragment1 = parseFragment`<p hidden${3}>x</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, h: api_element } = $api;
   return [
-    api_static_fragment($fragment1(), 0),
+    api_static_fragment($fragment1, 0),
     api_element("input", {
       attrs: {
         readonly: $cmp.getReadOnly ? "" : null,

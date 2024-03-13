@@ -7,9 +7,9 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, dc: api_dynamic_component } = $api;
   return [
-    api_static_fragment($fragment1(), 0),
+    api_static_fragment($fragment1, 0),
     api_dynamic_component($cmp.trackedProp.foo, stc0),
-    api_static_fragment($fragment2(), 2),
+    api_static_fragment($fragment2, 2),
   ];
   /*LWC compiler vX.X.X*/
 }

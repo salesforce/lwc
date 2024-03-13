@@ -8,9 +8,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, ddc: api_deprecated_dynamic_component } =
     $api;
   return [
-    api_static_fragment($fragment1(), 0),
+    api_static_fragment($fragment1, 0),
     api_deprecated_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0),
-    api_static_fragment($fragment2(), 2),
+    api_static_fragment($fragment2, 2),
   ];
   /*LWC compiler vX.X.X*/
 }

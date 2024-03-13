@@ -16,17 +16,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     $cmp.outer.if
-      ? api_fragment(0, [api_static_fragment($fragment1(), 1)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment1, 1)], 0)
       : $cmp.outer.elseif1
-      ? api_fragment(0, [api_static_fragment($fragment2(), 2)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment2, 2)], 0)
       : $cmp.outer.elseif2
       ? api_fragment(
           0,
           [
             $cmp.inner.if
-              ? api_fragment(3, [api_static_fragment($fragment3(), 4)], 0)
+              ? api_fragment(3, [api_static_fragment($fragment3, 4)], 0)
               : $cmp.inner.elseif
-              ? api_fragment(3, [api_static_fragment($fragment4(), 5)], 0)
+              ? api_fragment(3, [api_static_fragment($fragment4, 5)], 0)
               : $cmp.inner.elseif2
               ? api_fragment(
                   3,
@@ -39,11 +39,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   ],
                   0
                 )
-              : api_fragment(3, [api_static_fragment($fragment5(), 7)], 0),
+              : api_fragment(3, [api_static_fragment($fragment5, 7)], 0),
           ],
           0
         )
-      : api_fragment(0, [api_static_fragment($fragment6(), 8)], 0),
+      : api_fragment(0, [api_static_fragment($fragment6, 8)], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

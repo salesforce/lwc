@@ -39,9 +39,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_static_fragment($fragment1(), 0),
-    api_static_fragment($fragment2(), 1),
-    api_static_fragment($fragment3(), 2),
+    api_static_fragment($fragment1, 0),
+    api_static_fragment($fragment2, 1),
+    api_static_fragment($fragment3, 2),
     api_element("input", {
       attrs: {
         required: $cmp.computed ? "" : null,
@@ -49,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       props: stc0,
       key: 3,
     }),
-    api_static_fragment($fragment4(), 4),
+    api_static_fragment($fragment4, 4),
     api_custom_element("x-foo", _xFoo, stc1, [api_text("boolean present")]),
     api_custom_element("x-foo", _xFoo, stc2, [api_text("empty string")]),
     api_custom_element("x-foo", _xFoo, stc3, [api_text("string value")]),

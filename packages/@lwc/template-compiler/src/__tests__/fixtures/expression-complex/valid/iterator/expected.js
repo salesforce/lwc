@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: api_key(0, okazu),
       },
       [
-        api_static_fragment($fragment1(), 1, [
+        api_static_fragment($fragment1, 1, [
           api_static_part(0, {
             on: {
               click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),

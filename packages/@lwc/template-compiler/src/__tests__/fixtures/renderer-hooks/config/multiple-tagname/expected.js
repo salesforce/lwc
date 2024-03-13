@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         renderer: renderer,
       },
       [
-        api_static_fragment($fragment1(), 1),
+        api_static_fragment($fragment1, 1),
         api_element("p", stc1, [
           api_text("London is the capital of "),
           api_element(
@@ -42,10 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 4,
         renderer: renderer,
       },
-      [
-        api_static_fragment($fragment2(), 5),
-        api_static_fragment($fragment3(), 6),
-      ]
+      [api_static_fragment($fragment2, 5), api_static_fragment($fragment3, 6)]
     ),
   ];
   /*LWC compiler vX.X.X*/

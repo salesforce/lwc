@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment1, 1),
     api_custom_element("ns-bar", _nsBar, {
       classMap: stc0,
       attrs: stc1,
@@ -66,7 +66,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         svg: true,
       }),
     ]),
-    api_static_fragment($fragment2(), 5),
+    api_static_fragment($fragment2, 5),
     api_element("div", {
       className: $cmp.foo,
       attrs: stc3,

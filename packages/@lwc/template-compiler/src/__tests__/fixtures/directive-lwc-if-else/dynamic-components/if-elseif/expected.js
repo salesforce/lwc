@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     $cmp.visible.if
-      ? api_fragment(0, [api_static_fragment($fragment1(), 1)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment1, 1)], 0)
       : $cmp.visible.elseif
       ? api_fragment(0, [api_dynamic_component($cmp.trackedProp.foo, stc0)], 0)
       : null,

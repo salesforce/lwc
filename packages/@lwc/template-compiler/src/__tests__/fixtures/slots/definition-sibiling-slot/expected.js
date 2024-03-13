@@ -20,10 +20,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot(
         "other",
         stc1,
-        [api_static_fragment($fragment1(), "@other:2")],
+        [api_static_fragment($fragment1, "@other:2")],
         $slotset
       ),
-      api_slot("", stc2, [api_static_fragment($fragment2(), "@:4")], $slotset),
+      api_slot("", stc2, [api_static_fragment($fragment2, "@:4")], $slotset),
     ]),
   ];
   /*LWC compiler vX.X.X*/

@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("Should get custom renderer")]
     ),
-    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment1, 1),
   ];
   /*LWC compiler vX.X.X*/
 }

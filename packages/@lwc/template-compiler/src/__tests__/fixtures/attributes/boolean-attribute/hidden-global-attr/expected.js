@@ -36,9 +36,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_static_fragment($fragment1(), 0),
-    api_static_fragment($fragment2(), 1),
-    api_static_fragment($fragment3(), 2),
+    api_static_fragment($fragment1, 0),
+    api_static_fragment($fragment2, 1),
+    api_static_fragment($fragment3, 2),
     api_element(
       "p",
       {
@@ -49,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("computed value, should be resolved in component")]
     ),
-    api_static_fragment($fragment4(), 4),
+    api_static_fragment($fragment4, 4),
     api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
     api_custom_element("x-foo", _xFoo, stc1, [
       api_text("empty string, should be true"),

@@ -4,8 +4,8 @@ const $fragment2 = parseFragment`<div data-foo="{}"${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [
-    api_static_fragment($fragment1(), 0),
-    api_static_fragment($fragment2(), 1),
+    api_static_fragment($fragment1, 0),
+    api_static_fragment($fragment2, 1),
   ];
   /*LWC compiler vX.X.X*/
 }
