@@ -25,6 +25,16 @@ function createTestElement(tag, component) {
 }
 
 describe('Slotting', () => {
+    it('should render properly', () => {
+        const nodes = createTestElement('x-default-slot', BasicSlot);
+
+        expect(Array.from(nodes['x-container'].children)).toEqual([
+            nodes['upper-text'],
+            nodes['default-text'],
+            nodes['lower-text'],
+        ]);
+    });
+
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
         expect(Array.from(nodes['x-light-container'].children)).toEqual([
