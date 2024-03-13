@@ -3,7 +3,8 @@ import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>boolean present</p>`;
 const $fragment2 = parseFragment`<p hidden=""${3}>empty string, should be true</p>`;
 const $fragment3 = parseFragment`<p hidden="other than true"${3}>string value, should be true</p>`;
-const $fragment4 = parseFragment`<p hidden="3"${3}>integer value, should be true</p>`;
+const $fragment4 = parseFragment`<p${"a0:hidden"}${3}>computed value, should be resolved in component</p>`;
+const $fragment5 = parseFragment`<p hidden="3"${3}>integer value, should be true</p>`;
 const stc0 = {
   props: {
     hidden: true,
@@ -31,25 +32,22 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
+    sp: api_static_part,
     t: api_text,
-    h: api_element,
     c: api_custom_element,
   } = $api;
   return [
     api_static_fragment($fragment1, 0),
     api_static_fragment($fragment2, 1),
     api_static_fragment($fragment3, 2),
-    api_element(
-      "p",
-      {
+    api_static_fragment($fragment4, 3, [
+      api_static_part(0, {
         attrs: {
           hidden: $cmp.computed ? "" : null,
         },
-        key: 3,
-      },
-      [api_text("computed value, should be resolved in component")]
-    ),
-    api_static_fragment($fragment4, 4),
+      }),
+    ]),
+    api_static_fragment($fragment5, 4),
     api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
     api_custom_element("x-foo", _xFoo, stc1, [
       api_text("empty string, should be true"),

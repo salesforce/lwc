@@ -1,25 +1,25 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<a${"a0:href"}${3}>KIX</a>`;
 const stc0 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     fid: api_scoped_frag_id,
-    t: api_text,
+    sp: api_static_part,
+    st: api_static_fragment,
     h: api_element,
     gid: api_scoped_id,
+    t: api_text,
   } = $api;
   return [
-    api_element(
-      "a",
-      {
+    api_static_fragment($fragment1, 0, [
+      api_static_part(0, {
         attrs: {
           href: api_scoped_frag_id($cmp.narita),
         },
-        key: 0,
-      },
-      [api_text("KIX")]
-    ),
+      }),
+    ]),
     api_element("map", stc0, [
       api_element("area", {
         attrs: {
