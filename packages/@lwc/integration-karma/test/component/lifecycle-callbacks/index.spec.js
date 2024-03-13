@@ -287,7 +287,7 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
         },
     ];
 
-    scenarios.forEach(({ testName, Ctor, tagName }) => {
+    scenarios.forEach(({ testName, tagName, Ctor }) => {
         describe(testName, () => {
             it('connect/disconnect/reconnect', async () => {
                 const elm = createElement(tagName, { is: Ctor });
