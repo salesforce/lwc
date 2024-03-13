@@ -566,7 +566,7 @@ export default class CodeGen {
             expr,
         });
 
-        const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
+        const args: t.Expression[] = [identifier, t.literal(key)];
 
         // Only add the third argument (staticParts) if this element needs it
         const staticParts = this.genStaticParts(element);

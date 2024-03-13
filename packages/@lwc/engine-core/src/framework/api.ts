@@ -84,8 +84,9 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 }
 
 // [st]atic node
-function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
+function st(fragmentFactory: () => Element, key: Key, parts?: VStaticPart[]): VStatic {
     const owner = getVMBeingRendered()!;
+    const fragment = fragmentFactory();
     const vnode: VStatic = {
         type: VNodeType.Static,
         sel: undefined,
