@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/* eslint @lwc/lwc-internal/no-production-assert: "off" */
 import {
     assign,
     create,

@@ -24,11 +24,10 @@ export function createContextProviderWithRegister(
     adapter: WireAdapterConstructor,
     registerContextProvider: RegisterContextProviderFn
 ): ContextProvider {
-    let adapterContextToken = AdapterToTokenMap.get(adapter);
-    if (!isUndefined(adapterContextToken)) {
+    if (AdapterToTokenMap.has(adapter)) {
         throw new Error(`Adapter already has a context provider.`);
     }
-    adapterContextToken = guid();
+    const adapterContextToken = guid();
     AdapterToTokenMap.set(adapter, adapterContextToken);
     const providers = new WeakSet<EventTarget>();
 
@@ -42,7 +41,7 @@ export function createContextProviderWithRegister(
 
         registerContextProvider(
             elmOrComponent,
-            adapterContextToken!,
+            adapterContextToken,
             (subscriptionPayload: WireContextSubscriptionPayload) => {
                 const { setNewContext, setDisconnectedCallback } = subscriptionPayload;
                 const consumer: ContextConsumer = {
