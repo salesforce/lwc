@@ -20,7 +20,7 @@ const stc0 = {
     reversed: "true",
     selected: "true",
   },
-  key: 1,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -29,9 +29,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     sp: api_static_part,
   } = $api;
   return [
-    api_static_fragment($fragment1, 0),
+    api_static_fragment($fragment1, 1),
     api_custom_element("x-foo", _xFoo, stc0),
-    api_static_fragment($fragment2, 2, [
+    api_static_fragment($fragment2, 3, [
       api_static_part(0, {
         attrs: {
           readonly: $cmp.getReadOnly ? "" : null,

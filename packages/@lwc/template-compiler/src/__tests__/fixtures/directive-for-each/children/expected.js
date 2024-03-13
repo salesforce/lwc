@@ -12,14 +12,14 @@ const stc1 = {
   classMap: {
     s2: true,
   },
-  key: 2,
+  key: 3,
 };
 const stc2 = [];
 const stc3 = {
   classMap: {
     s3: true,
   },
-  key: 5,
+  key: 6,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -39,7 +39,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_iterator($cmp.items, function (item) {
           return api_text("X");
         }),
-        api_static_fragment($fragment1, 1),
+        api_static_fragment($fragment1, 2),
       ])
     ),
     api_element(
@@ -53,14 +53,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "p",
                   {
-                    key: api_key(3, item.id),
+                    key: api_key(4, item.id),
                   },
                   [api_text("X1")]
                 ),
                 api_element(
                   "p",
                   {
-                    key: api_key(4, item.id),
+                    key: api_key(5, item.id),
                   },
                   [api_text("X2")]
                 ),
@@ -73,15 +73,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc3,
       api_flatten([
-        api_static_fragment($fragment2, 6),
+        api_static_fragment($fragment2, 8),
         api_iterator($cmp.items, function (item) {
           return api_element("div", {
-            key: api_key(7, item.id),
+            key: api_key(9, item.id),
           });
         }),
       ])
     ),
-    api_static_fragment($fragment3, 8),
+    api_static_fragment($fragment3, 11),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -4,8 +4,8 @@ const $fragment2 = parseFragment`<input${"a0:readonly"} disabled title="foo"${3}
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, sp: api_static_part } = $api;
   return [
-    api_static_fragment($fragment1, 0),
-    api_static_fragment($fragment2, 1, [
+    api_static_fragment($fragment1, 1),
+    api_static_fragment($fragment2, 2, [
       api_static_part(0, {
         attrs: {
           readonly: $cmp.getReadOnly ? "" : null,
