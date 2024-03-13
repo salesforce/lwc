@@ -3,7 +3,7 @@ const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div$
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
-    api_static_fragment($fragment1, 0, [
+    api_static_fragment($fragment1, 1, [
       api_static_part(4, {
         attrs: {
           "data-name": $cmp.foo,

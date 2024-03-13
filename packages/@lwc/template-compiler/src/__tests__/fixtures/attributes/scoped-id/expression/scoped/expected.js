@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
   } = $api;
   return [
-    api_static_fragment($fragment1, 0, [
+    api_static_fragment($fragment1, 1, [
       api_static_part(0, {
         attrs: {
           "aria-describedby": api_scoped_id($cmp.foo),

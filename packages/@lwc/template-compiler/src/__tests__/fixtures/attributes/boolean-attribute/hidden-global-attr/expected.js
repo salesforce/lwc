@@ -9,25 +9,25 @@ const stc0 = {
   props: {
     hidden: true,
   },
-  key: 9,
+  key: 10,
 };
 const stc1 = {
   props: {
     hidden: true,
   },
-  key: 10,
+  key: 11,
 };
 const stc2 = {
   props: {
     hidden: true,
   },
-  key: 11,
+  key: 12,
 };
 const stc3 = {
   props: {
     hidden: true,
   },
-  key: 13,
+  key: 14,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -40,14 +40,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment1, 1),
     api_static_fragment($fragment2, 3),
     api_static_fragment($fragment3, 5),
-    api_static_fragment($fragment4, 6, [
+    api_static_fragment($fragment4, 7, [
       api_static_part(0, {
         attrs: {
           hidden: $cmp.computed ? "" : null,
         },
       }),
     ]),
-    api_static_fragment($fragment5, 8),
+    api_static_fragment($fragment5, 9),
     api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
     api_custom_element("x-foo", _xFoo, stc1, [
       api_text("empty string, should be true"),
@@ -62,7 +62,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           hidden: $cmp.computed,
         },
-        key: 12,
+        key: 13,
       },
       [api_text("computed value, should be resolved in component")]
     ),

@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_static_fragment($fragment1, 0, [
+    api_static_fragment($fragment1, 1, [
       api_static_part(0, {
         attrs: {
           tabindex: api_tab_index($cmp.computed),
@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       props: {
         tabIndex: api_tab_index($cmp.computed),
       },
-      key: 1,
+      key: 2,
     }),
   ];
   /*LWC compiler vX.X.X*/

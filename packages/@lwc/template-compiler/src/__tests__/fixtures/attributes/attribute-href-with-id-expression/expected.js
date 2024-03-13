@@ -1,7 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<a${"a0:href"}${3}>KIX</a>`;
 const stc0 = {
-  key: 1,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
   } = $api;
   return [
-    api_static_fragment($fragment1, 0, [
+    api_static_fragment($fragment1, 1, [
       api_static_part(0, {
         attrs: {
           href: api_scoped_frag_id($cmp.narita),
@@ -25,13 +25,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           href: api_scoped_frag_id("#haneda"),
         },
-        key: 2,
+        key: 3,
       }),
       api_element("area", {
         attrs: {
           href: api_scoped_frag_id("#chubu"),
         },
-        key: 3,
+        key: 4,
       }),
     ]),
     api_element(
@@ -40,7 +40,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           id: api_scoped_id("#narita"),
         },
-        key: 4,
+        key: 5,
       },
       [api_text("Time to travel!")]
     ),

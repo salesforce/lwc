@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_element("svg", stc0, [
-      api_static_fragment($fragment1, 1, [
+      api_static_fragment($fragment1, 2, [
         api_static_part(1, {
           attrs: {
             id: api_scoped_id($cmp.blackId),
@@ -40,7 +40,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_scoped_frag_id($cmp.blackUrl)
           ),
         },
-        key: 2,
+        key: 3,
         svg: true,
       }),
       api_element("use", {
@@ -52,7 +52,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_scoped_frag_id($cmp.redUrl)
           ),
         },
-        key: 3,
+        key: 4,
         svg: true,
       }),
     ]),
