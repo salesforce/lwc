@@ -69,9 +69,10 @@
         "typescript": "5.4.2"
     },
     "lint-staged": {
-        "**/*.{js,mjs,ts,only,skip}": "eslint",
+        "*.{js,mjs,ts}": "eslint",
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
-        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js"
+        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
+        "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
         "packages/@lwc/*",
