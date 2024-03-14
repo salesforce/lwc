@@ -9,7 +9,7 @@
 
 const {
     LEGACY_BROWSERS,
-    SYNTHETIC_SHADOW_ENABLED,
+    SYNTHETIC_SHADOW_LOADED,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
@@ -22,7 +22,7 @@ const {
 
 // These are used to decide the directory that coverage is written to
 const TAGS = [
-    `${SYNTHETIC_SHADOW_ENABLED ? 'synthetic' : 'native'}-shadow`,
+    `${SYNTHETIC_SHADOW_LOADED ? 'synthetic' : 'native'}-shadow`,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
     LEGACY_BROWSERS && 'legacy-browsers',
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL && 'aria-polyfill',

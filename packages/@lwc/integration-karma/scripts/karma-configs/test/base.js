@@ -13,7 +13,7 @@ const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const {
-    SYNTHETIC_SHADOW_ENABLED,
+    SYNTHETIC_SHADOW_LOADED,
     GREP,
     COVERAGE,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
@@ -43,7 +43,7 @@ process.setMaxListeners(1000);
 function getFiles() {
     const frameworkFiles = [];
 
-    if (SYNTHETIC_SHADOW_ENABLED) {
+    if (SYNTHETIC_SHADOW_LOADED) {
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
     }
     if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {

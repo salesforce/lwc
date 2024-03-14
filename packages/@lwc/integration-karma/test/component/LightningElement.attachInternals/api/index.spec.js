@@ -79,7 +79,7 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         describe('light DOM', () => {
             attachInternalsSanityTest('light-dom', LightDomCmp);
         });
-    } else if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
+    } else if (!process.env.SYNTHETIC_SHADOW_LOADED) {
         // ElementInternals API is not supported in the browser
         // Because of the order error messages are thrown, this error only appears when synthetic shadow
         // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
