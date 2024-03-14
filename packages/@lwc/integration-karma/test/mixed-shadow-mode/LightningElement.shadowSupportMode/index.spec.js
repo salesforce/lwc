@@ -26,7 +26,11 @@ describe('shadowSupportMode static property', () => {
             createElement('x-any', { is: Any });
         }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
 
-        if (process.env.SYNTHETIC_SHADOW_ENABLED && !process.env.MIXED_SHADOW) {
+        if (
+            process.env.SYNTHETIC_SHADOW_ENABLED &&
+            // eslint-disable-next-line no-undef
+            !lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST
+        ) {
             let elm;
             expect(() => {
                 elm = createElement('x-any2', { is: Any2 });
