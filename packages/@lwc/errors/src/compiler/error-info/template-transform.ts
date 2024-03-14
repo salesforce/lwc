@@ -818,7 +818,7 @@ export const ParserDiagnostics = {
 
     SINGLE_IF_DIRECTIVE_ALLOWED: {
         code: 1182,
-        message: `Multiple if: directives found on '{0}'. Only one if: directive is allowed; the rest are ignored.Only one If directive is allowed. The rest are ignored.`,
+        message: `Multiple if: directives found on '{0}'. Only one if: directive is allowed; the rest are ignored.`,
         level: DiagnosticLevel.Warning,
         url: '',
     },

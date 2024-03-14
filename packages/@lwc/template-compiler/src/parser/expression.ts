@@ -101,23 +101,22 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
     ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
-        const acornLocation = parsedExpression.loc!;
-        const parse5Location = {
-            startLine: acornLocation.start.line,
-            startCol: acornLocation.start.column,
+        const acornLoc = parsedExpression.loc!;
+        const parse5Loc = {
+            startLine: acornLoc.start.line,
+            startCol: acornLoc.start.column,
             startOffset: parsedExpression.start,
-            endLine: acornLocation.end.line,
-            endCol: acornLocation.end.column,
+            endLine: acornLoc.end.line,
+            endCol: acornLoc.end.column,
             endOffset: parsedExpression.end,
         };
-        const astLocation = ast.sourceLocation(parse5Location);
 
         ctx.withErrorWrapping(
             () => {
                 validateExpressionAst(parsedExpression);
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            astLocation,
+            ast.sourceLocation(parse5Loc),
             (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });
