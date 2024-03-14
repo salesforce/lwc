@@ -53,7 +53,12 @@ import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
-import { isExpression, parseExpression, parseIdentifier } from './expression';
+import {
+    isExpression,
+    parseExpression,
+    parseIdentifier,
+    validatePreparsedJsExpressions,
+} from './expression';
 import {
     attributeName,
     attributeToPropertyName,
@@ -123,6 +128,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     const root = ctx.withErrorRecovery(() => {
+        validatePreparsedJsExpressions(ctx);
         const templateRoot = getTemplateRoot(ctx, fragment);
         return parseRoot(ctx, templateRoot);
     });

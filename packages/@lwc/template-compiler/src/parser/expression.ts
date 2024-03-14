@@ -7,8 +7,9 @@
 import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
-import * as t from '../shared/estree';
 import { NormalizedConfig } from '../config';
+import * as ast from '../shared/ast';
+import * as t from '../shared/estree';
 import { Expression, Identifier, SourceLocation } from '../shared/types';
 import { validateExpressionAst } from './expression-complex';
 
@@ -96,6 +97,35 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     invariant(unclosedParenthesisCount === 0, ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, [
         'Unexpected end of expression',
     ]);
+}
+
+export function validatePreparsedJsExpressions(ctx: ParserCtx) {
+    ctx.preparsedJsExpressions?.forEach((parsedExpression) => {
+        // Include brackets for better context
+        const expressionStart = parsedExpression.start - EXPRESSION_SYMBOL_START.length;
+        const expressionEnd = parsedExpression.end + EXPRESSION_SYMBOL_END.length;
+        const expressionSource = ctx.getSource(expressionStart, expressionEnd);
+
+        const acornLocation = parsedExpression.loc!;
+        const parse5Location = {
+            startLine: acornLocation.start.line,
+            startCol: acornLocation.start.column,
+            startOffset: parsedExpression.start,
+            endLine: acornLocation.end.line,
+            endCol: acornLocation.end.column,
+            endOffset: parsedExpression.end,
+        };
+        const astLocation = ast.sourceLocation(parse5Location);
+
+        ctx.withErrorWrapping(
+            () => {
+                validateExpressionAst(parsedExpression);
+            },
+            ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+            astLocation,
+            (err) => `Invalid expression ${expressionSource} - ${err.message}`
+        );
+    });
 }
 
 export function parseExpression(
