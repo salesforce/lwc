@@ -100,12 +100,7 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 }
 
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
-    ctx.preparsedJsExpressions?.forEach((parsedExpression) => {
-        // Include brackets for better context
-        const expressionStart = parsedExpression.start - EXPRESSION_SYMBOL_START.length;
-        const expressionEnd = parsedExpression.end + EXPRESSION_SYMBOL_END.length;
-        const expressionSource = ctx.getSource(expressionStart, expressionEnd);
-
+    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
         const acornLocation = parsedExpression.loc!;
         const parse5Location = {
             startLine: acornLocation.start.line,
@@ -123,7 +118,7 @@ export function validatePreparsedJsExpressions(ctx: ParserCtx) {
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
             astLocation,
-            (err) => `Invalid expression ${expressionSource} - ${err.message}`
+            (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });
 }

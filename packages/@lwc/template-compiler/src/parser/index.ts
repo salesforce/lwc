@@ -498,13 +498,13 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
         // Implementation of the lexer ensures that each text-node template expression
         // will be contained in its own text node. Adjacent static text will be in
         // separate text nodes.
-        const preparsedExpression = ctx.preparsedJsExpressions!.get(location.startOffset);
-        if (!preparsedExpression) {
+        const entry = ctx.preparsedJsExpressions!.get(location.startOffset);
+        if (!entry?.parsedExpression) {
             throw new Error('Implementation error: cannot find preparsed template expression');
         }
 
         const value = {
-            ...preparsedExpression,
+            ...entry.parsedExpression,
             location: ast.sourceLocation(location),
         };
         return [ast.text(rawText, value, location)];
