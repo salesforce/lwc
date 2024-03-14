@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
+import { ENABLE_ELEMENT_INTERNALS_AND_FACE, IS_SYNTHETIC_SHADOW_LOADED } from 'test-utils';
 
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
@@ -11,7 +11,7 @@ import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachI
 if (
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&
     typeof ElementInternals !== 'undefined' &&
-    !process.env.SYNTHETIC_SHADOW_ENABLED
+    !IS_SYNTHETIC_SHADOW_LOADED
 ) {
     it('should throw an error when duplicate tag name used with different formAssociated value', () => {
         // Register tag with formAssociated = true
@@ -39,7 +39,7 @@ if (
     });
 }
 
-if (typeof ElementInternals !== 'undefined' && !process.env.SYNTHETIC_SHADOW_ENABLED) {
+if (typeof ElementInternals !== 'undefined' && !IS_SYNTHETIC_SHADOW_LOADED) {
     const isFormAssociated = (elm) => {
         const form = document.createElement('form');
         document.body.appendChild(form);

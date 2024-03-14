@@ -8,6 +8,10 @@ import ParentProp from 'x/parentProp';
 import Container from 'invocationorder/container';
 import LightContainer from 'invocationorder/lightContainer';
 import DispatchEvents from 'x/dispatchEvents';
+import TimingParent from 'timing/parent';
+import TimingParentLight from 'timing/parentLight';
+import ReorderingList from 'reordering/list';
+import ReorderingListLight from 'reordering/listLight';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -264,6 +268,106 @@ describe('invocation order', () => {
                 ];
 
                 expect(window.timingBuffer).toEqual(expected);
+            });
+        });
+    });
+});
+
+describe('connectedCallback/renderedCallback timing when reconnected', () => {
+    const scenarios = [
+        {
+            testName: 'shadow',
+            tagName: 'timing-parent',
+            Ctor: TimingParent,
+        },
+        {
+            testName: 'light',
+            tagName: 'timing-parent-light',
+            Ctor: TimingParentLight,
+        },
+    ];
+
+    scenarios.forEach(({ testName, tagName, Ctor }) => {
+        describe(testName, () => {
+            it('connect/disconnect/reconnect', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+                document.body.removeChild(elm);
+
+                await Promise.resolve();
+                resetTimingBuffer();
+
+                document.body.appendChild(elm);
+                // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
+                expect(window.timingBuffer).toEqual(
+                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                        ? [
+                              'parent:connectedCallback',
+                              'parent:renderedCallback',
+                              'child:connectedCallback',
+                          ]
+                        : ['parent:connectedCallback', 'parent:renderedCallback']
+                );
+            });
+
+            it('connect/mutate/disconnect/reconnect', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+                elm.value = 'baz';
+                document.body.removeChild(elm);
+
+                await Promise.resolve();
+                resetTimingBuffer();
+
+                document.body.appendChild(elm);
+                expect(window.timingBuffer).toEqual(
+                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                        ? ['parent:connectedCallback', 'child:connectedCallback']
+                        : ['parent:connectedCallback']
+                );
+            });
+        });
+    });
+});
+
+describe('timing when reordering a list', () => {
+    const scenarios = [
+        {
+            testName: 'shadow',
+            tagName: 'reordering-list',
+            Ctor: ReorderingList,
+        },
+        {
+            testName: 'light',
+            tagName: 'reordering-list-light',
+            Ctor: ReorderingListLight,
+        },
+    ];
+    scenarios.forEach(({ testName, tagName, Ctor }) => {
+        describe(testName, () => {
+            it('invokes the expected callbacks when reordering', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                elm.uids = [1, 2];
+                document.body.appendChild(elm);
+
+                await Promise.resolve();
+                resetTimingBuffer();
+
+                elm.uids = [2, 1];
+                await Promise.resolve();
+
+                expect(window.timingBuffer).toEqual(
+                    // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
+                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                        ? [
+                              'item-wrapper-1:disconnectedCallback',
+                              'item-1:disconnectedCallback',
+                              'item-wrapper-1:connectedCallback',
+                              'item-wrapper-1:renderedCallback',
+                              'item-1:connectedCallback',
+                          ]
+                        : []
+                );
             });
         });
     });
