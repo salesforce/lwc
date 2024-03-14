@@ -349,6 +349,29 @@
             "rules": {
                 "jsdoc/require-example": "off"
             }
+        },
+        {
+            // These files aren't JS files, but are directives used to selectively run test fixtures.
+            // We use eslint to break CI if they are accidentally committed. Note that lint-staged
+            // uses a different config to prevent them from being committed.
+            "files": ["**/.only"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"],
+            "rules": {
+                "header/header": "off",
+                "@lwc/lwc-internal/forbidden-filename": "error"
+            }
+        },
+        {
+            // These files aren't JS files, but are directives used to skip specific test fixtures.
+            // We want to know if they've been accidentally committed, but not break CI, as we may
+            // legitimately want to skip certain tests. Note that lint-staged uses a different config
+            // to prevent them from being committed.
+            "files": ["**/.skip"],
+            "extends": ["plugin:@typescript-eslint/disable-type-checked"],
+            "rules": {
+                "header/header": "off",
+                "@lwc/lwc-internal/forbidden-filename": "off"
+            }
         }
     ]
 }

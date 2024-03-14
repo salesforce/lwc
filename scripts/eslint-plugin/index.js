@@ -7,6 +7,7 @@
 
 module.exports = {
     rules: {
+        'forbidden-filename': require('./rules/forbidden-filename'),
         'no-global-node': require('./rules/no-global-node'),
         'no-invalid-todo': require('./rules/no-invalid-todo'),
     },
