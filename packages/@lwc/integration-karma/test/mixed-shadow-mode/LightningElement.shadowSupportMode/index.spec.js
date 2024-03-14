@@ -46,12 +46,6 @@ describe('ENABLE_NATIVE_SHADOW_MODE', () => {
 
     it('should render native shadow root', () => {
         const elm = createElement('x-native-only', { is: NativeOnly });
-        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
-            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
-        } else {
-            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toThrow(
-                'Native shadow is not supported on this enviroment'
-            );
-        }
+        expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
     });
 });
