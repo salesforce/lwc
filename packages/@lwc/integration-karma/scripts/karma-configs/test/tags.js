@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -9,7 +9,6 @@
 
 const {
     LEGACY_BROWSERS,
-    SYNTHETIC_SHADOW_LOADED,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
@@ -18,11 +17,12 @@ const {
     NODE_ENV_FOR_TEST,
     API_VERSION,
     FORCE_LWC_V5_COMPILER_FOR_TEST,
+    DISABLE_SYNTHETIC,
 } = require('../../shared/options');
 
 // These are used to decide the directory that coverage is written to
 const TAGS = [
-    `${SYNTHETIC_SHADOW_LOADED ? 'synthetic' : 'native'}-shadow`,
+    `${DISABLE_SYNTHETIC ? 'native' : 'synthetic'}-shadow`,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
     LEGACY_BROWSERS && 'legacy-browsers',
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL && 'aria-polyfill',

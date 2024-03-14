@@ -13,10 +13,10 @@ const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const {
-    SYNTHETIC_SHADOW_LOADED,
     GREP,
     COVERAGE,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    DISABLE_SYNTHETIC,
 } = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
@@ -43,7 +43,7 @@ process.setMaxListeners(1000);
 function getFiles() {
     const frameworkFiles = [];
 
-    if (SYNTHETIC_SHADOW_LOADED) {
+    if (!DISABLE_SYNTHETIC) {
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
     }
     if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
