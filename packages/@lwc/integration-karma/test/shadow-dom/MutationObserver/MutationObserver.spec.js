@@ -182,7 +182,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             document.body.appendChild(container);
         });
 
-        if (!process.env.MIXED_SHADOW) {
+        if (!process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
                 const parent = createElement('x-parent', { is: XParent });
                 container.appendChild(parent);
