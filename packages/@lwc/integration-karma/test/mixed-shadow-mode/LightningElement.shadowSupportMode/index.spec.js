@@ -28,8 +28,7 @@ describe('shadowSupportMode static property', () => {
 
         if (
             process.env.SYNTHETIC_SHADOW_ENABLED &&
-            // eslint-disable-next-line no-undef
-            !lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST
+            !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
         ) {
             let elm;
             expect(() => {
