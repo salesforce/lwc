@@ -516,17 +516,14 @@ function computeShadowMode(
     renderer: RendererAPI,
     hydrated: boolean | undefined
 ) {
-    // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
-    // on, but components running in actual native shadow mode
     if (
-        process.env.NODE_ENV !== 'production' &&
-        lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST
-    ) {
-        return ShadowMode.Native;
-    }
-
-    if (isTrue(hydrated)) {
+        // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
+        // on, but components running in actual native shadow mode
+        (process.env.NODE_ENV !== 'production' &&
+            lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
         // hydration only supports native shadow
+        isTrue(hydrated)
+    ) {
         return ShadowMode.Native;
     }
 
