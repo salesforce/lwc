@@ -15,11 +15,11 @@ const karmaPluginTransformFramework = require('../../karma-plugins/transform-fra
 const {
     GREP,
     COVERAGE,
+    COVERAGE_DIR_FOR_OPTIONS,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC,
 } = require('../../shared/options');
 const { createPattern } = require('../utils');
-const TAGS = require('./tags');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
@@ -108,7 +108,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, TAGS.join('_')),
+            dir: path.join(COVERAGE_DIR, COVERAGE_DIR_FOR_OPTIONS),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }

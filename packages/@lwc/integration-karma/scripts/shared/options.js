@@ -37,20 +37,32 @@ const API_VERSION = process.env.API_VERSION
 // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
 const FORCE_LWC_V5_COMPILER_FOR_TEST = Boolean(process.env.FORCE_LWC_V5_COMPILER_FOR_TEST);
 
-module.exports = {
-    // Test configuration
+const baseOptions = {
     LEGACY_BROWSERS,
-    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
-    NODE_ENV_FOR_TEST,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
-    DISABLE_SYNTHETIC,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    NODE_ENV_FOR_TEST,
     API_VERSION,
     FORCE_LWC_V5_COMPILER_FOR_TEST,
-    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
+    DISABLE_SYNTHETIC,
+};
+
+/** Unique directory name that encodes the flags that the tests were executed with. */
+const COVERAGE_DIR_FOR_OPTIONS =
+    Object.entries(baseOptions)
+        .filter(([, val]) => val)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('/') || 'no-options';
+
+module.exports = {
+    // Test configuration
+    ...baseOptions,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
+    COVERAGE_DIR_FOR_OPTIONS,
 
     // Sauce labs
     SAUCE_USERNAME: process.env.SAUCE_USERNAME,
