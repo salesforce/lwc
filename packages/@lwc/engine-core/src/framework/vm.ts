@@ -519,7 +519,8 @@ function computeShadowMode(
     if (
         // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
         // on, but components running in actual native shadow mode
-        (process.env.NODE_ENV === 'lwc-karma' && process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
+        (process.env.NODE_ENV === 'test-karma-lwc' &&
+            process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
         // hydration only supports native shadow
         isTrue(hydrated)
     ) {
