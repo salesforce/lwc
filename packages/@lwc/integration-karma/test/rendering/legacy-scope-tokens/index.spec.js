@@ -28,7 +28,7 @@ describe('legacy scope tokens', () => {
                 return (
                     [...elm.classList]
                         // these are classes we add ourselves for the test
-                        .filter((_) => !['static', 'dynamic', 'manual'].includes(_))
+                        .filter((_) => !['static', 'dynamic', 'manual', 'expression'].includes(_))
                         .sort()
                 );
             }
@@ -58,6 +58,7 @@ describe('legacy scope tokens', () => {
                 const verify = () => {
                     const staticDiv = elm.querySelector('.static');
                     const dynamicDiv = elm.querySelector('.dynamic');
+                    const expressionDiv = elm.querySelector('.expression');
 
                     expect(getClasses(elm)).toEqual(
                         expectTokens('lwc-1kadf5igpar-host', 'x-light_light-host')
@@ -69,9 +70,14 @@ describe('legacy scope tokens', () => {
                         expectTokens('lwc-1kadf5igpar', 'x-light_light')
                     );
 
+                    expect(getClasses(expressionDiv)).toEqual(
+                        expectTokens('lwc-1kadf5igpar', 'x-light_light')
+                    );
+
                     expect(getAttributes(elm)).toEqual([]);
                     expect(getAttributes(staticDiv)).toEqual([]);
                     expect(getAttributes(dynamicDiv)).toEqual([]);
+                    expect(getAttributes(expressionDiv)).toEqual([]);
                 };
 
                 await Promise.resolve();
@@ -95,6 +101,7 @@ describe('legacy scope tokens', () => {
                         const dynamicDiv = elm.shadowRoot.querySelector('.dynamic');
                         const manualDiv = elm.shadowRoot.querySelector('.manual');
                         const span = elm.shadowRoot.querySelector('span'); // inserted inside dom:manual
+                        const expressionDiv = elm.shadowRoot.querySelector('.expression');
 
                         expect(getClasses(elm)).toEqual(
                             expectTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
@@ -109,6 +116,9 @@ describe('legacy scope tokens', () => {
                             expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
                         );
                         expect(getClasses(span)).toEqual([]);
+                        expect(getClasses(expressionDiv)).toEqual(
+                            expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        );
 
                         expect(getAttributes(elm)).toEqual(
                             expectShadowAttrTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
@@ -123,6 +133,9 @@ describe('legacy scope tokens', () => {
                             expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
                         );
                         expect(getAttributes(span)).toEqual(
+                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        );
+                        expect(getAttributes(expressionDiv)).toEqual(
                             expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
                         );
                     };

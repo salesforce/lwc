@@ -444,12 +444,22 @@ describe('static content optimization with attribute', () => {
         elm = createElement('x-attributes', { is: Attribute });
         document.body.appendChild(elm);
         await Promise.resolve();
+<<<<<<< HEAD
         nodes = extractDataIds(elm);
+=======
+
+        const { mount, mountNested } = extractDataIds(elm);
+        expect(mount.getAttribute('data-mount')).toEqual('loaded on mount');
+        expect(mount.getAttribute('class')).toEqual('class_name_loaded_on_mount');
+        expect(mountNested.getAttribute('data-mount')).toEqual('loaded on mount');
+        expect(mountNested.getAttribute('class')).toEqual('class_name_loaded_on_mount');
+>>>>>>> b9d80ed23 (test: karma tests)
     });
 
     const verifyStyleAttributeAppliedCorrectly = ({ cmp, expected }) =>
         expect(cmp.getAttribute('style')).toEqual(expected);
 
+<<<<<<< HEAD
     const verifyAttributeAppliedCorrectly = ({ cmp, expected }) =>
         expect(cmp.getAttribute('data-value')).toEqual(expected);
 
@@ -478,6 +488,22 @@ describe('static content optimization with attribute', () => {
             { cmp: staticAttrNested, expected: 'static3' },
             { cmp: staticCombinedNested, expected: 'static4' },
         ].forEach(verifyAttributeAppliedCorrectly);
+=======
+        const { update, updateNested } = extractDataIds(elm);
+        expect(update.getAttribute('data-update')).toBe(null);
+        expect(update.getAttribute('class')).toBe(null);
+        expect(updateNested.getAttribute('data-update')).toBe(null);
+        expect(updateNested.getAttribute('class')).toBe(null);
+
+        elm.update = 'expression updated';
+        elm.updateClassName = 'class_name_updated';
+        await Promise.resolve();
+
+        expect(update.getAttribute('data-update')).toEqual('expression updated');
+        expect(update.getAttribute('class')).toEqual('class_name_updated');
+        expect(updateNested.getAttribute('data-update')).toEqual('expression updated');
+        expect(updateNested.getAttribute('class')).toEqual('class_name_updated');
+>>>>>>> b9d80ed23 (test: karma tests)
     });
 
     it('applies expressions on mount', () => {
