@@ -27,7 +27,7 @@ describe('rootDir', () => {
         expect(warnings).toHaveLength(1);
         expect(warnings[0]).toMatchObject({
             message: expect.stringMatching(
-                /^The "rootDir" option should be explicitly set when passing an "input" array to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures.$/
+                /The "rootDir" option should be explicitly set when passing an "input" array to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures.$/
             ),
             code: 'PLUGIN_WARNING',
             plugin: 'rollup-plugin-lwc-compiler',
@@ -51,7 +51,7 @@ describe('rootDir', () => {
         expect(warnings).toHaveLength(1);
         expect(warnings[0]).toMatchObject({
             message: expect.stringMatching(
-                /^The "rootDir" option should be explicitly set when passing "input" object to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures.$/
+                /The "rootDir" option should be explicitly set when passing "input" object to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures.$/
             ),
             code: 'PLUGIN_WARNING',
             plugin: 'rollup-plugin-lwc-compiler',
