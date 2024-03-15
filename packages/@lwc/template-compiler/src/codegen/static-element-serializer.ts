@@ -53,7 +53,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
         if (name === 'class') {
             hasClassAttr = true;
-            v += '${0}';
+            // The token will be injected at runtime for expressions in parseFragmentFn.
+            // This is only needed for SSR.
+            v += hasExpression ? '' : '${0}';
         }
         if (typeof v === 'string') {
             // Inject a placeholder where the staticPartId will go when an expression occurs.
@@ -89,6 +91,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         })
         .forEach(collector);
 
+    // The additional ${2}/${3} are needed when the class attribute contains static values and for SSR.
+    // In SSR, the style tokens need to be provided for serialization to work, see buildParseFragmentFn.
+    // For non-SSR, the engine will apply style tokens during patching.
     return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 

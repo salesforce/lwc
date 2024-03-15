@@ -619,7 +619,7 @@ function patchElementPropsAndAttrsAndRefs(
     applyRefs(vnode, owner);
 }
 
-function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+export function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     const { getClassList } = renderer;
 
     // Set the class name for `*.scoped.css` style scoping.

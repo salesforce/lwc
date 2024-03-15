@@ -49,7 +49,6 @@ import {
     VStatic,
     VFragment,
     isVCustomElement,
-    VStaticPart,
     VElementData,
     VStaticPartData,
 } from './vnodes';
@@ -503,9 +502,10 @@ function isMatchingElement(
         return false;
     }
 
-    const hasCompatibleAttrs = validateAttrs(vnode, elm, vnode.owner, renderer, shouldValidateAttr);
+    const { data } = vnode;
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, data, renderer, shouldValidateAttr);
     const hasCompatibleClass = shouldValidateAttr('class')
-        ? validateClassAttr(vnode, elm, renderer)
+        ? validateClassAttr(vnode, elm, data, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
         ? validateStyleAttr(vnode, elm, vnode.data, renderer)
@@ -535,15 +535,13 @@ function attributeValuesAreEqual(
 }
 
 function validateAttrs(
-    node: VBaseElement | VStaticPart,
+    vnode: VBaseElement | VStatic,
     elm: Element,
-    owner: VM,
+    data: VElementData | VStaticPartData,
     renderer: RendererAPI,
     shouldValidateAttr: (attrName: string) => boolean
 ): boolean {
-    const {
-        data: { attrs = {} },
-    } = node;
+    const { attrs = {} } = data;
 
     let nodesAreCompatible = true;
 
@@ -565,7 +563,7 @@ function validateAttrs(
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
                         isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
                     }`,
-                    owner
+                    vnode.owner
                 );
             }
             nodesAreCompatible = false;
@@ -575,9 +573,17 @@ function validateAttrs(
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
-    const { data, owner } = vnode;
-    let { className, classMap } = data;
+function validateClassAttr(
+    vnode: VBaseElement | VStatic,
+    elm: Element,
+    // Explicitly pass data because it is present on VBaseElement but not on VStatic (comes from VStaticPart).
+    data: VElementData | VStaticPartData,
+    renderer: RendererAPI
+): boolean {
+    const { owner } = vnode;
+    // classMap is never available on VStaticPartData so it can default to undefined
+    // casting to prevent TS error.
+    let { className, classMap } = data as VElementData;
     const { getProperty, getClassList, getAttribute } = renderer;
     // we don't care about legacy for hydration. it's a new use case
     const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
@@ -782,7 +788,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 }
 
 function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
-    const { owner, parts } = vnode;
+    const { parts } = vnode;
 
     if (isUndefined(parts)) {
         return true;
@@ -793,9 +799,10 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
         const { data, elm } = part;
-        const hasMatchingAttrs = validateAttrs(part, elm!, owner, renderer, () => true);
+        const hasMatchingAttrs = validateAttrs(vnode, elm!, data, renderer, () => true);
         const hasMatchingStyleAttr = validateStyleAttr(vnode, elm!, data, renderer);
-        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr)) {
+        const hasMatchingClass = validateClassAttr(vnode, elm!, data, renderer);
+        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
             return false;
         }
     }

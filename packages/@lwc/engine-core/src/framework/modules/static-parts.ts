@@ -8,10 +8,12 @@
 import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
 import { VStatic, VStaticPart } from '../vnodes';
 import { RendererAPI } from '../renderer';
+import { applyStyleScoping } from '../rendering';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
 import { patchStyleAttribute } from './computed-style-attr';
+import { patchClassAttribute } from './computed-class-attr';
 
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
@@ -107,6 +109,10 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         applyRefs(part, owner);
         patchAttributes(null, part, renderer);
         patchStyleAttribute(null, part, renderer, owner);
+        // Note, applyStyleScoping will apply the synthetic shadow style token, however, this is already applied at compile time and when the
+        // fragment is assembled in buildParseFragmentFn.
+        applyStyleScoping(part.elm!, owner, renderer);
+        patchClassAttribute(null, part, renderer);
     }
 }
 
@@ -146,6 +152,7 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
         applyRefs(part, currPartsOwner);
         patchAttributes(prevPart, part, renderer);
         patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
+        patchClassAttribute(prevPart, part, renderer);
     }
 }
 

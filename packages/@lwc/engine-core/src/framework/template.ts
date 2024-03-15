@@ -45,6 +45,7 @@ import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes, VStaticPart } from './vnodes';
 import { RendererAPI } from './renderer';
+import { getMapFromClassName } from './modules/computed-class-attr';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -146,15 +147,14 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         return { type, part, attrName };
     };
 
-    return (partToken: string) => {
+    return (partToken: string, classToken:string) => {
         const { type, part, attrName } = parsePartToken(partToken);
 
         switch (type) {
             case STATIC_PART_TOKEN_ID.ATTRIBUTE:
                 return serializeAttribute(part, attrName);
             case STATIC_PART_TOKEN_ID.CLASS: // class
-                // TODO [#3624]: Add class serialization
-                break;
+                return serializeClassAttribute(part, classToken)
             case STATIC_PART_TOKEN_ID.STYLE: // style
                 return serializeStyleAttribute(part);
             case STATIC_PART_TOKEN_ID.TEXT: // text
@@ -191,6 +191,14 @@ function serializeAttribute(part: VStaticPart, name: string) {
             : ` ${name}`;
     }
     return value;
+}
+
+function serializeClassAttribute(part: VStaticPart, classToken: string) {
+    const classMap = getMapFromClassName(part.data?.className);
+    // Trim the leading and trailing whitespace here because classToken contains a leading space and
+    // there will be a trailing space if classMap is empty.
+    const computedClassName = `${classToken} ${keys(classMap).join(' ')}`.trim();
+    return computedClassName.length ? ` class="${htmlEscape(`${computedClassName}`, true)}"` : '';
 }
 
 const enum FragmentCache {
@@ -285,7 +293,8 @@ function buildParseFragmentFn(
                         htmlFragment += strings[i] + classAttrToken + attrToken;
                         break;
                     default: // expressions ${partId:attributeName/textId}
-                        htmlFragment += strings[i] + serializeExpression(keys[i] as string);
+                        htmlFragment +=
+                            strings[i] + serializeExpression(keys[i] as string, classToken);
                         break;
                 }
             }
