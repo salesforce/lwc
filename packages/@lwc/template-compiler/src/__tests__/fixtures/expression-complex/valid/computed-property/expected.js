@@ -1,14 +1,20 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { d: api_dynamic_text, t: api_text, h: api_element } = $api;
+  const {
+    b: api_bind,
+    d: api_dynamic_text,
+    t: api_text,
+    h: api_element,
+  } = $api;
+  const { _m0 } = $ctx;
   return [
     api_element(
       "section",
       {
-        attrs: {
-          foo: $cmp.bar.arr[$cmp.baz],
-        },
         key: 0,
+        on: {
+          click: _m0 || ($ctx._m0 = api_bind($cmp.bar.arr[$cmp.baz])),
+        },
       },
       [api_text(api_dynamic_text($cmp.bar.arr[$cmp.baz]))]
     ),

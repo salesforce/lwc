@@ -7,7 +7,7 @@
             "endLine": 3,
             "endColumn": 12,
             "start": 0,
-            "end": 79,
+            "end": 83,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 3,
                 "endColumn": 12,
-                "start": 68,
-                "end": 79
+                "start": 72,
+                "end": 83
             }
         },
         "directives": [],
@@ -35,31 +35,34 @@
                     "startLine": 2,
                     "startColumn": 5,
                     "endLine": 2,
-                    "endColumn": 57,
+                    "endColumn": 61,
                     "start": 15,
-                    "end": 67,
+                    "end": 71,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
                         "endLine": 2,
-                        "endColumn": 33,
+                        "endColumn": 37,
                         "start": 15,
-                        "end": 43
+                        "end": 47
                     },
                     "endTag": {
                         "startLine": 2,
-                        "startColumn": 47,
+                        "startColumn": 51,
                         "endLine": 2,
-                        "endColumn": 57,
-                        "start": 57,
-                        "end": 67
+                        "endColumn": 61,
+                        "start": 61,
+                        "end": 71
                     }
                 },
-                "attributes": [
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
                     {
-                        "type": "Attribute",
-                        "name": "foo",
-                        "value": {
+                        "type": "EventListener",
+                        "name": "click",
+                        "handler": {
                             "type": "MemberExpression",
                             "start": 1,
                             "end": 13,
@@ -94,85 +97,62 @@
                                 "startLine": 2,
                                 "startColumn": 14,
                                 "endLine": 2,
-                                "endColumn": 32,
+                                "endColumn": 36,
                                 "start": 24,
-                                "end": 42
+                                "end": 46
                             }
                         },
                         "location": {
                             "startLine": 2,
                             "startColumn": 14,
                             "endLine": 2,
-                            "endColumn": 32,
+                            "endColumn": 36,
                             "start": 24,
-                            "end": 42
+                            "end": 46
                         }
                     }
                 ],
-                "properties": [],
-                "directives": [],
-                "listeners": [],
                 "children": [
                     {
                         "type": "Text",
                         "raw": "{bar.arr[baz]}",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 44,
-                            "end": 56,
+                            "start": 48,
+                            "end": 60,
                             "loc": {
                                 "start": {
                                     "line": 2,
-                                    "column": 33
+                                    "column": 37
                                 },
                                 "end": {
                                     "line": 2,
-                                    "column": 45
+                                    "column": 49
                                 }
                             },
                             "range": [
-                                44,
-                                56
+                                48,
+                                60
                             ],
                             "object": {
                                 "type": "MemberExpression",
-                                "start": 44,
-                                "end": 51,
+                                "start": 48,
+                                "end": 55,
                                 "loc": {
                                     "start": {
                                         "line": 2,
-                                        "column": 33
+                                        "column": 37
                                     },
                                     "end": {
                                         "line": 2,
-                                        "column": 40
+                                        "column": 44
                                     }
                                 },
                                 "range": [
-                                    44,
-                                    51
+                                    48,
+                                    55
                                 ],
                                 "object": {
-                                    "type": "Identifier",
-                                    "start": 44,
-                                    "end": 47,
-                                    "loc": {
-                                        "start": {
-                                            "line": 2,
-                                            "column": 33
-                                        },
-                                        "end": {
-                                            "line": 2,
-                                            "column": 36
-                                        }
-                                    },
-                                    "range": [
-                                        44,
-                                        47
-                                    ],
-                                    "name": "bar"
-                                },
-                                "property": {
                                     "type": "Identifier",
                                     "start": 48,
                                     "end": 51,
@@ -190,6 +170,26 @@
                                         48,
                                         51
                                     ],
+                                    "name": "bar"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 52,
+                                    "end": 55,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 41
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 44
+                                        }
+                                    },
+                                    "range": [
+                                        52,
+                                        55
+                                    ],
                                     "name": "arr"
                                 },
                                 "computed": false,
@@ -197,21 +197,21 @@
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 52,
-                                "end": 55,
+                                "start": 56,
+                                "end": 59,
                                 "loc": {
                                     "start": {
                                         "line": 2,
-                                        "column": 41
+                                        "column": 45
                                     },
                                     "end": {
                                         "line": 2,
-                                        "column": 44
+                                        "column": 48
                                     }
                                 },
                                 "range": [
-                                    52,
-                                    55
+                                    56,
+                                    59
                                 ],
                                 "name": "baz"
                             },
@@ -219,20 +219,20 @@
                             "optional": false,
                             "location": {
                                 "startLine": 2,
-                                "startColumn": 33,
+                                "startColumn": 37,
                                 "endLine": 2,
-                                "endColumn": 47,
-                                "start": 43,
-                                "end": 57
+                                "endColumn": 51,
+                                "start": 47,
+                                "end": 61
                             }
                         },
                         "location": {
                             "startLine": 2,
-                            "startColumn": 33,
+                            "startColumn": 37,
                             "endLine": 2,
-                            "endColumn": 47,
-                            "start": 43,
-                            "end": 57
+                            "endColumn": 51,
+                            "start": 47,
+                            "end": 61
                         }
                     }
                 ]

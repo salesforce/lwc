@@ -1,15 +1,3 @@
 {
-    "warnings": [
-        {
-            "code": 1057,
-            "message": "LWC1057: foo is not valid attribute for section. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section",
-            "level": 2,
-            "location": {
-                "line": 2,
-                "column": 14,
-                "start": 24,
-                "length": 18
-            }
-        }
-    ]
+    "warnings": []
 }
