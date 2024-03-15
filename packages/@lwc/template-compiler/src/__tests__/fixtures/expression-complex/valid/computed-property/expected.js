@@ -16,7 +16,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           click: _m0 || ($ctx._m0 = api_bind($cmp.bar.arr[$cmp.baz])),
         },
       },
-      [api_text(api_dynamic_text($cmp.bar.arr[$cmp.baz]))]
+      [
+        api_text(
+          api_dynamic_text($cmp.bar.arr[$cmp.baz]) +
+            " " +
+            api_dynamic_text($cmp.bar.baz.arr[$cmp.quux]) +
+            " " +
+            api_dynamic_text($cmp.bar.arr[$cmp.baz.quux])
+        ),
+      ]
     ),
   ];
   /*LWC compiler vX.X.X*/
