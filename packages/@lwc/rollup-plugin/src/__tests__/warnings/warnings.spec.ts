@@ -15,7 +15,8 @@ function normalizeLog(log: RollupLog) {
         frame: log.frame,
         hook: log.hook,
         id: log.id && path.relative(__dirname, log.id),
-        message: log.message,
+        // The error message contains a prefix determined by Rollup. We just want the part after "LWC123: <message>"
+        message: log.message.match(/(LWC\d+:.*$)/)![1],
         plugin: log.plugin,
         pluginCode: log.pluginCode,
         loc: log.loc && {
@@ -55,7 +56,7 @@ describe('warnings', () => {
                 hook: 'transform',
                 id: 'fixtures/test/test.html',
                 message:
-                    '@lwc/rollup-plugin: LWC1148: Invalid HTML syntax: end-tag-without-matching-open-element. ' +
+                    'LWC1148: Invalid HTML syntax: end-tag-without-matching-open-element. ' +
                     'This will not be supported in future versions of LWC. For more information, please visit ' +
                     'https://html.spec.whatwg.org/multipage/parsing.html#parse-error-end-tag-without-matching-open-element',
                 plugin: 'rollup-plugin-lwc-compiler',
