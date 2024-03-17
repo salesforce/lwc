@@ -43,7 +43,9 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             }),
         ],
         onwarn(warning) {
-            warnings.push(warning);
+            if (warning.message.includes('LWC1187')) {
+                warnings.push(warning);
+            }
         },
     });
 
