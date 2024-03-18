@@ -133,7 +133,7 @@ async function extractCpuThrottlingRate(benchmarkFile) {
     // Rollup transforms this into `const cpuThrottlingRate = 2; [...] export { cpuThrottlingRate };`,
     // so we just look for the const, not the export.
     // We could do a more sophisticated thing than a regex, but the regex works fine.
-    const match = contents.match(/const cpuThrottlingRate = (\d+)/);
+    const match = contents.match(/const cpuThrottlingRate\s*=\s*(\d+)/);
     return match && parseInt(match[1], 10);
 }
 
