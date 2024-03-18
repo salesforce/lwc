@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 9,
+            "endLine": 11,
             "endColumn": 12,
             "start": 0,
-            "end": 219,
+            "end": 371,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,42 +17,68 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 9,
+                "startLine": 11,
                 "startColumn": 1,
-                "endLine": 9,
+                "endLine": 11,
                 "endColumn": 12,
-                "start": 208,
-                "end": 219
+                "start": 360,
+                "end": 371
             }
         },
         "directives": [],
         "children": [
             {
+                "type": "Comment",
+                "raw": " These are invalid aria attributes ",
+                "value": " These are invalid aria attributes ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 47,
+                    "start": 15,
+                    "end": 57
+                }
+            },
+            {
+                "type": "Comment",
+                "raw": " Note the extra '-' after the second word, ex: aria-described-by instead of aria-describedby ",
+                "value": " Note the extra '-' after the second word, ex: aria-described-by instead of aria-describedby ",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 105,
+                    "start": 62,
+                    "end": 162
+                }
+            },
+            {
                 "type": "Element",
                 "name": "div",
                 "namespace": "http://www.w3.org/1999/xhtml",
                 "location": {
-                    "startLine": 2,
+                    "startLine": 4,
                     "startColumn": 5,
-                    "endLine": 8,
+                    "endLine": 10,
                     "endColumn": 12,
-                    "start": 15,
-                    "end": 207,
+                    "start": 167,
+                    "end": 359,
                     "startTag": {
-                        "startLine": 2,
+                        "startLine": 4,
                         "startColumn": 5,
-                        "endLine": 8,
+                        "endLine": 10,
                         "endColumn": 6,
-                        "start": 15,
-                        "end": 201
+                        "start": 167,
+                        "end": 353
                     },
                     "endTag": {
-                        "startLine": 8,
+                        "startLine": 10,
                         "startColumn": 6,
-                        "endLine": 8,
+                        "endLine": 10,
                         "endColumn": 12,
-                        "start": 201,
-                        "end": 207
+                        "start": 353,
+                        "end": 359
                     }
                 },
                 "attributes": [
@@ -65,21 +91,21 @@
                             "end": 7,
                             "name": "scoped",
                             "location": {
-                                "startLine": 3,
+                                "startLine": 5,
                                 "startColumn": 9,
-                                "endLine": 3,
+                                "endLine": 5,
                                 "endColumn": 35,
-                                "start": 29,
-                                "end": 55
+                                "start": 181,
+                                "end": 207
                             }
                         },
                         "location": {
-                            "startLine": 3,
+                            "startLine": 5,
                             "startColumn": 9,
-                            "endLine": 3,
+                            "endLine": 5,
                             "endColumn": 35,
-                            "start": 29,
-                            "end": 55
+                            "start": 181,
+                            "end": 207
                         }
                     },
                     {
@@ -91,21 +117,21 @@
                             "end": 7,
                             "name": "scoped",
                             "location": {
-                                "startLine": 4,
+                                "startLine": 6,
                                 "startColumn": 9,
-                                "endLine": 4,
+                                "endLine": 6,
                                 "endColumn": 40,
-                                "start": 64,
-                                "end": 95
+                                "start": 216,
+                                "end": 247
                             }
                         },
                         "location": {
-                            "startLine": 4,
+                            "startLine": 6,
                             "startColumn": 9,
-                            "endLine": 4,
+                            "endLine": 6,
                             "endColumn": 40,
-                            "start": 64,
-                            "end": 95
+                            "start": 216,
+                            "end": 247
                         }
                     },
                     {
@@ -117,21 +143,21 @@
                             "end": 7,
                             "name": "scoped",
                             "location": {
-                                "startLine": 5,
+                                "startLine": 7,
                                 "startColumn": 9,
-                                "endLine": 5,
+                                "endLine": 7,
                                 "endColumn": 36,
-                                "start": 104,
-                                "end": 131
+                                "start": 256,
+                                "end": 283
                             }
                         },
                         "location": {
-                            "startLine": 5,
+                            "startLine": 7,
                             "startColumn": 9,
-                            "endLine": 5,
+                            "endLine": 7,
                             "endColumn": 36,
-                            "start": 104,
-                            "end": 131
+                            "start": 256,
+                            "end": 283
                         }
                     },
                     {
@@ -143,21 +169,21 @@
                             "end": 7,
                             "name": "scoped",
                             "location": {
-                                "startLine": 6,
+                                "startLine": 8,
                                 "startColumn": 9,
-                                "endLine": 6,
+                                "endLine": 8,
                                 "endColumn": 30,
-                                "start": 140,
-                                "end": 161
+                                "start": 292,
+                                "end": 313
                             }
                         },
                         "location": {
-                            "startLine": 6,
+                            "startLine": 8,
                             "startColumn": 9,
-                            "endLine": 6,
+                            "endLine": 8,
                             "endColumn": 30,
-                            "start": 140,
-                            "end": 161
+                            "start": 292,
+                            "end": 313
                         }
                     },
                     {
@@ -169,21 +195,21 @@
                             "end": 7,
                             "name": "scoped",
                             "location": {
-                                "startLine": 7,
+                                "startLine": 9,
                                 "startColumn": 9,
-                                "endLine": 7,
+                                "endLine": 9,
                                 "endColumn": 34,
-                                "start": 170,
-                                "end": 195
+                                "start": 322,
+                                "end": 347
                             }
                         },
                         "location": {
-                            "startLine": 7,
+                            "startLine": 9,
                             "startColumn": 9,
-                            "endLine": 7,
+                            "endLine": 9,
                             "endColumn": 34,
-                            "start": 170,
-                            "end": 195
+                            "start": 322,
+                            "end": 347
                         }
                     }
                 ],
