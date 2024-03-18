@@ -61,13 +61,14 @@ export function bindComplexExpression(
 
         leave(node, parent) {
             if (t.isArrowFunctionExpression(node)) {
-                expressionScopes.exitScope(node);
-            } else if (
+                return expressionScopes.exitScope(node);
+            }
+            // Acorn parses `undefined` as an Identifier.
+            const isIdentifier = t.isIdentifier(node) && node.name !== 'undefined';
+            if (
                 parent !== null &&
-                t.isIdentifier(node) &&
-                // Acorn parses `undefined` as an Identifier.
-                node.name !== 'undefined' &&
-                !(t.isMemberExpression(parent) && parent.property === node) &&
+                isIdentifier &&
+                !(t.isMemberExpression(parent) && parent.property === node && !parent.computed) &&
                 !(t.isProperty(parent) && parent.key === node) &&
                 !codeGen.isLocalIdentifier(node) &&
                 !expressionScopes.isScopedToExpression(node)

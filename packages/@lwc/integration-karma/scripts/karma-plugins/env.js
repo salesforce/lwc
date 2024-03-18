@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -17,12 +17,11 @@ const path = require('path');
 const { LWC_VERSION } = require('@lwc/shared');
 const {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
-    SYNTHETIC_SHADOW_ENABLED,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
     NODE_ENV_FOR_TEST,
     API_VERSION,
-    FORCE_LWC_V5_COMPILER_FOR_TEST,
+    DISABLE_SYNTHETIC,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -36,21 +35,15 @@ function createEnvFile() {
     fs.writeFileSync(
         ENV_FILENAME,
         `
-        window.lwcRuntimeFlags = {
-            ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-        };
         window.process = {
             env: {
-                NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
-                MIXED_SHADOW: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-                NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-                NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
-                SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
+                API_VERSION: ${JSON.stringify(API_VERSION)},
                 ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: ${ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL},
                 ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: ${ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION},
+                FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
-                API_VERSION: ${JSON.stringify(API_VERSION)},
-                FORCE_LWC_V5_COMPILER_FOR_TEST: ${JSON.stringify(FORCE_LWC_V5_COMPILER_FOR_TEST)}
+                NATIVE_SHADOW: ${DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
+                NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
             }
         };
     `

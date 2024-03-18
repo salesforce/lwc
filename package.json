@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "6.3.2",
+    "version": "6.3.3",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prepare": "husky && yarn build",
-        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
+        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
         "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
@@ -69,9 +69,10 @@
         "typescript": "5.4.2"
     },
     "lint-staged": {
-        "**/*.{js,mjs,ts}": "eslint",
+        "*.{js,mjs,ts}": "eslint",
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
-        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js"
+        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
+        "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
         "packages/@lwc/*",

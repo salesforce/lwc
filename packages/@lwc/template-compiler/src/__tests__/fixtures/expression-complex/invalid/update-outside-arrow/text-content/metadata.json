@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1191,
+            "message": "Invalid expression {count += 1} - LWC1191: Field mutations are only permitted within arrow functions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17,
+                "start": 42,
+                "length": 10
+            }
+        }
+    ]
+}

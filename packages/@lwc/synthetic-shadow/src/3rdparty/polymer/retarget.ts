@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined } from '@lwc/shared';
+import { isSyntheticOrNativeShadowRoot } from '../../shared/utils';
 import { pathComposer } from './path-composer';
-import { isSyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
 @license
@@ -28,11 +28,16 @@ export function retarget(refNode: EventTarget | null, path: EventTarget[]): Even
     for (let i = 0, ancestor, lastRoot, root: Window | Node, rootIdx; i < p$.length; i++) {
         ancestor = p$[i];
         root = ancestor instanceof Window ? ancestor : (ancestor as Node).getRootNode();
+        // Retarget to ancestor if ancestor is not shadowed
+        if (!isSyntheticOrNativeShadowRoot(root)) {
+            return ancestor;
+        }
         if (root !== lastRoot) {
             rootIdx = refNodePath.indexOf(root);
             lastRoot = root;
         }
-        if (!isSyntheticShadowRoot(root) || (!isUndefined(rootIdx) && rootIdx > -1)) {
+        // Retarget to ancestor if ancestor is shadowed by refNode's shadow root
+        if (!isUndefined(rootIdx) && rootIdx > -1) {
             return ancestor;
         }
     }
