@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -563,6 +563,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         } while (object);
     }
 
+    const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -595,6 +597,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         getPropertyDescriptor,
         attachReportingControlDispatcher,
         detachReportingControlDispatcher,
+        IS_SYNTHETIC_SHADOW_LOADED,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

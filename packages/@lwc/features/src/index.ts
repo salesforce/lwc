@@ -12,7 +12,6 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 /** List of all feature flags available, with the default value `null`. */
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
-    ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
@@ -20,7 +19,6 @@ const features: FeatureFlagMap = {
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
     ENABLE_EXPERIMENTAL_SIGNALS: null,
-    DISABLE_TEMPORARY_V5_COMPILER_SUPPORT: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

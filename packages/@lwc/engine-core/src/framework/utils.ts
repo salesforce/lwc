@@ -13,14 +13,11 @@ import {
     seal,
     isAPIFeatureEnabled,
     APIFeature,
-    isUndefined,
-    isNull,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
-import { VElementData } from './vnodes';
 
 type Callback = () => void;
 
@@ -133,30 +130,6 @@ export function assertNotProd() {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-}
-
-// Temporary fix for when the LWC v5 compiler is used in conjunction with a v6+ engine
-// The old compiler format used the "slot" attribute in the `data` bag, whereas the new
-// format uses the special `slotAssignment` key.
-// This should be removed when the LWC v5 compiler is not used anywhere where it could be mismatched
-// with another LWC engine version.
-// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-export function applyTemporaryCompilerV5SlotFix(data: VElementData) {
-    if (lwcRuntimeFlags.DISABLE_TEMPORARY_V5_COMPILER_SUPPORT) {
-        return data;
-    }
-    const { attrs } = data;
-    if (!isUndefined(attrs)) {
-        const { slot } = attrs;
-        if (!isUndefined(slot) && !isNull(slot)) {
-            return {
-                ...data,
-                attrs: cloneAndOmitKey(attrs, 'slot'),
-                slotAssignment: String(slot),
-            };
-        }
-    }
-    return data;
 }
 
 export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {

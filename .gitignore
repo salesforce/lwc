@@ -1,7 +1,7 @@
 *.log
 -local-*
 .DS_Store
-dist/*.js
+dist/
 types/
 node_modules/
 coverage/
@@ -11,9 +11,6 @@ coverage/
 .nx-cache
 
 lib/
-playground/dist/
-packages/**/dist/
-benchmarking/dist/
 __benchmarks_results__/
 packages/@lwc/integration-tests/public/
 packages/@lwc/integration-tests/errorShots/

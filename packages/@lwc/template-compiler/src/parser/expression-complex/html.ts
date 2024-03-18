@@ -148,7 +148,10 @@ class TemplateHtmlTokenizer extends Tokenizer {
 
         // Parsed expressions that are cached here will be later retrieved when the
         // LWC template AST is being constructed.
-        this.parser.preparsedJsExpressions.set(expressionStart, estreeNode);
+        this.parser.preparsedJsExpressions.set(expressionStart, {
+            parsedExpression: estreeNode,
+            rawText: expressionTextNodeValue,
+        });
 
         return expressionTextNodeValue;
     }

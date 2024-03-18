@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -13,13 +13,13 @@ const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
 const {
-    SYNTHETIC_SHADOW_ENABLED,
     GREP,
     COVERAGE,
+    COVERAGE_DIR_FOR_OPTIONS,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    DISABLE_SYNTHETIC,
 } = require('../../shared/options');
 const { createPattern } = require('../utils');
-const TAGS = require('./tags');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
@@ -43,7 +43,7 @@ process.setMaxListeners(1000);
 function getFiles() {
     const frameworkFiles = [];
 
-    if (SYNTHETIC_SHADOW_ENABLED) {
+    if (!DISABLE_SYNTHETIC) {
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
     }
     if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
@@ -108,7 +108,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, TAGS.join('_')),
+            dir: path.join(COVERAGE_DIR, COVERAGE_DIR_FOR_OPTIONS),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }
