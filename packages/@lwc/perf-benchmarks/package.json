@@ -55,6 +55,9 @@
                     },
                     {
                         "env": "BENCHMARK_SMOKE_TEST"
+                    },
+                    {
+                        "env": "BENCHMARK_CPU_THROTTLING_RATE"
                     }
                 ]
             },

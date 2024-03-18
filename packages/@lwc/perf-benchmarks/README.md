@@ -56,9 +56,12 @@ You can also use these environment variables to adjust the default benchmark set
 BENCHMARK_SAMPLE_SIZE=50
 BENCHMARK_AUTO_SAMPLE_CONDITIONS=25%
 BENCHMARK_TIMEOUT=5
+BENCHMARK_CPU_THROTTLING_RATE=4
 ```
 
 See the [Tachometer documentation](https://github.com/Polymer/tachometer) for details on what these mean.
+
+For `BENCHMARK_CPU_THROTTLING_RATE`, some tests have a built-in `cpuThrottlingRate` which is exported as a `const`. The environment variable will override this.
 
 You can run a smoke test (to confirm the benchmark tests are working) using:
 
