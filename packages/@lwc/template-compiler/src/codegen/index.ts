@@ -80,6 +80,8 @@ import { bindAttributeExpression } from './expression';
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
+        // TODO [#4077]: Move databag gathering to after static element check as it doesn't seem to be used by static
+        // content optimization.
         const databag = elementDataBag(element, slotParentName);
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
