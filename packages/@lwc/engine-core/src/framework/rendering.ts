@@ -270,7 +270,7 @@ function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    patchStaticParts(n1, n2);
+    patchStaticParts(n1, n2, renderer);
 }
 
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {

@@ -10,8 +10,19 @@ import { VStatic, VStaticPart } from '../vnodes';
 import { RendererAPI } from '../renderer';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
+import { patchAttributes } from './attrs';
 
-function traverseAndSetElements(root: Element, parts: VStaticPart[], renderer: RendererAPI): void {
+/**
+ * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
+ * @param root the root element
+ * @param parts an array of VStaticParts
+ * @param renderer the renderer to use
+ */
+export function traverseAndSetElements(
+    root: Element,
+    parts: VStaticPart[],
+    renderer: RendererAPI
+): void {
     const numParts = parts.length;
 
     // Optimization given that, in most cases, there will be one part, and it's just the root
@@ -93,15 +104,17 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         applyEventListeners(part, renderer);
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
+        patchAttributes(null, part, renderer);
     }
 }
 
 /**
- * Mounts elements to the newly generated VStatic node
+ * Updates the static elements based on the content of the VStaticParts
  * @param n1 the previous VStatic vnode
  * @param n2 the current VStatic vnode
+ * @param renderer the renderer to use
  */
-export function patchStaticParts(n1: VStatic, n2: VStatic) {
+export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     // On the server, we don't support ref (because it relies on renderedCallback), nor do we
     // support event listeners (no interactivity), so traversing parts makes no sense
     if (!process.env.IS_BROWSER) {
@@ -128,5 +141,32 @@ export function patchStaticParts(n1: VStatic, n2: VStatic) {
         part.elm = prevParts![i].elm;
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, currPartsOwner);
+        patchAttributes(prevParts![i], part, renderer);
+    }
+}
+
+/**
+ * Mounts the hydration specific attributes
+ * @param vnode the parent VStatic node
+ * @param renderer the renderer to use
+ */
+export function hydrateStaticParts(vnode: VStatic, renderer: RendererAPI): void {
+    if (!process.env.IS_BROWSER) {
+        return;
+    }
+
+    const { parts, owner } = vnode;
+    if (isUndefined(parts)) {
+        return;
+    }
+
+    // Note, hydration doesn't patch attributes because hydration validation occurs before this routine
+    // which guarantees that the elements are the same.
+    // We only need to apply the parts for things that cannot be done on the server.
+    for (const part of parts) {
+        // Event listeners only need to be applied once when mounting
+        applyEventListeners(part, renderer);
+        // Refs must be updated after every render due to refVNodes getting reset before every render
+        applyRefs(part, owner);
     }
 }
