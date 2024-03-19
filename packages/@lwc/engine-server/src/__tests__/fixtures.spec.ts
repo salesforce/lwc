@@ -42,8 +42,15 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 ],
             }),
         ],
-        onwarn(warning) {
-            warnings.push(warning);
+        onwarn(warning, warn) {
+            if (warning.message.includes('LWC1187')) {
+                // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
+                // The warning message is expected and appears when the compiler detects usage of the directive.
+                // We plan to remove the directive in a future release, see #3331 for details.
+                warnings.push(warning);
+            } else {
+                warn(warning);
+            }
         },
     });
 

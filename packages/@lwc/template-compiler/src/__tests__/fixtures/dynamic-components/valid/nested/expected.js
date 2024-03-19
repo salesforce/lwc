@@ -26,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
       },
       [
-        api_static_fragment($fragment1(), 2),
+        api_static_fragment($fragment1, 2),
         api_dynamic_component(
           $cmp.ctor2,
           {
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               click: _m1 || ($ctx._m1 = api_bind($cmp.handleOuterClick)),
             },
           },
-          [api_static_fragment($fragment2(), 5)]
+          [api_static_fragment($fragment2, 5)]
         ),
       ]
     ),

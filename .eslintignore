@@ -6,3 +6,7 @@ fixtures/
 public/
 __benchmarks_results__/
 playground/
+# These are used to debug test fixtures; we use eslint to avoid accidentally committing them, but we
+# don't .gitignore them so we can loudly check for them (and maybe intentionally commit, sometimes).
+!.skip
+!.only

@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { APIVersion, getAPIVersionFromNumber, SVG_NAMESPACE } from '@lwc/shared';
+import {
+    APIVersion,
+    getAPIVersionFromNumber,
+    SVG_NAMESPACE,
+    STATIC_PART_TOKEN_ID,
+    isUndefined,
+} from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
@@ -19,6 +25,7 @@ import {
     RefDirective,
     Text,
     StaticElement,
+    Attribute,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -28,6 +35,7 @@ import {
 import {
     isComment,
     isElement,
+    isExpression,
     isPreserveCommentsDirective,
     isRenderModeDirective,
 } from '../shared/ast';
@@ -35,7 +43,7 @@ import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
-import { bindComplexExpression } from './expression';
+import { bindAttributeExpression, bindComplexExpression } from './expression';
 
 // structuredClone is only available in Node 17+
 // https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
@@ -72,27 +80,27 @@ interface RenderPrimitiveDefinition {
 }
 
 const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition } = {
-    iterator: { name: 'i', alias: 'api_iterator' },
-    flatten: { name: 'f', alias: 'api_flatten' },
-    element: { name: 'h', alias: 'api_element' },
-    slot: { name: 's', alias: 'api_slot' },
+    bind: { name: 'b', alias: 'api_bind' },
+    comment: { name: 'co', alias: 'api_comment' },
     customElement: { name: 'c', alias: 'api_custom_element' },
-    dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
     // TODO [#3331]: remove usage of lwc:dynamic in 246
     deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
-    bind: { name: 'b', alias: 'api_bind' },
-    text: { name: 't', alias: 'api_text' },
+    dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
-    key: { name: 'k', alias: 'api_key' },
-    tabindex: { name: 'ti', alias: 'api_tab_index' },
-    scopedId: { name: 'gid', alias: 'api_scoped_id' },
-    scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
-    comment: { name: 'co', alias: 'api_comment' },
-    sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    element: { name: 'h', alias: 'api_element' },
+    flatten: { name: 'f', alias: 'api_flatten' },
     fragment: { name: 'fr', alias: 'api_fragment' },
-    staticFragment: { name: 'st', alias: 'api_static_fragment' },
+    iterator: { name: 'i', alias: 'api_iterator' },
+    key: { name: 'k', alias: 'api_key' },
+    sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
+    scopedId: { name: 'gid', alias: 'api_scoped_id' },
     scopedSlotFactory: { name: 'ssf', alias: 'api_scoped_slot_factory' },
+    slot: { name: 's', alias: 'api_slot' },
+    staticFragment: { name: 'st', alias: 'api_static_fragment' },
     staticPart: { name: 'sp', alias: 'api_static_part' },
+    tabindex: { name: 'ti', alias: 'api_tab_index' },
+    text: { name: 't', alias: 'api_text' },
 };
 
 interface Scope {
@@ -150,6 +158,8 @@ export default class CodeGen {
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
+
+    staticExpressionMap = new WeakMap<Attribute, string>();
 
     constructor({
         root,
@@ -533,7 +543,9 @@ export default class CodeGen {
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
                 : this.generateKey();
-        const html = serializeStaticElement(element, this.preserveComments);
+        const staticParts = this.genStaticParts(element);
+        // Generate static parts prior to serialization to inject the corresponding static part Id into the serialized output.
+        const html = serializeStaticElement(element, this);
 
         const parseMethod =
             element.name !== 'svg' && element.namespace === SVG_NAMESPACE
@@ -566,10 +578,9 @@ export default class CodeGen {
             expr,
         });
 
-        const args: t.Expression[] = [t.callExpression(identifier, []), t.literal(key)];
+        const args: t.Expression[] = [identifier, t.literal(key)];
 
         // Only add the third argument (staticParts) if this element needs it
-        const staticParts = this.genStaticParts(element);
         if (staticParts) {
             args.push(staticParts);
         }
@@ -613,6 +624,29 @@ export default class CodeGen {
                     }
                 }
 
+                const attributeExpressions = [];
+                for (const attribute of node.attributes) {
+                    const { name, value } = attribute;
+                    if (isExpression(value)) {
+                        this.staticExpressionMap.set(
+                            attribute,
+                            `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${name}`
+                        );
+                        attributeExpressions.push(
+                            t.property(
+                                t.literal(name),
+                                bindAttributeExpression(attribute, node, this, false)
+                            )
+                        );
+                    }
+                }
+
+                if (attributeExpressions.length) {
+                    addDatabagProp(
+                        t.property(t.identifier('attrs'), t.objectExpression(attributeExpressions))
+                    );
+                }
+
                 // For depth-first traversal, children must be preprended in order, so that they are processed before
                 // siblings. Note that this is consistent with the order used in the diffing algo as well as
                 // `traverseAndSetElements` in @lwc/engine-core.
@@ -636,5 +670,17 @@ export default class CodeGen {
             t.literal(partId),
             t.objectExpression(databagProperties),
         ]);
+    }
+
+    getStaticExpressionToken(node: Attribute): string {
+        const token = this.staticExpressionMap.get(node);
+        /* istanbul ignore if */
+        if (isUndefined(token)) {
+            // It should not be possible to hit this code path
+            throw new Error(
+                `Template compiler internal error, unable to map ${node.name} to a static expression.`
+            );
+        }
+        return token;
     }
 }

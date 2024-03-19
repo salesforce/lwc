@@ -9,13 +9,10 @@
  * Builds the HTML and tachometer.json files necessary to run the benchmarks.
  */
 
-const path = require('path');
-const fs = require('fs');
-const { promisify } = require('util');
+const path = require('node:path');
+const { readFile, writeFile } = require('node:fs/promises');
 const { glob } = require('glob');
 const { hashElement } = require('folder-hash');
-
-const writeFile = promisify(fs.writeFile);
 
 const {
     BENCHMARK_SMOKE_TEST,
@@ -27,6 +24,7 @@ const {
 let {
     BENCHMARK_SAMPLE_SIZE = 100, // minimum number of samples to run
     BENCHMARK_TIMEOUT = 15, // timeout in minutes during auto-sampling (after the minimum samples). If 0, no auto-sampling
+    BENCHMARK_CPU_THROTTLING_RATE, // CPU throttling factor, typically 2 or 4
 } = process.env;
 
 const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
@@ -35,6 +33,8 @@ const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
 BENCHMARK_SAMPLE_SIZE = BENCHMARK_SMOKE_TEST ? 2 : toInt(BENCHMARK_SAMPLE_SIZE);
 // Timeout of 0 means don't auto-sample at all
 BENCHMARK_TIMEOUT = BENCHMARK_SMOKE_TEST ? 0 : toInt(BENCHMARK_TIMEOUT);
+BENCHMARK_CPU_THROTTLING_RATE =
+    BENCHMARK_CPU_THROTTLING_RATE && toInt(BENCHMARK_CPU_THROTTLING_RATE);
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 
@@ -66,7 +66,7 @@ function createHtml(benchmarkFile) {
   `.trim();
 }
 
-function createTachometerJson(htmlFilename, benchmarkName, directoryHash) {
+function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThrottlingRate) {
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
         sampleSize: BENCHMARK_SAMPLE_SIZE,
@@ -80,6 +80,7 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash) {
                     name: 'chrome',
                     headless: true,
                     ...(CHROME_BINARY && { binary: CHROME_BINARY }),
+                    ...(typeof cpuThrottlingRate === 'number' && { cpuThrottlingRate }),
                 },
                 measurement: {
                     mode: 'performance',
@@ -126,6 +127,16 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash) {
     };
 }
 
+// Given a *.benchmark.js file, extract the exported `cpuThrottlingRate`.
+async function extractCpuThrottlingRate(benchmarkFile) {
+    const contents = await readFile(benchmarkFile, 'utf-8');
+    // Rollup transforms this into `const cpuThrottlingRate = 2; [...] export { cpuThrottlingRate };`,
+    // so we just look for the const, not the export.
+    // We could do a more sophisticated thing than a regex, but the regex works fine.
+    const match = contents.match(/const cpuThrottlingRate\s*=\s*(\d+)/);
+    return match && parseInt(match[1], 10);
+}
+
 // Given a benchmark source file, create the necessary HTML file and Tachometer JSON
 // file for running it.
 async function processBenchmarkFile(benchmarkFile, directoryHash) {
@@ -141,7 +152,16 @@ async function processBenchmarkFile(benchmarkFile, directoryHash) {
     async function writeTachometerJsonFile() {
         const engineType = benchmarkFile.includes('/engine-server/') ? 'server' : 'dom';
         const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
-        const tachometerJson = createTachometerJson(htmlFilename, benchmarkName, directoryHash);
+        const cpuThrottlingRate =
+            typeof BENCHMARK_CPU_THROTTLING_RATE === 'number'
+                ? BENCHMARK_CPU_THROTTLING_RATE
+                : await extractCpuThrottlingRate(benchmarkFile);
+        const tachometerJson = createTachometerJson(
+            htmlFilename,
+            benchmarkName,
+            directoryHash,
+            cpuThrottlingRate
+        );
         const jsonFilename = path.join(
             targetDir,
             `${benchmarkFileBasename.split('.')[0]}.tachometer.json`

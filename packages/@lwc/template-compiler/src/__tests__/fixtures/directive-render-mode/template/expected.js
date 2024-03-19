@@ -19,7 +19,7 @@ const stc2 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, t: api_text, s: api_slot } = $api;
   return [
-    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment1, 1),
     api_slot("", stc0, [api_text("Default")], $slotset),
     api_slot("named", stc1, [api_text("Named")], $slotset),
     api_slot("forwarded", stc2, [api_text("Forwarded")], $slotset),

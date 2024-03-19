@@ -1,0 +1,10 @@
+{
+    "message": "LWC1110: Invalid property name \"slot\". \"slot\" is a reserved attribute.",
+    "loc": {
+        "line": 4,
+        "column": 2,
+        "start": 95,
+        "length": 9
+    },
+    "filename": "test.js"
+}

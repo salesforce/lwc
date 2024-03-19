@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, h: api_element } = $api;
   return [
     api_element("section", stc0, [
-      $cmp.isTrue === true ? api_static_fragment($fragment1(), 2) : null,
+      $cmp.isTrue === true ? api_static_fragment($fragment1, 2) : null,
     ]),
   ];
   /*LWC compiler vX.X.X*/

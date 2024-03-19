@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   const { _m0, _m1 } = $ctx;
   return [
-    api_static_fragment($fragment1(), 1, [
+    api_static_fragment($fragment1, 1, [
       api_static_part(0, {
         on: {
           click: _m1 || ($ctx._m1 = api_bind($cmp.create)),
@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           },
           [
             api_text(api_dynamic_text(task.title)),
-            api_static_fragment($fragment2(), 5, [
+            api_static_fragment($fragment2, 5, [
               api_static_part(0, {
                 on: {
                   click: api_bind(task.delete),

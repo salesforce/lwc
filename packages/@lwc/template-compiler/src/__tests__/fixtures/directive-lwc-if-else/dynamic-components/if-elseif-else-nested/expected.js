@@ -16,28 +16,28 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     $cmp.outer.if
-      ? api_fragment(0, [api_static_fragment($fragment1(), 2)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment1, 2)], 0)
       : $cmp.outer.elseif1
-      ? api_fragment(0, [api_static_fragment($fragment2(), 4)], 0)
+      ? api_fragment(0, [api_static_fragment($fragment2, 4)], 0)
       : $cmp.outer.elseif2
       ? api_fragment(
           0,
           [
             $cmp.inner.if
-              ? api_fragment(5, [api_static_fragment($fragment3(), 7)], 0)
+              ? api_fragment(5, [api_static_fragment($fragment3, 7)], 0)
               : $cmp.inner.elseif
-              ? api_fragment(5, [api_static_fragment($fragment4(), 9)], 0)
+              ? api_fragment(5, [api_static_fragment($fragment4, 9)], 0)
               : $cmp.inner.elseif2
               ? api_fragment(
                   5,
                   [api_dynamic_component($cmp.trackedProp.foo, stc0)],
                   0
                 )
-              : api_fragment(5, [api_static_fragment($fragment5(), 12)], 0),
+              : api_fragment(5, [api_static_fragment($fragment5, 12)], 0),
           ],
           0
         )
-      : api_fragment(0, [api_static_fragment($fragment6(), 14)], 0),
+      : api_fragment(0, [api_static_fragment($fragment6, 14)], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

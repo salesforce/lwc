@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -34,23 +34,31 @@ const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
 
-// TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-const FORCE_LWC_V5_COMPILER_FOR_TEST = Boolean(process.env.FORCE_LWC_V5_COMPILER_FOR_TEST);
+const baseOptions = {
+    API_VERSION,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    DISABLE_SYNTHETIC,
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
+    LEGACY_BROWSERS,
+    NODE_ENV_FOR_TEST,
+};
+
+/** Unique directory name that encodes the flags that the tests were executed with. */
+const COVERAGE_DIR_FOR_OPTIONS =
+    Object.entries(baseOptions)
+        .filter(([, val]) => val)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('/') || 'no-options';
 
 module.exports = {
     // Test configuration
-    LEGACY_BROWSERS,
-    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
-    NODE_ENV_FOR_TEST,
-    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
-    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
-    DISABLE_STATIC_CONTENT_OPTIMIZATION,
-    SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
-    API_VERSION,
-    FORCE_LWC_V5_COMPILER_FOR_TEST,
-    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
+    ...baseOptions,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
+    COVERAGE_DIR_FOR_OPTIONS,
 
     // Sauce labs
     SAUCE_USERNAME: process.env.SAUCE_USERNAME,

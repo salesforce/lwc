@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import {
     customElementCallbackReactionErrorListener,
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    IS_SYNTHETIC_SHADOW_LOADED,
 } from 'test-utils';
 
 import ShadowDomCmp from 'ai/shadowDom';
@@ -79,24 +80,22 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         describe('light DOM', () => {
             attachInternalsSanityTest('light-dom', LightDomCmp);
         });
-    } else {
+    } else if (!IS_SYNTHETIC_SHADOW_LOADED) {
         // ElementInternals API is not supported in the browser
         // Because of the order error messages are thrown, this error only appears when synthetic shadow
         // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
         // is thrown instead.
-        if (!process.env.SYNTHETIC_SHADOW_ENABLED) {
-            it('should throw an error when used with unsupported browser environments', () => {
-                createElementsThroughLwcAndCustomElementConstructor(
-                    'unsupported-env-component',
-                    ShadowDomCmp
-                ).forEach((elm) => {
-                    testConnectedCallbackError(
-                        elm,
-                        'attachInternals API is not supported in this browser environment.'
-                    );
-                });
+        it('should throw an error when used with unsupported browser environments', () => {
+            createElementsThroughLwcAndCustomElementConstructor(
+                'unsupported-env-component',
+                ShadowDomCmp
+            ).forEach((elm) => {
+                testConnectedCallbackError(
+                    elm,
+                    'attachInternals API is not supported in this browser environment.'
+                );
             });
-        }
+        });
     }
 } else {
     it(`should throw an error when api version < 61`, () => {

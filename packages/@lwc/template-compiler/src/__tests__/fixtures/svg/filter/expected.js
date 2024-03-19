@@ -58,7 +58,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [api_static_fragment($fragment1(), 4)]
+          [api_static_fragment($fragment1, 4)]
         ),
         api_element(
           "filter",
@@ -70,7 +70,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 5,
             svg: true,
           },
-          [api_static_fragment($fragment2(), 7)]
+          [api_static_fragment($fragment2, 7)]
         ),
         api_element(
           "filter",
@@ -82,17 +82,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 8,
             svg: true,
           },
-          [api_static_fragment($fragment3(), 10)]
+          [api_static_fragment($fragment3, 10)]
         ),
       ]),
-      api_static_fragment($fragment4(), 12),
-      api_static_fragment($fragment5(), 14),
-      api_static_fragment($fragment6(), 16),
-      api_static_fragment($fragment7(), 18),
+      api_static_fragment($fragment4, 12),
+      api_static_fragment($fragment5, 14),
+      api_static_fragment($fragment6, 16),
+      api_static_fragment($fragment7, 18),
     ]),
     api_element("svg", stc2, [
-      api_static_fragment($fragment8(), 21),
-      api_static_fragment($fragment9(), 23),
+      api_static_fragment($fragment8, 21),
+      api_static_fragment($fragment9, 23),
       api_element(
         "filter",
         {
@@ -108,13 +108,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           svg: true,
         },
         [
-          api_static_fragment($fragment10(), 26),
-          api_static_fragment($fragment11(), 28),
-          api_static_fragment($fragment12(), 30),
-          api_static_fragment($fragment13(), 32),
-          api_static_fragment($fragment14(), 34),
-          api_static_fragment($fragment15(), 36),
-          api_static_fragment($fragment16(), 38),
+          api_static_fragment($fragment10, 26),
+          api_static_fragment($fragment11, 28),
+          api_static_fragment($fragment12, 30),
+          api_static_fragment($fragment13, 32),
+          api_static_fragment($fragment14, 34),
+          api_static_fragment($fragment15, 36),
+          api_static_fragment($fragment16, 38),
         ]
       ),
     ]),
