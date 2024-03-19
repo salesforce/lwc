@@ -58,8 +58,6 @@ jobs:
       - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
       - run: API_VERSION=58 yarn sauce:ci
       - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: API_VERSION=59 yarn sauce:ci
-      - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn sauce:ci
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
@@ -94,12 +92,12 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
+      - run: API_VERSION=59 yarn sauce:ci
+      - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: API_VERSION=60 yarn sauce:ci
       - run: API_VERSION=60 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: API_VERSION=61 yarn sauce:ci
       - run: API_VERSION=61 DISABLE_SYNTHETIC=1 yarn sauce:ci
-      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn sauce:ci
-      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
 
       - name: Upload coverage results
@@ -135,6 +133,8 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
+      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn sauce:ci
+      - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
       - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
       - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
