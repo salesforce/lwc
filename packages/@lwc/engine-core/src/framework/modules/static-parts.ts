@@ -160,6 +160,9 @@ export function hydrateStaticParts(vnode: VStatic, renderer: RendererAPI): void 
         return;
     }
 
+    // Note, hydration doesn't patch attributes because hydration validation occurs before this routine
+    // which guarantees that the elements are the same.
+    // We only need to apply the parts for things that cannot be done on the server.
     for (const part of parts) {
         // Event listeners only need to be applied once when mounting
         applyEventListeners(part, renderer);

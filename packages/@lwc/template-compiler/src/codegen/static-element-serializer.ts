@@ -7,7 +7,7 @@
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
 import { isElement, isText, isComment, isExpression } from '../shared/ast';
-import CodeGen from './codegen';
+import { extractStaticPartToken } from './formatters/static-part-token';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
 
@@ -31,7 +31,7 @@ function templateStringEscape(str: string): string {
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
 
-function serializeAttrs(element: Element, codeGen: CodeGen): string {
+function serializeAttrs(element: Element): string {
     /**
      * 0: styleToken in existing class attr
      * 1: styleToken for added class attr
@@ -49,6 +49,15 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         value: string | boolean;
         hasExpression?: boolean;
     }) => {
+        /* istanbul ignore if */
+        if (hasExpression && value === '') {
+            // Note it should not be possible to reach this point.
+            // This indicates the staticPartToken does not exist on the attribute.
+            throw new Error(
+                `Template compiler internal error, unable to map ${element.name} to a static expression.`
+            );
+        }
+
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
         if (name === 'class') {
@@ -70,9 +79,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             return {
                 hasExpression,
                 name: attr.name,
-                value: hasExpression
-                    ? codeGen.getStaticExpressionToken(attr)
-                    : (attr.value as Literal).value,
+                value: hasExpression ? extractStaticPartToken(attr) : (attr.value as Literal).value,
             };
         })
         .forEach(collector);
@@ -95,15 +102,14 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 function serializeChildren(
     children: ChildNode[],
     parentTagName: string,
-    preserveComments: boolean,
-    codeGen: CodeGen
+    preserveComments: boolean
 ): string {
     let html = '';
 
     children.forEach((child) => {
         /* istanbul ignore else  */
         if (isElement(child)) {
-            html += serializeStaticElement(child, preserveComments, codeGen);
+            html += serializeStaticElement(child, preserveComments);
         } else if (isText(child)) {
             html += serializeTextNode(child, rawContentElements.has(parentTagName.toUpperCase()));
         } else if (isComment(child)) {
@@ -133,17 +139,13 @@ function serializeTextNode(text: Text, useRawContent: boolean): string {
     return templateStringEscape(content);
 }
 
-export function serializeStaticElement(
-    element: Element,
-    preserveComments: boolean,
-    codeGen: CodeGen
-): string {
+export function serializeStaticElement(element: Element, preserveComments: boolean): string {
     const { name: tagName, namespace } = element;
 
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    let html = `<${tagName}${serializeAttrs(element, codeGen)}`;
+    let html = `<${tagName}${serializeAttrs(element)}`;
 
     if (isForeignElement && !hasChildren) {
         html += '/>';
@@ -151,7 +153,7 @@ export function serializeStaticElement(
     }
 
     html += '>';
-    html += serializeChildren(element.children, tagName, preserveComments, codeGen);
+    html += serializeChildren(element.children, tagName, preserveComments);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;

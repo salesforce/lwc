@@ -782,6 +782,9 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
         return true;
     }
 
+    // The validation here relies on 2 key invariants:
+    // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
+    // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
         const hasMatchingAttrs = validateAttrs(part, part.elm!, owner, renderer, () => true);
         if (isFalse(hasMatchingAttrs)) {

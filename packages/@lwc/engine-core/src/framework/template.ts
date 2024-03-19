@@ -17,6 +17,7 @@ import {
     keys,
     noop,
     toString,
+    STATIC_PART_TOKEN_ID,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -135,16 +136,16 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
 
         let result = '';
         switch (type) {
-            case 'a':
+            case STATIC_PART_TOKEN_ID.ATTRIBUTE:
                 result = serializeAttribute(part, rest);
                 break;
-            case 'c': // class
+            case STATIC_PART_TOKEN_ID.CLASS: // class
                 // TODO [#3624]: Add class serialization
                 break;
-            case 's': // style
+            case STATIC_PART_TOKEN_ID.STYLE: // style
                 // TODO [#3624]: Add style serialization
                 break;
-            case 't': // text
+            case STATIC_PART_TOKEN_ID.TEXT: // text
                 // TODO [#3624]: Add text serialization
                 break;
             default:
@@ -201,7 +202,7 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
 function buildParseFragmentFn(
     createFragmentFn: (html: string, renderer: RendererAPI) => Element
 ): (strings: string[], ...keys: (string | number)[]) => () => Element {
-    return (strings: string[], ...keys: (number | string)[]) => {
+    return (strings: string[], ...keys: (string | number)[]) => {
         const cache = create(null);
 
         registerFragmentCache(cache);
@@ -226,9 +227,12 @@ function buildParseFragmentFn(
             }
 
             // Cache is only here to prevent calling innerHTML multiple times which doesn't happen on the server.
-            if (process.env.IS_BROWSER && !isUndefined(cache[cacheKey])) {
+            if (process.env.IS_BROWSER) {
                 // Disable this on the server to prevent cache poisoning when expressions are used.
-                return cache[cacheKey];
+                const cached = cache[cacheKey];
+                if (!isUndefined(cached)) {
+                    return cached;
+                }
             }
 
             // If legacy stylesheet tokens are required, then add them to the rendered string

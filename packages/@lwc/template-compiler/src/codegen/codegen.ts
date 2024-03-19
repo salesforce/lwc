@@ -5,7 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { APIVersion, getAPIVersionFromNumber, isUndefined, SVG_NAMESPACE } from '@lwc/shared';
+import {
+    APIVersion,
+    getAPIVersionFromNumber,
+    SVG_NAMESPACE,
+    STATIC_PART_TOKEN_ID,
+} from '@lwc/shared';
 
 import * as t from '../shared/estree';
 import {
@@ -19,7 +24,6 @@ import {
     RefDirective,
     Text,
     StaticElement,
-    Attribute,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -38,6 +42,7 @@ import State from '../state';
 import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
+import { genStaticPartMetadata } from './formatters/static-part-token';
 
 // structuredClone is only available in Node 17+
 // https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
@@ -152,8 +157,6 @@ export default class CodeGen {
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
-
-    staticExpressionMap = new WeakMap<Attribute, string>();
 
     constructor({
         root,
@@ -539,7 +542,7 @@ export default class CodeGen {
                 : this.generateKey();
         const staticParts = this.genStaticParts(element);
         // Generate static parts prior to serialization to inject the corresponding static part Id into the serialized output.
-        const html = serializeStaticElement(element, this.preserveComments, this);
+        const html = serializeStaticElement(element, this.preserveComments);
 
         const parseMethod =
             element.name !== 'svg' && element.namespace === SVG_NAMESPACE
@@ -622,7 +625,12 @@ export default class CodeGen {
                 for (const attribute of node.attributes) {
                     const { name, value } = attribute;
                     if (isExpression(value)) {
-                        this.staticExpressionMap.set(attribute, `a${partId}:${name}`);
+                        genStaticPartMetadata(
+                            attribute,
+                            STATIC_PART_TOKEN_ID.ATTRIBUTE,
+                            partId,
+                            name
+                        );
                         attributeExpressions.push(
                             t.property(
                                 t.literal(name),
@@ -661,16 +669,5 @@ export default class CodeGen {
             t.literal(partId),
             t.objectExpression(databagProperties),
         ]);
-    }
-
-    getStaticExpressionToken(node: Attribute): string {
-        const token = this.staticExpressionMap.get(node);
-        if (isUndefined(token)) {
-            // It should not be possible to hit this code path
-            throw new Error(
-                `Template compiler internal error, unable to map ${node.name} to a static expression.`
-            );
-        }
-        return token;
     }
 }

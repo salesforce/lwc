@@ -25,9 +25,14 @@ export enum LWCDirectiveRenderMode {
     light = 'light',
 }
 
+type Metadata = { [key: string]: any };
+
 export interface BaseNode {
     type: string;
     location: SourceLocation;
+    // Meta is intended to be used internally only.
+    // The data in meta should not be exposed externally.
+    meta?: Metadata;
 }
 
 export interface SourceLocation {
