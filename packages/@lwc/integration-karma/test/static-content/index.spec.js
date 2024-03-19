@@ -18,6 +18,7 @@ import Comments from 'x/comments';
 import PreserveComments from 'x/preserveComments';
 import AttributeExpression from 'x/attributeExpression';
 import DeepAttributeExpression from 'x/deepAttributeExpression';
+import IframeOnload from 'x/iframeOnload';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -480,5 +481,16 @@ describe('static optimization with attributes', () => {
         expect(nodes['deep3nested'].getAttribute('data-dynamic')).toEqual('3');
         expect(nodes['deep4'].getAttribute('data-dynamic')).toEqual('4');
         expect(nodes['deep4nested'].getAttribute('data-dynamic')).toEqual('4');
+    });
+});
+
+describe('iframe onload event listener', () => {
+    it('works with iframe onload listener', async () => {
+        const elm = createElement('x-iframe-onload', { is: IframeOnload });
+        document.body.appendChild(elm);
+        // Oddly Firefox requires two macrotasks before the load event fires. Chrome/Safari only require a microtask.
+        await new Promise((resolve) => setTimeout(resolve));
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(elm.loaded).toBeTrue();
     });
 });
