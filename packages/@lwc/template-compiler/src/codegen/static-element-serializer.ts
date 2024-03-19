@@ -7,7 +7,7 @@
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
 import { isElement, isText, isComment, isExpression } from '../shared/ast';
-import { extractStaticPartToken } from './formatters/static-part-token';
+import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
 
@@ -31,7 +31,7 @@ function templateStringEscape(str: string): string {
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
 
-function serializeAttrs(element: Element): string {
+function serializeAttrs(element: Element, codeGen: CodeGen): string {
     /**
      * 0: styleToken in existing class attr
      * 1: styleToken for added class attr
@@ -49,15 +49,6 @@ function serializeAttrs(element: Element): string {
         value: string | boolean;
         hasExpression?: boolean;
     }) => {
-        /* istanbul ignore if */
-        if (hasExpression && value === '') {
-            // Note it should not be possible to reach this point.
-            // This indicates the staticPartToken does not exist on the attribute.
-            throw new Error(
-                `Template compiler internal error, unable to map ${element.name} to a static expression.`
-            );
-        }
-
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
         if (name === 'class') {
@@ -79,7 +70,9 @@ function serializeAttrs(element: Element): string {
             return {
                 hasExpression,
                 name: attr.name,
-                value: hasExpression ? extractStaticPartToken(attr) : (attr.value as Literal).value,
+                value: hasExpression
+                    ? codeGen.getStaticExpressionToken(attr)
+                    : (attr.value as Literal).value,
             };
         })
         .forEach(collector);
@@ -99,21 +92,17 @@ function serializeAttrs(element: Element): string {
     return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 
-function serializeChildren(
-    children: ChildNode[],
-    parentTagName: string,
-    preserveComments: boolean
-): string {
+function serializeChildren(children: ChildNode[], parentTagName: string, codeGen: CodeGen): string {
     let html = '';
 
     children.forEach((child) => {
         /* istanbul ignore else  */
         if (isElement(child)) {
-            html += serializeStaticElement(child, preserveComments);
+            html += serializeStaticElement(child, codeGen);
         } else if (isText(child)) {
             html += serializeTextNode(child, rawContentElements.has(parentTagName.toUpperCase()));
         } else if (isComment(child)) {
-            html += serializeCommentNode(child, preserveComments);
+            html += serializeCommentNode(child, codeGen.preserveComments);
         } else {
             throw new TypeError(
                 'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
@@ -139,13 +128,13 @@ function serializeTextNode(text: Text, useRawContent: boolean): string {
     return templateStringEscape(content);
 }
 
-export function serializeStaticElement(element: Element, preserveComments: boolean): string {
+export function serializeStaticElement(element: Element, codeGen: CodeGen): string {
     const { name: tagName, namespace } = element;
 
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    let html = `<${tagName}${serializeAttrs(element)}`;
+    let html = `<${tagName}${serializeAttrs(element, codeGen)}`;
 
     if (isForeignElement && !hasChildren) {
         html += '/>';
@@ -153,7 +142,7 @@ export function serializeStaticElement(element: Element, preserveComments: boole
     }
 
     html += '>';
-    html += serializeChildren(element.children, tagName, preserveComments);
+    html += serializeChildren(element.children, tagName, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;
