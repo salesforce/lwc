@@ -20,18 +20,18 @@ import { VBaseElement, VStatic, VStaticPart } from '../vnodes';
 const ColonCharCode = 58;
 
 export function patchAttributes(
-    oldnode: VBaseElement | VStaticPart | null,
-    node: VBaseElement | VStaticPart,
+    oldVnode: VBaseElement | VStaticPart | null,
+    vnode: VBaseElement | VStaticPart,
     renderer: RendererAPI
 ) {
-    const { data, elm } = node;
+    const { data, elm } = vnode;
     const { attrs } = data;
 
     if (isUndefined(attrs)) {
         return;
     }
 
-    const oldAttrs = isNull(oldnode) ? EmptyObject : oldnode.data.attrs;
+    const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
     // Attrs may be the same due to the static content optimization, so we can skip diffing
     if (oldAttrs === attrs) {
         return;
