@@ -2,7 +2,7 @@ import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<param name="hello" value="world"${3}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
-  return [api_static_fragment($fragment1(), 1)];
+  return [api_static_fragment($fragment1, 1)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

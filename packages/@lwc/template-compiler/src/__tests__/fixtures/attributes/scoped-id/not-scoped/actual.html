@@ -1,5 +1,7 @@
 <template>
-    <lightning-combobox 
+    <!-- These are invalid aria attributes -->
+    <!-- Note the extra '-' after the second word, ex: aria-described-by instead of aria-describedby -->
+    <lightning-combobox
         aria-described-by="not-scoped-foo"
         aria-active-descendant="not-scoped-foo"
         aria-error-message="not-scoped-foo"

@@ -1,0 +1,59 @@
+{
+    "warnings": [
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-described-by is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 5,
+                "column": 9,
+                "start": 181,
+                "length": 26
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-active-descendant is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 6,
+                "column": 9,
+                "start": 216,
+                "length": 31
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-error-message is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 7,
+                "column": 9,
+                "start": 256,
+                "length": 27
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-flow-to is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 9,
+                "start": 292,
+                "length": 21
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-labelled-by is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 2,
+            "location": {
+                "line": 9,
+                "column": 9,
+                "start": 322,
+                "length": 25
+            }
+        }
+    ]
+}

@@ -10,19 +10,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     $cmp.visible
       ? api_fragment(
           0,
-          [api_text("Conditional Text"), api_static_fragment($fragment1(), 2)],
+          [api_text("Conditional Text"), api_static_fragment($fragment1, 2)],
           0
         )
       : api_fragment(
           0,
           [
-            api_static_fragment($fragment2(), 4),
-            api_static_fragment($fragment3(), 6),
+            api_static_fragment($fragment2, 4),
+            api_static_fragment($fragment3, 6),
           ],
           0
         ),
-    api_static_fragment($fragment4(), 8),
-    api_static_fragment($fragment5(), 10),
+    api_static_fragment($fragment4, 8),
+    api_static_fragment($fragment5, 10),
   ];
   /*LWC compiler vX.X.X*/
 }

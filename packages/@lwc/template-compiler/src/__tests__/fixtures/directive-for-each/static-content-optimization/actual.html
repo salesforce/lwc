@@ -1,0 +1,10 @@
+<template>
+    <div>
+        <template for:each={items} for:item="item">
+            <div key={item.key}>
+                <span data-dynamic={foo}></span>
+                <span data-static="bar"></span>
+            </div>
+        </template>
+    </div>
+</template>

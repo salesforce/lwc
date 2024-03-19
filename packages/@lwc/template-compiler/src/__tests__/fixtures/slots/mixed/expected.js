@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         _xB,
         stc1,
         api_flatten([
-          $cmp.isLoading ? api_static_fragment($fragment1(), 3) : null,
+          $cmp.isLoading ? api_static_fragment($fragment1, 3) : null,
           $cmp.haveLoadedItems
             ? api_iterator($cmp.menuItems, function (item) {
                 return api_text("x");
