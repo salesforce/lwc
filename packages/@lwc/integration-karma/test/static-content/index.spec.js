@@ -17,7 +17,7 @@ import DeepListener from 'x/deepListener';
 import Comments from 'x/comments';
 import PreserveComments from 'x/preserveComments';
 import AttributeExpression from 'x/attributeExpression';
-import DeepAttributeExpression from 'x/DeepAttributeExpression';
+import DeepAttributeExpression from 'x/deepAttributeExpression';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
