@@ -26,7 +26,7 @@ branches:
     pull-request:
       <<: *branch-definition
       merge-method: force-push # release branch should always be in sync with master branch (linear history)
-  spring23:
+  spring24:
     pull-request:
       <<: *branch-definition
   summer23:
@@ -62,4 +62,4 @@ steps:
   npm-publish-release:
     params:
       access: public
-      tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
+      tag: spring24 # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
