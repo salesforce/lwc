@@ -11,6 +11,7 @@ import {
     htmlEscape,
     isArray,
     isNull,
+    isString,
     isTrue,
     isUndefined,
     KEY__SCOPED_CSS,
@@ -135,17 +136,14 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         const rest = partToken.substring(delimiterIndex + 1);
         const part = partIdsToParts.get(partId) ?? EmptyObject;
 
-        let result = '';
         switch (type) {
             case STATIC_PART_TOKEN_ID.ATTRIBUTE:
-                result = serializeAttribute(part, rest);
-                break;
+                return serializeAttribute(part, rest);
             case STATIC_PART_TOKEN_ID.CLASS: // class
                 // TODO [#3624]: Add class serialization
                 break;
             case STATIC_PART_TOKEN_ID.STYLE: // style
-                // TODO [#3624]: Add style serialization
-                break;
+                return serializeStyleAttribute(part);
             case STATIC_PART_TOKEN_ID.TEXT: // text
                 // TODO [#3624]: Add text serialization
                 break;
@@ -155,8 +153,15 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
                     `LWC internal error, unrecognized part token during serialization ${partToken}`
                 );
         }
-        return result;
     };
+}
+
+function serializeStyleAttribute(part: VStaticPart) {
+    const {
+        data: { style },
+    } = part;
+    // This is designed to mirror logic patchStyleAttribute
+    return isString(style) && style.length ? ` style="${htmlEscape(style, true)}"` : '';
 }
 
 function serializeAttribute(part: VStaticPart, name: string) {

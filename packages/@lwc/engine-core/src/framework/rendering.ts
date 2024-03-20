@@ -605,17 +605,18 @@ function patchElementPropsAndAttrsAndRefs(
         applyStaticStyleAttribute(vnode, renderer);
     }
 
+    const { owner } = vnode;
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer, owner);
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
     patchSlotAssignment(oldVnode, vnode, renderer);
 
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    applyRefs(vnode, vnode.owner);
+    applyRefs(vnode, owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

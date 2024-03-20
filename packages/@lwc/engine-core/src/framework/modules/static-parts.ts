@@ -11,6 +11,7 @@ import { RendererAPI } from '../renderer';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
+import { patchStyleAttribute } from './computed-style-attr';
 
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
@@ -105,6 +106,7 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
         patchAttributes(null, part, renderer);
+        patchStyleAttribute(null, part, renderer, owner);
     }
 }
 
@@ -135,13 +137,15 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
     }
 
     for (let i = 0; i < currParts.length; i++) {
+        const prevPart = prevParts![i];
         const part = currParts[i];
         // Patch only occurs if the vnode is newly generated, which means the part.elm is always undefined
         // Since the vnode and elements are the same we can safely assume that prevParts[i].elm is defined.
-        part.elm = prevParts![i].elm;
+        part.elm = prevPart.elm;
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, currPartsOwner);
-        patchAttributes(prevParts![i], part, renderer);
+        patchAttributes(prevPart, part, renderer);
+        patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
     }
 }
 
