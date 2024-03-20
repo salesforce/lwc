@@ -124,21 +124,34 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
     for (const staticPart of parts) {
         partIdsToParts.set(`${staticPart.partId}`, staticPart);
     }
-    return (partToken: string) => {
+
+    const parsePartToken = (partToken: string) => {
         // The partTokens are split into 3 section:
         // 1. The first character represents the expression type (attribute, class, style, or text).
-        // 2. The characters from index 1 to the first occurrence of a ':' is the partId.
+        // 2. For attributes, the characters from index 1 to the first occurrence of a ':' is the partId.
         // 3. Everything after the first ':' represents the attribute name.
-        // For example: a0:data-name, a = an attribute, 0 = partId, data-name = attribute name.
+        // 4. For non-attributes everything from index 1 to the string length is the partId.
+        // Ex, attribute: a0:data-name, a = an attribute, 0 = partId, data-name = attribute name.
+        // Ex, style: s0, s = a style attribute, 0 = partId.
         const type = partToken.charAt(0);
-        const delimiterIndex = partToken.indexOf(':');
+        let delimiterIndex = partToken.length;
+        let attrName = '';
+        if (type === STATIC_PART_TOKEN_ID.ATTRIBUTE) {
+            delimiterIndex = partToken.indexOf(':');
+            // Only VStaticPartData.attrs have an attribute name
+            attrName = partToken.substring(delimiterIndex + 1);
+        }
         const partId = partToken.substring(1, delimiterIndex);
-        const rest = partToken.substring(delimiterIndex + 1);
         const part = partIdsToParts.get(partId) ?? EmptyObject;
+        return { type, part, attrName };
+    };
+
+    return (partToken: string) => {
+        const { type, part, attrName } = parsePartToken(partToken);
 
         switch (type) {
             case STATIC_PART_TOKEN_ID.ATTRIBUTE:
-                return serializeAttribute(part, rest);
+                return serializeAttribute(part, attrName);
             case STATIC_PART_TOKEN_ID.CLASS: // class
                 // TODO [#3624]: Add class serialization
                 break;

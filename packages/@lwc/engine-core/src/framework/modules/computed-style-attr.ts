@@ -22,11 +22,13 @@ export function patchStyleAttribute(
         data: { style: newStyle },
     } = vnode;
 
-    if (!isNull(newStyle) && !isUndefined(newStyle) && !isString(newStyle)) {
-        logError(
-            `Invalid 'style' attribute passed to <${elm!.tagName.toLowerCase()}> is ignored. This attribute must be a string value.`,
-            owner
-        );
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isNull(newStyle) && !isUndefined(newStyle) && !isString(newStyle)) {
+            logError(
+                `Invalid 'style' attribute passed to <${elm!.tagName.toLowerCase()}> is ignored. This attribute must be a string value.`,
+                owner
+            );
+        }
     }
 
     const oldStyle = isNull(oldVnode) ? undefined : oldVnode.data.style;

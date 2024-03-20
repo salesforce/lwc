@@ -630,7 +630,7 @@ export default class CodeGen {
                     if (isExpression(value)) {
                         let partToken = '';
                         if (name === 'style') {
-                            partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}:`;
+                            partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
                             addDatabagProp(
                                 t.property(t.identifier('style'), this.bindExpression(value))
                             );

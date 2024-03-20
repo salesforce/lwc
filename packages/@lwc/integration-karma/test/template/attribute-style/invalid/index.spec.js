@@ -16,9 +16,8 @@ describe('dynamic style attributes', () => {
             }`, () => {
                 const elm = createElement('x-invalid-style', { is: ctor });
                 elm[test] = true;
-                expect(async () => {
+                expect(() => {
                     document.body.appendChild(elm);
-                    await Promise.resolve();
                 }).toLogErrorDev(
                     new RegExp(
                         `Invalid 'style' attribute passed to <${tagName}> is ignored. This attribute must be a string value.`
