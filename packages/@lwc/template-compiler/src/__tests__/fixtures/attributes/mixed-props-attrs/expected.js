@@ -3,7 +3,7 @@ import _nsBar from "ns/bar";
 import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
 const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
 const $fragment2 = parseFragment`<table bgcolor="x"${3}></table>`;
-const $fragment3 = parseFragment`<div${"c0:"} aria-hidden="hidden"${2}></div>`;
+const $fragment3 = parseFragment`<div${"c0"} aria-hidden="hidden"${2}></div>`;
 const stc0 = {
   r: true,
 };
