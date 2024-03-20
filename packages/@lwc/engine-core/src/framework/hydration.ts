@@ -508,7 +508,7 @@ function isMatchingElement(
         ? validateClassAttr(vnode, elm, data, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
-        ? validateStyleAttr(vnode, elm, vnode.data, renderer)
+        ? validateStyleAttr(vnode, elm, data, renderer)
         : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
@@ -576,7 +576,6 @@ function validateAttrs(
 function validateClassAttr(
     vnode: VBaseElement | VStatic,
     elm: Element,
-    // Explicitly pass data because it is present on VBaseElement but not on VStatic (comes from VStaticPart).
     data: VElementData | VStaticPartData,
     renderer: RendererAPI
 ): boolean {

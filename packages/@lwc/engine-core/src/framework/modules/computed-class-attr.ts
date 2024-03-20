@@ -59,16 +59,16 @@ export function getMapFromClassName(className: string | undefined): Record<strin
 }
 
 export function patchClassAttribute(
-    oldNode: VBaseElement | VStaticPart | null,
-    node: VBaseElement | VStaticPart,
+    oldVnode: VBaseElement | VStaticPart | null,
+    vnode: VBaseElement | VStaticPart,
     renderer: RendererAPI
 ) {
     const {
         elm,
         data: { className: newClass },
-    } = node;
+    } = vnode;
 
-    const oldClass = isNull(oldNode) ? undefined : oldNode.data.className;
+    const oldClass = isNull(oldVnode) ? undefined : oldVnode.data.className;
     if (oldClass === newClass) {
         return;
     }
