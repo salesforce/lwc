@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${"a0:data-name"}${3}></div>`;
+const $fragment1 = parseFragment`<div${"a0:data-name"}${"s0:"}${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
   const { _m0, _m1 } = $ctx;
@@ -10,8 +10,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           click: _m1 || ($ctx._m1 = api_bind($cmp.onClick)),
         },
         ref: "foo",
+        style: $cmp.fooStyle,
         attrs: {
-          "data-name": $cmp.bar,
+          "data-name": $cmp.foo,
         },
       }),
     ]),
