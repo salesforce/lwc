@@ -22,7 +22,7 @@ export function patchStyleAttribute(
         data: { style: newStyle },
     } = vnode;
 
-    if (!(isNull(newStyle) || isUndefined(newStyle)) && !isString(newStyle)) {
+    if (!isNull(newStyle) && !isUndefined(newStyle) && !isString(newStyle)) {
         logError(
             `Invalid 'style' attribute passed to <${elm!.tagName.toLowerCase()}> is ignored. This attribute must be a string value.`,
             owner
