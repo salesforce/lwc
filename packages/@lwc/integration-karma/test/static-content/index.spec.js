@@ -16,8 +16,8 @@ import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
 import DeepListener from 'x/deepListener';
 import Comments from 'x/comments';
 import PreserveComments from 'x/preserveComments';
-import AttributeExpression from 'x/attributeExpression';
-import DeepAttributeExpression from 'x/deepAttributeExpression';
+import Attribute from 'x/attribute';
+import DeepAttribute from 'x/deepAttribute';
 import IframeOnload from 'x/iframeOnload';
 
 if (!process.env.NATIVE_SHADOW) {
@@ -436,51 +436,146 @@ describe('static parts applies to comments correctly', () => {
     });
 });
 
-describe('static optimization with attributes', () => {
-    it('applies expressions on mount', async () => {
-        const elm = createElement('x-attribute-expression', { is: AttributeExpression });
+describe('static content optimization with attribute', () => {
+    let nodes = {};
+    let elm;
+
+    beforeEach(async () => {
+        elm = createElement('x-attributes', { is: Attribute });
         document.body.appendChild(elm);
         await Promise.resolve();
-
-        const nodes = extractDataIds(elm);
-        expect(nodes['loaded-on-mount'].getAttribute('data-mount')).toEqual('loaded on mount');
-        expect(nodes['loaded-on-mount-nested'].getAttribute('data-mount')).toEqual(
-            'loaded on mount'
-        );
+        nodes = extractDataIds(elm);
     });
 
-    it('updates expressions when data changes', async () => {
-        const elm = createElement('x-attribute-expression', { is: AttributeExpression });
-        document.body.appendChild(elm);
-        await Promise.resolve();
+    const verifyStyleAttributeAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('style')).toEqual(expected);
 
-        const nodes = extractDataIds(elm);
-        expect(nodes['loaded-on-update'].getAttribute('data-update')).toBe(null);
-        expect(nodes['loaded-on-update-nested'].getAttribute('data-update')).toBe(null);
+    const verifyAttributeAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('data-value')).toEqual(expected);
 
-        elm.update = 'expression updated';
-        await Promise.resolve();
+    it('preserves static values', () => {
+        const {
+            staticAttr,
+            staticStyle,
+            staticAttrNested,
+            staticStyleNested,
+            staticCombined,
+            staticCombinedNested,
+        } = nodes;
 
-        expect(nodes['loaded-on-update'].getAttribute('data-update')).toEqual('expression updated');
-        expect(nodes['loaded-on-update-nested'].getAttribute('data-update')).toEqual(
-            'expression updated'
-        );
+        // styles
+        [
+            { cmp: staticStyle, expected: 'color: blue;' },
+            { cmp: staticCombined, expected: 'color: red;' },
+            { cmp: staticStyleNested, expected: 'color: white;' },
+            { cmp: staticCombinedNested, expected: 'color: orange;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // attributes
+        [
+            { cmp: staticAttr, expected: 'static1' },
+            { cmp: staticCombined, expected: 'static2' },
+            { cmp: staticAttrNested, expected: 'static3' },
+            { cmp: staticCombinedNested, expected: 'static4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
     });
 
-    it('applies expression from deeply nested data structure', async () => {
-        const elm = createElement('x-deep-attribute-expression', { is: DeepAttributeExpression });
+    it('applies expressions on mount', () => {
+        const {
+            dynamicAttr,
+            dynamicStyle,
+            dynamicAttrNested,
+            dynamicStyleNested,
+            dynamicCombined,
+            dynamicCombinedNested,
+        } = nodes;
+
+        // styles
+        [
+            { cmp: dynamicStyle, expected: 'color: green;' },
+            { cmp: dynamicStyleNested, expected: 'color: violet;' },
+            { cmp: dynamicCombined, expected: 'color: orange;' },
+            { cmp: dynamicCombinedNested, expected: 'color: black;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // attributes
+        [
+            { cmp: dynamicAttr, expected: 'dynamic1' },
+            { cmp: dynamicAttrNested, expected: 'dynamic2' },
+            { cmp: dynamicCombined, expected: 'dynamic3' },
+            { cmp: dynamicCombinedNested, expected: 'dynamic4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
+    });
+
+    it('updates values when expressions change', async () => {
+        const {
+            dynamicAttr,
+            dynamicStyle,
+            dynamicAttrNested,
+            dynamicStyleNested,
+            dynamicCombined,
+            dynamicCombinedNested,
+        } = nodes;
+
+        // styles
+
+        elm.dynamicStyle = 'color: teal;';
+        elm.dynamicStyleNested = 'color: rose;';
+        elm.combinedStyle = 'color: purple;';
+        elm.combinedStyleNested = 'color: random;';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicStyle, expected: 'color: teal;' },
+            { cmp: dynamicStyleNested, expected: 'color: rose;' },
+            { cmp: dynamicCombined, expected: 'color: purple;' },
+            { cmp: dynamicCombinedNested, expected: 'color: random;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // attributes
+        elm.dynamicAttr = 'dynamicUpdated1';
+        elm.dynamicAttrNested = 'dynamicUpdated2';
+        elm.combinedAttr = 'dynamicUpdated3';
+        elm.combinedAttrNested = 'dynamicUpdated4';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicAttr, expected: 'dynamicUpdated1' },
+            { cmp: dynamicAttrNested, expected: 'dynamicUpdated2' },
+            { cmp: dynamicCombined, expected: 'dynamicUpdated3' },
+            { cmp: dynamicCombinedNested, expected: 'dynamicUpdated4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
+    });
+
+    it('applies expression to deeply nested data structure', async () => {
+        const elm = createElement('x-deeply-nested', { is: DeepAttribute });
         document.body.appendChild(elm);
         await Promise.resolve();
 
-        const nodes = extractDataIds(elm);
-        expect(nodes['deep1'].getAttribute('data-dynamic')).toEqual('1');
-        expect(nodes['deep1nested'].getAttribute('data-dynamic')).toEqual('1');
-        expect(nodes['deep2'].getAttribute('data-dynamic')).toEqual('2');
-        expect(nodes['deep2nested'].getAttribute('data-dynamic')).toEqual('2');
-        expect(nodes['deep3'].getAttribute('data-dynamic')).toEqual('3');
-        expect(nodes['deep3nested'].getAttribute('data-dynamic')).toEqual('3');
-        expect(nodes['deep4'].getAttribute('data-dynamic')).toEqual('4');
-        expect(nodes['deep4nested'].getAttribute('data-dynamic')).toEqual('4');
+        nodes = extractDataIds(elm);
+
+        // Test includes 4 levels of depth
+        for (let i = 1; i < 5; i++) {
+            // style
+            [
+                { cmp: nodes[`deep${i}Style`], expected: `${i}` },
+                { cmp: nodes[`deep${i}StyleNested`], expected: `${i}` },
+            ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+            // attribute
+            [
+                { cmp: nodes[`deep${i}Attr`], expected: `${i}` },
+                { cmp: nodes[`deep${i}AttrNested`], expected: `${i}` },
+            ].forEach(verifyAttributeAppliedCorrectly);
+
+            // combined
+            [
+                { cmp: nodes[`deep${i}Combined`], expected: `${i}` },
+                { cmp: nodes[`deep${i}CombinedNested`], expected: `${i}` },
+            ].forEach(verifyAttributeAppliedCorrectly);
+        }
     });
 });
 

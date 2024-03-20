@@ -50,6 +50,8 @@ import {
     VFragment,
     isVCustomElement,
     VStaticPart,
+    VElementData,
+    VStaticPartData,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -506,7 +508,7 @@ function isMatchingElement(
         ? validateClassAttr(vnode, elm, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
-        ? validateStyleAttr(vnode, elm, renderer)
+        ? validateStyleAttr(vnode, elm, vnode.data, renderer)
         : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
@@ -661,10 +663,14 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
-    const {
-        data: { style, styleDecls },
-    } = vnode;
+function validateStyleAttr(
+    vnode: VBaseElement | VStatic,
+    elm: Element,
+    data: VElementData | VStaticPartData,
+    renderer: RendererAPI
+): boolean {
+    // Note styleDecls is always undefined for VStaticPartData, casting here to default it to undefined
+    const { style, styleDecls } = data as VElementData;
     const { getAttribute } = renderer;
     const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
@@ -786,8 +792,10 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
     // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
-        const hasMatchingAttrs = validateAttrs(part, part.elm!, owner, renderer, () => true);
-        if (isFalse(hasMatchingAttrs)) {
+        const { data, elm } = part;
+        const hasMatchingAttrs = validateAttrs(part, elm!, owner, renderer, () => true);
+        const hasMatchingStyleAttr = validateStyleAttr(vnode, elm!, data, renderer);
+        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr)) {
             return false;
         }
     }

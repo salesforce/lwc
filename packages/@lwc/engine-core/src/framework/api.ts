@@ -149,12 +149,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
             data.styleDecls && data.style,
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
-        if (data.style && !isString(data.style)) {
-            logError(
-                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered
-            );
-        }
+
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.isTrue(
