@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${"a4:data-name"}${"s4:"}${3}></div></div></div><div${"a5:data-name"}${"s5:"}${3}></div></div>`;
+const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${"a4:data-name"}${"s4"}${3}></div></div></div><div${"a5:data-name"}${"s5"}${3}></div></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
   const { _m0, _m1 } = $ctx;

@@ -1,7 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<span${"a0:data-dynamic"}${3}></span>`;
 const $fragment2 = parseFragment`<span data-static="bar"${3}></span>`;
-const $fragment3 = parseFragment`<span${"s0:"}${3}></span>`;
+const $fragment3 = parseFragment`<span${"s0"}${3}></span>`;
 const $fragment4 = parseFragment`<span style="quux"${3}></span>`;
 const stc0 = {
   key: 0,

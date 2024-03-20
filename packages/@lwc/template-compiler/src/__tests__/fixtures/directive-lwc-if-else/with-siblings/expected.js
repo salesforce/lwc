@@ -1,15 +1,15 @@
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<h1${3}>Happy days!</h1>`;
 const $fragment2 = parseFragment`<h1${"a0:data-dynamic"}${3}>Dynamic attribute</h1>`;
-const $fragment3 = parseFragment`<h1${"s0:"}${3}>Dynamic style</h1>`;
+const $fragment3 = parseFragment`<h1${"s0"}${3}>Dynamic style</h1>`;
 const $fragment4 = parseFragment`<h1${3}>stranger</h1>`;
 const $fragment5 = parseFragment`<h1${3}>things</h1>`;
 const $fragment6 = parseFragment`<h1${"a0:data-dynamic"}${3}>Dynamic attribute</h1>`;
-const $fragment7 = parseFragment`<h1${"s0:"}${3}>Dynamic style</h1>`;
+const $fragment7 = parseFragment`<h1${"s0"}${3}>Dynamic style</h1>`;
 const $fragment8 = parseFragment`<h1${3}>hello</h1>`;
 const $fragment9 = parseFragment`<h1${3}>world!</h1>`;
 const $fragment10 = parseFragment`<h1${"a0:data-dynamic"}${3}>Dynamic attribute</h1>`;
-const $fragment11 = parseFragment`<h1${"s0:"}${3}>Dynamic style</h1>`;
+const $fragment11 = parseFragment`<h1${"s0"}${3}>Dynamic style</h1>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,

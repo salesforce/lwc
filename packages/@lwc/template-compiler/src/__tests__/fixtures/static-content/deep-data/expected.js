@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div><div${"a6:data-name"}${3}></div><div${"s7:"}${3}></div></div></div><div${3}></div><div${3}></div><div${"a10:data-name"}${3}></div><div${"s11:"}${3}></div></div>`;
+const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div><div${"a6:data-name"}${3}></div><div${"s7"}${3}></div></div></div><div${3}></div><div${3}></div><div${"a10:data-name"}${3}></div><div${"s11"}${3}></div></div>`;
 const stc0 = {
   ref: "foo",
 };
