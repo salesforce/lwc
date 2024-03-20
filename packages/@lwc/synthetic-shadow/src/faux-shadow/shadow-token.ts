@@ -12,9 +12,10 @@ import {
     KEY__SHADOW_STATIC,
     KEY__SHADOW_STATIC_PRIVATE,
     KEY__SHADOW_RESOLVER,
+    isNull,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
-import { childNodesGetter } from '../env/node';
+import { firstChildGetter, nextSiblingGetter } from '../env/node';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -49,9 +50,13 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
 function recursivelySetShadowResolver(node: Node, fn: any) {
     (node as any)[KEY__SHADOW_RESOLVER] = fn;
 
-    const childNodes = childNodesGetter.call(node);
-    for (let i = 0, n = childNodes.length; i < n; i++) {
-        recursivelySetShadowResolver(childNodes[i], fn);
+    // Recurse using firstChild/nextSibling because browsers use a linked list under the hood to
+    // represent the DOM, so childNodes/children would cause an unnecessary array allocation.
+    // https://viethung.space/blog/2020/09/01/Browser-from-Scratch-DOM-API/#Choosing-DOM-tree-data-structure
+    let child = firstChildGetter.call(node);
+    while (!isNull(child)) {
+        recursivelySetShadowResolver(child, fn);
+        child = nextSiblingGetter.call(child);
     }
 }
 
