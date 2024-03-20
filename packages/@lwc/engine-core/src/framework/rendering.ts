@@ -304,8 +304,8 @@ function mountStatic(
 
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(null, vnode, renderer);
-    insertNode(elm, parent, anchor, renderer);
     mountStaticParts(elm, vnode, renderer);
+    insertNode(elm, parent, anchor, renderer);
 }
 
 function mountCustomElement(
