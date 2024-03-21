@@ -26,6 +26,7 @@ import {
     Text,
     StaticElement,
     Attribute,
+    KeyDirective,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -36,6 +37,7 @@ import {
     isComment,
     isElement,
     isExpression,
+    isKeyDirective,
     isPreserveCommentsDirective,
     isRenderModeDirective,
 } from '../shared/ast';
@@ -284,10 +286,6 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.flatten, children);
     }
 
-    genKey(compilerKey: t.SimpleLiteral, value: t.Expression) {
-        return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
-    }
-
     genScopedId(id: string | t.Expression): t.CallExpression {
         if (typeof id === 'string') {
             return this._renderApiCall(RENDER_APIS.scopedId, [t.literal(id)]);
@@ -362,6 +360,28 @@ export default class CodeGen {
     genRef(ref: RefDirective) {
         this.hasRefs = true;
         return t.property(t.identifier('ref'), ref.value);
+    }
+
+    genKeyExpression(ref: KeyDirective | undefined, slotParentName: string | undefined) {
+        if (ref) {
+            // If element has user-supplied `key` or is in iterator, call `api.k`
+            const forKeyExpression = this.bindExpression(ref.value);
+            const key = this.generateKey();
+            return this._renderApiCall(RENDER_APIS.key, [t.literal(key), forKeyExpression]);
+        } else {
+            // If standalone element with no user-defined key
+            let key: number | string = this.generateKey();
+            // Parent slot name could be the empty string
+            if (slotParentName !== undefined) {
+                // Prefixing the key is necessary to avoid conflicts with default content for the
+                // slot which might have similar keys. Each vnode will always have a key that starts
+                // with a numeric character from compiler. In this case, we add a unique notation
+                // for slotted vnodes keys, e.g.: `@foo:1:1`. Note that this is *not* needed for
+                // dynamic keys, since `api.k` already scopes based on the iteration.
+                key = `@${slotParentName}:${key}`;
+            }
+            return t.literal(key);
+        }
     }
 
     /**
@@ -539,10 +559,6 @@ export default class CodeGen {
     }
 
     genStaticElement(element: StaticElement, slotParentName?: string): t.Expression {
-        const key =
-            slotParentName !== undefined
-                ? `@${slotParentName}:${this.generateKey()}`
-                : this.generateKey();
         const staticParts = this.genStaticParts(element);
         // Generate static parts prior to serialization to inject the corresponding static part Id into the serialized output.
         const html = serializeStaticElement(element, this);
@@ -578,7 +594,13 @@ export default class CodeGen {
             expr,
         });
 
-        const args: t.Expression[] = [identifier, t.literal(key)];
+        // Keys are only supported at the top level of a static block, and are serialized directly in the args for
+        // the `api_static_fragment` call. We don't need to support keys in static parts (i.e. children of
+        // the top-level element), because the compiler ignores any keys that aren't direct children of a
+        // for:each block (see error code 1149 - "KEY_SHOULD_BE_IN_ITERATION").
+        const key = element.directives.find(isKeyDirective);
+        const keyExpression = this.genKeyExpression(key, slotParentName);
+        const args: t.Expression[] = [identifier, keyExpression];
 
         // Only add the third argument (staticParts) if this element needs it
         if (staticParts) {
@@ -617,10 +639,15 @@ export default class CodeGen {
                     addDatabagProp(this.genEventListeners(node.listeners));
                 }
 
-                // see STATIC_SAFE_DIRECTIVES for what's allowed here
+                // See STATIC_SAFE_DIRECTIVES and STATIC_SAFE_CHILD_DIRECTIVES for what's allowed here.
+                // Also note that we don't generate the 'key' here, because we only support it at the top level
+                // directly passed into the `api_static_fragment` function, not as a part.
                 for (const directive of node.directives) {
-                    if (directive.name === 'Ref') {
-                        addDatabagProp(this.genRef(directive));
+                    switch (directive.name) {
+                        case 'Ref': {
+                            addDatabagProp(this.genRef(directive));
+                            break;
+                        }
                     }
                 }
 

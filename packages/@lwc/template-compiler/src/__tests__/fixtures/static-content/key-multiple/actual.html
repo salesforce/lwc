@@ -1,0 +1,15 @@
+<template>
+    <div>
+        <template for:each={rows} for:item="row">
+            <div key={row.id}>
+                <span>repeated item #1</span>
+            </div>
+            <div key={row.id}>
+                <span>repeated item #2</span>
+            </div>
+            <div key={row.id}>
+                <span>repeated item #3</span>
+            </div>
+        </template>
+    </div>
+</template>
