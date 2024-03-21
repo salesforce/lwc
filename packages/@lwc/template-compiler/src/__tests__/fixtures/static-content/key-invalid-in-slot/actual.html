@@ -1,0 +1,8 @@
+<template>
+    <slot>
+        <div key={item}>Default fallback</div>
+    </slot>
+    <slot name="foo">
+        <div key={item}>Named fallback</div>
+    </slot>
+</template>
