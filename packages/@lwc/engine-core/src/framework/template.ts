@@ -124,6 +124,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
             // bypassing the need to call applyStyleScoping when mounting static parts.
             partToken.charAt(0) === STATIC_PART_TOKEN_ID.CLASS ? classAttrToken : '';
     }
+
     const partIdsToParts = new Map<string, VStaticPart>();
     for (const staticPart of parts) {
         partIdsToParts.set(`${staticPart.partId}`, staticPart);
@@ -202,7 +203,7 @@ function serializeClassAttribute(part: VStaticPart, classToken: string) {
     // Trim the leading and trailing whitespace here because classToken contains a leading space and
     // there will be a trailing space if classMap is empty.
     const computedClassName = `${classToken} ${keys(classMap).join(' ')}`.trim();
-    return computedClassName.length ? ` class="${htmlEscape(`${computedClassName}`, true)}"` : '';
+    return computedClassName.length ? ` class="${htmlEscape(computedClassName, true)}"` : '';
 }
 
 const enum FragmentCache {
