@@ -17,8 +17,9 @@ import {
     KEY__SCOPED_CSS,
     keys,
     noop,
-    toString,
+    StringCharAt,
     STATIC_PART_TOKEN_ID,
+    toString,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -122,7 +123,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         return (partToken: string, classAttrToken: string) =>
             // This will insert the scoped style token as a static class attribute in the fragment
             // bypassing the need to call applyStyleScoping when mounting static parts.
-            partToken.charAt(0) === STATIC_PART_TOKEN_ID.CLASS ? classAttrToken : '';
+            StringCharAt.call(partToken, 0) === STATIC_PART_TOKEN_ID.CLASS ? classAttrToken : '';
     }
 
     const partIdsToParts = new Map<string, VStaticPart>();
@@ -138,7 +139,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         // 4. For non-attributes everything from index 1 to the string length is the partId.
         // Ex, attribute: a0:data-name, a = an attribute, 0 = partId, data-name = attribute name.
         // Ex, style: s0, s = a style attribute, 0 = partId.
-        const type = partToken.charAt(0);
+        const type = StringCharAt.call(partToken, 0);
         let delimiterIndex = partToken.length;
         let attrName = '';
         if (type === STATIC_PART_TOKEN_ID.ATTRIBUTE) {
