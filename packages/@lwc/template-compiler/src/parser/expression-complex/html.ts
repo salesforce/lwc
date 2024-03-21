@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { parseExpressionAt } from 'acorn';
+import { Node, parseExpressionAt } from 'acorn';
 import {
     DefaultTreeAdapterMap,
     Parser,
@@ -18,6 +18,8 @@ import {
 } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { ChildNode, Document, DocumentFragment, Element, TextNode } from '@parse5/tools';
+import * as ast from '../../shared/ast';
+import { SourceLocation } from '../../shared/types';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
@@ -68,6 +70,25 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         ['expression must have balanced parentheses.']
     );
+}
+
+/**
+ * This function normalizes a parsed Acorn Node into our internal source location format.
+ * @param node A node that was parsed by Acorn
+ * @returns Source location metadata for use in our AST
+ */
+function acornNodeToSourceLocation(node: Node): SourceLocation {
+    const { start, end } = node;
+    // We always configure the acorn parser to include location
+    const loc = node.loc!;
+    return ast.sourceLocation({
+        startLine: loc.start.line,
+        startCol: loc.start.column,
+        startOffset: start,
+        endLine: loc.end.line,
+        endCol: loc.end.column,
+        endOffset: end,
+    });
 }
 
 /**
@@ -151,6 +172,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
         this.parser.preparsedJsExpressions.set(expressionStart, {
             parsedExpression: estreeNode,
             rawText: expressionTextNodeValue,
+            sourceLocation: acornNodeToSourceLocation(estreeNode),
         });
 
         return expressionTextNodeValue;

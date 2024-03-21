@@ -8,14 +8,12 @@ import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'ac
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import { NormalizedConfig } from '../config';
-import * as ast from '../shared/ast';
 import * as t from '../shared/estree';
 import { Expression, Identifier, SourceLocation } from '../shared/types';
 import { validateExpressionAst } from './expression-complex';
 
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
-import type { Node as AcornNode } from 'acorn';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -100,28 +98,14 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function acornNodeToSourceLocation(node: AcornNode): SourceLocation {
-    const { start, end } = node;
-    // We always configure the acorn parser to include location
-    const loc = node.loc!;
-    return ast.sourceLocation({
-        startLine: loc.start.line,
-        startCol: loc.start.column,
-        startOffset: start,
-        endLine: loc.end.line,
-        endCol: loc.end.column,
-        endOffset: end,
-    });
-}
-
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
-    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
+    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText, sourceLocation }) => {
         ctx.withErrorWrapping(
             () => {
                 validateExpressionAst(parsedExpression);
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            acornNodeToSourceLocation(parsedExpression),
+            sourceLocation,
             (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });

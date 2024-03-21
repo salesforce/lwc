@@ -5,10 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { SourceLocation } from '../../shared/types';
 import type { Node as AcornNode } from 'acorn';
 import type { Tokenizer } from 'parse5';
 
-export type PreparsedExpressionMap = Map<number, { parsedExpression: AcornNode; rawText: string }>;
+export type PreparsedExpressionMap = Map<
+    number,
+    { parsedExpression: AcornNode; rawText: string; sourceLocation: SourceLocation }
+>;
 
 export type Preprocessor = Omit<Tokenizer['preprocessor'], 'pos'> & {
     pos: number;
