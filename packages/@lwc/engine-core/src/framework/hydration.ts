@@ -771,6 +771,7 @@ function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, rende
             // Check if the root element attributes have expressions, if it does then we need to delegate hydration
             // validation to haveCompatibleStaticParts.
             // Note if there are no parts then it is a fully static fragment.
+            // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     logError(
