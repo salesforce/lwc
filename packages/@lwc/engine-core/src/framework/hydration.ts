@@ -224,7 +224,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !areCompatibleNodes(vnode.fragment, elm, vnode, renderer)
+        !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
@@ -726,7 +726,7 @@ function validateStyleAttr(
     return nodesAreCompatible;
 }
 
-function areCompatibleNodes(client: Node, ssr: Node, vnode: VStatic, renderer: RendererAPI) {
+function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, renderer: RendererAPI) {
     const { getProperty, getAttribute } = renderer;
     if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
         if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT, renderer)) {
@@ -748,6 +748,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VStatic, renderer: R
         return false;
     }
 
+    const { owner, parts } = vnode;
     let isCompatibleElements = true;
     if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
@@ -756,18 +757,21 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VStatic, renderer: R
                     client,
                     'tagName'
                 ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
-                vnode.owner
+                owner
             );
         }
 
         return false;
     }
 
-    if (isUndefined(vnode.parts)) {
-        const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
+    const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
 
-        clientAttrsNames.forEach((attrName) => {
-            if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+    clientAttrsNames.forEach((attrName) => {
+        if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+            // Check if the root element attributes have expressions, if it does then we need to delegate hydration
+            // validation to haveCompatibleStaticParts.
+            // Note if there are no parts then it is a fully static fragment.
+            if (parts?.[0].partId !== 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     logError(
                         `Mismatch hydrating element <${getProperty(
@@ -777,13 +781,13 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VStatic, renderer: R
                             client,
                             attrName
                         )}" but found "${getAttribute(ssr, attrName)}"`,
-                        vnode.owner
+                        owner
                     );
                 }
                 isCompatibleElements = false;
             }
-        });
-    }
+        }
+    });
 
     return isCompatibleElements;
 }

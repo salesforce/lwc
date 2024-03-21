@@ -57,7 +57,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // See buildParseFragmentFn for details.
             // The token is only needed when the class attribute is static.
             // The token will be injected at runtime for expressions in parseFragmentFn.
-            v += hasExpression ? '' : '${0}';
+            if (!hasExpression) {
+                v += '${0}';
+            }
         }
         if (typeof v === 'string') {
             // Inject a placeholder where the staticPartId will go when an expression occurs.

@@ -277,6 +277,10 @@ function buildParseFragmentFn(
                 hasScopedStyles && hasStyleToken ? ` class="${stylesheetTokenToRender}"` : '';
             const attrToken =
                 hasStyleToken && isSyntheticShadow ? ' ' + stylesheetTokenToRender : '';
+            // In the browser, we provide the entire class attribute as a perf optimization to avoid applying it on mount.
+            // The remaining class expression will be applied when the static parts are mounted.
+            // In SSR, the entire class attribute (expression included) is assembled along with the fragment.
+            // This is why in the browser we provide the entire class attribute and in SSR we only provide the class token.
             const exprClassToken = process.env.IS_BROWSER ? classAttrToken : classToken;
 
             // TODO [#3624]: The implementation of this function should be specific to @lwc/engine-dom and @lwc/engine-server.
