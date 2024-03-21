@@ -29,46 +29,55 @@ const nativeLifecycleElementsToUpgradedByLWC = new WeakMap<HTMLElement, boolean>
 
 let elementBeingUpgradedByLWC = false;
 
+// TODO [#2972]: this class should expose observedAttributes as necessary
+class BaseUpgradableConstructor extends HTMLElement {
+    constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
+        super();
+
+        if (useNativeLifecycle) {
+            // When in native lifecycle mode, we need to keep track of instances that were created outside LWC
+            // (i.e. not created by `lwc.createElement()`). If the element uses synthetic lifecycle, then we don't
+            // need to track this.
+            nativeLifecycleElementsToUpgradedByLWC.set(this, elementBeingUpgradedByLWC);
+        }
+
+        // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
+        // then elementBeingUpgradedByLWC will be false
+        if (elementBeingUpgradedByLWC) {
+            upgradeCallback(this);
+        }
+        // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
+        // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
+    }
+}
+
+for (const [propName, callback] of entries(LIFECYCLE_CALLBACKS)) {
+    // @ts-expect-error type-mismatch
+    BaseUpgradableConstructor.prototype[propName] = function () {
+        // If the element is in the WeakMap (i.e. it's marked as native lifecycle), and if it was upgraded by LWC,
+        // then it can use native lifecycle
+        if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
+            callback(this);
+        }
+    };
+}
+
 // Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
 // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
 // Another benefit is that only LWC can create components that actually do anything – if you do
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
 const createUpgradableConstructor = (isFormAssociated: boolean) => {
-    // TODO [#2972]: this class should expose observedAttributes as necessary
-    class UpgradableConstructor extends HTMLElement {
-        static formAssociated = isFormAssociated;
-
-        constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
-            super();
-
-            if (useNativeLifecycle) {
-                // When in native lifecycle mode, we need to keep track of instances that were created outside LWC
-                // (i.e. not created by `lwc.createElement()`). If the element uses synthetic lifecycle, then we don't
-                // need to track this.
-                nativeLifecycleElementsToUpgradedByLWC.set(this, elementBeingUpgradedByLWC);
-            }
-
-            // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
-            // then elementBeingUpgradedByLWC will be false
-            if (elementBeingUpgradedByLWC) {
-                upgradeCallback(this);
-            }
-            // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
-            // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
-        }
+    // Note that every class passed into `customElements.define(...)` must be unique, so we can never return
+    // the BaseUpgradableConstructor directly.
+    // https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#exceptions
+    class UpgradableConstructor extends BaseUpgradableConstructor {}
+    if (isFormAssociated) {
+        // Perf optimization - the vast majority of components have formAssociated=false,
+        // so we can skip the setter in those cases, since undefined works the same as false.
+        // @ts-expect-error type-mismatch
+        UpgradableConstructor.formAssociated = isFormAssociated;
     }
-
-    for (const [propName, callback] of entries(LIFECYCLE_CALLBACKS)) {
-        (UpgradableConstructor.prototype as any)[propName] = function () {
-            // If the element is in the WeakMap (i.e. it's marked as native lifecycle), and if it was upgraded by LWC,
-            // then it can use native lifecycle
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                callback(this);
-            }
-        };
-    }
-
     return UpgradableConstructor;
 };
 
@@ -96,13 +105,14 @@ export const createCustomElement = (
 ) => {
     const UpgradableConstructor = getUpgradableConstructor(tagName, isFormAssociated);
 
+    if (Boolean(UpgradableConstructor.formAssociated) !== isFormAssociated) {
+        throw new Error(
+            `<${tagName}> was already registered with formAssociated=${UpgradableConstructor.formAssociated}. It cannot be re-registered with formAssociated=${isFormAssociated}. Please rename your component to have a different name than <${tagName}>`
+        );
+    }
+
     elementBeingUpgradedByLWC = true;
     try {
-        if (UpgradableConstructor.formAssociated !== isFormAssociated) {
-            throw new Error(
-                `<${tagName}> was already registered with formAssociated=${UpgradableConstructor.formAssociated}. It cannot be re-registered with formAssociated=${isFormAssociated}. Please rename your component to have a different name than <${tagName}>`
-            );
-        }
         return new UpgradableConstructor(upgradeCallback, useNativeLifecycle);
     } finally {
         elementBeingUpgradedByLWC = false;
