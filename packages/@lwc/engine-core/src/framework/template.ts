@@ -119,7 +119,10 @@ function validateLightDomTemplate(template: Template, vm: VM) {
 // TODO [#4078]: Split the implementation between @lwc/engine-dom and @lwc/engine-server
 function buildSerializeExpressionFn(parts?: VStaticPart[]) {
     if (process.env.IS_BROWSER || isUndefined(parts)) {
-        return () => '';
+        return (partToken: string, classAttrToken: string) =>
+            // This will insert the scoped style token as a static class attribute in the fragment
+            // bypassing the need to call applyStyleScoping when mounting static parts.
+            partToken.charAt(0) === STATIC_PART_TOKEN_ID.CLASS ? classAttrToken : '';
     }
     const partIdsToParts = new Map<string, VStaticPart>();
     for (const staticPart of parts) {
@@ -144,17 +147,18 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         }
         const partId = partToken.substring(1, delimiterIndex);
         const part = partIdsToParts.get(partId) ?? EmptyObject;
+
         return { type, part, attrName };
     };
 
-    return (partToken: string, classToken:string) => {
+    return (partToken: string, classToken: string) => {
         const { type, part, attrName } = parsePartToken(partToken);
 
         switch (type) {
             case STATIC_PART_TOKEN_ID.ATTRIBUTE:
                 return serializeAttribute(part, attrName);
             case STATIC_PART_TOKEN_ID.CLASS: // class
-                return serializeClassAttribute(part, classToken)
+                return serializeClassAttribute(part, classToken);
             case STATIC_PART_TOKEN_ID.STYLE: // style
                 return serializeStyleAttribute(part);
             case STATIC_PART_TOKEN_ID.TEXT: // text
@@ -272,6 +276,7 @@ function buildParseFragmentFn(
                 hasScopedStyles && hasStyleToken ? ` class="${stylesheetTokenToRender}"` : '';
             const attrToken =
                 hasStyleToken && isSyntheticShadow ? ' ' + stylesheetTokenToRender : '';
+            const exprClassToken = process.env.IS_BROWSER ? classAttrToken : classToken;
 
             // TODO [#3624]: The implementation of this function should be specific to @lwc/engine-dom and @lwc/engine-server.
             // Find a way to split this in a future refactor.
@@ -294,7 +299,7 @@ function buildParseFragmentFn(
                         break;
                     default: // expressions ${partId:attributeName/textId}
                         htmlFragment +=
-                            strings[i] + serializeExpression(keys[i] as string, classToken);
+                            strings[i] + serializeExpression(keys[i] as string, exprClassToken);
                         break;
                 }
             }

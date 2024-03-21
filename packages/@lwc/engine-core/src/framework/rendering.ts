@@ -290,13 +290,14 @@ function mountStatic(
     const { cloneNode, isSyntheticShadowDefined } = renderer;
     const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
+    // Define the root node shadow resolver
     linkNodeToShadow(elm, owner, renderer);
     applyElementRestrictions(elm, vnode);
 
-    // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
     const { renderMode, shadowMode } = owner;
 
     if (isSyntheticShadowDefined) {
+        // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
             elm[KEY__SHADOW_STATIC] = true;
         }
@@ -619,7 +620,7 @@ function patchElementPropsAndAttrsAndRefs(
     applyRefs(vnode, owner);
 }
 
-export function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
+function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     const { getClassList } = renderer;
 
     // Set the class name for `*.scoped.css` style scoping.

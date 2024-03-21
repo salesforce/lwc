@@ -8,7 +8,6 @@
 import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
 import { VStatic, VStaticPart } from '../vnodes';
 import { RendererAPI } from '../renderer';
-import { applyStyleScoping } from '../rendering';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
@@ -109,9 +108,6 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         applyRefs(part, owner);
         patchAttributes(null, part, renderer);
         patchStyleAttribute(null, part, renderer, owner);
-        // Note, applyStyleScoping will apply the synthetic shadow style token, however, this is already applied at compile time and when the
-        // fragment is assembled in buildParseFragmentFn.
-        applyStyleScoping(part.elm!, owner, renderer);
         patchClassAttribute(null, part, renderer);
     }
 }

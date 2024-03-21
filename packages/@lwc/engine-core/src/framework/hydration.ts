@@ -726,7 +726,7 @@ function validateStyleAttr(
     return nodesAreCompatible;
 }
 
-function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: RendererAPI) {
+function areCompatibleNodes(client: Node, ssr: Node, vnode: VStatic, renderer: RendererAPI) {
     const { getProperty, getAttribute } = renderer;
     if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
         if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT, renderer)) {
@@ -763,25 +763,27 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
         return false;
     }
 
-    const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
+    if (isUndefined(vnode.parts)) {
+        const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
 
-    clientAttrsNames.forEach((attrName) => {
-        if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                logError(
-                    `Mismatch hydrating element <${getProperty(
-                        client,
-                        'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
-                        client,
-                        attrName
-                    )}" but found "${getAttribute(ssr, attrName)}"`,
-                    vnode.owner
-                );
+        clientAttrsNames.forEach((attrName) => {
+            if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    logError(
+                        `Mismatch hydrating element <${getProperty(
+                            client,
+                            'tagName'
+                        ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                            client,
+                            attrName
+                        )}" but found "${getAttribute(ssr, attrName)}"`,
+                        vnode.owner
+                    );
+                }
+                isCompatibleElements = false;
             }
-            isCompatibleElements = false;
-        }
-    });
+        });
+    }
 
     return isCompatibleElements;
 }
