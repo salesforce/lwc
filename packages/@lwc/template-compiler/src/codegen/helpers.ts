@@ -274,7 +274,7 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     });
 
     // all directives are static-safe
-    result &&= directives.every((directive) => STATIC_SAFE_DIRECTIVES.has(directive.name));
+    result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
 
     // all properties are static
     result &&= properties.every((prop) => isLiteral(prop.value));

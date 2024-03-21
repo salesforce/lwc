@@ -600,6 +600,7 @@ export default class CodeGen {
         // for:each block (see error code 1149 - "KEY_SHOULD_BE_IN_ITERATION").
         const key = element.directives.find(isKeyDirective);
         const keyExpression = this.genKeyExpression(key, slotParentName);
+
         const args: t.Expression[] = [identifier, keyExpression];
 
         // Only add the third argument (staticParts) if this element needs it
@@ -639,15 +640,12 @@ export default class CodeGen {
                     addDatabagProp(this.genEventListeners(node.listeners));
                 }
 
-                // See STATIC_SAFE_DIRECTIVES and STATIC_SAFE_CHILD_DIRECTIVES for what's allowed here.
+                // See STATIC_SAFE_DIRECTIVES for what's allowed here.
                 // Also note that we don't generate the 'key' here, because we only support it at the top level
                 // directly passed into the `api_static_fragment` function, not as a part.
                 for (const directive of node.directives) {
-                    switch (directive.name) {
-                        case 'Ref': {
-                            addDatabagProp(this.genRef(directive));
-                            break;
-                        }
+                    if (directive.name === 'Ref') {
+                        addDatabagProp(this.genRef(directive));
                     }
                 }
 
