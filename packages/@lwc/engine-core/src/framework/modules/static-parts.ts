@@ -107,8 +107,8 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
         patchAttributes(null, part, renderer);
-        patchStyleAttribute(null, part, renderer, owner);
         patchClassAttribute(null, part, renderer);
+        patchStyleAttribute(null, part, renderer, owner);
     }
 }
 
@@ -147,8 +147,8 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, currPartsOwner);
         patchAttributes(prevPart, part, renderer);
-        patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
         patchClassAttribute(prevPart, part, renderer);
+        patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
     }
 }
 
