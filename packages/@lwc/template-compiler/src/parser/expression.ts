@@ -15,6 +15,7 @@ import { validateExpressionAst } from './expression-complex';
 
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
+import type { Node as AcornNode } from 'acorn';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -99,24 +100,28 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
+export function acornNodeToSourceLocation(node: AcornNode): SourceLocation {
+    const { start, end } = node;
+    // We always configure the acorn parser to include location
+    const loc = node.loc!;
+    return ast.sourceLocation({
+        startLine: loc.start.line,
+        startCol: loc.start.column,
+        startOffset: start,
+        endLine: loc.end.line,
+        endCol: loc.end.column,
+        endOffset: end,
+    });
+}
+
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
     ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
-        const acornLoc = parsedExpression.loc!;
-        const parse5Loc = {
-            startLine: acornLoc.start.line,
-            startCol: acornLoc.start.column,
-            startOffset: parsedExpression.start,
-            endLine: acornLoc.end.line,
-            endCol: acornLoc.end.column,
-            endOffset: parsedExpression.end,
-        };
-
         ctx.withErrorWrapping(
             () => {
                 validateExpressionAst(parsedExpression);
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            ast.sourceLocation(parse5Loc),
+            acornNodeToSourceLocation(parsedExpression),
             (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });
