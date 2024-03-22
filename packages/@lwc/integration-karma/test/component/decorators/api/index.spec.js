@@ -223,6 +223,7 @@ describe('non-LightningElement `this` when calling accessor', () => {
                 const callback = () => {
                     elm.callGetterInternallyWithWrongThis(prop);
                 };
+                // TODO: Is this TODOne?
                 // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
                 if (type === 'classProp') {
                     expect(callback).toThrowError(TypeError, expectedErrorMessage);
@@ -235,6 +236,7 @@ describe('non-LightningElement `this` when calling accessor', () => {
                 const callback = () => {
                     elm.callSetterInternallyWithWrongThis(prop, 'foo');
                 };
+                // TODO: Is this TODOne?
                 // TODO [#3245]: this should not differ between prod mode and dev mode, class property and getter/setter
                 if (type === 'classProp') {
                     expect(callback).toThrowError(TypeError, expectedErrorMessage);

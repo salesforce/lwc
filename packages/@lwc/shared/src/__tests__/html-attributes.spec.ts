@@ -62,6 +62,7 @@ const ariaAttributeMapping = [
     ['role', 'role'],
 ] as StringPair[];
 
+// TODO: Is this TODOne?
 // TODO [#2733]: remove non-standard ARIA reflection
 const nonStandardAriaMapping = [
     ['ariaActiveDescendant', 'aria-activedescendant'],

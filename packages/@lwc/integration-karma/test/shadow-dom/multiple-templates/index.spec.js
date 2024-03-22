@@ -71,6 +71,7 @@ describe('multiple stylesheets rendered in same component', () => {
             })
             .then(() => {
                 if (process.env.NATIVE_SHADOW) {
+                    // TODO: Is this TODOne?
                     // TODO [#2466]: In native shadow, stylesheets are not removed from the DOM
                     expect(
                         getComputedStyle(element.shadowRoot.querySelector('.red')).color

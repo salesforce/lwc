@@ -182,6 +182,7 @@ export function swapComponent(
 
 export function swapStyle(oldStyle: StylesheetFactory, newStyle: StylesheetFactory): boolean {
     if (process.env.NODE_ENV !== 'production') {
+        // TODO: Is this TODOne?
         // TODO [#1887]: once the support for registering styles is implemented
         // we can add the validation of both styles around this block.
         swappedStyleMap.set(oldStyle, newStyle);

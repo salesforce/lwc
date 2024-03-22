@@ -175,6 +175,7 @@ describe('Event target retains native behavior in mixed shadow dom tree(syntheti
             expect(targetAtSource).toBe(parent);
 
             // Non-composed event should stop at shadow boundary
+            // TODO: Is this TODOne?
             // TODO [#1700]: Listener should not be invoked
             expect(eventTargetAtBody).toBeFalsy();
         });

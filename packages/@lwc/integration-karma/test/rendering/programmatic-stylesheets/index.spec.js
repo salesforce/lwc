@@ -229,6 +229,7 @@ describe('programmatic stylesheets', () => {
             expect(elm.shadowRoot.querySelector('h1')).toBeTruthy(); // still renders the template correctly
         });
 
+        // TODO: Is this TODOne?
         // TODO [#3122]: Disallow treating arbitrary functions as stylesheet functions
         it('no error thrown if stylesheets is an array of arbitrary functions', () => {
             let elm;

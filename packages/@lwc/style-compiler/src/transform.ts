@@ -16,6 +16,7 @@ export interface Config {
      * CSS custom properties configuration
      * @deprecated Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
      */
+    // TODO: Is this TODOne?
     // TODO [#3266]: Remove StylesheetConfig as part of breaking change wishlist
     customProperties?: {
         /** Name of the module to resolve custom properties lookup */

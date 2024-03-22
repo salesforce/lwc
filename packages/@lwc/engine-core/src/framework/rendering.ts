@@ -880,6 +880,7 @@ function createKeyToOldIdx(
 ): Record<Key, number> {
     const map: Record<Key, number> = {};
 
+    // TODO: Is this TODOne?
     // TODO [#1637]: simplify this by assuming that all vnodes has keys
     for (let j = beginIdx; j <= endIdx; ++j) {
         const ch = children[j];

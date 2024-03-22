@@ -242,6 +242,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
 }
 
 export function freezeTemplate(tmpl: Template) {
+    // TODO: Is this TODOne?
     // TODO [#2782]: remove this flag and delete the legacy behavior
     if (lwcRuntimeFlags.ENABLE_FROZEN_TEMPLATE) {
         // Deep freeze the template

@@ -54,6 +54,7 @@ export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; 
 /**
  * @deprecated Custom property transforms are deprecated because IE11 and other legacy browsers are no longer supported.
  */
+// TODO: Is this TODOne?
 // TODO [#3266]: Remove StylesheetConfig as part of breaking change wishlist
 export interface StylesheetConfig {
     customProperties?: {

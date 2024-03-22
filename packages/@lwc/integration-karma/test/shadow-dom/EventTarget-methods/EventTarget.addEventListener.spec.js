@@ -42,6 +42,7 @@ describe('EventTarget.addEventListener', () => {
         const targets = [
             nodes.button,
             nodes['container_div'],
+            // TODO: Is this TODOne?
             /*
             TODO [#2134]: These are valid cases but currently fail.
             nodes['x-container'].shadowRoot,
@@ -181,6 +182,7 @@ describe('EventTarget.addEventListener', () => {
                 document.body.appendChild(container);
             });
 
+            // TODO: Is this TODOne?
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
             it('should be discarded on host elements', () => {
@@ -199,6 +201,7 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
+            // TODO: Is this TODOne?
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
             it('should be discarded on shadow roots', () => {
@@ -233,6 +236,7 @@ describe('EventTarget.addEventListener', () => {
                 document.body.appendChild(container);
             });
 
+            // TODO: Is this TODOne?
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
             it('should not be discarded on host elements', () => {
@@ -251,6 +255,7 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
+            // TODO: Is this TODOne?
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
             it('should not be discarded on shadow roots', () => {

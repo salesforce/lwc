@@ -42,6 +42,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.p.getRootNode()).toEqual(document);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
+        // TODO: Is this TODOne?
         // TODO [#2425]: Incorrect serialization
         xit('textContent', () => {
             expect(nodes.p.textContent).toEqual('I am an assigned element.');
@@ -50,6 +51,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             );
             expect(elm.textContent).toEqual('I am an assigned element.I am an assigned text.');
         });
+        // TODO: Is this TODOne?
         // TODO [#2425]: Incorrect serialization
         xit('innerHTML', () => {
             expect(nodes.p.innerHTML).toEqual('I am an assigned element.');
@@ -60,6 +62,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
                 '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
             );
         });
+        // TODO: Is this TODOne?
         // TODO [#2425]: Incorrect serialization
         xit('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');

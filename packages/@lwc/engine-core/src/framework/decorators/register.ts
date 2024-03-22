@@ -43,6 +43,7 @@ export const enum PropType {
 
 interface PropCompilerDef {
     config: PropType; // 0 m
+    // TODO: Is this TODOne?
     type: string; // TODO [#1301]: make this an enum
 }
 interface WireCompilerDef {

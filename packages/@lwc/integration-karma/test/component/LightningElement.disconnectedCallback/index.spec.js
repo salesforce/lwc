@@ -94,6 +94,7 @@ describe('disconnectedCallback for host with slots', () => {
 
     beforeAll(() => {
         // Ignore the engine logging about passing slot content to a component that does not accept slot
+        // TODO: Is this TODOne?
         // TODO [#869]: These should become unnecessary when #869 is fixed
         spyOn(console, 'group');
         spyOn(console, 'log');

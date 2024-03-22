@@ -13,6 +13,7 @@ describe('scoped slots, slot forwarding', () => {
         document.body.removeChild(lightContainer);
     });
 
+    // TODO: Is this TODOne?
     // TODO [#3889]: This test should be updated once a fix is ready.
     it('does not reassign slot content', () => {
         const leaf = lightContainer.querySelector('x-leaf');

@@ -19,6 +19,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
+    // TODO: Is this TODOne?
     // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
     // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
     function spyConsole() {
@@ -62,6 +63,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return args.map(String).join(' ');
     }
 
+    // TODO: Is this TODOne?
     // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
     function consoleDevMatcherFactory(methodName, expectInProd) {
         return function consoleDevMatcher() {

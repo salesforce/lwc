@@ -80,6 +80,7 @@ describe('LightningElement.focus', () => {
             expect(elm.shadowRoot.activeElement).toBeNull();
         });
 
+        // TODO: Is this TODOne?
         // TODO [#3724]: There's a bug in Safari that causes non-focusable custom elements
         // to be focusable when formAssociated=true.
         // Note in Chrome and Firefox the behavior is the same, document.activeElement does not point to the
