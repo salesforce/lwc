@@ -18,6 +18,8 @@ import {
     runFormDisabledCallback,
     runFormResetCallback,
     runFormStateRestoreCallback,
+    FormRestoreState,
+    FormRestoreReason,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -124,20 +126,20 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             attributeChangedCallback.call(this, name, oldValue, newValue);
         }
 
-        formAssociatedCallback() {
-            runFormAssociatedCallback(this);
+        formAssociatedCallback(form: HTMLFormElement | null) {
+            runFormAssociatedCallback(this, form);
         }
 
-        formDisabledCallback() {
-            runFormDisabledCallback(this);
+        formDisabledCallback(disabled: boolean) {
+            runFormDisabledCallback(this, disabled);
         }
 
         formResetCallback() {
             runFormResetCallback(this);
         }
 
-        formStateRestoreCallback() {
-            runFormStateRestoreCallback(this);
+        formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason) {
+            runFormStateRestoreCallback(this, state, reason);
         }
 
         static observedAttributes = observedAttributes;
