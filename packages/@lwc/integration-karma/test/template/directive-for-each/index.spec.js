@@ -60,6 +60,16 @@ function iterator() {
 }
 testForEach('Iterator', { [Symbol.iterator]: iterator });
 
+it('should throw an error when the passing a non iterable', () => {
+    const elm = createElement('x-test', { is: XTest });
+    elm.items = {};
+
+    // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+    expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
+        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm \S+ \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
+    );
+});
+
 it('should render an array of objects with null prototype', () => {
     const elm = createElement('x-array-null-prototype', { is: ArrayNullPrototype });
     document.body.appendChild(elm);
@@ -86,15 +96,6 @@ const scenarios = [
 ];
 scenarios.forEach(({ testName, Ctor, tagName }) => {
     describe(testName, () => {
-        it('should throw an error when the passing a non iterable', () => {
-            const elm = createElement(tagName, { is: Ctor });
-            elm.items = {};
-
-            // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-            expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-                /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm \S+ \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
-            );
-        });
         it('logs an error when passing an invalid key', () => {
             const elm = createElement(tagName, { is: Ctor });
             elm.items = [{ key: null }];
