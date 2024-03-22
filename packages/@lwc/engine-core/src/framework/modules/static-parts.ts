@@ -12,6 +12,7 @@ import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
 import { patchStyleAttribute } from './computed-style-attr';
+import { patchClassAttribute } from './computed-class-attr';
 
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
@@ -106,6 +107,7 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, owner);
         patchAttributes(null, part, renderer);
+        patchClassAttribute(null, part, renderer);
         patchStyleAttribute(null, part, renderer, owner);
     }
 }
@@ -145,6 +147,7 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
         // Refs must be updated after every render due to refVNodes getting reset before every render
         applyRefs(part, currPartsOwner);
         patchAttributes(prevPart, part, renderer);
+        patchClassAttribute(prevPart, part, renderer);
         patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
     }
 }

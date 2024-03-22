@@ -28,10 +28,10 @@ export default {
             'Mismatch hydrating element <p>: attribute "data-attrs" has different values, expected "client-attrs" but found "ssr-attrs"'
         );
         expect(consoleCalls.error[1][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "class" has different values, expected "client-class" but found "ssr-class"'
+            'Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: blue;" but found "background-color: red;"'
         );
         expect(consoleCalls.error[2][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: blue;" but found "background-color: red;"'
+            'Mismatch hydrating element <p>: attribute "class" has different values, expected "client-class" but found "ssr-class"'
         );
         expect(consoleCalls.error[3][0].message).toContain('Hydration completed with errors.');
     },

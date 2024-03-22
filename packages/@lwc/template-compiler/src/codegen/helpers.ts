@@ -266,7 +266,6 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
         const isStaticSafeExpression =
             isExpression(value) &&
             name !== 'slot' &&
-            name !== 'class' &&
             // TODO [#3624]: Revisit whether svgs can be included in static content optimization
             // svg href needs sanitization.
             !isSvgUseHref(nodeName, name, namespace);

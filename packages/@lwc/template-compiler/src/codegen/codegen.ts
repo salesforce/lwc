@@ -650,6 +650,7 @@ export default class CodeGen {
                 }
 
                 const attributeExpressions = [];
+
                 for (const attribute of node.attributes) {
                     const { name, value } = attribute;
                     if (isExpression(value)) {
@@ -658,6 +659,11 @@ export default class CodeGen {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
                             addDatabagProp(
                                 t.property(t.identifier('style'), this.bindExpression(value))
+                            );
+                        } else if (name === 'class') {
+                            partToken = `${STATIC_PART_TOKEN_ID.CLASS}${partId}`;
+                            addDatabagProp(
+                                t.property(t.identifier('className'), this.bindExpression(value))
                             );
                         } else {
                             partToken = `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${name}`;

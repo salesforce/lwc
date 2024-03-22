@@ -94,6 +94,7 @@ const { fromCharCode: StringFromCharCode } = String;
 
 // No JSDocs here - see comment for Array.prototype
 const {
+    charAt: StringCharAt,
     charCodeAt: StringCharCodeAt,
     replace: StringReplace,
     split: StringSplit,
@@ -180,6 +181,8 @@ export {
     /*
      * String prototype
      */
+    /** Unbound {@linkcode String.prototype.charAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt MDN Reference}. */
+    StringCharAt,
     /** Unbound {@linkcode String.prototype.charCodeAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt MDN Reference}. */
     StringCharCodeAt,
     /** Unbound {@linkcode String.prototype.replace}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace MDN Reference}. */

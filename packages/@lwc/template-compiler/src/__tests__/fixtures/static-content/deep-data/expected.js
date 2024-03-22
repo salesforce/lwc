@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div><div${"a6:data-name"}${3}></div><div${"s7"}${3}></div></div></div><div${3}></div><div${3}></div><div${"a10:data-name"}${3}></div><div${"s11"}${3}></div></div>`;
+const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div><div${"a6:data-name"}${3}></div><div${"s7"}${3}></div><div${"c8"}${2}></div></div></div><div${3}></div><div${3}></div><div${"a11:data-name"}${3}></div><div${"s12"}${3}></div><div${"c13"}${2}></div></div>`;
 const stc0 = {
   ref: "foo",
 };
@@ -25,19 +25,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(7, {
         style: $cmp.fooStyle,
       }),
-      api_static_part(8, stc1),
-      api_static_part(9, {
+      api_static_part(8, {
+        className: $cmp.fooClass,
+      }),
+      api_static_part(9, stc1),
+      api_static_part(10, {
         on: {
           click: _m1 || ($ctx._m1 = api_bind($cmp.onClickQuux)),
         },
       }),
-      api_static_part(10, {
+      api_static_part(11, {
         attrs: {
           "data-name": $cmp.bar,
         },
       }),
-      api_static_part(11, {
+      api_static_part(12, {
         style: $cmp.barStyle,
+      }),
+      api_static_part(13, {
+        className: $cmp.barClass,
       }),
     ]),
   ];

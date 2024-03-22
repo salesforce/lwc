@@ -54,7 +54,7 @@ export interface VStaticPart {
     readonly data: VStaticPartData;
     elm: Element | undefined;
 }
-export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs' | 'style'>;
+export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs' | 'style' | 'className'>;
 
 export interface VStatic extends BaseVNode {
     readonly type: VNodeType.Static;

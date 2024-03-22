@@ -53,7 +53,13 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
         if (name === 'class') {
             hasClassAttr = true;
-            v += '${0}';
+            // ${0} maps to class token that will be appended to the string.
+            // See buildParseFragmentFn for details.
+            // The token is only needed when the class attribute is static.
+            // The token will be injected at runtime for expressions in parseFragmentFn.
+            if (!hasExpression) {
+                v += '${0}';
+            }
         }
         if (typeof v === 'string') {
             // Inject a placeholder where the staticPartId will go when an expression occurs.
@@ -89,6 +95,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         })
         .forEach(collector);
 
+    // ${2} maps to style token attribute
+    // ${3} maps to class attribute token + style token attribute
+    // See buildParseFragmentFn for details.
     return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 

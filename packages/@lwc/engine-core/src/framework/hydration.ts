@@ -49,7 +49,6 @@ import {
     VStatic,
     VFragment,
     isVCustomElement,
-    VStaticPart,
     VElementData,
     VStaticPartData,
 } from './vnodes';
@@ -225,7 +224,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !areCompatibleNodes(vnode.fragment, elm, vnode, renderer)
+        !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
@@ -503,12 +502,13 @@ function isMatchingElement(
         return false;
     }
 
-    const hasCompatibleAttrs = validateAttrs(vnode, elm, vnode.owner, renderer, shouldValidateAttr);
+    const { data } = vnode;
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, data, renderer, shouldValidateAttr);
     const hasCompatibleClass = shouldValidateAttr('class')
-        ? validateClassAttr(vnode, elm, renderer)
+        ? validateClassAttr(vnode, elm, data, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
-        ? validateStyleAttr(vnode, elm, vnode.data, renderer)
+        ? validateStyleAttr(vnode, elm, data, renderer)
         : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
@@ -535,15 +535,13 @@ function attributeValuesAreEqual(
 }
 
 function validateAttrs(
-    node: VBaseElement | VStaticPart,
+    vnode: VBaseElement | VStatic,
     elm: Element,
-    owner: VM,
+    data: VElementData | VStaticPartData,
     renderer: RendererAPI,
     shouldValidateAttr: (attrName: string) => boolean
 ): boolean {
-    const {
-        data: { attrs = {} },
-    } = node;
+    const { attrs = {} } = data;
 
     let nodesAreCompatible = true;
 
@@ -565,7 +563,7 @@ function validateAttrs(
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
                         isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
                     }`,
-                    owner
+                    vnode.owner
                 );
             }
             nodesAreCompatible = false;
@@ -575,9 +573,16 @@ function validateAttrs(
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
-    const { data, owner } = vnode;
-    let { className, classMap } = data;
+function validateClassAttr(
+    vnode: VBaseElement | VStatic,
+    elm: Element,
+    data: VElementData | VStaticPartData,
+    renderer: RendererAPI
+): boolean {
+    const { owner } = vnode;
+    // classMap is never available on VStaticPartData so it can default to undefined
+    // casting to prevent TS error.
+    let { className, classMap } = data as VElementData;
     const { getProperty, getClassList, getAttribute } = renderer;
     // we don't care about legacy for hydration. it's a new use case
     const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
@@ -721,7 +726,7 @@ function validateStyleAttr(
     return nodesAreCompatible;
 }
 
-function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: RendererAPI) {
+function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, renderer: RendererAPI) {
     const { getProperty, getAttribute } = renderer;
     if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
         if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT, renderer)) {
@@ -743,6 +748,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
         return false;
     }
 
+    const { owner, parts } = vnode;
     let isCompatibleElements = true;
     if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
@@ -751,7 +757,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
                     client,
                     'tagName'
                 ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
-                vnode.owner
+                owner
             );
         }
 
@@ -762,19 +768,25 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 
     clientAttrsNames.forEach((attrName) => {
         if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                logError(
-                    `Mismatch hydrating element <${getProperty(
-                        client,
-                        'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
-                        client,
-                        attrName
-                    )}" but found "${getAttribute(ssr, attrName)}"`,
-                    vnode.owner
-                );
+            // Check if the root element attributes have expressions, if it does then we need to delegate hydration
+            // validation to haveCompatibleStaticParts.
+            // Note if there are no parts then it is a fully static fragment.
+            // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
+            if (parts?.[0].partId !== 0) {
+                if (process.env.NODE_ENV !== 'production') {
+                    logError(
+                        `Mismatch hydrating element <${getProperty(
+                            client,
+                            'tagName'
+                        ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                            client,
+                            attrName
+                        )}" but found "${getAttribute(ssr, attrName)}"`,
+                        owner
+                    );
+                }
+                isCompatibleElements = false;
             }
-            isCompatibleElements = false;
         }
     });
 
@@ -782,7 +794,7 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
 }
 
 function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
-    const { owner, parts } = vnode;
+    const { parts } = vnode;
 
     if (isUndefined(parts)) {
         return true;
@@ -793,9 +805,10 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
         const { data, elm } = part;
-        const hasMatchingAttrs = validateAttrs(part, elm!, owner, renderer, () => true);
+        const hasMatchingAttrs = validateAttrs(vnode, elm!, data, renderer, () => true);
         const hasMatchingStyleAttr = validateStyleAttr(vnode, elm!, data, renderer);
-        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr)) {
+        const hasMatchingClass = validateClassAttr(vnode, elm!, data, renderer);
+        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
             return false;
         }
     }

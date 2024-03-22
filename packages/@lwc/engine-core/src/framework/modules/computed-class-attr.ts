@@ -16,11 +16,11 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement } from '../vnodes';
+import { VBaseElement, VStaticPart } from '../vnodes';
 
 const classNameToClassMap = create(null);
 
-function getMapFromClassName(className: string | undefined): Record<string, boolean> {
+export function getMapFromClassName(className: string | undefined): Record<string, boolean> {
     // Intentionally using == to match undefined and null values from computed style attribute
     if (className == null) {
         return EmptyObject;
@@ -59,8 +59,8 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 }
 
 export function patchClassAttribute(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
+    oldVnode: VBaseElement | VStaticPart | null,
+    vnode: VBaseElement | VStaticPart,
     renderer: RendererAPI
 ) {
     const {
