@@ -189,28 +189,28 @@ declare module 'lwc' {
         errorCallback(error: Error, stack: string): void;
         /**
          * Called when a Form-Associated Custom Element (FACE) is associated with an HTMLFormElement.
-         * @param form HTMLFormElement
+         * @param form HTMLFormElement - the associated form element
          * @see https://web.dev/articles/more-capable-form-controls#void_formassociatedcallbackform
          */
         formAssociatedCallback(form: HTMLFormElement | null): void;
         /**
          * Called when a Form-Associated Custom Element (FACE) has a disabled state that has changed.
-         * @param disabled boolean
+         * @param disabled boolean - the new disabled state
          * @see https://web.dev/articles/more-capable-form-controls#void_formdisabledcallbackdisabled
          */
         formDisabledCallback(disabled: boolean): void;
         /**
          * Called when a Form-Associated Custom Element (FACE) has an associated form that is reset.
-         * @param state FormRestoreState
-         * @param reason FormRestoreReason
          * @see https://web.dev/articles/more-capable-form-controls#void_formresetcallback
          */
-        formResetCallback(state: FormRestoreState | null, reason: FormRestoreReason): void;
+        formResetCallback(): void;
         /**
          * Called when a Form-Associated Custom Element (FACE) has an associated form that is restored.
+         * @param state FormRestoreState - the state of the form during restoration
+         * @param reason FormRestoreReason - the reason the form was restored
          * @see https://web.dev/articles/more-capable-form-controls#void_formstaterestorecallbackstate_mode
          */
-        formStateRestoreCallback(): void;
+        formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason): void;
 
         readonly template: ShadowRootTheGoodPart;
         readonly shadowRoot: null;
