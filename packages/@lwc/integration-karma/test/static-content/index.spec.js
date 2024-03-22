@@ -19,6 +19,7 @@ import PreserveComments from 'x/preserveComments';
 import Attribute from 'x/attribute';
 import DeepAttribute from 'x/deepAttribute';
 import IframeOnload from 'x/iframeOnload';
+import WithKey from 'x/withKey';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -587,5 +588,50 @@ describe('iframe onload event listener', () => {
         await new Promise((resolve) => setTimeout(resolve));
         await new Promise((resolve) => setTimeout(resolve));
         expect(elm.loaded).toBeTrue();
+    });
+});
+
+describe('key directive', () => {
+    it('works with a key directive on top-level static content', async () => {
+        const elm = createElement('x-with-key', { is: WithKey });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+        const tbody = elm.shadowRoot.querySelector('tbody');
+        expect(tbody.children.length).toBe(0);
+
+        // one child
+        elm.items = [0];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(1);
+        const trsA = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsA = [...elm.shadowRoot.querySelectorAll('td')];
+        expect(trsA.length).toBe(1);
+        expect(tdsA.length).toBe(1);
+
+        // second child
+        elm.items = [0, 1];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(2);
+        const trsB = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsB = [...elm.shadowRoot.querySelectorAll('td')];
+
+        expect(trsB.length).toBe(2);
+        expect(tdsB.length).toBe(2);
+        expect(trsB[0]).toBe(trsA[0]);
+        expect(tdsB[0]).toBe(tdsA[0]);
+
+        // switch order
+        elm.items = [1, 0];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(2);
+        const trsC = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsC = [...elm.shadowRoot.querySelectorAll('td')];
+
+        expect(trsC.length).toBe(2);
+        expect(tdsC.length).toBe(2);
+        expect(trsC[0]).toBe(trsB[1]);
+        expect(tdsC[0]).toBe(tdsB[1]);
+        expect(trsC[1]).toBe(trsB[0]);
+        expect(tdsC[1]).toBe(tdsB[0]);
     });
 });
