@@ -66,7 +66,7 @@ it('should throw an error when the passing a non iterable', () => {
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm \S+ \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
+        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm Test \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
     );
 });
 
@@ -102,7 +102,7 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
 
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev([
-                /Invalid key value "null" in \[object:vm \S+ \(\d+\)]. Key must be a string or number\./,
+                /Invalid key value "null" in \[object:vm (TestStatic|TestCustomElement|Test) \(\d+\)]. Key must be a string or number\./,
                 /Invalid "key" attribute value in "<(li|x-custom)>"/,
             ]);
         });
@@ -113,7 +113,7 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
 
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev(
-                /Duplicated "key" attribute value for "<(li|x-custom)>" in \[object:vm \S+ \(\d+\)] for item number 1\. A key with value "\d:xyz" appears more than once in the iteration\. Key values must be unique numbers or strings\./
+                /Duplicated "key" attribute value for "<(li|x-custom)>" in \[object:vm (TestStatic|TestCustomElement|Test) \(\d+\)] for item number 1\. A key with value "\d:xyz" appears more than once in the iteration\. Key values must be unique numbers or strings\./
             );
         });
     });
