@@ -437,9 +437,7 @@ function i(
                 if (
                     !isNull(childVnode) &&
                     isObject(childVnode) &&
-                    (childVnode.type === VNodeType.CustomElement ||
-                        childVnode.type === VNodeType.Element ||
-                        childVnode.type === VNodeType.Static)
+                    (isVBaseElement(childVnode) || isVStatic(childVnode))
                 ) {
                     const { key } = childVnode;
                     const tagName =
