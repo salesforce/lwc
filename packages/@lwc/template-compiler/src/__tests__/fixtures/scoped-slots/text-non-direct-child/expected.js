@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text(item.id) + " - " + api_dynamic_text(item.name)
               ),
             ]),
-            api_static_fragment($fragment1(), 3),
+            api_static_fragment($fragment1, 3),
           ],
           0
         );

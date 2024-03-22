@@ -1,0 +1,600 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 123,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 112,
+                "end": 123
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 101,
+                    "start": 15,
+                    "end": 111,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 37,
+                        "start": 15,
+                        "end": 47
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 91,
+                        "endLine": 2,
+                        "endColumn": 101,
+                        "start": 101,
+                        "end": 111
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "click",
+                        "handler": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 13,
+                            "object": {
+                                "type": "MemberExpression",
+                                "start": 1,
+                                "end": 8,
+                                "object": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "bar"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 5,
+                                    "end": 8,
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 9,
+                                "end": 12,
+                                "name": "baz"
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 14,
+                                "endLine": 2,
+                                "endColumn": 36,
+                                "start": 24,
+                                "end": 46
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 14,
+                            "endLine": 2,
+                            "endColumn": 36,
+                            "start": 24,
+                            "end": 46
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "{bar.arr[baz]}",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 48,
+                            "end": 60,
+                            "loc": {
+                                "start": {
+                                    "line": 2,
+                                    "column": 37
+                                },
+                                "end": {
+                                    "line": 2,
+                                    "column": 49
+                                }
+                            },
+                            "range": [
+                                48,
+                                60
+                            ],
+                            "object": {
+                                "type": "MemberExpression",
+                                "start": 48,
+                                "end": 55,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 37
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 44
+                                    }
+                                },
+                                "range": [
+                                    48,
+                                    55
+                                ],
+                                "object": {
+                                    "type": "Identifier",
+                                    "start": 48,
+                                    "end": 51,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 37
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 40
+                                        }
+                                    },
+                                    "range": [
+                                        48,
+                                        51
+                                    ],
+                                    "name": "bar"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 52,
+                                    "end": 55,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 41
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 44
+                                        }
+                                    },
+                                    "range": [
+                                        52,
+                                        55
+                                    ],
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 56,
+                                "end": 59,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 45
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 48
+                                    }
+                                },
+                                "range": [
+                                    56,
+                                    59
+                                ],
+                                "name": "baz"
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 37,
+                                "endLine": 2,
+                                "endColumn": 51,
+                                "start": 47,
+                                "end": 61
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 37,
+                            "endLine": 2,
+                            "endColumn": 51,
+                            "start": 47,
+                            "end": 61
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " "
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 51,
+                            "endLine": 2,
+                            "endColumn": 52,
+                            "start": 61,
+                            "end": 62
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{bar.baz.arr[quux]}",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 63,
+                            "end": 80,
+                            "loc": {
+                                "start": {
+                                    "line": 2,
+                                    "column": 52
+                                },
+                                "end": {
+                                    "line": 2,
+                                    "column": 69
+                                }
+                            },
+                            "range": [
+                                63,
+                                80
+                            ],
+                            "object": {
+                                "type": "MemberExpression",
+                                "start": 63,
+                                "end": 74,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 52
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 63
+                                    }
+                                },
+                                "range": [
+                                    63,
+                                    74
+                                ],
+                                "object": {
+                                    "type": "MemberExpression",
+                                    "start": 63,
+                                    "end": 70,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 52
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 59
+                                        }
+                                    },
+                                    "range": [
+                                        63,
+                                        70
+                                    ],
+                                    "object": {
+                                        "type": "Identifier",
+                                        "start": 63,
+                                        "end": 66,
+                                        "loc": {
+                                            "start": {
+                                                "line": 2,
+                                                "column": 52
+                                            },
+                                            "end": {
+                                                "line": 2,
+                                                "column": 55
+                                            }
+                                        },
+                                        "range": [
+                                            63,
+                                            66
+                                        ],
+                                        "name": "bar"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 67,
+                                        "end": 70,
+                                        "loc": {
+                                            "start": {
+                                                "line": 2,
+                                                "column": 56
+                                            },
+                                            "end": {
+                                                "line": 2,
+                                                "column": 59
+                                            }
+                                        },
+                                        "range": [
+                                            67,
+                                            70
+                                        ],
+                                        "name": "baz"
+                                    },
+                                    "computed": false,
+                                    "optional": false
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 71,
+                                    "end": 74,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 60
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 63
+                                        }
+                                    },
+                                    "range": [
+                                        71,
+                                        74
+                                    ],
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 75,
+                                "end": 79,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 64
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 68
+                                    }
+                                },
+                                "range": [
+                                    75,
+                                    79
+                                ],
+                                "name": "quux"
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 52,
+                                "endLine": 2,
+                                "endColumn": 71,
+                                "start": 62,
+                                "end": 81
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 52,
+                            "endLine": 2,
+                            "endColumn": 71,
+                            "start": 62,
+                            "end": 81
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " "
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 71,
+                            "endLine": 2,
+                            "endColumn": 72,
+                            "start": 81,
+                            "end": 82
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{bar.arr[baz.quux]}",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 83,
+                            "end": 100,
+                            "loc": {
+                                "start": {
+                                    "line": 2,
+                                    "column": 72
+                                },
+                                "end": {
+                                    "line": 2,
+                                    "column": 89
+                                }
+                            },
+                            "range": [
+                                83,
+                                100
+                            ],
+                            "object": {
+                                "type": "MemberExpression",
+                                "start": 83,
+                                "end": 90,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 72
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 79
+                                    }
+                                },
+                                "range": [
+                                    83,
+                                    90
+                                ],
+                                "object": {
+                                    "type": "Identifier",
+                                    "start": 83,
+                                    "end": 86,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 72
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 75
+                                        }
+                                    },
+                                    "range": [
+                                        83,
+                                        86
+                                    ],
+                                    "name": "bar"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 87,
+                                    "end": 90,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 76
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 79
+                                        }
+                                    },
+                                    "range": [
+                                        87,
+                                        90
+                                    ],
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "MemberExpression",
+                                "start": 91,
+                                "end": 99,
+                                "loc": {
+                                    "start": {
+                                        "line": 2,
+                                        "column": 80
+                                    },
+                                    "end": {
+                                        "line": 2,
+                                        "column": 88
+                                    }
+                                },
+                                "range": [
+                                    91,
+                                    99
+                                ],
+                                "object": {
+                                    "type": "Identifier",
+                                    "start": 91,
+                                    "end": 94,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 80
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 83
+                                        }
+                                    },
+                                    "range": [
+                                        91,
+                                        94
+                                    ],
+                                    "name": "baz"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 95,
+                                    "end": 99,
+                                    "loc": {
+                                        "start": {
+                                            "line": 2,
+                                            "column": 84
+                                        },
+                                        "end": {
+                                            "line": 2,
+                                            "column": 88
+                                        }
+                                    },
+                                    "range": [
+                                        95,
+                                        99
+                                    ],
+                                    "name": "quux"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 72,
+                                "endLine": 2,
+                                "endColumn": 91,
+                                "start": 82,
+                                "end": 101
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 72,
+                            "endLine": 2,
+                            "endColumn": 91,
+                            "start": 82,
+                            "end": 101
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

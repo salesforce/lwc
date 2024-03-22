@@ -270,7 +270,7 @@ function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    patchStaticParts(n1, n2);
+    patchStaticParts(n1, n2, renderer);
 }
 
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
@@ -304,8 +304,8 @@ function mountStatic(
 
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(null, vnode, renderer);
-    insertNode(elm, parent, anchor, renderer);
     mountStaticParts(elm, vnode, renderer);
+    insertNode(elm, parent, anchor, renderer);
 }
 
 function mountCustomElement(
@@ -605,17 +605,18 @@ function patchElementPropsAndAttrsAndRefs(
         applyStaticStyleAttribute(vnode, renderer);
     }
 
+    const { owner } = vnode;
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer, owner);
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
     patchSlotAssignment(oldVnode, vnode, renderer);
 
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    applyRefs(vnode, vnode.owner);
+    applyRefs(vnode, owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {

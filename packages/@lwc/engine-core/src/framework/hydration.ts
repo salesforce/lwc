@@ -19,6 +19,7 @@ import {
     StringToLowerCase,
     APIFeature,
     isAPIFeatureEnabled,
+    isFalse,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -48,11 +49,14 @@ import {
     VStatic,
     VFragment,
     isVCustomElement,
+    VStaticPart,
+    VElementData,
+    VStaticPartData,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
-import { mountStaticParts } from './modules/static-parts';
+import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
@@ -226,9 +230,26 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
         return handleMismatch(elm, vnode, renderer);
     }
 
+    return hydrateStaticElementParts(elm, vnode, renderer);
+}
+
+function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
+    const { parts } = vnode;
+
+    if (!isUndefined(parts)) {
+        // Elements must first be set on the static part to validate against.
+        traverseAndSetElements(elm, parts, renderer);
+    }
+
+    if (!haveCompatibleStaticParts(vnode, renderer)) {
+        return handleMismatch(elm, vnode, renderer);
+    }
+
     vnode.elm = elm;
 
-    mountStaticParts(elm, vnode, renderer);
+    // Hydration only requires applying event listeners and refs.
+    // All other expressions should be applied during SSR or through the handleMismatch routine.
+    hydrateStaticParts(vnode, renderer);
 
     return elm;
 }
@@ -482,12 +503,12 @@ function isMatchingElement(
         return false;
     }
 
-    const hasCompatibleAttrs = validateAttrs(vnode, elm, renderer, shouldValidateAttr);
+    const hasCompatibleAttrs = validateAttrs(vnode, elm, vnode.owner, renderer, shouldValidateAttr);
     const hasCompatibleClass = shouldValidateAttr('class')
         ? validateClassAttr(vnode, elm, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
-        ? validateStyleAttr(vnode, elm, renderer)
+        ? validateStyleAttr(vnode, elm, vnode.data, renderer)
         : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
@@ -514,14 +535,15 @@ function attributeValuesAreEqual(
 }
 
 function validateAttrs(
-    vnode: VBaseElement,
+    node: VBaseElement | VStaticPart,
     elm: Element,
+    owner: VM,
     renderer: RendererAPI,
     shouldValidateAttr: (attrName: string) => boolean
 ): boolean {
     const {
         data: { attrs = {} },
-    } = vnode;
+    } = node;
 
     let nodesAreCompatible = true;
 
@@ -531,7 +553,6 @@ function validateAttrs(
         if (!shouldValidateAttr(attrName)) {
             continue;
         }
-        const { owner } = vnode;
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
@@ -642,10 +663,14 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
-    const {
-        data: { style, styleDecls },
-    } = vnode;
+function validateStyleAttr(
+    vnode: VBaseElement | VStatic,
+    elm: Element,
+    data: VElementData | VStaticPartData,
+    renderer: RendererAPI
+): boolean {
+    // Note styleDecls is always undefined for VStaticPartData, casting here to default it to undefined
+    const { style, styleDecls } = data as VElementData;
     const { getAttribute } = renderer;
     const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
@@ -754,4 +779,25 @@ function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: Ren
     });
 
     return isCompatibleElements;
+}
+
+function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
+    const { owner, parts } = vnode;
+
+    if (isUndefined(parts)) {
+        return true;
+    }
+
+    // The validation here relies on 2 key invariants:
+    // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
+    // 2. It's never the case that `parts` has one length on the server but another on the client
+    for (const part of parts) {
+        const { data, elm } = part;
+        const hasMatchingAttrs = validateAttrs(part, elm!, owner, renderer, () => true);
+        const hasMatchingStyleAttr = validateStyleAttr(vnode, elm!, data, renderer);
+        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr)) {
+            return false;
+        }
+    }
+    return true;
 }

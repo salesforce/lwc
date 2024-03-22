@@ -3,9 +3,11 @@
     <x-description id="bar"></x-description>
     <x-description id="baz"></x-description>
     <x-textarea id="foo" aria-describedby="bar baz"></x-textarea>
+    <x-textarea id={computed} aria-describedby="bar baz"></x-textarea>
 
     <label for="boof">label text</label>
     <input id="boof">
+    <input id={computed}>
 
     <template for:each={things} for:item="thing">
         <p key={thing.key} id={thing.id}>description text</p>

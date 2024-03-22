@@ -11,7 +11,7 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, c: api_custom_element } = $api;
   return [
-    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment1, 1),
     api_custom_element("foo-bar", _fooBar, stc0),
   ];
   /*LWC compiler vX.X.X*/

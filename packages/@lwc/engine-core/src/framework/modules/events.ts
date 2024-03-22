@@ -9,9 +9,8 @@ import { RendererAPI } from '../renderer';
 import { VBaseElement, VStaticPart } from '../vnodes';
 
 export function applyEventListeners(vnode: VBaseElement | VStaticPart, renderer: RendererAPI) {
-    const { elm } = vnode;
-
-    const on = vnode.data?.on;
+    const { elm, data } = vnode;
+    const { on } = data;
 
     if (isUndefined(on)) {
         return;

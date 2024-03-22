@@ -7,9 +7,17 @@
 
 import { walk } from 'estree-walker';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
+import { isBooleanAttribute } from '@lwc/shared';
 import * as t from '../shared/estree';
-import { ComplexExpression } from '../shared/types';
+import { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
+import { isProperty } from '../shared/ast';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 import type CodeGen from './codegen';
 
 type VariableName = string;
@@ -53,13 +61,14 @@ export function bindComplexExpression(
 
         leave(node, parent) {
             if (t.isArrowFunctionExpression(node)) {
-                expressionScopes.exitScope(node);
-            } else if (
+                return expressionScopes.exitScope(node);
+            }
+            // Acorn parses `undefined` as an Identifier.
+            const isIdentifier = t.isIdentifier(node) && node.name !== 'undefined';
+            if (
                 parent !== null &&
-                t.isIdentifier(node) &&
-                // Acorn parses `undefined` as an Identifier.
-                node.name !== 'undefined' &&
-                !(t.isMemberExpression(parent) && parent.property === node) &&
+                isIdentifier &&
+                !(t.isMemberExpression(parent) && parent.property === node && !parent.computed) &&
                 !(t.isProperty(parent) && parent.key === node) &&
                 !codeGen.isLocalIdentifier(node) &&
                 !expressionScopes.isScopedToExpression(node)
@@ -169,4 +178,50 @@ function collectParamsFromMemberExpression(_node: t.MemberExpression, _vars: Var
     // It is unclear how this condition could ever be reached. But because it is allowed by
     // the AST, we'll validate anyway.
     invariant(false, ParserDiagnostics.INVALID_EXPR_ARROW_FN_PARAM, ['member expressions']);
+}
+
+export function bindAttributeExpression(
+    attr: Attribute | Property,
+    element: BaseElement,
+    codeGen: CodeGen,
+    addLegacySanitizationHook: boolean
+) {
+    const { name: elmName, namespace = '' } = element;
+    const { value: attrValue } = attr;
+    // Evaluate properties based on their attribute name
+    const attrName = isProperty(attr) ? attr.attributeName : attr.name;
+    const isUsedAsAttribute = isAttribute(element, attrName);
+
+    const expression = codeGen.bindExpression(attrValue);
+
+    // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
+    if (isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
+        // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
+        // without handling special cases at runtime.
+        return codeGen.genBooleanAttributeExpr(expression);
+    }
+    if (attrName === 'tabindex') {
+        return codeGen.genTabIndex([expression]);
+    }
+    if (attrName === 'id' || isIdReferencingAttribute(attrName)) {
+        return codeGen.genScopedId(expression);
+    }
+    if (codeGen.scopeFragmentId && isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace)) {
+        return codeGen.genScopedFragId(expression);
+    }
+    if (isSvgUseHref(elmName, attrName, namespace)) {
+        if (addLegacySanitizationHook) {
+            codeGen.usedLwcApis.add('sanitizeAttribute');
+
+            return t.callExpression(t.identifier('sanitizeAttribute'), [
+                t.literal(elmName),
+                t.literal(namespace),
+                t.literal(attrName),
+                codeGen.genScopedFragId(expression),
+            ]);
+        }
+        return codeGen.genScopedFragId(expression);
+    }
+
+    return expression;
 }

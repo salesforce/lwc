@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(2, row.id),
             },
-            [api_static_fragment($fragment1(), 4)]
+            [api_static_fragment($fragment1, 4)]
           );
         })
       ),
@@ -41,7 +41,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(6, row.id),
             },
-            [api_static_fragment($fragment2(), 8)]
+            [api_static_fragment($fragment2, 8)]
           );
         })
       ),

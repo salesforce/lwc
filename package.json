@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "6.3.2",
+    "version": "6.3.4",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prepare": "husky && yarn build",
-        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
+        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
         "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
@@ -31,7 +31,7 @@
         "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
     },
     "devDependencies": {
-        "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+        "@babel/plugin-transform-modules-commonjs": "^7.24.1",
         "@commitlint/cli": "^19.0.3",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
@@ -42,12 +42,12 @@
         "@rollup/plugin-typescript": "^11.1.6",
         "@types/babel__core": "^7.20.5",
         "@types/jest": "^29.5.12",
-        "@types/node": "^20.11.26",
+        "@types/node": "^20.11.30",
         "@types/prettier": "^2.7.3",
-        "@typescript-eslint/eslint-plugin": "^7.2.0",
-        "@typescript-eslint/parser": "^7.2.0",
+        "@typescript-eslint/eslint-plugin": "^7.3.1",
+        "@typescript-eslint/parser": "^7.3.1",
         "bytes": "^3.1.2",
-        "es-module-lexer": "^1.4.1",
+        "es-module-lexer": "^1.4.2",
         "eslint": "^8.57.0",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.29.1",
@@ -69,9 +69,10 @@
         "typescript": "5.4.2"
     },
     "lint-staged": {
-        "**/*.{js,mjs,ts}": "eslint",
+        "*.{js,mjs,ts}": "eslint",
         "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write",
-        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js"
+        "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
+        "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
         "packages/@lwc/*",

@@ -11,8 +11,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, s: api_slot, h: api_element } = $api;
   return [
     api_element("section", stc0, [
-      api_static_fragment($fragment1(), 2),
-      api_slot("", stc1, [api_static_fragment($fragment2(), "@:5")], $slotset),
+      api_static_fragment($fragment1, 2),
+      api_slot("", stc1, [api_static_fragment($fragment2, "@:5")], $slotset),
     ]),
   ];
   /*LWC compiler vX.X.X*/

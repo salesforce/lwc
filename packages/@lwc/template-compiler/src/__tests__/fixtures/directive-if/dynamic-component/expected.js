@@ -12,12 +12,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.isTrue
       ? api_dynamic_component($cmp.ctor, stc0, [
-          api_static_fragment($fragment1(), 2),
+          api_static_fragment($fragment1, 2),
         ])
       : null,
     !$cmp.isTrue2
       ? api_dynamic_component($cmp.ctor, stc1, [
-          api_static_fragment($fragment2(), 5),
+          api_static_fragment($fragment2, 5),
         ])
       : null,
   ];

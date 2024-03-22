@@ -14,6 +14,7 @@ import {
     isComment,
     isConditionalParentBlock,
     isElement,
+    isExpression,
     isForBlock,
     isIf,
     isParentNode,
@@ -246,8 +247,9 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     result &&= isElement(node);
 
     // all attrs are static-safe
+    // the criteria to determine safety can be found in computeAttrValue
     result &&= attributes.every(({ name, value }) => {
-        return (
+        const isStaticSafeLiteral =
             isLiteral(value) &&
             name !== 'slot' &&
             // check for ScopedId
@@ -260,8 +262,15 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
             !(
                 isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
                 isFragmentOnlyUrl(value.value as string)
-            )
-        );
+            );
+        const isStaticSafeExpression =
+            isExpression(value) &&
+            name !== 'slot' &&
+            name !== 'class' &&
+            // TODO [#3624]: Revisit whether svgs can be included in static content optimization
+            // svg href needs sanitization.
+            !isSvgUseHref(nodeName, name, namespace);
+        return isStaticSafeLiteral || isStaticSafeExpression;
     });
 
     // all directives are static-safe

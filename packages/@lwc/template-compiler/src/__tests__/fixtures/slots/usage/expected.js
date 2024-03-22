@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_custom_element("ns-cmp", _nsCmp, stc1, [
-        api_static_fragment($fragment1(), 3),
+        api_static_fragment($fragment1, 3),
         api_element("p", stc2, [api_text("Slot Empty String Attribute")]),
         api_element("p", stc3, [api_text("Slot Boolean Attribute")]),
         api_element(
