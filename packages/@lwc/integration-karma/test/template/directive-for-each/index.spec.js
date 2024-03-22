@@ -98,7 +98,7 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
     describe(testName, () => {
         it('logs an error when passing an invalid key', () => {
             const elm = createElement(tagName, { is: Ctor });
-            elm.items = [{ key: null }];
+            elm.items = [{ key: null, value: 'one' }];
 
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev([
@@ -109,7 +109,10 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
 
         it('logs an error when passing a duplicate key', () => {
             const elm = createElement(tagName, { is: Ctor });
-            elm.items = [{ key: 'xyz' }, { key: 'xyz' }];
+            elm.items = [
+                { key: 'xyz', value: 'one' },
+                { key: 'xyz', value: 'two' },
+            ];
 
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev(
