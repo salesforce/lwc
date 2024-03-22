@@ -22,6 +22,7 @@ import {
     isTrue,
     isUndefined,
     StringReplace,
+    StringToLowerCase,
     toString,
 } from '@lwc/shared';
 
@@ -35,7 +36,9 @@ import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    isVBaseElement,
     isVScopedSlotFragment,
+    isVStatic,
     Key,
     VComment,
     VCustomElement,
@@ -47,11 +50,9 @@ import {
     VNodeType,
     VScopedSlotFragment,
     VStatic,
-    VText,
     VStaticPart,
     VStaticPartData,
-    isVBaseElement,
-    isVStatic,
+    VText,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -431,16 +432,25 @@ function i(
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            forEach.call(vnodes, (childVnode: VNode | null) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
+            forEach.call(vnodes, (childVnode: VNode | VStatic | null) => {
+                // Check that the child vnode is either an element or VStatic
+                if (
+                    !isNull(childVnode) &&
+                    isObject(childVnode) &&
+                    (childVnode.type === VNodeType.CustomElement ||
+                        childVnode.type === VNodeType.Element ||
+                        childVnode.type === VNodeType.Static)
+                ) {
                     const { key } = childVnode;
+                    const tagName =
+                        childVnode.sel ?? StringToLowerCase.call(childVnode.fragment.tagName);
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
-                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. A key with value "${childVnode.key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
+                            iterationError = `Duplicated "key" attribute value for "<${tagName}>" in ${vmBeingRendered} for item number ${j}. A key with value "${childVnode.key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
-                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Set a unique "key" value on all iterated child elements.`;
+                        iterationError = `Invalid "key" attribute value in "<${tagName}>" in ${vmBeingRendered} for item number ${j}. Set a unique "key" value on all iterated child elements.`;
                     }
                 }
             });
