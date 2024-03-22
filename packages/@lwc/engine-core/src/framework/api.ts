@@ -432,7 +432,7 @@ function i(
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            forEach.call(vnodes, (childVnode: VNode | VStatic | null) => {
+            forEach.call(vnodes, (childVnode: VNode | null) => {
                 // Check that the child vnode is either an element or VStatic
                 if (
                     !isNull(childVnode) &&
