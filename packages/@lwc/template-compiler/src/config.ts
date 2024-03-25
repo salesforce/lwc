@@ -162,7 +162,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         // TODO [#3370]: remove experimental template expression flag
-        experimentalComplexExpressions: false,
+        experimentalComplexExpressions: true,
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
