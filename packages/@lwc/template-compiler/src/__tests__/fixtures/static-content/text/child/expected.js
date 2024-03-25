@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
+const $fragment1 = parseFragment`<div${3}>${"t1"}</div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(1, {
-        text: api_dynamic_text($cmp.text),
+        text: api_dynamic_text($cmp.dynamic),
       }),
     ]),
   ];
