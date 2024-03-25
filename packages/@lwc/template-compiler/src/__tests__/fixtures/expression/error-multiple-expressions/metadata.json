@@ -1,15 +1,9 @@
 {
     "warnings": [
         {
-            "code": 1074,
-            "message": "Invalid expression {foo;title} - LWC1074: Multiple expressions found",
-            "level": 1,
-            "location": {
-                "line": 1,
-                "column": 11,
-                "start": 10,
-                "length": 17
-            }
+            "code": 1083,
+            "message": "Unexpected compilation error: LWC1083: Error parsing template expression: expression must end with curly brace.",
+            "level": 1
         }
     ]
 }

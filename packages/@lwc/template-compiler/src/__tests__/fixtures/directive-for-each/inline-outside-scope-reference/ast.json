@@ -233,8 +233,22 @@
                                                 "raw": "{item}",
                                                 "value": {
                                                     "type": "Identifier",
-                                                    "start": 1,
-                                                    "end": 5,
+                                                    "start": 118,
+                                                    "end": 122,
+                                                    "loc": {
+                                                        "start": {
+                                                            "line": 4,
+                                                            "column": 16
+                                                        },
+                                                        "end": {
+                                                            "line": 4,
+                                                            "column": 20
+                                                        }
+                                                    },
+                                                    "range": [
+                                                        118,
+                                                        122
+                                                    ],
                                                     "name": "item",
                                                     "location": {
                                                         "startLine": 4,
@@ -294,8 +308,22 @@
                                                 "raw": "{item2}",
                                                 "value": {
                                                     "type": "Identifier",
-                                                    "start": 1,
-                                                    "end": 6,
+                                                    "start": 144,
+                                                    "end": 149,
+                                                    "loc": {
+                                                        "start": {
+                                                            "line": 5,
+                                                            "column": 16
+                                                        },
+                                                        "end": {
+                                                            "line": 5,
+                                                            "column": 21
+                                                        }
+                                                    },
+                                                    "range": [
+                                                        144,
+                                                        149
+                                                    ],
                                                     "name": "item2",
                                                     "location": {
                                                         "startLine": 5,
