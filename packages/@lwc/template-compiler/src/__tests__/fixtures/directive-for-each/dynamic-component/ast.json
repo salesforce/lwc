@@ -209,8 +209,22 @@
                                         "raw": "{item}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 5,
+                                            "start": 104,
+                                            "end": 108,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 12
+                                                },
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 16
+                                                }
+                                            },
+                                            "range": [
+                                                104,
+                                                108
+                                            ],
                                             "name": "item",
                                             "location": {
                                                 "startLine": 3,

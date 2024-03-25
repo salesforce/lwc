@@ -117,18 +117,60 @@
                                         "raw": "{slot1data.name}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 15,
+                                            "start": 103,
+                                            "end": 117,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 16
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 30
+                                                }
+                                            },
+                                            "range": [
+                                                103,
+                                                117
+                                            ],
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 10,
+                                                "start": 103,
+                                                "end": 112,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 16
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 25
+                                                    }
+                                                },
+                                                "range": [
+                                                    103,
+                                                    112
+                                                ],
                                                 "name": "slot1data"
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 11,
-                                                "end": 15,
+                                                "start": 113,
+                                                "end": 117,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 26
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 30
+                                                    }
+                                                },
+                                                "range": [
+                                                    113,
+                                                    117
+                                                ],
                                                 "name": "name"
                                             },
                                             "computed": false,

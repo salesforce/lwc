@@ -65,8 +65,22 @@
                         "raw": "{text}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 5,
+                            "start": 19,
+                            "end": 23,
+                            "loc": {
+                                "start": {
+                                    "line": 2,
+                                    "column": 8
+                                },
+                                "end": {
+                                    "line": 2,
+                                    "column": 12
+                                }
+                            },
+                            "range": [
+                                19,
+                                23
+                            ],
                             "name": "text",
                             "location": {
                                 "startLine": 2,

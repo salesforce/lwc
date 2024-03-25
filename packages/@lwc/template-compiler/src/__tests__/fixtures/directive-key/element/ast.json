@@ -183,18 +183,60 @@
                                         "raw": "{item.value}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 11,
+                                            "start": 104,
+                                            "end": 114,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 32
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 42
+                                                }
+                                            },
+                                            "range": [
+                                                104,
+                                                114
+                                            ],
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 5,
+                                                "start": 104,
+                                                "end": 108,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 32
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 36
+                                                    }
+                                                },
+                                                "range": [
+                                                    104,
+                                                    108
+                                                ],
                                                 "name": "item"
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 6,
-                                                "end": 11,
+                                                "start": 109,
+                                                "end": 114,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 4,
+                                                        "column": 37
+                                                    },
+                                                    "end": {
+                                                        "line": 4,
+                                                        "column": 42
+                                                    }
+                                                },
+                                                "range": [
+                                                    109,
+                                                    114
+                                                ],
                                                 "name": "value"
                                             },
                                             "computed": false,

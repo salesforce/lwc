@@ -113,17 +113,33 @@
                 "children": [
                     {
                         "type": "Text",
-                        "raw": "const &#123; foo &#125; = bar;",
+                        "raw": "const &#123;",
                         "value": {
                             "type": "Literal",
-                            "value": "const { foo } = bar;"
+                            "value": "const {"
                         },
                         "location": {
                             "startLine": 3,
                             "startColumn": 8,
                             "endLine": 3,
-                            "endColumn": 38,
+                            "endColumn": 20,
                             "start": 41,
+                            "end": 53
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " foo &#125; = bar;",
+                        "value": {
+                            "type": "Literal",
+                            "value": " foo } = bar;"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 20,
+                            "endLine": 3,
+                            "endColumn": 38,
+                            "start": 53,
                             "end": 71
                         }
                     }

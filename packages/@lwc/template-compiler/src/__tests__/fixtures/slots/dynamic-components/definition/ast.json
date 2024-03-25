@@ -159,8 +159,22 @@
                                         "raw": "{defaultContent}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 15,
+                                            "start": 76,
+                                            "end": 90,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 4,
+                                                    "column": 16
+                                                },
+                                                "end": {
+                                                    "line": 4,
+                                                    "column": 30
+                                                }
+                                            },
+                                            "range": [
+                                                76,
+                                                90
+                                            ],
                                             "name": "defaultContent",
                                             "location": {
                                                 "startLine": 4,
