@@ -6,14 +6,14 @@
  */
 import { isNull, isString, isUndefined } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
-import { VBaseElement, VStaticPart } from '../vnodes';
+import { VBaseElement, VStaticPartElement } from '../vnodes';
 import { logError } from '../../shared/logger';
 import { VM } from '../vm';
 
 // The style property is a string when defined via an expression in the template.
 export function patchStyleAttribute(
-    oldVnode: VBaseElement | VStaticPart | null,
-    vnode: VBaseElement | VStaticPart,
+    oldVnode: VBaseElement | VStaticPartElement | null,
+    vnode: VBaseElement | VStaticPartElement,
     renderer: RendererAPI,
     owner: VM
 ) {

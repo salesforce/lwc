@@ -61,7 +61,7 @@ import {
     VNodeType,
     VBaseElement,
     isVFragment,
-    VStaticPart,
+    VStaticPartElement,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
@@ -133,7 +133,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VBaseElement | VStaticPart };
+export type RefVNodes = { [name: string]: VBaseElement | VStaticPartElement };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */

@@ -6,13 +6,14 @@
  */
 
 import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
-import { VStatic, VStaticPart } from '../vnodes';
+import { VStatic, VStaticPart, isVStaticPartElement, isVStaticPartText } from '../vnodes';
 import { RendererAPI } from '../renderer';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
 import { patchStyleAttribute } from './computed-style-attr';
 import { patchClassAttribute } from './computed-class-attr';
+import { patchTextVStaticPart } from './text';
 
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
@@ -102,13 +103,23 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
 
     // Currently only event listeners and refs are supported for static vnodes
     for (const part of parts) {
-        // Event listeners only need to be applied once when mounting
-        applyEventListeners(part, renderer);
-        // Refs must be updated after every render due to refVNodes getting reset before every render
-        applyRefs(part, owner);
-        patchAttributes(null, part, renderer);
-        patchClassAttribute(null, part, renderer);
-        patchStyleAttribute(null, part, renderer, owner);
+        if (isVStaticPartElement(part)) {
+            // Event listeners only need to be applied once when mounting
+            applyEventListeners(part, renderer);
+            // Refs must be updated after every render due to refVNodes getting reset before every render
+            applyRefs(part, owner);
+            patchAttributes(null, part, renderer);
+            patchClassAttribute(null, part, renderer);
+            patchStyleAttribute(null, part, renderer, owner);
+        } else if (isVStaticPartText(part)) {
+            patchTextVStaticPart(null, part, renderer);
+        } else {
+            if (process.env.NODE_ENV !== 'production') {
+                throw new Error(
+                    `LWC internal error, encountered unknown static part type: ${part.type}`
+                );
+            }
+        }
     }
 }
 
@@ -144,11 +155,21 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
         // Patch only occurs if the vnode is newly generated, which means the part.elm is always undefined
         // Since the vnode and elements are the same we can safely assume that prevParts[i].elm is defined.
         part.elm = prevPart.elm;
-        // Refs must be updated after every render due to refVNodes getting reset before every render
-        applyRefs(part, currPartsOwner);
-        patchAttributes(prevPart, part, renderer);
-        patchClassAttribute(prevPart, part, renderer);
-        patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
+        if (isVStaticPartElement(part) && isVStaticPartElement(prevPart)) {
+            // Refs must be updated after every render due to refVNodes getting reset before every render
+            applyRefs(part, currPartsOwner);
+            patchAttributes(prevPart, part, renderer);
+            patchClassAttribute(prevPart, part, renderer);
+            patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
+        } else if (isVStaticPartText(part) && isVStaticPartText(prevPart)) {
+            patchTextVStaticPart(prevPart, part, renderer);
+        } else {
+            if (process.env.NODE_ENV !== 'production') {
+                throw new Error(
+                    `LWC internal error, static part types do not match. Previous type was ${prevPart.type} and current type is ${part.type}`
+                );
+            }
+        }
     }
 }
 
@@ -171,9 +192,11 @@ export function hydrateStaticParts(vnode: VStatic, renderer: RendererAPI): void 
     // which guarantees that the elements are the same.
     // We only need to apply the parts for things that cannot be done on the server.
     for (const part of parts) {
-        // Event listeners only need to be applied once when mounting
-        applyEventListeners(part, renderer);
-        // Refs must be updated after every render due to refVNodes getting reset before every render
-        applyRefs(part, owner);
+        if (isVStaticPartElement(part)) {
+            // Event listeners only need to be applied once when mounting
+            applyEventListeners(part, renderer);
+            // Refs must be updated after every render due to refVNodes getting reset before every render
+            applyRefs(part, owner);
+        }
     }
 }

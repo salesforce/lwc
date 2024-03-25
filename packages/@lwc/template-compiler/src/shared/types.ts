@@ -184,8 +184,10 @@ export interface Element extends AbstractBaseElement {
 }
 
 export interface StaticElement extends Element {
-    children: (StaticElement | Text)[];
+    children: StaticChildNode[];
 }
+
+export type StaticChildNode = StaticElement | Text;
 
 export interface ExternalComponent extends AbstractBaseElement {
     type: 'ExternalComponent';
