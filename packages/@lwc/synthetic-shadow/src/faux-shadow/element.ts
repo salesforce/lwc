@@ -92,7 +92,7 @@ function shadowRootGetterPatched(this: Element): ShadowRoot | null {
 
 function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
     const owner = getNodeOwner(this);
-    const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+    const childNodes = getAllMatches(owner, getFilteredChildNodes(this));
     return createStaticHTMLCollection(
         ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
     );

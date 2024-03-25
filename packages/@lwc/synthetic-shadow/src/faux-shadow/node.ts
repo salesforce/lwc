@@ -173,7 +173,7 @@ function cloneNodePatched(this: Node, deep?: boolean): Node {
 function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
-        const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+        const childNodes = getAllMatches(owner, getFilteredChildNodes(this));
         return createStaticNodeList(childNodes);
     }
     // nothing to do here since this does not have a synthetic shadow attached to it
