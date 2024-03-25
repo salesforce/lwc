@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 3,
+            "endLine": 4,
             "endColumn": 12,
             "start": 0,
-            "end": 37,
+            "end": 102,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,16 +17,29 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 3,
+                "startLine": 4,
                 "startColumn": 1,
-                "endLine": 3,
+                "endLine": 4,
                 "endColumn": 12,
-                "start": 26,
-                "end": 37
+                "start": 91,
+                "end": 102
             }
         },
         "directives": [],
         "children": [
+            {
+                "type": "Comment",
+                "raw": " note expected behavior of using incorrect style tag ",
+                "value": " note expected behavior of using incorrect style tag ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 65,
+                    "start": 15,
+                    "end": 75
+                }
+            },
             {
                 "type": "Text",
                 "raw": "</style>",
@@ -35,12 +48,12 @@
                     "value": "</style>"
                 },
                 "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
-                    "endLine": 3,
+                    "startLine": 2,
+                    "startColumn": 65,
+                    "endLine": 4,
                     "endColumn": 1,
-                    "start": 10,
-                    "end": 26
+                    "start": 75,
+                    "end": 91
                 }
             },
             {
@@ -52,21 +65,21 @@
                     "end": 5,
                     "name": "text",
                     "location": {
-                        "startLine": 1,
-                        "startColumn": 11,
-                        "endLine": 3,
+                        "startLine": 2,
+                        "startColumn": 65,
+                        "endLine": 4,
                         "endColumn": 1,
-                        "start": 10,
-                        "end": 26
+                        "start": 75,
+                        "end": 91
                     }
                 },
                 "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
-                    "endLine": 3,
+                    "startLine": 2,
+                    "startColumn": 65,
+                    "endLine": 4,
                     "endColumn": 1,
-                    "start": 10,
-                    "end": 26
+                    "start": 75,
+                    "end": 91
                 }
             }
         ]
