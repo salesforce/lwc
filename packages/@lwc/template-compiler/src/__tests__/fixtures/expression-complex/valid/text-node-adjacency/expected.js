@@ -8,35 +8,39 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(2, {
-        text: api_dynamic_text($cmp.noSpace),
-      }),
-      api_static_part(4, {
-        text: api_dynamic_text($cmp.spaceRight) + " ",
-      }),
-      api_static_part(6, {
-        text: " " + api_dynamic_text($cmp.spaceLeft),
-      }),
-      api_static_part(8, {
-        text: api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two),
-      }),
-      api_static_part(10, {
-        text: " " + api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two),
-      }),
-      api_static_part(12, {
-        text: api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two) + " ",
-      }),
-      api_static_part(14, {
-        text: api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two),
-      }),
-      api_static_part(16, {
-        text:
-          " " + api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two),
-      }),
-      api_static_part(18, {
-        text:
-          api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two) + " ",
-      }),
+      api_static_part(2, null, api_dynamic_text($cmp.noSpace)),
+      api_static_part(4, null, api_dynamic_text($cmp.spaceRight) + " "),
+      api_static_part(6, null, " " + api_dynamic_text($cmp.spaceLeft)),
+      api_static_part(
+        8,
+        null,
+        api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two)
+      ),
+      api_static_part(
+        10,
+        null,
+        " " + api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two)
+      ),
+      api_static_part(
+        12,
+        null,
+        api_dynamic_text($cmp.one) + api_dynamic_text($cmp.two) + " "
+      ),
+      api_static_part(
+        14,
+        null,
+        api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)
+      ),
+      api_static_part(
+        16,
+        null,
+        " " + api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two)
+      ),
+      api_static_part(
+        18,
+        null,
+        api_dynamic_text($cmp.one) + " " + api_dynamic_text($cmp.two) + " "
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

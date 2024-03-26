@@ -9,23 +9,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(2, {
-        text: api_dynamic_text($cmp.soloGrandChild),
-      }),
+      api_static_part(2, null, api_dynamic_text($cmp.soloGrandChild)),
     ]),
     api_static_fragment($fragment2, 3, [
-      api_static_part(2, {
-        text: api_dynamic_text($cmp.grandChildFirstSibling),
-      }),
-      api_static_part(8, {
-        text: api_dynamic_text($cmp.grandChildSecondSibling),
-      }),
-      api_static_part(16, {
-        text: api_dynamic_text($cmp.grandChildLastSibling),
-      }),
-      api_static_part(18, {
-        text: "concatenate the " + api_dynamic_text($cmp.string) + " value",
-      }),
+      api_static_part(2, null, api_dynamic_text($cmp.grandChildFirstSibling)),
+      api_static_part(8, null, api_dynamic_text($cmp.grandChildSecondSibling)),
+      api_static_part(16, null, api_dynamic_text($cmp.grandChildLastSibling)),
+      api_static_part(
+        18,
+        null,
+        "concatenate the " + api_dynamic_text($cmp.string) + " value"
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

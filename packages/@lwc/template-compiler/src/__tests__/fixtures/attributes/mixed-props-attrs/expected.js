@@ -67,9 +67,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ]),
     api_static_fragment($fragment2, 7),
     api_static_fragment($fragment3, 9, [
-      api_static_part(0, {
-        className: $cmp.foo,
-      }),
+      api_static_part(
+        0,
+        {
+          className: $cmp.foo,
+        },
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

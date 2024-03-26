@@ -21,9 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return [
           api_comment(" color "),
           api_static_fragment($fragment1, api_key(2, color), [
-            api_static_part(1, {
-              text: api_dynamic_text(color),
-            }),
+            api_static_part(1, null, api_dynamic_text(color)),
           ]),
         ];
       })

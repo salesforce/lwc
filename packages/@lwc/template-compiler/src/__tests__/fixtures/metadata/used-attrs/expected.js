@@ -8,9 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(2, {
-        text: api_dynamic_text($cmp.obj.sub),
-      }),
+      api_static_part(2, null, api_dynamic_text($cmp.obj.sub)),
     ]),
   ];
   /*LWC compiler vX.X.X*/

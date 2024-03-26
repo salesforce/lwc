@@ -18,25 +18,29 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           [
             api_text(api_dynamic_text($cmp.firstOutterSibling)),
             api_static_fragment($fragment1, 2, [
-              api_static_part(1, {
-                text: api_dynamic_text($cmp.solo),
-              }),
+              api_static_part(1, null, api_dynamic_text($cmp.solo)),
             ]),
             api_static_fragment($fragment2, 4, [
-              api_static_part(1, {
-                text: api_dynamic_text($cmp.firstInnerSibling),
-              }),
+              api_static_part(
+                1,
+                null,
+                api_dynamic_text($cmp.firstInnerSibling)
+              ),
             ]),
             api_text(api_dynamic_text($cmp.centerOutterSibling)),
             api_static_fragment($fragment3, 6, [
-              api_static_part(3, {
-                text: api_dynamic_text($cmp.secondInnerSibling),
-              }),
+              api_static_part(
+                3,
+                null,
+                api_dynamic_text($cmp.secondInnerSibling)
+              ),
             ]),
             api_static_fragment($fragment4, 8, [
-              api_static_part(3, {
-                text: api_dynamic_text($cmp.middleInnerSibling),
-              }),
+              api_static_part(
+                3,
+                null,
+                api_dynamic_text($cmp.middleInnerSibling)
+              ),
             ]),
             api_text(api_dynamic_text($cmp.lastOutterSibling)),
           ],

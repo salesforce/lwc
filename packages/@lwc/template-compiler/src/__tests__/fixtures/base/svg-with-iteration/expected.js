@@ -18,14 +18,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_iterator($cmp.lines, function (line) {
         return api_static_fragment($fragment1, api_key(2, line.key), [
-          api_static_part(0, {
-            attrs: {
-              x1: line.x1,
-              y1: line.y1,
-              x2: line.x2,
-              y2: line.y2,
+          api_static_part(
+            0,
+            {
+              attrs: {
+                x1: line.x1,
+                y1: line.y1,
+                x2: line.x2,
+                y2: line.y2,
+              },
             },
-          }),
+            null
+          ),
         ]);
       })
     ),

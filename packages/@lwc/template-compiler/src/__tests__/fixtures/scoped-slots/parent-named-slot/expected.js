@@ -22,9 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           key,
           [
             api_static_fragment($fragment1, 2, [
-              api_static_part(1, {
-                text: api_dynamic_text(slot1data.name),
-              }),
+              api_static_part(1, null, api_dynamic_text(slot1data.name)),
             ]),
           ],
           0
@@ -35,9 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           key,
           [
             api_static_fragment($fragment2, 4, [
-              api_static_part(1, {
-                text: api_dynamic_text(slot2data.title),
-              }),
+              api_static_part(1, null, api_dynamic_text(slot2data.title)),
             ]),
           ],
           0
@@ -48,9 +44,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           key,
           [
             api_static_fragment($fragment3, 6, [
-              api_static_part(1, {
-                text: api_dynamic_text(defaultdata.title),
-              }),
+              api_static_part(1, null, api_dynamic_text(defaultdata.title)),
             ]),
           ],
           0

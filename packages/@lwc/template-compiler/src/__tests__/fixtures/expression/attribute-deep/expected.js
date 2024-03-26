@@ -4,9 +4,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(1, {
-        className: $cmp.bar.foo.baz,
-      }),
+      api_static_part(
+        1,
+        {
+          className: $cmp.bar.foo.baz,
+        },
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

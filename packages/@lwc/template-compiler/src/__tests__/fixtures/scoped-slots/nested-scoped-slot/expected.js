@@ -41,14 +41,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       key,
                       [
                         api_static_fragment($fragment1, 3, [
-                          api_static_part(1, {
-                            text:
-                              "Coordinates: " +
+                          api_static_part(
+                            1,
+                            null,
+                            "Coordinates: " +
                               api_dynamic_text(row.number) +
                               " - " +
                               api_dynamic_text(column.number) +
-                              " ",
-                          }),
+                              " "
+                          ),
                         ]),
                       ],
                       0

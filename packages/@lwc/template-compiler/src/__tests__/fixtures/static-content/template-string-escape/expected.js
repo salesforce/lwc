@@ -27,16 +27,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment7, 13),
     api_static_fragment($fragment8, 15),
     api_static_fragment($fragment9, 17, [
-      api_static_part(1, {
-        text: "Escape $" + api_dynamic_text($cmp.me),
-      }),
+      api_static_part(1, null, "Escape $" + api_dynamic_text($cmp.me)),
     ]),
     api_static_fragment($fragment10, 19),
     api_static_fragment($fragment11, 21),
     api_static_fragment($fragment12, 23, [
-      api_static_part(1, {
-        text: "Escape $" + api_dynamic_text($cmp.me),
-      }),
+      api_static_part(1, null, "Escape $" + api_dynamic_text($cmp.me)),
     ]),
   ];
   /*LWC compiler vX.X.X*/

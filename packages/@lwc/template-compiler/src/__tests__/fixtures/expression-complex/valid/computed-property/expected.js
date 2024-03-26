@@ -10,19 +10,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0, _m1 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        on: {
-          click: _m1 || ($ctx._m1 = api_bind($cmp.bar.arr[$cmp.baz])),
+      api_static_part(
+        0,
+        {
+          on: {
+            click: _m1 || ($ctx._m1 = api_bind($cmp.bar.arr[$cmp.baz])),
+          },
         },
-      }),
-      api_static_part(1, {
-        text:
-          api_dynamic_text($cmp.bar.arr[$cmp.baz]) +
+        null
+      ),
+      api_static_part(
+        1,
+        null,
+        api_dynamic_text($cmp.bar.arr[$cmp.baz]) +
           " " +
           api_dynamic_text($cmp.bar.baz.arr[$cmp.quux]) +
           " " +
-          api_dynamic_text($cmp.bar.arr[$cmp.baz.quux]),
-      }),
+          api_dynamic_text($cmp.bar.arr[$cmp.baz.quux])
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

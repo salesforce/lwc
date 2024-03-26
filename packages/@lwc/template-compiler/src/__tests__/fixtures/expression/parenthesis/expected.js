@@ -12,29 +12,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.foo),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.foo)),
     ]),
     api_static_fragment($fragment2, 3, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.foo),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.foo)),
     ]),
     api_static_fragment($fragment3, 5, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.foo.bar),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
     ]),
     api_static_fragment($fragment4, 7, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.foo.bar),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
     ]),
     api_static_fragment($fragment5, 9, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.foo.bar),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
     ]),
   ];
   /*LWC compiler vX.X.X*/

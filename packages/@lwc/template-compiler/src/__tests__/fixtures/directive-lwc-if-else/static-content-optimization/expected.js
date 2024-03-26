@@ -21,17 +21,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_static_fragment($fragment1, 2, [
-              api_static_part(0, {
-                attrs: {
-                  "data-dynamic": $cmp.insideIf,
+              api_static_part(
+                0,
+                {
+                  attrs: {
+                    "data-dynamic": $cmp.insideIf,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
             api_static_fragment($fragment2, 4),
             api_static_fragment($fragment3, 6, [
-              api_static_part(1, {
-                text: "concatenated " + api_dynamic_text($cmp.insideIf),
-              }),
+              api_static_part(
+                1,
+                null,
+                "concatenated " + api_dynamic_text($cmp.insideIf)
+              ),
             ]),
           ],
           0
@@ -41,17 +47,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_static_fragment($fragment4, 8, [
-              api_static_part(0, {
-                attrs: {
-                  "data-dynamic": $cmp.insideElseIf,
+              api_static_part(
+                0,
+                {
+                  attrs: {
+                    "data-dynamic": $cmp.insideElseIf,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
             api_static_fragment($fragment5, 10),
             api_static_fragment($fragment6, 12, [
-              api_static_part(1, {
-                text: "concatenated " + api_dynamic_text($cmp.insideElseIf),
-              }),
+              api_static_part(
+                1,
+                null,
+                "concatenated " + api_dynamic_text($cmp.insideElseIf)
+              ),
             ]),
           ],
           0
@@ -60,17 +72,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0,
           [
             api_static_fragment($fragment7, 14, [
-              api_static_part(0, {
-                attrs: {
-                  "data-dynamic": $cmp.insideElse,
+              api_static_part(
+                0,
+                {
+                  attrs: {
+                    "data-dynamic": $cmp.insideElse,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
             api_static_fragment($fragment8, 16),
             api_static_fragment($fragment9, 18, [
-              api_static_part(1, {
-                text: "concatenated " + api_dynamic_text($cmp.insideElse),
-              }),
+              api_static_part(
+                1,
+                null,
+                "concatenated " + api_dynamic_text($cmp.insideElse)
+              ),
             ]),
           ],
           0

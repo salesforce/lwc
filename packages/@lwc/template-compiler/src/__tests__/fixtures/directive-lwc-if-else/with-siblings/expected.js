@@ -31,30 +31,46 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_text("Conditional Text"),
             api_static_fragment($fragment1, 2),
             api_static_fragment($fragment2, 4, [
-              api_static_part(0, {
-                attrs: {
-                  "data-dynamic": $cmp.dynamic,
+              api_static_part(
+                0,
+                {
+                  attrs: {
+                    "data-dynamic": $cmp.dynamic,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
             api_static_fragment($fragment3, 6, [
-              api_static_part(0, {
-                className: $cmp.dynamicClass,
-              }),
+              api_static_part(
+                0,
+                {
+                  className: $cmp.dynamicClass,
+                },
+                null
+              ),
             ]),
             api_static_fragment($fragment4, 8, [
-              api_static_part(0, {
-                style: $cmp.dynamicStyle,
-              }),
+              api_static_part(
+                0,
+                {
+                  style: $cmp.dynamicStyle,
+                },
+                null
+              ),
             ]),
             api_static_fragment($fragment5, 10, [
-              api_static_part(0, {
-                className: $cmp.dynamicClass,
-                style: $cmp.dynamicStyle,
-                attrs: {
-                  "data-dynamic": $cmp.dynamic,
+              api_static_part(
+                0,
+                {
+                  className: $cmp.dynamicClass,
+                  style: $cmp.dynamicStyle,
+                  attrs: {
+                    "data-dynamic": $cmp.dynamic,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
           ],
           0
@@ -65,30 +81,46 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_static_fragment($fragment6, 12),
             api_static_fragment($fragment7, 14),
             api_static_fragment($fragment8, 16, [
-              api_static_part(0, {
-                attrs: {
-                  "data-dynamic": $cmp.dynamic,
+              api_static_part(
+                0,
+                {
+                  attrs: {
+                    "data-dynamic": $cmp.dynamic,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
             api_static_fragment($fragment9, 18, [
-              api_static_part(0, {
-                className: $cmp.dynamicClass,
-              }),
+              api_static_part(
+                0,
+                {
+                  className: $cmp.dynamicClass,
+                },
+                null
+              ),
             ]),
             api_static_fragment($fragment10, 20, [
-              api_static_part(0, {
-                style: $cmp.dynamicStyle,
-              }),
+              api_static_part(
+                0,
+                {
+                  style: $cmp.dynamicStyle,
+                },
+                null
+              ),
             ]),
             api_static_fragment($fragment11, 22, [
-              api_static_part(0, {
-                className: $cmp.dynamicClass,
-                style: $cmp.dynamicStyle,
-                attrs: {
-                  "data-dynamic": $cmp.dynamic,
+              api_static_part(
+                0,
+                {
+                  className: $cmp.dynamicClass,
+                  style: $cmp.dynamicStyle,
+                  attrs: {
+                    "data-dynamic": $cmp.dynamic,
+                  },
                 },
-              }),
+                null
+              ),
             ]),
           ],
           0
@@ -96,30 +128,46 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment12, 24),
     api_static_fragment($fragment13, 26),
     api_static_fragment($fragment14, 28, [
-      api_static_part(0, {
-        attrs: {
-          "data-dynamic": $cmp.dynamic,
+      api_static_part(
+        0,
+        {
+          attrs: {
+            "data-dynamic": $cmp.dynamic,
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_static_fragment($fragment15, 30, [
-      api_static_part(0, {
-        className: $cmp.dynamicClass,
-      }),
+      api_static_part(
+        0,
+        {
+          className: $cmp.dynamicClass,
+        },
+        null
+      ),
     ]),
     api_static_fragment($fragment16, 32, [
-      api_static_part(0, {
-        style: $cmp.dynamicStyle,
-      }),
+      api_static_part(
+        0,
+        {
+          style: $cmp.dynamicStyle,
+        },
+        null
+      ),
     ]),
     api_static_fragment($fragment17, 34, [
-      api_static_part(0, {
-        className: $cmp.dynamicClass,
-        style: $cmp.dynamicStyle,
-        attrs: {
-          "data-dynamic": $cmp.dynamic,
+      api_static_part(
+        0,
+        {
+          className: $cmp.dynamicClass,
+          style: $cmp.dynamicStyle,
+          attrs: {
+            "data-dynamic": $cmp.dynamic,
+          },
         },
-      }),
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

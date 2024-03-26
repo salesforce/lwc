@@ -20,14 +20,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_iterator($cmp.items, function (item) {
         return [
           api_static_fragment($fragment1, api_key(2, item.keyOne), [
-            api_static_part(1, {
-              text: "1" + api_dynamic_text(item),
-            }),
+            api_static_part(1, null, "1" + api_dynamic_text(item)),
           ]),
           api_static_fragment($fragment2, api_key(4, item.keyTwo), [
-            api_static_part(1, {
-              text: "2" + api_dynamic_text(item),
-            }),
+            api_static_part(1, null, "2" + api_dynamic_text(item)),
           ]),
         ];
       })

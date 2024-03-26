@@ -24,18 +24,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           last: xLast,
         };
         return api_static_fragment($fragment1, api_key(2, x.value.id), [
-          api_static_part(0, {
-            attrs: {
-              "data-islast": x.last,
-              "data-isfirst": x.first,
+          api_static_part(
+            0,
+            {
+              attrs: {
+                "data-islast": x.last,
+                "data-isfirst": x.first,
+              },
             },
-          }),
-          api_static_part(2, {
-            text: "Row: " + api_dynamic_text(x.index),
-          }),
-          api_static_part(3, {
-            text: ". Value: " + api_dynamic_text(x.value),
-          }),
+            null
+          ),
+          api_static_part(2, null, "Row: " + api_dynamic_text(x.index)),
+          api_static_part(3, null, ". Value: " + api_dynamic_text(x.value)),
         ]);
       })
     ),

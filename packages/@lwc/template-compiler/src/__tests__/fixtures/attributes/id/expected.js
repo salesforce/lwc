@@ -67,27 +67,39 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       key: 6,
     }),
     api_static_fragment($fragment1, 8, [
-      api_static_part(0, {
-        attrs: {
-          id: api_scoped_id($cmp.computed),
+      api_static_part(
+        0,
+        {
+          attrs: {
+            id: api_scoped_id($cmp.computed),
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_iterator($cmp.things, function (thing) {
       return [
         api_static_fragment($fragment2, api_key(10, thing.key), [
-          api_static_part(0, {
-            attrs: {
-              id: api_scoped_id(thing.id),
+          api_static_part(
+            0,
+            {
+              attrs: {
+                id: api_scoped_id(thing.id),
+              },
             },
-          }),
+            null
+          ),
         ]),
         api_static_fragment($fragment3, api_key(12, thing.key), [
-          api_static_part(0, {
-            attrs: {
-              "aria-describedby": api_scoped_id(thing.id),
+          api_static_part(
+            0,
+            {
+              attrs: {
+                "aria-describedby": api_scoped_id(thing.id),
+              },
             },
-          }),
+            null
+          ),
         ]),
       ];
     }),

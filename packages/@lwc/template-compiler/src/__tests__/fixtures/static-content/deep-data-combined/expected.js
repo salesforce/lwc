@@ -10,32 +10,36 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0, _m1 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(4, {
-        on: {
-          click: _m0 || ($ctx._m0 = api_bind($cmp.onClickBaz)),
+      api_static_part(
+        4,
+        {
+          on: {
+            click: _m0 || ($ctx._m0 = api_bind($cmp.onClickBaz)),
+          },
+          ref: "foo",
+          style: $cmp.fooStyle,
+          attrs: {
+            "data-name": $cmp.foo,
+          },
         },
-        ref: "foo",
-        style: $cmp.fooStyle,
-        attrs: {
-          "data-name": $cmp.foo,
+        null
+      ),
+      api_static_part(5, null, "dynamic text " + api_dynamic_text($cmp.foo)),
+      api_static_part(
+        6,
+        {
+          on: {
+            click: _m1 || ($ctx._m1 = api_bind($cmp.onClickQuux)),
+          },
+          ref: "bar",
+          style: $cmp.barStyle,
+          attrs: {
+            "data-name": $cmp.bar,
+          },
         },
-      }),
-      api_static_part(5, {
-        text: "dynamic text " + api_dynamic_text($cmp.foo),
-      }),
-      api_static_part(6, {
-        on: {
-          click: _m1 || ($ctx._m1 = api_bind($cmp.onClickQuux)),
-        },
-        ref: "bar",
-        style: $cmp.barStyle,
-        attrs: {
-          "data-name": $cmp.bar,
-        },
-      }),
-      api_static_part(7, {
-        text: "dynamic text " + api_dynamic_text($cmp.bar),
-      }),
+        null
+      ),
+      api_static_part(7, null, "dynamic text " + api_dynamic_text($cmp.bar)),
     ]),
   ];
   /*LWC compiler vX.X.X*/

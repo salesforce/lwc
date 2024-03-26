@@ -21,9 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         stc1,
         [
           api_static_fragment($fragment1, "@:3", [
-            api_static_part(1, {
-              text: api_dynamic_text($cmp.defaultContent),
-            }),
+            api_static_part(1, null, api_dynamic_text($cmp.defaultContent)),
           ]),
         ],
         $slotset

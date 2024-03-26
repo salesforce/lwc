@@ -22,12 +22,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           $fragment1,
           api_key(1, feature.value.label),
           [
-            api_static_part(1, {
-              text:
-                api_dynamic_text(feature.value.label) +
+            api_static_part(
+              1,
+              null,
+              api_dynamic_text(feature.value.label) +
                 " " +
-                api_dynamic_text(feature.label),
-            }),
+                api_dynamic_text(feature.label)
+            ),
           ]
         );
       }

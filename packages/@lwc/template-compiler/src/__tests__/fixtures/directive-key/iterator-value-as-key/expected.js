@@ -24,9 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           last: xLast,
         };
         return api_static_fragment($fragment1, api_key(2, x.value), [
-          api_static_part(1, {
-            text: api_dynamic_text(x.value),
-          }),
+          api_static_part(1, null, api_dynamic_text(x.value)),
         ]);
       })
     ),

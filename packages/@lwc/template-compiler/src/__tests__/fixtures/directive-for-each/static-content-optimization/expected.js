@@ -18,27 +18,39 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_iterator($cmp.items, function (item) {
         return api_static_fragment($fragment1, api_key(2, item.key), [
-          api_static_part(1, {
-            attrs: {
-              "data-dynamic": $cmp.foo,
+          api_static_part(
+            1,
+            {
+              attrs: {
+                "data-dynamic": $cmp.foo,
+              },
             },
-          }),
-          api_static_part(3, {
-            style: $cmp.baaz,
-          }),
-          api_static_part(6, {
-            text: "concatenated text " + api_dynamic_text(item.text),
-          }),
-          api_static_part(7, {
-            style: $cmp.baaz,
-            className: $cmp.bar,
-            attrs: {
-              "data-dynamic": $cmp.foo,
+            null
+          ),
+          api_static_part(
+            3,
+            {
+              style: $cmp.baaz,
             },
-          }),
-          api_static_part(8, {
-            text: api_dynamic_text(item.text),
-          }),
+            null
+          ),
+          api_static_part(
+            6,
+            null,
+            "concatenated text " + api_dynamic_text(item.text)
+          ),
+          api_static_part(
+            7,
+            {
+              style: $cmp.baaz,
+              className: $cmp.bar,
+              attrs: {
+                "data-dynamic": $cmp.foo,
+              },
+            },
+            null
+          ),
+          api_static_part(8, null, api_dynamic_text(item.text)),
         ]);
       })
     ),

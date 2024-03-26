@@ -14,33 +14,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_text(api_dynamic_text($cmp.firstOutterSibling)),
     api_static_fragment($fragment1, 1, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.solo),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.solo)),
     ]),
     api_static_fragment($fragment2, 3, [
-      api_static_part(1, {
-        text: api_dynamic_text($cmp.firstInnerSibling),
-      }),
+      api_static_part(1, null, api_dynamic_text($cmp.firstInnerSibling)),
     ]),
     api_text(api_dynamic_text($cmp.centerOutterSibling)),
     api_static_fragment($fragment3, 5, [
-      api_static_part(3, {
-        text: api_dynamic_text($cmp.secondInnerSibling),
-      }),
+      api_static_part(3, null, api_dynamic_text($cmp.secondInnerSibling)),
     ]),
     api_static_fragment($fragment4, 7, [
-      api_static_part(3, {
-        text: api_dynamic_text($cmp.middleInnerSibling),
-      }),
+      api_static_part(3, null, api_dynamic_text($cmp.middleInnerSibling)),
     ]),
     api_static_fragment($fragment5, 9, [
-      api_static_part(1, {
-        text:
-          "String concat " +
-          api_dynamic_text($cmp.middleInnerSibling) +
-          " value",
-      }),
+      api_static_part(
+        1,
+        null,
+        "String concat " + api_dynamic_text($cmp.middleInnerSibling) + " value"
+      ),
     ]),
     api_text(api_dynamic_text($cmp.lastOutterSibling)),
   ];

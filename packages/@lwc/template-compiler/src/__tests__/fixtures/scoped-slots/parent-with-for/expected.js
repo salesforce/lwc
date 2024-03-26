@@ -26,17 +26,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key,
             [
               api_static_fragment($fragment1, 2, [
-                api_static_part(1, {
-                  text: api_dynamic_text(parentItem),
-                }),
+                api_static_part(1, null, api_dynamic_text(parentItem)),
               ]),
               api_static_fragment($fragment2, 4, [
-                api_static_part(1, {
-                  text:
-                    api_dynamic_text(item.id) +
+                api_static_part(
+                  1,
+                  null,
+                  api_dynamic_text(item.id) +
                     " - " +
-                    api_dynamic_text(item.name),
-                }),
+                    api_dynamic_text(item.name)
+                ),
               ]),
             ],
             0
