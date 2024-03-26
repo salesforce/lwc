@@ -82,10 +82,10 @@ const {
  * @param predicate A function to execute for each element of the array.
  * @returns Whether all elements in the array pass the test provided by the predicate.
  */
-function arrayEvery<T>(
-    arr: unknown[],
-    predicate: (value: any, index: number, array: typeof arr) => value is T
-): arr is T[] {
+function arrayEvery<S extends T, T = unknown>(
+    arr: readonly T[],
+    predicate: (value: any, index: number, array: readonly T[]) => value is S
+): arr is readonly S[] {
     return ArrayEvery.call(arr, predicate);
 }
 
