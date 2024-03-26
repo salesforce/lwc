@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -40,6 +40,7 @@ import {
     isVScopedSlotFragment,
     isVStatic,
     Key,
+    MutableVNodes,
     VComment,
     VCustomElement,
     VElement,
@@ -375,7 +376,7 @@ function i(
     iterable: Iterable<any>,
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
-    const list: VNodes = [];
+    const list: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
     const vmBeingRendered = getVMBeingRendered();
@@ -427,7 +428,8 @@ function i(
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
-            ArrayPush.call(list, vnode);
+            // `isArray` doesn't properly narrow this block properly...
+            ArrayPush.call(list, vnode as VNode | null);
         }
 
         if (process.env.NODE_ENV !== 'production') {
@@ -466,20 +468,25 @@ function i(
  * [f]lattening
  * @param items
  */
-function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
+function f(items: ReadonlyArray<ReadonlyArray<VNodes> | VNodes>): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
     const len = items.length;
-    const flattened: VNodes = [];
+    const flattened: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
-        if (isArray(item)) {
-            ArrayPush.apply(flattened, item);
-        } else {
-            ArrayPush.call(flattened, item);
+        const innerLen = items[j].length;
+        for (let k = 0; k < innerLen; k += 1) {
+            const vnodeOrArray = item[k];
+            if (isArray(vnodeOrArray)) {
+                ArrayPush.apply(flattened, vnodeOrArray);
+            } else {
+                // `isArray` doesn't narrow this block properly...
+                ArrayPush.call(flattened, vnodeOrArray as VNode | null);
+            }
         }
     }
     return flattened;
