@@ -664,7 +664,6 @@ export default class CodeGen {
                 );
 
                 setPartIdText(concatenatedText);
-                // addPartIdProp(t.property(t.identifier('text'), concatenatedText));
             } else if (isElement(current)) {
                 const elm = current;
                 const databag = [];
