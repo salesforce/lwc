@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import type { FormRestoreReason, FormRestoreState } from '@lwc/engine-core';
+
 /**
  * Lightning Web Components core module
  */
@@ -163,6 +165,12 @@ declare module 'lwc' {
          * ```
          */
         static get CustomElementConstructor(): typeof HTMLElement;
+
+        /**
+         * Set to true to designate this component as a Form-Associated Custom Element (FACE).
+         * @see https://web.dev/articles/more-capable-form-controls#form-associated_custom_elements
+         */
+        static formAssociated?: boolean;
         /**
          * Called when the element is inserted in a document
          */
@@ -179,6 +187,30 @@ declare module 'lwc' {
          * Called when a descendant component throws an error in one of its lifecycle hooks
          */
         errorCallback(error: Error, stack: string): void;
+        /**
+         * Called when a Form-Associated Custom Element (FACE) is associated with an HTMLFormElement.
+         * @param form HTMLFormElement - the associated form element
+         * @see https://web.dev/articles/more-capable-form-controls#void_formassociatedcallbackform
+         */
+        formAssociatedCallback(form: HTMLFormElement | null): void;
+        /**
+         * Called when a Form-Associated Custom Element (FACE) has a disabled state that has changed.
+         * @param disabled boolean - the new disabled state
+         * @see https://web.dev/articles/more-capable-form-controls#void_formdisabledcallbackdisabled
+         */
+        formDisabledCallback(disabled: boolean): void;
+        /**
+         * Called when a Form-Associated Custom Element (FACE) has an associated form that is reset.
+         * @see https://web.dev/articles/more-capable-form-controls#void_formresetcallback
+         */
+        formResetCallback(): void;
+        /**
+         * Called when a Form-Associated Custom Element (FACE) has an associated form that is restored.
+         * @param state FormRestoreState - the state of the form during restoration
+         * @param reason FormRestoreReason - the reason the form was restored
+         * @see https://web.dev/articles/more-capable-form-controls#void_formstaterestorecallbackstate_mode
+         */
+        formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason): void;
 
         readonly template: ShadowRootTheGoodPart;
         readonly shadowRoot: null;
