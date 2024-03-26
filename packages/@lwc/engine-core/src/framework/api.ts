@@ -436,7 +436,6 @@ function i(
                 // Check that the child vnode is either an element or VStatic
                 if (
                     !isNull(childVnode) &&
-                    isObject(childVnode) &&
                     (isVBaseElement(childVnode) || isVStatic(childVnode))
                 ) {
                     const { key } = childVnode;
