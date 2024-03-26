@@ -434,10 +434,7 @@ function i(
             const vnodes = isArray(vnode) ? vnode : [vnode];
             forEach.call(vnodes, (childVnode: VNode | null) => {
                 // Check that the child vnode is either an element or VStatic
-                if (
-                    !isNull(childVnode) &&
-                    (isVBaseElement(childVnode) || isVStatic(childVnode))
-                ) {
+                if (!isNull(childVnode) && (isVBaseElement(childVnode) || isVStatic(childVnode))) {
                     const { key } = childVnode;
                     const tagName =
                         childVnode.sel ?? StringToLowerCase.call(childVnode.fragment.tagName);
