@@ -123,6 +123,7 @@ const browserExpressionSerializer = (partToken: string, classAttrToken: string) 
         case STATIC_PART_TOKEN_ID.CLASS:
             return classAttrToken;
         case STATIC_PART_TOKEN_ID.TEXT:
+            // Using a single space here gives us a single empty text node
             return ' ';
         default:
             return '';

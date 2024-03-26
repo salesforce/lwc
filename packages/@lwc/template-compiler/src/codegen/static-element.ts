@@ -196,7 +196,8 @@ export function transformStaticChildren(elm: StaticElement) {
                     // When there is an expression in the source, the text nodes are split into contiguous text nodes.
                     // When there is no expression in the source, the text will appear as a single text literal.
                     // We normalize all of the contiguous text nodes or single text expression to an array.
-                    // Single text literal nodes remain text nodes.
+                    // Single text literal nodes (no expression or are not part of a contiguous set of text nodes) remain text nodes
+                    // and will not be consolidated to an array.
                     // This is to normalize the traversal behavior when creating static parts and when serializing
                     // the elements.
                     contiguousTextNodes = [current];
@@ -213,5 +214,7 @@ export function transformStaticChildren(elm: StaticElement) {
 }
 
 // Dynamic text is consolidated from individual text arrays into a single Text[].
+// Static text = a single text literal node (not in an array).
+// Dynamic text = At least 1 text expression node + 0 or more text literal nodes (always in an array).
 export const isDynamicText = (nodes: StaticChildNode | StaticChildNode[]): nodes is Text[] =>
     isArray(nodes) && ArrayEvery.call(nodes, isText);

@@ -6,7 +6,13 @@
  */
 
 import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
-import { VStatic, VStaticPart, isVStaticPartElement, isVStaticPartText } from '../vnodes';
+import {
+    VStatic,
+    VStaticPart,
+    VStaticPartText,
+    isVStaticPartElement,
+    isVStaticPartText,
+} from '../vnodes';
 import { RendererAPI } from '../renderer';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
@@ -111,14 +117,13 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
             patchAttributes(null, part, renderer);
             patchClassAttribute(null, part, renderer);
             patchStyleAttribute(null, part, renderer, owner);
-        } else if (isVStaticPartText(part)) {
-            patchTextVStaticPart(null, part, renderer);
         } else {
-            if (process.env.NODE_ENV !== 'production') {
+            if (process.env.NODE_ENV !== 'production' && !isVStaticPartText(part)) {
                 throw new Error(
                     `LWC internal error, encountered unknown static part type: ${part.type}`
                 );
             }
+            patchTextVStaticPart(null, part as VStaticPartText, renderer);
         }
     }
 }
@@ -161,14 +166,13 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
             patchAttributes(prevPart, part, renderer);
             patchClassAttribute(prevPart, part, renderer);
             patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
-        } else if (isVStaticPartText(part) && isVStaticPartText(prevPart)) {
-            patchTextVStaticPart(prevPart, part, renderer);
         } else {
-            if (process.env.NODE_ENV !== 'production') {
+            if (process.env.NODE_ENV !== 'production' && !isVStaticPartText(prevPart)) {
                 throw new Error(
                     `LWC internal error, static part types do not match. Previous type was ${prevPart.type} and current type is ${part.type}`
                 );
             }
+            patchTextVStaticPart(null, part as VStaticPartText, renderer);
         }
     }
 }

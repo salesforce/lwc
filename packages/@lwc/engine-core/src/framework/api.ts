@@ -53,7 +53,6 @@ import {
     VStaticPart,
     VStaticPartData,
     VStaticPartType,
-    VStaticText,
     VText,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
@@ -65,10 +64,9 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]tatic [p]art
-function sp(partId: number, content: VStaticPartData & VStaticText): VStaticPart {
+function sp(partId: number, data: VStaticPartData | null, text: string | null): VStaticPart {
     // Static part will always have either text or data, it's guaranteed by the compiler.
-    const { text, ...data } = content;
-    const type = isUndefined(text) ? VStaticPartType.Element : VStaticPartType.Text;
+    const type = isNull(text) ? VStaticPartType.Element : VStaticPartType.Text;
     return {
         type,
         partId,

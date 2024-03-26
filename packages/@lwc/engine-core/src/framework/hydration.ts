@@ -52,7 +52,7 @@ import {
     VElementData,
     VStaticPartData,
     VStaticPartText,
-    isVStaticPartText,
+    isVStaticPartElement,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -819,22 +819,24 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
     // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
-        const { data = {}, elm } = part;
-        if (isVStaticPartText(part)) {
-            if (!hasCorrectNodeType(vnode, elm!, EnvNodeTypes.TEXT, renderer)) {
-                return false;
-            }
-            updateTextContent(elm, part, owner, renderer);
-        } else {
+        const { elm } = part;
+        if (isVStaticPartElement(part)) {
             if (!hasCorrectNodeType<Element>(vnode, elm!, EnvNodeTypes.ELEMENT, renderer)) {
                 return false;
             }
+            const { data } = part;
             const hasMatchingAttrs = validateAttrs(vnode, elm, data, renderer, () => true);
             const hasMatchingStyleAttr = validateStyleAttr(vnode, elm, data, renderer);
             const hasMatchingClass = validateClassAttr(vnode, elm, data, renderer);
             if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
                 return false;
             }
+        } else {
+            // VStaticPartText
+            if (!hasCorrectNodeType(vnode, elm!, EnvNodeTypes.TEXT, renderer)) {
+                return false;
+            }
+            updateTextContent(elm, part as VStaticPartText, owner, renderer);
         }
     }
     return true;

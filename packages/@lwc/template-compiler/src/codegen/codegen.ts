@@ -620,16 +620,26 @@ export default class CodeGen {
 
     genStaticParts(element: StaticElement): t.ArrayExpression | undefined {
         const stack: (StaticChildNode | Text[])[] = [element];
-        const partIdsToProps = new Map<number, t.Property[]>();
+        const partIdsToArgs = new Map<number, { text: t.Expression; databag: t.Expression }>();
         let partId = -1;
 
-        const addPartIdProp = (prop: t.Property) => {
-            let props = partIdsToProps.get(partId);
-            if (!props) {
-                props = [];
-                partIdsToProps.set(partId, props);
+        const getPartIdArgs = (partId: number) => {
+            let args = partIdsToArgs.get(partId);
+            if (!args) {
+                args = { text: t.literal(null), databag: t.literal(null) };
+                partIdsToArgs.set(partId, args);
             }
-            props.push(prop);
+            return args;
+        };
+
+        const setPartIdText = (text: t.Expression) => {
+            const args = getPartIdArgs(partId)!;
+            args.text = text;
+        };
+
+        const setPartIdDatabag = (databag: t.Property[]) => {
+            const args = getPartIdArgs(partId)!;
+            args.databag = t.objectExpression(databag);
         };
 
         // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
@@ -653,12 +663,14 @@ export default class CodeGen {
                     )
                 );
 
-                addPartIdProp(t.property(t.identifier('text'), concatenatedText));
+                setPartIdText(concatenatedText);
+                // addPartIdProp(t.property(t.identifier('text'), concatenatedText));
             } else if (isElement(current)) {
                 const elm = current;
+                const databag = [];
                 // has event listeners
                 if (elm.listeners.length) {
-                    addPartIdProp(this.genEventListeners(elm.listeners));
+                    databag.push(this.genEventListeners(elm.listeners));
                 }
 
                 // See STATIC_SAFE_DIRECTIVES for what's allowed here.
@@ -666,7 +678,7 @@ export default class CodeGen {
                 // directly passed into the `api_static_fragment` function, not as a part.
                 for (const directive of elm.directives) {
                     if (directive.name === 'Ref') {
-                        addPartIdProp(this.genRef(directive));
+                        databag.push(this.genRef(directive));
                     }
                 }
 
@@ -678,12 +690,12 @@ export default class CodeGen {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
-                            addPartIdProp(
+                            databag.push(
                                 t.property(t.identifier('style'), this.bindExpression(value))
                             );
                         } else if (name === 'class') {
                             partToken = `${STATIC_PART_TOKEN_ID.CLASS}${partId}`;
-                            addPartIdProp(
+                            databag.push(
                                 t.property(t.identifier('className'), this.bindExpression(value))
                             );
                         } else {
@@ -700,9 +712,13 @@ export default class CodeGen {
                 }
 
                 if (attributeExpressions.length) {
-                    addPartIdProp(
+                    databag.push(
                         t.property(t.identifier('attrs'), t.objectExpression(attributeExpressions))
                     );
+                }
+
+                if (databag.length) {
+                    setPartIdDatabag(databag);
                 }
 
                 // For depth-first traversal, children must be prepended in order, so that they are processed before
@@ -712,22 +728,19 @@ export default class CodeGen {
             }
         }
 
-        if (partIdsToProps.size === 0) {
+        if (partIdsToArgs.size === 0) {
             return undefined; // no parts needed
         }
 
         return t.arrayExpression(
-            [...partIdsToProps.entries()].map(([partId, properties]) => {
-                return this.genStaticPart(partId, properties);
+            [...partIdsToArgs.entries()].map(([partId, { databag, text }]) => {
+                return this.genStaticPart(partId, databag, text);
             })
         );
     }
 
-    genStaticPart(partId: number, properties: t.Property[]): t.CallExpression {
-        return this._renderApiCall(RENDER_APIS.staticPart, [
-            t.literal(partId),
-            t.objectExpression(properties),
-        ]);
+    genStaticPart(partId: number, data: t.Expression, text: t.Expression): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.staticPart, [t.literal(partId), data, text]);
     }
 
     getStaticExpressionToken(node: Attribute | Text): string {
