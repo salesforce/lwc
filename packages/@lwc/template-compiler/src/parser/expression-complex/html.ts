@@ -246,7 +246,7 @@ interface TemplateHtmlParserOptions extends ParserOptions<DefaultTreeAdapterMap>
 }
 
 function isTemplateExpressionTextNodeValue(value: string | undefined): boolean {
-    return value?.[0] === '{';
+    return value !== undefined && value.startsWith('{') && value.length > 2;
 }
 
 function isTextNode(node: ChildNode | undefined): node is TextNode {
