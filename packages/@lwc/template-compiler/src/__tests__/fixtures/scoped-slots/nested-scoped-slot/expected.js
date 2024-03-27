@@ -1,9 +1,10 @@
 import _xRow from "x/row";
 import _xTable from "x/table";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<span${3}>${"t1"}</span>`;
+const $fragment1 = parseFragment`<span${3}>${"t1"}${"t2"}</span>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
+    t: api_text,
     d: api_dynamic_text,
     sp: api_static_part,
     st: api_static_fragment,
@@ -42,8 +43,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       key,
                       [
                         api_static_fragment($fragment1, 3, [
+                          api_static_part(1, null, " "),
                           api_static_part(
-                            1,
+                            2,
                             null,
                             "Coordinates: " +
                               api_dynamic_text(row.number) +

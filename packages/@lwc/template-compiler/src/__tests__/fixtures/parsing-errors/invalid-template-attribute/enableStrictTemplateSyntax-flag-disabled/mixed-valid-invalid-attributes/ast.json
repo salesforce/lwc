@@ -235,28 +235,14 @@
                                                     "type": "Identifier",
                                                     "start": 147,
                                                     "end": 151,
-                                                    "loc": {
-                                                        "start": {
-                                                            "line": 5,
-                                                            "column": 31
-                                                        },
-                                                        "end": {
-                                                            "line": 5,
-                                                            "column": 35
-                                                        }
-                                                    },
-                                                    "range": [
-                                                        147,
-                                                        151
-                                                    ],
                                                     "name": "item",
                                                     "location": {
                                                         "startLine": 5,
                                                         "startColumn": 31,
                                                         "endLine": 5,
-                                                        "endColumn": 37,
-                                                        "start": 146,
-                                                        "end": 152
+                                                        "endColumn": 35,
+                                                        "start": 147,
+                                                        "end": 151
                                                     }
                                                 },
                                                 "location": {

@@ -211,28 +211,14 @@
                                             "type": "Identifier",
                                             "start": 104,
                                             "end": 108,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 12
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 16
-                                                }
-                                            },
-                                            "range": [
-                                                104,
-                                                108
-                                            ],
                                             "name": "item",
                                             "location": {
                                                 "startLine": 3,
                                                 "startColumn": 12,
                                                 "endLine": 3,
-                                                "endColumn": 18,
-                                                "start": 103,
-                                                "end": 109
+                                                "endColumn": 16,
+                                                "start": 104,
+                                                "end": 108
                                             }
                                         },
                                         "location": {

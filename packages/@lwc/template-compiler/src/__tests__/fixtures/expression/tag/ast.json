@@ -67,28 +67,14 @@
                             "type": "Identifier",
                             "start": 19,
                             "end": 23,
-                            "loc": {
-                                "start": {
-                                    "line": 2,
-                                    "column": 8
-                                },
-                                "end": {
-                                    "line": 2,
-                                    "column": 12
-                                }
-                            },
-                            "range": [
-                                19,
-                                23
-                            ],
                             "name": "text",
                             "location": {
                                 "startLine": 2,
                                 "startColumn": 8,
                                 "endLine": 2,
-                                "endColumn": 14,
-                                "start": 18,
-                                "end": 24
+                                "endColumn": 12,
+                                "start": 19,
+                                "end": 23
                             }
                         },
                         "location": {

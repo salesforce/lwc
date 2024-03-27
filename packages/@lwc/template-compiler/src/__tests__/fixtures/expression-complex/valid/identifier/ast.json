@@ -128,28 +128,14 @@
                                     "type": "Identifier",
                                     "start": 53,
                                     "end": 56,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 28
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 31
-                                        }
-                                    },
-                                    "range": [
-                                        53,
-                                        56
-                                    ],
                                     "name": "foo",
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 28,
                                         "endLine": 3,
-                                        "endColumn": 33,
-                                        "start": 52,
-                                        "end": 57
+                                        "endColumn": 31,
+                                        "start": 53,
+                                        "end": 56
                                     }
                                 },
                                 "location": {
@@ -231,28 +217,14 @@
                                     "type": "Identifier",
                                     "start": 98,
                                     "end": 101,
-                                    "loc": {
-                                        "start": {
-                                            "line": 4,
-                                            "column": 31
-                                        },
-                                        "end": {
-                                            "line": 4,
-                                            "column": 34
-                                        }
-                                    },
-                                    "range": [
-                                        98,
-                                        101
-                                    ],
                                     "name": "foo",
                                     "location": {
                                         "startLine": 4,
-                                        "startColumn": 30,
+                                        "startColumn": 31,
                                         "endLine": 4,
-                                        "endColumn": 37,
-                                        "start": 96,
-                                        "end": 103
+                                        "endColumn": 34,
+                                        "start": 98,
+                                        "end": 101
                                     }
                                 },
                                 "location": {
@@ -334,28 +306,14 @@
                                     "type": "Identifier",
                                     "start": 145,
                                     "end": 148,
-                                    "loc": {
-                                        "start": {
-                                            "line": 5,
-                                            "column": 32
-                                        },
-                                        "end": {
-                                            "line": 5,
-                                            "column": 35
-                                        }
-                                    },
-                                    "range": [
-                                        145,
-                                        148
-                                    ],
                                     "name": "foo",
                                     "location": {
                                         "startLine": 5,
-                                        "startColumn": 30,
+                                        "startColumn": 32,
                                         "endLine": 5,
-                                        "endColumn": 39,
-                                        "start": 142,
-                                        "end": 151
+                                        "endColumn": 35,
+                                        "start": 145,
+                                        "end": 148
                                     }
                                 },
                                 "location": {
@@ -437,28 +395,14 @@
                                     "type": "Identifier",
                                     "start": 194,
                                     "end": 197,
-                                    "loc": {
-                                        "start": {
-                                            "line": 6,
-                                            "column": 33
-                                        },
-                                        "end": {
-                                            "line": 6,
-                                            "column": 36
-                                        }
-                                    },
-                                    "range": [
-                                        194,
-                                        197
-                                    ],
                                     "name": "foo",
                                     "location": {
                                         "startLine": 6,
-                                        "startColumn": 31,
+                                        "startColumn": 33,
                                         "endLine": 6,
-                                        "endColumn": 39,
-                                        "start": 191,
-                                        "end": 199
+                                        "endColumn": 36,
+                                        "start": 194,
+                                        "end": 197
                                     }
                                 },
                                 "location": {

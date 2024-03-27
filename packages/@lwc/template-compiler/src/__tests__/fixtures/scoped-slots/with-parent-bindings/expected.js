@@ -8,7 +8,6 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     sp: api_static_part,
     st: api_static_fragment,
     fr: api_fragment,

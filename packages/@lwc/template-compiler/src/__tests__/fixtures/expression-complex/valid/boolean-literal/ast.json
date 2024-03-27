@@ -129,29 +129,15 @@
                                     "type": "Literal",
                                     "start": 54,
                                     "end": 58,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 29
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 33
-                                        }
-                                    },
-                                    "range": [
-                                        54,
-                                        58
-                                    ],
                                     "value": true,
                                     "raw": "true",
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 29,
                                         "endLine": 3,
-                                        "endColumn": 35,
-                                        "start": 53,
-                                        "end": 59
+                                        "endColumn": 33,
+                                        "start": 54,
+                                        "end": 58
                                     }
                                 },
                                 "location": {
@@ -234,29 +220,15 @@
                                     "type": "Literal",
                                     "start": 99,
                                     "end": 104,
-                                    "loc": {
-                                        "start": {
-                                            "line": 4,
-                                            "column": 30
-                                        },
-                                        "end": {
-                                            "line": 4,
-                                            "column": 35
-                                        }
-                                    },
-                                    "range": [
-                                        99,
-                                        104
-                                    ],
                                     "value": false,
                                     "raw": "false",
                                     "location": {
                                         "startLine": 4,
                                         "startColumn": 30,
                                         "endLine": 4,
-                                        "endColumn": 37,
-                                        "start": 98,
-                                        "end": 105
+                                        "endColumn": 35,
+                                        "start": 99,
+                                        "end": 104
                                     }
                                 },
                                 "location": {

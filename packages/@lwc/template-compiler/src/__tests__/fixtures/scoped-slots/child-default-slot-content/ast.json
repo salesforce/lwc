@@ -128,28 +128,14 @@
                             "type": "Identifier",
                             "start": 80,
                             "end": 84,
-                            "loc": {
-                                "start": {
-                                    "line": 3,
-                                    "column": 13
-                                },
-                                "end": {
-                                    "line": 3,
-                                    "column": 17
-                                }
-                            },
-                            "range": [
-                                80,
-                                84
-                            ],
                             "name": "item",
                             "location": {
                                 "startLine": 3,
                                 "startColumn": 13,
                                 "endLine": 3,
-                                "endColumn": 19,
-                                "start": 79,
-                                "end": 85
+                                "endColumn": 17,
+                                "start": 80,
+                                "end": 84
                             }
                         },
                         "location": {
