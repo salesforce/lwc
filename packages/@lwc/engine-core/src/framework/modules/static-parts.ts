@@ -9,6 +9,7 @@ import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shar
 import {
     VStatic,
     VStaticPart,
+    VStaticPartElement,
     VStaticPartText,
     isVStaticPartElement,
     isVStaticPartText,
@@ -160,18 +161,20 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
         // Patch only occurs if the vnode is newly generated, which means the part.elm is always undefined
         // Since the vnode and elements are the same we can safely assume that prevParts[i].elm is defined.
         part.elm = prevPart.elm;
-        if (isVStaticPartElement(part) && isVStaticPartElement(prevPart)) {
+
+        if (process.env.NODE_ENV !== 'production' && prevPart.type !== part.type) {
+            throw new Error(
+                `LWC internal error, static part types do not match. Previous type was ${prevPart.type} and current type is ${part.type}`
+            );
+        }
+
+        if (isVStaticPartElement(part)) {
             // Refs must be updated after every render due to refVNodes getting reset before every render
             applyRefs(part, currPartsOwner);
-            patchAttributes(prevPart, part, renderer);
-            patchClassAttribute(prevPart, part, renderer);
-            patchStyleAttribute(prevPart, part, renderer, currPartsOwner);
+            patchAttributes(prevPart as VStaticPartElement, part, renderer);
+            patchClassAttribute(prevPart as VStaticPartElement, part, renderer);
+            patchStyleAttribute(prevPart as VStaticPartElement, part, renderer, currPartsOwner);
         } else {
-            if (process.env.NODE_ENV !== 'production' && !isVStaticPartText(prevPart)) {
-                throw new Error(
-                    `LWC internal error, static part types do not match. Previous type was ${prevPart.type} and current type is ${part.type}`
-                );
-            }
             patchTextVStaticPart(null, part as VStaticPartText, renderer);
         }
     }

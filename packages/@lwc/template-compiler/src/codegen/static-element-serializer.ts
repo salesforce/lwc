@@ -133,6 +133,8 @@ function serializeCommentNode(comment: Comment, preserveComment: boolean): strin
 }
 
 function serializeDynamicTextNode(textNodes: Text[], codeGen: CodeGen) {
+    // The first text node is they key for contiguous text nodes and single expressions.
+    // This is guaranteed to have a value by the isDynamicText check.
     return `\${"${codeGen.getStaticExpressionToken(textNodes[0])}"}`;
 }
 
