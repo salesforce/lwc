@@ -23,6 +23,7 @@ import {
     isUndefined,
     StringReplace,
     toString,
+    StringToLowerCase,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -438,8 +439,9 @@ function i(
                     // In @lwc/engine-server the fragment doesn't have a tagName, default to the VM's tagName.
                     const tagName =
                         childVnode.sel ??
-                        childVnode.fragment.tagName?.toLowerCase() ??
-                        vmBeingRendered.tagName;
+                        StringToLowerCase.call(
+                            childVnode.fragment.tagName ?? vmBeingRendered.tagName
+                        );
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
                             iterationError = `Duplicated "key" attribute value for "<${tagName}>" in ${vmBeingRendered} for item number ${j}. A key with value "${childVnode.key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
