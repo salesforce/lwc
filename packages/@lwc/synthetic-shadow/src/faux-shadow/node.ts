@@ -174,7 +174,7 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
         const filteredChildNodes = getFilteredChildNodes(this);
-        // no need to filter nodes by owner in case of light DOM
+        // No need to filter by owner for non-shadowed nodes
         const childNodes = isNull(owner)
             ? filteredChildNodes
             : getAllMatches(owner, filteredChildNodes);
