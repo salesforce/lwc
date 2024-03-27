@@ -66,7 +66,10 @@ export type Expression = Identifier | MemberExpression;
 // ComplexExpression type should be redefined as an ESTree Node. Doing
 // so when the flag is still in place results in a cascade of required
 // type changes across the codebase.
-export type ComplexExpression = AcornNode & { value?: any };
+export type ComplexExpression = AcornNode & {
+    value?: any;
+    location: SourceLocation;
+};
 
 export interface Attribute extends BaseNode {
     type: 'Attribute';
