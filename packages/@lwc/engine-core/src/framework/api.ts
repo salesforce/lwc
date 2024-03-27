@@ -22,7 +22,6 @@ import {
     isTrue,
     isUndefined,
     StringReplace,
-    StringToLowerCase,
     toString,
 } from '@lwc/shared';
 
@@ -378,7 +377,7 @@ function i(
     const list: VNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -436,8 +435,11 @@ function i(
                 // Check that the child vnode is either an element or VStatic
                 if (!isNull(childVnode) && (isVBaseElement(childVnode) || isVStatic(childVnode))) {
                     const { key } = childVnode;
+                    // In @lwc/engine-server the fragment doesn't have a tagName, default to the VM's tagName.
                     const tagName =
-                        childVnode.sel ?? StringToLowerCase.call(childVnode.fragment.tagName);
+                        childVnode.sel ??
+                        childVnode.fragment.tagName?.toLowerCase() ??
+                        vmBeingRendered.tagName;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
                             iterationError = `Duplicated "key" attribute value for "<${tagName}>" in ${vmBeingRendered} for item number ${j}. A key with value "${childVnode.key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
