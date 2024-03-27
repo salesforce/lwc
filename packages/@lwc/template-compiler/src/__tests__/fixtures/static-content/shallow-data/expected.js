@@ -5,16 +5,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0, _m1 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        on: {
-          click: _m1 || ($ctx._m1 = api_bind($cmp.onClick)),
+      api_static_part(
+        0,
+        {
+          on: {
+            click: _m1 || ($ctx._m1 = api_bind($cmp.onClick)),
+          },
+          ref: "foo",
+          style: $cmp.fooStyle,
+          attrs: {
+            "data-name": $cmp.foo,
+          },
         },
-        ref: "foo",
-        style: $cmp.fooStyle,
-        attrs: {
-          "data-name": $cmp.foo,
-        },
-      }),
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

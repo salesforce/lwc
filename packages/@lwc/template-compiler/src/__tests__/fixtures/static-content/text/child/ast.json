@@ -1,0 +1,93 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 47,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 36,
+                "end": 47
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 25,
+                    "start": 15,
+                    "end": 35,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 19,
+                        "endLine": 2,
+                        "endColumn": 25,
+                        "start": 29,
+                        "end": 35
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "{dynamic}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "dynamic",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 10,
+                                "endLine": 2,
+                                "endColumn": 19,
+                                "start": 20,
+                                "end": 29
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 19,
+                            "start": 20,
+                            "end": 29
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

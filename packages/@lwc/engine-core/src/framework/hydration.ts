@@ -51,6 +51,8 @@ import {
     isVCustomElement,
     VElementData,
     VStaticPartData,
+    VStaticPartText,
+    isVStaticPartElement,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -134,7 +136,11 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
 
 const NODE_VALUE_PROP = 'nodeValue';
 
-function textNodeContentsAreEqual(node: Node, vnode: VText, renderer: RendererAPI): boolean {
+function textNodeContentsAreEqual(
+    node: Node,
+    vnode: VText | VStaticPartText,
+    renderer: RendererAPI
+): boolean {
     const { getProperty } = renderer;
     const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
@@ -183,11 +189,20 @@ function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | nu
     if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, renderer)) {
         return handleMismatch(node, vnode, renderer);
     }
+    return updateTextContent(node, vnode, vnode.owner, renderer);
+}
+
+function updateTextContent(
+    node: Node,
+    vnode: VText | VStaticPartText,
+    owner: VM,
+    renderer: RendererAPI
+): Node | null {
     if (process.env.NODE_ENV !== 'production') {
         if (!textNodeContentsAreEqual(node, vnode, renderer)) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
-                vnode.owner
+                owner
             );
         }
     }
@@ -794,7 +809,7 @@ function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, rende
 }
 
 function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
-    const { parts } = vnode;
+    const { parts, owner } = vnode;
 
     if (isUndefined(parts)) {
         return true;
@@ -804,12 +819,24 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
     // 2. It's never the case that `parts` has one length on the server but another on the client
     for (const part of parts) {
-        const { data, elm } = part;
-        const hasMatchingAttrs = validateAttrs(vnode, elm!, data, renderer, () => true);
-        const hasMatchingStyleAttr = validateStyleAttr(vnode, elm!, data, renderer);
-        const hasMatchingClass = validateClassAttr(vnode, elm!, data, renderer);
-        if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
-            return false;
+        const { elm } = part;
+        if (isVStaticPartElement(part)) {
+            if (!hasCorrectNodeType<Element>(vnode, elm!, EnvNodeTypes.ELEMENT, renderer)) {
+                return false;
+            }
+            const { data } = part;
+            const hasMatchingAttrs = validateAttrs(vnode, elm, data, renderer, () => true);
+            const hasMatchingStyleAttr = validateStyleAttr(vnode, elm, data, renderer);
+            const hasMatchingClass = validateClassAttr(vnode, elm, data, renderer);
+            if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
+                return false;
+            }
+        } else {
+            // VStaticPartText
+            if (!hasCorrectNodeType(vnode, elm!, EnvNodeTypes.TEXT, renderer)) {
+                return false;
+            }
+            updateTextContent(elm, part as VStaticPartText, owner, renderer);
         }
     }
     return true;

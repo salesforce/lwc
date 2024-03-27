@@ -20,6 +20,11 @@ export const enum VNodeType {
     ScopedSlotFragment,
 }
 
+export const enum VStaticPartType {
+    Text,
+    Element,
+}
+
 export type VNode =
     | VText
     | VComment
@@ -50,9 +55,23 @@ export interface VScopedSlotFragment extends BaseVNode {
 }
 
 export interface VStaticPart {
+    readonly type: VStaticPartType;
     readonly partId: number;
+    readonly data: VStaticPartData | null;
+    readonly text: string | null;
+    elm: Element | Text | undefined;
+}
+
+export interface VStaticPartElement extends VStaticPart {
+    readonly type: VStaticPartType.Element;
     readonly data: VStaticPartData;
     elm: Element | undefined;
+}
+
+export interface VStaticPartText extends VStaticPart {
+    readonly type: VStaticPartType.Text;
+    readonly text: string;
+    elm: Text | undefined;
 }
 export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs' | 'style' | 'className'>;
 
@@ -165,4 +184,12 @@ export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragmen
 
 export function isVStatic(vnode: VNode): vnode is VStatic {
     return vnode.type === VNodeType.Static;
+}
+
+export function isVStaticPartElement(vnode: VStaticPart): vnode is VStaticPartElement {
+    return vnode.type === VStaticPartType.Element;
+}
+
+export function isVStaticPartText(vnode: VStaticPart): vnode is VStaticPartText {
+    return vnode.type === VStaticPartType.Text;
 }

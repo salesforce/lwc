@@ -6,7 +6,8 @@
                 <span data-static="bar"></span>
                 <span style={baaz}></span>
                 <span style="quux"></span>
-                <span data-dynamic={foo} style={baaz} class={bar}></span>
+                <span>concatenated text {item.text}</span>
+                <span data-dynamic={foo} style={baaz} class={bar}>{item.text}</span>
             </div>
         </template>
     </div>

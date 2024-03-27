@@ -16,7 +16,7 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement, VStaticPart } from '../vnodes';
+import { VBaseElement, VStaticPartElement } from '../vnodes';
 
 const classNameToClassMap = create(null);
 
@@ -58,8 +58,8 @@ export function getMapFromClassName(className: string | undefined): Record<strin
 }
 
 export function patchClassAttribute(
-    oldVnode: VBaseElement | VStaticPart | null,
-    vnode: VBaseElement | VStaticPart,
+    oldVnode: VBaseElement | VStaticPartElement | null,
+    vnode: VBaseElement | VStaticPartElement,
     renderer: RendererAPI
 ) {
     const {

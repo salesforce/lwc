@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
-import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
-import { isElement, isText, isComment, isExpression } from '../shared/ast';
+import { Comment, Element, Literal, StaticElement, Text } from '../shared/types';
+import { isElement, isComment, isExpression, isText } from '../shared/ast';
+import { transformStaticChildren, isDynamicText } from './static-element';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -101,15 +102,20 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
     return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 
-function serializeChildren(children: ChildNode[], parentTagName: string, codeGen: CodeGen): string {
+function serializeChildren(node: StaticElement, parentTagName: string, codeGen: CodeGen): string {
     let html = '';
 
-    children.forEach((child) => {
+    for (const child of transformStaticChildren(node)) {
         /* istanbul ignore else  */
-        if (isElement(child)) {
-            html += serializeStaticElement(child, codeGen);
+        if (isDynamicText(child)) {
+            html += serializeDynamicTextNode(child, codeGen);
         } else if (isText(child)) {
-            html += serializeTextNode(child, rawContentElements.has(parentTagName.toUpperCase()));
+            html += serializeStaticTextNode(
+                child,
+                rawContentElements.has(parentTagName.toUpperCase())
+            );
+        } else if (isElement(child)) {
+            html += serializeStaticElement(child, codeGen);
         } else if (isComment(child)) {
             html += serializeCommentNode(child, codeGen.preserveComments);
         } else {
@@ -117,7 +123,7 @@ function serializeChildren(children: ChildNode[], parentTagName: string, codeGen
                 'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
             );
         }
-    });
+    }
 
     return html;
 }
@@ -126,7 +132,13 @@ function serializeCommentNode(comment: Comment, preserveComment: boolean): strin
     return preserveComment ? `<!--${htmlEscape(templateStringEscape(comment.value))}-->` : '';
 }
 
-function serializeTextNode(text: Text, useRawContent: boolean): string {
+function serializeDynamicTextNode(textNodes: Text[], codeGen: CodeGen) {
+    // The first text node is they key for contiguous text nodes and single expressions.
+    // This is guaranteed to have a value by the isDynamicText check.
+    return `\${"${codeGen.getStaticExpressionToken(textNodes[0])}"}`;
+}
+
+function serializeStaticTextNode(text: Text, useRawContent: boolean): string {
     let content;
     if (useRawContent) {
         content = text.raw;
@@ -134,10 +146,12 @@ function serializeTextNode(text: Text, useRawContent: boolean): string {
         content = htmlEscape((text.value as Literal<string>).value);
     }
 
-    return templateStringEscape(content);
+    content = templateStringEscape(content);
+
+    return content;
 }
 
-export function serializeStaticElement(element: Element, codeGen: CodeGen): string {
+export function serializeStaticElement(element: StaticElement, codeGen: CodeGen): string {
     const { name: tagName, namespace } = element;
 
     const isForeignElement = namespace !== HTML_NAMESPACE;
@@ -151,7 +165,7 @@ export function serializeStaticElement(element: Element, codeGen: CodeGen): stri
     }
 
     html += '>';
-    html += serializeChildren(element.children, tagName, codeGen);
+    html += serializeChildren(element, tagName, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;

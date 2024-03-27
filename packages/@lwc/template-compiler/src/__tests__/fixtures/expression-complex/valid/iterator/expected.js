@@ -11,11 +11,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0 } = $ctx;
   return api_iterator($cmp.bento, function (okazu) {
     return api_static_fragment($fragment1, api_key(1, okazu), [
-      api_static_part(1, {
-        on: {
-          click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),
+      api_static_part(
+        1,
+        {
+          on: {
+            click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),
+          },
         },
-      }),
+        null
+      ),
     ]);
   });
   /*LWC compiler vX.X.X*/

@@ -44,7 +44,7 @@ import {
 } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNodes, VStaticPart } from './vnodes';
+import { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 
@@ -118,7 +118,16 @@ function validateLightDomTemplate(template: Template, vm: VM) {
 const browserExpressionSerializer = (partToken: string, classAttrToken: string) => {
     // This will insert the scoped style token as a static class attribute in the fragment
     // bypassing the need to call applyStyleScoping when mounting static parts.
-    return StringCharAt.call(partToken, 0) === STATIC_PART_TOKEN_ID.CLASS ? classAttrToken : '';
+    const type = StringCharAt.call(partToken, 0);
+    switch (type) {
+        case STATIC_PART_TOKEN_ID.CLASS:
+            return classAttrToken;
+        case STATIC_PART_TOKEN_ID.TEXT:
+            // Using a single space here gives us a single empty text node
+            return ' ';
+        default:
+            return '';
+    }
 };
 const serializerNoop = () => {
     throw new Error('LWC internal error, attempted to serialize partToken without static parts');
@@ -175,8 +184,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
             case STATIC_PART_TOKEN_ID.STYLE: // style
                 return serializeStyleAttribute(part);
             case STATIC_PART_TOKEN_ID.TEXT: // text
-                // TODO [#3624]: Add text serialization
-                break;
+                return serializeTextContent(part);
             default:
                 // This should not be reachable
                 throw new Error(
@@ -186,7 +194,18 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
     };
 }
 
-function serializeStyleAttribute(part: VStaticPart) {
+function serializeTextContent(part: VStaticPartText) {
+    const { text } = part;
+    if (text === '') {
+        return '\u200D'; // Special serialization for empty text nodes
+    }
+    // Note the serialization logic doesn't need to validate against the style tag as in serializeTextContent
+    // because style tags are always inserted through the engine.
+    // User input of style tags are blocked, furthermore, all dynamic text is escaped at this point.
+    return htmlEscape(text);
+}
+
+function serializeStyleAttribute(part: VStaticPartElement) {
     const {
         data: { style },
     } = part;
@@ -194,7 +213,7 @@ function serializeStyleAttribute(part: VStaticPart) {
     return isString(style) && style.length ? ` style="${htmlEscape(style, true)}"` : '';
 }
 
-function serializeAttribute(part: VStaticPart, name: string) {
+function serializeAttribute(part: VStaticPartElement, name: string) {
     const {
         data: { attrs = {} },
     } = part;
@@ -210,7 +229,7 @@ function serializeAttribute(part: VStaticPart, name: string) {
     return value;
 }
 
-function serializeClassAttribute(part: VStaticPart, classToken: string) {
+function serializeClassAttribute(part: VStaticPartElement, classToken: string) {
     const classMap = getMapFromClassName(part.data?.className);
     // Trim the leading and trailing whitespace here because classToken contains a leading space and
     // there will be a trailing space if classMap is empty.

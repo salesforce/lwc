@@ -1,0 +1,23 @@
+<template>
+    {firstOutterSibling}
+    <div>{solo}</div>
+    <div>
+        <!-- child siblings -->
+        {firstInnerSibling}
+        <span>text1</span>
+    </div>
+    {centerOutterSibling}
+    <div>
+        <span>text2</span>
+        {secondInnerSibling}
+    </div>
+    <div>
+        <span>text3</span>
+        {middleInnerSibling}
+        <span>text4</span>
+    </div>
+    <div>
+        String concat {middleInnerSibling} value
+    </div>
+    {lastOutterSibling}
+</template>

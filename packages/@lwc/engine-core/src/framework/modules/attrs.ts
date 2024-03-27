@@ -15,13 +15,13 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject } from '../utils';
-import { VBaseElement, VStatic, VStaticPart } from '../vnodes';
+import { VBaseElement, VStatic, VStaticPartElement } from '../vnodes';
 
 const ColonCharCode = 58;
 
 export function patchAttributes(
-    oldVnode: VBaseElement | VStaticPart | null,
-    vnode: VBaseElement | VStaticPart,
+    oldVnode: VBaseElement | VStaticPartElement | null,
+    vnode: VBaseElement | VStaticPartElement,
     renderer: RendererAPI
 ) {
     const { data, elm } = vnode;

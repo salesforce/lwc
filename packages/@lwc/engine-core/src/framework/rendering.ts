@@ -71,6 +71,7 @@ import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
 import { mountStaticParts, patchStaticParts } from './modules/static-parts';
 import { LightningElementConstructor } from './base-lightning-element';
+import { patchTextVNode, updateTextContent } from './modules/text';
 
 export function patchChildren(
     c1: VNodes,
@@ -111,7 +112,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     switch (n2.type) {
         case VNodeType.Text:
             // VText has no special capability, fallback to the owner's renderer
-            patchText(n1 as VText, n2, renderer);
+            patchTextVNode(n1 as VText, n2, renderer);
             break;
 
         case VNodeType.Comment:
@@ -167,14 +168,6 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountCustomElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
-    }
-}
-
-function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
-    n2.elm = n1.elm;
-
-    if (n2.text !== n1.text) {
-        updateTextContent(n2, renderer);
     }
 }
 
@@ -532,19 +525,6 @@ function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
             (elm as any)[KEY__SHADOW_RESOLVER] = renderRoot[KEY__SHADOW_RESOLVER];
         }
-    }
-}
-
-function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
-    const { elm, text } = vnode;
-    const { setText } = renderer;
-
-    if (process.env.NODE_ENV !== 'production') {
-        unlockDomMutation();
-    }
-    setText(elm, text);
-    if (process.env.NODE_ENV !== 'production') {
-        lockDomMutation();
     }
 }
 
