@@ -117,19 +117,35 @@
                                         "raw": "{slot1data.name}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 15,
+                                            "start": 103,
+                                            "end": 117,
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 10,
-                                                "name": "slot1data"
+                                                "start": 103,
+                                                "end": 112,
+                                                "name": "slot1data",
+                                                "location": {
+                                                    "startLine": 4,
+                                                    "startColumn": 16,
+                                                    "endLine": 4,
+                                                    "endColumn": 25,
+                                                    "start": 103,
+                                                    "end": 112
+                                                }
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 11,
-                                                "end": 15,
-                                                "name": "name"
+                                                "start": 113,
+                                                "end": 117,
+                                                "name": "name",
+                                                "location": {
+                                                    "startLine": 4,
+                                                    "startColumn": 26,
+                                                    "endLine": 4,
+                                                    "endColumn": 30,
+                                                    "start": 113,
+                                                    "end": 117
+                                                }
                                             },
                                             "computed": false,
                                             "optional": false,
@@ -137,9 +153,9 @@
                                                 "startLine": 4,
                                                 "startColumn": 16,
                                                 "endLine": 4,
-                                                "endColumn": 32,
-                                                "start": 102,
-                                                "end": 118
+                                                "endColumn": 30,
+                                                "start": 103,
+                                                "end": 117
                                             }
                                         },
                                         "location": {
@@ -240,19 +256,35 @@
                                         "raw": "{slot2data.title}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 16,
+                                            "start": 222,
+                                            "end": 237,
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 10,
-                                                "name": "slot2data"
+                                                "start": 222,
+                                                "end": 231,
+                                                "name": "slot2data",
+                                                "location": {
+                                                    "startLine": 8,
+                                                    "startColumn": 16,
+                                                    "endLine": 8,
+                                                    "endColumn": 25,
+                                                    "start": 222,
+                                                    "end": 231
+                                                }
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 11,
-                                                "end": 16,
-                                                "name": "title"
+                                                "start": 232,
+                                                "end": 237,
+                                                "name": "title",
+                                                "location": {
+                                                    "startLine": 8,
+                                                    "startColumn": 26,
+                                                    "endLine": 8,
+                                                    "endColumn": 31,
+                                                    "start": 232,
+                                                    "end": 237
+                                                }
                                             },
                                             "computed": false,
                                             "optional": false,
@@ -260,9 +292,9 @@
                                                 "startLine": 8,
                                                 "startColumn": 16,
                                                 "endLine": 8,
-                                                "endColumn": 33,
-                                                "start": 221,
-                                                "end": 238
+                                                "endColumn": 31,
+                                                "start": 222,
+                                                "end": 237
                                             }
                                         },
                                         "location": {
@@ -363,19 +395,35 @@
                                         "raw": "{defaultdata.title}",
                                         "value": {
                                             "type": "MemberExpression",
-                                            "start": 1,
-                                            "end": 18,
+                                            "start": 327,
+                                            "end": 344,
                                             "object": {
                                                 "type": "Identifier",
-                                                "start": 1,
-                                                "end": 12,
-                                                "name": "defaultdata"
+                                                "start": 327,
+                                                "end": 338,
+                                                "name": "defaultdata",
+                                                "location": {
+                                                    "startLine": 12,
+                                                    "startColumn": 16,
+                                                    "endLine": 12,
+                                                    "endColumn": 27,
+                                                    "start": 327,
+                                                    "end": 338
+                                                }
                                             },
                                             "property": {
                                                 "type": "Identifier",
-                                                "start": 13,
-                                                "end": 18,
-                                                "name": "title"
+                                                "start": 339,
+                                                "end": 344,
+                                                "name": "title",
+                                                "location": {
+                                                    "startLine": 12,
+                                                    "startColumn": 28,
+                                                    "endLine": 12,
+                                                    "endColumn": 33,
+                                                    "start": 339,
+                                                    "end": 344
+                                                }
                                             },
                                             "computed": false,
                                             "optional": false,
@@ -383,9 +431,9 @@
                                                 "startLine": 12,
                                                 "startColumn": 16,
                                                 "endLine": 12,
-                                                "endColumn": 35,
-                                                "start": 326,
-                                                "end": 345
+                                                "endColumn": 33,
+                                                "start": 327,
+                                                "end": 344
                                             }
                                         },
                                         "location": {

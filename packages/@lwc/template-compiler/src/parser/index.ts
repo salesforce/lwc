@@ -499,15 +499,11 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
         // will be contained in its own text node. Adjacent static text will be in
         // separate text nodes.
         const entry = ctx.preparsedJsExpressions!.get(location.startOffset);
-        if (!entry?.parsedExpression) {
+        if (!entry) {
             throw new Error('Implementation error: cannot find preparsed template expression');
         }
 
-        const value = {
-            ...entry.parsedExpression,
-            location: ast.sourceLocation(location),
-        };
-        return [ast.text(rawText, value, location)];
+        return [ast.text(rawText, entry.estreeNode, location)];
     }
 
     // Split the text node content arround expression and create node for each

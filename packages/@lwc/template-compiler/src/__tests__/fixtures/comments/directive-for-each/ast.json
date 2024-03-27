@@ -200,16 +200,16 @@
                                         "raw": "{color}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 6,
+                                            "start": 152,
+                                            "end": 157,
                                             "name": "color",
                                             "location": {
                                                 "startLine": 5,
                                                 "startColumn": 29,
                                                 "endLine": 5,
-                                                "endColumn": 36,
-                                                "start": 151,
-                                                "end": 158
+                                                "endColumn": 34,
+                                                "start": 152,
+                                                "end": 157
                                             }
                                         },
                                         "location": {

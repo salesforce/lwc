@@ -152,25 +152,25 @@
                         "raw": "{foo}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 4,
+                            "start": 68,
+                            "end": 71,
                             "name": "foo",
                             "location": {
-                                "startLine": 3,
-                                "startColumn": 34,
-                                "endLine": 5,
-                                "endColumn": 9,
-                                "start": 58,
-                                "end": 81
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 12,
+                                "start": 68,
+                                "end": 71
                             }
                         },
                         "location": {
-                            "startLine": 3,
-                            "startColumn": 34,
-                            "endLine": 5,
-                            "endColumn": 9,
-                            "start": 58,
-                            "end": 81
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 14,
+                            "start": 67,
+                            "end": 72
                         }
                     },
                     {

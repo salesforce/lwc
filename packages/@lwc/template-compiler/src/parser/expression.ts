@@ -8,7 +8,6 @@ import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'ac
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import { NormalizedConfig } from '../config';
-import * as ast from '../shared/ast';
 import * as t from '../shared/estree';
 import { Expression, Identifier, SourceLocation } from '../shared/types';
 import { validateExpressionAst } from './expression-complex';
@@ -100,23 +99,13 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 }
 
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
-    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
-        const acornLoc = parsedExpression.loc!;
-        const parse5Loc = {
-            startLine: acornLoc.start.line,
-            startCol: acornLoc.start.column,
-            startOffset: parsedExpression.start,
-            endLine: acornLoc.end.line,
-            endCol: acornLoc.end.column,
-            endOffset: parsedExpression.end,
-        };
-
+    ctx.preparsedJsExpressions?.forEach(({ estreeNode, rawText }) => {
         ctx.withErrorWrapping(
             () => {
-                validateExpressionAst(parsedExpression);
+                validateExpressionAst(estreeNode);
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            ast.sourceLocation(parse5Loc),
+            estreeNode.location,
             (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });

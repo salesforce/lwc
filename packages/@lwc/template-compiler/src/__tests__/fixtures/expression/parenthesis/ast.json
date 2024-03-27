@@ -65,16 +65,16 @@
                         "raw": "{ (foo) }",
                         "value": {
                             "type": "Identifier",
-                            "start": 3,
-                            "end": 6,
+                            "start": 23,
+                            "end": 26,
                             "name": "foo",
                             "location": {
                                 "startLine": 2,
-                                "startColumn": 10,
+                                "startColumn": 12,
                                 "endLine": 2,
-                                "endColumn": 19,
-                                "start": 20,
-                                "end": 29
+                                "endColumn": 15,
+                                "start": 23,
+                                "end": 26
                             }
                         },
                         "location": {
@@ -126,16 +126,16 @@
                         "raw": "{ ((foo)) }",
                         "value": {
                             "type": "Identifier",
-                            "start": 4,
-                            "end": 7,
+                            "start": 49,
+                            "end": 52,
                             "name": "foo",
                             "location": {
                                 "startLine": 3,
-                                "startColumn": 10,
+                                "startColumn": 13,
                                 "endLine": 3,
-                                "endColumn": 21,
-                                "start": 45,
-                                "end": 56
+                                "endColumn": 16,
+                                "start": 49,
+                                "end": 52
                             }
                         },
                         "location": {
@@ -187,29 +187,45 @@
                         "raw": "{ ((foo.bar)) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 4,
-                            "end": 11,
+                            "start": 76,
+                            "end": 83,
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
-                                "name": "foo"
+                                "start": 76,
+                                "end": 79,
+                                "name": "foo",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 16,
+                                    "start": 76,
+                                    "end": 79
+                                }
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 8,
-                                "end": 11,
-                                "name": "bar"
+                                "start": 80,
+                                "end": 83,
+                                "name": "bar",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 20,
+                                    "start": 80,
+                                    "end": 83
+                                }
                             },
                             "computed": false,
                             "optional": false,
                             "location": {
                                 "startLine": 4,
-                                "startColumn": 10,
+                                "startColumn": 13,
                                 "endLine": 4,
-                                "endColumn": 25,
-                                "start": 72,
-                                "end": 87
+                                "endColumn": 20,
+                                "start": 76,
+                                "end": 83
                             }
                         },
                         "location": {
@@ -261,29 +277,45 @@
                         "raw": "{ ((foo).bar) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 3,
-                            "end": 12,
+                            "start": 106,
+                            "end": 115,
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
-                                "name": "foo"
+                                "start": 107,
+                                "end": 110,
+                                "name": "foo",
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 13,
+                                    "endLine": 5,
+                                    "endColumn": 16,
+                                    "start": 107,
+                                    "end": 110
+                                }
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 9,
-                                "end": 12,
-                                "name": "bar"
+                                "start": 112,
+                                "end": 115,
+                                "name": "bar",
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 18,
+                                    "endLine": 5,
+                                    "endColumn": 21,
+                                    "start": 112,
+                                    "end": 115
+                                }
                             },
                             "computed": false,
                             "optional": false,
                             "location": {
                                 "startLine": 5,
-                                "startColumn": 10,
+                                "startColumn": 12,
                                 "endLine": 5,
-                                "endColumn": 25,
-                                "start": 103,
-                                "end": 118
+                                "endColumn": 21,
+                                "start": 106,
+                                "end": 115
                             }
                         },
                         "location": {
@@ -335,29 +367,45 @@
                         "raw": "{ ((foo).bar) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 3,
-                            "end": 12,
+                            "start": 137,
+                            "end": 146,
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
-                                "name": "foo"
+                                "start": 138,
+                                "end": 141,
+                                "name": "foo",
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 13,
+                                    "endLine": 6,
+                                    "endColumn": 16,
+                                    "start": 138,
+                                    "end": 141
+                                }
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 9,
-                                "end": 12,
-                                "name": "bar"
+                                "start": 143,
+                                "end": 146,
+                                "name": "bar",
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 18,
+                                    "endLine": 6,
+                                    "endColumn": 21,
+                                    "start": 143,
+                                    "end": 146
+                                }
                             },
                             "computed": false,
                             "optional": false,
                             "location": {
                                 "startLine": 6,
-                                "startColumn": 10,
+                                "startColumn": 12,
                                 "endLine": 6,
-                                "endColumn": 25,
-                                "start": 134,
-                                "end": 149
+                                "endColumn": 21,
+                                "start": 137,
+                                "end": 146
                             }
                         },
                         "location": {

@@ -6,7 +6,6 @@ const $fragment4 = parseFragment`<div${3}><span${3}>text3</span>${"t3"}<span${3}
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     sp: api_static_part,
     st: api_static_fragment,
     fr: api_fragment,
@@ -16,7 +15,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_text(api_dynamic_text($cmp.firstOutterSibling)),
             api_static_fragment($fragment1, 2, [
               api_static_part(1, null, api_dynamic_text($cmp.solo)),
             ]),
@@ -27,7 +25,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.firstInnerSibling)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.centerOutterSibling)),
             api_static_fragment($fragment3, 6, [
               api_static_part(
                 3,
@@ -42,7 +39,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.middleInnerSibling)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.lastOutterSibling)),
           ],
           0
         )

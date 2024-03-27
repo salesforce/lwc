@@ -126,16 +126,16 @@
                                 "raw": "{defaultContent}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 15,
+                                    "start": 60,
+                                    "end": 74,
                                     "name": "defaultContent",
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 38,
                                         "endLine": 3,
-                                        "endColumn": 54,
-                                        "start": 59,
-                                        "end": 75
+                                        "endColumn": 52,
+                                        "start": 60,
+                                        "end": 74
                                     }
                                 },
                                 "location": {

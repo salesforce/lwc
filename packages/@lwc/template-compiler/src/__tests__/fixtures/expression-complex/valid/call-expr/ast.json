@@ -135,39 +135,19 @@
                                     "type": "CallExpression",
                                     "start": 58,
                                     "end": 66,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 33
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 41
-                                        }
-                                    },
-                                    "range": [
-                                        58,
-                                        66
-                                    ],
                                     "callee": {
                                         "type": "Identifier",
                                         "start": 58,
                                         "end": 64,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 33
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 39
-                                            }
-                                        },
-                                        "range": [
-                                            58,
-                                            64
-                                        ],
-                                        "name": "getBaz"
+                                        "name": "getBaz",
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 33,
+                                            "endLine": 3,
+                                            "endColumn": 39,
+                                            "start": 58,
+                                            "end": 64
+                                        }
                                     },
                                     "arguments": [],
                                     "optional": false,
@@ -175,9 +155,9 @@
                                         "startLine": 3,
                                         "startColumn": 33,
                                         "endLine": 3,
-                                        "endColumn": 43,
-                                        "start": 57,
-                                        "end": 67
+                                        "endColumn": 41,
+                                        "start": 58,
+                                        "end": 66
                                     }
                                 },
                                 "location": {

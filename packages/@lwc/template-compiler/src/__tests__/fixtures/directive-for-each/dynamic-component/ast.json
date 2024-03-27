@@ -209,16 +209,16 @@
                                         "raw": "{item}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 5,
+                                            "start": 104,
+                                            "end": 108,
                                             "name": "item",
                                             "location": {
                                                 "startLine": 3,
                                                 "startColumn": 12,
                                                 "endLine": 3,
-                                                "endColumn": 18,
-                                                "start": 103,
-                                                "end": 109
+                                                "endColumn": 16,
+                                                "start": 104,
+                                                "end": 108
                                             }
                                         },
                                         "location": {
