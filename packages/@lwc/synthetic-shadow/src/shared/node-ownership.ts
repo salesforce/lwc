@@ -58,6 +58,8 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
 
+        // Elements slotted from top level light DOM into synthetic shadow
+        // reach the slot tag from the shadow element first
         if (!isNull(host) && isSyntheticSlotElement(host)) {
             return undefined;
         }
