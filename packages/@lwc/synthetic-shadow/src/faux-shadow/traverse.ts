@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -180,7 +180,7 @@ export function getAllSlottedMatches<T extends Node>(
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
-            ArrayPush.call(filteredAndPatched, node);
+            ArrayPush.call(filteredAndPatched, node as T);
         }
     }
     return filteredAndPatched;
@@ -204,7 +204,7 @@ export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]):
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            ArrayPush.call(filteredAndPatched, node);
+            ArrayPush.call(filteredAndPatched, node as T);
         }
     }
     return filteredAndPatched;
@@ -241,19 +241,20 @@ export function getFilteredChildNodes(node: Node): Element[] {
         // we need to get only the nodes that were slotted
         const slots = arrayFromCollection(querySelectorAll.call(node, 'slot'));
         const resolver = getShadowRootResolver(getShadowRoot(node));
-        // Typescript is inferring the wrong function type for this particular
-        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-        // @ts-expect-error type-mismatch
         return ArrayReduce.call(
             slots,
-            (seed, slot) => {
+            // @ts-expect-error Array#reduce has a generic that gets lost in our retyped ArrayReduce
+            (seed: Element[], slot) => {
                 if (resolver === getShadowRootResolver(slot)) {
-                    ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
+                    ArrayPush.apply(
+                        seed,
+                        getFilteredSlotAssignedNodes(slot as HTMLElement) as Element[]
+                    );
                 }
                 return seed;
             },
             []
-        );
+        ) as Element[];
     } else {
         // slot element
         const children = arrayFromCollection(childNodesGetter.call(node));

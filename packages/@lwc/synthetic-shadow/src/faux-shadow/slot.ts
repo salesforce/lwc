@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -73,12 +73,10 @@ function initSlotObserver() {
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
-    // Typescript is inferring the wrong function type for this particular
-    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-expect-error type-mismatch
     return ArrayReduce.call(
         childNodes,
-        (seed, child) => {
+        // @ts-expect-error Array#reduce has a generic that is lost by our redefined ArrayReduce
+        (seed: Node[], child) => {
             if (child instanceof Element && isSlotElement(child)) {
                 ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child));
             } else {
@@ -87,7 +85,7 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
             return seed;
         },
         []
-    );
+    ) as Node[];
 }
 
 export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement | null {
@@ -153,11 +151,13 @@ defineProperties(HTMLSlotElement.prototype, {
                 const nodes = flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
-                return ArrayFilter.call(nodes, (node) => node instanceof Element);
+                return ArrayFilter.call(nodes, (node) => node instanceof Element) as Element[];
             } else {
                 return originalAssignedElements.apply(
                     this,
-                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                    ArraySlice.call(arguments as unknown as unknown[]) as [
+                        options?: AssignedNodesOptions
+                    ]
                 );
             }
         },
@@ -175,7 +175,9 @@ defineProperties(HTMLSlotElement.prototype, {
             } else {
                 return originalAssignedNodes.apply(
                     this,
-                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                    ArraySlice.call(arguments as unknown as unknown[]) as [
+                        options?: AssignedNodesOptions
+                    ]
                 );
             }
         },

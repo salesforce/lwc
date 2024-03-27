@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -68,7 +68,7 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
         const vm = getAssociatedVM(this);
         const { callHook, component } = vm;
         const fn = (component as any)[methodName];
-        return callHook(vm.component, fn, ArraySlice.call(arguments));
+        return callHook(vm.component, fn, ArraySlice.call(arguments as unknown as unknown[]));
     };
 }
 
