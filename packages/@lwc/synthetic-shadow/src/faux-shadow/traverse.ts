@@ -134,25 +134,15 @@ export function isSlotElement(node: Node): node is HTMLSlotElement {
     return node instanceof HTMLSlotElement;
 }
 
-export function isNodeOwnedBy(owner: Element | null, node: Node): boolean {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!(node instanceof Node)) {
-            // eslint-disable-next-line no-console
-            console.error(`isNodeOwnedBy() should be called with a node as the second argument`);
-        }
-    }
-
-    // owner can be null if all the parents are in the light DOM
-    // ownerKey is undefined for such nodes
-    const ownerKey = getNodeNearestOwnerKey(node);
-    if (isNull(owner)) {
-        return isUndefined(ownerKey);
-    }
-
+export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         if (!(owner instanceof HTMLElement)) {
             // eslint-disable-next-line no-console
             console.error(`isNodeOwnedBy() should be called with an element as the first argument`);
+        }
+        if (!(node instanceof Node)) {
+            // eslint-disable-next-line no-console
+            console.error(`isNodeOwnedBy() should be called with a node as the second argument`);
         }
         if (!(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS)) {
             // eslint-disable-next-line no-console
@@ -161,6 +151,7 @@ export function isNodeOwnedBy(owner: Element | null, node: Node): boolean {
             );
         }
     }
+    const ownerKey = getNodeNearestOwnerKey(node);
 
     if (isUndefined(ownerKey)) {
         // in case of root level light DOM element slotting into a synthetic shadow
@@ -205,7 +196,7 @@ export function getFirstSlottedMatch(host: Element, nodeList: Element[]): Elemen
     return null;
 }
 
-export function getAllMatches<T extends Node>(owner: Element | null, nodeList: Node[]): T[] {
+export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]): T[] {
     const filteredAndPatched: T[] = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
