@@ -67,90 +67,58 @@
                             "type": "CallExpression",
                             "start": 20,
                             "end": 33,
-                            "loc": {
-                                "start": {
-                                    "line": 2,
-                                    "column": 9
-                                },
-                                "end": {
-                                    "line": 2,
-                                    "column": 22
-                                }
-                            },
-                            "range": [
-                                20,
-                                33
-                            ],
                             "callee": {
                                 "type": "MemberExpression",
                                 "start": 20,
                                 "end": 31,
-                                "loc": {
-                                    "start": {
-                                        "line": 2,
-                                        "column": 9
-                                    },
-                                    "end": {
-                                        "line": 2,
-                                        "column": 20
-                                    }
-                                },
-                                "range": [
-                                    20,
-                                    31
-                                ],
                                 "object": {
                                     "type": "Identifier",
                                     "start": 20,
                                     "end": 24,
-                                    "loc": {
-                                        "start": {
-                                            "line": 2,
-                                            "column": 9
-                                        },
-                                        "end": {
-                                            "line": 2,
-                                            "column": 13
-                                        }
-                                    },
-                                    "range": [
-                                        20,
-                                        24
-                                    ],
-                                    "name": "Math"
+                                    "name": "Math",
+                                    "location": {
+                                        "startLine": 2,
+                                        "startColumn": 9,
+                                        "endLine": 2,
+                                        "endColumn": 13,
+                                        "start": 20,
+                                        "end": 24
+                                    }
                                 },
                                 "property": {
                                     "type": "Identifier",
                                     "start": 25,
                                     "end": 31,
-                                    "loc": {
-                                        "start": {
-                                            "line": 2,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 2,
-                                            "column": 20
-                                        }
-                                    },
-                                    "range": [
-                                        25,
-                                        31
-                                    ],
-                                    "name": "random"
+                                    "name": "random",
+                                    "location": {
+                                        "startLine": 2,
+                                        "startColumn": 14,
+                                        "endLine": 2,
+                                        "endColumn": 20,
+                                        "start": 25,
+                                        "end": 31
+                                    }
                                 },
                                 "computed": false,
-                                "optional": false
+                                "optional": false,
+                                "location": {
+                                    "startLine": 2,
+                                    "startColumn": 9,
+                                    "endLine": 2,
+                                    "endColumn": 20,
+                                    "start": 20,
+                                    "end": 31
+                                }
                             },
                             "arguments": [],
                             "optional": false,
                             "location": {
                                 "startLine": 2,
-                                "startColumn": 8,
+                                "startColumn": 9,
                                 "endLine": 2,
-                                "endColumn": 25,
-                                "start": 18,
-                                "end": 35
+                                "endColumn": 22,
+                                "start": 20,
+                                "end": 33
                             }
                         },
                         "location": {

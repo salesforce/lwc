@@ -168,78 +168,38 @@
                                     "type": "TaggedTemplateExpression",
                                     "start": 74,
                                     "end": 98,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 49
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 73
-                                        }
-                                    },
-                                    "range": [
-                                        74,
-                                        98
-                                    ],
                                     "tag": {
                                         "type": "Identifier",
                                         "start": 74,
                                         "end": 77,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 49
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 52
-                                            }
-                                        },
-                                        "range": [
-                                            74,
-                                            77
-                                        ],
-                                        "name": "foo"
+                                        "name": "foo",
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 49,
+                                            "endLine": 3,
+                                            "endColumn": 52,
+                                            "start": 74,
+                                            "end": 77
+                                        }
                                     },
                                     "quasi": {
                                         "type": "TemplateLiteral",
                                         "start": 77,
                                         "end": 98,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 52
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 73
-                                            }
-                                        },
-                                        "range": [
-                                            77,
-                                            98
-                                        ],
                                         "expressions": [
                                             {
                                                 "type": "Identifier",
                                                 "start": 91,
                                                 "end": 96,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 66
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 71
-                                                    }
-                                                },
-                                                "range": [
-                                                    91,
-                                                    96
-                                                ],
-                                                "name": "bizzy"
+                                                "name": "bizzy",
+                                                "location": {
+                                                    "startLine": 3,
+                                                    "startColumn": 66,
+                                                    "endLine": 3,
+                                                    "endColumn": 71,
+                                                    "start": 91,
+                                                    "end": 96
+                                                }
                                             }
                                         ],
                                         "quasis": [
@@ -247,59 +207,55 @@
                                                 "type": "TemplateElement",
                                                 "start": 78,
                                                 "end": 89,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 53
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 64
-                                                    }
-                                                },
-                                                "range": [
-                                                    78,
-                                                    89
-                                                ],
                                                 "value": {
                                                     "raw": "barzy-bazzy",
                                                     "cooked": "barzy-bazzy"
                                                 },
-                                                "tail": false
+                                                "tail": false,
+                                                "location": {
+                                                    "startLine": 3,
+                                                    "startColumn": 53,
+                                                    "endLine": 3,
+                                                    "endColumn": 64,
+                                                    "start": 78,
+                                                    "end": 89
+                                                }
                                             },
                                             {
                                                 "type": "TemplateElement",
                                                 "start": 97,
                                                 "end": 97,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 72
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 72
-                                                    }
-                                                },
-                                                "range": [
-                                                    97,
-                                                    97
-                                                ],
                                                 "value": {
                                                     "raw": "",
                                                     "cooked": ""
                                                 },
-                                                "tail": true
+                                                "tail": true,
+                                                "location": {
+                                                    "startLine": 3,
+                                                    "startColumn": 72,
+                                                    "endLine": 3,
+                                                    "endColumn": 72,
+                                                    "start": 97,
+                                                    "end": 97
+                                                }
                                             }
-                                        ]
+                                        ],
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 52,
+                                            "endLine": 3,
+                                            "endColumn": 73,
+                                            "start": 77,
+                                            "end": 98
+                                        }
                                     },
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 49,
                                         "endLine": 3,
-                                        "endColumn": 75,
-                                        "start": 73,
-                                        "end": 99
+                                        "endColumn": 73,
+                                        "start": 74,
+                                        "end": 98
                                     }
                                 },
                                 "location": {

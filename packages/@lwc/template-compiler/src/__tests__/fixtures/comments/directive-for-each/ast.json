@@ -202,28 +202,14 @@
                                             "type": "Identifier",
                                             "start": 152,
                                             "end": 157,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 5,
-                                                    "column": 29
-                                                },
-                                                "end": {
-                                                    "line": 5,
-                                                    "column": 34
-                                                }
-                                            },
-                                            "range": [
-                                                152,
-                                                157
-                                            ],
                                             "name": "color",
                                             "location": {
                                                 "startLine": 5,
                                                 "startColumn": 29,
                                                 "endLine": 5,
-                                                "endColumn": 36,
-                                                "start": 151,
-                                                "end": 158
+                                                "endColumn": 34,
+                                                "start": 152,
+                                                "end": 157
                                             }
                                         },
                                         "location": {

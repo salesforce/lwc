@@ -185,59 +185,33 @@
                                             "type": "MemberExpression",
                                             "start": 109,
                                             "end": 119,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 4,
-                                                    "column": 37
-                                                },
-                                                "end": {
-                                                    "line": 4,
-                                                    "column": 47
-                                                }
-                                            },
-                                            "range": [
-                                                109,
-                                                119
-                                            ],
                                             "object": {
                                                 "type": "Identifier",
                                                 "start": 109,
                                                 "end": 113,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 4,
-                                                        "column": 37
-                                                    },
-                                                    "end": {
-                                                        "line": 4,
-                                                        "column": 41
-                                                    }
-                                                },
-                                                "range": [
-                                                    109,
-                                                    113
-                                                ],
-                                                "name": "item"
+                                                "name": "item",
+                                                "location": {
+                                                    "startLine": 4,
+                                                    "startColumn": 37,
+                                                    "endLine": 4,
+                                                    "endColumn": 41,
+                                                    "start": 109,
+                                                    "end": 113
+                                                }
                                             },
                                             "property": {
                                                 "type": "Identifier",
                                                 "start": 114,
                                                 "end": 119,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 4,
-                                                        "column": 42
-                                                    },
-                                                    "end": {
-                                                        "line": 4,
-                                                        "column": 47
-                                                    }
-                                                },
-                                                "range": [
-                                                    114,
-                                                    119
-                                                ],
-                                                "name": "value"
+                                                "name": "value",
+                                                "location": {
+                                                    "startLine": 4,
+                                                    "startColumn": 42,
+                                                    "endLine": 4,
+                                                    "endColumn": 47,
+                                                    "start": 114,
+                                                    "end": 119
+                                                }
                                             },
                                             "computed": false,
                                             "optional": false,
@@ -245,9 +219,9 @@
                                                 "startLine": 4,
                                                 "startColumn": 37,
                                                 "endLine": 4,
-                                                "endColumn": 49,
-                                                "start": 108,
-                                                "end": 120
+                                                "endColumn": 47,
+                                                "start": 109,
+                                                "end": 119
                                             }
                                         },
                                         "location": {

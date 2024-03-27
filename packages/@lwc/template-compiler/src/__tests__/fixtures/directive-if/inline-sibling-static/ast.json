@@ -154,28 +154,14 @@
                             "type": "Identifier",
                             "start": 68,
                             "end": 71,
-                            "loc": {
-                                "start": {
-                                    "line": 4,
-                                    "column": 9
-                                },
-                                "end": {
-                                    "line": 4,
-                                    "column": 12
-                                }
-                            },
-                            "range": [
-                                68,
-                                71
-                            ],
                             "name": "foo",
                             "location": {
                                 "startLine": 4,
                                 "startColumn": 9,
                                 "endLine": 4,
-                                "endColumn": 14,
-                                "start": 67,
-                                "end": 72
+                                "endColumn": 12,
+                                "start": 68,
+                                "end": 71
                             }
                         },
                         "location": {

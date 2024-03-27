@@ -129,29 +129,15 @@
                                     "type": "Literal",
                                     "start": 54,
                                     "end": 58,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 29
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 33
-                                        }
-                                    },
-                                    "range": [
-                                        54,
-                                        58
-                                    ],
                                     "value": null,
                                     "raw": "null",
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 29,
                                         "endLine": 3,
-                                        "endColumn": 35,
-                                        "start": 53,
-                                        "end": 59
+                                        "endColumn": 33,
+                                        "start": 54,
+                                        "end": 58
                                     }
                                 },
                                 "location": {
