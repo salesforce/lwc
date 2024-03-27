@@ -76,9 +76,9 @@ export function patchClassAttribute(
     const oldClassMap = getMapFromClassName(oldClass);
 
     if (oldClassMap === newClassMap) {
-        // These objects are cached by className string, so at this point we can only get here if there is a key
-        // collision due to types, e.g. one string is `undefined` and the other is `""` (empty string), or one
-        // string is `1` (number) and the other is `"1"` (string).
+        // These objects are cached by className string (`classNameToClassMap`), so we can only get here if there is
+        // a key collision due to types, e.g. oldClass is `undefined` and newClass is `""` (empty string), or oldClass
+        // className is `1` (number) and newClass is `"1"` (string).
         return;
     }
 
