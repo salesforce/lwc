@@ -31,7 +31,6 @@
         "@lwc/module-resolver": "6.3.4",
         "@lwc/rollup-plugin": "6.3.4",
         "@lwc/shared": "6.3.4",
-        "@lwc/signals": "6.3.4",
         "@lwc/style-compiler": "6.3.4",
         "@lwc/synthetic-shadow": "6.3.4",
         "@lwc/template-compiler": "6.3.4",
