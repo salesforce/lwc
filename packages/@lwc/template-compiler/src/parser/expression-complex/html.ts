@@ -91,6 +91,30 @@ function acornNodeToSourceLocation(node: Node): SourceLocation {
     });
 }
 
+// structuredClone is only available in Node 17+
+// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
+const doStructuredClone =
+    typeof structuredClone === 'function'
+        ? structuredClone
+        : (obj: any) => JSON.parse(JSON.stringify(obj));
+
+function normalizeLocation(node: any) {
+    if (typeof node === 'object' && node !== null) {
+        if (node.loc) {
+            node.location = acornNodeToSourceLocation(node);
+        }
+        Object.values(node).forEach(normalizeLocation);
+    }
+}
+
+function removeProperties(node: any) {
+    if (typeof node === 'object' && node !== null) {
+        delete node.loc;
+        delete node.range;
+        Object.values(node).forEach(removeProperties);
+    }
+}
+
 /**
  * This class extends `parse5`'s internal tokenizer.
  *
@@ -143,7 +167,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
         const javascriptExprStart = expressionStart + leadingWhitespaceLen + OPENING_CURLY_LEN;
 
         // Start parsing after the opening curly brace and any leading whitespace.
-        const estreeNode = parseExpressionAt(html, javascriptExprStart, {
+        const acornNode = parseExpressionAt(html, javascriptExprStart, {
             ecmaVersion: TMPL_EXPR_ECMASCRIPT_EDITION,
             allowAwaitOutsideFunction: true,
             locations: true,
@@ -151,10 +175,10 @@ class TemplateHtmlTokenizer extends Tokenizer {
             onComment: () => invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
         });
 
-        const leadingChars = html.slice(expressionStart + 1, estreeNode.start);
-        const trailingChars = getTrailingChars(html.slice(estreeNode.end));
+        const leadingChars = html.slice(expressionStart + 1, acornNode.start);
+        const trailingChars = getTrailingChars(html.slice(acornNode.end));
         validateMatchingExtraParens(leadingChars, trailingChars);
-        const idxOfClosingBracket = estreeNode.end + trailingChars.length;
+        const idxOfClosingBracket = acornNode.end + trailingChars.length;
         // Capture text content between the outer curly braces, inclusive.
         const expressionTextNodeValue = html.slice(
             expressionStart,
@@ -167,12 +191,19 @@ class TemplateHtmlTokenizer extends Tokenizer {
             ['expression must end with curly brace.']
         );
 
+        const estreeNode = (function normalizeToEstree(acornNode) {
+            const normalized = doStructuredClone(acornNode);
+            normalizeLocation(normalized);
+            removeProperties(normalized);
+            return normalized;
+        })(acornNode);
+
         // Parsed expressions that are cached here will be later retrieved when the
         // LWC template AST is being constructed.
         this.parser.preparsedJsExpressions.set(expressionStart, {
-            parsedExpression: estreeNode,
+            acornNode,
+            estreeNode,
             rawText: expressionTextNodeValue,
-            sourceLocation: acornNodeToSourceLocation(estreeNode),
         });
 
         return expressionTextNodeValue;

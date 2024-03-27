@@ -99,13 +99,13 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 }
 
 export function validatePreparsedJsExpressions(ctx: ParserCtx) {
-    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText, sourceLocation }) => {
+    ctx.preparsedJsExpressions?.forEach(({ estreeNode, rawText }) => {
         ctx.withErrorWrapping(
             () => {
-                validateExpressionAst(parsedExpression);
+                validateExpressionAst(estreeNode);
             },
             ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            sourceLocation,
+            estreeNode.location,
             (err) => `Invalid expression ${rawText} - ${err.message}`
         );
     });
