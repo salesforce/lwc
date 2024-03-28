@@ -9,3 +9,6 @@ types/
 .rollup.cache
 
 __benchmarks_results__/
+
+*.html
+*.css
