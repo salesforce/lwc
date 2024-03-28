@@ -1,8 +1,5 @@
 {
-  "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.tsdk": "./node_modules/typescript/lib",
 
-  "eslint.validate": [
-    "javascript",
-    "typescript"
-  ]
+    "eslint.validate": ["javascript", "typescript"]
 }
