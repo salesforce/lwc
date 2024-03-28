@@ -28,9 +28,6 @@ let elementBeingUpgradedByLWC = false;
 // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
 // This class should be created once per tag name.
 const createUpgradableConstructor = (isFormAssociated: boolean) => {
-    // Note that every class passed into `customElements.define(...)` must be unique, so we can never return
-    // the BaseUpgradableConstructor directly.
-    // https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#exceptions
     // TODO [#2972]: this class should expose observedAttributes as necessary
     class UpgradableConstructor extends HTMLElement {
         constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
