@@ -70,7 +70,7 @@
     },
     "lint-staged": {
         "*.{js,mjs,ts}": "eslint",
-        "*.{js,json,md,mjs,ts,yaml,yml}": "prettier --write",
+        "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
         "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },

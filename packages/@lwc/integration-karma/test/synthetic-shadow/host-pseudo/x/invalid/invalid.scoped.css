@@ -2,4 +2,3 @@
 :host(.foo, .bar) .baz .quux {
     color: green;
 }
-
