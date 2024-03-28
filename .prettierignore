@@ -9,3 +9,7 @@ types/
 .rollup.cache
 
 __benchmarks_results__/
+
+# HTML files are used by tests and may include deliberately invalid/ugly HTML
+# e.g. <input> without self-closing tag, extra leading/trailing whitespace, etc.
+*.html

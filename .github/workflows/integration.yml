@@ -1,53 +1,53 @@
 name: Run WebDriverIO integration tests
 
 on:
-  push:
-    branches:
-      - master
-      - release
-      - 'spring*'
-      - 'summer*'
-      - 'winter*'
-  pull_request:
-    branches:
-      - master
-      - release
-      - 'spring*'
-      - 'summer*'
-      - 'winter*'
+    push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
 
 env:
-  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
-  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
-  SAUCE_TUNNEL_ID: github-action-tunnel-karma-${{github.run_id}}
-  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
-  GITHUB_RUN_ID: ${{github.run_id}}
+    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+    SAUCE_TUNNEL_ID: github-action-tunnel-karma-${{github.run_id}}
+    PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
+    GITHUB_RUN_ID: ${{github.run_id}}
 
 jobs:
-  run-integration-tests:
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: ./packages/@lwc/integration-tests
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    run-integration-tests:
+        runs-on: ubuntu-22.04
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-tests
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18.18.0"
-          cache: 'yarn'
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.18.0'
+                  cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: ./
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
 
-      - uses: saucelabs/sauce-connect-action@v2
-        with:
-          username: ${{ secrets.SAUCE_USERNAME }}
-          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+            - uses: saucelabs/sauce-connect-action@v2
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-      - run: yarn sauce:prod --browsers chrome
-      - run: yarn sauce:dev --browsers chrome
+            - run: yarn sauce:prod --browsers chrome
+            - run: yarn sauce:dev --browsers chrome

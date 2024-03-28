@@ -1,76 +1,76 @@
 name: Run unit tests
 
 on:
-  push:
-    branches:
-      - master
-      - release
-      - 'spring*'
-      - 'summer*'
-      - 'winter*'
-  pull_request:
-    branches:
-      - master
-      - release
-      - 'spring*'
-      - 'summer*'
-      - 'winter*'
+    push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
 
 env:
-  PUPPETEER_SKIP_DOWNLOAD: "true" # only needed for @best/runner-local, unused here
+    PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
 
 jobs:
-  run-unit-tests:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    run-unit-tests:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18.18.0"
-          cache: 'yarn'
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.18.0'
+                  cache: 'yarn'
 
-      # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
-      # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
-      - name: Setup chrome v121
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 121
-        id: setup-chrome
+            # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
+            # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
+            - name: Setup chrome v121
+              uses: browser-actions/setup-chrome@v1
+              with:
+                  chrome-version: 121
+              id: setup-chrome
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
 
-      # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
-      # See: https://github.com/google/tachometer#on-demand-dependencies
-      - name: Install chromedriver v121
-        run: yarn add -W chromedriver@^121
+            # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
+            # See: https://github.com/google/tachometer#on-demand-dependencies
+            - name: Install chromedriver v121
+              run: yarn add -W chromedriver@^121
 
-      - name: Check package.json integrity
-        run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
-      - name: Verify @lwc/shared is tree-shakable
-        run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
-      - name: Verify that dependencies are declared
-        run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
-      - name: Check formatting
-        run: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
-      - name: Run linter
-        run: yarn lint
-      - name: Check the size of the LWC bundle
-        run: yarn bundlesize
-      - name: Run Jest tests
-        run: yarn test:ci
-      - name: Upload Jest coverage report
-        uses: actions/upload-artifact@v3
-        with:
-            name: jest-coverage-report
-            path: coverage/
-      - name: Run benchmark smoke tests
-        run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
-      - name: Add step summary
-        # 1. Remove leading/trailing "border" lines from output
-        # 2. Wrap file names in backticks
-        # 3. Convert leading whitespace to non-breaking to approximate plaintext output
-        run: sed -E '$d;1d;4,$s/^(  ?)([^ ]+)/\1`\2`/g;4,$s/^  /\&nbsp;\&nbsp;/g' coverage/coverage.txt >> "$GITHUB_STEP_SUMMARY"
+            - name: Check package.json integrity
+              run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+            - name: Verify @lwc/shared is tree-shakable
+              run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+            - name: Verify that dependencies are declared
+              run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
+            - name: Check formatting
+              run: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
+            - name: Run linter
+              run: yarn lint
+            - name: Check the size of the LWC bundle
+              run: yarn bundlesize
+            - name: Run Jest tests
+              run: yarn test:ci
+            - name: Upload Jest coverage report
+              uses: actions/upload-artifact@v3
+              with:
+                  name: jest-coverage-report
+                  path: coverage/
+            - name: Run benchmark smoke tests
+              run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
+            - name: Add step summary
+              # 1. Remove leading/trailing "border" lines from output
+              # 2. Wrap file names in backticks
+              # 3. Convert leading whitespace to non-breaking to approximate plaintext output
+              run: sed -E '$d;1d;4,$s/^(  ?)([^ ]+)/\1`\2`/g;4,$s/^  /\&nbsp;\&nbsp;/g' coverage/coverage.txt >> "$GITHUB_STEP_SUMMARY"
