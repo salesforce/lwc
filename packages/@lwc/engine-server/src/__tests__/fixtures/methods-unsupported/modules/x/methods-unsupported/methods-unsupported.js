@@ -8,5 +8,6 @@ export default class MethodsUnsupported extends LightningElement {
         expect(() => this.querySelectorAll('.foo')).toThrowError('"querySelectorAll" is not supported in this environment')
         expect(() => this.getElementsByTagName('x-foo')).toThrowError('"getElementsByTagName" is not supported in this environment')
         expect(() => this.getElementsByClassName('foo')).toThrowError('"getElementsByClassName" is not supported in this environment')
+        expect(() => this.style).toThrowError('"style" is not supported in this environment')
     }
 }
