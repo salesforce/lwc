@@ -23,7 +23,15 @@ interface FixtureModule {
 
 jest.setTimeout(10_000 /* 10 seconds */);
 
-async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
+async function compileFixture({
+    input,
+    dirname,
+    apiVersion,
+}: {
+    input: string;
+    dirname: string;
+    apiVersion?: number;
+}) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
     // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
@@ -40,6 +48,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                         dir: modulesDir,
                     },
                 ],
+                ...(typeof apiVersion !== 'undefined' && { apiVersion }),
             }),
         ],
         onwarn(warning, warn) {
@@ -161,6 +170,7 @@ function testFixtures() {
             const compiledFixturePath = await compileFixture({
                 input: filename,
                 dirname,
+                ...('apiVersion' in config && { apiVersion: config.apiVersion }),
             });
 
             // The LWC engine holds global state like the current VM index, which has an impact on

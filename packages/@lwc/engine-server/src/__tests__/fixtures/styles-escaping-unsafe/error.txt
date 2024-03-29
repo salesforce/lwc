@@ -1,1 +1,1 @@
-CSS contains unsafe characters and cannot be serialized inside a style element
+CSS contains unsafe characters and cannot be serialized inside a style element. Ensure that your CSS does not contain any HTML content.

@@ -46,5 +46,8 @@
         "postcss": "~8.4.37",
         "postcss-selector-parser": "~6.0.15",
         "postcss-value-parser": "~4.2.0"
+    },
+    "devDependencies": {
+        "parse5": "^7.1.2"
     }
 }

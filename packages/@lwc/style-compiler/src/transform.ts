@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import postcss from 'postcss';
-import { getAPIVersionFromNumber } from '@lwc/shared';
+import { parseFragment } from 'parse5';
+import {
+    APIFeature,
+    getAPIVersionFromNumber,
+    isAPIFeatureEnabled,
+    validateStyleTextContents,
+} from '@lwc/shared';
 
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';
@@ -58,5 +64,11 @@ export function transform(src: string, id: string, config: Config = {}): { code:
 
     const result = postcss(plugins).process(src, { from: id }).sync();
 
-    return { code: serialize(result, config) };
+    const code = serialize(result, config);
+
+    if (isAPIFeatureEnabled(APIFeature.VALIDATE_CSS_CONTENT_IN_STYLE_COMPILER, apiVersion)) {
+        validateStyleTextContents(code, parseFragment);
+    }
+
+    return { code };
 }

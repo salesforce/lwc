@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
+import {
+    createVM,
+    connectRootElement,
+    LightningElement,
+    getComponentAPIVersion,
+} from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/shared';
 
 import { renderer } from '../renderer';
@@ -82,5 +87,7 @@ export function renderComponent(
 
     connectRootElement(element);
 
-    return serializeElement(element);
+    const apiVersion = getComponentAPIVersion(Ctor);
+
+    return serializeElement(element, apiVersion);
 }

@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import * as parse5 from 'parse5';
-import { DocumentFragment } from '@parse5/tools';
+import type { parseFragment } from 'parse5';
+import type { DocumentFragment } from '@parse5/tools';
 
 function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
     if (node.childNodes.length !== 1) {
@@ -32,19 +32,25 @@ function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
  * However, to avoid XSS attacks, we still need to check for things like `</style><script>alert("pwned")</script>`,
  * since a user could use that inside of a *.css file to break out of a <style> element.
  * @param contents CSS source to validate
+ * @param parseFragmentFunc the parseFragment function from parse5, which must be passed in
+ * to avoid having parse5 as a dep of `@lwc/shared`
  * @throws Throws if the contents provided are not valid.
  * @see https://github.com/salesforce/lwc/issues/3439
  * @example
  * validateStyleTextContents('div { color: red }') // Ok
  * validateStyleTextContents('</style><script>alert("pwned")</script>') // Throws
  */
-export function validateStyleTextContents(contents: string): void {
+export function validateStyleTextContents(
+    contents: string,
+    parseFragmentFunc: typeof parseFragment
+): void {
     // If parse5 parses this as more than one `<style>` tag, then it is unsafe to be rendered as-is
-    const fragment = parse5.parseFragment(`<style>${contents}</style>`);
+    const fragment = parseFragmentFunc(`<style>${contents}</style>`);
 
     if (!isSingleStyleNodeContainingSingleTextNode(fragment)) {
         throw new Error(
-            'CSS contains unsafe characters and cannot be serialized inside a style element'
+            'CSS contains unsafe characters and cannot be serialized inside a style element. ' +
+                'Ensure that your CSS does not contain any HTML content.'
         );
     }
 }

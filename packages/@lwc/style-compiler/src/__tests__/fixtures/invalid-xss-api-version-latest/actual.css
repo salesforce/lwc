@@ -1,0 +1,3 @@
+[data-foo="</style><script>alert('pwned!')</script>"] {
+    color: red;
+}
