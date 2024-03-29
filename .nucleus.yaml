@@ -37,6 +37,13 @@ branches:
         pull-request:
             <<: *branch-definition
             workflow: build-and-test # the default workflow is release, and we just want build+tests
+jobs:
+    build-and-test:
+        memory-limit: 16
+    create-canary-release:
+        memory-limit: 16
+    build-dependency:
+        memory-limit: 16
 steps:
     node-conformance:
         run:
