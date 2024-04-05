@@ -26,6 +26,11 @@ const _Node = Node;
  * @example isNodeShadowed(document.querySelector('my-component'))
  */
 function isNodeShadowed(node: Node): boolean {
+    if (lwcRuntimeFlags.DISABLE_IS_NODE_FROM_TEMPLATE) {
+        throw new Error(
+            'isNodeFromTemplate/isNodeShadowed is a deprecated API and is no longer supported'
+        );
+    }
     if (isFalse(node instanceof _Node)) {
         return false;
     }

@@ -1,4 +1,4 @@
-import { createElement, isNodeFromTemplate } from 'lwc';
+import { createElement, isNodeFromTemplate, setFeatureFlagForTest } from 'lwc';
 import Test from 'x/test';
 
 function testNonNodes(type, obj) {
@@ -76,3 +76,19 @@ if (!process.env.NATIVE_SHADOW) {
         });
     });
 }
+
+describe('DISABLE_IS_NODE_FROM_TEMPLATE flag', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('DISABLE_IS_NODE_FROM_TEMPLATE', true);
+    });
+
+    afterEach(() => {
+        setFeatureFlagForTest('DISABLE_IS_NODE_FROM_TEMPLATE', false);
+    });
+
+    it('should throw an error when the flag is enabled', () => {
+        expect(isNodeFromTemplate).toThrowError(
+            /isNodeFromTemplate\/isNodeShadowed is a deprecated API and is no longer supported/
+        );
+    });
+});

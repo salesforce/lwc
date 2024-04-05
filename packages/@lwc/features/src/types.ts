@@ -69,6 +69,11 @@ export interface FeatureFlagMap {
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+    /**
+     * Causes the legacy `isNodeFromTemplate`/`isNodeShadowed` API to throw an error. Intend to be used as a first
+     * step toward deleting this API.
+     */
+    DISABLE_IS_NODE_FROM_TEMPLATE: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
