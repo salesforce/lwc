@@ -42,6 +42,7 @@
         }
     },
     "dependencies": {
+        "//": "Acorn is pinned due to a breaking change in its types in 8.11: https://github.com/acornjs/acorn/issues/1260",
         "@lwc/errors": "6.5.0",
         "@lwc/shared": "6.5.0",
         "acorn": "8.10.0",

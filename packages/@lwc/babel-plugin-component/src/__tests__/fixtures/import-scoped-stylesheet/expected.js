@@ -1,5 +1,5 @@
 import _tmpl from "./test.html";
-import { registerComponent as _registerComponent, LightningElement } from "lwc";
+import { LightningElement, registerComponent as _registerComponent } from 'lwc';
 import notScoped from './stylesheet.css';
 import scoped from "./stylesheet.scoped.css?scoped=true";
 export default _registerComponent(class extends LightningElement {
