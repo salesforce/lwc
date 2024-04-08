@@ -148,15 +148,17 @@ module.exports = {
 
     plugins: [
         nodeResolve({
-            // These are the devDeps that may be inlined into the dist/ bundles
-            // These include packages owned by us (LWC, observable-membrane), as well as parse5
-            // and its single dependency, which are bundled because it makes it simpler to distribute
+            // These are the devDeps that may be inlined into the `dist/` bundles.
+            // These include packages owned by us (LWC, `observable-membrane`), as well as certain ESM-only
+            // dependencies that would cause issues with our downstreams due to CJS vs ESM incompatibilities.
+            // These deps include `parse5` and its single dependency (`entities`) as well as `estree-walker`.
             resolveOnly: [
                 /^@lwc\//,
                 'observable-membrane',
                 /^parse5($|\/)/,
                 'entities',
                 /^@parse5\/tools/,
+                'estree-walker',
             ],
         }),
         ...sharedPlugins(),
