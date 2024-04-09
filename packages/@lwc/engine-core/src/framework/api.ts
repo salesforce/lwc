@@ -432,7 +432,7 @@ function i(
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
-            // `isArray` doesn't properly narrow this block properly...
+            // `isArray` doesn't narrow this block properly...
             ArrayPush.call(list, vnode as VNode | null);
         }
 
@@ -472,7 +472,7 @@ function i(
  * [f]lattening
  * @param items
  */
-function f(items: ReadonlyArray<ReadonlyArray<VNodes> | VNodes>): VNodes {
+function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
@@ -482,15 +482,11 @@ function f(items: ReadonlyArray<ReadonlyArray<VNodes> | VNodes>): VNodes {
     sc(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
-        const innerLen = items[j].length;
-        for (let k = 0; k < innerLen; k += 1) {
-            const vnodeOrArray = item[k];
-            if (isArray(vnodeOrArray)) {
-                ArrayPush.apply(flattened, vnodeOrArray);
-            } else {
-                // `isArray` doesn't narrow this block properly...
-                ArrayPush.call(flattened, vnodeOrArray as VNode | null);
-            }
+        if (isArray(item)) {
+            ArrayPush.apply(flattened, item);
+        } else {
+            // `isArray` doesn't narrow this block properly...
+            ArrayPush.call(flattened, item as VNode | null);
         }
     }
     return flattened;
