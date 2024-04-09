@@ -1,5 +1,5 @@
 import _tmpl from "./test.html";
-import { registerComponent as _registerComponent, registerDecorators as _registerDecorators } from "lwc";
+import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 const foo = _registerDecorators(class {
   foo;
 }, {
