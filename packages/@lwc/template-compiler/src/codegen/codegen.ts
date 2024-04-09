@@ -27,6 +27,7 @@ import {
     StaticElement,
     Attribute,
     KeyDirective,
+    StaticChildNode,
 } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
@@ -34,16 +35,19 @@ import {
     TEMPLATE_PARAMS,
 } from '../shared/constants';
 import {
+    isAttribute,
     isComment,
     isElement,
     isExpression,
     isKeyDirective,
     isPreserveCommentsDirective,
     isRenderModeDirective,
+    isStringLiteral,
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { getStaticNodes, memorizeHandler, objectToAST } from './helpers';
+import { memorizeHandler, objectToAST } from './helpers';
+import { transformStaticChildren, getStaticNodes, isDynamicText } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
 
@@ -161,7 +165,7 @@ export default class CodeGen {
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
 
-    staticExpressionMap = new WeakMap<Attribute, string>();
+    staticExpressionMap = new WeakMap<Attribute | Text, string>();
 
     constructor({
         root,
@@ -242,6 +246,10 @@ export default class CodeGen {
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {
+        return this._renderApiCall(RENDER_APIS.text, [this.genConcatenatedText(value)]);
+    }
+
+    genConcatenatedText(value: Array<string | t.Expression>): t.Expression {
         const mappedValues = value.map((v) => {
             return typeof v === 'string'
                 ? t.literal(v)
@@ -253,8 +261,7 @@ export default class CodeGen {
         for (let i = 1, n = mappedValues.length; i < n; i++) {
             textConcatenation = t.binaryExpression('+', textConcatenation, mappedValues[i]);
         }
-
-        return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
+        return textConcatenation;
     }
 
     genComment(value: string): t.Expression {
@@ -612,57 +619,82 @@ export default class CodeGen {
     }
 
     genStaticParts(element: StaticElement): t.ArrayExpression | undefined {
-        const stack: (StaticElement | Text)[] = [element];
-        const partIdsToDatabagProps = new Map<number, t.Property[]>();
+        const stack: (StaticChildNode | Text[])[] = [element];
+        const partIdsToArgs = new Map<number, { text: t.Expression; databag: t.Expression }>();
         let partId = -1;
 
-        const addDatabagProp = (prop: t.Property) => {
-            let databags = partIdsToDatabagProps.get(partId);
-            if (!databags) {
-                databags = [];
-                partIdsToDatabagProps.set(partId, databags);
+        const getPartIdArgs = (partId: number) => {
+            let args = partIdsToArgs.get(partId);
+            if (!args) {
+                args = { text: t.literal(null), databag: t.literal(null) };
+                partIdsToArgs.set(partId, args);
             }
-            databags.push(prop);
+            return args;
+        };
+
+        const setPartIdText = (text: t.Expression) => {
+            const args = getPartIdArgs(partId)!;
+            args.text = text;
+        };
+
+        const setPartIdDatabag = (databag: t.Property[]) => {
+            const args = getPartIdArgs(partId)!;
+            args.databag = t.objectExpression(databag);
         };
 
         // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
         while (stack.length > 0) {
-            const node = stack.shift()!;
+            const current = stack.shift()!;
 
             // Skip comment nodes in parts count, as they will be stripped in production, unless when `lwc:preserve-comments` is enabled
-            if (!isComment(node) || this.preserveComments) {
+            if (isDynamicText(current) || !isComment(current) || this.preserveComments) {
                 partId++;
             }
 
-            if (isElement(node)) {
+            if (isDynamicText(current)) {
+                const textNodes = current;
+                const partToken = `${STATIC_PART_TOKEN_ID.TEXT}${partId}`;
+                // Use the first text node as the key.
+                // Dynamic text is guaranteed to have at least 1 text node in the array by transformStaticChildren.
+                this.staticExpressionMap.set(textNodes[0], partToken);
+                const concatenatedText = this.genConcatenatedText(
+                    textNodes.map(({ value }) =>
+                        isStringLiteral(value) ? value.value : this.bindExpression(value)
+                    )
+                );
+
+                setPartIdText(concatenatedText);
+            } else if (isElement(current)) {
+                const elm = current;
+                const databag = [];
                 // has event listeners
-                if (node.listeners.length) {
-                    addDatabagProp(this.genEventListeners(node.listeners));
+                if (elm.listeners.length) {
+                    databag.push(this.genEventListeners(elm.listeners));
                 }
 
                 // See STATIC_SAFE_DIRECTIVES for what's allowed here.
                 // Also note that we don't generate the 'key' here, because we only support it at the top level
                 // directly passed into the `api_static_fragment` function, not as a part.
-                for (const directive of node.directives) {
+                for (const directive of elm.directives) {
                     if (directive.name === 'Ref') {
-                        addDatabagProp(this.genRef(directive));
+                        databag.push(this.genRef(directive));
                     }
                 }
 
                 const attributeExpressions = [];
 
-                for (const attribute of node.attributes) {
+                for (const attribute of elm.attributes) {
                     const { name, value } = attribute;
                     if (isExpression(value)) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
-                            addDatabagProp(
+                            databag.push(
                                 t.property(t.identifier('style'), this.bindExpression(value))
                             );
                         } else if (name === 'class') {
                             partToken = `${STATIC_PART_TOKEN_ID.CLASS}${partId}`;
-                            addDatabagProp(
+                            databag.push(
                                 t.property(t.identifier('className'), this.bindExpression(value))
                             );
                         } else {
@@ -670,7 +702,7 @@ export default class CodeGen {
                             attributeExpressions.push(
                                 t.property(
                                     t.literal(name),
-                                    bindAttributeExpression(attribute, node, this, false)
+                                    bindAttributeExpression(attribute, elm, this, false)
                                 )
                             );
                         }
@@ -679,43 +711,45 @@ export default class CodeGen {
                 }
 
                 if (attributeExpressions.length) {
-                    addDatabagProp(
+                    databag.push(
                         t.property(t.identifier('attrs'), t.objectExpression(attributeExpressions))
                     );
                 }
 
-                // For depth-first traversal, children must be preprended in order, so that they are processed before
+                if (databag.length) {
+                    setPartIdDatabag(databag);
+                }
+
+                // For depth-first traversal, children must be prepended in order, so that they are processed before
                 // siblings. Note that this is consistent with the order used in the diffing algo as well as
                 // `traverseAndSetElements` in @lwc/engine-core.
-                stack.unshift(...node.children);
+                stack.unshift(...transformStaticChildren(elm));
             }
         }
 
-        if (partIdsToDatabagProps.size === 0) {
-            return undefined; // no databags needed
+        if (partIdsToArgs.size === 0) {
+            return undefined; // no parts needed
         }
 
         return t.arrayExpression(
-            [...partIdsToDatabagProps.entries()].map(([partId, databagProperties]) => {
-                return this.genStaticPart(partId, databagProperties);
+            [...partIdsToArgs.entries()].map(([partId, { databag, text }]) => {
+                return this.genStaticPart(partId, databag, text);
             })
         );
     }
 
-    genStaticPart(partId: number, databagProperties: t.Property[]): t.CallExpression {
-        return this._renderApiCall(RENDER_APIS.staticPart, [
-            t.literal(partId),
-            t.objectExpression(databagProperties),
-        ]);
+    genStaticPart(partId: number, data: t.Expression, text: t.Expression): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.staticPart, [t.literal(partId), data, text]);
     }
 
-    getStaticExpressionToken(node: Attribute): string {
+    getStaticExpressionToken(node: Attribute | Text): string {
         const token = this.staticExpressionMap.get(node);
         /* istanbul ignore if */
         if (isUndefined(token)) {
             // It should not be possible to hit this code path
+            const nodeName = isAttribute(node) ? node.name : 'text node';
             throw new Error(
-                `Template compiler internal error, unable to map ${node.name} to a static expression.`
+                `Template compiler internal error, unable to map ${nodeName} to a static expression.`
             );
         }
         return token;

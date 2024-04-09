@@ -1,0 +1,59 @@
+<template>
+    <template lwc:if={show}>
+        {firstOutterSiblingLwcIf}
+        <div>{solo}</div>
+        <div>
+            {firstInnerSiblingLwcIf}
+            <span>text1LwcIf</span>
+        </div>
+        {centerOutterSiblingLwcIf}
+        <div>
+            <span>text2LwcIf</span>
+            {secondInnerSiblingLwcIf}
+        </div>
+        <div>
+            <span>text3LwcIf</span>
+            {middleInnerSiblingLwcIf}
+            <span>text4LwcIf</span>
+        </div>
+        {lastOutterSiblingLwcIf}
+    </template>
+    <template lwc:elseif={showElseIf}>
+        {firstOutterSiblingLwcElseIf}
+        <div>{solo}</div>
+        <div>
+            {firstInnerSiblingLwcElseIf}
+            <span>text1LwcElseIf</span>
+        </div>
+        {centerOutterSiblingLwcElseIf}
+        <div>
+            <span>text2LwcElseIf</span>
+            {secondInnerSiblingLwcElseIf}
+        </div>
+        <div>
+            <span>text3LwcElseIf</span>
+            {middleInnerSiblingLwcElseIf}
+            <span>text4LwcElseIf</span>
+        </div>
+        {lastOutterSiblingLwcElseIf}
+    </template>
+    <template lwc:else>
+        {firstOutterSiblingLwcElse}
+        <div>{solo}</div>
+        <div>
+            {firstInnerSiblingLwcElse}
+            <span>text1LwcElse</span>
+        </div>
+        {centerOutterSiblingLwcElse}
+        <div>
+            <span>text2LwcElse</span>
+            {secondInnerSiblingLwcElse}
+        </div>
+        <div>
+            <span>text3LwcElse</span>
+            {middleInnerSiblingLwcElse}
+            <span>text4LwcElse</span>
+        </div>
+        {lastOutterSiblingLwcElse}
+    </template>
+</template>

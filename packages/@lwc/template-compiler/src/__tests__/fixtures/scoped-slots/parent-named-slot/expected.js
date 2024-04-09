@@ -1,22 +1,16 @@
 import _xChild from "x/child";
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
+const $fragment2 = parseFragment`<p${3}>${"t1"}</p>`;
+const $fragment3 = parseFragment`<p${3}>${"t1"}</p>`;
 const stc0 = {
   key: 0,
-};
-const stc1 = {
-  key: 1,
-};
-const stc2 = {
-  key: 2,
-};
-const stc3 = {
-  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
     c: api_custom_element,
@@ -27,8 +21,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_fragment(
           key,
           [
-            api_element("p", stc1, [
-              api_text(api_dynamic_text(slot1data.name)),
+            api_static_fragment($fragment1, 2, [
+              api_static_part(1, null, api_dynamic_text(slot1data.name)),
             ]),
           ],
           0
@@ -38,8 +32,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_fragment(
           key,
           [
-            api_element("p", stc2, [
-              api_text(api_dynamic_text(slot2data.title)),
+            api_static_fragment($fragment2, 4, [
+              api_static_part(1, null, api_dynamic_text(slot2data.title)),
             ]),
           ],
           0
@@ -49,8 +43,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_fragment(
           key,
           [
-            api_element("p", stc3, [
-              api_text(api_dynamic_text(defaultdata.title)),
+            api_static_fragment($fragment3, 6, [
+              api_static_part(1, null, api_dynamic_text(defaultdata.title)),
             ]),
           ],
           0

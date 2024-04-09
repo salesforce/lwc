@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 13,
+            "endLine": 14,
             "endColumn": 12,
             "start": 0,
-            "end": 424,
+            "end": 494,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 13,
+                "startLine": 14,
                 "startColumn": 1,
-                "endLine": 13,
+                "endLine": 14,
                 "endColumn": 12,
-                "start": 413,
-                "end": 424
+                "start": 483,
+                "end": 494
             }
         },
         "directives": [],
@@ -34,10 +34,10 @@
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 12,
+                    "endLine": 13,
                     "endColumn": 11,
                     "start": 15,
-                    "end": 412,
+                    "end": 482,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -47,12 +47,12 @@
                         "end": 20
                     },
                     "endTag": {
-                        "startLine": 12,
+                        "startLine": 13,
                         "startColumn": 5,
-                        "endLine": 12,
+                        "endLine": 13,
                         "endColumn": 11,
-                        "start": 406,
-                        "end": 412
+                        "start": 476,
+                        "end": 482
                     }
                 },
                 "attributes": [],
@@ -91,10 +91,10 @@
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
-                            "endLine": 11,
+                            "endLine": 12,
                             "endColumn": 20,
                             "start": 29,
-                            "end": 401
+                            "end": 471
                         },
                         "directiveLocation": {
                             "startLine": 3,
@@ -112,10 +112,10 @@
                                 "location": {
                                     "startLine": 4,
                                     "startColumn": 13,
-                                    "endLine": 10,
+                                    "endLine": 11,
                                     "endColumn": 19,
                                     "start": 85,
-                                    "end": 381,
+                                    "end": 451,
                                     "startTag": {
                                         "startLine": 4,
                                         "startColumn": 13,
@@ -125,12 +125,12 @@
                                         "end": 105
                                     },
                                     "endTag": {
-                                        "startLine": 10,
+                                        "startLine": 11,
                                         "startColumn": 13,
-                                        "endLine": 10,
+                                        "endLine": 11,
                                         "endColumn": 19,
-                                        "start": 375,
-                                        "end": 381
+                                        "start": 445,
+                                        "end": 451
                                     }
                                 },
                                 "attributes": [],
@@ -410,24 +410,114 @@
                                             "startLine": 9,
                                             "startColumn": 17,
                                             "endLine": 9,
-                                            "endColumn": 74,
+                                            "endColumn": 59,
                                             "start": 305,
-                                            "end": 362,
+                                            "end": 347,
                                             "startTag": {
                                                 "startLine": 9,
                                                 "startColumn": 17,
                                                 "endLine": 9,
-                                                "endColumn": 67,
+                                                "endColumn": 23,
                                                 "start": 305,
-                                                "end": 355
+                                                "end": 311
                                             },
                                             "endTag": {
                                                 "startLine": 9,
-                                                "startColumn": 67,
+                                                "startColumn": 52,
                                                 "endLine": 9,
-                                                "endColumn": 74,
-                                                "start": 355,
-                                                "end": 362
+                                                "endColumn": 59,
+                                                "start": 340,
+                                                "end": 347
+                                            }
+                                        },
+                                        "attributes": [],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": [
+                                            {
+                                                "type": "Text",
+                                                "raw": "concatenated text ",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "concatenated text "
+                                                },
+                                                "location": {
+                                                    "startLine": 9,
+                                                    "startColumn": 23,
+                                                    "endLine": 9,
+                                                    "endColumn": 52,
+                                                    "start": 311,
+                                                    "end": 340
+                                                }
+                                            },
+                                            {
+                                                "type": "Text",
+                                                "raw": "{item.text}",
+                                                "value": {
+                                                    "type": "MemberExpression",
+                                                    "start": 1,
+                                                    "end": 10,
+                                                    "object": {
+                                                        "type": "Identifier",
+                                                        "start": 1,
+                                                        "end": 5,
+                                                        "name": "item"
+                                                    },
+                                                    "property": {
+                                                        "type": "Identifier",
+                                                        "start": 6,
+                                                        "end": 10,
+                                                        "name": "text"
+                                                    },
+                                                    "computed": false,
+                                                    "optional": false,
+                                                    "location": {
+                                                        "startLine": 9,
+                                                        "startColumn": 23,
+                                                        "endLine": 9,
+                                                        "endColumn": 52,
+                                                        "start": 311,
+                                                        "end": 340
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 9,
+                                                    "startColumn": 23,
+                                                    "endLine": 9,
+                                                    "endColumn": 52,
+                                                    "start": 311,
+                                                    "end": 340
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "span",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 17,
+                                            "endLine": 10,
+                                            "endColumn": 85,
+                                            "start": 364,
+                                            "end": 432,
+                                            "startTag": {
+                                                "startLine": 10,
+                                                "startColumn": 17,
+                                                "endLine": 10,
+                                                "endColumn": 67,
+                                                "start": 364,
+                                                "end": 414
+                                            },
+                                            "endTag": {
+                                                "startLine": 10,
+                                                "startColumn": 78,
+                                                "endLine": 10,
+                                                "endColumn": 85,
+                                                "start": 425,
+                                                "end": 432
                                             }
                                         },
                                         "attributes": [
@@ -440,21 +530,21 @@
                                                     "end": 4,
                                                     "name": "foo",
                                                     "location": {
-                                                        "startLine": 9,
+                                                        "startLine": 10,
                                                         "startColumn": 23,
-                                                        "endLine": 9,
+                                                        "endLine": 10,
                                                         "endColumn": 41,
-                                                        "start": 311,
-                                                        "end": 329
+                                                        "start": 370,
+                                                        "end": 388
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 9,
+                                                    "startLine": 10,
                                                     "startColumn": 23,
-                                                    "endLine": 9,
+                                                    "endLine": 10,
                                                     "endColumn": 41,
-                                                    "start": 311,
-                                                    "end": 329
+                                                    "start": 370,
+                                                    "end": 388
                                                 }
                                             },
                                             {
@@ -466,21 +556,21 @@
                                                     "end": 5,
                                                     "name": "baaz",
                                                     "location": {
-                                                        "startLine": 9,
+                                                        "startLine": 10,
                                                         "startColumn": 42,
-                                                        "endLine": 9,
+                                                        "endLine": 10,
                                                         "endColumn": 54,
-                                                        "start": 330,
-                                                        "end": 342
+                                                        "start": 389,
+                                                        "end": 401
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 9,
+                                                    "startLine": 10,
                                                     "startColumn": 42,
-                                                    "endLine": 9,
+                                                    "endLine": 10,
                                                     "endColumn": 54,
-                                                    "start": 330,
-                                                    "end": 342
+                                                    "start": 389,
+                                                    "end": 401
                                                 }
                                             },
                                             {
@@ -492,28 +582,68 @@
                                                     "end": 4,
                                                     "name": "bar",
                                                     "location": {
-                                                        "startLine": 9,
+                                                        "startLine": 10,
                                                         "startColumn": 55,
-                                                        "endLine": 9,
+                                                        "endLine": 10,
                                                         "endColumn": 66,
-                                                        "start": 343,
-                                                        "end": 354
+                                                        "start": 402,
+                                                        "end": 413
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 9,
+                                                    "startLine": 10,
                                                     "startColumn": 55,
-                                                    "endLine": 9,
+                                                    "endLine": 10,
                                                     "endColumn": 66,
-                                                    "start": 343,
-                                                    "end": 354
+                                                    "start": 402,
+                                                    "end": 413
                                                 }
                                             }
                                         ],
                                         "properties": [],
                                         "directives": [],
                                         "listeners": [],
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "type": "Text",
+                                                "raw": "{item.text}",
+                                                "value": {
+                                                    "type": "MemberExpression",
+                                                    "start": 1,
+                                                    "end": 10,
+                                                    "object": {
+                                                        "type": "Identifier",
+                                                        "start": 1,
+                                                        "end": 5,
+                                                        "name": "item"
+                                                    },
+                                                    "property": {
+                                                        "type": "Identifier",
+                                                        "start": 6,
+                                                        "end": 10,
+                                                        "name": "text"
+                                                    },
+                                                    "computed": false,
+                                                    "optional": false,
+                                                    "location": {
+                                                        "startLine": 10,
+                                                        "startColumn": 67,
+                                                        "endLine": 10,
+                                                        "endColumn": 78,
+                                                        "start": 414,
+                                                        "end": 425
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 10,
+                                                    "startColumn": 67,
+                                                    "endLine": 10,
+                                                    "endColumn": 78,
+                                                    "start": 414,
+                                                    "end": 425
+                                                }
+                                            }
+                                        ]
                                     }
                                 ]
                             }

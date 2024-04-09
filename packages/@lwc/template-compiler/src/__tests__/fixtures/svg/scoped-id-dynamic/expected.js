@@ -20,16 +20,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("svg", stc0, [
       api_static_fragment($fragment1, 2, [
-        api_static_part(1, {
-          attrs: {
-            id: api_scoped_id($cmp.blackId),
+        api_static_part(
+          1,
+          {
+            attrs: {
+              id: api_scoped_id($cmp.blackId),
+            },
           },
-        }),
-        api_static_part(2, {
-          attrs: {
-            id: api_scoped_id($cmp.redId),
+          null
+        ),
+        api_static_part(
+          2,
+          {
+            attrs: {
+              id: api_scoped_id($cmp.redId),
+            },
           },
-        }),
+          null
+        ),
       ]),
       api_element("use", {
         attrs: {

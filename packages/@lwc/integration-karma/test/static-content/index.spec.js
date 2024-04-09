@@ -20,6 +20,8 @@ import Attribute from 'x/attribute';
 import DeepAttribute from 'x/deepAttribute';
 import IframeOnload from 'x/iframeOnload';
 import WithKey from 'x/withKey';
+import Text from 'x/text';
+import TableWithExpression from 'x/tableWithExpressions';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -454,12 +456,17 @@ describe('static content optimization with attribute', () => {
     const verifyAttributeAppliedCorrectly = ({ cmp, expected }) =>
         expect(cmp.getAttribute('data-value')).toEqual(expected);
 
+    const verifyClassAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('class')).toEqual(expected);
+
     it('preserves static values', () => {
         const {
             staticAttr,
             staticStyle,
+            staticClass,
             staticAttrNested,
             staticStyleNested,
+            staticClassNested,
             staticCombined,
             staticCombinedNested,
         } = nodes;
@@ -471,6 +478,14 @@ describe('static content optimization with attribute', () => {
             { cmp: staticStyleNested, expected: 'color: white;' },
             { cmp: staticCombinedNested, expected: 'color: orange;' },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        [
+            { cmp: staticClass, expected: 'static class' },
+            { cmp: staticCombined, expected: 'combined class' },
+            { cmp: staticClassNested, expected: 'static nested class' },
+            { cmp: staticCombinedNested, expected: 'static combined nested' },
+        ].forEach(verifyClassAppliedCorrectly);
 
         // attributes
         [
@@ -485,8 +500,10 @@ describe('static content optimization with attribute', () => {
         const {
             dynamicAttr,
             dynamicStyle,
+            dynamicClass,
             dynamicAttrNested,
             dynamicStyleNested,
+            dynamicClassNested,
             dynamicCombined,
             dynamicCombinedNested,
         } = nodes;
@@ -498,6 +515,14 @@ describe('static content optimization with attribute', () => {
             { cmp: dynamicCombined, expected: 'color: orange;' },
             { cmp: dynamicCombinedNested, expected: 'color: black;' },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        [
+            { cmp: dynamicClass, expected: 'class1' },
+            { cmp: dynamicClassNested, expected: 'nestedClass1' },
+            { cmp: dynamicCombined, expected: 'combinedClass' },
+            { cmp: dynamicCombinedNested, expected: 'combinedClassNested' },
+        ].forEach(verifyClassAppliedCorrectly);
 
         // attributes
         [
@@ -512,8 +537,10 @@ describe('static content optimization with attribute', () => {
         const {
             dynamicAttr,
             dynamicStyle,
+            dynamicClass,
             dynamicAttrNested,
             dynamicStyleNested,
+            dynamicClassNested,
             dynamicCombined,
             dynamicCombinedNested,
         } = nodes;
@@ -533,6 +560,21 @@ describe('static content optimization with attribute', () => {
             { cmp: dynamicCombined, expected: 'color: purple;' },
             { cmp: dynamicCombinedNested, expected: 'color: random;' },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        elm.dynamicClass = 'class2';
+        elm.dynamicClassNested = 'nestedClass2';
+        elm.combinedClass = 'combinedClassUpdated';
+        elm.combinedClassNested = 'combinedClassNestedUpdated';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicClass, expected: 'class2' },
+            { cmp: dynamicClassNested, expected: 'nestedClass2' },
+            { cmp: dynamicCombined, expected: 'combinedClassUpdated' },
+            { cmp: dynamicCombinedNested, expected: 'combinedClassNestedUpdated' },
+        ].forEach(verifyClassAppliedCorrectly);
 
         // attributes
         elm.dynamicAttr = 'dynamicUpdated1';
@@ -564,6 +606,12 @@ describe('static content optimization with attribute', () => {
                 { cmp: nodes[`deep${i}Style`], expected: `${i}` },
                 { cmp: nodes[`deep${i}StyleNested`], expected: `${i}` },
             ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+            // class
+            [
+                { cmp: nodes[`deep${i}Class`], expected: `${i}` },
+                { cmp: nodes[`deep${i}ClassNested`], expected: `${i}` },
+            ].forEach(verifyClassAppliedCorrectly);
 
             // attribute
             [
@@ -633,5 +681,71 @@ describe('key directive', () => {
         expect(tdsC[0]).toBe(tdsB[1]);
         expect(trsC[1]).toBe(trsB[0]);
         expect(tdsC[1]).toBe(tdsB[0]);
+    });
+});
+
+describe('static content dynamic text', () => {
+    it('renders expressions on mount', async () => {
+        const elm = createElement('x-text', { is: Text });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        const { emptyString, concateBeginning, concateEnd, siblings } = extractDataIds(elm);
+
+        expect(emptyString.textContent).toEqual('');
+        expect(concateBeginning.textContent).toEqual('default value');
+        expect(concateEnd.textContent).toEqual('value default');
+
+        expect(siblings.childNodes.length).toBe(2);
+        expect(siblings.childNodes[0].textContent).toEqual('standard text');
+        expect(siblings.childNodes[1].textContent).toEqual('second default');
+    });
+
+    it('updates expressions on mount', async () => {
+        const elm = createElement('x-text', { is: Text });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        elm.emptyString = 'not empty';
+        elm.dynamicText = 'updated';
+        elm.siblingDynamicText = 'updated second';
+
+        await Promise.resolve();
+
+        const { emptyString, concateBeginning, concateEnd, siblings } = extractDataIds(elm);
+
+        expect(emptyString.textContent).toEqual('not empty');
+        expect(concateBeginning.textContent).toEqual('updated value');
+        expect(concateEnd.textContent).toEqual('value updated');
+
+        expect(siblings.childNodes.length).toEqual(2);
+        expect(siblings.childNodes[0].textContent).toEqual('standard text');
+        expect(siblings.childNodes[1].textContent).toEqual('updated second');
+    });
+});
+
+describe('table with static content containing expressions', () => {
+    it('renders static content correctly', async () => {
+        const table = createElement('x-table', { is: TableWithExpression });
+        document.body.appendChild(table);
+
+        await Promise.resolve();
+
+        const tbody = table.shadowRoot.querySelector('tbody');
+        expect(tbody.children.length).toEqual(3);
+        const trs = [...table.shadowRoot.querySelectorAll('tr')];
+        const tds = [...table.shadowRoot.querySelectorAll('td')];
+
+        expect(trs.length).toEqual(3);
+        expect(tds.length).toEqual(3);
+
+        tds.forEach((td, i) => {
+            expect(td.getAttribute('class')).toEqual(`class${i}`);
+            expect(td.getAttribute('style')).toEqual(`color: ${i};`);
+            expect(td.getAttribute('data-id')).toEqual(`${i}`);
+            expect(td.textContent).toEqual(`value${i}`);
+        });
     });
 });

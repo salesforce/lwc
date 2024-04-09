@@ -1,5 +1,5 @@
 import _tmpl from "./test.html";
-import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement, LightningElement } from "lwc";
+import { createElement, LightningElement, registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 const Test = _registerDecorators(class extends LightningElement {
   state;
   foo;

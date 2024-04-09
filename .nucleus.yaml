@@ -1,63 +1,70 @@
 core-deploy:
-  enabled: true
-  project-modules:
-    lwc: lwc.version
+    enabled: true
+    project-modules:
+        lwc: lwc.version
 branches:
-  ~DEFAULT~:
-    pull-request: &branch-definition
-      auto-start: true
-      auto-start-from-forks: false
-      merge-method: disabled # do not auto-merge; we'll do it ourselves
-      validate-optional-downstream-deps: true # temporarily test non-required downstreams
-      required-downstream-deps:
-        - LightningMobileRuntime/ui-lmr-components
-        - MobilePlatform/lds-debug-app
-        - Trailhead-Platform/ui-trailhead-core-components
-        - automation-platform/ui-interaction-explorer-components
-        - communities/shared-experience-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - nrkruk/lwc-dev-core
-        - ris-gpta/core_via_components
-        - salesforce/builder-framework
-        - salesforce-experience-platform-emu/luvio
-        - salesforce-experience-platform-emu/lwr
-        - salesforce/lwr-lightning-platform
-  release:
-    pull-request:
-      <<: *branch-definition
-      merge-method: force-push # release branch should always be in sync with master branch (linear history)
-  winter24:
-    pull-request:
-      <<: *branch-definition
-  spring24:
-    pull-request:
-      <<: *branch-definition
-  milestone-.*: # used for prerelease testing
-    pull-request:
-      <<: *branch-definition
-      workflow: build-and-test # the default workflow is release, and we just want build+tests
+    ~DEFAULT~:
+        pull-request: &branch-definition
+            auto-start: true
+            auto-start-from-forks: false
+            merge-method: disabled # do not auto-merge; we'll do it ourselves
+            validate-optional-downstream-deps: true # temporarily test non-required downstreams
+            required-downstream-deps:
+                - LightningMobileRuntime/ui-lmr-components
+                - MobilePlatform/lds-debug-app
+                - Trailhead-Platform/ui-trailhead-core-components
+                - automation-platform/ui-interaction-explorer-components
+                - communities/shared-experience-components
+                - communities/ui-lightning-community
+                - lwc/lwc-platform
+                - nrkruk/lwc-dev-core
+                - ris-gpta/core_via_components
+                - salesforce/builder-framework
+                - salesforce-experience-platform-emu/luvio
+                - salesforce-experience-platform-emu/lwr
+                - salesforce/lwr-lightning-platform
+    release:
+        pull-request:
+            <<: *branch-definition
+            merge-method: force-push # release branch should always be in sync with master branch (linear history)
+    spring24:
+        pull-request:
+            <<: *branch-definition
+    summer24:
+        pull-request:
+            <<: *branch-definition
+    milestone-.*: # used for prerelease testing
+        pull-request:
+            <<: *branch-definition
+            workflow: build-and-test # the default workflow is release, and we just want build+tests
+jobs:
+    build-and-test:
+        memory-limit: 16
+    create-canary-release:
+        memory-limit: 16
+    build-dependency:
+        memory-limit: 16
 steps:
-  node-conformance:
-    run:
-      command: yarn run lint
-    after: node-build
-  node-unit-tests:
-    run:
-      command: yarn test
-  # this project runs yarn build after yarn install so skip explicit build step
-  node-build: &node-build
-    skip: true
-  node-pre-release-tests:
-    params:
-      command: yarn test
-  npm-configure:
-    params:
-      registry-url: https://registry.yarnpkg.com
-  npm-configure-for-publish:
-    params:
-      registry-url: https://registry.npmjs.org
-  npm-publish-release:
-    params:
-      access: public
-      tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
+    node-conformance:
+        run:
+            command: yarn run lint
+        after: node-build
+    node-unit-tests:
+        run:
+            command: yarn test
+    # this project runs yarn build after yarn install so skip explicit build step
+    node-build: &node-build
+        skip: true
+    node-pre-release-tests:
+        params:
+            command: yarn test
+    npm-configure:
+        params:
+            registry-url: https://registry.yarnpkg.com
+    npm-configure-for-publish:
+        params:
+            registry-url: https://registry.npmjs.org
+    npm-publish-release:
+        params:
+            access: public
+            tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch

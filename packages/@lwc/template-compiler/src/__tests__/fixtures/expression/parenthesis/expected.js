@@ -1,27 +1,31 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  key: 1,
-};
-const stc2 = {
-  key: 2,
-};
-const stc3 = {
-  key: 3,
-};
-const stc4 = {
-  key: 4,
-};
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment2 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment3 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment4 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment5 = parseFragment`<div${3}>${"t1"}</div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { d: api_dynamic_text, t: api_text, h: api_element } = $api;
+  const {
+    d: api_dynamic_text,
+    sp: api_static_part,
+    st: api_static_fragment,
+  } = $api;
   return [
-    api_element("div", stc0, [api_text(api_dynamic_text($cmp.foo))]),
-    api_element("div", stc1, [api_text(api_dynamic_text($cmp.foo))]),
-    api_element("div", stc2, [api_text(api_dynamic_text($cmp.foo.bar))]),
-    api_element("div", stc3, [api_text(api_dynamic_text($cmp.foo.bar))]),
-    api_element("div", stc4, [api_text(api_dynamic_text($cmp.foo.bar))]),
+    api_static_fragment($fragment1, 1, [
+      api_static_part(1, null, api_dynamic_text($cmp.foo)),
+    ]),
+    api_static_fragment($fragment2, 3, [
+      api_static_part(1, null, api_dynamic_text($cmp.foo)),
+    ]),
+    api_static_fragment($fragment3, 5, [
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
+    ]),
+    api_static_fragment($fragment4, 7, [
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
+    ]),
+    api_static_fragment($fragment5, 9, [
+      api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

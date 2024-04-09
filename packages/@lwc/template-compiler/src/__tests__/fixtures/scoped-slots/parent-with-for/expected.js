@@ -1,17 +1,13 @@
 import _xList from "x/list";
-import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 1,
-};
-const stc1 = {
-  key: 2,
-};
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment2 = parseFragment`<span${3}>${"t1"}</span>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
     c: api_custom_element,
@@ -29,11 +25,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_fragment(
             key,
             [
-              api_element("div", stc0, [
-                api_text(api_dynamic_text(parentItem)),
+              api_static_fragment($fragment1, 2, [
+                api_static_part(1, null, api_dynamic_text(parentItem)),
               ]),
-              api_element("span", stc1, [
-                api_text(
+              api_static_fragment($fragment2, 4, [
+                api_static_part(
+                  1,
+                  null,
                   api_dynamic_text(item.id) +
                     " - " +
                     api_dynamic_text(item.name)

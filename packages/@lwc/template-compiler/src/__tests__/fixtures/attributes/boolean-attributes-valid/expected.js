@@ -32,11 +32,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment1, 1),
     api_custom_element("x-foo", _xFoo, stc0),
     api_static_fragment($fragment2, 4, [
-      api_static_part(0, {
-        attrs: {
-          readonly: $cmp.getReadOnly ? "" : null,
+      api_static_part(
+        0,
+        {
+          attrs: {
+            readonly: $cmp.getReadOnly ? "" : null,
+          },
         },
-      }),
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/
