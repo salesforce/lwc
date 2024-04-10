@@ -52,9 +52,10 @@ async function main() {
             return `## ${depName}\n\n` + (await findLicenseText(depName));
         })
     );
-    const newLicense = `# LWC core license\n\n${coreLicense}\n\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
-        '\n\n'
-    )}`;
+    const newLicense =
+        `# LWC core license\n\n${coreLicense}\n\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
+            '\n\n'
+        )}`.trim() + '\n';
 
     // Top level
     await writeFile('LICENSE.md', newLicense, 'utf-8');
