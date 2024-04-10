@@ -21,8 +21,6 @@ export default class extends LightningElement {
     }
 
     get children() {
-        return Array(this.breadth)
-            .fill()
-            .map((_, i) => i);
+        return Array.from({ length: this.breadth }, (_, i) => i);
     }
 }
