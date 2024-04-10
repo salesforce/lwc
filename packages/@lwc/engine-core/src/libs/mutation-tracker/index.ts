@@ -103,17 +103,16 @@ export class ReactiveObserver {
             for (let i = 0; i < len; i++) {
                 const set = listeners[i];
                 const setLength = set.length;
-                if (setLength === 1) {
-                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+push.
-                    // If the length is 1, we can also be sure that `this` is the first item in the array.
-                    set.length = 0;
-                } else {
-                    // Slow case - swap with the last item and then remove.
+                // The length is usually 1, so avoid doing an indexOf when we know for certain
+                // that `this` is the first item in the array.
+                if (setLength > 1) {
+                    // Swap with the last item before removal.
                     // (Avoiding splice here is a perf optimization, and the order doesn't matter.)
                     const index = ArrayIndexOf.call(set, this);
                     set[index] = set[setLength - 1];
-                    ArrayPop.call(set);
                 }
+                // Remove the last item
+                ArrayPop.call(set);
             }
             listeners.length = 0;
         }
