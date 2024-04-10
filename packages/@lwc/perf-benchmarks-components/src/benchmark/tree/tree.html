@@ -1,0 +1,19 @@
+<template>
+    <div>Depth: {depth}</div>
+    <div>Index: {index}</div>
+    <div>ID: {data.id}</div>
+    <template lwc:if={notLeaf}>
+        <template for:each={children} for:item="child">
+            <!-- The point of this component is to have multiple template functions that are
+             all observing the same data, hence why the data object is passed down -->
+            <benchmark-tree
+                    depth={depthMinusOne}
+                    breadth={breadth}
+                    data-id={data.id}
+                    data={data}
+                    key={child}
+                    index={child}
+            ></benchmark-tree>
+        </template>
+    </template>
+</template>

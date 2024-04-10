@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined, ArraySplice, ArrayIndexOf, ArrayPush } from '@lwc/shared';
+import { create, isUndefined, ArrayIndexOf, ArrayPush, ArrayPop } from '@lwc/shared';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
@@ -102,14 +102,17 @@ export class ReactiveObserver {
         if (len > 0) {
             for (let i = 0; i < len; i++) {
                 const set = listeners[i];
-                if (set.length === 1) {
-                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+splice.
+                const setLength = set.length;
+                if (setLength === 1) {
+                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+push.
                     // If the length is 1, we can also be sure that `this` is the first item in the array.
                     set.length = 0;
                 } else {
-                    // Slow case
-                    const pos = ArrayIndexOf.call(set, this);
-                    ArraySplice.call(set, pos, 1);
+                    // Slow case - swap with the last item and then remove.
+                    // (Avoiding splice here is a perf optimization, and the order doesn't matter.)
+                    const index = ArrayIndexOf.call(set, this);
+                    set[index] = set[setLength - 1];
+                    ArrayPop.call(set);
                 }
             }
             listeners.length = 0;
