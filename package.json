@@ -80,7 +80,7 @@
         "playground"
     ],
     "engines": {
-        "node": ">=10"
+        "node": ">=16.20.2"
     },
     "volta": {
         "node": "20.12.1",
