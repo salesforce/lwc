@@ -17,6 +17,7 @@
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
         "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
+        "external-contributor-ci-workaround": "./scripts/tasks/unsafe-external-contributor-ci-workaround.sh",
         "test": "jest --config ./scripts/jest/root.config.js",
         "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
         "test:ci": "yarn test --no-cache --coverage --runInBand",
