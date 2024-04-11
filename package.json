@@ -60,7 +60,7 @@
         "jest-environment-jsdom": "^29.7.0",
         "lint-staged": "^15.2.2",
         "magic-string": "^0.30.9",
-        "nx": "17.2.6",
+        "nx": "18.2.4",
         "prettier": "^2.8.8",
         "rollup": "^4.14.1",
         "terser": "^5.30.3",
