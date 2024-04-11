@@ -6,8 +6,14 @@
  */
 const path = require('node:path');
 const { readFile, writeFile, stat, readdir } = require('node:fs/promises');
+const prettier = require('prettier');
 const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
 
+// Generate our LICENSE files for each package, including any bundled dependencies
+// This is modeled after how Rollup does it:
+// https://github.com/rollup/rollup/blob/0b665c3/build-plugins/generate-license-file.ts
+
+// Async fs.existsSync
 async function exists(filename) {
     try {
         await stat(filename);
@@ -41,9 +47,6 @@ async function findLicenseText(depName) {
     return `${license} license defined in package.json in v${version}.`;
 }
 
-// Generate our LICENSE files for each package, including any bundled dependencies
-// This is modeled after how Rollup does it:
-// https://github.com/rollup/rollup/blob/0b665c3/build-plugins/generate-license-file.ts
 async function main() {
     const coreLicense = await readFile('LICENSE-CORE.md', 'utf-8');
 
@@ -57,8 +60,12 @@ async function main() {
             '\n'
         )}`.trim() + '\n';
 
+    const formattedLicense = prettier.format(newLicense, {
+        parser: 'markdown',
+    });
+
     // Top level
-    await writeFile('LICENSE.md', newLicense, 'utf-8');
+    await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
     // For each package as well
 
@@ -71,7 +78,7 @@ async function main() {
 
     await Promise.all(
         packages.map(async (pkg) => {
-            await writeFile(path.join('packages/', pkg, 'LICENSE.md'), newLicense, 'utf-8');
+            await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
         })
     );
 }
