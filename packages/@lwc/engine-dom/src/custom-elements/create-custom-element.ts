@@ -22,14 +22,17 @@ const nativeLifecycleElementsToUpgradedByLWC = new WeakMap<HTMLElement, boolean>
 
 let elementBeingUpgradedByLWC = false;
 
-// Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
-// passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
-// Another benefit is that only LWC can create components that actually do anything – if you do
-// `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
-// This class should be created once per tag name.
-const createUpgradableConstructor = (isFormAssociated: boolean) => {
+let BaseUpgradableConstructor: CustomElementConstructor | undefined;
+let BaseHTMLElement: typeof HTMLElement | undefined;
+
+function createBaseUpgradableConstructor() {
+    // Creates a constructor that is intended to be used directly as a custom element, except that the upgradeCallback is
+    // passed in to the constructor so LWC can reuse the same custom element constructor for multiple components.
+    // Another benefit is that only LWC can create components that actually do anything – if you do
+    // `customElements.define('x-foo')`, then you don't have access to the upgradeCallback, so it's a dummy custom element.
+    // This class should be created once per tag name.
     // TODO [#2972]: this class should expose observedAttributes as necessary
-    class UpgradableConstructor extends HTMLElement {
+    BaseUpgradableConstructor = class TheBaseUpgradableConstructor extends HTMLElement {
         constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
             super();
 
@@ -79,12 +82,24 @@ const createUpgradableConstructor = (isFormAssociated: boolean) => {
                 runFormStateRestoreCallback(this, state, reason);
             }
         }
-    }
+    };
+    BaseHTMLElement = HTMLElement; // cache to track if it changes
+}
 
+const createUpgradableConstructor = (isFormAssociated: boolean) => {
+    if (HTMLElement !== BaseHTMLElement) {
+        // If the global HTMLElement changes out from under our feet, then we need to create a new
+        // BaseUpgradableConstructor from scratch (since it extends from HTMLElement). This can occur if
+        // polyfills are in play, e.g. a polyfill for scoped custom element registries.
+        // This workaround can potentially be removed when W-15361244 is resolved.
+        createBaseUpgradableConstructor();
+    }
+    // Using a BaseUpgradableConstructor superclass here is a perf optimization to avoid
+    // re-defining the same logic (connectedCallback, disconnectedCallback, etc.) over and over.
+    class UpgradableConstructor extends (BaseUpgradableConstructor!) {}
     if (isFormAssociated) {
         // Perf optimization - the vast majority of components have formAssociated=false,
         // so we can skip the setter in those cases, since undefined works the same as false.
-        // @ts-expect-error type-mismatch
         UpgradableConstructor.formAssociated = isFormAssociated;
     }
     return UpgradableConstructor;
