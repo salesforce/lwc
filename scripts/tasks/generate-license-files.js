@@ -29,7 +29,7 @@ async function findLicenseText(depName) {
     for (const name of names) {
         const fullFilePath = path.join(resolvedDepPath, name);
         if (await exists(fullFilePath)) {
-            return await readFile(fullFilePath, 'utf-8');
+            return (await readFile(fullFilePath, 'utf-8')).trim();
         }
     }
 
@@ -38,7 +38,7 @@ async function findLicenseText(depName) {
 
     const { license, version } = pkgJson;
 
-    return `${license} license defined in package.json in v${version}`;
+    return `${license} license defined in package.json in v${version}.`;
 }
 
 // Generate our LICENSE files for each package, including any bundled dependencies
@@ -49,11 +49,11 @@ async function main() {
 
     const bundledLicenses = await Promise.all(
         BUNDLED_DEPENDENCIES.map(async (depName) => {
-            return `## ${depName}\n` + (await findLicenseText(depName));
+            return `## ${depName}\n\n` + (await findLicenseText(depName));
         })
     );
     const newLicense =
-        `# LWC core license\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
+        `# LWC core license\n\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
             '\n'
         )}`.trim() + '\n';
 

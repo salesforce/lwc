@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## @parse5/tools
 
-MIT license defined in package.json in v0.4.0
+MIT license defined in package.json in v0.4.0.
 
 ## entities
 
