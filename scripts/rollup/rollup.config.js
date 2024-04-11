@@ -149,15 +149,11 @@ module.exports = {
 
     plugins: [
         nodeResolve({
-            // These are the devDeps that may be inlined into the dist/ bundles
-            // These include packages owned by us (LWC, observable-membrane), as well as parse5
-            // and its single dependency, which are bundled because it makes it simpler to distribute
+            // These are the dependencies that, when used as devDeps, should be inlined into the dist/ bundles
             resolveOnly: [
                 /^@lwc\//,
-                ...BUNDLED_DEPENDENCIES.map((dep) => [
-                    // capture the package itself (e.g. `foo`) plus its files (e.g. `foo/bar.js`)
-                    new RegExp(`^${dep}($|/)`),
-                ]).flat(),
+                // capture the package itself (e.g. `foo`) plus its files (e.g. `foo/bar.js`)
+                ...BUNDLED_DEPENDENCIES.map((dep) => new RegExp(`^${dep}($|/)`)),
             ],
         }),
         ...sharedPlugins(),
