@@ -64,17 +64,15 @@ async function main() {
         parser: 'markdown',
     });
 
-    // Top level
+    // Top level license
     await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
-    // For each package as well
-
-    const packages = [
-        'lwc',
-        ...(await readdir('packages/@lwc'))
-            .filter((_) => !_.startsWith('.'))
-            .map((_) => `@lwc/${_}`),
-    ];
+    // License file for each package as well, so that we publish it to npm
+    const atLwcPackages = (await readdir('packages/@lwc'))
+        // skip dotfiles like .DS_Store
+        .filter((_) => !_.startsWith('.'))
+        .map((_) => `@lwc/${_}`);
+    const packages = ['lwc', ...atLwcPackages];
 
     await Promise.all(
         packages.map(async (pkg) => {
