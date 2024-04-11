@@ -49,12 +49,12 @@ async function main() {
 
     const bundledLicenses = await Promise.all(
         BUNDLED_DEPENDENCIES.map(async (depName) => {
-            return `## ${depName}\n\n` + (await findLicenseText(depName));
+            return `## ${depName}\n` + (await findLicenseText(depName));
         })
     );
     const newLicense =
-        `# LWC core license\n\n${coreLicense}\n\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
-            '\n\n'
+        `# LWC core license\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
+            '\n'
         )}`.trim() + '\n';
 
     // Top level
