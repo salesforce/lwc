@@ -351,3 +351,5 @@ The footer should contain any information about **Breaking Changes** and is also
 -   If your tests have the potential to negatively impact performance, provide a before & after comparison of performance using the test collateral provided in the repo.
 
 It's also worth noting that not all submissions will be accepted, even if all the above criteria are met. There may be constraints in the larger Salesforce ecosystem that prevent certain changes. If your submission is likely to change large parts of the codebase, please open an issue preemptively so that the design can be discussed.
+
+**Working with GitHub:** Pull requests submitted from forks do not have access to the secrets used by GitHub actions. If necessary, please ask a maintainer to run the `copy-fork` script for your pull request.
