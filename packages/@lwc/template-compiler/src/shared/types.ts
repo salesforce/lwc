@@ -14,6 +14,7 @@ export interface TemplateParseResult {
 
 export interface TemplateCompileResult extends TemplateParseResult {
     code: string;
+    cssScopeTokens: string[];
 }
 
 export enum LWCDirectiveDomMode {

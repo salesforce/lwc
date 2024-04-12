@@ -12,6 +12,11 @@ export const PARSE_SVG_FRAGMENT_METHOD_NAME = 'parseSVGFragment';
 export const RENDERER = 'renderer';
 export const LWC_MODULE_NAME = 'lwc';
 export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
+export const FREEZE_TEMPLATE = 'freezeTemplate';
+export const IMPLICIT_STYLESHEETS = '_implicitStylesheets';
+export const IMPLICIT_SCOPED_STYLESHEETS = '_implicitScopedStylesheets';
+
+export const IMPLICIT_STYLESHEET_IMPORTS = [IMPLICIT_STYLESHEETS, IMPLICIT_SCOPED_STYLESHEETS];
 
 export const TEMPLATE_FUNCTION_NAME: string = 'tmpl';
 

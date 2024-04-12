@@ -321,6 +321,19 @@ export function functionDeclaration(
     };
 }
 
+export function ifStatement(
+    test: t.IfStatement['test'],
+    consequent: t.IfStatement['consequent'],
+    alternate?: t.IfStatement['alternate']
+): t.IfStatement {
+    return {
+        type: 'IfStatement',
+        test,
+        consequent,
+        alternate,
+    };
+}
+
 export function blockStatement(
     body: t.BlockStatement['body'],
     config?: Partial<t.BlockStatement>
@@ -458,6 +471,7 @@ export type Expression = t.Expression;
 export type FunctionDeclaration = t.FunctionDeclaration;
 export type ArrowFunctionExpression = t.ArrowFunctionExpression;
 export type AssignmentPattern = t.AssignmentPattern;
+export type IfStatement = t.IfStatement;
 export type BlockStatement = t.BlockStatement;
 export type ReturnStatement = t.ReturnStatement;
 export type VariableDeclarator = t.VariableDeclarator;

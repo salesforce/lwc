@@ -11,13 +11,13 @@ describe('option validation', () => {
     it('validated presence of options', () => {
         expect(() => {
             // @ts-expect-error Explicitly testing JS behavior that violates TS types
-            compile(`<template></template>`);
+            compile(`<template></template>`, '');
         }).toThrow(/Compiler options must be an object/);
     });
 
     it('throws for unknown compiler option', () => {
         expect(() => {
-            compile(`<template></template>`, { foo: true } as any);
+            compile(`<template></template>`, '', { foo: true } as any);
         }).toThrow(/Unknown option property foo/);
     });
 });
@@ -48,7 +48,7 @@ describe('parse', () => {
         ];
         configs.forEach(({ name, config }) => {
             it(`parse() with double </template> with config=${name}`, () => {
-                const result = parse('<template></template></template>', config);
+                const result = parse('<template></template></template>', '', config);
                 const expectWarning = config.apiVersion === 58; // null/undefined/unspecified is treated as latest
                 expect(result.warnings.length).toBe(1);
                 expect(result.warnings[0].level).toBe(
@@ -76,7 +76,7 @@ describe('parse', () => {
         configs.forEach(({ name, config, expected }) => {
             it(name, () => {
                 const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
-                const { code, warnings } = compile(template, config);
+                const { code, warnings } = compile(template, '', config);
                 expect(warnings.length).toBe(0);
                 if (expected) {
                     expect(code).toContain('<img');

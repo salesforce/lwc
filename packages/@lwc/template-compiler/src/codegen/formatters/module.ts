@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import path from 'path';
 import * as t from '../../shared/estree';
 import { kebabcaseToCamelcase } from '../../shared/naming';
 import {
     TEMPLATE_FUNCTION_NAME,
     SECURE_REGISTER_TEMPLATE_METHOD_NAME,
     LWC_MODULE_NAME,
+    FREEZE_TEMPLATE,
+    IMPLICIT_STYLESHEETS,
+    IMPLICIT_STYLESHEET_IMPORTS,
 } from '../../shared/constants';
 
 import CodeGen from '../codegen';
@@ -28,13 +32,29 @@ function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
 }
 
 function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
-    const imports = Array.from(codeGen.usedLwcApis)
-        .sort()
-        .map((name) => {
-            return t.importSpecifier(t.identifier(name), t.identifier(name));
-        });
+    // freezeTemplate will always be needed and is called once it has been created.
+    const imports = [...codeGen.usedLwcApis, FREEZE_TEMPLATE].sort().map((name) => {
+        return t.importSpecifier(t.identifier(name), t.identifier(name));
+    });
 
     return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
+}
+
+function generateStylesheetImports(codeGen: CodeGen): t.ImportDeclaration[] {
+    const {
+        state: { filename },
+    } = codeGen;
+
+    const relPath = `./${path.basename(filename, path.extname(filename))}`;
+    const imports = IMPLICIT_STYLESHEET_IMPORTS.map((stylesheet) => {
+        const extension = stylesheet === IMPLICIT_STYLESHEETS ? '.css' : '.scoped.css?scoped=true';
+        return t.importDeclaration(
+            [t.importDefaultSpecifier(t.identifier(stylesheet))],
+            t.literal(`${relPath}${extension}`)
+        );
+    });
+
+    return imports;
 }
 
 function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
@@ -66,7 +86,11 @@ function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
 export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
     codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
 
-    const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
+    const imports = [
+        ...generateStylesheetImports(codeGen),
+        ...generateComponentImports(codeGen),
+        generateLwcApisImport(codeGen),
+    ];
     const hoistedNodes = generateHoistedNodes(codeGen);
 
     const metadata = generateTemplateMetadata(codeGen);
@@ -82,5 +106,16 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
         ),
     ];
 
-    return t.program([...imports, ...hoistedNodes, ...templateBody, ...metadata]);
+    const freezeTemplate = t.expressionStatement(
+        t.callExpression(t.identifier(FREEZE_TEMPLATE), [t.identifier(TEMPLATE_FUNCTION_NAME)])
+    );
+
+    return t.program([
+        ...imports,
+        ...hoistedNodes,
+        ...templateBody,
+        ...metadata,
+        // At this point, no more expando props should be added to `tmpl`.
+        freezeTemplate,
+    ]);
 }

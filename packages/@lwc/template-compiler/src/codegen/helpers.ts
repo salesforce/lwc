@@ -9,7 +9,11 @@ import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
 import { isBaseElement, isForBlock, isIf, isParentNode, isSlot } from '../shared/ast';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import {
+    IMPLICIT_STYLESHEET_IMPORTS,
+    TEMPLATE_FUNCTION_NAME,
+    TEMPLATE_PARAMS,
+} from '../shared/constants';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -127,13 +131,6 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(slotsMetadata));
     }
 
-    const stylesheetsMetadata = t.assignmentExpression(
-        '=',
-        t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
-        t.arrayExpression([])
-    );
-    metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
-
     // ignore when shadow because we don't want to modify template unnecessarily
     if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(
@@ -153,7 +150,98 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(refsMetadata));
     }
 
+    const stylesheetsMetadata = t.assignmentExpression(
+        '=',
+        t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
+        t.arrayExpression([])
+    );
+    metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
+
+    const stylesheetTokens = generateStylesheetTokens(codeGen);
+    metadataExpressions.push(...stylesheetTokens);
+
+    const implicitStylesheetImports = generateImplicitStylesheetImports();
+    metadataExpressions.push(...implicitStylesheetImports);
+
     return metadataExpressions;
+}
+
+// Generates conditional statements to insert stylesheets into the
+// tmpl.stylesheets metadata.
+function generateImplicitStylesheetImports(): t.IfStatement[] {
+    // tmpl.stylesheets
+    const tmplStylesheetsExpr = t.memberExpression(
+        t.identifier(TEMPLATE_FUNCTION_NAME),
+        t.identifier('stylesheets')
+    );
+    // tmpl.stylesheets.push.apply
+    const tmplStylesheetPushApplyExpr = t.memberExpression(
+        t.memberExpression(tmplStylesheetsExpr, t.identifier('push')),
+        t.identifier('apply')
+    );
+
+    // Generates conditional logic to the imported styleSheet, ex:
+    // if (_implicitStylesheets) {
+    //  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+    // }
+    const implicitStyleSheets = IMPLICIT_STYLESHEET_IMPORTS.map((styleSheetName) =>
+        t.ifStatement(
+            t.identifier(styleSheetName),
+            t.blockStatement([
+                t.expressionStatement(
+                    t.callExpression(tmplStylesheetPushApplyExpr, [
+                        tmplStylesheetsExpr,
+                        t.identifier(styleSheetName),
+                    ])
+                ),
+            ])
+        )
+    );
+
+    return implicitStyleSheets;
+}
+
+function generateStylesheetTokens(codeGen: CodeGen): t.ExpressionStatement[] {
+    const {
+        apiVersion,
+        state: {
+            scopeTokens: { scopeToken, legacyScopeToken },
+        },
+    } = codeGen;
+
+    const generateStyleTokenAssignmentExpr = (
+        styleToken: 'stylesheetToken' | 'legacyStylesheetToken',
+        styleTokenName: string
+    ) => {
+        // tmpl.stylesheetToken | tmpl.legacyStylesheetToken
+        const styleTokenExpr = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier(styleToken)
+        );
+        return t.expressionStatement(
+            t.assignmentExpression('=', styleTokenExpr, t.literal(styleTokenName))
+        );
+    };
+
+    const styleTokens: t.ExpressionStatement[] = [];
+
+    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
+        // Include both the new and legacy tokens, so that the runtime can decide based on a flag whether
+        // we need to render the legacy one. This is designed for cases where the legacy one is required
+        // for backwards compat (e.g. global stylesheets that rely on the legacy format for a CSS selector).
+        // tmpl.stylesheetToken = "{scopeToken}"
+        styleTokens.push(generateStyleTokenAssignmentExpr('stylesheetToken', scopeToken));
+        // tmpl.legacyStylesheetToken = "{legacyScopeToken}"
+        styleTokens.push(
+            generateStyleTokenAssignmentExpr('legacyStylesheetToken', legacyScopeToken)
+        );
+    } else {
+        // In old API versions, we can just keep doing what we always did
+        // tmpl.stylesheetToken = "{legacyScopeToken}"
+        styleTokens.push(generateStyleTokenAssignmentExpr('stylesheetToken', legacyScopeToken));
+    }
+
+    return styleTokens;
 }
 
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;

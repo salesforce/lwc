@@ -20,13 +20,14 @@ describe('fixtures', () => {
         },
         ({ src, dirname }) => {
             const configPath = path.resolve(dirname, 'config.json');
+            const filename = path.basename(dirname);
 
-            let config: Config = {};
+            let config: Config = { namespace: 'x', name: filename };
             if (fs.existsSync(configPath)) {
-                config = require(configPath);
+                config = { ...config, ...require(configPath) };
             }
 
-            const compiled = compiler(src, config);
+            const compiled = compiler(src, filename, config);
             const { warnings, root } = compiled;
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change
