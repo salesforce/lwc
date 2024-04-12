@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./attribute-props-transform.css";
+import _implicitScopedStylesheets from "./attribute-props-transform.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element } = $api;
   return [
@@ -81,3 +83,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6dvmnra325n";
+tmpl.legacyStylesheetToken =
+  "x-attribute-props-transform_attribute-props-transform";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

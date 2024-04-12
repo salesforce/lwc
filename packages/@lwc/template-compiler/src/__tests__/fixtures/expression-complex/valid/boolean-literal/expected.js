@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./boolean-literal.css";
+import _implicitScopedStylesheets from "./boolean-literal.scoped.css?scoped=true";
 import _xPert from "x/pert";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -36,3 +38,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-34ejl9uakkr";
+tmpl.legacyStylesheetToken = "x-boolean-literal_boolean-literal";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./child-with-foreach.css";
+import _implicitScopedStylesheets from "./child-with-foreach.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { k: api_key, s: api_slot, i: api_iterator } = $api;
@@ -17,5 +19,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.slots = [""];
-tmpl.stylesheets = [];
 tmpl.renderMode = "light";
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2gr7k6l9fj";
+tmpl.legacyStylesheetToken = "x-child-with-foreach_child-with-foreach";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

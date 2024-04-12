@@ -1,4 +1,6 @@
-import { registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./href-with-literal-value.css";
+import _implicitScopedStylesheets from "./href-with-literal-value.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate, renderer } from "lwc";
 const stc0 = {
   attrs: {
     viewBox: "0 0 30 10",
@@ -38,3 +40,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-609tun6ro15";
+tmpl.legacyStylesheetToken =
+  "x-href-with-literal-value_href-with-literal-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./scoped.css";
+import _implicitScopedStylesheets from "./scoped.scoped.css?scoped=true";
 import _lightningCombobox from "lightning/combobox";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element } = $api;
   return [
@@ -22,3 +24,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-8anf07i38v";
+tmpl.legacyStylesheetToken = "x-scoped_scoped";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

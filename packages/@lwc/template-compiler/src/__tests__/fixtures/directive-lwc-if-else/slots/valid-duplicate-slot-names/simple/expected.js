@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./simple.css";
+import _implicitScopedStylesheets from "./simple.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   attrs: {
     name: "conditional-slot",
@@ -28,3 +30,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["conditional-slot"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1lae0rspni6";
+tmpl.legacyStylesheetToken = "x-simple_simple";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

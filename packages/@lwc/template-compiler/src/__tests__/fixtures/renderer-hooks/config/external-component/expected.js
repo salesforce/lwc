@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./external-component.css";
+import _implicitScopedStylesheets from "./external-component.scoped.css?scoped=true";
 import _fooBar from "foo/bar";
-import { registerTemplate, renderer } from "lwc";
+import { freezeTemplate, registerTemplate, renderer } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -17,3 +19,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-5fjt5cr87l5";
+tmpl.legacyStylesheetToken = "x-external-component_external-component";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

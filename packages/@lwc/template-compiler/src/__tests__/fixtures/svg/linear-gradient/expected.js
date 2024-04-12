@@ -1,4 +1,6 @@
-import { parseSVGFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./linear-gradient.css";
+import _implicitScopedStylesheets from "./linear-gradient.scoped.css?scoped=true";
+import { freezeTemplate, parseSVGFragment, registerTemplate } from "lwc";
 const $fragment1 = parseSVGFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/>`;
 const $fragment2 = parseSVGFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/>`;
 const $fragment3 = parseSVGFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/>`;
@@ -45,3 +47,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1nbpngf4dh9";
+tmpl.legacyStylesheetToken = "x-linear-gradient_linear-gradient";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

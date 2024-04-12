@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./tag-with-namespace.css";
+import _implicitScopedStylesheets from "./tag-with-namespace.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate, renderer } from "lwc";
 const $fragment1 = parseFragment`<use href="#myCircle" x="10" fill="blue"${3}></use>`;
 const stc0 = {
   classMap: {
@@ -52,3 +54,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ed3iv0kbet";
+tmpl.legacyStylesheetToken = "x-tag-with-namespace_tag-with-namespace";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

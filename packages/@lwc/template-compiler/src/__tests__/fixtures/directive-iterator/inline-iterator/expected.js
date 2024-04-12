@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./inline-iterator.css";
+import _implicitScopedStylesheets from "./inline-iterator.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"a0:data-islast"}${"a0:data-isfirst"}${3}><span${3}>${"t2"}</span>${"t3"}</div>`;
 const stc0 = {
   key: 0,
@@ -44,3 +46,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4sfvv4u31r7";
+tmpl.legacyStylesheetToken = "x-inline-iterator_inline-iterator";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

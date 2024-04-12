@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./slot-name-with-dash.css";
+import _implicitScopedStylesheets from "./slot-name-with-dash.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>Test slot content</p>`;
 const stc0 = {
   attrs: {
@@ -21,3 +23,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["secret-slot"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-69tppsdg3l4";
+tmpl.legacyStylesheetToken = "x-slot-name-with-dash_slot-name-with-dash";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

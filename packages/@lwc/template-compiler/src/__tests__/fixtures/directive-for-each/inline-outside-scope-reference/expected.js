@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./inline-outside-scope-reference.css";
+import _implicitScopedStylesheets from "./inline-outside-scope-reference.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div class="my-list${0}"${2}><p${3}>${"t2"}</p><p${3}>${"t4"}</p></div>`;
 const stc0 = {
   key: 0,
@@ -28,3 +30,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ijo9j3k237";
+tmpl.legacyStylesheetToken =
+  "x-inline-outside-scope-reference_inline-outside-scope-reference";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

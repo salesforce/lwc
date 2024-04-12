@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./multiple-tagname.css";
+import _implicitScopedStylesheets from "./multiple-tagname.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate, renderer } from "lwc";
 const $fragment1 = parseFragment`<h2${3}>London</h2>`;
 const $fragment2 = parseFragment`<h2${3}>Paris</h2>`;
 const $fragment3 = parseFragment`<p${3}>Paris is the capital of <span class="bold${0}"${2}>France.</span></p>`;
@@ -49,3 +51,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4hgahqkce";
+tmpl.legacyStylesheetToken = "x-multiple-tagname_multiple-tagname";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

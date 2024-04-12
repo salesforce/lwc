@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./text-non-direct-child.css";
+import _implicitScopedStylesheets from "./text-non-direct-child.scoped.css?scoped=true";
 import _xList from "x/list";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<span${3}>${"t1"}</span>`;
 const $fragment2 = parseFragment`<div${3}>Content from parent&#x27;s template</div>`;
 const stc0 = {
@@ -38,3 +40,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7snm06k811b";
+tmpl.legacyStylesheetToken = "x-text-non-direct-child_text-non-direct-child";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

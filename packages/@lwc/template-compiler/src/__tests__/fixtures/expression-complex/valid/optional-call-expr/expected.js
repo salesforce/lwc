@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./optional-call-expr.css";
+import _implicitScopedStylesheets from "./optional-call-expr.scoped.css?scoped=true";
 import _xPert from "x/pert";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -29,3 +31,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-pgc7san7rd";
+tmpl.legacyStylesheetToken = "x-optional-call-expr_optional-call-expr";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

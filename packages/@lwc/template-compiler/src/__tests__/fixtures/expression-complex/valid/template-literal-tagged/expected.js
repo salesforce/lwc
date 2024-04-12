@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./template-literal-tagged.css";
+import _implicitScopedStylesheets from "./template-literal-tagged.scoped.css?scoped=true";
 import _xPert from "x/pert";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -29,3 +31,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1bebniq3rl9";
+tmpl.legacyStylesheetToken =
+  "x-template-literal-tagged_template-literal-tagged";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

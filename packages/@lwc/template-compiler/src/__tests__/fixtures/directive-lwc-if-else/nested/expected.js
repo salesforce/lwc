@@ -1,3 +1,5 @@
+import _implicitStylesheets from "./nested.css";
+import _implicitScopedStylesheets from "./nested.scoped.css?scoped=true";
 import _cCustom from "c/custom";
 import _cDoubleNested from "c/doubleNested";
 import _cDoubleNestedElse from "c/doubleNestedElse";
@@ -6,7 +8,7 @@ import _cNestedElseif from "c/nestedElseif";
 import _cNestedElse from "c/nestedElse";
 import _cCustomElseif from "c/customElseif";
 import _cCustomElse from "c/customElse";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 1,
 };
@@ -105,3 +107,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ud1n1pkbjc";
+tmpl.legacyStylesheetToken = "x-nested_nested";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./attribute-href-with-id-expression.css";
+import _implicitScopedStylesheets from "./attribute-href-with-id-expression.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<a${"a0:href"}${3}>KIX</a>`;
 const stc0 = {
   key: 2,
@@ -53,3 +55,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4s0jmj9uli4";
+tmpl.legacyStylesheetToken =
+  "x-attribute-href-with-id-expression_attribute-href-with-id-expression";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

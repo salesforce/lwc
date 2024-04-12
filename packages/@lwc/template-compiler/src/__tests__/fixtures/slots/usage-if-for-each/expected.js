@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./usage-if-for-each.css";
+import _implicitScopedStylesheets from "./usage-if-for-each.scoped.css?scoped=true";
 import _aB from "a/b";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>X</p>`;
 const stc0 = {
   classMap: {
@@ -31,3 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-5m49nb9vba";
+tmpl.legacyStylesheetToken = "x-usage-if-for-each_usage-if-for-each";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

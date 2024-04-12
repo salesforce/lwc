@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./mixed-valid-invalid-attributes.css";
+import _implicitScopedStylesheets from "./mixed-valid-invalid-attributes.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 const stc0 = {
   key: 0,
@@ -29,3 +31,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-37n02qqr3et";
+tmpl.legacyStylesheetToken =
+  "x-mixed-valid-invalid-attributes_mixed-valid-invalid-attributes";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,4 +1,6 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import _implicitStylesheets from "./scoped-id-static.css";
+import _implicitScopedStylesheets from "./scoped-id-static.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
 const stc0 = {
   attrs: {
     width: "100px",
@@ -70,3 +72,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1h20vq2uq0o";
+tmpl.legacyStylesheetToken = "x-scoped-id-static_scoped-id-static";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./class.css";
+import _implicitScopedStylesheets from "./class.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div class="foo${0}"${2}></div>`;
 const $fragment2 = parseFragment`<div class="foo bar${0}"${2}></div>`;
 const $fragment3 = parseFragment`<div class=" foo bar   ${0}"${2}></div>`;
@@ -15,3 +17,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-44l3bs9cc8q";
+tmpl.legacyStylesheetToken = "x-class_class";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

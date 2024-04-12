@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./definition-sibiling-slot.css";
+import _implicitScopedStylesheets from "./definition-sibiling-slot.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>Default slot other content</p>`;
 const $fragment2 = parseFragment`<p${3}>Default slot content</p>`;
 const stc0 = {
@@ -31,3 +33,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["", "other"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1o8q2pov2a0";
+tmpl.legacyStylesheetToken =
+  "x-definition-sibiling-slot_definition-sibiling-slot";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

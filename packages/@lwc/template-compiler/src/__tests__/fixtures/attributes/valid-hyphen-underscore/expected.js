@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./valid-hyphen-underscore.css";
+import _implicitScopedStylesheets from "./valid-hyphen-underscore.scoped.css?scoped=true";
 import _xButton from "x/button";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     under_hyphen: "bar",
@@ -29,3 +31,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-52sd2331v5c";
+tmpl.legacyStylesheetToken =
+  "x-valid-hyphen-underscore_valid-hyphen-underscore";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

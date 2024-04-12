@@ -1,6 +1,8 @@
+import _implicitStylesheets from "./duplicate-props.css";
+import _implicitScopedStylesheets from "./duplicate-props.scoped.css?scoped=true";
 import _nsBaz1 from "ns/baz1";
 import _nsBaz2 from "ns/baz2";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     accessKey: "with-hyphen",
@@ -23,3 +25,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2tn6o48t2v1";
+tmpl.legacyStylesheetToken = "x-duplicate-props_duplicate-props";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

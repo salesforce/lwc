@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./if-elseif-else.css";
+import _implicitScopedStylesheets from "./if-elseif-else.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<h1${3}>if condition</h1>`;
 const $fragment2 = parseFragment`<h1${3}>elseif condition</h1>`;
 const stc0 = {
@@ -31,3 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-78th695ov3g";
+tmpl.legacyStylesheetToken = "x-if-elseif-else_if-elseif-else";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

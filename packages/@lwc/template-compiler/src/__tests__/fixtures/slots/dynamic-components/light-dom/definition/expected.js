@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./definition.css";
+import _implicitScopedStylesheets from "./definition.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -34,5 +36,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["body", "footer", "head"];
-tmpl.stylesheets = [];
 tmpl.renderMode = "light";
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4ksn4idai2c";
+tmpl.legacyStylesheetToken = "x-definition_definition";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

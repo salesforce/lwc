@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./attribute-with-equal.css";
+import _implicitScopedStylesheets from "./attribute-with-equal.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div props="{url: https://example.com/over/there?name=ferret}"${3}></div>`;
 const stc0 = {
   props: {
@@ -17,3 +19,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7uumbeenlgi";
+tmpl.legacyStylesheetToken = "x-attribute-with-equal_attribute-with-equal";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

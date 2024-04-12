@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./data-passing.css";
+import _implicitScopedStylesheets from "./data-passing.scoped.css?scoped=true";
 import _xTest from "x/test";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element, h: api_element } = $api;
   return [
@@ -28,3 +30,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-74096niamqs";
+tmpl.legacyStylesheetToken = "x-data-passing_data-passing";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

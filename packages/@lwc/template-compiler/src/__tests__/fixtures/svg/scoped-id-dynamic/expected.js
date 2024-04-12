@@ -1,4 +1,11 @@
-import { parseSVGFragment, registerTemplate, sanitizeAttribute } from "lwc";
+import _implicitStylesheets from "./scoped-id-dynamic.css";
+import _implicitScopedStylesheets from "./scoped-id-dynamic.scoped.css?scoped=true";
+import {
+  freezeTemplate,
+  parseSVGFragment,
+  registerTemplate,
+  sanitizeAttribute,
+} from "lwc";
 const $fragment1 = parseSVGFragment`<defs${3}><circle${"a1:id"} r="10" cx="10" cy="10" fill="black"${3}/><circle${"a2:id"} r="10" cx="14" cy="14" fill="red"${3}/></defs>`;
 const stc0 = {
   attrs: {
@@ -69,3 +76,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-72ju6ij1be7";
+tmpl.legacyStylesheetToken = "x-scoped-id-dynamic_scoped-id-dynamic";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

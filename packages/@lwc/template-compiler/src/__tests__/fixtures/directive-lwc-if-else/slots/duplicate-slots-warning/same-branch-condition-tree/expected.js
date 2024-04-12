@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./same-branch-condition-tree.css";
+import _implicitScopedStylesheets from "./same-branch-condition-tree.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   attrs: {
     name: "nested-slot",
@@ -36,3 +38,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["nested-slot"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7498dhinp2o";
+tmpl.legacyStylesheetToken =
+  "x-same-branch-condition-tree_same-branch-condition-tree";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

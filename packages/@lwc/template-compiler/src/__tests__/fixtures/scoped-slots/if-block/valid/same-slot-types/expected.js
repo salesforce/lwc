@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./same-slot-types.css";
+import _implicitScopedStylesheets from "./same-slot-types.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   name: "slotname1",
 };
@@ -46,5 +48,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["slotname1"];
-tmpl.stylesheets = [];
 tmpl.renderMode = "light";
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-70bcseng4gg";
+tmpl.legacyStylesheetToken = "x-same-slot-types_same-slot-types";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./not-scoped.css";
+import _implicitScopedStylesheets from "./not-scoped.scoped.css?scoped=true";
 import _lightningCombobox from "lightning/combobox";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     ariaDescribedBy: "not-scoped-foo",
@@ -17,3 +19,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-68v9rhsbkkg";
+tmpl.legacyStylesheetToken = "x-not-scoped_not-scoped";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

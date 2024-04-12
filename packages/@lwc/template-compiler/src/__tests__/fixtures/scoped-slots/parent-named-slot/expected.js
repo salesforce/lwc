@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./parent-named-slot.css";
+import _implicitScopedStylesheets from "./parent-named-slot.scoped.css?scoped=true";
 import _xChild from "x/child";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 const $fragment2 = parseFragment`<p${3}>${"t1"}</p>`;
 const $fragment3 = parseFragment`<p${3}>${"t1"}</p>`;
@@ -56,3 +58,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1f3m2kh4n8r";
+tmpl.legacyStylesheetToken = "x-parent-named-slot_parent-named-slot";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

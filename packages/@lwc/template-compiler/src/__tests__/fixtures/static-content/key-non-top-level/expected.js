@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./key-non-top-level.css";
+import _implicitScopedStylesheets from "./key-non-top-level.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<tr${3}><td${3}>hello</td><td${3}>world</td><td${3}>!</td></tr>`;
 const stc0 = {
   key: 0,
@@ -28,3 +30,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7qgdv2kbdr9";
+tmpl.legacyStylesheetToken = "x-key-non-top-level_key-non-top-level";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./boolean-attributes-valid.css";
+import _implicitScopedStylesheets from "./boolean-attributes-valid.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>x</p>`;
 const $fragment2 = parseFragment`<input${"a0:readonly"} disabled title="foo"${3}>`;
 const stc0 = {
@@ -47,3 +49,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3s2d8ffesnq";
+tmpl.legacyStylesheetToken =
+  "x-boolean-attributes-valid_boolean-attributes-valid";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

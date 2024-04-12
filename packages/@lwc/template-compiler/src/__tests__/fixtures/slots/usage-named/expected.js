@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./usage-named.css";
+import _implicitScopedStylesheets from "./usage-named.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>Test slot content</p>`;
 const stc0 = {
   key: 0,
@@ -26,3 +28,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["test"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2ok8npp45is";
+tmpl.legacyStylesheetToken = "x-usage-named_usage-named";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

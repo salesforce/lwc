@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./parent-default-slot.css";
+import _implicitScopedStylesheets from "./parent-default-slot.scoped.css?scoped=true";
 import _xChild from "x/child";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<span${3}>${"t1"}</span>`;
 const stc0 = {
   key: 0,
@@ -36,3 +38,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2bvog59ttg6";
+tmpl.legacyStylesheetToken = "x-parent-default-slot_parent-default-slot";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

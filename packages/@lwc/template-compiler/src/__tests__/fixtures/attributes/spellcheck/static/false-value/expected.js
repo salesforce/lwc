@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./false-value.css";
+import _implicitScopedStylesheets from "./false-value.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     spellcheck: false,
@@ -29,3 +31,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4oh91tt7sup";
+tmpl.legacyStylesheetToken = "x-false-value_false-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

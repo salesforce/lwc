@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./concatenated.css";
+import _implicitScopedStylesheets from "./concatenated.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<span${3}>${"t1"}</span>`;
 const $fragment2 = parseFragment`<span${3}>${"t1"}</span>`;
 const $fragment3 = parseFragment`<span${3}>${"t1"}</span>`;
@@ -35,3 +37,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2mft3qo9a2t";
+tmpl.legacyStylesheetToken = "x-concatenated_concatenated";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./valid-non-alphanumeric.css";
+import _implicitScopedStylesheets from "./valid-non-alphanumeric.scoped.css?scoped=true";
 import _xButton from "x/button";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     nåna: "nana",
@@ -29,3 +31,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7m0fdesmolf";
+tmpl.legacyStylesheetToken = "x-valid-non-alphanumeric_valid-non-alphanumeric";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

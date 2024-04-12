@@ -1,4 +1,6 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import _implicitStylesheets from "./xlink-with-expression-value.css";
+import _implicitScopedStylesheets from "./xlink-with-expression-value.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
 const stc0 = {
   classMap: {
     "slds-icon": true,
@@ -32,3 +34,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1n01u8vu8d9";
+tmpl.legacyStylesheetToken =
+  "x-xlink-with-expression-value_xlink-with-expression-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);
