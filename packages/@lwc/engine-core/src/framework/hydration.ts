@@ -174,7 +174,7 @@ function getValidationPredicate(
     // If validationOptOut is an array of strings, attributes specified in the
     // array will be "opted out". Attributes not specified in the array will still
     // be validated.
-    if (isArray(optOutStaticProp) && arrayEvery<string>(optOutStaticProp, isString)) {
+    if (isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString)) {
         return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
     }
     if (process.env.NODE_ENV !== 'production') {

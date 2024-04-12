@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -44,7 +44,7 @@ import {
 } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
+import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 
@@ -370,7 +370,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     }
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
-    let vnodes: VNodes = [];
+    let vnodes: MutableVNodes = [];
 
     runWithBoundaryProtection(
         vm,
@@ -446,7 +446,13 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+                vnodes = html.call(
+                    undefined,
+                    api,
+                    component,
+                    cmpSlots,
+                    context.tplCache
+                ) as MutableVNodes;
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
                     ArrayUnshift.apply(vnodes, styleVNodes);
