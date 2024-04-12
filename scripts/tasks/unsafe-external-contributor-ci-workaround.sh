@@ -25,6 +25,10 @@ if [[ -z `which gh` ]]; then
   echo 'Please install the GitHub CLI (gh): https://cli.github.com/'
   exit 1
 fi
+if [[ -z `which jq` ]]; then
+  echo 'Please install jq: https://jqlang.github.io/jq'
+  exit 1
+fi
 
 # Enforce required input
 if [[ -z "$PR_INPUT" ]]; then
