@@ -57,6 +57,5 @@ export function swapTemplate(): void {
  *
  * The whole point of defining this and exporting it is so that you can import it in isomorphic code without
  * an error being thrown by the import itself.
- * @returns undefined
  */
 export const hot = void 0;
