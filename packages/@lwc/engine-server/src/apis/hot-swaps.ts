@@ -13,8 +13,12 @@
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapComponent(): never {
-    throw new Error('swapComponent is not supported in @lwc/engine-server, only @lwc/engine-dom.');
+export function swapComponent(): void {
+    if (process.env.NODE_ENV !== 'production') {
+        throw new Error(
+            'swapComponent is not supported in @lwc/engine-server, only @lwc/engine-dom.'
+        );
+    }
 }
 
 /**
@@ -25,8 +29,10 @@ export function swapComponent(): never {
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapStyle(): never {
-    throw new Error('swapStyle is not supported in @lwc/engine-server, only @lwc/engine-dom.');
+export function swapStyle(): void {
+    if (process.env.NODE_ENV !== 'production') {
+        throw new Error('swapStyle is not supported in @lwc/engine-server, only @lwc/engine-dom.');
+    }
 }
 
 /**
@@ -37,6 +43,20 @@ export function swapStyle(): never {
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapTemplate(): never {
-    throw new Error('swapTemplate is not supported in @lwc/engine-server, only @lwc/engine-dom.');
+export function swapTemplate(): void {
+    if (process.env.NODE_ENV !== 'production') {
+        throw new Error(
+            'swapTemplate is not supported in @lwc/engine-server, only @lwc/engine-dom.'
+        );
+    }
 }
+
+/**
+ * The hot API is used to orchestrate hot swapping in client rendered components.
+ * It doesn't do anything on the server side, however, you may import it.
+ *
+ * The whole point of defining this and exporting it is so that you can import it in isomorphic code without
+ * an error being thrown by the import itself.
+ * @returns undefined
+ */
+export const hot = void 0;
