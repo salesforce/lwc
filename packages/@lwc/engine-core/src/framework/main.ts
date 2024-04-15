@@ -57,6 +57,7 @@ export type {
     WireContextSubscriptionPayload,
     WireContextSubscriptionCallback,
 } from './wiring';
+export type { FormRestoreState, FormRestoreReason } from './vm';
 
 // Public APIs -------------------------------------------------------------------------------------
 export { LightningElement } from './base-lightning-element';

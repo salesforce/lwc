@@ -1,5 +1,7 @@
 import { createElement } from 'lwc';
 import XTest from 'x/test';
+import XTestStatic from 'x/testStatic';
+import XTestCustomElement from 'x/testCustomElement';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
 
 function testForEach(type, obj) {
@@ -64,7 +66,7 @@ it('should throw an error when the passing a non iterable', () => {
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-        /Invalid template iteration for value `\[object (ProxyObject|Object)\]` in \[object:vm Test \(\d+\)\]. It must be an array-like object and not `null` nor `undefined`.|is not a function/
+        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm Test \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
     );
 });
 
@@ -75,13 +77,47 @@ it('should render an array of objects with null prototype', () => {
     expect(elm.shadowRoot.querySelector('span').textContent).toBe('text');
 });
 
-it('logs an error when passing an invalid key', () => {
-    const elm = createElement('x-test', { is: XTest });
-    elm.items = [{ key: null, value: 'one' }];
+const scenarios = [
+    {
+        testName: 'dynamic text node',
+        Ctor: XTest,
+        tagName: 'x-test',
+    },
+    {
+        testName: 'static text node',
+        Ctor: XTestStatic,
+        tagName: 'x-test-static',
+    },
+    {
+        testName: 'custom element',
+        Ctor: XTestCustomElement,
+        tagName: 'x-test-custom-element',
+    },
+];
+scenarios.forEach(({ testName, Ctor, tagName }) => {
+    describe(testName, () => {
+        it('logs an error when passing an invalid key', () => {
+            const elm = createElement(tagName, { is: Ctor });
+            elm.items = [{ key: null, value: 'one' }];
 
-    // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-    expect(() => document.body.appendChild(elm)).toLogErrorDev([
-        /Invalid key value "null" in \[object:vm Test \(\d+\)\]. Key must be a string or number./,
-        /Invalid "key" attribute value in "<li>"/,
-    ]);
+            // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+            expect(() => document.body.appendChild(elm)).toLogErrorDev([
+                /Invalid key value "null" in \[object:vm (TestStatic|TestCustomElement|Test) \(\d+\)]. Key must be a string or number\./,
+                /Invalid "key" attribute value in "<(x-test|x-test-static|x-test-custom-element)>"/,
+            ]);
+        });
+
+        it('logs an error when passing a duplicate key', () => {
+            const elm = createElement(tagName, { is: Ctor });
+            elm.items = [
+                { key: 'xyz', value: 'one' },
+                { key: 'xyz', value: 'two' },
+            ];
+
+            // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+            expect(() => document.body.appendChild(elm)).toLogErrorDev(
+                /Duplicated "key" attribute value in "<(x-test|x-test-static|x-test-custom-element)>" for item number 1\. A key with value "\d:xyz" appears more than once in the iteration\. Key values must be unique numbers or strings\./
+            );
+        });
+    });
 });

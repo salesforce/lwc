@@ -16,13 +16,12 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement } from '../vnodes';
+import { VBaseElement, VStaticPartElement } from '../vnodes';
 
 const classNameToClassMap = create(null);
 
-function getMapFromClassName(className: string | undefined): Record<string, boolean> {
-    // Intentionally using == to match undefined and null values from computed style attribute
-    if (className == null) {
+export function getMapFromClassName(className: string | undefined): Record<string, boolean> {
+    if (isUndefined(className) || isNull(className) || className === '') {
         return EmptyObject;
     }
     // computed class names must be string
@@ -59,8 +58,8 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 }
 
 export function patchClassAttribute(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
+    oldVnode: VBaseElement | VStaticPartElement | null,
+    vnode: VBaseElement | VStaticPartElement,
     renderer: RendererAPI
 ) {
     const {
@@ -73,10 +72,18 @@ export function patchClassAttribute(
         return;
     }
 
-    const { getClassList } = renderer;
-    const classList = getClassList(elm!);
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);
+
+    if (oldClassMap === newClassMap) {
+        // These objects are cached by className string (`classNameToClassMap`), so we can only get here if there is
+        // a key collision due to types, e.g. oldClass is `undefined` and newClass is `""` (empty string), or oldClass
+        // is `1` (number) and newClass is `"1"` (string).
+        return;
+    }
+
+    const { getClassList } = renderer;
+    const classList = getClassList(elm!);
 
     let name: string;
     for (name in oldClassMap) {

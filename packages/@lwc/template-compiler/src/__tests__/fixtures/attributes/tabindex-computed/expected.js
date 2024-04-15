@@ -10,11 +10,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        attrs: {
-          tabindex: api_tab_index($cmp.computed),
+      api_static_part(
+        0,
+        {
+          attrs: {
+            tabindex: api_tab_index($cmp.computed),
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_custom_element("x-foo", _xFoo, {
       props: {

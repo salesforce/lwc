@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 14,
+            "endLine": 17,
             "endColumn": 12,
             "start": 0,
-            "end": 467,
+            "end": 608,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 14,
+                "startLine": 17,
                 "startColumn": 1,
-                "endLine": 14,
+                "endLine": 17,
                 "endColumn": 12,
-                "start": 456,
-                "end": 467
+                "start": 597,
+                "end": 608
             }
         },
         "directives": [],
@@ -46,10 +46,10 @@
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 5,
+                    "endLine": 6,
                     "endColumn": 16,
                     "start": 15,
-                    "end": 154
+                    "end": 199
                 },
                 "directiveLocation": {
                     "startLine": 2,
@@ -171,6 +171,83 @@
                         "directives": [],
                         "listeners": [],
                         "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 45,
+                            "start": 147,
+                            "end": 183,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 15,
+                                "start": 147,
+                                "end": 153
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 38,
+                                "endLine": 5,
+                                "endColumn": 45,
+                                "start": 176,
+                                "end": 183
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "concatenated ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "concatenated "
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 38,
+                                    "start": 153,
+                                    "end": 176
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": "{insideIf}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "insideIf",
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 15,
+                                        "endLine": 5,
+                                        "endColumn": 38,
+                                        "start": 153,
+                                        "end": 176
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 38,
+                                    "start": 153,
+                                    "end": 176
+                                }
+                            }
+                        ]
                     }
                 ],
                 "else": {
@@ -181,29 +258,29 @@
                         "end": 11,
                         "name": "showElseIf",
                         "location": {
-                            "startLine": 6,
+                            "startLine": 7,
                             "startColumn": 15,
-                            "endLine": 6,
+                            "endLine": 7,
                             "endColumn": 38,
-                            "start": 169,
-                            "end": 192
+                            "start": 214,
+                            "end": 237
                         }
                     },
                     "location": {
-                        "startLine": 6,
+                        "startLine": 7,
                         "startColumn": 5,
-                        "endLine": 9,
+                        "endLine": 11,
                         "endColumn": 16,
-                        "start": 159,
-                        "end": 314
+                        "start": 204,
+                        "end": 408
                     },
                     "directiveLocation": {
-                        "startLine": 6,
+                        "startLine": 7,
                         "startColumn": 15,
-                        "endLine": 6,
+                        "endLine": 7,
                         "endColumn": 38,
-                        "start": 169,
-                        "end": 192
+                        "start": 214,
+                        "end": 237
                     },
                     "children": [
                         {
@@ -211,27 +288,27 @@
                             "name": "span",
                             "namespace": "http://www.w3.org/1999/xhtml",
                             "location": {
-                                "startLine": 7,
+                                "startLine": 8,
                                 "startColumn": 9,
-                                "endLine": 7,
+                                "endLine": 8,
                                 "endColumn": 50,
-                                "start": 202,
-                                "end": 243,
+                                "start": 247,
+                                "end": 288,
                                 "startTag": {
-                                    "startLine": 7,
+                                    "startLine": 8,
                                     "startColumn": 9,
-                                    "endLine": 7,
+                                    "endLine": 8,
                                     "endColumn": 43,
-                                    "start": 202,
-                                    "end": 236
+                                    "start": 247,
+                                    "end": 281
                                 },
                                 "endTag": {
-                                    "startLine": 7,
+                                    "startLine": 8,
                                     "startColumn": 43,
-                                    "endLine": 7,
+                                    "endLine": 8,
                                     "endColumn": 50,
-                                    "start": 236,
-                                    "end": 243
+                                    "start": 281,
+                                    "end": 288
                                 }
                             },
                             "attributes": [
@@ -244,21 +321,21 @@
                                         "end": 13,
                                         "name": "insideElseIf",
                                         "location": {
-                                            "startLine": 7,
+                                            "startLine": 8,
                                             "startColumn": 15,
-                                            "endLine": 7,
+                                            "endLine": 8,
                                             "endColumn": 42,
-                                            "start": 208,
-                                            "end": 235
+                                            "start": 253,
+                                            "end": 280
                                         }
                                     },
                                     "location": {
-                                        "startLine": 7,
+                                        "startLine": 8,
                                         "startColumn": 15,
-                                        "endLine": 7,
+                                        "endLine": 8,
                                         "endColumn": 42,
-                                        "start": 208,
-                                        "end": 235
+                                        "start": 253,
+                                        "end": 280
                                     }
                                 }
                             ],
@@ -272,27 +349,27 @@
                             "name": "span",
                             "namespace": "http://www.w3.org/1999/xhtml",
                             "location": {
-                                "startLine": 8,
+                                "startLine": 9,
                                 "startColumn": 9,
-                                "endLine": 8,
+                                "endLine": 9,
                                 "endColumn": 55,
-                                "start": 252,
-                                "end": 298,
+                                "start": 297,
+                                "end": 343,
                                 "startTag": {
-                                    "startLine": 8,
+                                    "startLine": 9,
                                     "startColumn": 9,
-                                    "endLine": 8,
+                                    "endLine": 9,
                                     "endColumn": 48,
-                                    "start": 252,
-                                    "end": 291
+                                    "start": 297,
+                                    "end": 336
                                 },
                                 "endTag": {
-                                    "startLine": 8,
+                                    "startLine": 9,
                                     "startColumn": 48,
-                                    "endLine": 8,
+                                    "endLine": 9,
                                     "endColumn": 55,
-                                    "start": 291,
-                                    "end": 298
+                                    "start": 336,
+                                    "end": 343
                                 }
                             },
                             "attributes": [
@@ -304,12 +381,12 @@
                                         "value": "staticInsideElseIf"
                                     },
                                     "location": {
-                                        "startLine": 8,
+                                        "startLine": 9,
                                         "startColumn": 15,
-                                        "endLine": 8,
+                                        "endLine": 9,
                                         "endColumn": 47,
-                                        "start": 258,
-                                        "end": 290
+                                        "start": 303,
+                                        "end": 335
                                     }
                                 }
                             ],
@@ -317,25 +394,102 @@
                             "directives": [],
                             "listeners": [],
                             "children": []
+                        },
+                        {
+                            "type": "Element",
+                            "name": "span",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 10,
+                                "startColumn": 9,
+                                "endLine": 10,
+                                "endColumn": 49,
+                                "start": 352,
+                                "end": 392,
+                                "startTag": {
+                                    "startLine": 10,
+                                    "startColumn": 9,
+                                    "endLine": 10,
+                                    "endColumn": 15,
+                                    "start": 352,
+                                    "end": 358
+                                },
+                                "endTag": {
+                                    "startLine": 10,
+                                    "startColumn": 42,
+                                    "endLine": 10,
+                                    "endColumn": 49,
+                                    "start": 385,
+                                    "end": 392
+                                }
+                            },
+                            "attributes": [],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": [
+                                {
+                                    "type": "Text",
+                                    "raw": "concatenated ",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "concatenated "
+                                    },
+                                    "location": {
+                                        "startLine": 10,
+                                        "startColumn": 15,
+                                        "endLine": 10,
+                                        "endColumn": 42,
+                                        "start": 358,
+                                        "end": 385
+                                    }
+                                },
+                                {
+                                    "type": "Text",
+                                    "raw": "{insideElseIf}",
+                                    "value": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 13,
+                                        "name": "insideElseIf",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 15,
+                                            "endLine": 10,
+                                            "endColumn": 42,
+                                            "start": 358,
+                                            "end": 385
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 10,
+                                        "startColumn": 15,
+                                        "endLine": 10,
+                                        "endColumn": 42,
+                                        "start": 358,
+                                        "end": 385
+                                    }
+                                }
+                            ]
                         }
                     ],
                     "else": {
                         "type": "ElseBlock",
                         "location": {
-                            "startLine": 10,
+                            "startLine": 12,
                             "startColumn": 5,
-                            "endLine": 13,
+                            "endLine": 16,
                             "endColumn": 16,
-                            "start": 319,
-                            "end": 455
+                            "start": 413,
+                            "end": 596
                         },
                         "directiveLocation": {
-                            "startLine": 10,
+                            "startLine": 12,
                             "startColumn": 15,
-                            "endLine": 10,
+                            "endLine": 12,
                             "endColumn": 23,
-                            "start": 329,
-                            "end": 337
+                            "start": 423,
+                            "end": 431
                         },
                         "children": [
                             {
@@ -343,27 +497,27 @@
                                 "name": "span",
                                 "namespace": "http://www.w3.org/1999/xhtml",
                                 "location": {
-                                    "startLine": 11,
+                                    "startLine": 13,
                                     "startColumn": 9,
-                                    "endLine": 11,
+                                    "endLine": 13,
                                     "endColumn": 48,
-                                    "start": 347,
-                                    "end": 386,
+                                    "start": 441,
+                                    "end": 480,
                                     "startTag": {
-                                        "startLine": 11,
+                                        "startLine": 13,
                                         "startColumn": 9,
-                                        "endLine": 11,
+                                        "endLine": 13,
                                         "endColumn": 41,
-                                        "start": 347,
-                                        "end": 379
+                                        "start": 441,
+                                        "end": 473
                                     },
                                     "endTag": {
-                                        "startLine": 11,
+                                        "startLine": 13,
                                         "startColumn": 41,
-                                        "endLine": 11,
+                                        "endLine": 13,
                                         "endColumn": 48,
-                                        "start": 379,
-                                        "end": 386
+                                        "start": 473,
+                                        "end": 480
                                     }
                                 },
                                 "attributes": [
@@ -376,21 +530,21 @@
                                             "end": 11,
                                             "name": "insideElse",
                                             "location": {
-                                                "startLine": 11,
+                                                "startLine": 13,
                                                 "startColumn": 15,
-                                                "endLine": 11,
+                                                "endLine": 13,
                                                 "endColumn": 40,
-                                                "start": 353,
-                                                "end": 378
+                                                "start": 447,
+                                                "end": 472
                                             }
                                         },
                                         "location": {
-                                            "startLine": 11,
+                                            "startLine": 13,
                                             "startColumn": 15,
-                                            "endLine": 11,
+                                            "endLine": 13,
                                             "endColumn": 40,
-                                            "start": 353,
-                                            "end": 378
+                                            "start": 447,
+                                            "end": 472
                                         }
                                     }
                                 ],
@@ -404,27 +558,27 @@
                                 "name": "span",
                                 "namespace": "http://www.w3.org/1999/xhtml",
                                 "location": {
-                                    "startLine": 12,
+                                    "startLine": 14,
                                     "startColumn": 9,
-                                    "endLine": 12,
+                                    "endLine": 14,
                                     "endColumn": 53,
-                                    "start": 395,
-                                    "end": 439,
+                                    "start": 489,
+                                    "end": 533,
                                     "startTag": {
-                                        "startLine": 12,
+                                        "startLine": 14,
                                         "startColumn": 9,
-                                        "endLine": 12,
+                                        "endLine": 14,
                                         "endColumn": 46,
-                                        "start": 395,
-                                        "end": 432
+                                        "start": 489,
+                                        "end": 526
                                     },
                                     "endTag": {
-                                        "startLine": 12,
+                                        "startLine": 14,
                                         "startColumn": 46,
-                                        "endLine": 12,
+                                        "endLine": 14,
                                         "endColumn": 53,
-                                        "start": 432,
-                                        "end": 439
+                                        "start": 526,
+                                        "end": 533
                                     }
                                 },
                                 "attributes": [
@@ -436,12 +590,12 @@
                                             "value": "staticInsideElse"
                                         },
                                         "location": {
-                                            "startLine": 12,
+                                            "startLine": 14,
                                             "startColumn": 15,
-                                            "endLine": 12,
+                                            "endLine": 14,
                                             "endColumn": 45,
-                                            "start": 401,
-                                            "end": 431
+                                            "start": 495,
+                                            "end": 525
                                         }
                                     }
                                 ],
@@ -449,6 +603,83 @@
                                 "directives": [],
                                 "listeners": [],
                                 "children": []
+                            },
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 15,
+                                    "startColumn": 9,
+                                    "endLine": 15,
+                                    "endColumn": 47,
+                                    "start": 542,
+                                    "end": 580,
+                                    "startTag": {
+                                        "startLine": 15,
+                                        "startColumn": 9,
+                                        "endLine": 15,
+                                        "endColumn": 15,
+                                        "start": 542,
+                                        "end": 548
+                                    },
+                                    "endTag": {
+                                        "startLine": 15,
+                                        "startColumn": 40,
+                                        "endLine": 15,
+                                        "endColumn": 47,
+                                        "start": 573,
+                                        "end": 580
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "concatenated ",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "concatenated "
+                                        },
+                                        "location": {
+                                            "startLine": 15,
+                                            "startColumn": 15,
+                                            "endLine": 15,
+                                            "endColumn": 40,
+                                            "start": 548,
+                                            "end": 573
+                                        }
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "raw": "{insideElse}",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 11,
+                                            "name": "insideElse",
+                                            "location": {
+                                                "startLine": 15,
+                                                "startColumn": 15,
+                                                "endLine": 15,
+                                                "endColumn": 40,
+                                                "start": 548,
+                                                "end": 573
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 15,
+                                            "startColumn": 15,
+                                            "endLine": 15,
+                                            "endColumn": 40,
+                                            "start": 548,
+                                            "end": 573
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     }

@@ -7,20 +7,15 @@ const $fragment5 = parseFragment`<div${3}>Escape \\\`me\`</div>`;
 const $fragment6 = parseFragment`<div data-message="Escape \\\`me\`"${3}></div>`;
 const $fragment7 = parseFragment`<div${3}><!-- Escape \\\`me\` --></div>`;
 const $fragment8 = parseFragment`<xmp${3}>Escape \\\`me\`</xmp>`;
-const $fragment9 = parseFragment`<div data-message="Escape \${me}"${3}></div>`;
-const $fragment10 = parseFragment`<div${3}><!-- Escape \${me} --></div>`;
-const stc0 = {
-  key: 16,
-};
-const stc1 = {
-  key: 21,
-};
+const $fragment9 = parseFragment`<div${3}>${"t1"}</div>`;
+const $fragment10 = parseFragment`<div data-message="Escape \${me}"${3}></div>`;
+const $fragment11 = parseFragment`<div${3}><!-- Escape \${me} --></div>`;
+const $fragment12 = parseFragment`<xmp${3}>${"t1"}</xmp>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
   } = $api;
   return [
     api_static_fragment($fragment1, 1),
@@ -31,13 +26,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment6, 11),
     api_static_fragment($fragment7, 13),
     api_static_fragment($fragment8, 15),
-    api_element("div", stc0, [
-      api_text("Escape $" + api_dynamic_text($cmp.me)),
+    api_static_fragment($fragment9, 17, [
+      api_static_part(1, null, "Escape $" + api_dynamic_text($cmp.me)),
     ]),
-    api_static_fragment($fragment9, 18),
-    api_static_fragment($fragment10, 20),
-    api_element("xmp", stc1, [
-      api_text("Escape $" + api_dynamic_text($cmp.me)),
+    api_static_fragment($fragment10, 19),
+    api_static_fragment($fragment11, 21),
+    api_static_fragment($fragment12, 23, [
+      api_static_part(1, null, "Escape $" + api_dynamic_text($cmp.me)),
     ]),
   ];
   /*LWC compiler vX.X.X*/

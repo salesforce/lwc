@@ -14,11 +14,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        attrs: {
-          href: api_scoped_frag_id($cmp.narita),
+      api_static_part(
+        0,
+        {
+          attrs: {
+            href: api_scoped_frag_id($cmp.narita),
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_element("map", stc0, [
       api_element("area", {

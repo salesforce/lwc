@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -20,6 +20,11 @@ export const enum VNodeType {
     ScopedSlotFragment,
 }
 
+export const enum VStaticPartType {
+    Text,
+    Element,
+}
+
 export type VNode =
     | VText
     | VComment
@@ -29,7 +34,12 @@ export type VNode =
     | VFragment
     | VScopedSlotFragment;
 
-export type VNodes = Readonly<Array<VNode | null>>;
+export type VNodes = ReadonlyArray<VNode | null>;
+/**
+ * Mutable version of {@link VNodes}. It should only be used inside functions to build an array;
+ * it should never be used as a parameter or return type.
+ */
+export type MutableVNodes = Array<VNode | null>;
 
 export interface BaseVParent {
     children: VNodes;
@@ -50,11 +60,25 @@ export interface VScopedSlotFragment extends BaseVNode {
 }
 
 export interface VStaticPart {
+    readonly type: VStaticPartType;
     readonly partId: number;
+    readonly data: VStaticPartData | null;
+    readonly text: string | null;
+    elm: Element | Text | undefined;
+}
+
+export interface VStaticPartElement extends VStaticPart {
+    readonly type: VStaticPartType.Element;
     readonly data: VStaticPartData;
     elm: Element | undefined;
 }
-export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs'>;
+
+export interface VStaticPartText extends VStaticPart {
+    readonly type: VStaticPartType.Text;
+    readonly text: string;
+    elm: Text | undefined;
+}
+export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs' | 'style' | 'className'>;
 
 export interface VStatic extends BaseVNode {
     readonly type: VNodeType.Static;
@@ -125,7 +149,7 @@ export interface VNodeData {
     readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
-    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly styleDecls?: ReadonlyArray<[string, string, boolean]>;
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
@@ -165,4 +189,12 @@ export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragmen
 
 export function isVStatic(vnode: VNode): vnode is VStatic {
     return vnode.type === VNodeType.Static;
+}
+
+export function isVStaticPartElement(vnode: VStaticPart): vnode is VStaticPartElement {
+    return vnode.type === VStaticPartType.Element;
+}
+
+export function isVStaticPartText(vnode: VStaticPart): vnode is VStaticPartText {
+    return vnode.type === VStaticPartType.Text;
 }

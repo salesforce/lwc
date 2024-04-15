@@ -4,15 +4,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        attrs: {
-          "aria-described-by": $cmp.scoped,
-          "aria-active-descendant": $cmp.scoped,
-          "aria-error-message": $cmp.scoped,
-          "aria-flow-to": $cmp.scoped,
-          "aria-labelled-by": $cmp.scoped,
+      api_static_part(
+        0,
+        {
+          attrs: {
+            "aria-described-by": $cmp.scoped,
+            "aria-active-descendant": $cmp.scoped,
+            "aria-error-message": $cmp.scoped,
+            "aria-flow-to": $cmp.scoped,
+            "aria-labelled-by": $cmp.scoped,
+          },
         },
-      }),
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

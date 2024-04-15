@@ -3,6 +3,8 @@ import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<input${"a0:id"}${3}>`;
+const $fragment2 = parseFragment`<p${"a0:id"}${3}>description text</p>`;
+const $fragment3 = parseFragment`<input${"a0:aria-describedby"}${3}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
@@ -65,30 +67,40 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       key: 6,
     }),
     api_static_fragment($fragment1, 8, [
-      api_static_part(0, {
-        attrs: {
-          id: api_scoped_id($cmp.computed),
+      api_static_part(
+        0,
+        {
+          attrs: {
+            id: api_scoped_id($cmp.computed),
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_iterator($cmp.things, function (thing) {
       return [
-        api_element(
-          "p",
-          {
-            attrs: {
-              id: api_scoped_id(thing.id),
+        api_static_fragment($fragment2, api_key(10, thing.key), [
+          api_static_part(
+            0,
+            {
+              attrs: {
+                id: api_scoped_id(thing.id),
+              },
             },
-            key: api_key(9, thing.key),
-          },
-          [api_text("description text")]
-        ),
-        api_element("input", {
-          attrs: {
-            "aria-describedby": api_scoped_id(thing.id),
-          },
-          key: api_key(10, thing.key),
-        }),
+            null
+          ),
+        ]),
+        api_static_fragment($fragment3, api_key(12, thing.key), [
+          api_static_part(
+            0,
+            {
+              attrs: {
+                "aria-describedby": api_scoped_id(thing.id),
+              },
+            },
+            null
+          ),
+        ]),
       ];
     }),
   ]);

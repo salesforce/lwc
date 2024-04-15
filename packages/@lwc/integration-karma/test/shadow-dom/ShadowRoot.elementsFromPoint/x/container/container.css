@@ -21,7 +21,9 @@
     bottom: 0;
 }
 
-x-slottable, .around-slotted, x-slotted {
+x-slottable,
+.around-slotted,
+x-slotted {
     position: absolute;
     left: 0;
     top: 0;

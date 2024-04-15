@@ -9,11 +9,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
-      api_static_part(0, {
-        attrs: {
-          spellcheck: $cmp.spellCheck,
+      api_static_part(
+        0,
+        {
+          attrs: {
+            spellcheck: $cmp.spellCheck,
+          },
         },
-      }),
+        null
+      ),
     ]),
     api_custom_element("x-foo", _xFoo, {
       props: {

@@ -1,9 +1,10 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${3}>Conditional Iteration</div>`;
+const $fragment2 = parseFragment`<div${3}>Else</div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
-    t: api_text,
-    h: api_element,
+    st: api_static_fragment,
     fr: api_fragment,
     i: api_iterator,
   } = $api;
@@ -11,28 +12,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     return item.visible
       ? api_fragment(
           0,
-          [
-            api_element(
-              "div",
-              {
-                key: api_key(1, item.key),
-              },
-              [api_text("Conditional Iteration")]
-            ),
-          ],
+          [api_static_fragment($fragment1, api_key(2, item.key))],
           0
         )
       : api_fragment(
           0,
-          [
-            api_element(
-              "div",
-              {
-                key: api_key(2, item.key),
-              },
-              [api_text("Else")]
-            ),
-          ],
+          [api_static_fragment($fragment2, api_key(4, item.key))],
           0
         );
   });

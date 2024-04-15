@@ -6,10 +6,10 @@
  */
 import { isUndefined } from '@lwc/shared';
 import { RefVNodes, VM } from '../vm';
-import { VBaseElement, VStaticPart } from '../vnodes';
+import { VBaseElement, VStaticPartElement } from '../vnodes';
 
 // Set a ref (lwc:ref) on a VM, from a template API
-export function applyRefs(vnode: VBaseElement | VStaticPart, owner: VM) {
+export function applyRefs(vnode: VBaseElement | VStaticPartElement, owner: VM) {
     const { data } = vnode;
     const { ref } = data;
 

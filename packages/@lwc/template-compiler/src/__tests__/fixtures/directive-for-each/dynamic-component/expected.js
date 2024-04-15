@@ -1,13 +1,11 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 1,
-};
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     dc: api_dynamic_component,
     i: api_iterator,
   } = $api;
@@ -17,7 +15,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: api_key(0, item.id),
       },
-      [api_element("p", stc0, [api_text(api_dynamic_text(item))])]
+      [
+        api_static_fragment($fragment1, 2, [
+          api_static_part(1, null, api_dynamic_text(item)),
+        ]),
+      ]
     );
   });
   /*LWC compiler vX.X.X*/
