@@ -32,7 +32,7 @@
     },
     "devDependencies": {
         "@babel/plugin-transform-modules-commonjs": "^7.24.1",
-        "@commitlint/cli": "^19.2.1",
+        "@commitlint/cli": "^19.2.2",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
         "@rollup/plugin-commonjs": "^25.0.2",
@@ -62,7 +62,7 @@
         "magic-string": "^0.30.9",
         "nx": "18.2.4",
         "prettier": "^2.8.8",
-        "rollup": "^4.14.1",
+        "rollup": "^4.14.3",
         "terser": "^5.30.3",
         "ts-jest": "^29.1.2",
         "tslib": "^2.6.1",
