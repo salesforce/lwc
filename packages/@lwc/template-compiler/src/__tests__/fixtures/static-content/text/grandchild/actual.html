@@ -1,0 +1,28 @@
+<template>
+    <div> 
+        <div>{soloGrandChild}</div>
+    </div>
+    <div>
+        <div>
+            <!-- grand child siblings -->
+            {grandChildFirstSibling}
+            <span>text1</span>
+        </div>
+        <div>
+            <!-- grand child siblings -->
+            <span>text2</span>
+            {grandChildSecondSibling}
+            <span>text3</span>
+        </div>
+        <div>
+            <!-- grand child siblings -->
+            <span>text4</span>
+            <span>text5</span>
+            {grandChildLastSibling}
+        </div>
+        <div>
+            <!-- grand child siblings -->
+            concatenate the {string} value
+        </div>
+    </div>
+</template>

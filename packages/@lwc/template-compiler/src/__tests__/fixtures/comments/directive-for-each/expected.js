@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<li${3}>${"t1"}</li>`;
 const stc0 = {
   key: 0,
 };
@@ -7,9 +8,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     co: api_comment,
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     i: api_iterator,
+    h: api_element,
   } = $api;
   return [
     api_element(
@@ -18,13 +20,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_iterator($cmp.colors, function (color) {
         return [
           api_comment(" color "),
-          api_element(
-            "li",
-            {
-              key: api_key(1, color),
-            },
-            [api_text(api_dynamic_text(color))]
-          ),
+          api_static_fragment($fragment1, api_key(2, color), [
+            api_static_part(1, null, api_dynamic_text(color)),
+          ]),
         ];
       })
     ),

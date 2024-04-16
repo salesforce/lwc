@@ -16,6 +16,12 @@ import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
 import DeepListener from 'x/deepListener';
 import Comments from 'x/comments';
 import PreserveComments from 'x/preserveComments';
+import Attribute from 'x/attribute';
+import DeepAttribute from 'x/deepAttribute';
+import IframeOnload from 'x/iframeOnload';
+import WithKey from 'x/withKey';
+import Text from 'x/text';
+import TableWithExpression from 'x/tableWithExpressions';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -430,5 +436,316 @@ describe('static parts applies to comments correctly', () => {
         bar.click();
         expect(elm.barWasClicked).toBe(true);
         expect(refs.bar).toBe(bar);
+    });
+});
+
+describe('static content optimization with attribute', () => {
+    let nodes = {};
+    let elm;
+
+    beforeEach(async () => {
+        elm = createElement('x-attributes', { is: Attribute });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+        nodes = extractDataIds(elm);
+    });
+
+    const verifyStyleAttributeAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('style')).toEqual(expected);
+
+    const verifyAttributeAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('data-value')).toEqual(expected);
+
+    const verifyClassAppliedCorrectly = ({ cmp, expected }) =>
+        expect(cmp.getAttribute('class')).toEqual(expected);
+
+    it('preserves static values', () => {
+        const {
+            staticAttr,
+            staticStyle,
+            staticClass,
+            staticAttrNested,
+            staticStyleNested,
+            staticClassNested,
+            staticCombined,
+            staticCombinedNested,
+        } = nodes;
+
+        // styles
+        [
+            { cmp: staticStyle, expected: 'color: blue;' },
+            { cmp: staticCombined, expected: 'color: red;' },
+            { cmp: staticStyleNested, expected: 'color: white;' },
+            { cmp: staticCombinedNested, expected: 'color: orange;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        [
+            { cmp: staticClass, expected: 'static class' },
+            { cmp: staticCombined, expected: 'combined class' },
+            { cmp: staticClassNested, expected: 'static nested class' },
+            { cmp: staticCombinedNested, expected: 'static combined nested' },
+        ].forEach(verifyClassAppliedCorrectly);
+
+        // attributes
+        [
+            { cmp: staticAttr, expected: 'static1' },
+            { cmp: staticCombined, expected: 'static2' },
+            { cmp: staticAttrNested, expected: 'static3' },
+            { cmp: staticCombinedNested, expected: 'static4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
+    });
+
+    it('applies expressions on mount', () => {
+        const {
+            dynamicAttr,
+            dynamicStyle,
+            dynamicClass,
+            dynamicAttrNested,
+            dynamicStyleNested,
+            dynamicClassNested,
+            dynamicCombined,
+            dynamicCombinedNested,
+        } = nodes;
+
+        // styles
+        [
+            { cmp: dynamicStyle, expected: 'color: green;' },
+            { cmp: dynamicStyleNested, expected: 'color: violet;' },
+            { cmp: dynamicCombined, expected: 'color: orange;' },
+            { cmp: dynamicCombinedNested, expected: 'color: black;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        [
+            { cmp: dynamicClass, expected: 'class1' },
+            { cmp: dynamicClassNested, expected: 'nestedClass1' },
+            { cmp: dynamicCombined, expected: 'combinedClass' },
+            { cmp: dynamicCombinedNested, expected: 'combinedClassNested' },
+        ].forEach(verifyClassAppliedCorrectly);
+
+        // attributes
+        [
+            { cmp: dynamicAttr, expected: 'dynamic1' },
+            { cmp: dynamicAttrNested, expected: 'dynamic2' },
+            { cmp: dynamicCombined, expected: 'dynamic3' },
+            { cmp: dynamicCombinedNested, expected: 'dynamic4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
+    });
+
+    it('updates values when expressions change', async () => {
+        const {
+            dynamicAttr,
+            dynamicStyle,
+            dynamicClass,
+            dynamicAttrNested,
+            dynamicStyleNested,
+            dynamicClassNested,
+            dynamicCombined,
+            dynamicCombinedNested,
+        } = nodes;
+
+        // styles
+
+        elm.dynamicStyle = 'color: teal;';
+        elm.dynamicStyleNested = 'color: rose;';
+        elm.combinedStyle = 'color: purple;';
+        elm.combinedStyleNested = 'color: random;';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicStyle, expected: 'color: teal;' },
+            { cmp: dynamicStyleNested, expected: 'color: rose;' },
+            { cmp: dynamicCombined, expected: 'color: purple;' },
+            { cmp: dynamicCombinedNested, expected: 'color: random;' },
+        ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+        // class
+        elm.dynamicClass = 'class2';
+        elm.dynamicClassNested = 'nestedClass2';
+        elm.combinedClass = 'combinedClassUpdated';
+        elm.combinedClassNested = 'combinedClassNestedUpdated';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicClass, expected: 'class2' },
+            { cmp: dynamicClassNested, expected: 'nestedClass2' },
+            { cmp: dynamicCombined, expected: 'combinedClassUpdated' },
+            { cmp: dynamicCombinedNested, expected: 'combinedClassNestedUpdated' },
+        ].forEach(verifyClassAppliedCorrectly);
+
+        // attributes
+        elm.dynamicAttr = 'dynamicUpdated1';
+        elm.dynamicAttrNested = 'dynamicUpdated2';
+        elm.combinedAttr = 'dynamicUpdated3';
+        elm.combinedAttrNested = 'dynamicUpdated4';
+
+        await Promise.resolve();
+
+        [
+            { cmp: dynamicAttr, expected: 'dynamicUpdated1' },
+            { cmp: dynamicAttrNested, expected: 'dynamicUpdated2' },
+            { cmp: dynamicCombined, expected: 'dynamicUpdated3' },
+            { cmp: dynamicCombinedNested, expected: 'dynamicUpdated4' },
+        ].forEach(verifyAttributeAppliedCorrectly);
+    });
+
+    it('applies expression to deeply nested data structure', async () => {
+        const elm = createElement('x-deeply-nested', { is: DeepAttribute });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        nodes = extractDataIds(elm);
+
+        // Test includes 4 levels of depth
+        for (let i = 1; i < 5; i++) {
+            // style
+            [
+                { cmp: nodes[`deep${i}Style`], expected: `${i}` },
+                { cmp: nodes[`deep${i}StyleNested`], expected: `${i}` },
+            ].forEach(verifyStyleAttributeAppliedCorrectly);
+
+            // class
+            [
+                { cmp: nodes[`deep${i}Class`], expected: `${i}` },
+                { cmp: nodes[`deep${i}ClassNested`], expected: `${i}` },
+            ].forEach(verifyClassAppliedCorrectly);
+
+            // attribute
+            [
+                { cmp: nodes[`deep${i}Attr`], expected: `${i}` },
+                { cmp: nodes[`deep${i}AttrNested`], expected: `${i}` },
+            ].forEach(verifyAttributeAppliedCorrectly);
+
+            // combined
+            [
+                { cmp: nodes[`deep${i}Combined`], expected: `${i}` },
+                { cmp: nodes[`deep${i}CombinedNested`], expected: `${i}` },
+            ].forEach(verifyAttributeAppliedCorrectly);
+        }
+    });
+});
+
+describe('iframe onload event listener', () => {
+    it('works with iframe onload listener', async () => {
+        const elm = createElement('x-iframe-onload', { is: IframeOnload });
+        document.body.appendChild(elm);
+        // Oddly Firefox requires two macrotasks before the load event fires. Chrome/Safari only require a microtask.
+        await new Promise((resolve) => setTimeout(resolve));
+        await new Promise((resolve) => setTimeout(resolve));
+        expect(elm.loaded).toBeTrue();
+    });
+});
+
+describe('key directive', () => {
+    it('works with a key directive on top-level static content', async () => {
+        const elm = createElement('x-with-key', { is: WithKey });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+        const tbody = elm.shadowRoot.querySelector('tbody');
+        expect(tbody.children.length).toBe(0);
+
+        // one child
+        elm.items = [0];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(1);
+        const trsA = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsA = [...elm.shadowRoot.querySelectorAll('td')];
+        expect(trsA.length).toBe(1);
+        expect(tdsA.length).toBe(1);
+
+        // second child
+        elm.items = [0, 1];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(2);
+        const trsB = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsB = [...elm.shadowRoot.querySelectorAll('td')];
+
+        expect(trsB.length).toBe(2);
+        expect(tdsB.length).toBe(2);
+        expect(trsB[0]).toBe(trsA[0]);
+        expect(tdsB[0]).toBe(tdsA[0]);
+
+        // switch order
+        elm.items = [1, 0];
+        await Promise.resolve();
+        expect(tbody.children.length).toBe(2);
+        const trsC = [...elm.shadowRoot.querySelectorAll('tr')];
+        const tdsC = [...elm.shadowRoot.querySelectorAll('td')];
+
+        expect(trsC.length).toBe(2);
+        expect(tdsC.length).toBe(2);
+        expect(trsC[0]).toBe(trsB[1]);
+        expect(tdsC[0]).toBe(tdsB[1]);
+        expect(trsC[1]).toBe(trsB[0]);
+        expect(tdsC[1]).toBe(tdsB[0]);
+    });
+});
+
+describe('static content dynamic text', () => {
+    it('renders expressions on mount', async () => {
+        const elm = createElement('x-text', { is: Text });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        const { emptyString, concateBeginning, concateEnd, siblings } = extractDataIds(elm);
+
+        expect(emptyString.textContent).toEqual('');
+        expect(concateBeginning.textContent).toEqual('default value');
+        expect(concateEnd.textContent).toEqual('value default');
+
+        expect(siblings.childNodes.length).toBe(2);
+        expect(siblings.childNodes[0].textContent).toEqual('standard text');
+        expect(siblings.childNodes[1].textContent).toEqual('second default');
+    });
+
+    it('updates expressions on mount', async () => {
+        const elm = createElement('x-text', { is: Text });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        elm.emptyString = 'not empty';
+        elm.dynamicText = 'updated';
+        elm.siblingDynamicText = 'updated second';
+
+        await Promise.resolve();
+
+        const { emptyString, concateBeginning, concateEnd, siblings } = extractDataIds(elm);
+
+        expect(emptyString.textContent).toEqual('not empty');
+        expect(concateBeginning.textContent).toEqual('updated value');
+        expect(concateEnd.textContent).toEqual('value updated');
+
+        expect(siblings.childNodes.length).toEqual(2);
+        expect(siblings.childNodes[0].textContent).toEqual('standard text');
+        expect(siblings.childNodes[1].textContent).toEqual('updated second');
+    });
+});
+
+describe('table with static content containing expressions', () => {
+    it('renders static content correctly', async () => {
+        const table = createElement('x-table', { is: TableWithExpression });
+        document.body.appendChild(table);
+
+        await Promise.resolve();
+
+        const tbody = table.shadowRoot.querySelector('tbody');
+        expect(tbody.children.length).toEqual(3);
+        const trs = [...table.shadowRoot.querySelectorAll('tr')];
+        const tds = [...table.shadowRoot.querySelectorAll('td')];
+
+        expect(trs.length).toEqual(3);
+        expect(tds.length).toEqual(3);
+
+        tds.forEach((td, i) => {
+            expect(td.getAttribute('class')).toEqual(`class${i}`);
+            expect(td.getAttribute('style')).toEqual(`color: ${i};`);
+            expect(td.getAttribute('data-id')).toEqual(`${i}`);
+            expect(td.textContent).toEqual(`value${i}`);
+        });
     });
 });

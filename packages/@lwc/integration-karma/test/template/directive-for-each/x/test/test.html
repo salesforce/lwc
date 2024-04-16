@@ -1,7 +1,10 @@
 <template>
     <ul>
         <template for:each={items} for:item="item">
-            <li key={item.key}>{item.value}</li>
+            <li key={item.key}>
+                <!-- putting an lwc:if in here so that the LI will always be VElement instead of VStatic -->
+                <template lwc:if={item.value}>{item.value}</template>
+            </li>
         </template>
     </ul>
 </template>

@@ -1,5 +1,6 @@
 import _aB from "a/b";
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<p${3}>X</p>`;
 const stc0 = {
   classMap: {
     s2: true,
@@ -10,8 +11,7 @@ const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
-    t: api_text,
-    h: api_element,
+    st: api_static_fragment,
     i: api_iterator,
     c: api_custom_element,
   } = $api;
@@ -22,13 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       $cmp.isTrue
         ? api_iterator($cmp.items, function (item) {
-            return api_element(
-              "p",
-              {
-                key: api_key(1, item.id),
-              },
-              [api_text("X")]
-            );
+            return api_static_fragment($fragment1, api_key(2, item.id));
           })
         : stc1
     ),

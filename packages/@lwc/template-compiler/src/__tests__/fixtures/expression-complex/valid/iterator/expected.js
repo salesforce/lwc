@@ -1,31 +1,26 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<a${3}>one</a>`;
+const $fragment1 = parseFragment`<div${3}><a${3}>one</a></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     b: api_bind,
     sp: api_static_part,
     st: api_static_fragment,
-    h: api_element,
     i: api_iterator,
   } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0 } = $ctx;
   return api_iterator($cmp.bento, function (okazu) {
-    return api_element(
-      "div",
-      {
-        key: api_key(0, okazu),
-      },
-      [
-        api_static_fragment($fragment1(), 2, [
-          api_static_part(0, {
-            on: {
-              click: _m1 || ($ctx._m1 = api_bind(() => $cmp.taberu(okazu))),
-            },
-          }),
-        ]),
-      ]
-    );
+    return api_static_fragment($fragment1, api_key(1, okazu), [
+      api_static_part(
+        1,
+        {
+          on: {
+            click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),
+          },
+        },
+        null
+      ),
+    ]);
   });
   /*LWC compiler vX.X.X*/
 }

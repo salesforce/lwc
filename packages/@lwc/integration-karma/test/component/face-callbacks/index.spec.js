@@ -100,14 +100,22 @@ const testFaceLifecycleMethodsCallable = (createFace) => {
 
     // formAssociatedCallback
     expect(face.formAssociatedCallbackHasBeenCalled).toBeTruthy();
+    expect(face.formAssociatedCallbackHasBeenCalledWith).toBe(form);
 
     // formDisabledCallback
-    face.setAttribute('disabled', true);
+    face.setAttribute('disabled', 'true');
     expect(face.formDisabledCallbackHasBeenCalled).toBeTruthy();
+    expect(face.formDisabledCallbackHasBeenCalledWith).toBe(true);
+
+    // formDisabledCallback - re-enable
+    face.removeAttribute('disabled');
+    expect(face.formDisabledCallbackHasBeenCalled).toBeTruthy();
+    expect(face.formDisabledCallbackHasBeenCalledWith).toBe(false);
 
     // formResetCallback
     form.reset();
     expect(face.formResetCallbackHasBeenCalled).toBeTruthy();
+    expect(face.formResetCallbackHasBeenCalledWith).toBeUndefined();
 
     // Note there is no good way to test formStateRestoreCallback in karma tests
 };

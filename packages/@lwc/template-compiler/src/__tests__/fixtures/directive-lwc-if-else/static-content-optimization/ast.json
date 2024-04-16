@@ -1,0 +1,690 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 17,
+            "endColumn": 12,
+            "start": 0,
+            "end": 608,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 17,
+                "startColumn": 1,
+                "endLine": 17,
+                "endColumn": 12,
+                "start": 597,
+                "end": 608
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 7,
+                    "name": "showIf",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 15,
+                        "endLine": 2,
+                        "endColumn": 30,
+                        "start": 25,
+                        "end": 40
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 16,
+                    "start": 15,
+                    "end": 199
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 15,
+                    "endLine": 2,
+                    "endColumn": 30,
+                    "start": 25,
+                    "end": 40
+                },
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 46,
+                            "start": 50,
+                            "end": 87,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 39,
+                                "start": 50,
+                                "end": 80
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 39,
+                                "endLine": 3,
+                                "endColumn": 46,
+                                "start": 80,
+                                "end": 87
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-dynamic",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "insideIf",
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 15,
+                                        "endLine": 3,
+                                        "endColumn": 38,
+                                        "start": 56,
+                                        "end": 79
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 15,
+                                    "endLine": 3,
+                                    "endColumn": 38,
+                                    "start": 56,
+                                    "end": 79
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 51,
+                            "start": 96,
+                            "end": 138,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 44,
+                                "start": 96,
+                                "end": 131
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 44,
+                                "endLine": 4,
+                                "endColumn": 51,
+                                "start": 131,
+                                "end": 138
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-static",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "staticInsideIf"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 15,
+                                    "endLine": 4,
+                                    "endColumn": 43,
+                                    "start": 102,
+                                    "end": 130
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 45,
+                            "start": 147,
+                            "end": 183,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 15,
+                                "start": 147,
+                                "end": 153
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 38,
+                                "endLine": 5,
+                                "endColumn": 45,
+                                "start": 176,
+                                "end": 183
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "concatenated ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "concatenated "
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 38,
+                                    "start": 153,
+                                    "end": 176
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": "{insideIf}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "insideIf",
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 15,
+                                        "endLine": 5,
+                                        "endColumn": 38,
+                                        "start": 153,
+                                        "end": 176
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 38,
+                                    "start": 153,
+                                    "end": 176
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "else": {
+                    "type": "ElseifBlock",
+                    "condition": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 11,
+                        "name": "showElseIf",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 15,
+                            "endLine": 7,
+                            "endColumn": 38,
+                            "start": 214,
+                            "end": 237
+                        }
+                    },
+                    "location": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 11,
+                        "endColumn": 16,
+                        "start": 204,
+                        "end": 408
+                    },
+                    "directiveLocation": {
+                        "startLine": 7,
+                        "startColumn": 15,
+                        "endLine": 7,
+                        "endColumn": 38,
+                        "start": 214,
+                        "end": 237
+                    },
+                    "children": [
+                        {
+                            "type": "Element",
+                            "name": "span",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 50,
+                                "start": 247,
+                                "end": 288,
+                                "startTag": {
+                                    "startLine": 8,
+                                    "startColumn": 9,
+                                    "endLine": 8,
+                                    "endColumn": 43,
+                                    "start": 247,
+                                    "end": 281
+                                },
+                                "endTag": {
+                                    "startLine": 8,
+                                    "startColumn": 43,
+                                    "endLine": 8,
+                                    "endColumn": 50,
+                                    "start": 281,
+                                    "end": 288
+                                }
+                            },
+                            "attributes": [
+                                {
+                                    "type": "Attribute",
+                                    "name": "data-dynamic",
+                                    "value": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 13,
+                                        "name": "insideElseIf",
+                                        "location": {
+                                            "startLine": 8,
+                                            "startColumn": 15,
+                                            "endLine": 8,
+                                            "endColumn": 42,
+                                            "start": 253,
+                                            "end": 280
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 8,
+                                        "startColumn": 15,
+                                        "endLine": 8,
+                                        "endColumn": 42,
+                                        "start": 253,
+                                        "end": 280
+                                    }
+                                }
+                            ],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": []
+                        },
+                        {
+                            "type": "Element",
+                            "name": "span",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 55,
+                                "start": 297,
+                                "end": 343,
+                                "startTag": {
+                                    "startLine": 9,
+                                    "startColumn": 9,
+                                    "endLine": 9,
+                                    "endColumn": 48,
+                                    "start": 297,
+                                    "end": 336
+                                },
+                                "endTag": {
+                                    "startLine": 9,
+                                    "startColumn": 48,
+                                    "endLine": 9,
+                                    "endColumn": 55,
+                                    "start": 336,
+                                    "end": 343
+                                }
+                            },
+                            "attributes": [
+                                {
+                                    "type": "Attribute",
+                                    "name": "data-static",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "staticInsideElseIf"
+                                    },
+                                    "location": {
+                                        "startLine": 9,
+                                        "startColumn": 15,
+                                        "endLine": 9,
+                                        "endColumn": 47,
+                                        "start": 303,
+                                        "end": 335
+                                    }
+                                }
+                            ],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": []
+                        },
+                        {
+                            "type": "Element",
+                            "name": "span",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "location": {
+                                "startLine": 10,
+                                "startColumn": 9,
+                                "endLine": 10,
+                                "endColumn": 49,
+                                "start": 352,
+                                "end": 392,
+                                "startTag": {
+                                    "startLine": 10,
+                                    "startColumn": 9,
+                                    "endLine": 10,
+                                    "endColumn": 15,
+                                    "start": 352,
+                                    "end": 358
+                                },
+                                "endTag": {
+                                    "startLine": 10,
+                                    "startColumn": 42,
+                                    "endLine": 10,
+                                    "endColumn": 49,
+                                    "start": 385,
+                                    "end": 392
+                                }
+                            },
+                            "attributes": [],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": [
+                                {
+                                    "type": "Text",
+                                    "raw": "concatenated ",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "concatenated "
+                                    },
+                                    "location": {
+                                        "startLine": 10,
+                                        "startColumn": 15,
+                                        "endLine": 10,
+                                        "endColumn": 42,
+                                        "start": 358,
+                                        "end": 385
+                                    }
+                                },
+                                {
+                                    "type": "Text",
+                                    "raw": "{insideElseIf}",
+                                    "value": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 13,
+                                        "name": "insideElseIf",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 15,
+                                            "endLine": 10,
+                                            "endColumn": 42,
+                                            "start": 358,
+                                            "end": 385
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 10,
+                                        "startColumn": 15,
+                                        "endLine": 10,
+                                        "endColumn": 42,
+                                        "start": 358,
+                                        "end": 385
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "else": {
+                        "type": "ElseBlock",
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 5,
+                            "endLine": 16,
+                            "endColumn": 16,
+                            "start": 413,
+                            "end": 596
+                        },
+                        "directiveLocation": {
+                            "startLine": 12,
+                            "startColumn": 15,
+                            "endLine": 12,
+                            "endColumn": 23,
+                            "start": 423,
+                            "end": 431
+                        },
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 13,
+                                    "startColumn": 9,
+                                    "endLine": 13,
+                                    "endColumn": 48,
+                                    "start": 441,
+                                    "end": 480,
+                                    "startTag": {
+                                        "startLine": 13,
+                                        "startColumn": 9,
+                                        "endLine": 13,
+                                        "endColumn": 41,
+                                        "start": 441,
+                                        "end": 473
+                                    },
+                                    "endTag": {
+                                        "startLine": 13,
+                                        "startColumn": 41,
+                                        "endLine": 13,
+                                        "endColumn": 48,
+                                        "start": 473,
+                                        "end": 480
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "data-dynamic",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 11,
+                                            "name": "insideElse",
+                                            "location": {
+                                                "startLine": 13,
+                                                "startColumn": 15,
+                                                "endLine": 13,
+                                                "endColumn": 40,
+                                                "start": 447,
+                                                "end": 472
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 13,
+                                            "startColumn": 15,
+                                            "endLine": 13,
+                                            "endColumn": 40,
+                                            "start": 447,
+                                            "end": 472
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            },
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 14,
+                                    "startColumn": 9,
+                                    "endLine": 14,
+                                    "endColumn": 53,
+                                    "start": 489,
+                                    "end": 533,
+                                    "startTag": {
+                                        "startLine": 14,
+                                        "startColumn": 9,
+                                        "endLine": 14,
+                                        "endColumn": 46,
+                                        "start": 489,
+                                        "end": 526
+                                    },
+                                    "endTag": {
+                                        "startLine": 14,
+                                        "startColumn": 46,
+                                        "endLine": 14,
+                                        "endColumn": 53,
+                                        "start": 526,
+                                        "end": 533
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "data-static",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "staticInsideElse"
+                                        },
+                                        "location": {
+                                            "startLine": 14,
+                                            "startColumn": 15,
+                                            "endLine": 14,
+                                            "endColumn": 45,
+                                            "start": 495,
+                                            "end": 525
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            },
+                            {
+                                "type": "Element",
+                                "name": "span",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "location": {
+                                    "startLine": 15,
+                                    "startColumn": 9,
+                                    "endLine": 15,
+                                    "endColumn": 47,
+                                    "start": 542,
+                                    "end": 580,
+                                    "startTag": {
+                                        "startLine": 15,
+                                        "startColumn": 9,
+                                        "endLine": 15,
+                                        "endColumn": 15,
+                                        "start": 542,
+                                        "end": 548
+                                    },
+                                    "endTag": {
+                                        "startLine": 15,
+                                        "startColumn": 40,
+                                        "endLine": 15,
+                                        "endColumn": 47,
+                                        "start": 573,
+                                        "end": 580
+                                    }
+                                },
+                                "attributes": [],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Text",
+                                        "raw": "concatenated ",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "concatenated "
+                                        },
+                                        "location": {
+                                            "startLine": 15,
+                                            "startColumn": 15,
+                                            "endLine": 15,
+                                            "endColumn": 40,
+                                            "start": 548,
+                                            "end": 573
+                                        }
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "raw": "{insideElse}",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 11,
+                                            "name": "insideElse",
+                                            "location": {
+                                                "startLine": 15,
+                                                "startColumn": 15,
+                                                "endLine": 15,
+                                                "endColumn": 40,
+                                                "start": 548,
+                                                "end": 573
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 15,
+                                            "startColumn": 15,
+                                            "endLine": 15,
+                                            "endColumn": 40,
+                                            "start": 548,
+                                            "end": 573
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}

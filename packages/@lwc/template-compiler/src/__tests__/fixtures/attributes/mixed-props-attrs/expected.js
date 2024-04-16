@@ -3,6 +3,7 @@ import _nsBar from "ns/bar";
 import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
 const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
 const $fragment2 = parseFragment`<table bgcolor="x"${3}></table>`;
+const $fragment3 = parseFragment`<div${"c0"} aria-hidden="hidden"${2}></div>`;
 const stc0 = {
   r: true,
 };
@@ -19,15 +20,13 @@ const stc2 = {
   key: 4,
   svg: true,
 };
-const stc3 = {
-  "aria-hidden": "hidden",
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
     c: api_custom_element,
     st: api_static_fragment,
     h: api_element,
+    sp: api_static_part,
   } = $api;
   return [
     api_custom_element("ns-foo", _nsFoo, {
@@ -37,7 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    api_static_fragment($fragment1(), 2),
+    api_static_fragment($fragment1, 2),
     api_custom_element("ns-bar", _nsBar, {
       classMap: stc0,
       attrs: stc1,
@@ -66,12 +65,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         svg: true,
       }),
     ]),
-    api_static_fragment($fragment2(), 7),
-    api_element("div", {
-      className: $cmp.foo,
-      attrs: stc3,
-      key: 8,
-    }),
+    api_static_fragment($fragment2, 7),
+    api_static_fragment($fragment3, 9, [
+      api_static_part(
+        0,
+        {
+          className: $cmp.foo,
+        },
+        null
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

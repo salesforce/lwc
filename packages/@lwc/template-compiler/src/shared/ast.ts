@@ -625,3 +625,7 @@ export function isProperty(node: BaseNode): node is Property {
 export function isScopedSlotFragment(node: BaseNode): node is ScopedSlotFragment {
     return node.type === 'ScopedSlotFragment';
 }
+
+export function isAttribute(node: BaseNode): node is Attribute {
+    return node.type === 'Attribute';
+}

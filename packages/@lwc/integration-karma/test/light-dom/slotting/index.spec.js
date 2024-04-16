@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import {
@@ -25,6 +25,16 @@ function createTestElement(tag, component) {
 }
 
 describe('Slotting', () => {
+    it('should render properly', () => {
+        const nodes = createTestElement('x-default-slot', BasicSlot);
+
+        expect(Array.from(nodes['x-container'].children)).toEqual([
+            nodes['upper-text'],
+            nodes['default-text'],
+            nodes['lower-text'],
+        ]);
+    });
+
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
         expect(Array.from(nodes['x-light-container'].children)).toEqual([
@@ -131,29 +141,4 @@ describe('Slotting', () => {
             expect(commentNodes.length).toBe(0); // old implementation does not use fragments, just flattening
         }
     });
-
-    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-    if (process.env.FORCE_LWC_V5_COMPILER_FOR_TEST) {
-        describe('DISABLE_TEMPORARY_V5_COMPILER_SUPPORT', () => {
-            beforeEach(() => {
-                setFeatureFlagForTest('DISABLE_TEMPORARY_V5_COMPILER_SUPPORT', true);
-            });
-
-            afterEach(() => {
-                setFeatureFlagForTest('DISABLE_TEMPORARY_V5_COMPILER_SUPPORT', false);
-            });
-
-            it('should not render slots properly', () => {
-                const nodes = createTestElement('x-default-slot', BasicSlot);
-
-                expect(Array.from(nodes['x-container'].children)).toEqual([
-                    nodes['container-upper-slot-default'],
-                    nodes['upper-text'],
-                    nodes['default-text'],
-                    nodes['lower-text'],
-                    nodes['container-lower-slot-default'],
-                ]);
-            });
-        });
-    }
 });

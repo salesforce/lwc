@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isFalse, isFunction, isUndefined } from '@lwc/shared';
-import { Signal } from '@lwc/signals';
 import { logWarnOnce } from '../../shared/logger';
+import type { Signal } from '@lwc/signals';
 
 /**
  * This map keeps track of objects to signals. There is an assumption that the signal is strongly referenced

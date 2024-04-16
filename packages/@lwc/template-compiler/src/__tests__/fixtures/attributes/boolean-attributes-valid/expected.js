@@ -1,6 +1,7 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>x</p>`;
+const $fragment2 = parseFragment`<input${"a0:readonly"} disabled title="foo"${3}>`;
 const stc0 = {
   props: {
     autofocus: "true",
@@ -25,19 +26,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     st: api_static_fragment,
     c: api_custom_element,
-    h: api_element,
+    sp: api_static_part,
   } = $api;
   return [
-    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment1, 1),
     api_custom_element("x-foo", _xFoo, stc0),
-    api_element("input", {
-      attrs: {
-        readonly: $cmp.getReadOnly ? "" : null,
-        disabled: "",
-        title: "foo",
-      },
-      key: 3,
-    }),
+    api_static_fragment($fragment2, 4, [
+      api_static_part(
+        0,
+        {
+          attrs: {
+            readonly: $cmp.getReadOnly ? "" : null,
+          },
+        },
+        null
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

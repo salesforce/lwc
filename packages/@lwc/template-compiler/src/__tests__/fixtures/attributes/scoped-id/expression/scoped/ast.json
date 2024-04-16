@@ -1,0 +1,301 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 13,
+            "endColumn": 12,
+            "start": 0,
+            "end": 296,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 13,
+                "startColumn": 1,
+                "endLine": 13,
+                "endColumn": 12,
+                "start": 285,
+                "end": 296
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 12,
+                    "start": 15,
+                    "end": 284,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 278
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 6,
+                        "endLine": 12,
+                        "endColumn": 12,
+                        "start": 278,
+                        "end": 284
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "aria-describedby",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 31,
+                                "start": 29,
+                                "end": 51
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 31,
+                            "start": 29,
+                            "end": 51
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-activedescendant",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 36,
+                                "start": 60,
+                                "end": 87
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 36,
+                            "start": 60,
+                            "end": 87
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-errormessage",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 32,
+                                "start": 96,
+                                "end": 119
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 32,
+                            "start": 96,
+                            "end": 119
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-flowto",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 26,
+                                "start": 128,
+                                "end": 145
+                            }
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 26,
+                            "start": 128,
+                            "end": 145
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-labelledby",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 7,
+                                "startColumn": 9,
+                                "endLine": 7,
+                                "endColumn": 30,
+                                "start": 154,
+                                "end": 175
+                            }
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 30,
+                            "start": 154,
+                            "end": 175
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-controls",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 28,
+                                "start": 184,
+                                "end": 203
+                            }
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 28,
+                            "start": 184,
+                            "end": 203
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-details",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 27,
+                                "start": 212,
+                                "end": 230
+                            }
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 27,
+                            "start": 212,
+                            "end": 230
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-owns",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 10,
+                                "startColumn": 9,
+                                "endLine": 10,
+                                "endColumn": 24,
+                                "start": 239,
+                                "end": 254
+                            }
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 9,
+                            "endLine": 10,
+                            "endColumn": 24,
+                            "start": 239,
+                            "end": 254
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "for",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 11,
+                                "startColumn": 9,
+                                "endLine": 11,
+                                "endColumn": 18,
+                                "start": 263,
+                                "end": 272
+                            }
+                        },
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 11,
+                            "endColumn": 18,
+                            "start": 263,
+                            "end": 272
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

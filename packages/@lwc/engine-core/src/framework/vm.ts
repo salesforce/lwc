@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -61,7 +61,7 @@ import {
     VNodeType,
     VBaseElement,
     isVFragment,
-    VStaticPart,
+    VStaticPartElement,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
@@ -133,7 +133,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VBaseElement | VStaticPart };
+export type RefVNodes = { [name: string]: VBaseElement | VStaticPartElement };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
@@ -516,17 +516,14 @@ function computeShadowMode(
     renderer: RendererAPI,
     hydrated: boolean | undefined
 ) {
-    // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
-    // on, but components running in actual native shadow mode
     if (
-        process.env.NODE_ENV !== 'production' &&
-        lwcRuntimeFlags.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST
-    ) {
-        return ShadowMode.Native;
-    }
-
-    if (isTrue(hydrated)) {
+        // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
+        // on, but components running in actual native shadow mode
+        (process.env.NODE_ENV === 'test-karma-lwc' &&
+            process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
         // hydration only supports native shadow
+        isTrue(hydrated)
+    ) {
         return ShadowMode.Native;
     }
 
@@ -943,7 +940,7 @@ export function forceRehydration(vm: VM) {
     }
 }
 
-export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void) {
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void, args?: any[]) {
     const { renderMode, shadowMode } = vm;
 
     if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
@@ -952,24 +949,24 @@ export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => voi
         );
     }
 
-    invokeComponentCallback(vm, faceCb);
+    invokeComponentCallback(vm, faceCb, args);
 }
 
-export function runFormAssociatedCallback(elm: HTMLElement) {
+export function runFormAssociatedCallback(elm: HTMLElement, form: HTMLFormElement | null) {
     const vm = getAssociatedVM(elm);
     const { formAssociatedCallback } = vm.def;
 
     if (!isUndefined(formAssociatedCallback)) {
-        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback);
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback, [form]);
     }
 }
 
-export function runFormDisabledCallback(elm: HTMLElement) {
+export function runFormDisabledCallback(elm: HTMLElement, disabled: boolean) {
     const vm = getAssociatedVM(elm);
     const { formDisabledCallback } = vm.def;
 
     if (!isUndefined(formDisabledCallback)) {
-        runFormAssociatedCustomElementCallback(vm, formDisabledCallback);
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback, [disabled]);
     }
 }
 
@@ -982,12 +979,21 @@ export function runFormResetCallback(elm: HTMLElement) {
     }
 }
 
-export function runFormStateRestoreCallback(elm: HTMLElement) {
+// These types are inspired by https://github.com/material-components/material-web/blob/ffc08d1/labs/behaviors/form-associated.ts
+export type FormRestoreState = File | string | Array<[string, FormDataEntryValue]>;
+
+export type FormRestoreReason = 'restore' | 'autocomplete';
+
+export function runFormStateRestoreCallback(
+    elm: HTMLElement,
+    state: FormRestoreState | null,
+    reason: FormRestoreReason
+) {
     const vm = getAssociatedVM(elm);
     const { formStateRestoreCallback } = vm.def;
 
     if (!isUndefined(formStateRestoreCallback)) {
-        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback);
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback, [state, reason]);
     }
 }
 

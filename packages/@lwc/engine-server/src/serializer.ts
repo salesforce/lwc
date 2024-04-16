@@ -22,6 +22,8 @@ import {
 } from './types';
 import { validateStyleTextContents } from './utils/validate-style-text-contents';
 
+// Note that for statically optimized content the expression serialization is done in
+// buildParseFragmentFn in @lwc/engine-core. It takes the same logic used here.
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
         .map((attr) =>

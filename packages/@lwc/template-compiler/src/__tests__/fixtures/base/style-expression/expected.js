@@ -1,11 +1,17 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<section${"s0"}${3}></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+  const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
-    api_element("section", {
-      style: $cmp.customStyle,
-      key: 0,
-    }),
+    api_static_fragment($fragment1, 1, [
+      api_static_part(
+        0,
+        {
+          style: $cmp.customStyle,
+        },
+        null
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

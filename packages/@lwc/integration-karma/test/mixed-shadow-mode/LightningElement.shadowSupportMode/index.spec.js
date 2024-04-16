@@ -1,5 +1,9 @@
 import { createElement } from 'lwc';
-import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
+import {
+    isNativeShadowRootInstance,
+    isSyntheticShadowRootInstance,
+    IS_SYNTHETIC_SHADOW_LOADED,
+} from 'test-utils';
 
 import Any from 'x/any';
 import Any2 from 'x/any2';
@@ -26,7 +30,7 @@ describe('shadowSupportMode static property', () => {
             createElement('x-any', { is: Any });
         }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
 
-        if (process.env.SYNTHETIC_SHADOW_ENABLED && !process.env.MIXED_SHADOW) {
+        if (IS_SYNTHETIC_SHADOW_LOADED && !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             let elm;
             expect(() => {
                 elm = createElement('x-any2', { is: Any2 });
@@ -43,12 +47,6 @@ describe('ENABLE_NATIVE_SHADOW_MODE', () => {
 
     it('should render native shadow root', () => {
         const elm = createElement('x-native-only', { is: NativeOnly });
-        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
-            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
-        } else {
-            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toThrow(
-                'Native shadow is not supported on this enviroment'
-            );
-        }
+        expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
     });
 });

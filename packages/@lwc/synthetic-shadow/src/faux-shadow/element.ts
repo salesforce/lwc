@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -92,9 +92,13 @@ function shadowRootGetterPatched(this: Element): ShadowRoot | null {
 
 function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
     const owner = getNodeOwner(this);
-    const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+    const filteredChildNodes = getFilteredChildNodes(this);
+    // No need to filter by owner for non-shadowed nodes
+    const childNodes = isNull(owner)
+        ? filteredChildNodes
+        : getAllMatches(owner, filteredChildNodes);
     return createStaticHTMLCollection(
-        ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
+        ArrayFilter.call(childNodes, (node) => node instanceof Element) as Element[]
     );
 }
 
@@ -231,7 +235,10 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+        elementQuerySelectorAll.apply(
+            this,
+            ArraySlice.call(arguments as unknown as unknown[]) as [string]
+        )
     );
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
@@ -336,7 +343,10 @@ defineProperties(Element.prototype, {
     querySelectorAll: {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const nodeList = arrayFromCollection(
-                elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+                elementQuerySelectorAll.apply(
+                    this,
+                    ArraySlice.call(arguments as unknown as unknown[]) as [string]
+                )
             );
 
             // Note: we deviate from native shadow here, but are not fixing
@@ -358,7 +368,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByClassName.apply(
                         this,
-                        ArraySlice.call(arguments) as [string]
+                        ArraySlice.call(arguments as unknown as unknown[]) as [string]
                     )
                 );
 
@@ -375,7 +385,10 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByTagName: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+                    elementGetElementsByTagName.apply(
+                        this,
+                        ArraySlice.call(arguments as unknown as unknown[]) as [tagName: string]
+                    )
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
@@ -393,7 +406,10 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagNameNS.apply(
                         this,
-                        ArraySlice.call(arguments) as [string, string]
+                        ArraySlice.call(arguments as unknown as unknown[]) as [
+                            namespace: string,
+                            localName: string
+                        ]
                     )
                 );
 

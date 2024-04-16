@@ -5,14 +5,6 @@ import ResetExtendsAny from 'x/resetExtendsAny';
 import LightContainer from 'x/lightContainer';
 import NativeContainer from 'x/nativeContainer';
 
-function assertNativeShadowRootWhenPossible(elm) {
-    if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
-        expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
-    } else {
-        expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
-    }
-}
-
 if (!process.env.NATIVE_SHADOW) {
     describe('when root component shadowSupportMode="native"', () => {
         let elm;
@@ -23,7 +15,7 @@ if (!process.env.NATIVE_SHADOW) {
         });
 
         it('should attach a native shadow root when possible', () => {
-            assertNativeShadowRootWhenPossible(elm);
+            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
         });
 
         it('should not attach shadow root for child light component', () => {
@@ -34,19 +26,19 @@ if (!process.env.NATIVE_SHADOW) {
         it('should attach a native shadow root when possible for child synthetic component', () => {
             const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic');
-            assertNativeShadowRootWhenPossible(synthetic);
+            expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a native shadow root when possible for child synthetic component with shadowSupportMode="reset"', () => {
             const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic-reset');
-            assertNativeShadowRootWhenPossible(synthetic);
+            expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a native shadow root when possible for slotted synthetic', () => {
             const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic.slot-slotted');
-            assertNativeShadowRootWhenPossible(synthetic);
+            expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });
 

@@ -75,12 +75,14 @@ import {
     styleMapToStyleDeclsAST,
 } from './helpers';
 import { format as formatModule } from './formatters/module';
+import { bindAttributeExpression } from './expression';
 
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
+        // TODO [#4077]: Move databag gathering to after static element check as it doesn't seem to be used by static
+        // content optimization.
         const databag = elementDataBag(element, slotParentName);
-        let res: t.Expression;
 
         if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
@@ -88,6 +90,7 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         const children = transformChildren(element);
+        let res: t.Expression;
 
         const { name } = element;
         // lwc:dynamic directive
@@ -411,41 +414,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const isUsedAsAttribute = isAttribute(element, attrName);
 
         if (isExpression(attrValue)) {
-            const expression = codeGen.bindExpression(attrValue);
-
-            // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
-            if (isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
-                // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
-                // without handling special cases at runtime.
-                return codeGen.genBooleanAttributeExpr(expression);
-            }
-            if (attrName === 'tabindex') {
-                return codeGen.genTabIndex([expression]);
-            }
-            if (attrName === 'id' || isIdReferencingAttribute(attrName)) {
-                return codeGen.genScopedId(expression);
-            }
-            if (
-                codeGen.scopeFragmentId &&
-                isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace)
-            ) {
-                return codeGen.genScopedFragId(expression);
-            }
-            if (isSvgUseHref(elmName, attrName, namespace)) {
-                if (addLegacySanitizationHook) {
-                    codeGen.usedLwcApis.add('sanitizeAttribute');
-
-                    return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(elmName),
-                        t.literal(namespace),
-                        t.literal(attrName),
-                        codeGen.genScopedFragId(expression),
-                    ]);
-                }
-                return codeGen.genScopedFragId(expression);
-            }
-
-            return expression;
+            return bindAttributeExpression(attr, element, codeGen, addLegacySanitizationHook);
         } else if (isStringLiteral(attrValue)) {
             if (attrName === 'id') {
                 return codeGen.genScopedId(attrValue.value);
@@ -624,25 +593,9 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // Key property on VNode
-        if (forKey) {
-            // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = codeGen.bindExpression(forKey.value);
-            const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
-            data.push(t.property(t.identifier('key'), generatedKey));
-        } else {
-            // If standalone element with no user-defined key
-            let key: number | string = codeGen.generateKey();
-            // Parent slot name could be the empty string
-            if (slotParentName !== undefined) {
-                // Prefixing the key is necessary to avoid conflicts with default content for the
-                // slot which might have similar keys. Each vnode will always have a key that starts
-                // with a numeric character from compiler. In this case, we add a unique notation
-                // for slotted vnodes keys, e.g.: `@foo:1:1`. Note that this is *not* needed for
-                // dynamic keys, since `api.k` already scopes based on the iteration.
-                key = `@${slotParentName}:${key}`;
-            }
-            data.push(t.property(t.identifier('key'), t.literal(key)));
-        }
+        data.push(
+            t.property(t.identifier('key'), codeGen.genKeyExpression(forKey, slotParentName))
+        );
 
         // Event handler
         if (listeners.length) {

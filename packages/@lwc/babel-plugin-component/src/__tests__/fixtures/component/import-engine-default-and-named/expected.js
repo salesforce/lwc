@@ -1,5 +1,6 @@
 import _tmpl from "./test.html";
-import lwc, { registerComponent as _registerComponent, LightningElement } from "lwc";
+import lwc, { LightningElement, registerComponent as _registerComponent } from 'lwc';
+
 // eslint-disable-next-line no-console
 console.log(lwc);
 export default _registerComponent(class extends LightningElement {

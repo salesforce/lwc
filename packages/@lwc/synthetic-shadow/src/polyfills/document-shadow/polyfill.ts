@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -80,7 +80,10 @@ defineProperty(Document.prototype, 'activeElement', {
 
 defineProperty(Document.prototype, 'getElementById', {
     value(this: Document): Element | null {
-        const elm = documentGetElementById.apply(this, ArraySlice.call(arguments) as [string]);
+        const elm = documentGetElementById.apply(
+            this,
+            ArraySlice.call(arguments as unknown as unknown[]) as [string]
+        );
         if (isNull(elm)) {
             return null;
         }
@@ -96,7 +99,10 @@ defineProperty(Document.prototype, 'getElementById', {
 defineProperty(Document.prototype, 'querySelector', {
     value(this: Document): Element | null {
         const elements = arrayFromCollection(
-            documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+            documentQuerySelectorAll.apply(
+                this,
+                ArraySlice.call(arguments as unknown as unknown[]) as [string]
+            )
         );
         const filtered = ArrayFind.call(
             elements,
@@ -114,7 +120,10 @@ defineProperty(Document.prototype, 'querySelector', {
 defineProperty(Document.prototype, 'querySelectorAll', {
     value(this: Document): NodeListOf<Element> {
         const elements = arrayFromCollection(
-            documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+            documentQuerySelectorAll.apply(
+                this,
+                ArraySlice.call(arguments as unknown as unknown[]) as [string]
+            )
         );
         const filtered = ArrayFilter.call(
             elements,
@@ -132,7 +141,10 @@ defineProperty(Document.prototype, 'querySelectorAll', {
 defineProperty(Document.prototype, 'getElementsByClassName', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+            documentGetElementsByClassName.apply(
+                this,
+                ArraySlice.call(arguments as unknown as unknown[]) as [string]
+            )
         );
         const filtered = ArrayFilter.call(
             elements,
@@ -150,7 +162,10 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
 defineProperty(Document.prototype, 'getElementsByTagName', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+            documentGetElementsByTagName.apply(
+                this,
+                ArraySlice.call(arguments as unknown as unknown[]) as [string]
+            )
         );
         const filtered = ArrayFilter.call(
             elements,
@@ -170,7 +185,7 @@ defineProperty(Document.prototype, 'getElementsByTagNameNS', {
         const elements = arrayFromCollection(
             documentGetElementsByTagNameNS.apply(
                 this,
-                ArraySlice.call(arguments) as [string, string]
+                ArraySlice.call(arguments as unknown as unknown[]) as [string, string]
             )
         );
         const filtered = ArrayFilter.call(
@@ -195,7 +210,10 @@ defineProperty(
     {
         value(this: Document): NodeListOf<Element> {
             const elements = arrayFromCollection(
-                getElementsByName.apply(this, ArraySlice.call(arguments) as [string])
+                getElementsByName.apply(
+                    this,
+                    ArraySlice.call(arguments as unknown as unknown[]) as [string]
+                )
             );
             const filtered = ArrayFilter.call(
                 elements,

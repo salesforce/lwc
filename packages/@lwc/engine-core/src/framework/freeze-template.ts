@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -116,10 +116,10 @@ function warnOnArrayMutation(stylesheets: TemplateStylesheetFactories) {
     // we can at least warn when they use the most common mutation methods.
     for (const prop of ARRAY_MUTATION_METHODS) {
         const originalArrayMethod = getOriginalArrayMethod(prop);
-        stylesheets[prop] = function arrayMutationWarningWrapper() {
+        // Assertions used here because TypeScript can't handle mapping over our types
+        (stylesheets as any)[prop] = function arrayMutationWarningWrapper() {
             reportTemplateViolation('stylesheets');
-            // @ts-expect-error can't properly determine the right `this`
-            return originalArrayMethod.apply(this, arguments);
+            return originalArrayMethod.apply(this, arguments as any);
         };
     }
 }

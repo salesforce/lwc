@@ -19,8 +19,6 @@ export const enum APIVersion {
 // It's a bit annoying to do have to do this manually, but this makes the file tree-shakeable,
 // passing the `verify-treeshakeable.js` test.
 
-export const LOWEST_API_VERSION = APIVersion.V58_244_SUMMER_23;
-export const HIGHEST_API_VERSION = APIVersion.V62_252_WINTER_25;
 const allVersions = [
     APIVersion.V58_244_SUMMER_23,
     APIVersion.V59_246_WINTER_24,
@@ -29,6 +27,8 @@ const allVersions = [
     APIVersion.V62_252_WINTER_25,
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
+export const LOWEST_API_VERSION = allVersions[0];
+export const HIGHEST_API_VERSION = allVersions[allVersions.length - 1];
 
 /**
  *

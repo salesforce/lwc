@@ -1,0 +1,21 @@
+<template>
+    <template lwc:if={show}>
+        {firstOutterSibling}
+        <div>{solo}</div>
+        <div>
+            {firstInnerSibling}
+            <span>text1</span>
+        </div>
+        {centerOutterSibling}
+        <div>
+            <span>text2</span>
+            {secondInnerSibling}
+        </div>
+        <div>
+            <span>text3</span>
+            {middleInnerSibling}
+            <span>text4</span>
+        </div>
+        {lastOutterSibling}
+    </template>
+</template>

@@ -1,0 +1,17 @@
+<template>
+    <template lwc:if={showIf}>
+        <span data-dynamic={insideIf}></span>
+        <span data-static="staticInsideIf"></span>
+        <span>concatenated {insideIf}</span>
+    </template>
+    <template lwc:elseif={showElseIf}>
+        <span data-dynamic={insideElseIf}></span>
+        <span data-static="staticInsideElseIf"></span>
+        <span>concatenated {insideElseIf}</span>
+    </template>
+    <template lwc:else>
+        <span data-dynamic={insideElse}></span>
+        <span data-static="staticInsideElse"></span>
+        <span>concatenated {insideElse}</span>
+    </template>
+</template>

@@ -34,4 +34,7 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
 ]);
 
 // Subset of LWC template directives that can safely be statically optimized
-export const STATIC_SAFE_DIRECTIVES: Set<keyof typeof ElementDirectiveName> = new Set(['Ref']);
+export const STATIC_SAFE_DIRECTIVES: Set<keyof typeof ElementDirectiveName> = new Set([
+    'Ref',
+    'Key',
+]);

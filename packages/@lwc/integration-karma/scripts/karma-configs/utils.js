@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -15,7 +15,7 @@ const {
     SAUCE_USERNAME,
 } = require('../shared/options');
 
-function getSauceSection({ suiteName, tags, customData }) {
+function getSauceSection({ suiteName, customData }) {
     const username = SAUCE_USERNAME;
     if (!username) {
         throw new TypeError('Missing SAUCE_USERNAME environment variable');
@@ -28,8 +28,8 @@ function getSauceSection({ suiteName, tags, customData }) {
 
     const buildId = GITHUB_RUN_ID || Date.now();
 
-    const testName = [suiteName, ...tags].join(' - ');
-    const build = [suiteName, buildId, ...tags].join(' - ');
+    const testName = suiteName;
+    const build = `${suiteName} - ${buildId}`;
 
     return {
         username,
@@ -38,7 +38,6 @@ function getSauceSection({ suiteName, tags, customData }) {
 
         build,
         testName,
-        tags,
 
         customData: {
             ...customData,
@@ -59,9 +58,9 @@ function createPattern(location, config = {}) {
     };
 }
 
-function getSauceConfig(config, { suiteName, tags, customData, browsers }) {
+function getSauceConfig(config, { suiteName, customData, browsers }) {
     return {
-        sauceLabs: getSauceSection({ suiteName, tags, customData }),
+        sauceLabs: getSauceSection({ suiteName, customData }),
 
         browsers: browsers.map((browser) => browser.label),
         customLaunchers: browsers.reduce((acc, browser) => {

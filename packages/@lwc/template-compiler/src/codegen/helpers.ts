@@ -4,35 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIFeature, APIVersion, HTML_NAMESPACE, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
-import { isLiteral } from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
-import {
-    isBaseElement,
-    isComment,
-    isConditionalParentBlock,
-    isElement,
-    isForBlock,
-    isIf,
-    isParentNode,
-    isSlot,
-    isText,
-} from '../shared/ast';
-import {
-    STATIC_SAFE_DIRECTIVES,
-    TEMPLATE_FUNCTION_NAME,
-    TEMPLATE_PARAMS,
-} from '../shared/constants';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-import State from '../state';
-import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
+import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
+import { isBaseElement, isForBlock, isIf, isParentNode, isSlot } from '../shared/ast';
+import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -227,90 +204,4 @@ export function parseClassNames(classNames: string): string[] {
         .split(CLASSNAME_DELIMITER)
         .map((className) => className.trim())
         .filter((className) => className.length);
-}
-
-function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
-    let result = true;
-    const { name: nodeName, namespace = '', attributes, directives, properties } = node;
-
-    // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
-    // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
-    if (
-        !isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion) &&
-        namespace !== HTML_NAMESPACE
-    ) {
-        return false;
-    }
-
-    // it is an element
-    result &&= isElement(node);
-
-    // all attrs are static-safe
-    result &&= attributes.every(({ name, value }) => {
-        return (
-            isLiteral(value) &&
-            name !== 'slot' &&
-            // check for ScopedId
-            name !== 'id' &&
-            name !== 'spellcheck' && // spellcheck is specially handled by the vnodes.
-            !isIdReferencingAttribute(name) &&
-            // svg href needs sanitization.
-            !isSvgUseHref(nodeName, name, namespace) &&
-            // Check for ScopedFragId
-            !(
-                isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
-                isFragmentOnlyUrl(value.value as string)
-            )
-        );
-    });
-
-    // all directives are static-safe
-    result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
-
-    // all properties are static
-    result &&= properties.every((prop) => isLiteral(prop.value));
-
-    return result;
-}
-
-function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
-    let childrenAreStatic = true;
-    let nodeIsStatic;
-
-    if (isText(node)) {
-        nodeIsStatic = isLiteral(node.value);
-    } else if (isComment(node)) {
-        nodeIsStatic = true;
-    } else {
-        // it is ElseBlock | ForBlock | If | BaseElement
-        node.children.forEach((childNode) => {
-            collectStaticNodes(childNode, staticNodes, state);
-
-            childrenAreStatic &&= staticNodes.has(childNode);
-        });
-
-        // for IfBlock and ElseifBlock, traverse down the else branch
-        if (isConditionalParentBlock(node) && node.else) {
-            collectStaticNodes(node.else, staticNodes, state);
-        }
-
-        nodeIsStatic =
-            isBaseElement(node) &&
-            !isCustomRendererHookRequired(node, state) &&
-            isStaticNode(node, state.config.apiVersion);
-    }
-
-    if (nodeIsStatic && childrenAreStatic) {
-        staticNodes.add(node);
-    }
-}
-
-export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
-    const staticNodes = new Set<ChildNode>();
-
-    root.children.forEach((childNode) => {
-        collectStaticNodes(childNode, staticNodes, state);
-    });
-
-    return staticNodes;
 }

@@ -1,34 +1,25 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div class="my-list${0}"${2}><p${3}>${"t2"}</p></div>`;
 const stc0 = {
   key: 0,
-};
-const stc1 = {
-  "my-list": true,
-};
-const stc2 = {
-  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     i: api_iterator,
+    h: api_element,
   } = $api;
   return [
     api_element(
       "section",
       stc0,
       api_iterator($cmp.items, function (item) {
-        return api_element(
-          "div",
-          {
-            classMap: stc1,
-            key: api_key(1, item.id),
-          },
-          [api_element("p", stc2, [api_text(api_dynamic_text(item))])]
-        );
+        return api_static_fragment($fragment1, api_key(2, item.id), [
+          api_static_part(2, null, api_dynamic_text(item)),
+        ]);
       })
     ),
   ];

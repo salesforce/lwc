@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 13,
+            "endLine": 19,
             "endColumn": 12,
             "start": 0,
-            "end": 296,
+            "end": 540,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 13,
+                "startLine": 19,
                 "startColumn": 1,
-                "endLine": 13,
+                "endLine": 19,
                 "endColumn": 12,
-                "start": 285,
-                "end": 296
+                "start": 529,
+                "end": 540
             }
         },
         "directives": [],
@@ -34,10 +34,10 @@
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 12,
+                    "endLine": 18,
                     "endColumn": 11,
                     "start": 15,
-                    "end": 284,
+                    "end": 528,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -47,12 +47,12 @@
                         "end": 20
                     },
                     "endTag": {
-                        "startLine": 12,
+                        "startLine": 18,
                         "startColumn": 5,
-                        "endLine": 12,
+                        "endLine": 18,
                         "endColumn": 11,
-                        "start": 278,
-                        "end": 284
+                        "start": 522,
+                        "end": 528
                     }
                 },
                 "attributes": [],
@@ -101,10 +101,10 @@
                         "location": {
                             "startLine": 4,
                             "startColumn": 9,
-                            "endLine": 9,
+                            "endLine": 12,
                             "endColumn": 15,
                             "start": 49,
-                            "end": 197,
+                            "end": 331,
                             "startTag": {
                                 "startLine": 4,
                                 "startColumn": 9,
@@ -114,12 +114,12 @@
                                 "end": 54
                             },
                             "endTag": {
-                                "startLine": 9,
+                                "startLine": 12,
                                 "startColumn": 9,
-                                "endLine": 9,
+                                "endLine": 12,
                                 "endColumn": 15,
-                                "start": 191,
-                                "end": 197
+                                "start": 325,
+                                "end": 331
                             }
                         },
                         "attributes": [],
@@ -134,10 +134,10 @@
                                 "location": {
                                     "startLine": 5,
                                     "startColumn": 13,
-                                    "endLine": 8,
+                                    "endLine": 11,
                                     "endColumn": 19,
                                     "start": 67,
-                                    "end": 182,
+                                    "end": 316,
                                     "startTag": {
                                         "startLine": 5,
                                         "startColumn": 13,
@@ -147,12 +147,12 @@
                                         "end": 72
                                     },
                                     "endTag": {
-                                        "startLine": 8,
+                                        "startLine": 11,
                                         "startColumn": 13,
-                                        "endLine": 8,
+                                        "endLine": 11,
                                         "endColumn": 19,
-                                        "start": 176,
-                                        "end": 182
+                                        "start": 310,
+                                        "end": 316
                                     }
                                 },
                                 "attributes": [],
@@ -271,6 +271,189 @@
                                             }
                                         ],
                                         "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "div",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 8,
+                                            "startColumn": 17,
+                                            "endLine": 8,
+                                            "endColumn": 44,
+                                            "start": 180,
+                                            "end": 207,
+                                            "startTag": {
+                                                "startLine": 8,
+                                                "startColumn": 17,
+                                                "endLine": 8,
+                                                "endColumn": 38,
+                                                "start": 180,
+                                                "end": 201
+                                            },
+                                            "endTag": {
+                                                "startLine": 8,
+                                                "startColumn": 38,
+                                                "endLine": 8,
+                                                "endColumn": 44,
+                                                "start": 201,
+                                                "end": 207
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "data-name",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "start": 1,
+                                                    "end": 4,
+                                                    "name": "foo",
+                                                    "location": {
+                                                        "startLine": 8,
+                                                        "startColumn": 22,
+                                                        "endLine": 8,
+                                                        "endColumn": 37,
+                                                        "start": 185,
+                                                        "end": 200
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 8,
+                                                    "startColumn": 22,
+                                                    "endLine": 8,
+                                                    "endColumn": 37,
+                                                    "start": 185,
+                                                    "end": 200
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "div",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 9,
+                                            "startColumn": 17,
+                                            "endLine": 9,
+                                            "endColumn": 45,
+                                            "start": 224,
+                                            "end": 252,
+                                            "startTag": {
+                                                "startLine": 9,
+                                                "startColumn": 17,
+                                                "endLine": 9,
+                                                "endColumn": 39,
+                                                "start": 224,
+                                                "end": 246
+                                            },
+                                            "endTag": {
+                                                "startLine": 9,
+                                                "startColumn": 39,
+                                                "endLine": 9,
+                                                "endColumn": 45,
+                                                "start": 246,
+                                                "end": 252
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "style",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "start": 1,
+                                                    "end": 9,
+                                                    "name": "fooStyle",
+                                                    "location": {
+                                                        "startLine": 9,
+                                                        "startColumn": 22,
+                                                        "endLine": 9,
+                                                        "endColumn": 38,
+                                                        "start": 229,
+                                                        "end": 245
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 9,
+                                                    "startColumn": 22,
+                                                    "endLine": 9,
+                                                    "endColumn": 38,
+                                                    "start": 229,
+                                                    "end": 245
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "div",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 17,
+                                            "endLine": 10,
+                                            "endColumn": 45,
+                                            "start": 269,
+                                            "end": 297,
+                                            "startTag": {
+                                                "startLine": 10,
+                                                "startColumn": 17,
+                                                "endLine": 10,
+                                                "endColumn": 39,
+                                                "start": 269,
+                                                "end": 291
+                                            },
+                                            "endTag": {
+                                                "startLine": 10,
+                                                "startColumn": 39,
+                                                "endLine": 10,
+                                                "endColumn": 45,
+                                                "start": 291,
+                                                "end": 297
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "class",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "start": 1,
+                                                    "end": 9,
+                                                    "name": "fooClass",
+                                                    "location": {
+                                                        "startLine": 10,
+                                                        "startColumn": 22,
+                                                        "endLine": 10,
+                                                        "endColumn": 38,
+                                                        "start": 274,
+                                                        "end": 290
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 10,
+                                                    "startColumn": 22,
+                                                    "endLine": 10,
+                                                    "endColumn": 38,
+                                                    "start": 274,
+                                                    "end": 290
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
                                     }
                                 ]
                             }
@@ -281,27 +464,27 @@
                         "name": "div",
                         "namespace": "http://www.w3.org/1999/xhtml",
                         "location": {
-                            "startLine": 10,
+                            "startLine": 13,
                             "startColumn": 9,
-                            "endLine": 10,
+                            "endLine": 13,
                             "endColumn": 34,
-                            "start": 206,
-                            "end": 231,
+                            "start": 340,
+                            "end": 365,
                             "startTag": {
-                                "startLine": 10,
+                                "startLine": 13,
                                 "startColumn": 9,
-                                "endLine": 10,
+                                "endLine": 13,
                                 "endColumn": 28,
-                                "start": 206,
-                                "end": 225
+                                "start": 340,
+                                "end": 359
                             },
                             "endTag": {
-                                "startLine": 10,
+                                "startLine": 13,
                                 "startColumn": 28,
-                                "endLine": 10,
+                                "endLine": 13,
                                 "endColumn": 34,
-                                "start": 225,
-                                "end": 231
+                                "start": 359,
+                                "end": 365
                             }
                         },
                         "attributes": [],
@@ -315,12 +498,12 @@
                                     "value": "bar"
                                 },
                                 "location": {
-                                    "startLine": 10,
+                                    "startLine": 13,
                                     "startColumn": 14,
-                                    "endLine": 10,
+                                    "endLine": 13,
                                     "endColumn": 27,
-                                    "start": 211,
-                                    "end": 224
+                                    "start": 345,
+                                    "end": 358
                                 }
                             }
                         ],
@@ -332,27 +515,27 @@
                         "name": "div",
                         "namespace": "http://www.w3.org/1999/xhtml",
                         "location": {
-                            "startLine": 11,
+                            "startLine": 14,
                             "startColumn": 9,
-                            "endLine": 11,
+                            "endLine": 14,
                             "endColumn": 42,
-                            "start": 240,
-                            "end": 273,
+                            "start": 374,
+                            "end": 407,
                             "startTag": {
-                                "startLine": 11,
+                                "startLine": 14,
                                 "startColumn": 9,
-                                "endLine": 11,
+                                "endLine": 14,
                                 "endColumn": 36,
-                                "start": 240,
-                                "end": 267
+                                "start": 374,
+                                "end": 401
                             },
                             "endTag": {
-                                "startLine": 11,
+                                "startLine": 14,
                                 "startColumn": 36,
-                                "endLine": 11,
+                                "endLine": 14,
                                 "endColumn": 42,
-                                "start": 267,
-                                "end": 273
+                                "start": 401,
+                                "end": 407
                             }
                         },
                         "attributes": [],
@@ -368,24 +551,207 @@
                                     "end": 12,
                                     "name": "onClickQuux",
                                     "location": {
-                                        "startLine": 11,
+                                        "startLine": 14,
                                         "startColumn": 14,
-                                        "endLine": 11,
+                                        "endLine": 14,
                                         "endColumn": 35,
-                                        "start": 245,
-                                        "end": 266
+                                        "start": 379,
+                                        "end": 400
                                     }
                                 },
                                 "location": {
-                                    "startLine": 11,
+                                    "startLine": 14,
                                     "startColumn": 14,
-                                    "endLine": 11,
+                                    "endLine": 14,
                                     "endColumn": 35,
-                                    "start": 245,
-                                    "end": 266
+                                    "start": 379,
+                                    "end": 400
                                 }
                             }
                         ],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 15,
+                            "startColumn": 9,
+                            "endLine": 15,
+                            "endColumn": 36,
+                            "start": 416,
+                            "end": 443,
+                            "startTag": {
+                                "startLine": 15,
+                                "startColumn": 9,
+                                "endLine": 15,
+                                "endColumn": 30,
+                                "start": 416,
+                                "end": 437
+                            },
+                            "endTag": {
+                                "startLine": 15,
+                                "startColumn": 30,
+                                "endLine": 15,
+                                "endColumn": 36,
+                                "start": 437,
+                                "end": 443
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "data-name",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "bar",
+                                    "location": {
+                                        "startLine": 15,
+                                        "startColumn": 14,
+                                        "endLine": 15,
+                                        "endColumn": 29,
+                                        "start": 421,
+                                        "end": 436
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 15,
+                                    "startColumn": 14,
+                                    "endLine": 15,
+                                    "endColumn": 29,
+                                    "start": 421,
+                                    "end": 436
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 9,
+                            "endLine": 16,
+                            "endColumn": 37,
+                            "start": 452,
+                            "end": 480,
+                            "startTag": {
+                                "startLine": 16,
+                                "startColumn": 9,
+                                "endLine": 16,
+                                "endColumn": 31,
+                                "start": 452,
+                                "end": 474
+                            },
+                            "endTag": {
+                                "startLine": 16,
+                                "startColumn": 31,
+                                "endLine": 16,
+                                "endColumn": 37,
+                                "start": 474,
+                                "end": 480
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "style",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "barStyle",
+                                    "location": {
+                                        "startLine": 16,
+                                        "startColumn": 14,
+                                        "endLine": 16,
+                                        "endColumn": 30,
+                                        "start": 457,
+                                        "end": 473
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 16,
+                                    "startColumn": 14,
+                                    "endLine": 16,
+                                    "endColumn": 30,
+                                    "start": 457,
+                                    "end": 473
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 17,
+                            "startColumn": 9,
+                            "endLine": 17,
+                            "endColumn": 37,
+                            "start": 489,
+                            "end": 517,
+                            "startTag": {
+                                "startLine": 17,
+                                "startColumn": 9,
+                                "endLine": 17,
+                                "endColumn": 31,
+                                "start": 489,
+                                "end": 511
+                            },
+                            "endTag": {
+                                "startLine": 17,
+                                "startColumn": 31,
+                                "endLine": 17,
+                                "endColumn": 37,
+                                "start": 511,
+                                "end": 517
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "class",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "barClass",
+                                    "location": {
+                                        "startLine": 17,
+                                        "startColumn": 14,
+                                        "endLine": 17,
+                                        "endColumn": 30,
+                                        "start": 494,
+                                        "end": 510
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 17,
+                                    "startColumn": 14,
+                                    "endLine": 17,
+                                    "endColumn": 30,
+                                    "start": 494,
+                                    "end": 510
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
                         "children": []
                     }
                 ]

@@ -78,5 +78,7 @@ describe('root light element', () => {
         expect(nodes['x-list'].querySelector('button')).toEqual(nodes.button);
         expect(nodes['x-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
         expect(nodes['x-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
+        expect(nodes['x-list'].childNodes[0]).toEqual(nodes.button);
+        expect(nodes['x-list'].children[0]).toEqual(nodes.button);
     });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -29,14 +29,17 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
-import { applyTemporaryCompilerV5SlotFix, EmptyArray } from './utils';
+import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    isVBaseElement,
     isVScopedSlotFragment,
+    isVStatic,
     Key,
+    MutableVNodes,
     VComment,
     VCustomElement,
     VElement,
@@ -47,11 +50,10 @@ import {
     VNodeType,
     VScopedSlotFragment,
     VStatic,
-    VText,
     VStaticPart,
     VStaticPartData,
-    isVBaseElement,
-    isVStatic,
+    VStaticPartType,
+    VText,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
 
@@ -62,10 +64,14 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [s]tatic [p]art
-function sp(partId: number, data: VStaticPartData): VStaticPart {
+function sp(partId: number, data: VStaticPartData | null, text: string | null): VStaticPart {
+    // Static part will always have either text or data, it's guaranteed by the compiler.
+    const type = isNull(text) ? VStaticPartType.Element : VStaticPartType.Text;
     return {
+        type,
         partId,
         data,
+        text,
         elm: undefined, // elm is defined later
     };
 }
@@ -84,8 +90,13 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
 }
 
 // [st]atic node
-function st(fragment: Element, key: Key, parts?: VStaticPart[]): VStatic {
+function st(
+    fragmentFactory: (parts?: VStaticPart[]) => Element,
+    key: Key,
+    parts?: VStaticPart[]
+): VStatic {
     const owner = getVMBeingRendered()!;
+    const fragment = fragmentFactory(parts);
     const vnode: VStatic = {
         type: VNodeType.Static,
         sel: undefined,
@@ -144,12 +155,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
             data.styleDecls && data.style,
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
-        if (data.style && !isString(data.style)) {
-            logError(
-                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered
-            );
-        }
+
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.isTrue(
@@ -162,9 +168,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
             }
         });
     }
-
-    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-    data = applyTemporaryCompilerV5SlotFix(data);
 
     const { key, slotAssignment } = data;
 
@@ -217,9 +220,6 @@ function s(
 
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, apiVersion } = vmBeingRendered;
-
-    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-    data = applyTemporaryCompilerV5SlotFix(data);
 
     if (
         !isUndefined(slotset) &&
@@ -353,9 +353,6 @@ function c(
         }
     }
 
-    // TODO [#3974]: remove temporary logic to support v5 compiler + v6+ engine
-    data = applyTemporaryCompilerV5SlotFix(data);
-
     const { key, slotAssignment } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
@@ -383,10 +380,10 @@ function i(
     iterable: Iterable<any>,
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
-    const list: VNodes = [];
+    const list: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -435,21 +432,25 @@ function i(
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
-            ArrayPush.call(list, vnode);
+            // `isArray` doesn't narrow this block properly...
+            ArrayPush.call(list, vnode as VNode | null);
         }
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
             forEach.call(vnodes, (childVnode: VNode | null) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
+                // Check that the child vnode is either an element or VStatic
+                if (!isNull(childVnode) && (isVBaseElement(childVnode) || isVStatic(childVnode))) {
                     const { key } = childVnode;
+                    // In @lwc/engine-server the fragment doesn't have a tagName, default to the VM's tagName.
+                    const { tagName } = vmBeingRendered;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
-                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. A key with value "${childVnode.key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
+                            iterationError = `Duplicated "key" attribute value in "<${tagName}>" for item number ${j}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
-                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Set a unique "key" value on all iterated child elements.`;
+                        iterationError = `Invalid "key" attribute value in "<${tagName}>" for item number ${j}. Set a unique "key" value on all iterated child elements.`;
                     }
                 }
             });
@@ -471,12 +472,12 @@ function i(
  * [f]lattening
  * @param items
  */
-function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
+function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
     const len = items.length;
-    const flattened: VNodes = [];
+    const flattened: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(flattened);
     for (let j = 0; j < len; j += 1) {
@@ -484,7 +485,8 @@ function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
         if (isArray(item)) {
             ArrayPush.apply(flattened, item);
         } else {
-            ArrayPush.call(flattened, item);
+            // `isArray` doesn't narrow this block properly...
+            ArrayPush.call(flattened, item as VNode | null);
         }
     }
     return flattened;

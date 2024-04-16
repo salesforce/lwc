@@ -1,0 +1,155 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 106,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 95,
+                "end": 106
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 40,
+                    "start": 15,
+                    "end": 50,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 34,
+                        "start": 15,
+                        "end": 44
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 34,
+                        "endLine": 2,
+                        "endColumn": 40,
+                        "start": 44,
+                        "end": 50
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "spellcheck",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 11,
+                            "name": "spellCheck",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 10,
+                                "endLine": 2,
+                                "endColumn": 33,
+                                "start": 20,
+                                "end": 43
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 33,
+                            "start": 20,
+                            "end": 43
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 44,
+                    "start": 55,
+                    "end": 94,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 36,
+                        "start": 55,
+                        "end": 86
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 36,
+                        "endLine": 3,
+                        "endColumn": 44,
+                        "start": 86,
+                        "end": 94
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "spellcheck",
+                        "attributeName": "spellcheck",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 11,
+                            "name": "spellCheck",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 35,
+                                "start": 62,
+                                "end": 85
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 35,
+                            "start": 62,
+                            "end": 85
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

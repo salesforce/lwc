@@ -33,12 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           [
-            api_static_fragment($fragment1(), 4),
-            api_static_fragment($fragment2(), 6),
+            api_static_fragment($fragment1, 4),
+            api_static_fragment($fragment2, 6),
           ]
         ),
       ]),
-      api_static_fragment($fragment3(), 8),
+      api_static_fragment($fragment3, 8),
     ]),
   ];
   /*LWC compiler vX.X.X*/

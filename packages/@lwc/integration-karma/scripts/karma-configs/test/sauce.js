@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -11,7 +11,6 @@ const { STANDARD_SAUCE_BROWSERS, LEGACY_SAUCE_BROWSERS } = require('../shared/br
 const { getSauceConfig } = require('../utils');
 const { LEGACY_BROWSERS } = require('../../shared/options');
 
-const TAGS = require('./tags');
 const localConfig = require('./base');
 
 const SAUCE_BROWSERS = [...(LEGACY_BROWSERS ? LEGACY_SAUCE_BROWSERS : STANDARD_SAUCE_BROWSERS)];
@@ -25,7 +24,6 @@ module.exports = (config) => {
 
     const sauceConfig = getSauceConfig(config, {
         suiteName: 'integration-karma',
-        tags: TAGS,
         browsers: SAUCE_BROWSERS,
     });
 

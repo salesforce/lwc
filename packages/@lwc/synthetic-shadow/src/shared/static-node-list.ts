@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -41,7 +41,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value(cb: (value: Node, key: number, parent: Node[]) => void, thisArg?: any) {
-            forEach.call(Items.get(this), cb, thisArg);
+            forEach.call(Items.get(this)!, cb, thisArg);
         },
     },
     entries: {
@@ -49,7 +49,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(Items.get(this), (v, i) => [i, v]);
+            return ArrayMap.call(Items.get(this)!, (v, i) => [i, v]);
         },
     },
     keys: {
@@ -57,7 +57,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(Items.get(this), (_v, i) => i);
+            return ArrayMap.call(Items.get(this)!, (_v, i) => i);
         },
     },
     values: {

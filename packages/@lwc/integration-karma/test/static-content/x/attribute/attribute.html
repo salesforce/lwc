@@ -1,0 +1,20 @@
+<template>
+    <div data-id="staticAttr" data-value="static1"></div>
+    <div data-id="dynamicAttr" data-value={dynamicAttr}></div>
+    <div data-id="staticStyle" style="color: blue;"></div>
+    <div data-id="dynamicStyle" style={dynamicStyle}></div>
+    <div data-id="staticClass" class="static class"></div>
+    <div data-id="dynamicClass" class={dynamicClass}></div>
+    <div data-id="staticCombined" style="color: red;" data-value="static2" class="combined class"></div>
+    <div data-id="dynamicCombined" style={combinedStyle} data-value={combinedAttr} class={combinedClass}></div>
+    <div>
+        <div data-id="staticAttrNested" data-value="static3"></div>
+        <div data-id="dynamicAttrNested" data-value={dynamicAttrNested}></div>
+        <div data-id="staticStyleNested" style="color: white;"></div>
+        <div data-id="dynamicStyleNested" style={dynamicStyleNested}></div>
+        <div data-id="staticClassNested" class="static nested class"></div>
+        <div data-id="dynamicClassNested" class={dynamicClassNested}></div>
+        <div data-id="staticCombinedNested" style="color: orange;" data-value="static4" class="static combined nested"></div>
+        <div data-id="dynamicCombinedNested" style={combinedStyleNested} data-value={combinedAttrNested} class={combinedClassNested}></div>
+    </div>
+</template>
