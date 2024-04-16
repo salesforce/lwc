@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -22,6 +22,8 @@ import {
 } from './types';
 import { validateStyleTextContents } from './utils/validate-style-text-contents';
 
+// Note that for statically optimized content the expression serialization is done in
+// buildParseFragmentFn in @lwc/engine-core. It takes the same logic used here.
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
         .map((attr) =>
@@ -59,6 +61,11 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
     )}</template>`;
 }
 
+/**
+ * Serializes an element into a string
+ * @param element The element to serialize
+ * @returns A string representation of the element
+ */
 export function serializeElement(element: HostElement): string {
     let output = '';
 

@@ -1,4 +1,5 @@
-import { registerTemplate, renderer } from "lwc";
+import { parseSVGFragment, registerTemplate, renderer } from "lwc";
+const $fragment1 = parseSVGFragment`<circle${"a0:id"} cx="5" cy="5" r="4" stroke="black"${3}/>`;
 const stc0 = {
   attrs: {
     viewBox: "0 0 30 10",
@@ -8,27 +9,33 @@ const stc0 = {
   svg: true,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, h: api_element, fid: api_scoped_frag_id } = $api;
+  const {
+    gid: api_scoped_id,
+    sp: api_static_part,
+    st: api_static_fragment,
+    fid: api_scoped_frag_id,
+    h: api_element,
+  } = $api;
   return [
     api_element("svg", stc0, [
-      api_element("circle", {
-        attrs: {
-          id: api_scoped_id($cmp.id),
-          cx: "5",
-          cy: "5",
-          r: "4",
-          stroke: "black",
-        },
-        key: 1,
-        svg: true,
-      }),
+      api_static_fragment($fragment1, 2, [
+        api_static_part(
+          0,
+          {
+            attrs: {
+              id: api_scoped_id($cmp.id),
+            },
+          },
+          null
+        ),
+      ]),
       api_element("use", {
         attrs: {
           href: api_scoped_frag_id($cmp.id),
           x: "10",
           fill: "blue",
         },
-        key: 2,
+        key: 3,
         svg: true,
         renderer: renderer,
       }),

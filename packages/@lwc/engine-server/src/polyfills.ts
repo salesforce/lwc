@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty, globalThis } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 
 /**
  * The following constructor might be used in either the constructor or the connectedCallback. In

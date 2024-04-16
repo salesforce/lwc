@@ -94,6 +94,10 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
     return { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
 })();
 
+/**
+ *
+ * @param attrName
+ */
 export function isAriaAttribute(attrName: string): boolean {
     return attrName in AriaAttrNameToPropNameMap;
 }

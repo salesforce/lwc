@@ -45,6 +45,7 @@ function tabIndexGetterPatched(this: HTMLElement) {
 
 /**
  * This method only applies to elements with a shadow attached to them
+ * @param value
  */
 function tabIndexSetterPatched(this: HTMLElement, value: any) {
     // This tabIndex setter might be confusing unless it is understood that HTML
@@ -140,7 +141,7 @@ function focusPatched(this: HTMLElement) {
     }
 
     // Typescript does not like it when you treat the `arguments` object as an array
-    // @ts-ignore type-mismatch
+    // @ts-expect-error type-mismatch
     focus.apply(this, arguments);
 
     // Restore state by enabling if originally enabled
@@ -182,7 +183,7 @@ defineProperties(HTMLElement.prototype, {
     focus: {
         value(this: HTMLElement) {
             // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-ignore type-mismatch
+            // @ts-expect-error type-mismatch
             focusPatched.apply(this, arguments);
         },
         enumerable: true,

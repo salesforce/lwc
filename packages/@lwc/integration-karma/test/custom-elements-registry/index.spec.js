@@ -22,7 +22,7 @@ function getEngineCode() {
     return Promise.all(scripts);
 }
 
-function createLWC({
+const createLWC = function createLWC({
     tagName = 'x-foo',
     skipInject = false,
     text = 'Hello LWC',
@@ -60,9 +60,9 @@ function createLWC({
     if (!skipInject) {
         document.body.appendChild(elm);
     }
-}
+}.toString();
 
-function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
+const createVanilla = function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
     customElements.define(
         tagName,
         class MyCustomElement extends HTMLElement {
@@ -75,7 +75,7 @@ function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
     if (!skipInject) {
         document.body.appendChild(document.createElement(tagName));
     }
-}
+}.toString();
 
 describe('custom elements registry', () => {
     let iframe;

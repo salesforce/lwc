@@ -15,11 +15,11 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
-    api_static_fragment($fragment1(), 1, [
-      api_static_part(4, stc0),
-      api_static_part(5, stc1),
-      api_static_part(6, stc2),
-      api_static_part(7, stc3),
+    api_static_fragment($fragment1, 1, [
+      api_static_part(4, stc0, null),
+      api_static_part(5, stc1, null),
+      api_static_part(6, stc2, null),
+      api_static_part(7, stc3, null),
     ]),
   ];
   /*LWC compiler vX.X.X*/

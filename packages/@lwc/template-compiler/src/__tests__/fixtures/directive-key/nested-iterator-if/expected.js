@@ -1,17 +1,17 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${"a0:data-islast"}${"a0:data-isfirst"}${3}><span${3}>${"t2"}</span>${"t3"}</div>`;
+const $fragment2 = parseFragment`<div${3}>Text</div>`;
 const stc0 = {
   key: 0,
-};
-const stc1 = {
-  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     i: api_iterator,
+    h: api_element,
   } = $api;
   return [
     api_element(
@@ -25,30 +25,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           last: xLast,
         };
         return [
-          api_element(
-            "div",
-            {
-              attrs: {
-                "data-islast": x.last,
-                "data-isfirst": x.first,
-              },
-              key: api_key(1, x.value.id),
-            },
-            [
-              api_element("span", stc1, [
-                api_text("Row: " + api_dynamic_text(x.index)),
-              ]),
-              api_text(". Value: " + api_dynamic_text(x.value)),
-            ]
-          ),
-          $cmp.isTrue
-            ? api_element(
-                "div",
-                {
-                  key: api_key(3, x.value.key),
+          api_static_fragment($fragment1, api_key(2, x.value.id), [
+            api_static_part(
+              0,
+              {
+                attrs: {
+                  "data-islast": x.last,
+                  "data-isfirst": x.first,
                 },
-                [api_text("Text")]
-              )
+              },
+              null
+            ),
+            api_static_part(2, null, "Row: " + api_dynamic_text(x.index)),
+            api_static_part(3, null, ". Value: " + api_dynamic_text(x.value)),
+          ]),
+          $cmp.isTrue
+            ? api_static_fragment($fragment2, api_key(4, x.value.key))
             : null,
         ];
       })

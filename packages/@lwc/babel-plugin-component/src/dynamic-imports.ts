@@ -28,7 +28,7 @@ function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginP
     }
 }
 
-/*
+/**
  * Expected API for this plugin:
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
@@ -51,7 +51,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
         }
 
         if (!state.dynamicImports.includes(dependency)) {
-            state.dynamicImports!.push(dependency);
+            state.dynamicImports.push(dependency);
         }
     }
 

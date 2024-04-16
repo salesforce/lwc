@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -19,18 +19,40 @@ import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
 
+/** The object returned after transforming code. */
 export interface TransformResult {
+    /** The compiled source code. */
     code: string;
+    /** The generated source map. */
     map: unknown;
+    /** Any diagnostic warnings that may have occurred. */
     warnings?: CompilerDiagnostic[];
+    /**
+     * String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css`, as either
+     * attributes or classes.
+     */
     cssScopeTokens?: string[];
 }
 
 /**
- * Transforms the passed code. Returning a Promise of an object with the generated code, source map
- * and gathered metadata.
- *
- * @deprecated Use transformSync instead.
+ * Transform the passed source code.
+ * @param src The source to be transformed. Can be the content of a JavaScript, HTML, or CSS file.
+ * @param filename The source filename, with extension.
+ * @param options The transformation options. The `name` and the `namespace` of the component is the
+ * minimum required for transformation.
+ * @returns A promise resolving to an object with the generated code, source map and gathered metadata.
+ * @example
+ * const source = `
+ *     import { LightningElement } from 'lwc';
+ *     export default class App extends LightningElement {}
+ * `;
+ * const filename = 'app.js';
+ * const options = {
+ *     namespace: 'c',
+ *     name: 'app',
+ * };
+ * const { code } = await transform(source, filename, options);
+ * @deprecated Use {@linkcode transformSync} instead
  */
 export function transform(
     src: string,
@@ -49,8 +71,24 @@ export function transform(
 }
 
 /**
- * Transform the passed source code. Returning an object with the generated code, source map and
- * gathered metadata.
+ * Transform the passed source code
+ * @param src The source to be transformed. Can be the content of a JavaScript, HTML, or CSS file.
+ * @param filename The source filename, with extension.
+ * @param options The transformation options. The `name` and the `namespace` of the component is the
+ * minimum required for transformation.
+ * @returns An object with the generated code, source map and gathered metadata.
+ * @example
+ *
+ * const source = `
+ *     import { LightningElement } from 'lwc';
+ *     export default class App extends LightningElement {}
+ * `;
+ * const filename = 'app.js';
+ * const options = {
+ *     namespace: 'c',
+ *     name: 'app',
+ * };
+ * const { code } = transformSync(source, filename, options);
  */
 export function transformSync(
     src: string,

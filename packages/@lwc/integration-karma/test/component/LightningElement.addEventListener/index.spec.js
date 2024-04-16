@@ -10,6 +10,7 @@ it('should be able to attach an event listener on the host element', () => {
     let args;
 
     const clickHandler = function (...handlerArgs) {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         thisValue = this;
         args = handlerArgs;
     };

@@ -21,6 +21,7 @@ export function isTemplateRegistered(tpl: Template): boolean {
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
+ * @param tpl
  */
 export function registerTemplate(tpl: Template): Template {
     if (process.env.NODE_ENV !== 'production') {
@@ -36,6 +37,10 @@ export function registerTemplate(tpl: Template): Template {
 /**
  * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
  * libraries to sanitize vulnerable attributes.
+ * @param tagName
+ * @param namespaceUri
+ * @param attrName
+ * @param attrValue
  */
 export function sanitizeAttribute(
     tagName: string,

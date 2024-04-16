@@ -75,6 +75,7 @@ function getEventMap(elm: EventTarget): ListenerMap {
  * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
  * property of events dispatched on shadow roots always resolve to their host. This function understands this
  * abstraction and properly returns a reference to the shadow root when appropriate.
+ * @param event
  */
 export function getActualTarget(event: Event): EventTarget {
     return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
@@ -152,7 +153,7 @@ function domListener(evt: Event) {
     // currentTarget is always defined
     const currentTarget = eventCurrentTargetGetter.call(evt)!;
     const listenerMap = getEventMap(currentTarget);
-    const listeners = listenerMap![type]; // it must have listeners at this point
+    const listeners = listenerMap[type]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
         value() {
             immediatePropagationStopped = true;
@@ -241,7 +242,9 @@ export function addCustomElementEventListener(
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
                     this
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${toString(
+                    listener
+                )}.`
             );
         }
     }
@@ -274,7 +277,9 @@ export function addShadowRootEventListener(
             throw new TypeError(
                 `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
                     sr
-                )} for event "${type}". Expected EventListener or EventListenerObject but received ${listener}.`
+                )} for event "${type}". Expected EventListener or EventListenerObject but received ${toString(
+                    listener
+                )}.`
             );
         }
     }

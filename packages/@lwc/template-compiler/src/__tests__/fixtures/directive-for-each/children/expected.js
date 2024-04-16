@@ -1,7 +1,10 @@
 import { parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>Last child</p>`;
-const $fragment2 = parseFragment`<p${3}>Last child</p>`;
-const $fragment3 = parseFragment`<section class="s4${0}"${2}><p${3}>Other child1</p><p${3}>Other child2</p></section>`;
+const $fragment2 = parseFragment`<p${3}>X1</p>`;
+const $fragment3 = parseFragment`<p${3}>X2</p>`;
+const $fragment4 = parseFragment`<p${3}>Last child</p>`;
+const $fragment5 = parseFragment`<div${3}></div>`;
+const $fragment6 = parseFragment`<section class="s4${0}"${2}><p${3}>Other child1</p><p${3}>Other child2</p></section>`;
 const stc0 = {
   classMap: {
     s1: true,
@@ -19,7 +22,7 @@ const stc3 = {
   classMap: {
     s3: true,
   },
-  key: 6,
+  key: 8,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -39,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_iterator($cmp.items, function (item) {
           return api_text("X");
         }),
-        api_static_fragment($fragment1(), 2),
+        api_static_fragment($fragment1, 2),
       ])
     ),
     api_element(
@@ -50,20 +53,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         $cmp.isTrue
           ? api_iterator($cmp.items, function (item) {
               return [
-                api_element(
-                  "p",
-                  {
-                    key: api_key(4, item.id),
-                  },
-                  [api_text("X1")]
-                ),
-                api_element(
-                  "p",
-                  {
-                    key: api_key(5, item.id),
-                  },
-                  [api_text("X2")]
-                ),
+                api_static_fragment($fragment2, api_key(5, item.id)),
+                api_static_fragment($fragment3, api_key(7, item.id)),
               ];
             })
           : stc2,
@@ -73,15 +64,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc3,
       api_flatten([
-        api_static_fragment($fragment2(), 8),
+        api_static_fragment($fragment4, 10),
         api_iterator($cmp.items, function (item) {
-          return api_element("div", {
-            key: api_key(9, item.id),
-          });
+          return api_static_fragment($fragment5, api_key(12, item.id));
         }),
       ])
     ),
-    api_static_fragment($fragment3(), 11),
+    api_static_fragment($fragment6, 14),
   ];
   /*LWC compiler vX.X.X*/
 }

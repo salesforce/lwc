@@ -25,7 +25,7 @@ benchmark(`dom/synthetic-shadow/mutation-observer/10k`, () => {
         tableRows = [...tableElement.shadowRoot.querySelectorAll('benchmark-table-component-row')];
     });
 
-    run(async () => {
+    run(() => {
         // observe at multiple levels, including where we shouldn't be allowed to see inside the shadow root
         for (const rowElement of tableRows) {
             new MutationObserver(() => {}).observe(tableElement, {

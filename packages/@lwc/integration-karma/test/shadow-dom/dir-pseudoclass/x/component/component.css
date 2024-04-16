@@ -1,39 +1,39 @@
 div:dir(ltr) {
-  color: #000001;
+    color: #000001;
 }
 
 div:dir(rtl) {
-  color: #000002;
+    color: #000002;
 }
 
 .foo:dir(ltr):not(.bar) {
-  color: #000003;
+    color: #000003;
 }
 
 .foo:dir(rtl):not(.bar) {
-  color: #000004;
+    color: #000004;
 }
 
 .foo:dir(ltr) {
-  color: #000005;
+    color: #000005;
 }
 
 .foo:dir(rtl) {
-  color: #000006;
+    color: #000006;
 }
 
 .baz:dir(ltr) span {
-  color: #000007;
+    color: #000007;
 }
 
 .baz:dir(rtl) span {
-  color: #000008;
+    color: #000008;
 }
 
 .baz button:dir(ltr) {
-  color: #000009;
+    color: #000009;
 }
 
 .baz button:dir(rtl) {
-  color: #00000a;
+    color: #00000a;
 }

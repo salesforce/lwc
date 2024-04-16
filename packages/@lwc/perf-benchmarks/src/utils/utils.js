@@ -4,7 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/** Assert presence of an HTMLElement matching a querySelector */
+/**
+ * Assert presence of an HTMLElement matching a querySelector
+ * @param selector
+ */
 export function assertElement(selector) {
     const node = document.querySelector(selector);
 
@@ -15,7 +18,11 @@ export function assertElement(selector) {
     return node;
 }
 
-/** Assert present of text in a HTML Element */
+/**
+ * Assert present of text in a HTML Element
+ * @param selector
+ * @param text
+ */
 export function assertText(selector, text) {
     const node = assertElement(selector);
 
@@ -24,13 +31,20 @@ export function assertText(selector, text) {
     }
 }
 
-/** Wait for the next rendering cycle to occur */
+/**
+ * Wait for the next rendering cycle to occur
+ * @param cb
+ */
 export function nextTick(cb) {
     return Promise.resolve().then(cb);
 }
 
-/** Wait for the next frame */
+/**
+ * Wait for the next frame
+ * @param cb
+ */
 export function nextFrame(cb) {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     setTimeout(cb, 0);
 }
 

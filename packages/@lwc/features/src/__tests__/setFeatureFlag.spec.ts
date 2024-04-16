@@ -32,7 +32,7 @@ describe('setFeatureFlag', () => {
                 const expectedError =
                     'Failed to set the value "foo" for the runtime feature flag "PLACEHOLDER_TEST_FLAG". Runtime feature flags can only be set to a boolean value.';
                 const callback = () => {
-                    // @ts-ignore
+                    // @ts-expect-error Explicitly testing JS behavior that violates TS types
                     setFeatureFlag('PLACEHOLDER_TEST_FLAG', 'foo');
                 };
                 if (env === 'production') {
@@ -47,14 +47,14 @@ describe('setFeatureFlag', () => {
             });
 
             it('logs and does nothing when the flag is unknown', () => {
-                // @ts-ignore
+                // @ts-expect-error Explicitly testing JS behavior that violates TS types
                 setFeatureFlag('DOES_NOT_EXIST', true);
                 expect(info).toHaveBeenCalledWith(
                     expect.stringMatching(/Attempt to set a value on an unknown feature flag/)
                 );
 
                 // value is not changed
-                // @ts-ignore
+                // @ts-expect-error Explicitly testing JS behavior that violates TS types
                 expect(lwcRuntimeFlags.DOES_NOT_EXIST).toBeUndefined();
             });
 

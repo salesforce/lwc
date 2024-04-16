@@ -99,19 +99,10 @@
                                     "start": 1,
                                     "end": 8,
                                     "object": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 4,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
                                     },
                                     "property": {
                                         "type": "Identifier",
@@ -183,33 +174,24 @@
                                             64
                                         ],
                                         "object": {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 57,
-                                                "end": 60,
-                                                "loc": {
-                                                    "start": {
-                                                        "line": 3,
-                                                        "column": 32
-                                                    },
-                                                    "end": {
-                                                        "line": 3,
-                                                        "column": 35
-                                                    }
+                                            "type": "Identifier",
+                                            "start": 57,
+                                            "end": 60,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 3,
+                                                    "column": 32
                                                 },
-                                                "range": [
-                                                    57,
-                                                    60
-                                                ],
-                                                "name": "foo"
+                                                "end": {
+                                                    "line": 3,
+                                                    "column": 35
+                                                }
                                             },
-                                            "computed": false,
-                                            "optional": false
+                                            "range": [
+                                                57,
+                                                60
+                                            ],
+                                            "name": "foo"
                                         },
                                         "property": {
                                             "type": "Identifier",
@@ -315,19 +297,10 @@
                                     "start": 1,
                                     "end": 10,
                                     "object": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 2,
-                                            "end": 5,
-                                            "name": "foo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 2,
+                                        "end": 5,
+                                        "name": "foo"
                                     },
                                     "property": {
                                         "type": "Identifier",
@@ -381,33 +354,24 @@
                                         122
                                     ],
                                     "object": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 114,
-                                            "end": 117,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 4,
-                                                    "column": 35
-                                                },
-                                                "end": {
-                                                    "line": 4,
-                                                    "column": 38
-                                                }
+                                        "type": "Identifier",
+                                        "start": 114,
+                                        "end": 117,
+                                        "loc": {
+                                            "start": {
+                                                "line": 4,
+                                                "column": 35
                                             },
-                                            "range": [
-                                                114,
-                                                117
-                                            ],
-                                            "name": "biz"
+                                            "end": {
+                                                "line": 4,
+                                                "column": 38
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            114,
+                                            117
+                                        ],
+                                        "name": "biz"
                                     },
                                     "property": {
                                         "type": "Identifier",

@@ -77,7 +77,7 @@ interface SiblingScope {
 }
 
 export default class ParserCtx {
-    private readonly source: String;
+    private readonly source: string;
 
     readonly config: NormalizedConfig;
     readonly warnings: CompilerDiagnostic[] = [];
@@ -129,7 +129,7 @@ export default class ParserCtx {
     preserveComments: boolean;
     apiVersion: APIVersion;
 
-    constructor(source: String, config: NormalizedConfig) {
+    constructor(source: string, config: NormalizedConfig) {
         this.source = source;
         this.config = config;
         this.renderMode = LWCDirectiveRenderMode.shadow;
@@ -158,6 +158,8 @@ export default class ParserCtx {
 
     /**
      * This method flattens the scopes into a single array for traversal.
+     * @param element
+     * @yields Each node in the scope and its parent.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
         const ancestors = this.elementScopes.flat();
@@ -172,11 +174,10 @@ export default class ParserCtx {
      * This method returns an iterator over ancestor nodes, starting at the parent and ending at the root node.
      *
      * Note: There are instances when we want to terminate the traversal early, such as searching for a ForBlock parent.
-     *
-     * @param {ParentNode} startNode - Starting node to begin search, defaults to the tail of the current scope.
-     * @param {function} predicate - This callback is called once for each ancestor until it finds one where predicate returns true.
-     * @param {function} traversalCond - This callback is called after predicate and will terminate the traversal if it returns false.
+     * @param predicate This callback is called once for each ancestor until it finds one where predicate returns true.
+     * @param traversalCond This callback is called after predicate and will terminate the traversal if it returns false.
      * traversalCond is ignored if no value is provided.
+     * @param startNode Starting node to begin search, defaults to the tail of the current scope.
      */
     findAncestor<A extends ParentNode>(
         predicate: (node: ParentNode) => node is A,
@@ -198,8 +199,7 @@ export default class ParserCtx {
 
     /**
      * This method searchs the current scope and returns the value that satisfies the predicate.
-     *
-     * @param {function} predicate - This callback is called once for each sibling in the current scope
+     * @param predicate This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */
     findInCurrentElementScope<A extends ParentNode>(
@@ -339,8 +339,7 @@ export default class ParserCtx {
     /**
      * This method recovers from diagnostic errors that are encountered when fn is invoked.
      * All other errors are considered compiler errors and can not be recovered from.
-     *
-     * @param fn - method to be invoked.
+     * @param fn method to be invoked.
      */
     withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
@@ -382,6 +381,9 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error with the node's location.
+     * @param errorInfo
+     * @param node
+     * @param messageArgs
      */
     throwOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): never {
         this.throw(errorInfo, messageArgs, node.location);
@@ -389,6 +391,9 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error with location information.
+     * @param errorInfo
+     * @param location
+     * @param messageArgs
      */
     throwAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): never {
         this.throw(errorInfo, messageArgs, location);
@@ -396,6 +401,10 @@ export default class ParserCtx {
 
     /**
      * This method throws a diagnostic error and will immediately exit the current routine.
+     * @param errorInfo
+     * @param messageArgs
+     * @param location
+     * @throws
      */
     throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
         throw generateCompilerError(errorInfo, {
@@ -408,6 +417,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning with the node's location.
+     * @param errorInfo
+     * @param node
+     * @param messageArgs
      */
     warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
         this.warn(errorInfo, messageArgs, node.location);
@@ -415,6 +427,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning with location information.
+     * @param errorInfo
+     * @param location
+     * @param messageArgs
      */
     warnAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): void {
         this.warn(errorInfo, messageArgs, location);
@@ -422,6 +437,9 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning and will continue execution of the current routine.
+     * @param errorInfo
+     * @param messageArgs
+     * @param location
      */
     warn(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): void {
         this.addDiagnostic(

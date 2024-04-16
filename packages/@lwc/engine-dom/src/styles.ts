@@ -44,7 +44,7 @@ interface StyleElementCacheData extends CacheData {
     element: HTMLStyleElement;
 }
 
-const stylesheetCache: Map<String, CacheData> = new Map();
+const stylesheetCache: Map<string, CacheData> = new Map();
 
 //
 // Test utilities
@@ -52,8 +52,7 @@ const stylesheetCache: Map<String, CacheData> = new Map();
 
 // Only used in LWC's Karma tests
 if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // @ts-ignore
-    window.__lwcResetGlobalStylesheets = () => {
+    (window as any).__lwcResetGlobalStylesheets = () => {
         stylesheetCache.clear();
     };
 }

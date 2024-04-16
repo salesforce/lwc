@@ -19,6 +19,7 @@ const reactiveMembrane = new ObservableMembrane({
  * EXPERIMENTAL: This function implements an unwrap mechanism that
  * works for observable membrane objects. This API is subject to
  * change or being removed.
+ * @param value
  */
 export function unwrap(value: any): any {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.

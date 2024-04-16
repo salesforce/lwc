@@ -181,6 +181,8 @@ function validateMethodDecoratedWithApi(
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by user-land code.
+ * @param Ctor
+ * @param meta
  */
 export function registerDecorators(
     Ctor: LightningElementConstructor,

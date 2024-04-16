@@ -15,9 +15,12 @@ import { updateComponentValue } from '../update-component-value';
 import { logError } from '../../shared/logger';
 
 /**
- * @track decorator function to mark field value as reactive in
+ * The @track decorator function marks field values as reactive in
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
+ * @param target
+ * @param propertyKey
+ * @param descriptor
  */
 export default function track(
     target: any,
@@ -40,8 +43,9 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
     return {
         get(this: LightningElement): any {
             const vm = getAssociatedVM(this);
-            componentValueObserved(vm, key);
-            return vm.cmpFields[key];
+            const val = vm.cmpFields[key];
+            componentValueObserved(vm, key, val);
+            return val;
         },
         set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);

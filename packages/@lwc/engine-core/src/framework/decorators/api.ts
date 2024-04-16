@@ -13,9 +13,12 @@ import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
- * @api decorator to mark public fields and public methods in
+ * The @api decorator marks public fields and public methods in
  * LWC Components. This function implements the internals of this
  * decorator.
+ * @param target
+ * @param propertyKey
+ * @param descriptor
  */
 export default function api(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
 export default function api() {
@@ -40,8 +43,9 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                 }
                 return;
             }
-            componentValueObserved(vm, key);
-            return vm.cmpProps[key];
+            const val = vm.cmpProps[key];
+            componentValueObserved(vm, key, val);
+            return val;
         },
         set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);

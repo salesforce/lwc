@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { TEMPLATE_CLASS_NAME_OBJECT_BINDING } from 'test-utils';
 
 import Dynamic from 'x/dynamic';
 import Reactive from 'x/reactive';
@@ -36,26 +37,27 @@ function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
     });
 }
 
-// Object class binding is enabled starting from API v61.
-const isObjectBindingEnabled = process.env.API_VERSION >= 61;
-
 describe('type coercion', () => {
-    testClassNameValue('object', {}, isObjectBindingEnabled ? '' : '[object Object]');
-    testClassNameValue('true', true, isObjectBindingEnabled ? '' : 'true');
-    testClassNameValue('false', false, isObjectBindingEnabled ? '' : 'false');
-    testClassNameValue('null', null, isObjectBindingEnabled ? '' : '');
-    testClassNameValue('undefined', undefined, isObjectBindingEnabled ? '' : '');
-    testClassNameValue('number', 1, isObjectBindingEnabled ? '' : '1');
-    testClassNameValue('map', new Map(), isObjectBindingEnabled ? '' : '[object Map]');
-    testClassNameValue('function', function () {}, isObjectBindingEnabled ? '' : 'function () {}');
+    testClassNameValue('object', {}, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '[object Object]');
+    testClassNameValue('true', true, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'true');
+    testClassNameValue('false', false, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'false');
+    testClassNameValue('null', null, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '');
+    testClassNameValue('undefined', undefined, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '');
+    testClassNameValue('number', 1, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '1');
+    testClassNameValue('map', new Map(), TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '[object Map]');
+    testClassNameValue(
+        'function',
+        function () {},
+        TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'function () {}'
+    );
 
     // Passing a symbol as a class name prior to API v61 would throw an error.
-    if (isObjectBindingEnabled) {
+    if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
         testClassNameValue('symbol', Symbol(), '');
     }
 });
 
-if (isObjectBindingEnabled) {
+if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
     describe('plain object class value', () => {
         testClassNameValue('empty', {}, '');
         testClassNameValue('single class', { foo: true }, 'foo');

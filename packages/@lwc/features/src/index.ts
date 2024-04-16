@@ -1,37 +1,40 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
+import { create, defineProperty, isUndefined, isBoolean } from '@lwc/shared';
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
 // example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
+/** List of all feature flags available, with the default value `null`. */
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
-    ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
-    ENABLE_MIXED_SHADOW_MODE: null,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_FROZEN_TEMPLATE: null,
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
+    ENABLE_EXPERIMENTAL_SIGNALS: null,
 };
 
-// eslint-disable-next-line no-restricted-properties
-if (!globalThis.lwcRuntimeFlags) {
+if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-// eslint-disable-next-line no-restricted-properties
-const flags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
+/** Feature flags that have been set. */
+const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
  * flag. It is meant to be used during the app initialization.
+ * @param name Name of the feature flag to set
+ * @param value Whether the feature flag should be enabled
+ * @throws Will throw if a non-boolean value is provided when running in production.
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
     if (!isBoolean(value)) {
@@ -72,6 +75,9 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
 /**
  * Set the value at runtime of a given feature flag. This method should only be used for testing
  * purposes. It is a no-op when invoked in production mode.
+ * @param name Name of the feature flag to enable or disable
+ * @param value Whether the feature flag should be enabled
+ * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
     // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
@@ -90,5 +96,6 @@ export {
 export type { FeatureFlagMap };
 
 declare global {
+    /** Feature flags that have been set. */
     const lwcRuntimeFlags: Partial<FeatureFlagMap>;
 }

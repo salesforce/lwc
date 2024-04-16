@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -25,6 +25,12 @@ export interface ErrorConfig {
     origin?: CompilerDiagnosticOrigin;
 }
 
+/**
+ * Generates a friendly error message for the given error type, using the provided template values.
+ * @param errorInfo The object holding the error metadata.
+ * @param args Values used to fill the error message template.
+ * @returns The generated error message.
+ */
 export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
     const message = Array.isArray(args)
         ? templateString(errorInfo.message, args)
@@ -41,10 +47,9 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  * Generates a compiler diagnostic. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent diagnostic object. Diagnostic contains
  * info about the error's code and its origin (filename, line, column) when applicable.
- *
- * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
- * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
- * @return {CompilerDiagnostic}
+ * @param errorInfo The object holding the error metadata.
+ * @param config A config object providing any message arguments and origin info needed to create the error.
+ * @returns The generated compiler diagnostic object.
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
@@ -69,10 +74,9 @@ export function generateCompilerDiagnostic(
  * Generates a compiler error. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent error object. Error object contains info about
  * the error's code and its origin (filename, line, column) when applicable.
- *
- * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
- * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
- * @return {CompilerError}
+ * @param errorInfo The object holding the error metadata.
+ * @param config A config object providing any message arguments and origin info needed to create the error.
+ * @returns The generated compiler error.
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
@@ -89,6 +93,13 @@ export function generateCompilerError(
     return error;
 }
 
+/**
+ * Validates that the provided condition is truthy.
+ * @param condition Condition to check.
+ * @param errorInfo The object holding the error metadata.
+ * @param args Values used to fill the error message template.
+ * @throws Throws a compiler error if the provided condition is falsy.
+ */
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
         throw generateCompilerError(errorInfo, {
@@ -99,11 +110,10 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
 
 /**
  * Normalizes a received error into a CompilerError. Adds any provided additional origin info.
- * @param errorInfo
- * @param error
- * @param origin
- *
- * @return {CompilerError}
+ * @param errorInfo The object holding the error metadata.
+ * @param error The original error.
+ * @param origin The origin associated with the error.
+ * @returns The normalized compiler error.
  */
 export function normalizeToCompilerError(
     errorInfo: LWCErrorInfo,
@@ -131,10 +141,10 @@ export function normalizeToCompilerError(
 
 /**
  * Normalizes a received error into a CompilerDiagnostic. Adds any provided additional origin info.
- * @param error
- * @param origin
- *
- * @return {CompilerDiagnostic}
+ * @param errorInfo The object holding the error metadata.
+ * @param error The original error.
+ * @param origin The origin of the error.
+ * @returns The normalized compiler diagnostic object.
  */
 export function normalizeToDiagnostic(
     errorInfo: LWCErrorInfo,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -27,25 +27,28 @@ const {
 
 // Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
+type MutationCallbackWithInternals = MutationCallback &
+    Partial<Record<typeof wrapperLookupField, MutationCallback>>;
 const observerLookupField = '$$lwcNodeObservers$$';
+type NodeWithInternals = Node & Partial<Record<typeof observerLookupField, MutationObserver[]>>;
 
-const observerToNodesMap: WeakMap<MutationObserver, Array<Node>> = new WeakMap();
+const observerToNodesMap: WeakMap<MutationObserver, Array<NodeWithInternals>> = new WeakMap();
 
-function getNodeObservers(node: Node): MutationObserver[] {
-    return (node as any)[observerLookupField];
+function getNodeObservers(node: NodeWithInternals): MutationObserver[] | undefined {
+    return node[observerLookupField];
 }
 
-function setNodeObservers(node: Node, observers: MutationObserver[]) {
-    (node as any)[observerLookupField] = observers;
+function setNodeObservers(node: NodeWithInternals, observers: MutationObserver[]) {
+    node[observerLookupField] = observers;
 }
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
- * @param {MutationRecord} originalRecord
+ * @param originalRecord
  */
 function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord {
     const { addedNodes, removedNodes, target, type } = originalRecord;
-    const retargetedRecord = create(MutationRecord.prototype);
+    const retargetedRecord: MutationRecord = create(MutationRecord.prototype);
     defineProperties(retargetedRecord, {
         addedNodes: {
             get() {
@@ -82,8 +85,8 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 /**
  * Utility to identify if a target node is being observed by the given observer
  * Start at the current node, if the observer is registered to observe the current node, the mutation qualifies
- * @param {MutationObserver} observer
- * @param {Node} target
+ * @param observer
+ * @param target
  */
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
@@ -107,8 +110,8 @@ function isQualifiedObserver(observer: MutationObserver, target: Node): boolean 
  * The key logic here is to determine if a given observer has been registered to observe any nodes
  * between the target node of a mutation record to the target's root node.
  * This function also retargets records when mutations occur directly under the shadow root
- * @param {MutationRecords[]} mutations
- * @param {MutationObserver} observer
+ * @param mutations
+ * @param observer
  */
 function filterMutationRecords(
     mutations: MutationRecord[],
@@ -179,13 +182,10 @@ function filterMutationRecords(
     return result;
 }
 
-function getWrappedCallback(callback: MutationCallback): MutationCallback {
-    let wrappedCallback: MutationCallback | undefined = (callback as any)[wrapperLookupField];
+function getWrappedCallback(callback: MutationCallbackWithInternals): MutationCallback {
+    let wrappedCallback = callback[wrapperLookupField];
     if (isUndefined(wrappedCallback)) {
-        wrappedCallback = (callback as any)[wrapperLookupField] = (
-            mutations: MutationRecord[],
-            observer: MutationObserver
-        ): void => {
+        wrappedCallback = callback[wrapperLookupField] = (mutations, observer) => {
             // Filter mutation records
             const filteredRecords = filterMutationRecords(mutations, observer);
             // If not records are eligible for the observer, do not invoke callback
@@ -202,7 +202,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  * Patched MutationObserver constructor.
  * 1. Wrap the callback to filter out MutationRecords based on dom ownership
  * 2. Add a property field to track all observed targets of the observer instance
- * @param {MutationCallback} callback
+ * @param callback
  */
 function PatchedMutationObserver(
     this: MutationObserver,
@@ -235,8 +235,8 @@ function patchedDisconnect(this: MutationObserver): void {
 /**
  * A single mutation observer can observe multiple nodes(target).
  * Maintain a list of all targets that the observer chooses to observe
- * @param {Node} target
- * @param {Object} options
+ * @param target
+ * @param options
  */
 function patchedObserve(
     this: MutationObserver,
@@ -257,7 +257,7 @@ function patchedObserve(
 
     // SyntheticShadowRoot instances are not actually a part of the DOM so observe the host instead.
     if (isSyntheticShadowRoot(target)) {
-        target = (target as ShadowRoot).host;
+        target = target.host;
     }
 
     // maintain a list of all nodes observed by this observer

@@ -21,6 +21,9 @@ const _Node = Node;
 /**
  * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. THIS API WILL BE REMOVED
  * ONCE LOCKER V1 IS NO LONGER SUPPORTED.
+ * @param node Node to check
+ * @returns `true` if the the node is shadowed
+ * @example isNodeShadowed(document.querySelector('my-component'))
  */
 function isNodeShadowed(node: Node): boolean {
     if (isFalse(node instanceof _Node)) {

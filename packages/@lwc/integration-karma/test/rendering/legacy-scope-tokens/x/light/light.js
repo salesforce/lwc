@@ -5,5 +5,7 @@ export default class extends LightningElement {
 
     props = {};
 
+    expression = 'expression';
+
     @api rerender = 0;
 }

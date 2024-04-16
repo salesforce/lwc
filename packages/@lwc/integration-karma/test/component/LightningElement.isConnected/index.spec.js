@@ -6,6 +6,7 @@ describe('Basic DOM manipulation cases', () => {
     class Test extends LightningElement {
         constructor() {
             super();
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             context = this;
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -9,28 +9,22 @@
  * A feature flag can have three different values:
  * - `null`: The feature is **present** and **disabled** by default. It can be enabled at runtime.
  * - `true`: The feature is **present** and **enabled**. The flag is enabled in the generated output
- *           and can't be disabled at runtime.
+ * and can't be disabled at runtime.
  * - `false`: The feature is entirely **disabled**. The code behind the flag is stripped away from
- *            the generated output.
+ * the generated output.
  */
 export type FeatureFlagValue = boolean | null;
 
+/**
+ * Map of feature flags to whether each feature is enabled. Feature flags can be toggled to change
+ * the behavior of LWC components.
+ */
 export interface FeatureFlagMap {
     /**
      * This is only used to test that feature flags are actually working
+     * @internal
      */
     PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
-
-    /**
-     * LWC engine flag to enable mixed shadow mode. Setting this flag to `true` enables usage of
-     * native shadow DOM even when the synthetic shadow polyfill is applied.
-     */
-    ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
-
-    /**
-     * LWC engine flag to force native shadow mode for mixed shadow mode testing.
-     */
-    ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
 
     /**
      * When true, disables native custom element lifecycle, even if the API version is high enough to support it.
@@ -69,6 +63,12 @@ export interface FeatureFlagMap {
      * If true, enable experimental shadow DOM migration mode globally.
      */
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: FeatureFlagValue;
+
+    /**
+     * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
+     * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
+     */
+    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

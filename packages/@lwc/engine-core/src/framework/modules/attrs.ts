@@ -15,29 +15,32 @@ import {
 import { RendererAPI } from '../renderer';
 
 import { EmptyObject } from '../utils';
-import { VBaseElement, VStatic } from '../vnodes';
+import { VBaseElement, VStatic, VStaticPartElement } from '../vnodes';
 
 const ColonCharCode = 58;
 
 export function patchAttributes(
-    oldVnode: VBaseElement | null,
-    vnode: VBaseElement,
+    oldVnode: VBaseElement | VStaticPartElement | null,
+    vnode: VBaseElement | VStaticPartElement,
     renderer: RendererAPI
 ) {
-    const { attrs, external } = vnode.data;
+    const { data, elm } = vnode;
+    const { attrs } = data;
+
     if (isUndefined(attrs)) {
         return;
     }
 
     const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
-
     // Attrs may be the same due to the static content optimization, so we can skip diffing
     if (oldAttrs === attrs) {
         return;
     }
 
-    const { elm } = vnode;
+    // Note VStaticPartData does not contain the external property so it will always default to false.
+    const external = 'external' in data ? data.external : false;
     const { setAttribute, removeAttribute, setProperty } = renderer;
+
     for (const key in attrs) {
         const cur = attrs[key];
         const old = oldAttrs[key];

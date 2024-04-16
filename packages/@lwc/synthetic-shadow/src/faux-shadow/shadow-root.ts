@@ -9,7 +9,6 @@ import {
     assign,
     create,
     defineProperty,
-    globalThis,
     isNull,
     isTrue,
     isUndefined,
@@ -98,7 +97,7 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
 
 // The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
 // would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
-if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
+if (isUndefined((globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
     defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, {
         value: getElementById,
         configurable: true,
@@ -106,7 +105,7 @@ if (isUndefined(globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
 }
 
 // See note above.
-if (isUndefined(globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
+if (isUndefined((globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
     defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, {
         value: querySelectorAll,
         configurable: true,
@@ -354,7 +353,7 @@ const NodePatchDescriptors = {
         value(this: ShadowRoot, evt: Event): boolean {
             eventToShadowRootMap.set(evt, this);
             // Typescript does not like it when you treat the `arguments` object as an array
-            // @ts-ignore type-mismatch
+            // @ts-expect-error type-mismatch
             return dispatchEvent.apply(getHost(this), arguments);
         },
     },
@@ -403,7 +402,7 @@ const NodePatchDescriptors = {
             if (this === otherNode) {
                 // "this" and "otherNode" are the same shadow root.
                 return 0;
-            } else if (this.contains(otherNode as Node)) {
+            } else if (this.contains(otherNode)) {
                 // "otherNode" belongs to the shadow tree where "this" is the shadow root.
                 return 20; // Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
             } else if (

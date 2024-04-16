@@ -103,35 +103,17 @@
                                         "start": 1,
                                         "end": 11,
                                         "callee": {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 1,
-                                                "end": 4,
-                                                "name": "foo"
-                                            },
-                                            "computed": false,
-                                            "optional": false
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "foo"
                                         },
                                         "arguments": [
                                             {
-                                                "type": "MemberExpression",
-                                                "object": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "property": {
-                                                    "type": "Identifier",
-                                                    "start": 7,
-                                                    "end": 10,
-                                                    "name": "bar"
-                                                },
-                                                "computed": false,
-                                                "optional": false
+                                                "type": "Identifier",
+                                                "start": 7,
+                                                "end": 10,
+                                                "name": "bar"
                                             }
                                         ],
                                         "optional": true
@@ -216,33 +198,24 @@
                                                 69
                                             ],
                                             "object": {
-                                                "type": "MemberExpression",
-                                                "object": {
-                                                    "type": "Identifier",
-                                                    "name": "$cmp"
-                                                },
-                                                "property": {
-                                                    "type": "Identifier",
-                                                    "start": 60,
-                                                    "end": 63,
-                                                    "loc": {
-                                                        "start": {
-                                                            "line": 3,
-                                                            "column": 35
-                                                        },
-                                                        "end": {
-                                                            "line": 3,
-                                                            "column": 38
-                                                        }
+                                                "type": "Identifier",
+                                                "start": 60,
+                                                "end": 63,
+                                                "loc": {
+                                                    "start": {
+                                                        "line": 3,
+                                                        "column": 35
                                                     },
-                                                    "range": [
-                                                        60,
-                                                        63
-                                                    ],
-                                                    "name": "baz"
+                                                    "end": {
+                                                        "line": 3,
+                                                        "column": 38
+                                                    }
                                                 },
-                                                "computed": false,
-                                                "optional": false
+                                                "range": [
+                                                    60,
+                                                    63
+                                                ],
+                                                "name": "baz"
                                             },
                                             "property": {
                                                 "type": "Identifier",

@@ -18,6 +18,7 @@ const ERROR_CODE_RANGES = {
 };
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace jest {
         interface Matchers<R> {
             __type: R; // unused, but makes TypeScript happy

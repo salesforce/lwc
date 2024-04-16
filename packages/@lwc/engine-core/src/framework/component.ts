@@ -13,7 +13,11 @@ import {
     LOWEST_API_VERSION,
 } from '@lwc/shared';
 
-import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
+import {
+    createReactiveObserver,
+    ReactiveObserver,
+    unsubscribeFromSignals,
+} from './mutation-tracker';
 
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
@@ -33,6 +37,8 @@ const registeredComponentMap: Map<LightningElementConstructor, ComponentConstruc
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
+ * @param Ctor
+ * @param metadata
  */
 export function registerComponent(
     // We typically expect a LightningElementConstructor, but technically you can call this with anything
@@ -86,12 +92,28 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
+export function resetTemplateObserverAndUnsubscribe(vm: VM) {
+    const { tro, component } = vm;
+    tro.reset();
+    // Unsubscribe every time the template reactive observer is reset.
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        unsubscribeFromSignals(component);
+    }
+}
+
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
-
-    vm.tro.reset();
+    // The engine should only hold a subscription to a signal if it is rendered in the template.
+    // Because of the potential presence of conditional rendering logic, we unsubscribe on each render
+    // in the scenario where it is present in one condition but not the other.
+    // For example:
+    // 1. There is an lwc:if=true conditional where the signal is present on the template.
+    // 2. The lwc:if changes to false and the signal is no longer present on the template.
+    // If the signal is still subscribed to, the template will re-render when it receives a notification
+    // from the signal, even though we won't be using the new value.
+    resetTemplateObserverAndUnsubscribe(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;

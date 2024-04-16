@@ -76,6 +76,11 @@ const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = getOwnPrope
     'childNodes'
 )!.get!;
 
+const nextSiblingGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
+    nodePrototype,
+    'nextSibling'
+)!.get!;
+
 const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
     ? getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!
     : function (this: Node): boolean {
@@ -109,6 +114,7 @@ export {
     firstChildGetter,
     lastChildGetter,
     textContentGetter,
+    nextSiblingGetter,
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,

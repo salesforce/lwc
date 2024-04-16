@@ -248,6 +248,7 @@ function isTemplateDirective(attrName: string): boolean {
 
 /**
  * Convert attribute name from kebab case to camel case property name
+ * @param attrName
  */
 export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);

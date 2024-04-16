@@ -42,8 +42,15 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 ],
             }),
         ],
-        onwarn(warning) {
-            warnings.push(warning);
+        onwarn(warning, warn) {
+            if (warning.message.includes('LWC1187')) {
+                // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
+                // The warning message is expected and appears when the compiler detects usage of the directive.
+                // We plan to remove the directive in a future release, see #3331 for details.
+                warnings.push(warning);
+            } else {
+                warn(warning);
+            }
         },
     });
 
@@ -62,7 +69,6 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
  * This is a replacement for Prettier HTML formatting. Prettier formatting is too aggressive for
  * fixture testing. It not only indent the HTML code but also fixes HTML issues. For testing we want
  * to make sure that the fixture file is as close as possible to what the engine produces.
- *
  * @param src the original HTML fragment.
  * @returns the formatter HTML fragment.
  */
@@ -88,7 +94,7 @@ function formatHTML(src: string): string {
                 const styleMatch = src.slice(pos).match(/<style([\s\S]*?)>([\s\S]*?)<\/style>/);
                 if (styleMatch) {
                     // opening tag
-                    const [wholeMatch, attrs, textContent] = styleMatch!;
+                    const [wholeMatch, attrs, textContent] = styleMatch;
                     res += getPadding() + `<style${attrs}>` + '\n';
                     depth++;
                     res += getPadding() + textContent + '\n';

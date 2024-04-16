@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { lightDomSlotForwardingEnabled, vFragBookEndEnabled } from 'test-utils';
+import { USE_LIGHT_DOM_SLOT_FORWARDING, USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
@@ -7,7 +7,7 @@ import ParentWNoSlotContent from 'x/parentWNoSlotContent';
 import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
 import NestedSlots from 'x/nestedSlots';
 
-const vFragBookend = vFragBookEndEnabled ? '<!---->' : '';
+const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {
@@ -62,7 +62,7 @@ describe('scoped slots', () => {
         // For standard slot content, "slot" attribute goes directly on the element unlike scoped
         //  slots where the attribute goes on the template tag
         expect(child.querySelector('.slotname3').innerHTML).toBe(
-            lightDomSlotForwardingEnabled
+            USE_LIGHT_DOM_SLOT_FORWARDING
                 ? `${vFragBookend}<p>MLB</p>${vFragBookend}`
                 : `${vFragBookend}<p slot="slotname3">MLB</p>${vFragBookend}`
         );

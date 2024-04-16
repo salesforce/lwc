@@ -10,13 +10,13 @@ describe('host pseudo', () => {
 
         // expected styles for the div based on classes added to the light "host"
         const expectedStyles = [
-            ['', ['rgb(0, 0, 0)', '0px']],
-            ['foo', ['rgb(0, 128, 0)', '17px']],
-            ['bar', ['rgb(0, 128, 0)', '17px']],
-            ['foo bar', ['rgb(0, 128, 0)', '17px']],
+            ['', 'rgb(0, 0, 0)', '0px'],
+            ['foo', 'rgb(0, 128, 0)', '17px'],
+            ['bar', 'rgb(0, 128, 0)', '17px'],
+            ['foo bar', 'rgb(0, 128, 0)', '17px'],
         ];
 
-        for (const [className, [color, marginLeft]] of expectedStyles) {
+        for (const [className, color, marginLeft] of expectedStyles) {
             const oldClassName = elm.className;
             elm.className += ' ' + className;
             await new Promise((resolve) => requestAnimationFrame(resolve));

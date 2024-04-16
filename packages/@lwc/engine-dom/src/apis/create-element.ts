@@ -22,6 +22,7 @@ import {
     disconnectRootElement,
     LightningElement,
     getComponentAPIVersion,
+    shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
 
@@ -81,18 +82,25 @@ function monkeyPatchDomAPIs() {
     } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 }
 
+// For some reason, JSDOC says "options.is" is a syntax error. And we can't disable the rule using
+// `eslint-disable-next-line` because that gets included in the JSDOC, so we need this workaround.
+/* eslint-disable jsdoc/valid-types */
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
  * difference that in the options, you can pass the `is` property set to a Constructor instead of
  * just a string value. The intent is to allow the creation of an element controlled by LWC without
  * having to register the element as a custom element.
- *
+ * @param sel The tagname of the element to create
+ * @param options Control the behavior of the created element
+ * @param options.is The LWC component that the element should be
+ * @param options.mode What kind of shadow root to use
+ * @returns The created HTML element
+ * @throws Throws when called with invalid parameters.
  * @example
- * ```
  * const el = createElement('x-foo', { is: FooCtor });
- * ```
  */
 export function createElement(
+    /* eslint-enable jsdoc/valid-types */
     sel: string,
     options: {
         is: typeof LightningElement;
@@ -128,8 +136,10 @@ export function createElement(
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
         isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
 
+    const isFormAssociated = shouldBeFormAssociated(Ctor);
+
     // the custom element from the registry is expecting an upgrade callback
-    /**
+    /*
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
      * mechanism that only passes that argument if the constructor is known to be
@@ -150,5 +160,10 @@ export function createElement(
         }
     };
 
-    return createCustomElement(tagName, upgradeCallback, useNativeCustomElementLifecycle);
+    return createCustomElement(
+        tagName,
+        upgradeCallback,
+        useNativeCustomElementLifecycle,
+        isFormAssociated
+    );
 }

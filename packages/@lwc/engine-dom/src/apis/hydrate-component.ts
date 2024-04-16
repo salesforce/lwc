@@ -11,6 +11,7 @@ import {
     hydrateRoot,
     connectRootElement,
     getAssociatedVMIfPresent,
+    shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -46,6 +47,18 @@ function createVMWithProps(element: Element, Ctor: typeof LightningElement, prop
     return vm;
 }
 
+/**
+ * Replaces an existing DOM node with an LWC component.
+ * @param element The existing node in the DOM that where the root component should be attached.
+ * @param Ctor The LWC class to use as the root component.
+ * @param props Any props for the root component as part of initial client-side rendering. The props must be identical to those passed to renderComponent during SSR.
+ * @throws Throws when called with invalid parameters.
+ * @example
+ * import { hydrateComponent } from 'lwc';
+ * import App from 'x/App';
+ * const elm = document.querySelector('x-app');
+ * hydrateComponent(elm, App, { name: 'Hello World' });
+ */
 export function hydrateComponent(
     element: Element,
     Ctor: typeof LightningElement,
@@ -77,7 +90,8 @@ export function hydrateComponent(
 
     try {
         const { defineCustomElement, getTagName } = renderer;
-        defineCustomElement(StringToLowerCase.call(getTagName(element)));
+        const isFormAssociated = shouldBeFormAssociated(Ctor);
+        defineCustomElement(StringToLowerCase.call(getTagName(element)), isFormAssociated);
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

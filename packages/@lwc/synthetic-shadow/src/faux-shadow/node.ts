@@ -54,6 +54,7 @@ import {
  * based on the light-dom slotting mechanism. This applies to synthetic slot elements
  * and elements with shadow dom attached to them. It doesn't apply to native slot elements
  * because we don't want to patch the children getters for those elements.
+ * @param node
  */
 export function hasMountedChildren(node: Node): boolean {
     return isSyntheticSlotElement(node) || isSyntheticShadowHost(node);
@@ -63,7 +64,7 @@ function getShadowParent(node: Node, value: ParentNode & Node): (Node & ParentNo
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner!);
+        return getShadowRoot(owner);
     } else if (value instanceof Element) {
         if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -172,7 +173,11 @@ function cloneNodePatched(this: Node, deep?: boolean): Node {
 function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
-        const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+        const filteredChildNodes = getFilteredChildNodes(this);
+        // No need to filter by owner for non-shadowed nodes
+        const childNodes = isNull(owner)
+            ? filteredChildNodes
+            : getAllMatches(owner, filteredChildNodes);
         return createStaticNodeList(childNodes);
     }
     // nothing to do here since this does not have a synthetic shadow attached to it
@@ -192,6 +197,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
 )
     ? nativeGetRootNode
     : function (this: Node): Node {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           let node = this;
           let nodeParent: Node | null;
           while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
@@ -204,10 +210,10 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
  * Get the shadow root
  * getNodeOwner() returns the host element that owns the given node
  * Note: getNodeOwner() returns null when running in native-shadow mode.
- *  Fallback to using the native getRootNode() to discover the root node.
- *  This is because, it is not possible to inspect the node and decide if it is part
- *  of a native shadow or the synthetic shadow.
- * @param {Node} node
+ * Fallback to using the native getRootNode() to discover the root node.
+ * This is because, it is not possible to inspect the node and decide if it is part
+ * of a native shadow or the synthetic shadow.
+ * @param node
  */
 function getNearestRoot(node: Node): Node {
     const ownerNode: HTMLElement | null = getNodeOwner(node);
@@ -228,17 +234,17 @@ function getNearestRoot(node: Node): Node {
  *
  * If looking for a shadow root of a node by calling `node.getRootNode({composed: false})` or `node.getRootNode()`,
  *
- *  1. Try to identify the host element that owns the give node.
- *     i. Identify the shadow tree that the node belongs to
- *     ii. If the node belongs to a shadow tree created by engine, return the shadowRoot of the host element that owns the shadow tree
- *  2. The host identification logic returns null in two cases:
- *     i. The node does not belong to a shadow tree created by engine
- *     ii. The engine is running in native shadow dom mode
- *     If so, use the original Node.prototype.getRootNode to fetch the root node(or manually climb up the dom tree where getRootNode() is unsupported)
+ * 1. Try to identify the host element that owns the give node.
+ * i. Identify the shadow tree that the node belongs to
+ * ii. If the node belongs to a shadow tree created by engine, return the shadowRoot of the host element that owns the shadow tree
+ * 2. The host identification logic returns null in two cases:
+ * i. The node does not belong to a shadow tree created by engine
+ * ii. The engine is running in native shadow dom mode
+ * If so, use the original Node.prototype.getRootNode to fetch the root node(or manually climb up the dom tree where getRootNode() is unsupported)
  *
  * _Spec_: https://dom.spec.whatwg.org/#dom-node-getrootnode
- *
- **/
+ * @param options
+ */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
     return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);

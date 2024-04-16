@@ -6,10 +6,10 @@ const $fragment4 = parseFragment`<noframes${3}><p${3}>It seems your browser does
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [
-    api_static_fragment($fragment1(), 1),
-    api_static_fragment($fragment2(), 3),
-    api_static_fragment($fragment3(), 5),
-    api_static_fragment($fragment4(), 7),
+    api_static_fragment($fragment1, 1),
+    api_static_fragment($fragment2, 3),
+    api_static_fragment($fragment3, 5),
+    api_static_fragment($fragment4, 7),
   ];
   /*LWC compiler vX.X.X*/
 }

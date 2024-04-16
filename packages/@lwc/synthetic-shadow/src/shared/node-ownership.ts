@@ -58,6 +58,8 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
 
+        // Elements slotted from top level light DOM into synthetic shadow
+        // reach the slot tag from the shadow element first
         if (!isNull(host) && isSyntheticSlotElement(host)) {
             return undefined;
         }
@@ -72,6 +74,7 @@ export function getNodeKey(node: Node): number | undefined {
  * This function does not traverse up for performance reasons, but is sufficient for most use
  * cases. If we need to traverse up and verify those nodes that don't have owner key, use
  * isNodeDeepShadowed instead.
+ * @param node
  */
 export function isNodeShadowed(node: Node): boolean {
     return !isUndefined(getNodeOwnerKey(node));

@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_slot("conditional-slot", stc2, stc3, $slotset),
       ]),
     ]),
-    api_static_fragment($fragment1(), 4),
+    api_static_fragment($fragment1, 4),
     api_element("div", stc4, [
       api_slot("conditional-slot", stc5, stc3, $slotset),
     ]),

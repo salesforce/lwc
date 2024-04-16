@@ -11,10 +11,10 @@ import {
     registerTemplate,
     registerDecorators,
 } from '@lwc/engine-dom';
-import { globalThis, LOWEST_API_VERSION } from '@lwc/shared';
+import { LOWEST_API_VERSION } from '@lwc/shared';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
-const LightningElementFormatter = globalThis['devtoolsFormatters'].find((f: any) => {
+const LightningElementFormatter = (globalThis as any)['devtoolsFormatters'].find((f: any) => {
     return f.name === 'LightningElementFormatter';
 });
 
@@ -59,6 +59,7 @@ describe('Lightning Element formatter', () => {
             class Foo extends LightningElement {
                 constructor() {
                     super();
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },
@@ -87,6 +88,7 @@ describe('Lightning Element formatter', () => {
             class Foo extends LightningElement {
                 constructor() {
                     super();
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },
@@ -108,6 +110,7 @@ describe('Lightning Element formatter', () => {
                 constructor() {
                     super();
                     this.foo = void 0;
+                    // eslint-disable-next-line @typescript-eslint/no-this-alias
                     componentInstance = this;
                 }
             },

@@ -12,7 +12,6 @@
 'use strict';
 
 const path = require('path');
-
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 
@@ -39,12 +38,12 @@ function createPreprocessor(config, emitter, logger) {
 
         // Wrap all the tests into a describe block with the file structure name
         // This avoids needing to manually write `describe()` for every file.
-        // Also add a dummy test because otherwise Jasmine complains about empty describe()s:
+        // Also add an empty test because otherwise Jasmine complains about empty describe()s:
         // https://github.com/jasmine/jasmine/pull/1742
         const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
         const intro =
             ancestorDirectories.map((tag) => `describe("${tag}", function () {`).join('\n') +
-            `\nxit("dummy test", () => { /* empty */ });\n`;
+            `\nxit("empty test", () => { /* empty */ });\n`;
         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
         // TODO [#3370]: remove experimental template expression flag
@@ -86,7 +85,6 @@ function createPreprocessor(config, emitter, logger) {
 
             watcher.watchSuite(input, bundle.watchFiles);
 
-            // eslint-disable-next-line require-atomic-updates
             cache = bundle.cache;
 
             const { output } = await bundle.generate({
@@ -111,7 +109,7 @@ function createPreprocessor(config, emitter, logger) {
             if (map) {
                 // We need to assign the source to the original file so Karma can source map the error in the console. Add
                 // also adding the source map inline for browser debugging.
-                // eslint-disable-next-line require-atomic-updates
+
                 file.sourceMap = map;
             }
 

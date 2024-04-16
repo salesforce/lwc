@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { extractDataIds, lightDomSlotForwardingEnabled } from 'test-utils';
+import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
 
 import LightContainer from './x/lightContainer/lightContainer';
 
@@ -42,7 +42,7 @@ describe('light DOM slot forwarding reactivity', () => {
         },
         {
             slotAssignment:
-                shadowMode.includes('shadow') || lightDomSlotForwardingEnabled ? '' : null,
+                shadowMode.includes('shadow') || USE_LIGHT_DOM_SLOT_FORWARDING ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -58,7 +58,7 @@ describe('light DOM slot forwarding reactivity', () => {
         },
         {
             slotAssignment:
-                shadowMode.includes('shadow') || lightDomSlotForwardingEnabled ? '' : null,
+                shadowMode.includes('shadow') || USE_LIGHT_DOM_SLOT_FORWARDING ? '' : null,
             slotContent: 'Default slot content',
         },
     ];
@@ -82,21 +82,21 @@ describe('light DOM slot forwarding reactivity', () => {
         {
             slotAssignment: 'lower',
             slotContent:
-                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
+                shadowMode.includes('shadow') && !USE_LIGHT_DOM_SLOT_FORWARDING
                     ? 'Lower slot content'
                     : 'Upper slot content',
         },
         {
             slotAssignment: '',
             slotContent:
-                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
+                shadowMode.includes('shadow') && !USE_LIGHT_DOM_SLOT_FORWARDING
                     ? 'Upper slot content'
                     : 'Default slot content',
         },
         {
             slotAssignment: 'upper',
             slotContent:
-                shadowMode.includes('shadow') && !lightDomSlotForwardingEnabled
+                shadowMode.includes('shadow') && !USE_LIGHT_DOM_SLOT_FORWARDING
                     ? 'Default slot content'
                     : 'Lower slot content',
         },
@@ -126,13 +126,13 @@ describe('light DOM slot forwarding reactivity', () => {
             testName: 'lightLight',
             expectedDefaultSlotContent: expectedDefaultSlotContent('light'),
             expectedSlotContentAfterParentMutation: expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterForwardedSlotMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterForwardedSlotMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterForwardedSlotMutation
                 : expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterLeafMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterLeafMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterLeafMutation('light')
                 : expectedSlotContentAfterParentMutation('light'),
-            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterConditionalMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterConditionalMutation
                 : [
                       {
@@ -158,11 +158,11 @@ describe('light DOM slot forwarding reactivity', () => {
             expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
             expectedSlotContentAfterParentMutation:
                 expectedSlotContentAfterParentMutation('shadow'),
-            expectedSlotContentAfterForwardedSlotMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterForwardedSlotMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterForwardedSlotMutation
                 : expectedSlotContentAfterParentMutation('shadow'),
             expectedSlotContentAfterLeafMutation: expectedSlotContentAfterLeafMutation('shadow'),
-            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterConditionalMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterConditionalMutation
                 : [
                       {
@@ -193,10 +193,10 @@ describe('light DOM slot forwarding reactivity', () => {
             expectedSlotContentAfterParentMutation:
                 expectedSlotContentAfterParentMutation('shadow'),
             expectedSlotContentAfterForwardedSlotMutation,
-            expectedSlotContentAfterLeafMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterLeafMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterLeafMutation('shadow')
                 : expectedSlotContentAfterForwardedSlotMutation,
-            expectedSlotContentAfterConditionalMutation: lightDomSlotForwardingEnabled
+            expectedSlotContentAfterConditionalMutation: USE_LIGHT_DOM_SLOT_FORWARDING
                 ? expectedSlotContentAfterConditionalMutation
                 : [
                       {

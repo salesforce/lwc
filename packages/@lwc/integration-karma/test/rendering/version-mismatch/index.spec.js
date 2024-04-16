@@ -83,6 +83,7 @@ describe('compiler version mismatch', () => {
             function tmpl() {
                 return [];
             }
+
             tmpl.stylesheetToken = 'x-component_component';
             tmpl.stylesheets = [
                 function stylesheet() {
@@ -91,7 +92,9 @@ describe('compiler version mismatch', () => {
                 },
             ];
             registerTemplate(tmpl);
+
             class CustomElement extends LightningElement {}
+
             registerComponent(CustomElement, { tmpl });
 
             const elm = createElement('x-component', { is: CustomElement });

@@ -100,19 +100,19 @@ function enableDetection() {
                 throw new Error('detect-non-standard-aria.ts loaded before @lwc/aria-reflection');
             }
         }
-        // @ts-ignore
-        const { get, set } = descriptor;
+
+        const { get, set } = descriptor!;
         // It's important for this defineProperty call to happen _after_ ARIA accessors are applied to the
         // BaseBridgeElement and LightningElement prototypes. Otherwise, we will log/report for access of non-standard
         // props on these prototypes, which we actually don't want. We only care about access on generic HTMLElements.
         defineProperty(prototype, prop, {
             get() {
                 checkAndReportViolation(this, prop, false, undefined);
-                return get.call(this);
+                return get!.call(this);
             },
             set(val) {
                 checkAndReportViolation(this, prop, true, val);
-                return set.call(this, val);
+                return set!.call(this, val);
             },
             configurable: true,
             enumerable: true,

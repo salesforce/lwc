@@ -1,0 +1,223 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 8,
+            "endColumn": 12,
+            "start": 0,
+            "end": 171,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 8,
+                "startColumn": 1,
+                "endLine": 8,
+                "endColumn": 12,
+                "start": 160,
+                "end": 171
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 12,
+                    "start": 15,
+                    "end": 80,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 11,
+                        "start": 15,
+                        "end": 21
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 12,
+                        "start": 73,
+                        "end": 80
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 47,
+                            "start": 30,
+                            "end": 68,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 25,
+                                "start": 30,
+                                "end": 46
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 41,
+                                "endLine": 3,
+                                "endColumn": 47,
+                                "start": 62,
+                                "end": 68
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Default fallback",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Default fallback"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 25,
+                                    "endLine": 3,
+                                    "endColumn": 41,
+                                    "start": 46,
+                                    "end": 62
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "foo",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 12,
+                    "start": 85,
+                    "end": 159,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 22,
+                        "start": 85,
+                        "end": 102
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 12,
+                        "start": 152,
+                        "end": 159
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "foo"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 11,
+                            "endLine": 5,
+                            "endColumn": 21,
+                            "start": 91,
+                            "end": 101
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 45,
+                            "start": 111,
+                            "end": 147,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 25,
+                                "start": 111,
+                                "end": 127
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 39,
+                                "endLine": 6,
+                                "endColumn": 45,
+                                "start": 141,
+                                "end": 147
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Named fallback",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Named fallback"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 25,
+                                    "endLine": 6,
+                                    "endColumn": 39,
+                                    "start": 127,
+                                    "end": 141
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

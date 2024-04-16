@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { nativeCustomElementLifecycleEnabled } from 'test-utils';
+import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 import Parent from 'x/parent';
 import LightParent from 'x/lightParent';
 import Symbol from 'x/symbol';
@@ -7,7 +7,7 @@ import EmptyObject from 'x/emptyobject';
 import BigintCmp from 'x/bigint';
 
 describe('dynamic slotting', () => {
-    it('should render all slots', async function () {
+    it('should render all slots', function () {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
@@ -73,7 +73,7 @@ describe('dynamic slotting', () => {
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual('BigInt');
     });
-    if (!nativeCustomElementLifecycleEnabled) {
+    if (!ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         // it actually throws in this scenario as well, but in a different callstack, so we can't assert
         it('should throw on symbol', () => {
             expect(() => {
@@ -82,7 +82,7 @@ describe('dynamic slotting', () => {
             }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
         });
     }
-    if (!nativeCustomElementLifecycleEnabled) {
+    if (!ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         it('should throw on empty object', () => {
             expect(() => {
                 const elm = createElement('x-emptyobject', { is: EmptyObject });

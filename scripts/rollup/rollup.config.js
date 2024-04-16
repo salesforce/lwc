@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -14,12 +14,14 @@ const { rollup } = require('rollup');
 const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
 const { name: packageName, version, dependencies, peerDependencies } = packageJson;
-let banner = `/**\n * Copyright (C) 2023 salesforce.com, inc.\n */`;
+// This copyright text should match the text in the header/header eslint rule
+let banner = `/**\n * Copyright (c) ${new Date().getFullYear()} Salesforce, Inc.\n */`;
 let footer = `/** version: ${version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
 const formats = ['es', 'cjs'];
@@ -57,7 +59,6 @@ function sharedPlugins() {
 
     return [
         typescript({
-            target: 'es2017',
             tsconfig: path.join(packageRoot, 'tsconfig.json'),
             noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
             ...(watchMode && {
@@ -148,15 +149,11 @@ module.exports = {
 
     plugins: [
         nodeResolve({
-            // These are the devDeps that may be inlined into the dist/ bundles
-            // These include packages owned by us (LWC, observable-membrane), as well as parse5
-            // and its single dependency, which are bundled because it makes it simpler to distribute
+            // These are the dependencies that, when used as devDeps, should be inlined into the dist/ bundles
             resolveOnly: [
                 /^@lwc\//,
-                'observable-membrane',
-                /^parse5($|\/)/,
-                'entities',
-                /^@parse5\/tools/,
+                // capture the package itself (e.g. `foo`) plus its files (e.g. `foo/bar.js`)
+                ...BUNDLED_DEPENDENCIES.map((dep) => new RegExp(`^${dep}($|/)`)),
             ],
         }),
         ...sharedPlugins(),

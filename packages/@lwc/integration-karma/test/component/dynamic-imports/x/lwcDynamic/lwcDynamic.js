@@ -16,10 +16,10 @@ export default class DynamicCtor extends LightningElement {
     }
 
     @api enableCtor() {
-        this.loadCtor();
+        void this.loadCtor();
     }
     @api enableAlter() {
-        this.loadAlter();
+        void this.loadAlter();
     }
     @api disableAll() {
         this.customCtor = null;

@@ -41,22 +41,24 @@ function getTrailingChars(str: string): string {
  * This function checks for "unbalanced" extraneous parentheses surrounding the expression.
  *
  * Examples of balanced extraneous parentheses (validation passes):
- *   {(foo.bar)}        <-- the MemberExpressions does not account for the surrounding parens
- *   {(foo())}          <-- the CallExpression does not account for the surrounding parens
- *   {((foo ?? bar)())} <-- the CallExpression does not account for the surrounding parens
+ * - `{(foo.bar)}`        <-- the MemberExpressions does not account for the surrounding parens
+ * - `{(foo())}`          <-- the CallExpression does not account for the surrounding parens
+ * - `{((foo ?? bar)())}` <-- the CallExpression does not account for the surrounding parens
  *
  * Examples of unbalanced extraneous parentheses (validation fails):
- *   {(foo.bar))}       <-- there is an extraneous trailing paren
- *   {foo())}           <-- there is an extraneous trailing paren
+ * - `{(foo.bar))}`       <-- there is an extraneous trailing paren
+ * - `{foo())}`           <-- there is an extraneous trailing paren
  *
  * Examples of no extraneous parentheses (validation passes):
- *   {foo()}            <-- the CallExpression accounts for the trailing paren
- *   {(foo ?? bar).baz} <-- the outer MemberExpression accounts for the leading paren
- *   {(foo).bar}        <-- the outer MemberExpression accounts for the leading paren
+ * - `{foo()}`            <-- the CallExpression accounts for the trailing paren
+ * - `{(foo ?? bar).baz}` <-- the outer MemberExpression accounts for the leading paren
+ * - `{(foo).bar}`        <-- the outer MemberExpression accounts for the leading paren
  *
  * Notably, no examples of extraneous leading parens could be found - these result in a
  * parsing error in Acorn. However, this function still checks, in case there is an
  * unknown expression that would parse with an extraneous leading paren.
+ * @param leadingChars
+ * @param trailingChars
  */
 function validateMatchingExtraParens(leadingChars: string, trailingChars: string) {
     const numLeadingParens = leadingChars.split('(').length - 1;
@@ -73,8 +75,8 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
  *
  * Its behavior diverges from that specified in the WHATWG HTML spec
  * in two places:
- *   - 13.2.5.38 - unquoted attribute values
- *   - 13.2.5.1 - the "data" state, which corresponds to parsing outside of tags
+ * - 13.2.5.38 - unquoted attribute values
+ * - 13.2.5.1 - the "data" state, which corresponds to parsing outside of tags
  *
  * Specifically, this tokenizer defers to Acorn's JavaScript parser when
  * encountering a `{` character for an attribute value or within a text
@@ -87,7 +89,7 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
  * specified by the HTML spec.
  */
 class TemplateHtmlTokenizer extends Tokenizer {
-    // @ts-ignore
+    // @ts-expect-error This Preprocessor is an incomplete customization of parse5's Preprocessor
     preprocessor!: Preprocessor;
 
     parser: TemplateHtmlParser;
@@ -114,7 +116,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
 
     parseTemplateExpression() {
         const expressionStart: number = this.preprocessor.pos;
-        const html = this.preprocessor.html as string;
+        const html = this.preprocessor.html;
 
         const leadingWhitespaceLen = getWhitespaceLen(html.slice(expressionStart + 1));
         const javascriptExprStart = expressionStart + leadingWhitespaceLen + OPENING_CURLY_LEN;
@@ -146,7 +148,10 @@ class TemplateHtmlTokenizer extends Tokenizer {
 
         // Parsed expressions that are cached here will be later retrieved when the
         // LWC template AST is being constructed.
-        this.parser.preparsedJsExpressions.set(expressionStart, estreeNode);
+        this.parser.preparsedJsExpressions.set(expressionStart, {
+            parsedExpression: estreeNode,
+            rawText: expressionTextNodeValue,
+        });
 
         return expressionTextNodeValue;
     }
@@ -159,17 +164,17 @@ class TemplateHtmlTokenizer extends Tokenizer {
     _stateAttributeValueUnquoted(codePoint: number) {
         if (codePoint === OPENING_CURLY_BRACKET && !this.checkedAttrs.has(this.currentAttr)) {
             this.checkedAttrs.add(this.currentAttr);
-            this.currentAttr!.value = this.parseTemplateExpression();
+            this.currentAttr.value = this.parseTemplateExpression();
 
-            this._advanceBy(this.currentAttr!.value.length - 1);
-            this.consumedAfterSnapshot = this.currentAttr!.value.length;
+            this._advanceBy(this.currentAttr.value.length - 1);
+            this.consumedAfterSnapshot = this.currentAttr.value.length;
         } else {
             // If the first character in an unquoted-attr-value is not an opening
             // curly brace, it isn't a template expression. Opening curly braces
             // coming later in an unquoted attr value should not be considered
             // the beginning of a template expression.
             this.checkedAttrs.add(this.currentAttr);
-            // @ts-ignore
+            // @ts-expect-error private method
             super._stateAttributeValueUnquoted(codePoint);
         }
     }
@@ -208,7 +213,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
             this.currentToken = null;
             this.currentCharacterToken = null;
         } else {
-            // @ts-ignore
+            // @ts-expect-error private method
             super._stateData(codePoint);
         }
     }
@@ -285,11 +290,9 @@ interface ParseFragmentConfig {
 /**
  * Parse the LWC template using a customized parser & lexer that allow
  * for template expressions to be parsed correctly.
- *
- * @param      {string}               source  raw template markup
- * @param      {ParseFragmentConfig}  config
- *
- * @return     {DocumentFragment}     the parsed document
+ * @param               source  raw template markup
+ * @param  config
+ * @returns     the parsed document
  */
 export function parseFragment(source: string, config: ParseFragmentConfig): DocumentFragment {
     const { ctx, sourceCodeLocationInfo = true, onParseError } = config;

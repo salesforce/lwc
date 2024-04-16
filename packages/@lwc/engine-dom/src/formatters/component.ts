@@ -10,8 +10,7 @@ import { isUndefined, keys } from '@lwc/shared';
 
 /**
  * Displays the header for a custom element.
- *
- * @param ce the custom element
+ * @param ce The custom element to get the header for.
  * @param componentInstance component instance associated with the custom element.
  */
 function getHeaderForCustomElement(ce: HTMLElement, componentInstance: LightningElement) {

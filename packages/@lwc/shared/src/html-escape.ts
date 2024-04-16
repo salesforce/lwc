@@ -13,6 +13,11 @@ const ESCAPED_CHARS: { [char: string]: string } = {
     '&': '&amp;',
 };
 
+/**
+ *
+ * @param str
+ * @param attrMode
+ */
 export function htmlEscape(str: string, attrMode: boolean = false): string {
     const searchValue = attrMode ? /["&]/g : /["'<>&]/g;
 

@@ -13,19 +13,34 @@ export default class extends LightningElement {
     formResetCallbackHasBeenCalled = false;
 
     @api
+    formAssociatedCallbackHasBeenCalledWith;
+
+    @api
+    formDisabledCallbackHasBeenCalledWith;
+
+    @api
+    formResetCallbackHasBeenCalledWith;
+
+    @api
     get internals() {
-        return this.attachInternals();
+        if (!this._internals) {
+            this._internals = this.attachInternals();
+        }
+        return this._internals;
     }
 
-    formAssociatedCallback() {
+    formAssociatedCallback(form) {
         this.formAssociatedCallbackHasBeenCalled = true;
+        this.formAssociatedCallbackHasBeenCalledWith = form;
     }
 
-    formDisabledCallback() {
+    formDisabledCallback(disabled) {
         this.formDisabledCallbackHasBeenCalled = true;
+        this.formDisabledCallbackHasBeenCalledWith = disabled;
     }
 
-    formResetCallback() {
+    formResetCallback(expectUndefinedHere) {
         this.formResetCallbackHasBeenCalled = true;
+        this.formResetCallbackHasBeenCalledWith = expectUndefinedHere;
     }
 }

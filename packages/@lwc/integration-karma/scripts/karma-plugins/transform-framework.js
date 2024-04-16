@@ -44,10 +44,7 @@ function createPreprocessor(config, emitter, logger) {
         const magicString = new MagicString(content.replace(/\/\/# sourceMappingURL=\S+/, ''));
 
         /**
-         * This transformation replaces:
-         *     process.env.NODE_ENV === 'test-karma-lwc'
-         * with:
-         *     true
+         * This transformation replaces `process.env.NODE_ENV === 'test-karma-lwc'` with `true`.
          *
          * You might wonder why we replace the whole thing rather than just `process.env.NODE_ENV`. Well, because we need a way
          * to test `process.env.NODE_ENV === "production"` (prod mode) vs `process.env.NODE_ENV !== "production"` (dev mode).
@@ -100,7 +97,7 @@ function createPreprocessor(config, emitter, logger) {
             // also adding the source map inline for browser debugging.
             const map = magicString.generateMap();
             code += '\n//# sourceMappingURL=' + map.toUrl();
-            // eslint-disable-next-line require-atomic-updates
+
             file.sourceMap = map;
         }
 

@@ -21,6 +21,9 @@ interface LegacyAdapterDataCallback extends DataCallback {
 
 /**
  * Registers a wire adapter factory for Lightning Platform.
+ * @param adapterId Adapter ID object
+ * @param adapterEventTargetCallback Adapter factory function
+ * @throws when parameters are not valid
  * @deprecated
  */
 export function register(
@@ -75,6 +78,10 @@ type ConfigListener = (config: ConfigListenerArgument) => void;
 
 type WireEventTargetListener = NoArgumentListener | ConfigListener;
 
+/**
+ * An implementation of the {@linkcode https://developer.mozilla.org/en-US/docs/Web/API/EventTarget EventTarget}
+ * interface for the wire adapter.
+ */
 export interface WireEventTarget {
     addEventListener: (type: string, listener: WireEventTargetListener) => void;
     removeEventListener: (type: string, listener: WireEventTargetListener) => void;
@@ -209,7 +216,7 @@ class LegacyWireAdapterBridge implements WireAdapter {
 
         if (
             isUndefined(this.currentConfig) ||
-            isDifferentConfig(config, this.currentConfig!, this.dynamicParamsNames)
+            isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
         ) {
             this.currentConfig = config;
             forEach.call(this.configuring, (listener) => {

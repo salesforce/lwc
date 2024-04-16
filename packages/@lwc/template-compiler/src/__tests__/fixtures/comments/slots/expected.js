@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("x-child", _xChild, stc0, [
       api_comment(" HTML comment inside slot "),
-      api_static_fragment($fragment1(), 2),
+      api_static_fragment($fragment1, 2),
     ]),
   ];
   /*LWC compiler vX.X.X*/

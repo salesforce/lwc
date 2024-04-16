@@ -8,6 +8,12 @@ import { isUndefined, isTrue } from '@lwc/shared';
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
+import { isSyntheticShadowRoot } from '../faux-shadow/shadow-root';
+
+export function isSyntheticOrNativeShadowRoot(node: unknown): node is ShadowRoot {
+    return isSyntheticShadowRoot(node) || isInstanceOfNativeShadowRoot(node);
+}
 
 // Helpful for tests running with jsdom
 export function getOwnerDocument(node: Node): Document {
@@ -47,6 +53,7 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
 /**
  * This utility should be used to convert NodeList and HTMLCollection into an array before we
  * perform array operations on them. See issue #1545 for more details.
+ * @param collection
  */
 export function arrayFromCollection<T extends NodeList>(
     collection: T

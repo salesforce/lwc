@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -58,6 +58,11 @@ export class CompilerError extends Error implements CompilerDiagnostic {
     }
 }
 
+/**
+ * Extracts an error code from the given error.
+ * @param error The error to check.
+ * @returns The error code, if found.
+ */
 export function getCodeFromError(error: any): number | undefined {
     if (error.lwcCode && typeof error.lwcCode === 'number') {
         return error.lwcCode;
@@ -67,6 +72,13 @@ export function getCodeFromError(error: any): number | undefined {
     return undefined;
 }
 
+/**
+ * Extracts the filename from the provided parameters, preferring to use the compiler diagnostic
+ * origin, if provided.
+ * @param origin Compiler diagnositic origin data
+ * @param obj Any object that might have a filename associated
+ * @returns The filename, if found.
+ */
 export function getFilename(
     origin: CompilerDiagnosticOrigin | undefined,
     obj?: any
@@ -80,6 +92,13 @@ export function getFilename(
     return undefined;
 }
 
+/**
+ * Extracts the location from the provided parameters, preferring to use the compiler diagnostic
+ * origin, if provided.
+ * @param origin Compiler diagnositic origin data
+ * @param obj Any object that might have a location property
+ * @returns The location, if found.
+ */
 export function getLocation(
     origin: CompilerDiagnosticOrigin | undefined,
     obj?: any

@@ -353,8 +353,7 @@ function createUpgradableElementConstructor(tagName: string): CreateElementAndUp
 
 function getUpgradableElement(
     tagName: string,
-    _connectedCallback?: LifecycleCallback,
-    _disconnectedCallback?: LifecycleCallback
+    _isFormAssociated?: boolean
 ): CreateElementAndUpgrade {
     let ctor = localRegistryRecord.get(tagName);
     if (!isUndefined(ctor)) {
@@ -370,7 +369,8 @@ function getUpgradableElement(
 function createCustomElement(
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    _useNativeLifecycle: boolean
+    _useNativeLifecycle: boolean,
+    _isFormAssociated: boolean
 ): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
     return new (UpgradableConstructor as any)(upgradeCallback);

@@ -1,24 +1,23 @@
 import _xChild from "x/child";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<span${3}>Chocolatier</span>`;
+const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
+const $fragment2 = parseFragment`<span${3}>Chocolatier</span>`;
 const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 1,
-};
-const stc2 = {
   slotAssignment: "slotname2",
-  key: 2,
+  key: 3,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     fr: api_fragment,
     ssf: api_scoped_slot_factory,
-    st: api_static_fragment,
+    t: api_text,
+    h: api_element,
     c: api_custom_element,
   } = $api;
   return [
@@ -27,15 +26,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_fragment(
           key,
           [
-            api_element("p", stc1, [
-              api_text(api_dynamic_text(slot1data.name)),
+            api_static_fragment($fragment1, 2, [
+              api_static_part(1, null, api_dynamic_text(slot1data.name)),
             ]),
           ],
           0
         );
       }),
-      api_element("span", stc2, [api_text("Willy Wonka")]),
-      api_static_fragment($fragment1(), 4),
+      api_element("span", stc1, [api_text("Willy Wonka")]),
+      api_static_fragment($fragment2, 5),
     ]),
   ];
   /*LWC compiler vX.X.X*/

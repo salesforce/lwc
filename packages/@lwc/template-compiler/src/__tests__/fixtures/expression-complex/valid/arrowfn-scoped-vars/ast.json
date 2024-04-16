@@ -67,19 +67,10 @@
                             "end": 125,
                             "elements": [
                                 {
-                                    "type": "MemberExpression",
-                                    "object": {
-                                        "type": "Identifier",
-                                        "name": "$cmp"
-                                    },
-                                    "property": {
-                                        "type": "Identifier",
-                                        "start": 15,
-                                        "end": 18,
-                                        "name": "foo"
-                                    },
-                                    "computed": false,
-                                    "optional": false
+                                    "type": "Identifier",
+                                    "start": 15,
+                                    "end": 18,
+                                    "name": "foo"
                                 },
                                 {
                                     "type": "ArrowFunctionExpression",
@@ -105,19 +96,10 @@
                                     }
                                 },
                                 {
-                                    "type": "MemberExpression",
-                                    "object": {
-                                        "type": "Identifier",
-                                        "name": "$cmp"
-                                    },
-                                    "property": {
-                                        "type": "Identifier",
-                                        "start": 58,
-                                        "end": 61,
-                                        "name": "foo"
-                                    },
-                                    "computed": false,
-                                    "optional": false
+                                    "type": "Identifier",
+                                    "start": 58,
+                                    "end": 61,
+                                    "name": "foo"
                                 },
                                 {
                                     "type": "ArrayExpression",
@@ -184,19 +166,10 @@
                                             }
                                         },
                                         {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 111,
-                                                "end": 114,
-                                                "name": "foo"
-                                            },
-                                            "computed": false,
-                                            "optional": false
+                                            "type": "Identifier",
+                                            "start": 111,
+                                            "end": 114,
+                                            "name": "foo"
                                         }
                                     ]
                                 }

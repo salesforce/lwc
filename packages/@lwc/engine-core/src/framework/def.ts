@@ -32,7 +32,7 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
@@ -48,6 +48,7 @@ import {
     HTMLElementConstructor,
 } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 export interface ComponentDef {
     name: string;
@@ -131,6 +132,13 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             );
         }
 
+        // TODO [#3971]: Completely remove shadowSupportMode "any"
+        if (ctorShadowSupportMode === ShadowSupportMode.Any) {
+            logWarn(
+                `Invalid value 'any' for static property shadowSupportMode. 'any' is deprecated and will be removed in a future release--use 'native' instead.`
+            );
+        }
+
         if (
             !isUndefined(ctorRenderMode) &&
             ctorRenderMode !== 'light' &&
@@ -191,6 +199,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     let shadowSupportMode = superDef.shadowSupportMode;
     if (!isUndefined(ctorShadowSupportMode)) {
         shadowSupportMode = ctorShadowSupportMode;
+
+        if (
+            isReportingEnabled() &&
+            (shadowSupportMode === ShadowSupportMode.Any ||
+                shadowSupportMode === ShadowSupportMode.Native)
+        ) {
+            report(ReportingEventId.ShadowSupportModeUsage, {
+                tagName: Ctor.name,
+                mode: shadowSupportMode,
+            });
+        }
     }
 
     let renderMode = superDef.renderMode;
@@ -244,6 +263,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 /**
  * EXPERIMENTAL: This function allows for the identification of LWC constructors. This API is
  * subject to change or being removed.
+ * @param ctor
  */
 export function isComponentConstructor(ctor: unknown): ctor is LightningElementConstructor {
     if (!isFunction(ctor)) {
@@ -350,6 +370,7 @@ interface PublicComponentDef {
 /**
  * EXPERIMENTAL: This function allows for the collection of internal component metadata. This API is
  * subject to change or being removed.
+ * @param Ctor
  */
 export function getComponentDef(Ctor: any): PublicComponentDef {
     const def = getComponentInternalDef(Ctor);

@@ -126,8 +126,9 @@ describe('html serialization', () => {
         expect(parsedHtml).toEqual(
             '<x-html-void-html-namespace><div xmlns="http://www.w3.org/1999/xhtml"><input type="text" value="one"><input type="text" value="two"></div></x-html-void-html-namespace>'
         );
-        expect(warnings.map((_) => _.message)).toEqual([
-            '@lwc/rollup-plugin: LWC1057: xmlns is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div',
-        ]);
+        expect(warnings).toHaveLength(1);
+        expect(warnings[0].message).toContain(
+            'LWC1057: xmlns is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div'
+        );
     });
 });

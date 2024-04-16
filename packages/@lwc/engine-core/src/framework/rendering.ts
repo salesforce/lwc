@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -24,7 +24,7 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
-import { EmptyArray, shouldUseNativeCustomElementLifecycle } from './utils';
+import { EmptyArray, shouldBeFormAssociated, shouldUseNativeCustomElementLifecycle } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
@@ -49,6 +49,7 @@ import {
     isVScopedSlotFragment,
     isVStatic,
     Key,
+    MutableVNodes,
     VBaseElement,
     VComment,
     VCustomElement,
@@ -69,8 +70,9 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
-import { applyStaticParts } from './modules/static-parts';
+import { mountStaticParts, patchStaticParts } from './modules/static-parts';
 import { LightningElementConstructor } from './base-lightning-element';
+import { patchTextVNode, updateTextContent } from './modules/text';
 
 export function patchChildren(
     c1: VNodes,
@@ -111,7 +113,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
     switch (n2.type) {
         case VNodeType.Text:
             // VText has no special capability, fallback to the owner's renderer
-            patchText(n1 as VText, n2, renderer);
+            patchTextVNode(n1 as VText, n2, renderer);
             break;
 
         case VNodeType.Comment:
@@ -167,14 +169,6 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountCustomElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
-    }
-}
-
-function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
-    n2.elm = n1.elm;
-
-    if (n2.text !== n1.text) {
-        updateTextContent(n2, renderer);
     }
 }
 
@@ -265,12 +259,12 @@ function mountElement(
 }
 
 function patchStatic(n1: VStatic, n2: VStatic, renderer: RendererAPI) {
-    const elm = (n2.elm = n1.elm!);
+    n2.elm = n1.elm!;
 
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(n1, n2, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    applyStaticParts(elm, n2, renderer, false);
+    patchStaticParts(n1, n2, renderer);
 }
 
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
@@ -290,22 +284,23 @@ function mountStatic(
     const { cloneNode, isSyntheticShadowDefined } = renderer;
     const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
+    // Define the root node shadow resolver
     linkNodeToShadow(elm, owner, renderer);
     applyElementRestrictions(elm, vnode);
 
-    // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
     const { renderMode, shadowMode } = owner;
 
     if (isSyntheticShadowDefined) {
+        // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            (elm as any)[KEY__SHADOW_STATIC] = true;
+            elm[KEY__SHADOW_STATIC] = true;
         }
     }
 
     // slotAssignments can only apply to the top level element, never to a static part.
     patchSlotAssignment(null, vnode, renderer);
+    mountStaticParts(elm, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
-    applyStaticParts(elm, vnode, renderer, true);
 }
 
 function mountCustomElement(
@@ -337,7 +332,13 @@ function mountCustomElement(
     const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
         ctor as LightningElementConstructor
     );
-    const elm = createCustomElement(normalizedTagname, upgradeCallback, useNativeLifecycle);
+    const isFormAssociated = shouldBeFormAssociated(ctor);
+    const elm = createCustomElement(
+        normalizedTagname,
+        upgradeCallback,
+        useNativeLifecycle,
+        isFormAssociated
+    );
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -528,19 +529,6 @@ function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
     }
 }
 
-function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
-    const { elm, text } = vnode;
-    const { setText } = renderer;
-
-    if (process.env.NODE_ENV !== 'production') {
-        unlockDomMutation();
-    }
-    setText(elm, text!);
-    if (process.env.NODE_ENV !== 'production') {
-        lockDomMutation();
-    }
-}
-
 function insertFragmentOrNode(
     vnode: VNode,
     parent: Node,
@@ -599,17 +587,18 @@ function patchElementPropsAndAttrsAndRefs(
         applyStaticStyleAttribute(vnode, renderer);
     }
 
+    const { owner } = vnode;
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
-    patchStyleAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer, owner);
 
     patchAttributes(oldVnode, vnode, renderer);
     patchProps(oldVnode, vnode, renderer);
     patchSlotAssignment(oldVnode, vnode, renderer);
 
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
-    applyRefs(vnode, vnode.owner);
+    applyRefs(vnode, owner);
 }
 
 function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
@@ -726,13 +715,14 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
  * With the delimiters removed, the contents are marked dynamic so they are diffed correctly.
  *
  * This function is used for slotted VFragments to avoid the text delimiters interfering with slotting functionality.
+ * @param children
  */
 function flattenFragmentsInChildren(children: VNodes): VNodes {
-    const flattenedChildren: VNodes = [];
+    const flattenedChildren: MutableVNodes = [];
 
     // Initialize our stack with the direct children of the custom component and check whether we have a VFragment.
     // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
-    const nodeStack: VNodes = [];
+    const nodeStack: MutableVNodes = [];
     let fragmentFound = false;
     for (let i = children.length - 1; i > -1; i -= 1) {
         const child = children[i];
@@ -791,7 +781,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
     const {
         cmpSlots: { slotAssignments: oldSlotsMapping },
     } = vm;
@@ -815,9 +805,10 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         // but elm.setAttribute('slot', Symbol(1)) is an error.
         // the following line also throws same error for symbols
         // Similar for Object.create(null)
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const normalizedSlotName = '' + slotName;
 
-        const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =
+        const vnodes: MutableVNodes = (cmpSlotsMapping[normalizedSlotName] =
             cmpSlotsMapping[normalizedSlotName] || []);
         ArrayPush.call(vnodes, vnode);
     }

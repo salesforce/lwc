@@ -14,8 +14,9 @@ import {
     isAPIFeatureEnabled,
     APIFeature,
 } from '@lwc/shared';
+import { logWarnOnce } from '../shared/logger';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-import { getComponentAPIVersion } from './component';
+import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
 
 type Callback = () => void;
@@ -50,6 +51,7 @@ export function addCallbackToNextTick(callback: Callback) {
         }
     }
     if (nextTickCallbackQueue.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.resolve().then(flushCallbackQueue);
     }
     ArrayPush.call(nextTickCallbackQueue, callback);
@@ -128,4 +130,24 @@ export function assertNotProd() {
         // this method should never leak to prod
         throw new ReferenceError();
     }
+}
+
+export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
+    const ctorFormAssociated = Boolean(Ctor.formAssociated);
+    const apiVersion = getComponentAPIVersion(Ctor);
+    const apiFeatureEnabled = isAPIFeatureEnabled(
+        APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE,
+        apiVersion
+    );
+
+    if (process.env.NODE_ENV !== 'production' && ctorFormAssociated && !apiFeatureEnabled) {
+        const tagName = getComponentRegisteredName(Ctor);
+        logWarnOnce(
+            `Component <${tagName}> set static formAssociated to true, but form ` +
+                `association is not enabled because the API version is ${apiVersion}. To enable form association, ` +
+                `update the LWC component API version to 61 or above. https://lwc.dev/guide/versioning`
+        );
+    }
+
+    return ctorFormAssociated && apiFeatureEnabled;
 }

@@ -4,12 +4,12 @@ h1[data-foo='bar'] {
 }
 
 /* double quote */
-h1[data-foo="bar"] {
+h1[data-foo='bar'] {
     background-color: blue;
 }
 
 /* less-than */
-h2[data-foo="<"] {
+h2[data-foo='<'] {
     color: green;
 }
 
@@ -19,6 +19,6 @@ h2 > div {
 }
 
 /* ampersand */
-div[data-foo="&"] {
+div[data-foo='&'] {
     color: purple;
 }

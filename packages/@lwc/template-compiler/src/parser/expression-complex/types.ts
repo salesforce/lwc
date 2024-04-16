@@ -8,7 +8,7 @@
 import type { Node as AcornNode } from 'acorn';
 import type { Tokenizer } from 'parse5';
 
-export type PreparsedExpressionMap = Map<number, AcornNode>;
+export type PreparsedExpressionMap = Map<number, { parsedExpression: AcornNode; rawText: string }>;
 
 export type Preprocessor = Omit<Tokenizer['preprocessor'], 'pos'> & {
     pos: number;

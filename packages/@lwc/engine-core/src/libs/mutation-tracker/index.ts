@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined, ArraySplice, ArrayIndexOf, ArrayPush } from '@lwc/shared';
+import { create, isUndefined, ArrayIndexOf, ArrayPush, ArrayPop } from '@lwc/shared';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
@@ -77,6 +77,7 @@ export class ReactiveObserver {
 
     observe(job: JobFunction) {
         const inceptionReactiveRecord = currentReactiveObserver;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         currentReactiveObserver = this;
         let error;
         try {
@@ -101,15 +102,17 @@ export class ReactiveObserver {
         if (len > 0) {
             for (let i = 0; i < len; i++) {
                 const set = listeners[i];
-                if (set.length === 1) {
-                    // Perf optimization for the common case - the length is usually 1, so avoid the indexOf+splice.
-                    // If the length is 1, we can also be sure that `this` is the first item in the array.
-                    set.length = 0;
-                } else {
-                    // Slow case
-                    const pos = ArrayIndexOf.call(set, this);
-                    ArraySplice.call(set, pos, 1);
+                const setLength = set.length;
+                // The length is usually 1, so avoid doing an indexOf when we know for certain
+                // that `this` is the first item in the array.
+                if (setLength > 1) {
+                    // Swap with the last item before removal.
+                    // (Avoiding splice here is a perf optimization, and the order doesn't matter.)
+                    const index = ArrayIndexOf.call(set, this);
+                    set[index] = set[setLength - 1];
                 }
+                // Remove the last item
+                ArrayPop.call(set);
             }
             listeners.length = 0;
         }
@@ -124,5 +127,9 @@ export class ReactiveObserver {
         ArrayPush.call(reactiveObservers, this);
         // we keep track of observing records where the observing record was added to so we can do some clean up later on
         ArrayPush.call(this.listeners, reactiveObservers);
+    }
+
+    isObserving() {
+        return currentReactiveObserver === this;
     }
 }

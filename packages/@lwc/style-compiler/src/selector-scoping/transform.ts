@@ -35,8 +35,9 @@ function isHostPseudoClass(node: Node): node is Pseudo {
 
 /**
  * Add scoping attributes to all the matching selectors:
- *   h1 -> h1[x-foo_tmpl]
- *   p a -> p[x-foo_tmpl] a[x-foo_tmpl]
+ * - h1 -> h1[x-foo_tmpl]
+ * - p a -> p[x-foo_tmpl] a[x-foo_tmpl]
+ * @param selector
  */
 function scopeSelector(selector: Selector) {
     const compoundSelectors: ChildNode[][] = [[]];
@@ -102,8 +103,9 @@ function scopeSelector(selector: Selector) {
 /**
  * Mark the :host selector with a placeholder. If the selector has a list of
  * contextual selector it will generate a rule for each of them.
- *   :host -> [x-foo_tmpl-host]
- *   :host(.foo, .bar) -> [x-foo_tmpl-host].foo, [x-foo_tmpl-host].bar
+ * - `:host -> [x-foo_tmpl-host]`
+ * - `:host(.foo, .bar) -> [x-foo_tmpl-host].foo, [x-foo_tmpl-host].bar`
+ * @param selector
  */
 function transformHost(selector: Selector) {
     // Locate the first :host pseudo-class
@@ -124,12 +126,12 @@ function transformHost(selector: Selector) {
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
         const contextualSelectors = hostNode.nodes.map((contextSelectors) => {
-            const clonedSelector = selector.clone({}) as Selector;
+            const clonedSelector = selector.clone({});
             const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
             // Add to the compound selector previously containing the :host pseudo class
             // the contextual selectors.
-            (contextSelectors as Selector).each((node) => {
+            contextSelectors.each((node) => {
                 trimNodeWhitespaces(node);
                 clonedSelector.insertAfter(clonedHostNode, node);
             });

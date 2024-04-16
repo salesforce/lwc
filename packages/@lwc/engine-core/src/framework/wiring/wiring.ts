@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -62,6 +62,7 @@ function createConfigWatcher(
         if (hasPendingConfig === false) {
             hasPendingConfig = true;
             // collect new config in the micro-task
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             Promise.resolve().then(() => {
                 hasPendingConfig = false;
                 // resetting current reactive params
@@ -76,7 +77,7 @@ function createConfigWatcher(
         ro.observe(() => (config = configCallback(component)));
         // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
-        // @ts-ignore it is assigned in the observe() callback
+        // @ts-expect-error it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
     };
     return {
@@ -190,7 +191,7 @@ function createConnector(
         });
     }
     return {
-        // @ts-ignore the boundary protection executes sync, connector is always defined
+        // @ts-expect-error the boundary protection executes sync, connector is always defined
         connector,
         computeConfigAndUpdate,
         resetConfigWatcher: () => ro.reset(),
@@ -245,8 +246,9 @@ export function installWireAdapters(vm: VM) {
         vm.debugInfo![WIRE_DEBUG_ENTRY] = create(null);
     }
 
-    const wiredConnecting = (context.wiredConnecting = []);
-    const wiredDisconnecting = (context.wiredDisconnecting = []);
+    const wiredConnecting: VM['context']['wiredConnecting'] = (context.wiredConnecting = []);
+    const wiredDisconnecting: VM['context']['wiredDisconnecting'] = (context.wiredDisconnecting =
+        []);
 
     for (const fieldNameOrMethod in wire) {
         const descriptor = wire[fieldNameOrMethod];
@@ -265,6 +267,7 @@ export function installWireAdapters(vm: VM) {
                 connector.connect();
                 if (!lwcRuntimeFlags.ENABLE_WIRE_SYNC_EMIT) {
                     if (hasDynamicParams) {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
                         Promise.resolve().then(computeConfigAndUpdate);
                         return;
                     }

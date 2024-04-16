@@ -110,19 +110,10 @@
                                         "end": 22,
                                         "operator": "=",
                                         "left": {
-                                            "type": "MemberExpression",
-                                            "object": {
-                                                "type": "Identifier",
-                                                "name": "$cmp"
-                                            },
-                                            "property": {
-                                                "type": "Identifier",
-                                                "start": 7,
-                                                "end": 14,
-                                                "name": "myField"
-                                            },
-                                            "computed": false,
-                                            "optional": false
+                                            "type": "Identifier",
+                                            "start": 7,
+                                            "end": 14,
+                                            "name": "myField"
                                         },
                                         "right": {
                                             "type": "Literal",

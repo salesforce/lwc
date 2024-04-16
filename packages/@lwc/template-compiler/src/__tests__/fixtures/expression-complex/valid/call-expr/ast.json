@@ -99,19 +99,10 @@
                                     "start": 1,
                                     "end": 9,
                                     "callee": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 1,
-                                            "end": 7,
-                                            "name": "getFoo"
-                                        },
-                                        "computed": false,
-                                        "optional": false
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 7,
+                                        "name": "getFoo"
                                     },
                                     "arguments": [],
                                     "optional": false,
@@ -159,33 +150,24 @@
                                         66
                                     ],
                                     "callee": {
-                                        "type": "MemberExpression",
-                                        "object": {
-                                            "type": "Identifier",
-                                            "name": "$cmp"
-                                        },
-                                        "property": {
-                                            "type": "Identifier",
-                                            "start": 58,
-                                            "end": 64,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 33
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 39
-                                                }
+                                        "type": "Identifier",
+                                        "start": 58,
+                                        "end": 64,
+                                        "loc": {
+                                            "start": {
+                                                "line": 3,
+                                                "column": 33
                                             },
-                                            "range": [
-                                                58,
-                                                64
-                                            ],
-                                            "name": "getBaz"
+                                            "end": {
+                                                "line": 3,
+                                                "column": 39
+                                            }
                                         },
-                                        "computed": false,
-                                        "optional": false
+                                        "range": [
+                                            58,
+                                            64
+                                        ],
+                                        "name": "getBaz"
                                     },
                                     "arguments": [],
                                     "optional": false,

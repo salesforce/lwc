@@ -14,6 +14,12 @@ import {
     createVM,
     disconnectRootElement,
     getComponentHtmlPrototype,
+    runFormAssociatedCallback,
+    runFormDisabledCallback,
+    runFormResetCallback,
+    runFormStateRestoreCallback,
+    FormRestoreState,
+    FormRestoreReason,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -24,17 +30,15 @@ type HTMLElementConstructor = typeof HTMLElement;
 /**
  * This function builds a Web Component class from a LWC constructor so it can be
  * registered as a new element via customElements.define() at any given time.
- *
- * @deprecated since version 1.3.11
- *
+ * @param Ctor LWC constructor to build
+ * @returns A Web Component class
  * @example
- * ```
  * import { buildCustomElementConstructor } from 'lwc';
  * import Foo from 'ns/foo';
  * const WC = buildCustomElementConstructor(Foo);
  * customElements.define('x-foo', WC);
  * const elm = document.createElement('x-foo');
- * ```
+ * @deprecated since version 1.3.11
  */
 export function deprecatedBuildCustomElementConstructor(
     Ctor: ComponentConstructor
@@ -57,6 +61,13 @@ function clearNode(node: Node) {
     }
 }
 
+/**
+ * The real `buildCustomElementConstructor`. Should not be accessible to external users!
+ * @internal
+ * @param Ctor LWC constructor to build
+ * @returns A Web Component class
+ * @see {@linkcode deprecatedBuildCustomElementConstructor}
+ */
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
     const { observedAttributes } = HtmlPrototype as any;
@@ -115,6 +126,25 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             attributeChangedCallback.call(this, name, oldValue, newValue);
         }
 
+        formAssociatedCallback(form: HTMLFormElement | null) {
+            runFormAssociatedCallback(this, form);
+        }
+
+        formDisabledCallback(disabled: boolean) {
+            runFormDisabledCallback(this, disabled);
+        }
+
+        formResetCallback() {
+            runFormResetCallback(this);
+        }
+
+        formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason) {
+            runFormStateRestoreCallback(this, state, reason);
+        }
+
         static observedAttributes = observedAttributes;
+        // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
+        // attachInternals API.
+        static formAssociated = Boolean(Ctor.formAssociated);
     };
 }

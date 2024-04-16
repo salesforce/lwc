@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -22,8 +22,8 @@ export interface RollupLwcOptions {
     exclude?: FilterPattern;
     /** The LWC root module directory. */
     rootDir?: string;
-    /** If `true` the plugin will produce source maps. */
-    sourcemap?: boolean;
+    /** If `true` the plugin will produce source maps. If `'inline'`, the plugin will produce inlined source maps and append them to the end of the generated file. */
+    sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
@@ -144,6 +144,11 @@ function transformWarningToRollupLog(
     return result;
 }
 
+/**
+ * Rollup plugin for bundling LWC components
+ * @param pluginOptions LWC rollup plugin options
+ * @returns LWC rollup plugin
+ */
 export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -315,8 +315,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return error;
     }
 
-    var nativeCustomElementLifecycleEnabled = process.env.API_VERSION >= 61;
-
     // For errors we expect to be thrown in the connectedCallback() phase
     // of a custom element, there are two possibilities:
     // 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
@@ -324,7 +322,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     //    only be caught with window.addEventListener('error')
     //      - Note native lifecycle callbacks are all thrown asynchronously.
     function customElementCallbackReactionErrorListener(callback) {
-        return nativeCustomElementLifecycleEnabled
+        return apiFeatures.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
             ? windowErrorListener(callback)
             : directErrorListener(callback);
     }
@@ -341,6 +339,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             customElementCallbackReactionErrorListener,
             true
         ),
+        toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode: errorMatcherFactory(
+            windowErrorListener,
+            true
+        ),
     };
 
     beforeAll(function () {
@@ -349,8 +351,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     /**
      *
-     * @param {jasmine.Spy} dispatcher
-     * @param {String[]} runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
+     * @param dispatcher
+     * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
      */
     function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
         lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
@@ -548,12 +550,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     ];
 
     const ariaProperties = Object.keys(ariaPropertiesMapping);
-
-    // Can't use Object.values because we need to support IE11
-    const ariaAttributes = [];
-    for (let i = 0; i < ariaProperties.length; i++) {
-        ariaAttributes.push(ariaPropertiesMapping[ariaProperties[i]]);
-    }
+    const ariaAttributes = Object.values(ariaPropertiesMapping);
 
     // Keep traversing up the prototype chain until a property descriptor is found
     function getPropertyDescriptor(object, prop) {
@@ -566,33 +563,42 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         } while (object);
     }
 
+    const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
+
     // These values are based on the API versions in @lwc/shared/api-version
-    const lightDomSlotForwardingEnabled = process.env.API_VERSION > 60;
-    const vFragBookEndEnabled = process.env.API_VERSION > 59;
+    const apiFeatures = {
+        LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
+        USE_COMMENTS_FOR_FRAGMENT_BOOKENDS: process.env.API_VERSION >= 60,
+        USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS: process.env.API_VERSION >= 60,
+        DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION: process.env.API_VERSION >= 60,
+        ENABLE_ELEMENT_INTERNALS_AND_FACE: process.env.API_VERSION >= 61,
+        ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: process.env.API_VERSION >= 61,
+        USE_LIGHT_DOM_SLOT_FORWARDING: process.env.API_VERSION >= 61,
+        TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
+    };
 
     return {
-        clearRegister: clearRegister,
-        extractDataIds: extractDataIds,
-        extractShadowDataIds: extractShadowDataIds,
-        getHostChildNodes: getHostChildNodes,
-        isNativeShadowRootInstance: isNativeShadowRootInstance,
-        isSyntheticShadowRootInstance: isSyntheticShadowRootInstance,
-        load: load,
-        registerForLoad: registerForLoad,
-        getHooks: getHooks,
-        setHooks: setHooks,
-        spyConsole: spyConsole,
-        customElementCallbackReactionErrorListener: customElementCallbackReactionErrorListener,
-        ariaPropertiesMapping: ariaPropertiesMapping,
-        ariaProperties: ariaProperties,
-        ariaAttributes: ariaAttributes,
-        nonStandardAriaProperties: nonStandardAriaProperties,
-        nonPolyfilledAriaProperties: nonPolyfilledAriaProperties,
-        getPropertyDescriptor: getPropertyDescriptor,
-        attachReportingControlDispatcher: attachReportingControlDispatcher,
-        detachReportingControlDispatcher: detachReportingControlDispatcher,
-        nativeCustomElementLifecycleEnabled: nativeCustomElementLifecycleEnabled,
-        lightDomSlotForwardingEnabled: lightDomSlotForwardingEnabled,
-        vFragBookEndEnabled: vFragBookEndEnabled,
+        clearRegister,
+        extractDataIds,
+        extractShadowDataIds,
+        getHostChildNodes,
+        isNativeShadowRootInstance,
+        isSyntheticShadowRootInstance,
+        load,
+        registerForLoad,
+        getHooks,
+        setHooks,
+        spyConsole,
+        customElementCallbackReactionErrorListener,
+        ariaPropertiesMapping,
+        ariaProperties,
+        ariaAttributes,
+        nonStandardAriaProperties,
+        nonPolyfilledAriaProperties,
+        getPropertyDescriptor,
+        attachReportingControlDispatcher,
+        detachReportingControlDispatcher,
+        IS_SYNTHETIC_SHADOW_LOADED,
+        ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

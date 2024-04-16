@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
@@ -14,7 +13,7 @@ const { globSync } = require('glob');
 (async () => {
     const newVersion = await promptVersion();
     updatePackages(newVersion);
-})();
+})().catch(console.error);
 
 async function promptVersion() {
     const rl = readline.createInterface({

@@ -6,7 +6,6 @@
  */
 import {
     assign,
-    globalThis,
     isTrue,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
@@ -34,16 +33,18 @@ import { logWarnOnce } from '../shared/logger';
 //
 
 // Use the unpatched native getElementById/querySelectorAll rather than the synthetic one
-const getElementById = globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID] as typeof document.getElementById;
+const getElementById = (globalThis as any)[
+    KEY__NATIVE_GET_ELEMENT_BY_ID
+] as typeof document.getElementById;
 
-const querySelectorAll = globalThis[
+const querySelectorAll = (globalThis as any)[
     KEY__NATIVE_QUERY_SELECTOR_ALL
 ] as typeof document.querySelectorAll;
 
 // This is a "handoff" from synthetic-shadow to engine-core – we want to clean up after ourselves
 // so nobody else can misuse these global APIs.
-delete globalThis[KEY__NATIVE_GET_ELEMENT_BY_ID];
-delete globalThis[KEY__NATIVE_QUERY_SELECTOR_ALL];
+delete (globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID];
+delete (globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL];
 
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
     return rootNode !== document && isTrue((rootNode as any).synthetic);

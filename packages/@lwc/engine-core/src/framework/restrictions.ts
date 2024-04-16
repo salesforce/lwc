@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/* eslint @lwc/lwc-internal/no-production-assert: "off" */
 import {
     assign,
     create,
@@ -195,7 +194,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
+                // @ts-expect-error type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
@@ -256,7 +255,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
+                // @ts-expect-error type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
