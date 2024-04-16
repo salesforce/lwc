@@ -48,7 +48,7 @@ describe('parse', () => {
         ];
         configs.forEach(({ name, config }) => {
             it(`parse() with double </template> with config=${name}`, () => {
-                const result = parse('<template></template></template>', '', config);
+                const result = parse('<template></template></template>', config);
                 const expectWarning = config.apiVersion === 58; // null/undefined/unspecified is treated as latest
                 expect(result.warnings.length).toBe(1);
                 expect(result.warnings[0].level).toBe(

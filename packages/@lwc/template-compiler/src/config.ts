@@ -91,9 +91,9 @@ export interface Config {
      */
     apiVersion?: number;
 }
-type OptionalConfigValues = 'customRendererConfig' | 'instrumentation' | 'namespace' | 'name';
-type RequiredConfigOptions = Required<Omit<Config, OptionalConfigValues>>;
-type OptionalConfigOptions = Partial<Pick<Config, OptionalConfigValues>>;
+type OptionalConfigNames = 'customRendererConfig' | 'instrumentation' | 'namespace' | 'name';
+type RequiredConfigOptions = Required<Omit<Config, OptionalConfigNames>>;
+type OptionalConfigOptions = Partial<Pick<Config, OptionalConfigNames>>;
 export type NormalizedConfig = RequiredConfigOptions & OptionalConfigOptions;
 
 const AVAILABLE_OPTION_NAMES = new Set([

@@ -26,17 +26,13 @@ export { Config } from './config';
 /**
  * Parses HTML markup into an AST
  * @param source HTML markup to parse
- * @param filename HTML filename
  * @param config HTML template compilation config
  * @returns Object containing the AST
  */
-export function parse(
-    source: string,
-    filename: string = '',
-    config: Config = {}
-): TemplateParseResult {
+export function parse(source: string, config: Config = {}): TemplateParseResult {
     const options = normalizeConfig(config);
-    const state = new State(options, filename);
+    // The file name is never used in this function, defaulting it to an empty string.
+    const state = new State(options, '');
     return parseTemplate(source, state);
 }
 
@@ -56,6 +52,8 @@ export default function compile(
     config: Config
 ): TemplateCompileResult {
     const options = normalizeConfig(config);
+    // Note the file name is required to generate implicit css imports and style tokens.
+    // It is not part of the config because all values in the config are optional by convention.
     const state = new State(options, filename);
 
     let code = '';
