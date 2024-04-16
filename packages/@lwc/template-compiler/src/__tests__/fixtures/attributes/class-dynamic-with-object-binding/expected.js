@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: $cmp.computed,
+          className: api_normalize_class_name($cmp.computed),
         },
         null
       ),

@@ -6,14 +6,7 @@
  */
 import * as astring from 'astring';
 
-import {
-    isBooleanAttribute,
-    SVG_NAMESPACE,
-    LWC_VERSION_COMMENT,
-    isUndefined,
-    isAPIFeatureEnabled,
-    APIFeature,
-} from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -500,16 +493,9 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
                     if (isExpression(value)) {
-                        let classExpression = codeGen.bindExpression(value);
-                        const isClassNameObjectBindingEnabled = isAPIFeatureEnabled(
-                            APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING,
-                            codeGen.state.config.apiVersion
+                        data.push(
+                            t.property(t.identifier('className'), codeGen.genClassExpression(value))
                         );
-
-                        if (isClassNameObjectBindingEnabled) {
-                            classExpression = codeGen.genNormalizeClassName(classExpression);
-                        }
-                        data.push(t.property(t.identifier('className'), classExpression));
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(

@@ -46,7 +46,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_static_part(
                 0,
                 {
-                  className: $cmp.dynamicClass,
+                  className: api_normalize_class_name($cmp.dynamicClass),
                 },
                 null
               ),
@@ -64,7 +64,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_static_part(
                 0,
                 {
-                  className: $cmp.dynamicClass,
+                  className: api_normalize_class_name($cmp.dynamicClass),
                   style: $cmp.dynamicStyle,
                   attrs: {
                     "data-dynamic": $cmp.dynamic,
@@ -96,7 +96,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_static_part(
                 0,
                 {
-                  className: $cmp.dynamicClass,
+                  className: api_normalize_class_name($cmp.dynamicClass),
                 },
                 null
               ),
@@ -114,7 +114,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               api_static_part(
                 0,
                 {
-                  className: $cmp.dynamicClass,
+                  className: api_normalize_class_name($cmp.dynamicClass),
                   style: $cmp.dynamicStyle,
                   attrs: {
                     "data-dynamic": $cmp.dynamic,
@@ -143,7 +143,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: $cmp.dynamicClass,
+          className: api_normalize_class_name($cmp.dynamicClass),
         },
         null
       ),
@@ -161,7 +161,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: $cmp.dynamicClass,
+          className: api_normalize_class_name($cmp.dynamicClass),
           style: $cmp.dynamicStyle,
           attrs: {
             "data-dynamic": $cmp.dynamic,
