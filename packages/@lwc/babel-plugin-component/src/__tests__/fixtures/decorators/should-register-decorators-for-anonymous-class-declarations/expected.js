@@ -1,4 +1,4 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
+import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 export default _registerComponent(_registerDecorators(class extends LightningElement {
   foo;

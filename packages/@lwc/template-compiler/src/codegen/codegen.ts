@@ -50,6 +50,7 @@ import { memorizeHandler, objectToAST } from './helpers';
 import { transformStaticChildren, getStaticNodes, isDynamicText } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
+import type { Node } from 'estree';
 
 // structuredClone is only available in Node 17+
 // https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
@@ -548,7 +549,11 @@ export default class CodeGen {
         // Cloning here is necessary because `this.replace()` is destructive, and we might use the
         // node later during static content optimization
         expression = doStructuredClone(expression);
-        walk(expression, {
+        // TODO [#3370]: when the template expression flag is removed, the
+        // ComplexExpression type should be redefined as an ESTree Node. Doing
+        // so when the flag is still in place results in a cascade of required
+        // type changes across the codebase.
+        walk(expression as Node, {
             leave(node, parent) {
                 if (
                     parent !== null &&

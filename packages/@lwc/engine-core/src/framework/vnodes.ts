@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -34,7 +34,12 @@ export type VNode =
     | VFragment
     | VScopedSlotFragment;
 
-export type VNodes = Readonly<Array<VNode | null>>;
+export type VNodes = ReadonlyArray<VNode | null>;
+/**
+ * Mutable version of {@link VNodes}. It should only be used inside functions to build an array;
+ * it should never be used as a parameter or return type.
+ */
+export type MutableVNodes = Array<VNode | null>;
 
 export interface BaseVParent {
     children: VNodes;
@@ -144,7 +149,7 @@ export interface VNodeData {
     readonly className?: string;
     readonly style?: string;
     readonly classMap?: Readonly<Record<string, boolean>>;
-    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly styleDecls?: ReadonlyArray<[string, string, boolean]>;
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;

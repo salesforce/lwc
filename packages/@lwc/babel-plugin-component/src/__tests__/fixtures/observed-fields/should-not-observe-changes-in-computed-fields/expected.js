@@ -1,4 +1,4 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement, LightningElement } from "lwc";
+import { registerDecorators as _registerDecorators, createElement, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 const PREFIX = "prefix";
 class Test extends LightningElement {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -27,16 +27,19 @@ const {
 
 // Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
+type MutationCallbackWithInternals = MutationCallback &
+    Partial<Record<typeof wrapperLookupField, MutationCallback>>;
 const observerLookupField = '$$lwcNodeObservers$$';
+type NodeWithInternals = Node & Partial<Record<typeof observerLookupField, MutationObserver[]>>;
 
-const observerToNodesMap: WeakMap<MutationObserver, Array<Node>> = new WeakMap();
+const observerToNodesMap: WeakMap<MutationObserver, Array<NodeWithInternals>> = new WeakMap();
 
-function getNodeObservers(node: Node): MutationObserver[] {
-    return (node as any)[observerLookupField];
+function getNodeObservers(node: NodeWithInternals): MutationObserver[] | undefined {
+    return node[observerLookupField];
 }
 
-function setNodeObservers(node: Node, observers: MutationObserver[]) {
-    (node as any)[observerLookupField] = observers;
+function setNodeObservers(node: NodeWithInternals, observers: MutationObserver[]) {
+    node[observerLookupField] = observers;
 }
 
 /**
@@ -45,7 +48,7 @@ function setNodeObservers(node: Node, observers: MutationObserver[]) {
  */
 function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord {
     const { addedNodes, removedNodes, target, type } = originalRecord;
-    const retargetedRecord = create(MutationRecord.prototype);
+    const retargetedRecord: MutationRecord = create(MutationRecord.prototype);
     defineProperties(retargetedRecord, {
         addedNodes: {
             get() {
@@ -179,13 +182,10 @@ function filterMutationRecords(
     return result;
 }
 
-function getWrappedCallback(callback: MutationCallback): MutationCallback {
-    let wrappedCallback: MutationCallback | undefined = (callback as any)[wrapperLookupField];
+function getWrappedCallback(callback: MutationCallbackWithInternals): MutationCallback {
+    let wrappedCallback = callback[wrapperLookupField];
     if (isUndefined(wrappedCallback)) {
-        wrappedCallback = (callback as any)[wrapperLookupField] = (
-            mutations: MutationRecord[],
-            observer: MutationObserver
-        ): void => {
+        wrappedCallback = callback[wrapperLookupField] = (mutations, observer) => {
             // Filter mutation records
             const filteredRecords = filterMutationRecords(mutations, observer);
             // If not records are eligible for the observer, do not invoke callback

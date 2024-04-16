@@ -1,5 +1,5 @@
 import _tmpl from "./test.html";
-import { registerComponent as _registerComponent, LightningElement as Component } from "lwc";
+import { LightningElement as Component, registerComponent as _registerComponent } from "lwc";
 class Test extends Component {
   /*LWC compiler vX.X.X*/
 }

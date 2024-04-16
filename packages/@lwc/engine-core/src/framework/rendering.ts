@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -49,6 +49,7 @@ import {
     isVScopedSlotFragment,
     isVStatic,
     Key,
+    MutableVNodes,
     VBaseElement,
     VComment,
     VCustomElement,
@@ -717,11 +718,11 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
  * @param children
  */
 function flattenFragmentsInChildren(children: VNodes): VNodes {
-    const flattenedChildren: VNodes = [];
+    const flattenedChildren: MutableVNodes = [];
 
     // Initialize our stack with the direct children of the custom component and check whether we have a VFragment.
     // If no VFragment is found in children, we don't need to traverse anything or mark the children dynamic and can return early.
-    const nodeStack: VNodes = [];
+    const nodeStack: MutableVNodes = [];
     let fragmentFound = false;
     for (let i = children.length - 1; i > -1; i -= 1) {
         const child = children[i];
@@ -780,7 +781,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
     const {
         cmpSlots: { slotAssignments: oldSlotsMapping },
     } = vm;
@@ -807,7 +808,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const normalizedSlotName = '' + slotName;
 
-        const vnodes: VNodes = (cmpSlotsMapping[normalizedSlotName] =
+        const vnodes: MutableVNodes = (cmpSlotsMapping[normalizedSlotName] =
             cmpSlotsMapping[normalizedSlotName] || []);
         ArrayPush.call(vnodes, vnode);
     }

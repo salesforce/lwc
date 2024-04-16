@@ -41,6 +41,49 @@ const {
 /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
 const { isArray } = Array;
 
+/** The most extensible array type. */
+type BaseArray = readonly unknown[];
+/** Names of methods that can be used on a readonly array. */
+type ArrayPureMethodNames = {
+    [K in keyof BaseArray]: K extends string
+        ? BaseArray[K] extends (...args: any) => any
+            ? K
+            : never
+        : never;
+}[keyof BaseArray];
+/**
+ * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
+ * @example
+ * const arr = ['a', 'b', 'c']
+ * const trim = (str: string) => str.trim()
+ * const sq = (num: number) => num ** 2
+ * const unboundForEach = arr.forEach
+ * unboundForEach.call(arr, trim) // passes - good
+ * unboundForEach.call(arr, sq) // passes - BAD!
+ * const fixedForEach = arr.forEach as UnboundArrayPureMethods['forEach']
+ * fixedForEach.call(arr, trim) // passes - good
+ * fixedForEach.call(arr, sq) // error - yay!
+ */
+type UnboundArrayPureMethods = {
+    [K in ArrayPureMethodNames]: {
+        call: <T extends BaseArray>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
+        apply: <T extends BaseArray>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+    };
+};
+
+/** Names of methods that mutate an array (cannot be used on a readonly array). */
+type ArrayMutationMethodNames = Exclude<keyof unknown[], keyof BaseArray>;
+/**
+ * Unbound array mutation methods, re-typed so that `.call` and `.apply` correctly report type errors.
+ * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
+ */
+type UnboundArrayMutationMethods = {
+    [K in ArrayMutationMethodNames]: {
+        call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
+        apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+    };
+};
+
 // For some reason, JSDoc don't get picked up for multiple renamed destructured constants (even
 // though it works fine for one, e.g. isArray), so comments for these are added to the export
 // statement, rather than this declaration.
@@ -67,7 +110,7 @@ const {
     splice: ArraySplice,
     unshift: ArrayUnshift,
     forEach, // Weird anomaly!
-} = Array.prototype;
+}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
 
 // The type of the return value of Array.prototype.every is `this is T[]`. However, once this
 // Array method is pulled out of the prototype, the function is now referencing `this` where
@@ -82,10 +125,10 @@ const {
  * @param predicate A function to execute for each element of the array.
  * @returns Whether all elements in the array pass the test provided by the predicate.
  */
-function arrayEvery<T>(
-    arr: unknown[],
-    predicate: (value: any, index: number, array: typeof arr) => value is T
-): arr is T[] {
+function arrayEvery<S extends T, T = unknown>(
+    arr: readonly T[],
+    predicate: (value: any, index: number, array: readonly T[]) => value is S
+): arr is readonly S[] {
     return ArrayEvery.call(arr, predicate);
 }
 
