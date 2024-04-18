@@ -25,7 +25,7 @@ export default (args) => {
                     open: false,
                     port: 3000,
                 }),
-            args.watch && livereload(),
+            args.watch && livereload('dist'),
         ],
     };
 };
