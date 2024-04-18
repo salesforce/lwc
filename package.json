@@ -53,7 +53,6 @@
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jest": "^28.2.0",
-        "eslint-plugin-jsdoc": "^48.2.3",
         "glob": "^10.3.12",
         "husky": "^9.0.11",
         "isbinaryfile": "^5.0.2",
