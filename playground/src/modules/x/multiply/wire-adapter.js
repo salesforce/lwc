@@ -1,3 +1,7 @@
+/**
+ * NOTE: Custom wire adapters are not supported on the Salesforce Platform.
+ * This is for demonstration purposes only.
+ */
 export class multiply {
     constructor(dataCallback) {
         this.dataCallback = dataCallback;

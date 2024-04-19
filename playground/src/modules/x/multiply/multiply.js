@@ -6,6 +6,8 @@ export default class extends LightningElement {
 
     @track inputs = { first: 0, second: 0 };
 
+    // NOTE: Custom wire adapters are not supported on the Salesforce Platform.
+    // This is for demonstration purposes only.
     @wire(multiply, { first: '$inputs.first', second: '$inputs.second' }) product;
 
     handleInput(event) {
