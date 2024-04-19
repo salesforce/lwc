@@ -170,10 +170,8 @@ if (process.env.NODE_ENV !== 'production') {
                 elmB = createElement(`x-library-user-b`, { is: LibraryUserB });
                 document.body.appendChild(elmA);
                 document.body.appendChild(elmB);
-                await Promise.resolve();
-            });
 
-            function expectInitialState() {
+                await Promise.resolve();
                 expectStyles(extractDataIds(elmA).paragraph, {
                     fontSize: '10px',
                     fontWeight: '100',
@@ -182,11 +180,9 @@ if (process.env.NODE_ENV !== 'production') {
                     fontSize: '10px',
                     fontWeight: '800',
                 });
-            }
+            });
 
             it('swaps a library CSS file', async () => {
-                expectInitialState();
-
                 swapStyle(libraryStyle[0], libraryStyleV2[0]);
 
                 await Promise.resolve();
@@ -201,8 +197,6 @@ if (process.env.NODE_ENV !== 'production') {
             });
 
             it('swaps a non-library CSS file while keeping library styles', async () => {
-                expectInitialState();
-
                 // The library (`@import`) is the first stylesheet, so grab the second instead
                 swapStyle(styleA[1], styleAV2[1]);
 
