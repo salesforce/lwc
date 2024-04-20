@@ -123,8 +123,6 @@ function transformFile(
 
         case '.tsx':
         case '.jsx':
-            break;
-
         case '.ts':
         case '.js':
             transformer = scriptTransformer;
