@@ -121,6 +121,8 @@ function transformFile(
             transformer = styleTransform;
             break;
 
+        case '.tsx':
+        case '.jsx':
         case '.ts':
         case '.js':
             transformer = scriptTransformer;
