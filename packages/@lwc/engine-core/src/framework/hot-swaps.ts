@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isNull, isArray } from '@lwc/shared';
+import { isFalse, isNull, isUndefined } from '@lwc/shared';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory, unrenderStylesheet } from './stylesheet';
+import { StylesheetFactory, TemplateStylesheetFactories, unrenderStylesheet } from './stylesheet';
 import { assertNotProd, flattenStylesheets } from './utils';
 import { WeakMultiMap } from './weak-multimap';
 
@@ -139,6 +139,23 @@ export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFact
     return style;
 }
 
+function addActiveStylesheets(stylesheets: TemplateStylesheetFactories | undefined | null, vm: VM) {
+    if (isUndefined(stylesheets) || isNull(stylesheets)) {
+        // Ignore non-existent stylesheets
+        return;
+    }
+    for (const stylesheet of flattenStylesheets(stylesheets)) {
+        // this is necessary because we don't hold the list of styles
+        // in the vm, we only hold the selected (already swapped template)
+        // but the styles attached to the template might not be the actual
+        // active ones, but the swapped versions of those.
+        const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
+        // this will allow us to keep track of the stylesheet that are
+        // being used by a hot component
+        activeStyles.add(swappedStylesheet, vm);
+    }
+}
+
 export function setActiveVM(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
@@ -156,20 +173,8 @@ export function setActiveVM(vm: VM) {
 
         // Tracking active styles from the template or the VM. `template.stylesheets` are implicitly associated
         // (e.g. `foo.css` associated with `foo.html`), whereas `vm.stylesheets` are from `static stylesheets`.
-        for (const stylesheets of [template.stylesheets, vm.stylesheets]) {
-            if (isArray(stylesheets)) {
-                for (const stylesheet of flattenStylesheets(stylesheets)) {
-                    // this is necessary because we don't hold the list of styles
-                    // in the vm, we only hold the selected (already swapped template)
-                    // but the styles attached to the template might not be the actual
-                    // active ones, but the swapped versions of those.
-                    const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
-                    // this will allow us to keep track of the stylesheet that are
-                    // being used by a hot component
-                    activeStyles.add(swappedStylesheet, vm);
-                }
-            }
-        }
+        addActiveStylesheets(template.stylesheets, vm);
+        addActiveStylesheets(vm.stylesheets, vm);
     }
 }
 
