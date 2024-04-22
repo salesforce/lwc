@@ -60,7 +60,11 @@ export interface RendererAPI {
     getLastElementChild: (element: E) => E | null;
     getTagName: (element: E) => string;
     isConnected: (node: N) => boolean;
-    insertStylesheet: (content: string, target?: ShadowRoot) => void;
+    insertStylesheet: (
+        content: string,
+        target: ShadowRoot | undefined,
+        signal: AbortSignal | undefined
+    ) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
     createCustomElement: (
         tagName: string,
