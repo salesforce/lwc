@@ -1,5 +1,8 @@
 import { createElement, swapStyle } from 'lwc';
 import { extractDataIds } from 'test-utils';
+import ShadowUsesStaticStylesheets from 'shadow/usesStaticStylesheets';
+import LightUsesStaticStylesheets from 'light/usesStaticStylesheets';
+import LightGlobalUsesStaticStylesheets from 'light-global/usesStaticStylesheets';
 import ShadowSimple from 'shadow/simple';
 import ShadowStaleProp from 'shadow/staleProp';
 import LightSimple from 'light/simple';
@@ -29,6 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
                 components: {
                     Simple: ShadowSimple,
                     StaleProp: ShadowStaleProp,
+                    UsesStaticStylesheets: ShadowUsesStaticStylesheets,
                 },
             },
             {
@@ -36,6 +40,7 @@ if (process.env.NODE_ENV !== 'production') {
                 components: {
                     Simple: LightSimple,
                     StaleProp: LightStaleProp,
+                    UsesStaticStylesheets: LightUsesStaticStylesheets,
                 },
             },
             {
@@ -43,12 +48,13 @@ if (process.env.NODE_ENV !== 'production') {
                 components: {
                     Simple: LightGlobalSimple,
                     StaleProp: LightGlobalStaleProp,
+                    UsesStaticStylesheets: LightGlobalUsesStaticStylesheets,
                 },
             },
         ];
         scenarios.forEach(({ testName, components }) => {
             describe(testName, () => {
-                const { Simple, StaleProp } = components;
+                const { Simple, StaleProp, UsesStaticStylesheets } = components;
                 it('should work with components with implicit style definition', async () => {
                     const { blockStyle, inlineStyle, noneStyle } = Simple;
                     const elm = createElement(`${testName}-simple`, { is: Simple });
@@ -150,6 +156,28 @@ if (process.env.NODE_ENV !== 'production') {
                             opacity: '0.5',
                         });
                     }
+                });
+
+                it('should replace static stylesheets', async () => {
+                    const { asStatic, asStaticV2 } = UsesStaticStylesheets;
+                    const elm = createElement(`${testName}-uses-static-stylesheets`, {
+                        is: UsesStaticStylesheets,
+                    });
+                    document.body.appendChild(elm);
+
+                    await Promise.resolve();
+                    expectStyles(extractDataIds(elm).paragraph, {
+                        color: 'rgba(255, 0, 0, 0)',
+                        fontStyle: 'italic',
+                    });
+
+                    swapStyle(asStatic[0], asStaticV2[0]);
+
+                    await Promise.resolve();
+                    expectStyles(extractDataIds(elm).paragraph, {
+                        color: 'rgba(0, 0, 255, 0)',
+                        fontStyle: 'italic',
+                    });
                 });
             });
         });
