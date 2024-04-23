@@ -273,10 +273,10 @@ describe('sourcemaps', () => {
 describe('transformFile function', () => {
     it('should be tranform Typescript file with ext (.tsx)', () => {
         const src = `
-        import { LightningElement } from 'lwc';
-        export default class Foo extends LightningElement {}
-    `;
-        const fileName = 'app.ts';
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+        const fileName = 'app.tsx';
         const options = { namespace: 'c', name: 'app' };
         const result = transformSync(src, fileName, options);
         expect(result.code).toBeDefined();
@@ -287,10 +287,10 @@ describe('transformFile function', () => {
 
     it('should be tranform Javascript file with ext (.jsx)', () => {
         const src = `
-        import { LightningElement } from 'lwc';
-        export default class Foo extends LightningElement {}
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
         `;
-        const fileName = 'app.js';
+        const fileName = 'app.jsx';
 
         const options = { namespace: 'c', name: 'app' };
         const result = transformSync(src, fileName, options);
