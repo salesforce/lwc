@@ -270,32 +270,20 @@ describe('sourcemaps', () => {
     });
 });
 
-describe('transformFile function', () => {
-    it('should be tranform Typescript file with ext (.tsx)', () => {
-        const src = `
-            import { LightningElement } from 'lwc';
-            export default class Foo extends LightningElement {}
-        `;
-        const fileName = 'app.tsx';
-        const options = { namespace: 'c', name: 'app' };
-        const result = transformSync(src, fileName, options);
-        expect(result.code).toBeDefined();
-        expect(result.map).toBeDefined();
-        expect(result.warnings).toBeUndefined();
-        expect(result.cssScopeTokens).toBeUndefined();
-    });
-
-    it('should be tranform Javascript file with ext (.jsx)', () => {
-        const src = `
-            import { LightningElement } from 'lwc';
-            export default class Foo extends LightningElement {}
-        `;
-        const fileName = 'app.jsx';
-        const options = { namespace: 'c', name: 'app' };
-        const result = transformSync(src, fileName, options);
-        expect(result.code).toBeDefined();
-        expect(result.map).toBeDefined();
-        expect(result.warnings).toBeUndefined();
-        expect(result.cssScopeTokens).toBeUndefined();
-    });
+describe('file extension support', () => {
+    function testFileExtensionSupport(ext: string) {
+        it(`should support ${ext} file extension`, () => {
+            const src = `
+                import { LightningElement } from 'lwc';
+                export default class Foo extends LightningElement {}
+            `;
+            const options = { namespace: 'c', name: 'foo' };
+            const result = transformSync(src, `foo${ext}`, options);
+            expect(result.code).toBeDefined();
+            expect(result.map).toBeDefined();
+            expect(result.warnings).toBeUndefined();
+            expect(result.cssScopeTokens).toBeUndefined();
+        });
+    }
+    ['.js', '.jsx', '.ts', '.tsx'].forEach(testFileExtensionSupport);
 });
