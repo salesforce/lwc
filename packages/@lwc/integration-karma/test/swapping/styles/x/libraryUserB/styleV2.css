@@ -1,0 +1,5 @@
+@import 'x/library';
+
+p {
+    font-weight: 900;
+}

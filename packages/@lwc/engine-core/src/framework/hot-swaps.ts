@@ -5,28 +5,44 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isUndefined, isNull } from '@lwc/shared';
+import { isFalse, isNull, isUndefined } from '@lwc/shared';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory } from './stylesheet';
+import { StylesheetFactory, TemplateStylesheetFactories, unrenderStylesheet } from './stylesheet';
 import { assertNotProd, flattenStylesheets } from './utils';
 import { WeakMultiMap } from './weak-multimap';
 
-const swappedTemplateMap = new WeakMap<Template, Template>();
-const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
-const swappedStyleMap = new WeakMap<StylesheetFactory, StylesheetFactory>();
+let swappedTemplateMap: WeakMap<Template, Template> = /*@__PURE__@*/ new WeakMap();
+let swappedComponentMap: WeakMap<LightningElementConstructor, LightningElementConstructor> =
+    /*@__PURE__@*/ new WeakMap();
+let swappedStyleMap: WeakMap<StylesheetFactory, StylesheetFactory> = /*@__PURE__@*/ new WeakMap();
 
 // The important thing here is the weak values – VMs are transient (one per component instance) and should be GC'ed,
 // so we don't want to create strong references to them.
 // The weak keys are kind of useless, because Templates, LightningElementConstructors, and StylesheetFactories are
 // never GC'ed. But maybe they will be someday, so we may as well use weak keys too.
-const activeTemplates: WeakMultiMap<Template, VM> = new WeakMultiMap();
-const activeComponents: WeakMultiMap<LightningElementConstructor, VM> = new WeakMultiMap();
-const activeStyles: WeakMultiMap<StylesheetFactory, VM> = new WeakMultiMap();
+// The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
+let activeTemplates: WeakMultiMap<Template, VM> = /*@__PURE__@*/ new WeakMultiMap();
+let activeComponents: WeakMultiMap<LightningElementConstructor, VM> =
+    /*@__PURE__@*/ new WeakMultiMap();
+let activeStyles: WeakMultiMap<StylesheetFactory, VM> = /*@__PURE__@*/ new WeakMultiMap();
+
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
+    // Used to reset the global state between test runs
+    (window as any).__lwcResetHotSwaps = () => {
+        swappedTemplateMap = new WeakMap();
+        swappedComponentMap = new WeakMap();
+        swappedStyleMap = new WeakMap();
+        activeTemplates = new WeakMultiMap();
+        activeComponents = new WeakMultiMap();
+        activeStyles = new WeakMultiMap();
+    };
+}
 
 function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);
@@ -44,8 +60,9 @@ function rehydrateHotTemplate(tpl: Template): boolean {
 }
 
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
-    const list = activeStyles.get(style);
-    for (const vm of list) {
+    const activeVMs = activeStyles.get(style);
+    unrenderStylesheet(style);
+    for (const vm of activeVMs) {
         // if a style definition is swapped, we must reset
         // vm's template content in the next micro-task:
         forceRehydration(vm);
@@ -84,6 +101,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
 export function getTemplateOrSwappedTemplate(tpl: Template): Template {
     assertNotProd(); // this method should never leak to prod
 
+    // TODO [#4154]: shows stale content when swapping content back and forth multiple times
     const visited: Set<Template> = new Set();
     while (swappedTemplateMap.has(tpl) && !visited.has(tpl)) {
         visited.add(tpl);
@@ -98,6 +116,7 @@ export function getComponentOrSwappedComponent(
 ): LightningElementConstructor {
     assertNotProd(); // this method should never leak to prod
 
+    // TODO [#4154]: shows stale content when swapping content back and forth multiple times
     const visited: Set<LightningElementConstructor> = new Set();
     while (swappedComponentMap.has(Ctor) && !visited.has(Ctor)) {
         visited.add(Ctor);
@@ -110,6 +129,7 @@ export function getComponentOrSwappedComponent(
 export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFactory {
     assertNotProd(); // this method should never leak to prod
 
+    // TODO [#4154]: shows stale content when swapping content back and forth multiple times
     const visited: Set<StylesheetFactory> = new Set();
     while (swappedStyleMap.has(style) && !visited.has(style)) {
         visited.add(style);
@@ -117,6 +137,23 @@ export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFact
     }
 
     return style;
+}
+
+function addActiveStylesheets(stylesheets: TemplateStylesheetFactories | undefined | null, vm: VM) {
+    if (isUndefined(stylesheets) || isNull(stylesheets)) {
+        // Ignore non-existent stylesheets
+        return;
+    }
+    for (const stylesheet of flattenStylesheets(stylesheets)) {
+        // this is necessary because we don't hold the list of styles
+        // in the vm, we only hold the selected (already swapped template)
+        // but the styles attached to the template might not be the actual
+        // active ones, but the swapped versions of those.
+        const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
+        // this will allow us to keep track of the stylesheet that are
+        // being used by a hot component
+        activeStyles.add(swappedStylesheet, vm);
+    }
 }
 
 export function setActiveVM(vm: VM) {
@@ -128,26 +165,16 @@ export function setActiveVM(vm: VM) {
     activeComponents.add(Ctor, vm);
 
     // tracking active template
-    const tpl = vm.cmpTemplate;
-    if (tpl) {
+    const template = vm.cmpTemplate;
+    if (!isNull(template)) {
         // this will allow us to keep track of the templates that are
         // being used by a hot component
-        activeTemplates.add(tpl, vm);
+        activeTemplates.add(template, vm);
 
-        // tracking active styles associated to template
-        const stylesheets = tpl.stylesheets;
-        if (!isUndefined(stylesheets)) {
-            for (const stylesheet of flattenStylesheets(stylesheets)) {
-                // this is necessary because we don't hold the list of styles
-                // in the vm, we only hold the selected (already swapped template)
-                // but the styles attached to the template might not be the actual
-                // active ones, but the swapped versions of those.
-                const swappedStylesheet = getStyleOrSwappedStyle(stylesheet);
-                // this will allow us to keep track of the stylesheet that are
-                // being used by a hot component
-                activeStyles.add(swappedStylesheet, vm);
-            }
-        }
+        // Tracking active styles from the template or the VM. `template.stylesheets` are implicitly associated
+        // (e.g. `foo.css` associated with `foo.html`), whereas `vm.stylesheets` are from `static stylesheets`.
+        addActiveStylesheets(template.stylesheets, vm);
+        addActiveStylesheets(vm.stylesheets, vm);
     }
 }
 
