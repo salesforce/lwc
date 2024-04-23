@@ -291,7 +291,6 @@ describe('transformFile function', () => {
             export default class Foo extends LightningElement {}
         `;
         const fileName = 'app.jsx';
-
         const options = { namespace: 'c', name: 'app' };
         const result = transformSync(src, fileName, options);
         expect(result.code).toBeDefined();
