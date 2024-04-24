@@ -269,3 +269,21 @@ describe('sourcemaps', () => {
         });
     });
 });
+
+describe('file extension support', () => {
+    function testFileExtensionSupport(ext: string) {
+        it(`should support ${ext} file extension`, () => {
+            const src = `
+                import { LightningElement } from 'lwc';
+                export default class Foo extends LightningElement {}
+            `;
+            const options = { namespace: 'c', name: 'foo' };
+            const result = transformSync(src, `foo${ext}`, options);
+            expect(result.code).toBeDefined();
+            expect(result.map).toBeDefined();
+            expect(result.warnings).toBeUndefined();
+            expect(result.cssScopeTokens).toBeUndefined();
+        });
+    }
+    ['.js', '.jsx', '.ts', '.tsx'].forEach(testFileExtensionSupport);
+});
