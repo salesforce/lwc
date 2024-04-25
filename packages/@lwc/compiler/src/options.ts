@@ -128,6 +128,7 @@ export interface TransformOptions {
     instrumentation?: InstrumentationObject;
     /** API version to associate with the compiled module. Values correspond to Salesforce platform releases. */
     apiVersion?: number;
+    targetSSR?: boolean;
 }
 
 type RequiredTransformOptions = Omit<
@@ -243,5 +244,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         outputConfig,
         experimentalDynamicComponent,
         apiVersion,
+        targetSSR: !!options.targetSSR,
     };
 }
