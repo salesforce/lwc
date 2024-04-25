@@ -88,7 +88,7 @@ function formatHTML(src: string): string {
         if (src.charAt(pos) === '<') {
             const tagNameMatch = src.slice(pos).match(/([\w-]+)/);
 
-            const posAfterTagName = pos + 1 + tagNameMatch![0].length // +1 to account for '<'
+            const posAfterTagName = pos + 1 + tagNameMatch![0].length; // +1 to account for '<'
 
             // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
             // inside the text content. So we just serialize it as-is.
@@ -119,14 +119,19 @@ function formatHTML(src: string): string {
                 // Keep advancing until consuming the closing tag.
             }
 
-            // -1 to account for '>', trim to account for whitespace at the beginning
-            const attributesRaw = src.slice(posAfterTagName, pos - 1).trim()
-            const attributesReordered = attributesRaw ? (' ' + reorderAttributes(attributesRaw)) : ''
-            src = src.substring(0, posAfterTagName) + attributesReordered + src.substring(pos)
-
             // Adjust current depth and print the element tag or comment.
             if (isClosing) {
                 depth--;
+            } else if (!isComment) {
+                // -1 to account for '>', trim to account for whitespace at the beginning
+                const attributesRaw = src.slice(posAfterTagName, pos - 1).trim();
+                const attributesReordered = attributesRaw
+                    ? ' ' + reorderAttributes(attributesRaw)
+                    : '';
+                src =
+                    src.substring(0, posAfterTagName) +
+                    attributesReordered +
+                    src.substring(pos - 1);
             }
 
             res += getPadding() + src.slice(start, pos) + '\n';
@@ -152,16 +157,24 @@ function formatHTML(src: string): string {
 }
 
 function reorderAttributes(attributesRaw: string) {
-    const matches = [...attributesRaw.matchAll(/([a-z-]+)(="[^"]*")?/ig)];
+    // If we have an odd number of quotes, we haven't parsed the attributes
+    // correctly, so we just avoid trying to sort them. This is mostly to paper
+    // over the `attribute-dynamic-escape` fixture.
+    const numQuotes = attributesRaw.match(/"/g)?.length || 0;
+    if (numQuotes % 2 !== 0) return attributesRaw;
 
-    const results = matches.map(_ => _[0]).sort().join(' ')
+    const matches = [...attributesRaw.matchAll(/[:a-z-]+(="[^"]*")?/gi)];
+
+    const results = matches
+        .map((_) => _[0])
+        .sort()
+        .join(' ');
 
     if (results.length !== attributesRaw.length) {
-        debugger
-        throw new Error('HTML auto-formatting failed due to unexpected whitespaces')
+        throw new Error('HTML auto-formatting failed due to unexpected whitespaces');
     }
 
-    return results
+    return results;
 }
 
 function testFixtures() {
