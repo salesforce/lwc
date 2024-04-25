@@ -86,7 +86,9 @@ function formatHTML(src: string): string {
     while (pos < src.length) {
         // Consume element tags and comments.
         if (src.charAt(pos) === '<') {
-            const tagNameMatch = src.slice(pos).match(/(\w+)/);
+            const tagNameMatch = src.slice(pos).match(/([\w-]+)/);
+
+            const posAfterTagName = pos + 1 + tagNameMatch![0].length // +1 to account for '<'
 
             // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
             // inside the text content. So we just serialize it as-is.
@@ -117,6 +119,11 @@ function formatHTML(src: string): string {
                 // Keep advancing until consuming the closing tag.
             }
 
+            // -1 to account for '>', trim to account for whitespace at the beginning
+            const attributesRaw = src.slice(posAfterTagName, pos - 1).trim()
+            const attributesReordered = attributesRaw ? (' ' + reorderAttributes(attributesRaw)) : ''
+            src = src.substring(0, posAfterTagName) + attributesReordered + src.substring(pos)
+
             // Adjust current depth and print the element tag or comment.
             if (isClosing) {
                 depth--;
@@ -144,15 +151,18 @@ function formatHTML(src: string): string {
     return res.trim();
 }
 
-// const ATTRIBUTE_MATCHER = /([a-z\-]+)(="[^"]+")?/;
+function reorderAttributes(attributesRaw: string) {
+    const matches = [...attributesRaw.matchAll(/([a-z-]+)(="[^"]*")?/ig)];
 
-// function reorderAttributes(attributesRaw) {
-//     const matches = attributesRaw.matchAll(ATTRIBUTE_MATCHER);
+    const results = matches.map(_ => _[0]).sort().join(' ')
 
-//     if (results.length !== attributesRaw.length) {
-//         throw new Error('HTML auto-formatting failed due to unexpected whitespaces')
-//     }
-// }
+    if (results.length !== attributesRaw.length) {
+        debugger
+        throw new Error('HTML auto-formatting failed due to unexpected whitespaces')
+    }
+
+    return results
+}
 
 function testFixtures() {
     testFixtureDir(
