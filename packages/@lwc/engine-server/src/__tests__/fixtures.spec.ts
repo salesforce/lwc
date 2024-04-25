@@ -144,6 +144,16 @@ function formatHTML(src: string): string {
     return res.trim();
 }
 
+// const ATTRIBUTE_MATCHER = /([a-z\-]+)(="[^"]+")?/;
+
+// function reorderAttributes(attributesRaw) {
+//     const matches = attributesRaw.matchAll(ATTRIBUTE_MATCHER);
+
+//     if (results.length !== attributesRaw.length) {
+//         throw new Error('HTML auto-formatting failed due to unexpected whitespaces')
+//     }
+// }
+
 function testFixtures() {
     testFixtureDir(
         {
