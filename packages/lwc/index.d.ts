@@ -1,11 +1,19 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import type { FormRestoreReason, FormRestoreState } from '@lwc/engine-core';
+export * from '@lwc/engine-dom';
+
+// ---------------------------------------------------------------------------------------------- //
+// In the JavaScript code (./index.js), we just re-export @lwc/engine-dom. Everything below this
+// line does not exist in that package. It's mostly types that aren't actually used, plus a fake
+// class `HTMLElementTheGoodPart` and an additional signature for the wire decorator. Those two
+// anomalies should be remedied in a major version bump. The types should probably go, too, but
+// less urgently, as they're not really hurting anything.
+// ---------------------------------------------------------------------------------------------- //
 
 /**
  * Lightning Web Components core module
@@ -17,6 +25,14 @@ declare module 'lwc' {
         composed: boolean;
     }
 
+    /**
+     * **DO NOT USE**: This is a former implementation detail for `LightningElement`. It is solely
+     * exported as a type, and does not exist in the JavaScript code. If you think you need it, use
+     * `LightningElement` instead, or the full [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
+     * interface.
+     * @private
+     * @deprecated
+     */
     class HTMLElementTheGoodPart {
         dispatchEvent(evt: Event): boolean;
         addEventListener(
@@ -150,83 +166,6 @@ declare module 'lwc' {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
     }
 
-    /**
-     * Base class for the Lightning Web Component JavaScript class
-     */
-    export class LightningElement extends HTMLElementTheGoodPart {
-        /**
-         * This static getter builds a Web Component class from a LWC constructor so it can be registered
-         * as a new element via customElements.define() at any given time. For example:
-         *
-         * ```
-         * import XComponent from 'namespace/element';
-         * customElements.define('x-component', XComponent.CustomElementConstructor);
-         * const elm = document.createElement('x-component');
-         * ```
-         */
-        static get CustomElementConstructor(): typeof HTMLElement;
-
-        /**
-         * Set to true to designate this component as a Form-Associated Custom Element (FACE).
-         * @see https://web.dev/articles/more-capable-form-controls#form-associated_custom_elements
-         */
-        static formAssociated?: boolean;
-        /**
-         * Called when the element is inserted in a document
-         */
-        connectedCallback(): void;
-        /**
-         * Called when the element is removed from a document
-         */
-        disconnectedCallback(): void;
-        /**
-         * Called after every render of the component
-         */
-        renderedCallback(): void;
-        /**
-         * Called when a descendant component throws an error in one of its lifecycle hooks
-         */
-        errorCallback(error: Error, stack: string): void;
-        /**
-         * Called when a Form-Associated Custom Element (FACE) is associated with an HTMLFormElement.
-         * @param form HTMLFormElement - the associated form element
-         * @see https://web.dev/articles/more-capable-form-controls#void_formassociatedcallbackform
-         */
-        formAssociatedCallback(form: HTMLFormElement | null): void;
-        /**
-         * Called when a Form-Associated Custom Element (FACE) has a disabled state that has changed.
-         * @param disabled boolean - the new disabled state
-         * @see https://web.dev/articles/more-capable-form-controls#void_formdisabledcallbackdisabled
-         */
-        formDisabledCallback(disabled: boolean): void;
-        /**
-         * Called when a Form-Associated Custom Element (FACE) has an associated form that is reset.
-         * @see https://web.dev/articles/more-capable-form-controls#void_formresetcallback
-         */
-        formResetCallback(): void;
-        /**
-         * Called when a Form-Associated Custom Element (FACE) has an associated form that is restored.
-         * @param state FormRestoreState - the state of the form during restoration
-         * @param reason FormRestoreReason - the reason the form was restored
-         * @see https://web.dev/articles/more-capable-form-controls#void_formstaterestorecallbackstate_mode
-         */
-        formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason): void;
-
-        readonly template: ShadowRootTheGoodPart;
-        readonly shadowRoot: null;
-        readonly refs: { [key: string]: Element | LightningElement };
-    }
-
-    /**
-     * Decorator to mark public reactive properties
-     */
-    export const api: PropertyDecorator;
-
-    /**
-     * Decorator to mark private reactive properties
-     */
-    export const track: PropertyDecorator;
-
     type StringKeyedRecord = Record<string, any>;
     /**
      * Decorator factory to wire a property or method to a wire adapter data source
@@ -298,9 +237,4 @@ declare module 'lwc' {
         elm: EventTarget,
         options: ContextProviderOptions<Context>
     ) => void;
-    export function createContextProvider<
-        Config extends StringKeyedRecord,
-        Value,
-        Context extends StringKeyedRecord = StringKeyedRecord
-    >(config: WireAdapterConstructor<Config, Value, Context>): Contextualizer<Context>;
 }
