@@ -7,7 +7,7 @@ const __ENV__ = process.env.NODE_ENV ?? 'development';
 
 export default (args) => {
     return {
-        input: 'src/main.js',
+        input: 'src/main.ts',
 
         output: {
             file: 'dist/main.js',

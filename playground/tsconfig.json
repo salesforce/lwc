@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        // "experimentalDecorators": true,
+        "strict": true,
+
+        "declaration": true,
+        "declarationDir": "dist",
+        "sourceMap": true,
+        // Required to enable converting .js + map -> .ts
+        "inlineSources": true,
+
+        "outDir": "dist",
+
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+
+        "target": "ESNext",
+        "lib": ["es2021", "DOM"],
+
+        // @rollup/plugin-typescript ignores this setting (it always emits); we can set it here to
+        // facilitate type checking without running the full build
+        "noEmit": true,
+
+        "allowJs": true,
+        "checkJs": true,
+
+        "paths": {
+            "x/app": ["./src/modules/x/app/app.ts"],
+            "x/counter": ["./src/modules/x/counter/counter.ts"],
+            "x/multiply": ["./src/modules/x/multiply/multiply.ts"]
+        }
+    },
+    "include": ["src/"],
+    "exclude": []
+}
