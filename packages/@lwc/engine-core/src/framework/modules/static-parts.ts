@@ -69,7 +69,8 @@ export function traverseAndSetElements(
         const part = partIdsToParts.get(partId);
         if (!isUndefined(part)) {
             part.elm = node;
-            if (++numFoundParts === numParts) {
+            numFoundParts++;
+            if (numFoundParts === numParts) {
                 return; // perf optimization - stop traversing once we've found everything we need
             }
         }
