@@ -12,6 +12,7 @@ export default (args) => {
         output: {
             file: 'dist/main.js',
             format: 'esm',
+            sourcemap: true,
         },
 
         plugins: [
