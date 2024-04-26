@@ -97,6 +97,7 @@ export function traverseAndSetElements(
         }
     }
 
+    /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             numFoundParts === numParts,
