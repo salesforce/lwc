@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNull, isUndefined, assert, ArrayShift, ArrayUnshift } from '@lwc/shared';
+import { isNull, isUndefined, assert } from '@lwc/shared';
 import {
     VStatic,
     VStaticPart,
@@ -50,32 +50,46 @@ export function traverseAndSetElements(
         partIdsToParts.set(staticPart.partId, staticPart);
     }
 
+    // Note that we traverse using `*Child`/`*Sibling` rather than `children` because the browser uses a linked
+    // list under the hood to represent the DOM tree, so it's faster to do this than to create an underlying array
+    // by calling `children`.
+    const { nextSibling, getFirstChild, getParentNode } = renderer;
     let numFoundParts = 0;
-    const { previousSibling, getLastChild } = renderer;
-    const stack = [root];
     let partId = -1;
 
     // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
-    while (stack.length > 0) {
-        const elm = ArrayShift.call(stack)!;
+    // This function is very hot, which is why it's micro-optimized. Note we don't use a stack at all; we traverse
+    // using an algorithm that relies on the parentNode getter: https://stackoverflow.com/a/5285417
+    // This is very slightly faster than a TreeWalker (~0.5% on js-framework-benchmark create-10k), but basically
+    // the same idea.
+    let node: Element | Text | null = root;
+    mainloop: while (!isNull(node)) {
+        // visit node
         partId++;
-
         const part = partIdsToParts.get(partId);
         if (!isUndefined(part)) {
-            part.elm = elm;
+            part.elm = node;
             if (++numFoundParts === numParts) {
                 return; // perf optimization - stop traversing once we've found everything we need
             }
         }
 
-        // For depth-first traversal, prepend to the stack in reverse order
-        // Note that we traverse using `*Child`/`*Sibling` rather than `children` because the browser uses a linked
-        // list under the hood to represent the DOM tree, so it's faster to do this than to create an underlying array
-        // by calling `children`.
-        let child = getLastChild(elm);
-        while (!isNull(child)) {
-            ArrayUnshift.call(stack, child);
-            child = previousSibling(child);
+        const child = getFirstChild(node);
+        if (!isNull(child)) {
+            // walk down
+            node = child;
+        } else {
+            let sibling: Element | Text | null;
+            while (isNull((sibling = nextSibling(node)))) {
+                if (node === root) {
+                    // reached the root - don't walk up further
+                    break mainloop;
+                }
+                // walk up
+                node = getParentNode(node);
+            }
+            // walk right
+            node = sibling;
         }
     }
 

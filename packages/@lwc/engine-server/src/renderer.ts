@@ -138,6 +138,10 @@ function previousSibling(node: N) {
     return getSibling(node, -1);
 }
 
+function getParentNode(node: N) {
+    return node[HostParentKey];
+}
+
 function attachShadow(element: E, config: ShadowRootInit) {
     element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
@@ -481,4 +485,5 @@ export const renderer = {
     registerContextConsumer,
     attachInternals,
     defineCustomElement: getUpgradableElement,
+    getParentNode,
 };
