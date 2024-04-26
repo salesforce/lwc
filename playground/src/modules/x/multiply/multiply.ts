@@ -1,5 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import { multiply } from './wire-adapter';
+import { multiply } from './wire-adapter.js';
 
 export default class extends LightningElement {
     @api message: string = '';
