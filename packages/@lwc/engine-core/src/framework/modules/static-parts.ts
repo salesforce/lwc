@@ -22,6 +22,11 @@ import { patchStyleAttribute } from './computed-style-attr';
 import { patchClassAttribute } from './computed-class-attr';
 import { patchTextVStaticPart } from './text';
 
+const walker = document.createTreeWalker(
+    document,
+    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT
+);
+
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId
  * @param root the root element
@@ -31,7 +36,7 @@ import { patchTextVStaticPart } from './text';
 export function traverseAndSetElements(
     root: Element,
     parts: VStaticPart[],
-    renderer: RendererAPI
+    _renderer: RendererAPI
 ): void {
     const numParts = parts.length;
 
@@ -50,18 +55,27 @@ export function traverseAndSetElements(
         partIdsToParts.set(staticPart.partId, staticPart);
     }
 
-    // Note that we traverse using `*Child`/`*Sibling` rather than `children` because the browser uses a linked
-    // list under the hood to represent the DOM tree, so it's faster to do this than to create an underlying array
-    // by calling `children`.
-    const { nextSibling, getFirstChild, getParentNode } = renderer;
     let numFoundParts = 0;
     let partId = -1;
 
     // Depth-first traversal. We assign a partId to each element, which is an integer based on traversal order.
     // This function is very hot, which is why it's micro-optimized. Note we don't use a stack at all; we traverse
     // using a neat algorithm relying on the parentNode getter: https://stackoverflow.com/a/5285417
-    let node: Element | Text | null = root;
-    mainloop: while (!isNull(node)) {
+    walker.currentNode = root;
+
+    let node: Text | Element | null = root;
+
+    // visit node
+    partId++;
+    const part = partIdsToParts.get(partId);
+    if (!isUndefined(part)) {
+        part.elm = node;
+        if (++numFoundParts === numParts) {
+            return; // perf optimization - stop traversing once we've found everything we need
+        }
+    }
+
+    while (!isNull((node = walker.nextNode() as Text | Element | null))) {
         // visit node
         partId++;
         const part = partIdsToParts.get(partId);
@@ -70,24 +84,6 @@ export function traverseAndSetElements(
             if (++numFoundParts === numParts) {
                 return; // perf optimization - stop traversing once we've found everything we need
             }
-        }
-
-        const child = getFirstChild(node);
-        if (!isNull(child)) {
-            // walk down
-            node = child;
-        } else {
-            let sibling: Element | Text | null;
-            while (isNull((sibling = nextSibling(node)))) {
-                if (node === root) {
-                    // reached the root - don't walk up further
-                    break mainloop;
-                }
-                // walk up
-                node = getParentNode(node);
-            }
-            // walk right
-            node = sibling;
         }
     }
 
