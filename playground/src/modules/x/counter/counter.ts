@@ -1,21 +1,14 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class extends LightningElement {
-    public counter: number = 0;
+    @api label: string | undefined;
 
-    connectedCallback(): void {
-        console.log('connected counter');
-    }
-    renderedCallback(): void {
-        console.log('rendered counter');
-    }
-    disconnectedCallback(): void {
-        console.log('disconnected counter');
-    }
+    counter = 0;
+
     increment() {
-        console.log(this.counter++);
+        this.counter++;
     }
     decrement() {
-        throw new Error('No, thanks!');
+        this.counter--;
     }
 }
