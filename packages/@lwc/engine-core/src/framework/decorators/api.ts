@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -13,20 +13,26 @@ import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
- * The @api decorator marks public fields and public methods in
+ * The `@api` decorator marks public fields and public methods in
  * LWC Components. This function implements the internals of this
  * decorator.
- * @param target
- * @param propertyKey
- * @param descriptor
  */
-export default function api(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
-export default function api() {
+export default function api(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    value: unknown,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    context: ClassMemberDecoratorContext | string | symbol
+): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(`@api decorator can only be used as a decorator function.`);
     }
     throw new Error();
 }
+
+export const x: PropertyDecorator | MethodDecorator = (
+    _target: unknown,
+    _propertyKey: string | symbol | ClassMemberDecoratorContext
+) => {};
 
 export function createPublicPropertyDescriptor(key: string): PropertyDescriptor {
     return {
