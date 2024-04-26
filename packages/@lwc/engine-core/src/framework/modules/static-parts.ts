@@ -63,7 +63,7 @@ export function traverseAndSetElements(
     // This is very slightly faster than a TreeWalker (~0.5% on js-framework-benchmark create-10k), but basically
     // the same idea.
     let node: Element | Text | null = root;
-    mainloop: while (!isNull(node)) {
+    while (!isNull(node)) {
         // visit node
         partId++;
         const part = partIdsToParts.get(partId);
@@ -81,9 +81,12 @@ export function traverseAndSetElements(
         } else {
             let sibling: Element | Text | null;
             while (isNull((sibling = nextSibling(node)))) {
-                if (node === root) {
-                    // reached the root - don't walk up further
-                    break mainloop;
+                if (process.env.NODE_ENV !== 'production') {
+                    // We should never traverse up to the root. We should exit early due to numFoundParts === numParts.
+                    assert.isFalse(
+                        node === root,
+                        `Reached the root without finding all parts. Found ${numFoundParts}, needed ${numParts}.`
+                    );
                 }
                 // walk up
                 node = getParentNode(node);
