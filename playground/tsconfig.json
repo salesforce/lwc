@@ -9,6 +9,10 @@
         // Required to enable converting .js + map -> .ts
         "inlineSources": true,
 
+        // To suppress issues with @types/jest + @types/mocha
+        // CAUTION: may also hide other errors
+        "skipLibCheck": true,
+
         "outDir": "dist",
 
         "moduleResolution": "node",
