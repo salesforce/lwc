@@ -17,9 +17,8 @@
         "target": "ESNext",
         "lib": ["es2021", "DOM"],
 
-        // @rollup/plugin-typescript ignores this setting (it always emits); we can set it here to
-        // facilitate type checking without running the full build
-        "noEmit": true,
+        // Rollup handles the JS transformation, but we need `tsc` to emit declaration files
+        "emitDeclarationOnly": true,
 
         "allowJs": true,
         "checkJs": true,
