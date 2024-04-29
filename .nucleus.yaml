@@ -44,6 +44,8 @@ jobs:
         memory-limit: 16
     build-dependency:
         memory-limit: 16
+    release:
+        memory-limit: 16
 steps:
     node-conformance:
         run:
