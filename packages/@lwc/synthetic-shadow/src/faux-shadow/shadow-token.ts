@@ -12,10 +12,15 @@ import {
     KEY__SHADOW_STATIC,
     KEY__SHADOW_STATIC_PRIVATE,
     KEY__SHADOW_RESOLVER,
-    isNull,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
-import { firstChildGetter, nextSiblingGetter } from '../env/node';
+import { nextSiblingGetter } from '../env/node';
+
+const treeWalker = document.createTreeWalker(
+    document,
+    // NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT
+    133
+);
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -47,16 +52,14 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     configurable: true,
 });
 
-function recursivelySetShadowResolver(node: Node, fn: any) {
-    (node as any)[KEY__SHADOW_RESOLVER] = fn;
-
-    // Recurse using firstChild/nextSibling because browsers use a linked list under the hood to
-    // represent the DOM, so childNodes/children would cause an unnecessary array allocation.
-    // https://viethung.space/blog/2020/09/01/Browser-from-Scratch-DOM-API/#Choosing-DOM-tree-data-structure
-    let child = firstChildGetter.call(node);
-    while (!isNull(child)) {
-        recursivelySetShadowResolver(child, fn);
-        child = nextSiblingGetter.call(child);
+function traverseAndSetShadowResolver(root: Node, fn: any) {
+    // Avoid re-creating the TreeWalker for perf
+    treeWalker.currentNode = root;
+    const nextSiblingOfRoot = nextSiblingGetter.call(root);
+    let node: Node | null;
+    // Do not traverse past the next sibling of the root (or null if it doesn't exist)
+    while ((node = treeWalker.nextNode()) !== nextSiblingOfRoot) {
+        (node as any)[KEY__SHADOW_RESOLVER] = fn;
     }
 }
 
@@ -65,7 +68,7 @@ defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
         // Marking an element as static will propagate the shadow resolver to the children.
         if (v) {
             const fn = (this as any)[KEY__SHADOW_RESOLVER];
-            recursivelySetShadowResolver(this, fn);
+            traverseAndSetShadowResolver(this, fn);
         }
         (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
     },
