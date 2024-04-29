@@ -29,11 +29,6 @@ export default function api(
     throw new Error();
 }
 
-export const x: PropertyDecorator | MethodDecorator = (
-    _target: unknown,
-    _propertyKey: string | symbol | ClassMemberDecoratorContext
-) => {};
-
 export function createPublicPropertyDescriptor(key: string): PropertyDescriptor {
     return {
         get(this: LightningElement): any {
