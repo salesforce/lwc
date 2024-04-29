@@ -12,7 +12,7 @@
         "@lwc/rollup-plugin": "6.6.0",
         "@rollup/plugin-replace": "^5.0.5",
         "lwc": "6.6.0",
-        "rollup": "^4.16.1",
+        "rollup": "^4.17.1",
         "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^3.0.0"
     },

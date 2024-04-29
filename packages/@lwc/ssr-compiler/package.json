@@ -48,10 +48,10 @@
         "@lwc/sfdc-compiler-utils": "6.5.3-0",
         "@lwc/style-compiler": "6.6.0",
         "@lwc/template-compiler": "6.6.0",
-        "acorn": "8.10.0",
+        "acorn": "8.11.3",
         "astring": "^1.8.6",
         "estree-toolkit": "^1.7.3",
-        "immer": "^10.0.3",
+        "immer": "^10.1.1",
         "meriyah": "^4.3.8"
     },
     "devDependencies": {
