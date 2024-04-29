@@ -47,9 +47,9 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     configurable: true,
 });
 
-function recursivelySetShadowResolver(root: Node, fn: any) {
-    // Recurse using firstChild/nextSibling because browsers use a linked list under the hood to
-    // represent the DOM, so childNodes/children would cause an unnecessary array allocation.
+function traverseAndSetShadowResolver(root: Node, fn: any) {
+    // Recurse using `firstChild`/`nextSibling` because browsers use a linked list under the hood to
+    // represent the DOM, so `childNodes`/`children` would cause an unnecessary array allocation.
     // https://viethung.space/blog/2020/09/01/Browser-from-Scratch-DOM-API/#Choosing-DOM-tree-data-structure
     // Also, we use `parentNode` to avoid a stack/recursion for perf: https://github.com/salesforce/lwc/pull/4181
     let node: Node | null = root;
@@ -70,6 +70,10 @@ function recursivelySetShadowResolver(root: Node, fn: any) {
                 }
                 // walk up
                 node = parentNodeGetter.call(node!);
+                if (node === root) {
+                    // We have traversed back up to the root; we are done
+                    return;
+                }
             }
             // walk right
             node = sibling;
@@ -82,7 +86,7 @@ defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
         // Marking an element as static will propagate the shadow resolver to the children.
         if (v) {
             const fn = (this as any)[KEY__SHADOW_RESOLVER];
-            recursivelySetShadowResolver(this, fn);
+            traverseAndSetShadowResolver(this, fn);
         }
         (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
     },
