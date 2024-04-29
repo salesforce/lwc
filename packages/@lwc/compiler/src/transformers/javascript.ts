@@ -84,9 +84,6 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
             plugins,
-            // TODO [#0]: This isn't needed for JS. What happens in projects that don't include
-            // typescript as a dependency? May need to use separate JS + TS transformers.
-            presets: ['@babel/preset-typescript'],
         })!;
     } catch (e) {
         let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
