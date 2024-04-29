@@ -15,7 +15,7 @@ import {
     isNull,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
-import { firstChildGetter, nextSiblingGetter } from '../env/node';
+import { firstChildGetter, nextSiblingGetter, parentNodeGetter } from '../env/node';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -47,16 +47,33 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     configurable: true,
 });
 
-function recursivelySetShadowResolver(node: Node, fn: any) {
-    (node as any)[KEY__SHADOW_RESOLVER] = fn;
-
+function recursivelySetShadowResolver(root: Node, fn: any) {
     // Recurse using firstChild/nextSibling because browsers use a linked list under the hood to
     // represent the DOM, so childNodes/children would cause an unnecessary array allocation.
     // https://viethung.space/blog/2020/09/01/Browser-from-Scratch-DOM-API/#Choosing-DOM-tree-data-structure
-    let child = firstChildGetter.call(node);
-    while (!isNull(child)) {
-        recursivelySetShadowResolver(child, fn);
-        child = nextSiblingGetter.call(child);
+    // Also, we use `parentNode` to avoid a stack/recursion for perf: https://github.com/salesforce/lwc/pull/4181
+    let node: Node | null = root;
+    while (!isNull(node)) {
+        // visit node
+        (node as any)[KEY__SHADOW_RESOLVER] = fn;
+
+        const child: Node | null = firstChildGetter.call(node);
+        if (!isNull(child)) {
+            // walk down
+            node = child;
+        } else {
+            let sibling: Node | null;
+            while (isNull((sibling = nextSiblingGetter.call(node!)))) {
+                if (node === root) {
+                    // We have traversed back up to the root; we are done
+                    return;
+                }
+                // walk up
+                node = parentNodeGetter.call(node!);
+            }
+            // walk right
+            node = sibling;
+        }
     }
 }
 
