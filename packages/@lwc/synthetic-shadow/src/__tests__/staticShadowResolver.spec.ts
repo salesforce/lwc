@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { KEY__SHADOW_RESOLVER, KEY__SHADOW_STATIC } from '@lwc/shared';
+import '../index';
 
 describe('traverseAndSetShadowResolver', () => {
     const fragments = [
