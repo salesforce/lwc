@@ -7,7 +7,7 @@
 import { KEY__SHADOW_RESOLVER, KEY__SHADOW_STATIC } from '@lwc/shared';
 import '../index';
 
-describe('traverseAndSetShadowResolver', () => {
+describe('sets shadow resolver correctly on static trees', () => {
     const fragments = [
         '<div></div>',
         '<div>hello</div>',
