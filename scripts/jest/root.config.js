@@ -27,9 +27,9 @@ module.exports = {
     ],
     coverageThreshold: {
         global: {
-            branches: 60,
-            functions: 60,
-            lines: 70,
+            branches: 80,
+            functions: 90,
+            lines: 90,
         },
     },
     // Jest's default reporters are [clover, json, lcov, text]. We add the second text reporter to
