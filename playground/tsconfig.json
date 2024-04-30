@@ -4,25 +4,21 @@
         "strict": true,
 
         "declaration": true,
-        "declarationDir": "dist",
-        "sourceMap": true,
-        // Required to enable converting .js + map -> .ts
-        "inlineSources": true,
+        "declarationDir": "compiled",
+        "outDir": "compiled",
+        // "sourceMap": true, // Generate source map file
+        "inlineSourceMap": true, // Embed source map in the compiled JS
+        "inlineSources": true, // Include original TS in source map
 
         // To suppress issues with @types/jest + @types/mocha
         // CAUTION: may also hide other errors
         "skipLibCheck": true,
-
-        "outDir": "dist",
 
         "moduleResolution": "node",
         "esModuleInterop": true,
 
         "target": "ESNext",
         "lib": ["es2021", "DOM"],
-
-        // Rollup handles the JS transformation, but we need `tsc` to emit declaration files
-        "emitDeclarationOnly": true,
 
         "allowJs": true,
         "checkJs": true,
