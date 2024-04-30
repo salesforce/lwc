@@ -65,15 +65,15 @@ function traverseAndSetShadowResolver(root: Node, fn: any) {
             let sibling: Node | null;
             while (isNull((sibling = nextSiblingGetter.call(node!)))) {
                 if (node === root) {
-                    // We have traversed back up to the root; we are done
+                    // We never want to traverse up from the root; we are done
                     return;
                 }
                 // walk up
                 node = parentNodeGetter.call(node!);
-                if (node === root) {
-                    // We have traversed back up to the root; we are done
-                    return;
-                }
+            }
+            if (node === root) {
+                // We never want to traverse right from the root; we are done
+                return;
             }
             // walk right
             node = sibling;
