@@ -16,31 +16,55 @@ describe('sets shadow resolver correctly on static trees', () => {
         '<section><div></div><div>hello</div></section>',
         '<section><div>hello</div><div>hello</div></section>',
     ];
+
+    const scenarios = [
+        {},
+        {
+            withParent: true,
+        },
+        {
+            withParent: true,
+            withRightSibling: true,
+        },
+    ];
+
     fragments.forEach((fragment) => {
-        [false, true].forEach((hasParent) => {
-            it(`${fragment} ${hasParent ? 'with parent' : 'without parent'}`, () => {
-                const parent = document.createElement('div');
-                parent.innerHTML = fragment;
-                const root = parent.firstChild;
+        scenarios.forEach(({ withParent, withRightSibling }) => {
+            describe(`${withParent ? 'with parent' : 'without parent'}${
+                withRightSibling ? ' and right sibling' : ''
+            }`, () => {
+                it(fragment, () => {
+                    const parent = document.createElement('div');
+                    parent.innerHTML = fragment;
+                    const root = parent.firstChild;
 
-                if (!hasParent) {
-                    parent.removeChild(root!);
-                }
+                    if (!withParent) {
+                        parent.removeChild(root!);
+                    }
+                    const rightSibling = document.createElement('div');
+                    if (withRightSibling) {
+                        parent.appendChild(rightSibling);
+                    }
 
-                const resolver = () => {};
-                (root as any)[KEY__SHADOW_RESOLVER] = resolver;
-                (root as any)[KEY__SHADOW_STATIC] = true;
+                    const resolver = () => {};
+                    (root as any)[KEY__SHADOW_RESOLVER] = resolver;
+                    (root as any)[KEY__SHADOW_STATIC] = true;
 
-                const walker = document.createTreeWalker(
-                    root!,
-                    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
-                );
+                    const walker = document.createTreeWalker(
+                        root!,
+                        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
+                    );
 
-                let node: Node | null;
-                while ((node = walker.nextNode())) {
-                    expect((node as any)[KEY__SHADOW_RESOLVER]).toBe(resolver);
-                }
-                expect((parent as any)[KEY__SHADOW_RESOLVER]).toBeUndefined();
+                    let node: Node | null;
+                    // ensure the shadow resolver is set on all nodes in the tree
+                    while ((node = walker.nextNode())) {
+                        expect((node as any)[KEY__SHADOW_RESOLVER]).toBe(resolver);
+                    }
+                    // ensure we don't traverse up past the root
+                    for (const node of [parent, rightSibling]) {
+                        expect((node as any)[KEY__SHADOW_RESOLVER]).toBeUndefined();
+                    }
+                });
             });
         });
     });
