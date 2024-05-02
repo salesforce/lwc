@@ -164,7 +164,7 @@ function reorderAttributes(attributesRaw: string) {
     const numQuotes = attributesRaw.match(/"/g)?.length || 0;
     if (numQuotes % 2 !== 0) return attributesRaw;
 
-    const matches = [...attributesRaw.matchAll(/[:\w]+(="[^"]*")?/gi)];
+    const matches = [...attributesRaw.matchAll(/[:\w-]+(="[^"]*")?/gi)];
 
     const results = matches
         .map((_) => _[0])
