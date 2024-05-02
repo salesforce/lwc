@@ -12,7 +12,7 @@
         "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
-        "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc && node scripts/tasks/generate-license-files.js",
+        "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
         "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
@@ -72,6 +72,7 @@
         "*.{js,mjs,ts}": "eslint",
         "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
+        "{LICENSE-CORE.md,**/LICENSE.md,yarn.lock,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.js",
         "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
