@@ -119,24 +119,25 @@ function formatHTML(src: string): string {
                 // Keep advancing until consuming the closing tag.
             }
 
+            const isSelfClosing = src.charAt(pos - 2) === '/';
+
             // Adjust current depth and print the element tag or comment.
             if (isClosing) {
                 depth--;
             } else if (!isComment) {
-                // -1 to account for '>', trim to account for whitespace at the beginning
-                const attributesRaw = src.slice(posAfterTagName, pos - 1).trim();
+                // Offsets to account for '>' or '/>'
+                const endPos = isSelfClosing ? pos - 2 : pos - 1;
+                // Trim to account for whitespace at the beginning
+                const attributesRaw = src.slice(posAfterTagName, endPos).trim();
                 const attributesReordered = attributesRaw
                     ? ' ' + reorderAttributes(attributesRaw)
                     : '';
                 src =
-                    src.substring(0, posAfterTagName) +
-                    attributesReordered +
-                    src.substring(pos - 1);
+                    src.substring(0, posAfterTagName) + attributesReordered + src.substring(endPos);
             }
 
             res += getPadding() + src.slice(start, pos) + '\n';
 
-            const isSelfClosing = src.charAt(pos - 2) === '/';
             if (!isClosing && !isSelfClosing && !isVoid && !isComment) {
                 depth++;
             }
@@ -163,7 +164,7 @@ function reorderAttributes(attributesRaw: string) {
     const numQuotes = attributesRaw.match(/"/g)?.length || 0;
     if (numQuotes % 2 !== 0) return attributesRaw;
 
-    const matches = [...attributesRaw.matchAll(/[:a-z-]+(="[^"]*")?/gi)];
+    const matches = [...attributesRaw.matchAll(/[:\w]+(="[^"]*")?/gi)];
 
     const results = matches
         .map((_) => _[0])
