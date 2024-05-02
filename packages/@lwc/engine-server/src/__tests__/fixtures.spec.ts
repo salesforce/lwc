@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
@@ -26,8 +26,6 @@ jest.setTimeout(10_000 /* 10 seconds */);
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
-    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
@@ -42,14 +40,10 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 ],
             }),
         ],
-        onwarn(warning, warn) {
-            if (warning.message.includes('LWC1187')) {
-                // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
-                // The warning message is expected and appears when the compiler detects usage of the directive.
-                // We plan to remove the directive in a future release, see #3331 for details.
-                warnings.push(warning);
-            } else {
-                warn(warning);
+        onwarn({ message, code }) {
+            // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
+            if (!message.includes('LWC1187') && code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
             }
         },
     });
