@@ -26,8 +26,6 @@ jest.setTimeout(10_000 /* 10 seconds */);
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
-    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    // const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
@@ -43,7 +41,8 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             }),
         ],
         onwarn({ message, code }) {
-            if (!message.includes('LWC1187') && code !== 'CIRCULAR_DEPENDENCY') {
+            // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
+            if (!(message.includes('LWC1187') || code !== 'CIRCULAR_DEPENDENCY')) {
                 throw new Error(message);
             }
         },
