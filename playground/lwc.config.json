@@ -1,7 +1,7 @@
 {
     "modules": [
         {
-            "dir": "compiled/modules"
+            "dir": "src/modules"
         }
     ]
 }

@@ -8,7 +8,7 @@ const __ENV__ = process.env.NODE_ENV ?? 'development';
 /** @type {import("rollup").RollupOptionsFunction} */
 export default (args) => {
     return {
-        input: 'compiled/main.js',
+        input: 'src/main.ts',
 
         output: {
             file: 'dist/main.js',

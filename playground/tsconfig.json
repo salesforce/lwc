@@ -4,8 +4,8 @@
         "strict": true,
 
         "declaration": true,
-        "declarationDir": "compiled",
-        "outDir": "compiled",
+        "declarationDir": "dist",
+        "outDir": "dist",
         // "sourceMap": true, // Generate source map file
         "inlineSourceMap": true, // Embed source map in the compiled JS
         "inlineSources": true, // Include original TS in source map

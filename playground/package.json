@@ -5,10 +5,9 @@
     "type": "module",
     "description": "Playground project to experiment with LWC.",
     "scripts": {
-        "clean": "rm -rf compiled dist",
-        "compile": "cp -r src compiled && tsc",
+        "clean": "rm -rf dist",
         "dev": "rollup -c --watch",
-        "build": "yarn clean && yarn compile && NODE_ENV=production rollup -c"
+        "build": "NODE_ENV=production rollup -c"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "6.6.0",
