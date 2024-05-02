@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "6.6.0",
+    "version": "6.6.1",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -12,7 +12,7 @@
         "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
-        "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc && node scripts/tasks/generate-license-files.js",
+        "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
         "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
@@ -48,11 +48,11 @@
         "@typescript-eslint/eslint-plugin": "^7.7.0",
         "@typescript-eslint/parser": "^7.7.0",
         "bytes": "^3.1.2",
-        "es-module-lexer": "^1.5.0",
+        "es-module-lexer": "^1.5.2",
         "eslint": "^8.57.0",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-jest": "^28.2.0",
+        "eslint-plugin-jest": "^28.3.0",
         "glob": "^10.3.12",
         "husky": "^9.0.11",
         "isbinaryfile": "^5.0.2",
@@ -60,10 +60,10 @@
         "jest-environment-jsdom": "^29.7.0",
         "lint-staged": "^15.2.2",
         "magic-string": "^0.30.10",
-        "nx": "18.3.3",
+        "nx": "18.3.4",
         "prettier": "^2.8.8",
-        "rollup": "^4.16.1",
-        "terser": "^5.30.4",
+        "rollup": "^4.17.1",
+        "terser": "^5.31.0",
         "ts-jest": "^29.1.2",
         "tslib": "^2.6.1",
         "typescript": "5.4.5"
@@ -72,6 +72,7 @@
         "*.{js,mjs,ts}": "eslint",
         "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
+        "{LICENSE-CORE.md,**/LICENSE.md,yarn.lock,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.js",
         "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [

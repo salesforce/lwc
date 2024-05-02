@@ -64,6 +64,11 @@ async function main() {
         parser: 'markdown',
     });
 
+    // Check against current top-level license for changes
+    const shouldWarnChanges =
+        process.argv.includes('--test') &&
+        formattedLicense !== (await readFile('LICENSE.md', 'utf-8'));
+
     // Top level license
     await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
@@ -79,9 +84,17 @@ async function main() {
             await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
         })
     );
+
+    if (shouldWarnChanges) {
+        const relativeFilename = path.relative(process.cwd(), __filename);
+        throw new Error(
+            'Either the LWC core license or the license of a bundled dependency has been updated.\n' +
+                `Please run \`node ${relativeFilename}\` and commit the result.`
+        );
+    }
 }
 
 main().catch((err) => {
     console.error(err);
-    process.exit(1);
+    process.exitCode ||= 1;
 });
