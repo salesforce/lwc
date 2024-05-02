@@ -2,7 +2,6 @@ import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-import typescript from '@rollup/plugin-typescript';
 
 const __ENV__ = process.env.NODE_ENV ?? 'development';
 
@@ -18,7 +17,6 @@ export default (args) => {
         },
 
         plugins: [
-            typescript(),
             replace({
                 'process.env.NODE_ENV': JSON.stringify(__ENV__),
                 preventAssignment: true,

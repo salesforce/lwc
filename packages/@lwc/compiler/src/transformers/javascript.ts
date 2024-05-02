@@ -56,8 +56,6 @@ export default function scriptTransform(
     const plugins: babel.PluginItem[] = [
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
-        '@babel/plugin-transform-typescript',
-        // '@babel/plugin-syntax-typescript',
     ];
 
     if (!isAPIFeatureEnabled(APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, apiVersion)) {
