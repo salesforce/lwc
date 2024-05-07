@@ -5,19 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as babel from '@babel/core';
-import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
-import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
-import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
-import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
-import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
+import babelAsyncGeneratorFunctionsPlugin from '@babel/plugin-transform-async-generator-functions';
 import babelAsyncToGenPlugin from '@babel/plugin-transform-async-to-generator';
-import babelAsyncGeneratorFunctionsPlugin from '@babel/plugin-proposal-async-generator-functions';
-
+import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties';
+import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
+import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
+import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
-import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 
 /**
  * Transforms a JavaScript file.
