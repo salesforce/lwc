@@ -12,7 +12,7 @@
         "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
-        "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
+        "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
         "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
