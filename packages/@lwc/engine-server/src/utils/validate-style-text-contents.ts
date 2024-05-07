@@ -5,44 +5,46 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import * as parse5 from 'parse5';
-import { DocumentFragment } from '@parse5/tools';
-
-function isSingleStyleNodeContainingSingleTextNode(node: DocumentFragment) {
-    if (node.childNodes.length !== 1) {
-        return false;
-    }
-
-    const style = node.childNodes[0];
-
-    if (style.nodeName !== 'style' || style.childNodes.length !== 1) {
-        return false;
-    }
-
-    const textNode = style.childNodes[0];
-
-    return textNode.nodeName === '#text';
-}
+/**
+ * Per the HTML spec on restrictions for "raw text elements" like `<style>`:
+ * <blockquote>
+ * The text in raw text and escapable raw text elements must not contain any occurrences of the string
+ * "</" (U+003C LESS-THAN SIGN, U+002F SOLIDUS) followed by characters that case-insensitively match the tag name of
+ * the element followed by one of:
+ * - U+0009 CHARACTER TABULATION (tab)
+ * - U+000A LINE FEED (LF)
+ * - U+000C FORM FEED (FF)
+ * - U+000D CARRIAGE RETURN (CR)
+ * - U+0020 SPACE
+ * - U+003E GREATER-THAN SIGN (>), or
+ * - U+002F SOLIDUS (/)
+ * </blockquote>
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
+ */
+const INVALID_STYLE_CONTENT = /<\/style[\t\n\f\r >/]/i;
 
 /**
- * The text content inside `<style>` is a special case. It is _only_ rendered by the LWC engine itself; <style> tags
- * are disallowed inside of templates. Also, we want to avoid over-escaping, since CSS containing strings like
- * `&amp;` and `&quot;` is not valid CSS (even when inside a `<style>` element).
+ * The text content inside `<style>` is a special case. It is _only_ rendered by the LWC engine itself; `<style>` tags
+ * are disallowed inside of HTML templates.
  *
- * However, to avoid XSS attacks, we still need to check for things like `</style><script>alert("pwned")</script>`,
- * since a user could use that inside of a *.css file to break out of a <style> element.
+ * The `<style>` tag is unusual in how it's defined in HTML. Like `<script>`, it is considered a "raw text element,"
+ * which means that it is parsed as raw text, but certain character sequences are disallowed, namely to avoid XSS
+ * attacks like `</style><script>alert("pwned")</script>`.
+ *
+ * This also means that we cannot use "normal" HTML escaping inside `<style>` tags, e.g. we cannot use `&lt;`,
+ * `&gt;`, etc., because these are treated as-is by the HTML parser.
+ *
+ *
  * @param contents CSS source to validate
  * @throws Throws if the contents provided are not valid.
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#raw-text-elements
  * @see https://github.com/salesforce/lwc/issues/3439
  * @example
  * validateStyleTextContents('div { color: red }') // Ok
  * validateStyleTextContents('</style><script>alert("pwned")</script>') // Throws
  */
 export function validateStyleTextContents(contents: string): void {
-    // If parse5 parses this as more than one `<style>` tag, then it is unsafe to be rendered as-is
-    const fragment = parse5.parseFragment(`<style>${contents}</style>`);
-
-    if (!isSingleStyleNodeContainingSingleTextNode(fragment)) {
+    if (INVALID_STYLE_CONTENT.test(contents)) {
         throw new Error(
             'CSS contains unsafe characters and cannot be serialized inside a style element'
         );
