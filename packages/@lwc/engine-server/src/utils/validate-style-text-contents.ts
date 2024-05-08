@@ -7,18 +7,17 @@
 
 /**
  * Per the HTML spec on restrictions for "raw text elements" like `<style>`:
- * <blockquote>
- * The text in raw text and escapable raw text elements must not contain any occurrences of the string
- * "</" (U+003C LESS-THAN SIGN, U+002F SOLIDUS) followed by characters that case-insensitively match the tag name of
- * the element followed by one of:
- * - U+0009 CHARACTER TABULATION (tab)
- * - U+000A LINE FEED (LF)
- * - U+000C FORM FEED (FF)
- * - U+000D CARRIAGE RETURN (CR)
- * - U+0020 SPACE
- * - U+003E GREATER-THAN SIGN (>), or
- * - U+002F SOLIDUS (/)
- * </blockquote>
+ *
+ * > The text in raw text and escapable raw text elements must not contain any occurrences of the string
+ * > "</" (U+003C LESS-THAN SIGN, U+002F SOLIDUS) followed by characters that case-insensitively match the tag name of
+ * > the element followed by one of:
+ * > - U+0009 CHARACTER TABULATION (tab)
+ * > - U+000A LINE FEED (LF)
+ * > - U+000C FORM FEED (FF)
+ * > - U+000D CARRIAGE RETURN (CR)
+ * > - U+0020 SPACE
+ * > - U+003E GREATER-THAN SIGN (>), or
+ * > - U+002F SOLIDUS (/)
  * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
  */
 const INVALID_STYLE_CONTENT = /<\/style[\t\n\f\r >/]/i;
