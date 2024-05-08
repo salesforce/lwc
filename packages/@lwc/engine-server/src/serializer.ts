@@ -108,7 +108,6 @@ function serializeTextContent(contents: string, tagName?: string) {
     if (tagName === 'style') {
         // Special validation for <style> tags since their content must be served unescaped, and we need to validate
         // that the contents are safe to serialize unescaped.
-        // TODO [#3454]: move this validation to compilation
         validateStyleTextContents(contents);
         // If we haven't thrown an error during validation, then the content is safe to serialize unescaped
         return contents;
