@@ -8,7 +8,7 @@
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { walk } from 'estree-walker';
 import * as t from '../../shared/estree';
-import type { BaseNode } from 'estree';
+import type { BaseNode, Node } from 'estree';
 
 const ALWAYS_INVALID_TYPES = new Map(
     Object.entries({
@@ -96,7 +96,7 @@ function validateLiteral(node: t.Literal) {
     );
 }
 
-function validateNode(node: BaseNode, _parent: BaseNode, isWithinArrowFn: boolean) {
+function validateNode(node: BaseNode, _parent: BaseNode | null, isWithinArrowFn: boolean) {
     invariant(
         !node.leadingComments?.length && !node.trailingComments?.length,
         ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED
@@ -126,14 +126,18 @@ function validateNode(node: BaseNode, _parent: BaseNode, isWithinArrowFn: boolea
 
 export function validateExpressionAst(rootNode: BaseNode) {
     let arrowFnScopeDepth = 0;
-    walk(rootNode, {
-        enter(node: BaseNode, parent: BaseNode) {
+    // TODO [#3370]: when the template expression flag is removed, the
+    // ComplexExpression type should be redefined as an ESTree Node. Doing
+    // so when the flag is still in place results in a cascade of required
+    // type changes across the codebase.
+    walk(rootNode as Node, {
+        enter(node: Node, parent: Node | null) {
             validateNode(node, parent, !!arrowFnScopeDepth);
             if (t.isArrowFunctionExpression(node)) {
                 arrowFnScopeDepth++;
             }
         },
-        leave(node: BaseNode) {
+        leave(node: Node) {
             if (t.isArrowFunctionExpression(node)) {
                 arrowFnScopeDepth--;
             }

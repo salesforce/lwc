@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -246,8 +246,9 @@ export function installWireAdapters(vm: VM) {
         vm.debugInfo![WIRE_DEBUG_ENTRY] = create(null);
     }
 
-    const wiredConnecting = (context.wiredConnecting = []);
-    const wiredDisconnecting = (context.wiredDisconnecting = []);
+    const wiredConnecting: VM['context']['wiredConnecting'] = (context.wiredConnecting = []);
+    const wiredDisconnecting: VM['context']['wiredDisconnecting'] = (context.wiredDisconnecting =
+        []);
 
     for (const fieldNameOrMethod in wire) {
         const descriptor = wire[fieldNameOrMethod];

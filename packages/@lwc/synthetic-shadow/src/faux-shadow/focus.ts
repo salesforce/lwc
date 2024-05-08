@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -63,7 +63,7 @@ const FocusableSelector = `
 
 const formElementTagNames = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA']);
 
-function filterSequentiallyFocusableElements(elements: Element[]): Element[] {
+function filterSequentiallyFocusableElements<T extends Element>(elements: T[]): T[] {
     return elements.filter((element) => {
         if (hasAttribute.call(element, 'tabindex')) {
             // Even though LWC only supports tabindex values of 0 or -1,
@@ -133,8 +133,8 @@ export function hostElementFocus(this: HTMLElement) {
     }
 
     const focusables = arrayFromCollection(
-        querySelectorAll.call(this, FocusableSelector)
-    ) as HTMLElement[];
+        querySelectorAll.call(this, FocusableSelector) as NodeListOf<HTMLElement>
+    );
 
     let didFocus = false;
     while (!didFocus && focusables.length !== 0) {
@@ -150,11 +150,15 @@ export function hostElementFocus(this: HTMLElement) {
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
     const all = filterSequentiallyFocusableElements(
-        arrayFromCollection(documentQuerySelectorAll.call(doc, FocusableSelector))
+        arrayFromCollection(
+            documentQuerySelectorAll.call(doc, FocusableSelector) as NodeListOf<HTMLElement>
+        )
     );
     const inner = filterSequentiallyFocusableElements(
-        arrayFromCollection(querySelectorAll.call(host, FocusableSelector))
-    ) as HTMLElement[];
+        arrayFromCollection(
+            querySelectorAll.call(host, FocusableSelector) as NodeListOf<HTMLElement>
+        )
+    );
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             getAttribute.call(host, 'tabindex') === '-1' || isDelegatingFocus(host),
@@ -194,9 +198,9 @@ export function getActiveElement(host: HTMLElement): Element | null {
         : null;
 }
 
-function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): number {
+function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): number {
     // assert: target must be child of host
-    const pos = compareDocumentPosition.call(host, relatedTarget as Node);
+    const pos = compareDocumentPosition.call(host, relatedTarget);
     if (pos & DOCUMENT_POSITION_CONTAINED_BY) {
         // focus remains inside the host
         return 0;
@@ -225,15 +229,15 @@ function muteFocusEventsDuringExecution(win: Window, func: (...args: any[]) => a
 
 function focusOnNextOrBlur(
     segment: HTMLElement[],
-    target: EventTarget,
-    relatedTarget: EventTarget
+    target: HTMLElement,
+    relatedTarget: HTMLElement
 ) {
-    const win = getOwnerWindow(relatedTarget as Node);
+    const win = getOwnerWindow(relatedTarget);
     const next = getNextTabbable(segment, relatedTarget);
     if (isNull(next)) {
         // nothing to focus on, blur to invalidate the operation
         muteFocusEventsDuringExecution(win, () => {
-            (target as HTMLElement).blur();
+            target.blur();
         });
     } else {
         muteFocusEventsDuringExecution(win, () => {
@@ -258,8 +262,8 @@ function skipHostHandler(event: FocusEvent) {
         return;
     }
 
-    const host = eventCurrentTargetGetter.call(event);
-    const target = eventTargetGetter.call(event);
+    const host = eventCurrentTargetGetter.call(event) as HTMLElement | null;
+    const target = eventTargetGetter.call(event) as HTMLElement;
 
     // If the host delegating focus with tabindex=0 is not the target, we know
     // that the event was dispatched on a descendant node of the host. This
@@ -269,7 +273,7 @@ function skipHostHandler(event: FocusEvent) {
         return;
     }
 
-    const relatedTarget = focusEventRelatedTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event) as HTMLElement | null;
     if (isNull(relatedTarget)) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
         // browser chrome. We could probably deduce whether focus is coming in from the top or the
@@ -279,12 +283,12 @@ function skipHostHandler(event: FocusEvent) {
         return;
     }
 
-    const segments = getTabbableSegments(host as HTMLElement);
+    const segments = getTabbableSegments(host);
 
-    const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
+    const position = relatedTargetPosition(host, relatedTarget);
     if (position === 1) {
         // Focus is coming from above
-        const findTabbableElms = isTabbableFrom.bind(null, (host as Node).getRootNode());
+        const findTabbableElms = isTabbableFrom.bind(null, host.getRootNode());
         const first = ArrayFind.call(segments.inner, findTabbableElms);
         if (!isUndefined(first)) {
             const win = getOwnerWindow(first);
@@ -305,7 +309,7 @@ function skipShadowHandler(event: FocusEvent) {
         return;
     }
 
-    const relatedTarget = focusEventRelatedTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event) as HTMLElement | null;
     if (isNull(relatedTarget)) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
         // browser chrome. We could probably deduce whether focus is coming in from the top or the
@@ -357,12 +361,12 @@ function isTabbableFrom(fromRoot: Node, toElm: HTMLElement): boolean {
     return true;
 }
 
-function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): HTMLElement | null {
+function getNextTabbable(tabbables: HTMLElement[], relatedTarget: HTMLElement): HTMLElement | null {
     const len = tabbables.length;
     if (len > 0) {
         for (let i = 0; i < len; i += 1) {
             const next = tabbables[i];
-            if (isTabbableFrom((relatedTarget as Node).getRootNode(), next)) {
+            if (isTabbableFrom(relatedTarget.getRootNode(), next)) {
                 return next;
             }
         }

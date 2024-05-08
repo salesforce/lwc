@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "6.5.0",
+    "version": "6.6.3",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -13,14 +13,13 @@
     "//": [
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
         "Also note we are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.",
-        "Breaking change: https://github.com/google/tachometer/issues/244",
-        "Also note that we use legacy versions of rollup-plugin-node-resolve and rollup-plugin-commonjs because Best uses an old version of Rollup."
+        "Breaking change: https://github.com/google/tachometer/issues/244"
     ],
     "dependencies": {
-        "@lwc/engine-dom": "6.5.0",
-        "@lwc/engine-server": "6.5.0",
-        "@lwc/perf-benchmarks-components": "6.5.0",
-        "@lwc/synthetic-shadow": "6.5.0"
+        "@lwc/engine-dom": "6.6.3",
+        "@lwc/engine-server": "6.6.3",
+        "@lwc/perf-benchmarks-components": "6.6.3",
+        "@lwc/synthetic-shadow": "6.6.3"
     },
     "devDependencies": {
         "@best/cli": "^12.0.2",

@@ -14,6 +14,7 @@ const { rollup } = require('rollup');
 const replace = require('@rollup/plugin-replace');
 const typescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
@@ -148,15 +149,11 @@ module.exports = {
 
     plugins: [
         nodeResolve({
-            // These are the devDeps that may be inlined into the dist/ bundles
-            // These include packages owned by us (LWC, observable-membrane), as well as parse5
-            // and its single dependency, which are bundled because it makes it simpler to distribute
+            // These are the dependencies that, when used as devDeps, should be inlined into the dist/ bundles
             resolveOnly: [
                 /^@lwc\//,
-                'observable-membrane',
-                /^parse5($|\/)/,
-                'entities',
-                /^@parse5\/tools/,
+                // capture the package itself (e.g. `foo`) plus its files (e.g. `foo/bar.js`)
+                ...BUNDLED_DEPENDENCIES.map((dep) => new RegExp(`^${dep}($|/)`)),
             ],
         }),
         ...sharedPlugins(),

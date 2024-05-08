@@ -138,6 +138,10 @@ function previousSibling(node: N) {
     return getSibling(node, -1);
 }
 
+function getParentNode(node: N) {
+    return node[HostParentKey];
+}
+
 function attachShadow(element: E, config: ShadowRootInit) {
     element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
@@ -380,7 +384,11 @@ function createCustomElement(
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
 // synthetic shadow.
-const insertStylesheet = noop as (content: string, target: any) => void;
+const insertStylesheet = noop as (
+    content: string,
+    target: ShadowRoot | undefined,
+    signal: AbortSignal | undefined
+) => void;
 const addEventListener = noop as (
     target: HostNode,
     type: string,
@@ -477,4 +485,5 @@ export const renderer = {
     registerContextConsumer,
     attachInternals,
     defineCustomElement: getUpgradableElement,
+    getParentNode,
 };

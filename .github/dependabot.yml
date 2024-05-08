@@ -3,14 +3,18 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "weekly"
-    groups:
-      # Non-major version bumps hopefully shouldn't break anything,
-      # so let's group them together into a single PR!
-      theoretically-non-breaking:
-        update-types:
-          - "minor"
-          - "patch"
+    - package-ecosystem: 'npm' # See documentation for possible values
+      directory: '/' # Location of package manifests
+      schedule:
+          interval: 'weekly'
+      groups:
+          # Non-major version bumps hopefully shouldn't break anything,
+          # so let's group them together into a single PR!
+          theoretically-non-breaking:
+              update-types:
+                  - 'minor'
+                  - 'patch'
+      ignore:
+          # We are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.
+          # See: https://github.com/google/tachometer/issues/244
+          - dependency-name: 'tachometer'

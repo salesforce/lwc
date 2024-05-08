@@ -37,3 +37,4 @@ export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
 export { createElement } from './apis/create-element';
 export { createContextProvider } from './context';
+export { hot, swapComponent, swapStyle, swapTemplate } from './apis/hot-swaps';

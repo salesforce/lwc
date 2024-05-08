@@ -18,6 +18,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import type { Node } from 'estree';
 import type CodeGen from './codegen';
 
 type VariableName = string;
@@ -50,7 +51,11 @@ export function bindComplexExpression(
     codeGen: CodeGen
 ): t.Expression {
     const expressionScopes = new ExpressionScopes();
-    walk(expression, {
+    // TODO [#3370]: when the template expression flag is removed, the
+    // ComplexExpression type should be redefined as an ESTree Node. Doing
+    // so when the flag is still in place results in a cascade of required
+    // type changes across the codebase.
+    walk(expression as Node, {
         enter(node, _parent) {
             // Function and class expressions are not permitted in template expressions,
             // only arrow function expressions.

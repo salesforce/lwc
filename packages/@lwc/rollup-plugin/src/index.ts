@@ -16,6 +16,8 @@ import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {
+    /** A boolean indicating whether to compile for SSR runtime target. */
+    targetSSR?: boolean;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should transform on. By default all files are targeted. */
     include?: FilterPattern;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should not transform. By default no files are ignored. */
@@ -154,6 +156,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
     let { rootDir, modules = [] } = pluginOptions;
     const {
+        targetSSR,
         stylesheetConfig,
         sourcemap = false,
         preserveHtmlComments,
@@ -336,6 +339,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 ...('enableStaticContentOptimization' in pluginOptions && {
                     enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
                 }),
+                targetSSR,
             });
 
             if (warnings) {

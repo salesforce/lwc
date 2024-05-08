@@ -15,6 +15,21 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 import { getComponentInternalDef } from './def';
+import { assertNotProd } from './utils';
+
+// These are only used for HMR in dev mode
+// The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
+let stylesheetsToCssContent: WeakMap<StylesheetFactory, Set<string>> = /*@__PURE__@*/ new WeakMap();
+let cssContentToAbortControllers: Map<string, AbortController> = /*@__PURE__@*/ new Map();
+
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
+    // Used to reset the global state between test runs
+    (window as any).__lwcResetStylesheetCache = () => {
+        stylesheetsToCssContent = new WeakMap();
+        cssContentToAbortControllers = new Map();
+    };
+}
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -32,6 +47,36 @@ export type StylesheetFactory = (
  * the @import CSS declaration).
  */
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
+
+function linkStylesheetToCssContentInDevMode(stylesheet: StylesheetFactory, cssContent: string) {
+    // Should never leak to prod; only used for HMR
+    assertNotProd();
+    let cssContents = stylesheetsToCssContent.get(stylesheet);
+    if (isUndefined(cssContents)) {
+        cssContents = new Set();
+        stylesheetsToCssContent.set(stylesheet, cssContents);
+    }
+    cssContents.add(cssContent);
+}
+
+function getOrCreateAbortControllerInDevMode(cssContent: string) {
+    // Should never leak to prod; only used for HMR
+    assertNotProd();
+    let abortController = cssContentToAbortControllers.get(cssContent);
+    if (isUndefined(abortController)) {
+        abortController = new AbortController();
+        cssContentToAbortControllers.set(cssContent, abortController);
+    }
+    return abortController;
+}
+
+function getOrCreateAbortSignal(cssContent: string): AbortSignal | undefined {
+    // abort controller/signal is only used for HMR in development
+    if (process.env.NODE_ENV !== 'production') {
+        return getOrCreateAbortControllerInDevMode(cssContent).signal;
+    }
+    return undefined;
+}
 
 function makeHostToken(token: string) {
     // Note: if this ever changes, update the `cssScopeTokens` returned by `@lwc/compiler`
@@ -187,10 +232,17 @@ function evaluateStylesheetsContent(
                 }
                 useNativeDirPseudoclass = isNull(root) || root.shadowMode === ShadowMode.Native;
             }
-            ArrayPush.call(
-                content,
-                stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass)
+            const cssContent = stylesheet(
+                scopeToken,
+                useActualHostSelector,
+                useNativeDirPseudoclass
             );
+
+            if (process.env.NODE_ENV !== 'production') {
+                linkStylesheetToCssContentInDevMode(stylesheet, cssContent);
+            }
+
+            ArrayPush.call(content, cssContent);
         }
     }
 
@@ -280,7 +332,8 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null 
     } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertStylesheet(stylesheets[i]);
+            const stylesheet = stylesheets[i];
+            insertStylesheet(stylesheet, undefined, getOrCreateAbortSignal(stylesheet));
         }
     } else if (!process.env.IS_BROWSER || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
@@ -295,8 +348,29 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null 
         // null root means a global style
         const target = isNull(root) ? undefined : root.shadowRoot!;
         for (let i = 0; i < stylesheets.length; i++) {
-            insertStylesheet(stylesheets[i], target);
+            const stylesheet = stylesheets[i];
+            insertStylesheet(stylesheet, target, getOrCreateAbortSignal(stylesheet));
         }
     }
     return null;
+}
+
+export function unrenderStylesheet(stylesheet: StylesheetFactory) {
+    // should never leak to prod; only used for HMR
+    assertNotProd();
+    const cssContents = stylesheetsToCssContent.get(stylesheet);
+    /* istanbul ignore if */
+    if (isUndefined(cssContents)) {
+        throw new Error('Cannot unrender stylesheet which was never rendered');
+    }
+    for (const cssContent of cssContents) {
+        const abortController = cssContentToAbortControllers.get(cssContent);
+        /* istanbul ignore if */
+        if (isUndefined(abortController)) {
+            throw new Error('Cannot find AbortController for CSS content');
+        }
+        abortController.abort();
+        // remove association with AbortController in case stylesheet is rendered again
+        cssContentToAbortControllers.delete(cssContent);
+    }
 }
