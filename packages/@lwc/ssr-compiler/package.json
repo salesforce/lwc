@@ -50,7 +50,7 @@
         "@lwc/template-compiler": "6.6.3",
         "acorn": "8.11.3",
         "astring": "^1.8.6",
-        "estree-toolkit": "^1.7.3",
+        "estree-toolkit": "^1.7.5",
         "immer": "^10.1.1",
         "meriyah": "^4.3.8"
     },
