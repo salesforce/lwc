@@ -27,7 +27,10 @@ export interface WireAdapterConstructor<
     Value = any,
     Context extends ContextValue = ContextValue
 > {
-    new (callback: DataCallback<Value>): WireAdapter<Config, Context>;
+    new (callback: DataCallback<Value>, sourceContext?: { tagName: string }): WireAdapter<
+        Config,
+        Context
+    >;
     configSchema?: Record<keyof Config, WireAdapterSchemaValue>;
     contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
 }
