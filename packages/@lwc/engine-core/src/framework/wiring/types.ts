@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -8,21 +8,28 @@
 import type { LightningElement } from '../base-lightning-element';
 import type { HostElement } from '../renderer';
 
-export type DataCallback = (value: any) => void;
+export type DataCallback<T = any> = (value: T) => void;
 export type ConfigValue = Record<string, any>;
 export type WireAdapterSchemaValue = 'optional' | 'required';
 export type ContextValue = Record<string, any>;
 
-export interface WireAdapter {
-    update(config: ConfigValue, context?: ContextValue): void;
+export interface WireAdapter<
+    Config extends ConfigValue = ConfigValue,
+    Context extends ContextValue = ContextValue
+> {
+    update(config: Config, context?: Context): void;
     connect(): void;
     disconnect(): void;
 }
 
-export interface WireAdapterConstructor {
-    new (callback: DataCallback, sourceContext?: { tagName: string }): WireAdapter;
-    configSchema?: Record<string, WireAdapterSchemaValue>;
-    contextSchema?: Record<string, WireAdapterSchemaValue>;
+export interface WireAdapterConstructor<
+    Config extends ConfigValue = ConfigValue,
+    Value = any,
+    Context extends ContextValue = ContextValue
+> {
+    new (callback: DataCallback<Value>): WireAdapter<Config, Context>;
+    configSchema?: Record<keyof Config, WireAdapterSchemaValue>;
+    contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
 }
 
 export interface WireDef {
