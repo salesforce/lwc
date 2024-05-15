@@ -493,8 +493,9 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
                     if (isExpression(value)) {
-                        const classExpression = codeGen.bindExpression(value);
-                        data.push(t.property(t.identifier('className'), classExpression));
+                        data.push(
+                            t.property(t.identifier('className'), codeGen.genClassExpression(value))
+                        );
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(

@@ -11,6 +11,8 @@ import {
     SVG_NAMESPACE,
     STATIC_PART_TOKEN_ID,
     isUndefined,
+    APIFeature,
+    isAPIFeatureEnabled,
 } from '@lwc/shared';
 
 import * as t from '../shared/estree';
@@ -79,7 +81,8 @@ type RenderPrimitive =
     | 'fragment'
     | 'staticFragment'
     | 'scopedSlotFactory'
-    | 'staticPart';
+    | 'staticPart'
+    | 'normalizeClassName';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -108,6 +111,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     staticPart: { name: 'sp', alias: 'api_static_part' },
     tabindex: { name: 'ti', alias: 'api_tab_index' },
     text: { name: 't', alias: 'api_text' },
+    normalizeClassName: { name: 'ncls', alias: 'api_normalize_class_name' },
 };
 
 interface Scope {
@@ -306,6 +310,22 @@ export default class CodeGen {
             return this._renderApiCall(RENDER_APIS.scopedFragId, [t.literal(id)]);
         }
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
+    }
+
+    genClassExpression(value: Expression) {
+        let classExpression = this.bindExpression(value);
+        const isClassNameObjectBindingEnabled = isAPIFeatureEnabled(
+            APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING,
+            this.state.config.apiVersion
+        );
+        if (isClassNameObjectBindingEnabled) {
+            classExpression = this.genNormalizeClassName(classExpression);
+        }
+        return classExpression;
+    }
+
+    genNormalizeClassName(className: t.Expression): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className]);
     }
 
     /**
@@ -699,8 +719,12 @@ export default class CodeGen {
                             );
                         } else if (name === 'class') {
                             partToken = `${STATIC_PART_TOKEN_ID.CLASS}${partId}`;
+
                             databag.push(
-                                t.property(t.identifier('className'), this.bindExpression(value))
+                                t.property(
+                                    t.identifier('className'),
+                                    this.genClassExpression(value)
+                                )
                             );
                         } else {
                             partToken = `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${name}`;

@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<section${"c0"}${2}><p${"c1"}${2}></p></section>`;
+const $fragment1 = parseFragment`<div${"c0"}${2}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     ncls: api_normalize_class_name,
@@ -11,14 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: api_normalize_class_name($cmp.foo.c),
-        },
-        null
-      ),
-      api_static_part(
-        1,
-        {
-          className: api_normalize_class_name($cmp.bar.c),
+          className: api_normalize_class_name($cmp.computed),
         },
         null
       ),
