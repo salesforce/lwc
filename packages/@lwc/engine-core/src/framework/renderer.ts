@@ -60,6 +60,7 @@ export interface RendererAPI {
     getLastChild: (element: E) => N | null;
     getLastElementChild: (element: E) => E | null;
     getTagName: (element: E) => string;
+    getStyle: (elm: E) => CSSStyleDeclaration;
     isConnected: (node: N) => boolean;
     insertStylesheet: (
         content: string,
