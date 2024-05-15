@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./template-outside-scope-reference.css";
+import _implicitScopedStylesheets from "./template-outside-scope-reference.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 const $fragment2 = parseFragment`<p${3}>${"t1"}</p>`;
 const $fragment3 = parseFragment`<p${3}>${"t1"}</p>`;
@@ -41,3 +43,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-5jakk9rc2bg";
+tmpl.legacyStylesheetToken =
+  "x-template-outside-scope-reference_template-outside-scope-reference";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./dynamic-name.css";
+import _implicitScopedStylesheets from "./dynamic-name.scoped.css?scoped=true";
 import _nsCmp from "ns/cmp";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -17,3 +19,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-619lvcnih24";
+tmpl.legacyStylesheetToken = "x-dynamic-name_dynamic-name";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

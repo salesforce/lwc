@@ -13,6 +13,7 @@ yarn add --dev @lwc/template-compiler
 ```js
 import { compile } from '@lwc/template-compiler';
 
+const filename = 'component.html';
 const options = {};
 const { code, warnings } = compile(
     `
@@ -20,6 +21,7 @@ const { code, warnings } = compile(
         <h1>Hello World!</h1>
     </template>
 `,
+    filename,
     options
 );
 
@@ -44,10 +46,13 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 **Parameters:**
 
 -   `source` (string, required) - the HTML template source to compile.
+-   `filename` (string, required) - the source filename with extension.
 -   `options` (object, required) - the options to used to compile the HTML template source.
 
 **Options:**
 
+-   `name` (type: `string`, optional, `undefined` by default) - name of the component, e.g. `foo` in `x/foo`.
+-   `namespace` (type: `string`, optional, `undefined` by default) - namespace of the component, e.g. `x` in `x/foo`.
 -   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
 -   `experimentalComplexExpressions` (boolean, optional, `false` by default) - set to `true` to enable use of (a subset of) JavaScript expressions in place of template bindings.
 -   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow the usage of `lwc:dynamic` directives in the template.

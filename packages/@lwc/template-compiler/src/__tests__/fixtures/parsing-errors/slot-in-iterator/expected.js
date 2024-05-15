@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./slot-in-iterator.css";
+import _implicitScopedStylesheets from "./slot-in-iterator.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 1,
 };
@@ -19,3 +21,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7vp41askmik";
+tmpl.legacyStylesheetToken = "x-slot-in-iterator_slot-in-iterator";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./secure-template.css";
+import _implicitScopedStylesheets from "./secure-template.scoped.css?scoped=true";
 import _xTest from "x/test";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -10,3 +12,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3e181pmdmpc";
+tmpl.legacyStylesheetToken = "x-secure-template_secure-template";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

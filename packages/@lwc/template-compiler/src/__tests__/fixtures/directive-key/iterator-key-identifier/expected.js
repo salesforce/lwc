@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./iterator-key-identifier.css";
+import _implicitScopedStylesheets from "./iterator-key-identifier.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 const stc0 = {
   key: 0,
@@ -33,3 +35,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-mk60ujrh6t";
+tmpl.legacyStylesheetToken =
+  "x-iterator-key-identifier_iterator-key-identifier";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

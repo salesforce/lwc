@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./nested-iterator-if.css";
+import _implicitScopedStylesheets from "./nested-iterator-if.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"a0:data-islast"}${"a0:data-isfirst"}${3}><span${3}>${"t2"}</span>${"t3"}</div>`;
 const $fragment2 = parseFragment`<div${3}>Text</div>`;
 const stc0 = {
@@ -50,3 +52,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-s0e1j42tjc";
+tmpl.legacyStylesheetToken = "x-nested-iterator-if_nested-iterator-if";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

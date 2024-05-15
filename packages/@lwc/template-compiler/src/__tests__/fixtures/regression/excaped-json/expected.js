@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./excaped-json.css";
+import _implicitScopedStylesheets from "./excaped-json.scoped.css?scoped=true";
 import _xTest from "x/test";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     json: '[{"column":"ID","value":"5e","operator":"equals","f":true}]',
@@ -13,3 +15,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2mip20h8vh2";
+tmpl.legacyStylesheetToken = "x-excaped-json_excaped-json";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

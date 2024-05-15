@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./attribute-multiple.css";
+import _implicitScopedStylesheets from "./attribute-multiple.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<section${"c0"}${2}><p${"c1"}${2}></p></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -28,3 +30,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3qo8eqopgq6";
+tmpl.legacyStylesheetToken = "x-attribute-multiple_attribute-multiple";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

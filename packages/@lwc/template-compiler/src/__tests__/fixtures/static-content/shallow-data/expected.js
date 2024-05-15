@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./shallow-data.css";
+import _implicitScopedStylesheets from "./shallow-data.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"a0:data-name"}${"s0"}${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
@@ -24,5 +26,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
-tmpl.stylesheets = [];
 tmpl.hasRefs = true;
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1li76rtl7bn";
+tmpl.legacyStylesheetToken = "x-shallow-data_shallow-data";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

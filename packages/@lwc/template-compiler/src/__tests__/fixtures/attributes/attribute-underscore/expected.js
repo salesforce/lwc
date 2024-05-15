@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./attribute-underscore.css";
+import _implicitScopedStylesheets from "./attribute-underscore.scoped.css?scoped=true";
 import _xButton from "x/button";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     foo__bar: "underscore",
@@ -29,3 +31,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-36q7c97l1ni";
+tmpl.legacyStylesheetToken = "x-attribute-underscore_attribute-underscore";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

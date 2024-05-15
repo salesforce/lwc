@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./boolean.css";
+import _implicitScopedStylesheets from "./boolean.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>x</p>`;
 const $fragment2 = parseFragment`<input${"a0:readonly"} disabled title="foo"${3}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -21,3 +23,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7c5u711os5r";
+tmpl.legacyStylesheetToken = "x-boolean_boolean";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

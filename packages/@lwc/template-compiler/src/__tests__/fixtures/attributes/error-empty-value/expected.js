@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./error-empty-value.css";
+import _implicitScopedStylesheets from "./error-empty-value.scoped.css?scoped=true";
 import _fooBar from "foo/bar";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p title=""${3}></p>`;
 const stc0 = {
   props: {
@@ -18,3 +20,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-5kto7mbkvvs";
+tmpl.legacyStylesheetToken = "x-error-empty-value_error-empty-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

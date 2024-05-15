@@ -15,6 +15,12 @@ import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
 
 export interface Config {
+    /** The name of the component. For example, the name in `<my-component>` is `"component"`. */
+    name?: string;
+
+    /** The namespace of the component. For example, the namespace in `<my-component>` is `"my"`. */
+    namespace?: string;
+
     /**
      * Specification to use to determine which nodes in the template require custom renderer hooks.
      */
@@ -85,9 +91,10 @@ export interface Config {
      */
     apiVersion?: number;
 }
-
-export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig' | 'instrumentation'>> &
-    Partial<Pick<Config, 'customRendererConfig' | 'instrumentation'>>;
+type OptionalConfigNames = 'customRendererConfig' | 'instrumentation' | 'namespace' | 'name';
+type RequiredConfigOptions = Required<Omit<Config, OptionalConfigNames>>;
+type OptionalConfigOptions = Partial<Pick<Config, OptionalConfigNames>>;
+export type NormalizedConfig = RequiredConfigOptions & OptionalConfigOptions;
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
@@ -101,6 +108,8 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'enableDynamicComponents',
     'preserveHtmlComments',
     'instrumentation',
+    'namespace',
+    'name',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {

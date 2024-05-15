@@ -1,7 +1,9 @@
+import _implicitStylesheets from "./id.css";
+import _implicitScopedStylesheets from "./id.scoped.css?scoped=true";
 import _xSubject from "x/subject";
 import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<input${"a0:id"}${3}>`;
 const $fragment2 = parseFragment`<p${"a0:id"}${3}>description text</p>`;
 const $fragment3 = parseFragment`<input${"a0:aria-describedby"}${3}>`;
@@ -108,3 +110,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6rsnvsuaeq1";
+tmpl.legacyStylesheetToken = "x-id_id";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

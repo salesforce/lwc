@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./named-slot-in-iterator.css";
+import _implicitScopedStylesheets from "./named-slot-in-iterator.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   attrs: {
     name: "james",
@@ -22,3 +24,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["james"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-66hm9o8u2h";
+tmpl.legacyStylesheetToken = "x-named-slot-in-iterator_named-slot-in-iterator";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

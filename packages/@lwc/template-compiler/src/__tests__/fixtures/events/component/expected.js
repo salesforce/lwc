@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./component.css";
+import _implicitScopedStylesheets from "./component.scoped.css?scoped=true";
 import _nsFoo from "ns/foo";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -20,3 +22,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6a8uqob2ku4";
+tmpl.legacyStylesheetToken = "x-component_component";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

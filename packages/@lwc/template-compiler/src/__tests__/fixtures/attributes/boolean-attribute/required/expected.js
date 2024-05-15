@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./required.css";
+import _implicitScopedStylesheets from "./required.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<input required value="boolean present"${3}>`;
 const $fragment2 = parseFragment`<input required="" value="empty string"${3}>`;
 const $fragment3 = parseFragment`<input required="other than true" value="string value"${3}>`;
@@ -72,3 +74,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3ohsg11uo67";
+tmpl.legacyStylesheetToken = "x-required_required";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

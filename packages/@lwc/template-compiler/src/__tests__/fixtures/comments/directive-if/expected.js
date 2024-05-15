@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./directive-if.css";
+import _implicitScopedStylesheets from "./directive-if.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>true branch</p>`;
 const $fragment2 = parseFragment`<p${3}>false branch</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -13,3 +15,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6a2nu6tldoq";
+tmpl.legacyStylesheetToken = "x-directive-if_directive-if";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

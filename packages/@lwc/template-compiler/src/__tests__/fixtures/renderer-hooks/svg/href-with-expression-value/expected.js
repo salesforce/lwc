@@ -1,4 +1,11 @@
-import { parseSVGFragment, registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./href-with-expression-value.css";
+import _implicitScopedStylesheets from "./href-with-expression-value.scoped.css?scoped=true";
+import {
+  freezeTemplate,
+  parseSVGFragment,
+  registerTemplate,
+  renderer,
+} from "lwc";
 const $fragment1 = parseSVGFragment`<circle${"a0:id"} cx="5" cy="5" r="4" stroke="black"${3}/>`;
 const stc0 = {
   attrs: {
@@ -45,3 +52,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-4i58lt2008n";
+tmpl.legacyStylesheetToken =
+  "x-href-with-expression-value_href-with-expression-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

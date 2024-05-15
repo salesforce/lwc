@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./handler-memoization.css";
+import _implicitScopedStylesheets from "./handler-memoization.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<button${3}>New</button>`;
 const $fragment2 = parseFragment`<li${3}>${"t1"}<button${3}>[X]</button></li>`;
 const stc0 = {
@@ -50,3 +52,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3trccpvgsbq";
+tmpl.legacyStylesheetToken = "x-handler-memoization_handler-memoization";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

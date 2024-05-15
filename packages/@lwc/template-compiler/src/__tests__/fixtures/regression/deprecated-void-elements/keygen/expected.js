@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./keygen.css";
+import _implicitScopedStylesheets from "./keygen.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<input type="text"${3}>`;
 const $fragment2 = parseFragment`<keygen name="name" challenge="some challenge" keytype="type" keyparams="some-params"${3}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -12,3 +14,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-1tm45udomu6";
+tmpl.legacyStylesheetToken = "x-keygen_keygen";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

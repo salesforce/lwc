@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./preserve-comments-off-with-parts.css";
+import _implicitScopedStylesheets from "./preserve-comments-off-with-parts.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><button data-id="foo"${"a1:data-dynamic"}${"s1"}${"c1"}${2}>foo</button><button data-id="bar"${"a3:data-dynamic"}${"s3"}${"c3"}${2}>bar</button></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -45,5 +47,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
-tmpl.stylesheets = [];
 tmpl.hasRefs = true;
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-vgq39e7dj1";
+tmpl.legacyStylesheetToken =
+  "x-preserve-comments-off-with-parts_preserve-comments-off-with-parts";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

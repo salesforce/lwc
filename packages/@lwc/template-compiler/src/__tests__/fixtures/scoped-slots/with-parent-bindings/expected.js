@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./with-parent-bindings.css";
+import _implicitScopedStylesheets from "./with-parent-bindings.scoped.css?scoped=true";
 import _xList from "x/list";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}>${"t1"}</div>`;
 const $fragment2 = parseFragment`<span${3}>${"t1"}</span>`;
 const stc0 = {
@@ -42,3 +44,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ft0hnohr70";
+tmpl.legacyStylesheetToken = "x-with-parent-bindings_with-parent-bindings";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

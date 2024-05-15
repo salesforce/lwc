@@ -1,4 +1,6 @@
-import { parseSVGFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./filter.css";
+import _implicitScopedStylesheets from "./filter.scoped.css?scoped=true";
+import { freezeTemplate, parseSVGFragment, registerTemplate } from "lwc";
 const $fragment1 = parseSVGFragment`<feFlood x="25%" y="25%" width="50%" height="50%" flood-color="green" flood-opacity="0.75"${3}/>`;
 const $fragment2 = parseSVGFragment`<feBlend x="25%" y="25%" width="50%" height="50%" in2="SourceGraphic" mode="multiply"${3}/>`;
 const $fragment3 = parseSVGFragment`<feMerge x="25%" y="25%" width="50%" height="50%"${3}><feMergeNode in="SourceGraphic"${3}/><feMergeNode in="FillPaint"${3}/></feMerge>`;
@@ -123,3 +125,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3thc4kq8dg9";
+tmpl.legacyStylesheetToken = "x-filter_filter";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

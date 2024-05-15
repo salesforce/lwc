@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./text-node-adjacency.css";
+import _implicitScopedStylesheets from "./text-node-adjacency.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<section${3}><div${3}>${"t2"}</div><div${3}>${"t4"}</div><div${3}>${"t6"}</div><div${3}>${"t8"}</div><div${3}>${"t10"}</div><div${3}>${"t12"}</div><div${3}>${"t14"}</div><div${3}>${"t16"}</div><div${3}>${"t18"}</div></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -47,3 +49,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6kcfs482gvt";
+tmpl.legacyStylesheetToken = "x-text-node-adjacency_text-node-adjacency";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

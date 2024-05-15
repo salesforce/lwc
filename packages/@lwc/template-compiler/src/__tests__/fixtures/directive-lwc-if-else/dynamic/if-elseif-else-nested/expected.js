@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./if-elseif-else-nested.css";
+import _implicitScopedStylesheets from "./if-elseif-else-nested.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<h1${3}>outer if</h1>`;
 const $fragment2 = parseFragment`<h1${3}>outer elseif</h1>`;
 const $fragment3 = parseFragment`<h1${3}>inner if</h1>`;
@@ -49,3 +51,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2ejbkifb08c";
+tmpl.legacyStylesheetToken = "x-if-elseif-else-nested_if-elseif-else-nested";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

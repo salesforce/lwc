@@ -1,6 +1,13 @@
+import _implicitStylesheets from "./mixed-props-attrs.css";
+import _implicitScopedStylesheets from "./mixed-props-attrs.scoped.css?scoped=true";
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
+import {
+  freezeTemplate,
+  parseFragment,
+  registerTemplate,
+  sanitizeAttribute,
+} from "lwc";
 const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
 const $fragment2 = parseFragment`<table bgcolor="x"${3}></table>`;
 const $fragment3 = parseFragment`<div${"c0"} aria-hidden="hidden"${2}></div>`;
@@ -81,3 +88,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-cfdictrqeg";
+tmpl.legacyStylesheetToken = "x-mixed-props-attrs_mixed-props-attrs";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

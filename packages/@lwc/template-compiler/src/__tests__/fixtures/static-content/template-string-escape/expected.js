@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./template-string-escape.css";
+import _implicitScopedStylesheets from "./template-string-escape.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}>Escape \`me\`</div>`;
 const $fragment2 = parseFragment`<div data-message="Escape \`me\`"${3}></div>`;
 const $fragment3 = parseFragment`<div${3}><!-- Escape \`me\` --></div>`;
@@ -39,3 +41,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-742r8pnmnj5";
+tmpl.legacyStylesheetToken = "x-template-string-escape_template-string-escape";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

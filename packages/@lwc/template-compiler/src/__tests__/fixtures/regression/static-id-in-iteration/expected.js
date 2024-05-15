@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./static-id-in-iteration.css";
+import _implicitScopedStylesheets from "./static-id-in-iteration.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -79,3 +81,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-41g515g6rr7";
+tmpl.legacyStylesheetToken = "x-static-id-in-iteration_static-id-in-iteration";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

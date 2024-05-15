@@ -1,7 +1,9 @@
+import _implicitStylesheets from "./if-true.css";
+import _implicitScopedStylesheets from "./if-true.scoped.css?scoped=true";
 import _xCounter from "x/counter";
 import _xButton from "x/button";
 import _xChild from "x/child";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -39,3 +41,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6l5rn7c0v7l";
+tmpl.legacyStylesheetToken = "x-if-true_if-true";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

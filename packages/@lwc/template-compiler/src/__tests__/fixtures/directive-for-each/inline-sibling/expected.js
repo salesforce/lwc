@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./inline-sibling.css";
+import _implicitScopedStylesheets from "./inline-sibling.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<li${"c0"}${2}>${"t1"}</li>`;
 const $fragment2 = parseFragment`<li${3}>Last</li>`;
 const stc0 = {
@@ -40,3 +42,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-48n2bhseivd";
+tmpl.legacyStylesheetToken = "x-inline-sibling_inline-sibling";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

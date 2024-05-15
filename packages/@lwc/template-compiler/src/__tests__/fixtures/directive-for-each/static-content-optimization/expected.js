@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./static-content-optimization.css";
+import _implicitScopedStylesheets from "./static-content-optimization.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><span${"a1:data-dynamic"}${3}></span><span data-static="bar"${3}></span><span${"s3"}${3}></span><span style="quux"${3}></span><span${3}>${"t6"}</span><span${"a7:data-dynamic"}${"s7"}${"c7"}${2}>${"t8"}</span></div>`;
 const stc0 = {
   key: 0,
@@ -60,3 +62,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-40fo8n330sd";
+tmpl.legacyStylesheetToken =
+  "x-static-content-optimization_static-content-optimization";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

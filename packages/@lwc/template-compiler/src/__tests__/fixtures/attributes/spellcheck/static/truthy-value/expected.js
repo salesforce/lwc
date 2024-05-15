@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./truthy-value.css";
+import _implicitScopedStylesheets from "./truthy-value.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   props: {
     spellcheck: true,
@@ -29,3 +31,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7vvscilgpnd";
+tmpl.legacyStylesheetToken = "x-truthy-value_truthy-value";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

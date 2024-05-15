@@ -1,4 +1,6 @@
-import { registerTemplate } from "lwc";
+import _implicitStylesheets from "./child-named-slot.css";
+import _implicitScopedStylesheets from "./child-named-slot.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   name: "slotname1",
 };
@@ -43,5 +45,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["", "slotname1", "slotname2"];
-tmpl.stylesheets = [];
 tmpl.renderMode = "light";
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-34oecl8jnu5";
+tmpl.legacyStylesheetToken = "x-child-named-slot_child-named-slot";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

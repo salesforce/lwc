@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./mixed.css";
+import _implicitScopedStylesheets from "./mixed.scoped.css?scoped=true";
 import _xB from "x/b";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}></div>`;
 const stc0 = {
   key: 0,
@@ -38,3 +40,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3qe0c8mgo6d";
+tmpl.legacyStylesheetToken = "x-mixed_mixed";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./tabindex-computed.css";
+import _implicitScopedStylesheets from "./tabindex-computed.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${"a0:tabindex"}${3}>valid</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -31,3 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-576tik9amt5";
+tmpl.legacyStylesheetToken = "x-tabindex-computed_tabindex-computed";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

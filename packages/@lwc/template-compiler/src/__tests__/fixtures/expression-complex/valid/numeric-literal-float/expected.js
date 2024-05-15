@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./numeric-literal-float.css";
+import _implicitScopedStylesheets from "./numeric-literal-float.scoped.css?scoped=true";
 import _xPert from "x/pert";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -18,3 +20,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-72hs29kfuv6";
+tmpl.legacyStylesheetToken = "x-numeric-literal-float_numeric-literal-float";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);
