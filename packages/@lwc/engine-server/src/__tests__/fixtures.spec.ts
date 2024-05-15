@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
@@ -26,8 +26,6 @@ jest.setTimeout(10_000 /* 10 seconds */);
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
-    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
@@ -42,14 +40,10 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 ],
             }),
         ],
-        onwarn(warning, warn) {
-            if (warning.message.includes('LWC1187')) {
-                // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
-                // The warning message is expected and appears when the compiler detects usage of the directive.
-                // We plan to remove the directive in a future release, see #3331 for details.
-                warnings.push(warning);
-            } else {
-                warn(warning);
+        onwarn({ message, code }) {
+            // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
+            if (!message.includes('LWC1187') && code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
             }
         },
     });
@@ -86,7 +80,9 @@ function formatHTML(src: string): string {
     while (pos < src.length) {
         // Consume element tags and comments.
         if (src.charAt(pos) === '<') {
-            const tagNameMatch = src.slice(pos).match(/(\w+)/);
+            const tagNameMatch = src.slice(pos).match(/([\w-]+)/);
+
+            const posAfterTagName = pos + 1 + tagNameMatch![0].length; // +1 to account for '<'
 
             // Special handling for `<style>` tags – these are not encoded, so we may hit '<' or '>'
             // inside the text content. So we just serialize it as-is.
@@ -117,14 +113,25 @@ function formatHTML(src: string): string {
                 // Keep advancing until consuming the closing tag.
             }
 
+            const isSelfClosing = src.charAt(pos - 2) === '/';
+
             // Adjust current depth and print the element tag or comment.
             if (isClosing) {
                 depth--;
+            } else if (!isComment) {
+                // Offsets to account for '>' or '/>'
+                const endPos = isSelfClosing ? pos - 2 : pos - 1;
+                // Trim to account for whitespace at the beginning
+                const attributesRaw = src.slice(posAfterTagName, endPos).trim();
+                const attributesReordered = attributesRaw
+                    ? ' ' + reorderAttributes(attributesRaw)
+                    : '';
+                src =
+                    src.substring(0, posAfterTagName) + attributesReordered + src.substring(endPos);
             }
 
             res += getPadding() + src.slice(start, pos) + '\n';
 
-            const isSelfClosing = src.charAt(pos - 2) === '/';
             if (!isClosing && !isSelfClosing && !isVoid && !isComment) {
                 depth++;
             }
@@ -142,6 +149,27 @@ function formatHTML(src: string): string {
     }
 
     return res.trim();
+}
+
+function reorderAttributes(attributesRaw: string) {
+    // If we have an odd number of quotes, we haven't parsed the attributes
+    // correctly, so we just avoid trying to sort them. This is mostly to paper
+    // over the `attribute-dynamic-escape` fixture.
+    const numQuotes = attributesRaw.match(/"/g)?.length || 0;
+    if (numQuotes % 2 !== 0) return attributesRaw;
+
+    const matches = [...attributesRaw.matchAll(/[:\w-]+(="[^"]*")?/gi)];
+
+    const results = matches
+        .map((_) => _[0])
+        .sort()
+        .join(' ');
+
+    if (results.length !== attributesRaw.length) {
+        throw new Error('HTML auto-formatting failed due to unexpected whitespaces');
+    }
+
+    return results;
 }
 
 function testFixtures() {

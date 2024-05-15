@@ -8,21 +8,28 @@ branches:
             auto-start: true
             auto-start-from-forks: false
             merge-method: disabled # do not auto-merge; we'll do it ourselves
-            validate-optional-downstream-deps: true # temporarily test non-required downstreams
             required-downstream-deps:
-                - LightningMobileRuntime/ui-lmr-components
-                - MobilePlatform/lds-debug-app
-                - Trailhead-Platform/ui-trailhead-core-components
+                - BuilderFramework/builder-framework-salesforce
+                - MobilePlatform/lsdk-modules
+                - MobilePlatform/lwr-lightning-platform
+                - MobilePlatform/ui-fsm-components
+                - Skilling-and-Enablement/storybook-utils
+                - Skilling-and-Enablement/ui-external-enablement
+                - Skilling-and-Enablement/ui-ses-experience-cloud
+                - automation-platform/ui-externalservices-builder-components
                 - automation-platform/ui-interaction-explorer-components
+                - communities/microsite-template-marketing
                 - communities/shared-experience-components
-                - communities/ui-lightning-community
+                - communities/ui-commerce-components
+                - lds/lds-plugins
                 - lwc/lwc-platform
-                - nrkruk/lwc-dev-core
-                - ris-gpta/core_via_components
-                - salesforce/builder-framework
-                - salesforce-experience-platform-emu/luvio
+                - salesforce-experience-platform-emu/komaci
+                - salesforce-experience-platform-emu/locker-pentest-app
                 - salesforce-experience-platform-emu/lwr
-                - salesforce/lwr-lightning-platform
+                - salesforce-experience-platform-emu/lwr-everywhere
+                - salesforce-experience-platform-emu/lwr-recipes
+                - salesforce/lwc-test
+                - salesforce/o11y-sample-app
     release:
         pull-request:
             <<: *branch-definition
@@ -33,10 +40,6 @@ branches:
     summer24:
         pull-request:
             <<: *branch-definition
-    milestone-.*: # used for prerelease testing
-        pull-request:
-            <<: *branch-definition
-            workflow: build-and-test # the default workflow is release, and we just want build+tests
 jobs:
     build-and-test:
         memory-limit: 16
