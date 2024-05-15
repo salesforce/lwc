@@ -82,9 +82,6 @@ function monkeyPatchDomAPIs() {
     } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 }
 
-// For some reason, JSDOC says "options.is" is a syntax error. And we can't disable the rule using
-// `eslint-disable-next-line` because that gets included in the JSDOC, so we need this workaround.
-/* eslint-disable jsdoc/valid-types */
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
  * difference that in the options, you can pass the `is` property set to a Constructor instead of
@@ -100,7 +97,6 @@ function monkeyPatchDomAPIs() {
  * const el = createElement('x-foo', { is: FooCtor });
  */
 export function createElement(
-    /* eslint-enable jsdoc/valid-types */
     sel: string,
     options: {
         is: typeof LightningElement;

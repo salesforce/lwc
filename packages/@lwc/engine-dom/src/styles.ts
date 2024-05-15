@@ -89,21 +89,47 @@ function createConstructableStylesheet(content: string) {
 function insertConstructableStylesheet(
     content: string,
     target: ShadowRoot | Document,
-    cacheData: ConstructableStylesheetCacheData
+    cacheData: ConstructableStylesheetCacheData,
+    signal: AbortSignal | undefined
 ) {
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
     // The reason we prefer .push() rather than reassignment is for perf: https://github.com/salesforce/lwc/pull/2683
     adoptedStyleSheets.push(stylesheet);
+
+    if (process.env.NODE_ENV !== 'production') {
+        /* istanbul ignore if */
+        if (isUndefined(signal)) {
+            throw new Error('Expected AbortSignal to be defined in dev mode');
+        }
+        // TODO [#4155]: unrendering should account for stylesheet content collisions
+        signal.addEventListener('abort', () => {
+            adoptedStyleSheets.splice(adoptedStyleSheets.indexOf(stylesheet), 1);
+            stylesheetCache.delete(content);
+        });
+    }
 }
 
 function insertStyleElement(
     content: string,
     target: ShadowRoot | HTMLHeadElement,
-    cacheData: StyleElementCacheData
+    cacheData: StyleElementCacheData,
+    signal: AbortSignal | undefined
 ) {
     const elm = createStyleElement(content, cacheData);
     target.appendChild(elm);
+
+    if (process.env.NODE_ENV !== 'production') {
+        /* istanbul ignore if */
+        if (isUndefined(signal)) {
+            throw new Error('Expected AbortSignal to be defined in dev mode');
+        }
+        // TODO [#4155]: unrendering should account for stylesheet content collisions
+        signal.addEventListener('abort', () => {
+            target.removeChild(elm);
+            stylesheetCache.delete(content);
+        });
+    }
 }
 
 function getCacheData(content: string, useConstructableStylesheet: boolean): CacheData {
@@ -128,7 +154,7 @@ function getCacheData(content: string, useConstructableStylesheet: boolean): Cac
     return cacheData;
 }
 
-function insertGlobalStylesheet(content: string) {
+function insertGlobalStylesheet(content: string, signal: AbortSignal | undefined) {
     // Force a <style> element for global stylesheets. See comment below.
     const cacheData = getCacheData(content, false);
     if (cacheData.global) {
@@ -138,10 +164,14 @@ function insertGlobalStylesheet(content: string) {
     cacheData.global = true; // mark inserted
 
     // TODO [#2922]: use document.adoptedStyleSheets in supported browsers. Currently we can't, due to backwards compat.
-    insertStyleElement(content, document.head, cacheData as StyleElementCacheData);
+    insertStyleElement(content, document.head, cacheData as StyleElementCacheData, signal);
 }
 
-function insertLocalStylesheet(content: string, target: ShadowRoot) {
+function insertLocalStylesheet(
+    content: string,
+    target: ShadowRoot,
+    signal: AbortSignal | undefined
+) {
     const cacheData = getCacheData(content, supportsConstructableStylesheets);
     let { roots } = cacheData;
     if (isUndefined(roots)) {
@@ -159,20 +189,31 @@ function insertLocalStylesheet(content: string, target: ShadowRoot) {
         insertConstructableStylesheet(
             content,
             target,
-            cacheData as ConstructableStylesheetCacheData
+            cacheData as ConstructableStylesheetCacheData,
+            signal
         );
     } else {
         // Fall back to <style> element
-        insertStyleElement(content, target, cacheData as StyleElementCacheData);
+        insertStyleElement(content, target, cacheData as StyleElementCacheData, signal);
     }
 }
 
-export function insertStylesheet(content: string, target?: ShadowRoot) {
+/**
+ * Injects a stylesheet into the global (document) level or inside a shadow root.
+ * @param content CSS content to insert
+ * @param target ShadowRoot to insert into, or undefined if global (document) level
+ * @param signal AbortSignal for aborting the stylesheet render. Used in dev mode for HMR to unrender stylesheets.
+ */
+export function insertStylesheet(
+    content: string,
+    target: ShadowRoot | undefined,
+    signal: AbortSignal | undefined
+) {
     if (isUndefined(target)) {
         // global
-        insertGlobalStylesheet(content);
+        insertGlobalStylesheet(content, signal);
     } else {
         // local
-        insertLocalStylesheet(content, target);
+        insertLocalStylesheet(content, target, signal);
     }
 }
