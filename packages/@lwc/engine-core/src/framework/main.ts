@@ -49,6 +49,8 @@ export { getComponentConstructor } from './get-component-constructor';
 export type { RendererAPI, LifecycleCallback } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
+    ContextConsumer as WireContextConsumer,
+    ContextProvider as WireContextProvider,
     ContextValue as WireContextValue,
     DataCallback,
     WireAdapter,
