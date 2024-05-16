@@ -44,8 +44,8 @@
         }
     },
     "dependencies": {
-        "@lwc/metadata": "6.5.3-0",
-        "@lwc/sfdc-compiler-utils": "6.5.3-0",
+        "@lwc/metadata": "7.0.0-6.6.3",
+        "@lwc/sfdc-compiler-utils": "7.0.0-6.6.3",
         "@lwc/style-compiler": "6.6.3",
         "@lwc/template-compiler": "6.6.3",
         "acorn": "8.11.3",
