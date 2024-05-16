@@ -190,9 +190,17 @@ type RefNodes = { [name: string]: Element };
 
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
+/**
+ * A `LightningElement` will always be attached to an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement),
+ * rather than the more broad `Element` used by the generic shadow root interface.
+ */
+export interface LightningElementShadowRoot extends ShadowRoot {
+    readonly host: HTMLElement;
+}
+
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     constructor: LightningElementConstructor;
-    template: ShadowRoot | null;
+    template: LightningElementShadowRoot | null;
     refs: RefNodes | undefined;
     render(): Template;
     connectedCallback?(): void;
@@ -270,7 +278,7 @@ export const LightningElement: LightningElementConstructor = function (
     return this;
 };
 
-function doAttachShadow(vm: VM): ShadowRoot {
+function doAttachShadow(vm: VM): LightningElementShadowRoot {
     const {
         elm,
         mode,
@@ -528,7 +536,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         return getClassList(elm);
     },
 
-    get template(): ShadowRoot | null {
+    get template(): LightningElementShadowRoot | null {
         const vm = getAssociatedVM(this);
 
         if (process.env.NODE_ENV !== 'production') {

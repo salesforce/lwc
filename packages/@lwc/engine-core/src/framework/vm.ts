@@ -43,7 +43,11 @@ import {
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
-import { LightningElement, LightningElementConstructor } from './base-lightning-element';
+import {
+    LightningElement,
+    LightningElementConstructor,
+    LightningElementShadowRoot,
+} from './base-lightning-element';
 import {
     logOperationStart,
     logOperationEnd,
@@ -190,12 +194,12 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component instance. */
     component: LightningElement;
     /** The custom element shadow root. */
-    shadowRoot: ShadowRoot | null;
+    shadowRoot: LightningElementShadowRoot | null;
     /**
      * The component render root. If the component is a shadow DOM component, it is its shadow
      * root. If the component is a light DOM component it the element itself.
      */
-    renderRoot: ShadowRoot | HostElement;
+    renderRoot: LightningElementShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
     /**
