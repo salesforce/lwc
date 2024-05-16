@@ -75,3 +75,10 @@ This is equivalent to:
 ```js
 import { renderComponent } from '@lwc/engine-server';
 ```
+
+Additionally, for TypeScript projects, type definitions for HTML templates are exported by `lwc/html`.
+
+```ts
+import 'lwc/html'; // Eanbles the following line to work without errors
+import template from './my-component.html';
+```
