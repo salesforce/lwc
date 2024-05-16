@@ -1166,14 +1166,16 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/jest-utils-lwc-internals@link:./scripts/jest/utils":
   version "0.0.0"
+  uid ""
 
-"@lwc/metadata@6.5.3-0":
-  version "6.5.3-0"
-  resolved "https://registry.yarnpkg.com/@lwc/metadata/-/metadata-6.5.3-0.tgz#b4343a784195a14f0b190c3fc7dbc0e4556e6b90"
-  integrity sha512-fJL9JJmdw+Dmx1oJhMIN1/1DHcE3V+U7CmQNKIcpndJq2Oksr0CF0gukov1DEin7utHJmoIToVNYJlULZgJI1Q==
+"@lwc/metadata@7.0.0-6.6.3":
+  version "7.0.0-6.6.3"
+  resolved "https://registry.yarnpkg.com/@lwc/metadata/-/metadata-7.0.0-6.6.3.tgz#7f0f750d3cf70ad65aeac627f279e1242f53c983"
+  integrity sha512-mbPaPcWemh9wkMM8PlRgO913fjanGdy4aNXJluJ3SoYcKSVX6z8p+EmKmwW2erKBi2zfNI+/vGyqZTzmjqSI7w==
   dependencies:
     "@babel/parser" "~7.24.4"
     "@babel/traverse" "~7.24.1"
@@ -1182,10 +1184,10 @@
     postcss-selector-parser "~6.0.16"
     postcss-value-parser "~4.2.0"
 
-"@lwc/sfdc-compiler-utils@6.5.3-0":
-  version "6.5.3-0"
-  resolved "https://registry.yarnpkg.com/@lwc/sfdc-compiler-utils/-/sfdc-compiler-utils-6.5.3-0.tgz#b1f878d4518ccb5277e5899d10c3929dfac7328f"
-  integrity sha512-yCEF3jrzdfUVCWD6Uw9hTC+ihERYKOa/DkI0Rf8aMiqiJpuUralCcQlKfzo0BD1dxlgqDNUx0pO0hY17Evd7/A==
+"@lwc/sfdc-compiler-utils@7.0.0-6.6.3":
+  version "7.0.0-6.6.3"
+  resolved "https://registry.yarnpkg.com/@lwc/sfdc-compiler-utils/-/sfdc-compiler-utils-7.0.0-6.6.3.tgz#c8da1a24a336adc0b14aed49adf44a5b0ce250cf"
+  integrity sha512-IVINH3wGO5XXxoE3TZiS/esz8iziQgJcZBwKtE/7sehdJOR8VtAMg0AeKxyYEEXsBF+m+aus/vDIfEZrEeBVgQ==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
