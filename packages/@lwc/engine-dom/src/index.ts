@@ -39,7 +39,15 @@ export {
 } from '@lwc/engine-core';
 
 // Engine-core public types ------------------------------------------------------------------------
-export type { WireAdapter, WireAdapterConstructor } from '@lwc/engine-core';
+export type {
+    WireAdapter,
+    WireAdapterConstructor,
+    WireConfigValue,
+    WireContextValue,
+    WireContextConsumer,
+    WireContextProvider,
+    Template,
+} from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';
