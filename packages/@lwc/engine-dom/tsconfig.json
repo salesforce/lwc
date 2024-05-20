@@ -5,5 +5,5 @@
         "lib": ["dom", "es2021"]
     },
 
-    "include": ["src/", "./html.d.ts"]
+    "include": ["src/"]
 }
