@@ -1,0 +1,14 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "target": "ESNext",
+        "lib": ["ES2021", "DOM"],
+        "paths": {
+            "x/app": ["./src/playground/modules/x/app/app.ts"],
+            "x/counter": ["./src/playground/modules/x/counter/counter.ts"],
+            "x/multiply": ["./src/playground/modules/x/multiply/multiply.ts"]
+        }
+    },
+    "include": ["src"]
+}
