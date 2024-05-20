@@ -83,10 +83,24 @@ function monkeyPatchDomAPIs() {
 }
 
 /**
+ * Properties defined on the component class, excluding those inherited from `LightningElement`.
+ */
+// TODO [#0]: Restrict this to only @api props
+type ComponentClassProperties<T extends typeof LightningElement> = Omit<
+    T['prototype'],
+    keyof LightningElement
+>;
+
+/**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
  * difference that in the options, you can pass the `is` property set to a Constructor instead of
  * just a string value. The intent is to allow the creation of an element controlled by LWC without
  * having to register the element as a custom element.
+ *
+ * NOTE: The returned type incorrectly includes all properties defined on the component class,
+ * even though the runtime object only uses those decorated with `@api`. This is due to a
+ * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
+ * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
  * @param sel The tagname of the element to create
  * @param options Control the behavior of the created element
  * @param options.is The LWC component that the element should be
@@ -96,13 +110,13 @@ function monkeyPatchDomAPIs() {
  * @example
  * const el = createElement('x-foo', { is: FooCtor });
  */
-export function createElement(
+export function createElement<T extends typeof LightningElement>(
     sel: string,
     options: {
-        is: typeof LightningElement;
+        is: T;
         mode?: 'open' | 'closed';
     }
-): HTMLElement {
+): HTMLElement & ComponentClassProperties<T> {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
