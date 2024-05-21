@@ -39,9 +39,7 @@ export function checkVersionMismatch(
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         const version = versionMatcher[1];
-        const [major, minor] = version.split('.');
-        const [expectedMajor, expectedMinor] = LWC_VERSION.split('.');
-        if (major !== expectedMajor || minor !== expectedMinor || version !== LWC_VERSION) {
+        if (version !== LWC_VERSION) {
             warned = true; // only warn once to avoid flooding the console
             // stylesheets and templates do not have user-meaningful names, but components do
             const friendlyName = type === 'component' ? `${type} ${func.name}` : type;
