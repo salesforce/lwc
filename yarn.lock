@@ -1172,10 +1172,10 @@
   version "0.0.0"
   uid ""
 
-"@lwc/metadata@7.0.0-6.6.3":
-  version "7.0.0-6.6.3"
-  resolved "https://registry.yarnpkg.com/@lwc/metadata/-/metadata-7.0.0-6.6.3.tgz#7f0f750d3cf70ad65aeac627f279e1242f53c983"
-  integrity sha512-mbPaPcWemh9wkMM8PlRgO913fjanGdy4aNXJluJ3SoYcKSVX6z8p+EmKmwW2erKBi2zfNI+/vGyqZTzmjqSI7w==
+"@lwc/metadata@7.0.2-6.6.3":
+  version "7.0.2-6.6.3"
+  resolved "https://registry.yarnpkg.com/@lwc/metadata/-/metadata-7.0.2-6.6.3.tgz#6c2b2fdcca2eb4d7bcba266b6cc162d87f71f5f0"
+  integrity sha512-Vdqb6hWuNXKRNYURqfYnHaXsSY7SgD6NTs9U0ItIP/tIr1KBAwU2m4YvSkpZ1od72l0T7xs9vA7ISdfN9yDBNA==
   dependencies:
     "@babel/parser" "~7.24.4"
     "@babel/traverse" "~7.24.1"
@@ -1184,10 +1184,10 @@
     postcss-selector-parser "~6.0.16"
     postcss-value-parser "~4.2.0"
 
-"@lwc/sfdc-compiler-utils@7.0.0-6.6.3":
-  version "7.0.0-6.6.3"
-  resolved "https://registry.yarnpkg.com/@lwc/sfdc-compiler-utils/-/sfdc-compiler-utils-7.0.0-6.6.3.tgz#c8da1a24a336adc0b14aed49adf44a5b0ce250cf"
-  integrity sha512-IVINH3wGO5XXxoE3TZiS/esz8iziQgJcZBwKtE/7sehdJOR8VtAMg0AeKxyYEEXsBF+m+aus/vDIfEZrEeBVgQ==
+"@lwc/sfdc-compiler-utils@7.0.2-6.6.3":
+  version "7.0.2-6.6.3"
+  resolved "https://registry.yarnpkg.com/@lwc/sfdc-compiler-utils/-/sfdc-compiler-utils-7.0.2-6.6.3.tgz#c05388131f14ea0ddf91a1ca820dd47d282e586b"
+  integrity sha512-yWBJ6t3GguONNjI8EosCNoPLiLHvRmmwgbc9SsGFxPVZ8nI8hkR4JiDS1G9elXvCF6XfCG71q6B9lJfcPUtrKA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
