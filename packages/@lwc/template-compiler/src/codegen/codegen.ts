@@ -47,7 +47,12 @@ import {
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
 import { memorizeHandler, objectToAST } from './helpers';
-import { transformStaticChildren, getStaticNodes, isDynamicText } from './static-element';
+import {
+    transformStaticChildren,
+    getStaticNodes,
+    isContiguousText,
+    hasDynamicText,
+} from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
 
@@ -647,23 +652,24 @@ export default class CodeGen {
             const current = stack.shift()!;
 
             // Skip comment nodes in parts count, as they will be stripped in production, unless when `lwc:preserve-comments` is enabled
-            if (isDynamicText(current) || !isComment(current) || this.preserveComments) {
+            if (isContiguousText(current) || !isComment(current) || this.preserveComments) {
                 partId++;
             }
 
-            if (isDynamicText(current)) {
+            if (isContiguousText(current)) {
                 const textNodes = current;
-                const partToken = `${STATIC_PART_TOKEN_ID.TEXT}${partId}`;
-                // Use the first text node as the key.
-                // Dynamic text is guaranteed to have at least 1 text node in the array by transformStaticChildren.
-                this.staticExpressionMap.set(textNodes[0], partToken);
-                const concatenatedText = this.genConcatenatedText(
-                    textNodes.map(({ value }) =>
-                        isStringLiteral(value) ? value.value : this.bindExpression(value)
-                    )
-                );
-
-                setPartIdText(concatenatedText);
+                if (hasDynamicText(textNodes)) {
+                    const partToken = `${STATIC_PART_TOKEN_ID.TEXT}${partId}`;
+                    // Use the first text node as the key.
+                    // Dynamic text is guaranteed to have at least 1 text node in the array by transformStaticChildren.
+                    this.staticExpressionMap.set(textNodes[0], partToken);
+                    const concatenatedText = this.genConcatenatedText(
+                        textNodes.map(({ value }) =>
+                            isStringLiteral(value) ? value.value : this.bindExpression(value)
+                        )
+                    );
+                    setPartIdText(concatenatedText);
+                }
             } else if (isElement(current)) {
                 const elm = current;
                 const databag = [];
@@ -723,7 +729,7 @@ export default class CodeGen {
                 // For depth-first traversal, children must be prepended in order, so that they are processed before
                 // siblings. Note that this is consistent with the order used in the diffing algo as well as
                 // `traverseAndSetElements` in @lwc/engine-core.
-                stack.unshift(...transformStaticChildren(elm));
+                stack.unshift(...transformStaticChildren(elm, this.preserveComments));
             }
         }
 

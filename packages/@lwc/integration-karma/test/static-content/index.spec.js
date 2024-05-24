@@ -22,6 +22,8 @@ import IframeOnload from 'x/iframeOnload';
 import WithKey from 'x/withKey';
 import Text from 'x/text';
 import TableWithExpression from 'x/tableWithExpressions';
+import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
+import TextWithPreserveComments from 'x/textWithPreserveComments';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
@@ -746,6 +748,98 @@ describe('table with static content containing expressions', () => {
             expect(td.getAttribute('style')).toEqual(`color: ${i};`);
             expect(td.getAttribute('data-id')).toEqual(`${i}`);
             expect(td.textContent).toEqual(`value${i}`);
+        });
+    });
+});
+
+describe('text containing comments', () => {
+    [
+        {
+            tagName: 'x-text-without-preserve-comments',
+            preserveComments: false,
+            ctor: TextWithoutPreserveComments,
+            expected: {
+                staticText: Array(4).fill('static text'),
+                initialDynamicText: Array(4).fill(' text'),
+                updatedDynamicText: Array(4).fill('dynamic text'),
+                initialMixedText: ' static text<span>  text</span> text ',
+                updatedMixedText: ' static text<span>mixed  text</span>mixed text ',
+            },
+        },
+        {
+            tagName: 'x-text-with-preserve-comments',
+            preserveComments: true,
+            ctor: TextWithPreserveComments,
+            expected: {
+                staticText: [
+                    '<!-- front -->static text',
+                    'static<!-- middle --> text',
+                    'static text<!-- back -->',
+                    '<!-- front -->static<!-- middle --> text<!-- back -->',
+                ],
+                initialDynamicText: [
+                    '<!-- front --> text',
+                    ' <!-- middle -->text',
+                    ' text<!-- back -->',
+                    '<!-- front --><!-- middle --> text<!-- back -->',
+                ],
+                updatedDynamicText: [
+                    '<!-- front -->dynamic text',
+                    'dynamic <!-- middle -->text',
+                    'dynamic text<!-- back -->',
+                    '<!-- front -->dynamic<!-- middle --> text<!-- back -->',
+                ],
+                initialMixedText:
+                    '<!-- first comment --> static text<span> <!-- second comment --> text</span> text <!-- third comment-->',
+                updatedMixedText:
+                    '<!-- first comment --> static text<span>mixed <!-- second comment --> text</span>mixed text <!-- third comment-->',
+            },
+        },
+    ].forEach(({ tagName, preserveComments, ctor, expected }) => {
+        describe(`preserveComments ${preserveComments}`, () => {
+            let elm;
+            let nodes;
+            beforeAll(async () => {
+                elm = createElement(tagName, {
+                    is: ctor,
+                });
+                document.body.appendChild(elm);
+                await Promise.resolve();
+                nodes = extractDataIds(elm);
+            });
+
+            afterAll(() => {
+                document.body.removeChild(elm);
+            });
+
+            const assertChildNodesInnerHTMLMatches = (actual, expected) => {
+                expect(actual.length).toEqual(expected.length);
+                // Actual is a HTMLCollection
+                expect(Array.from(actual).map((val) => val.innerHTML)).toEqual(expected);
+            };
+
+            it('renders static text correctly', () => {
+                const { staticText } = nodes;
+                assertChildNodesInnerHTMLMatches(staticText.children, expected.staticText);
+            });
+
+            it('renders dynamic text correctly', async () => {
+                const { dynamicText } = nodes;
+                // Initially empty variable
+                assertChildNodesInnerHTMLMatches(dynamicText.children, expected.initialDynamicText);
+                elm.dynamicText = 'dynamic';
+                await Promise.resolve();
+                assertChildNodesInnerHTMLMatches(dynamicText.children, expected.updatedDynamicText);
+            });
+
+            it('renders mixed static and dynamic text correctly', async () => {
+                const { mixedText } = nodes;
+                // Initially empty variable
+                expect(mixedText.innerHTML).toEqual(expected.initialMixedText);
+                elm.mixedText = 'mixed';
+                await Promise.resolve();
+                expect(mixedText.innerHTML).toEqual(expected.updatedMixedText);
+            });
         });
     });
 });
