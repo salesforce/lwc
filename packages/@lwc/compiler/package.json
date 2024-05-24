@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "6.4.1",
+    "version": "6.4.2",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
@@ -48,10 +48,10 @@
         "@babel/plugin-proposal-object-rest-spread": "7.20.7",
         "@babel/plugin-transform-async-to-generator": "7.23.3",
         "@locker/babel-plugin-transform-unforgeables": "0.20.0",
-        "@lwc/babel-plugin-component": "6.4.1",
-        "@lwc/errors": "6.4.1",
-        "@lwc/shared": "6.4.1",
-        "@lwc/style-compiler": "6.4.1",
-        "@lwc/template-compiler": "6.4.1"
+        "@lwc/babel-plugin-component": "6.4.2",
+        "@lwc/errors": "6.4.2",
+        "@lwc/shared": "6.4.2",
+        "@lwc/style-compiler": "6.4.2",
+        "@lwc/template-compiler": "6.4.2"
     }
 }
