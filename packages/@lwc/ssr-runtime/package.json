@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-runtime",
-    "version": "6.6.3",
+    "version": "6.6.4",
     "description": "Runtime complement to @lwc/ssr-compiler",
     "keywords": [
         "lwc",
