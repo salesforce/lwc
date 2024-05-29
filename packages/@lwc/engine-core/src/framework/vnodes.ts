@@ -82,7 +82,7 @@ export type VStaticPartData = Pick<VElementData, 'on' | 'ref' | 'attrs' | 'style
 
 export interface VStatic extends BaseVNode {
     readonly type: VNodeType.Static;
-    readonly sel: undefined;
+    readonly sel: '__static__';
     readonly key: Key;
     readonly fragment: Element;
     readonly parts: VStaticPart[] | undefined;
@@ -95,7 +95,7 @@ export interface VFragment extends BaseVNode, BaseVParent {
     // In a fragment elm represents the last node of the fragment,
     // which is the end delimiter text node ([start, ...children, end]). Used in the updateStaticChildren routine.
     // elm: Node | undefined; (inherited from BaseVNode)
-    sel: undefined;
+    sel: '__fragment__';
     type: VNodeType.Fragment;
 
     // which diffing strategy to use.
@@ -108,16 +108,16 @@ export interface VFragment extends BaseVNode, BaseVParent {
 
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
-    sel: undefined;
+    sel: '__text__';
     text: string;
     key: undefined;
 }
 
 export interface VComment extends BaseVNode {
     type: VNodeType.Comment;
-    sel: undefined;
+    sel: '__comment__';
     text: string;
-    key: 'c';
+    key: undefined;
 }
 
 export interface VBaseElement extends BaseVNode, BaseVParent {
