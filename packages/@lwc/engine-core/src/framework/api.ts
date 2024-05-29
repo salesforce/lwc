@@ -83,7 +83,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
         factory,
         owner: getVMBeingRendered()!,
         elm: undefined,
-        sel: undefined,
+        sel: '__scoped_slot_fragment__',
         key: undefined,
         slotName,
     };

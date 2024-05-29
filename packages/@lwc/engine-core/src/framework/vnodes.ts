@@ -48,7 +48,7 @@ export interface BaseVParent {
 export interface BaseVNode {
     type: VNodeType;
     elm: Node | undefined;
-    sel: string | undefined;
+    sel: string;
     key: Key | undefined;
     owner: VM;
 }
