@@ -18,11 +18,13 @@ it('W-15885661 - renders list when key is invalid (preserve backwards compat)', 
     const {
         calls: { error },
     } = spy;
-    expect(error.length).toBe(2);
+    expect(error.length).toBe(process.env.NODE_ENV === 'production' ? 0 : 2);
     error.forEach((error) =>
         expect(error).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/)
     );
+
     spy.reset();
 
+    // Still renders list with invalid keys
     expect(ul.children.length).toBe(1);
 });
