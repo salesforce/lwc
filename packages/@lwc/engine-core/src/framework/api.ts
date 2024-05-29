@@ -82,7 +82,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
         factory,
         owner: getVMBeingRendered()!,
         elm: undefined,
-        sel: undefined,
+        sel: '__scoped_slot_fragment__',
         key: undefined,
         slotName,
     };
@@ -98,7 +98,7 @@ function st(
     const fragment = fragmentFactory(parts);
     const vnode: VStatic = {
         type: VNodeType.Static,
-        sel: undefined,
+        sel: '__static__',
         key,
         elm: undefined,
         fragment,
@@ -123,7 +123,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 
     return {
         type: VNodeType.Fragment,
-        sel: undefined,
+        sel: '__fragment__',
         key,
         elm: undefined,
         children: [leading, ...children, trailing],
@@ -491,10 +491,10 @@ function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
 
 // [t]ext node
 function t(text: string): VText {
-    let sel, key, elm;
+    let key, elm;
     return {
         type: VNodeType.Text,
-        sel,
+        sel: '__text__',
         text,
         elm,
         key,
@@ -504,13 +504,13 @@ function t(text: string): VText {
 
 // [co]mment node
 function co(text: string): VComment {
-    let sel, elm;
+    let elm, key;
     return {
         type: VNodeType.Comment,
-        sel,
+        sel: '__comment__',
         text,
         elm,
-        key: 'c',
+        key,
         owner: getVMBeingRendered()!,
     };
 }
