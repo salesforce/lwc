@@ -57,6 +57,7 @@ export interface VScopedSlotFragment extends BaseVNode {
     factory: (value: any, key: any) => VFragment;
     type: VNodeType.ScopedSlotFragment;
     slotName: unknown;
+    sel: '__scoped_slot_fragment__';
 }
 
 export interface VStaticPart {
