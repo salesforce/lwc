@@ -15,12 +15,18 @@ describe('mixed API versions', () => {
 
         const apiVersion60Elm = createElement('x-use-api-version-60', { is: UseApiVersion60 });
 
-        expect(() => {
+        const doAppend = () => {
             // insert manually without a portal
             div.appendChild(apiVersion60Elm);
-        }).toLogWarningDev(
-            /The `appendChild` method is available only on elements that use the `lwc:dom="manual"` directive/
-        );
+        };
+
+        if (process.env.NATIVE_SHADOW) {
+            doAppend();
+        } else {
+            expect(doAppend).toLogWarningDev(
+                /The `appendChild` method is available only on elements that use the `lwc:dom="manual"` directive/
+            );
+        }
 
         await Promise.resolve();
 
