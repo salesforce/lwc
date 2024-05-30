@@ -49,8 +49,8 @@ function createPreprocessor(config, emitter, logger) {
         // TODO [#3370]: remove experimental template expression flag
         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
 
-        const plugins = [
-            lwcRollupPlugin({
+        const createRollupPlugin = (options) => {
+            return lwcRollupPlugin({
                 // Sourcemaps don't work with Istanbul coverage
                 sourcemap: !process.env.COVERAGE,
                 experimentalDynamicComponent: {
@@ -62,8 +62,36 @@ function createPreprocessor(config, emitter, logger) {
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
                 apiVersion: API_VERSION,
-            }),
-        ];
+                ...options,
+            });
+        };
+
+        const defaultRollupPlugin = createRollupPlugin();
+
+        // Override the LWC Rollup plugin to specify an API version based on the file path
+        // This allows for individual components to have individual API versions
+        // without needing to have a separate Rollup bundle/chunk for each one
+        const rollupPluginsPerApiVersion = new Map();
+
+        const customLwcRollupPlugin = {
+            ...defaultRollupPlugin,
+            transform(src, id) {
+                let rollupPluginToUse = defaultRollupPlugin;
+                const match = id.match(/useApiVersion(\d+)/);
+                if (match) {
+                    const apiVersion = parseInt(match[1], 10);
+                    let perApiVersionPlugin = rollupPluginsPerApiVersion.get(apiVersion);
+                    if (!perApiVersionPlugin) {
+                        perApiVersionPlugin = createRollupPlugin({ apiVersion });
+                        rollupPluginsPerApiVersion.set(apiVersion, perApiVersionPlugin);
+                    }
+                    rollupPluginToUse = perApiVersionPlugin;
+                }
+                return rollupPluginToUse.transform.call(this, src, id);
+            },
+        };
+
+        const plugins = [customLwcRollupPlugin];
 
         try {
             const bundle = await rollup({
