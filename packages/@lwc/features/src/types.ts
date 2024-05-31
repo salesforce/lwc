@@ -27,12 +27,6 @@ export interface FeatureFlagMap {
     PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
 
     /**
-     * When true, disables native custom element lifecycle, even if the API version is high enough to support it.
-     * This is designed as a temporary "kill switch."
-     */
-    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
-
-    /**
      * Flag to invoke the wire adapter update method right after the component is connected, instead
      * of next tick. It only affects wire configurations that depend on component values.
      */

@@ -12,7 +12,6 @@ import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 /** List of all feature flags available, with the default value `null`. */
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
-    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_FROZEN_TEMPLATE: null,
@@ -24,8 +23,6 @@ const features: FeatureFlagMap = {
 if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
-// disable to test
-(globalThis as any).lwcRuntimeFlags['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'] = true;
 
 /** Feature flags that have been set. */
 const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;

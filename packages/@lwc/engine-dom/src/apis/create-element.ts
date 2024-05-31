@@ -13,15 +13,12 @@ import {
     isUndefined,
     toString,
     StringToLowerCase,
-    isAPIFeatureEnabled,
-    APIFeature,
 } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getComponentAPIVersion,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
@@ -137,12 +134,8 @@ export function createElement(
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
 
-    const apiVersion = getComponentAPIVersion(Ctor);
-
-    const useNativeCustomElementLifecycle =
-        // temporary "kill switch"
-        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
-        isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
+    // temporary "kill switch"
+    const useNativeCustomElementLifecycle = false;
 
     const isFormAssociated = shouldBeFormAssociated(Ctor);
 

@@ -67,15 +67,9 @@ export function guid(): string {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-export function shouldUseNativeCustomElementLifecycle(ctor: LightningElementConstructor) {
-    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        // temporary "kill switch"
-        return false;
-    }
-
-    const apiVersion = getComponentAPIVersion(ctor);
-
-    return isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
+export function shouldUseNativeCustomElementLifecycle(_ctor: LightningElementConstructor) {
+    // temporary "kill switch"
+    return false;
 }
 
 // Borrowed from Vue template compiler.
