@@ -141,7 +141,7 @@ describe('W-15904769', () => {
             { name: 'x-synthetic-sloter-synthetic-slotee', ctor: SyntheticSloterSyntheticSlotee },
             { name: 'x-native-sloter-native-slotee', ctor: NativeSloterNativeSlotee },
         ].forEach(({ name, ctor }) => {
-            it(`${name} - child disconnects root and subtree components but does not reconnect synthetic subtree`, async () => {
+            it(`${name} - sloter + slotee connected and never disconnected when sloter is moved`, async () => {
                 const elm = createElement(name, { is: ctor });
                 document.body.appendChild(elm);
                 await Promise.resolve();
