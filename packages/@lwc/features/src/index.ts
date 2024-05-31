@@ -24,10 +24,8 @@ const features: FeatureFlagMap = {
 if (!(globalThis as any).lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
-if (process.env.IS_BROWSER) {
-    // disable to test
-    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
-}
+// disable to test
+(globalThis as any).lwcRuntimeFlags['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'] = true;
 
 /** Feature flags that have been set. */
 const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
