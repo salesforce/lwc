@@ -201,7 +201,7 @@ if (process.env.NODE_ENV !== 'production') {
                     expectStyles(extractDataIds(elm).paragraph, {
                         display: 'block',
                     });
-                    // Swap blockStyle to inlineStyle, which transitively be swapped to noneStyle
+                    // Swap blockStyle to inlineStyle, which will transitively be swapped to noneStyle
                     swapStyle(blockStyle[0], inlineStyle[0]);
 
                     await Promise.resolve();
