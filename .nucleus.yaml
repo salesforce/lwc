@@ -20,6 +20,7 @@ branches:
                 - communities/microsite-template-marketing
                 - communities/shared-experience-components
                 - communities/ui-commerce-components
+                - communities/webruntime
                 - lds/lds-plugins
                 - lwc/lwc-platform
                 - salesforce-experience-platform-emu/komaci
