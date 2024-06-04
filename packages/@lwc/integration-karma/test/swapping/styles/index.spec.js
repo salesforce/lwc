@@ -183,6 +183,32 @@ if (process.env.NODE_ENV !== 'production') {
                         fontStyle: 'italic',
                     });
                 });
+
+                it('should be able to swap a style that will be used in future', async () => {
+                    const { blockStyle, inlineStyle, noneStyle } = Simple;
+                    const elm = createElement(`${testName}-simple`, { is: Simple });
+                    document.body.appendChild(elm);
+
+                    await Promise.resolve();
+                    expectStyles(extractDataIds(elm).paragraph, {
+                        display: 'block',
+                    });
+                    // Swap inlineStyle that hasn't been rendered yet
+                    swapStyle(inlineStyle[0], noneStyle[0]);
+
+                    await Promise.resolve();
+                    // Verify that rendered content did not change
+                    expectStyles(extractDataIds(elm).paragraph, {
+                        display: 'block',
+                    });
+                    // Swap blockStyle to inlineStyle, which transitively be swapped to noneStyle
+                    swapStyle(blockStyle[0], inlineStyle[0]);
+
+                    await Promise.resolve();
+                    expectStyles(extractDataIds(elm).paragraph, {
+                        display: 'none',
+                    });
+                });
             });
         });
 
