@@ -38,7 +38,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
     const pkg = JSON.parse(actual);
     // Skip private packages
     if (pkg.private) {
-      continue;
+        continue;
     }
 
     const { name, description, version, dependencies, devDependencies, peerDependencies } = pkg;
