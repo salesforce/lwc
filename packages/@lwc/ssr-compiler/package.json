@@ -52,7 +52,7 @@
         "astring": "^1.8.6",
         "estree-toolkit": "^1.7.5",
         "immer": "^10.1.1",
-        "meriyah": "^4.3.8"
+        "meriyah": "^4.4.3"
     },
     "devDependencies": {
         "@types/estree": "^1.0.5"
