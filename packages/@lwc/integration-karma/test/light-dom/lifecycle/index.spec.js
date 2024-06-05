@@ -3,12 +3,48 @@ import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
 
 import SlotForwarding from 'x/slotForwarding';
 import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
+import StandardSlotting from 'x/standardSlotting';
 
 import { resetId } from './util.js';
 
 const resetTimingBuffer = () => {
     window.timingBuffer = [];
 };
+
+describe('standard slotting', () => {
+    beforeEach(() => {
+        window.timingBuffer = [];
+        resetId();
+    });
+
+    afterEach(() => {
+        delete window.timingBuffer;
+    });
+
+    it('invokes lifecycle methods in correct order', async () => {
+        const elm = createElement('x-standard-slotting', { is: StandardSlotting });
+        elm.show = true;
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        expect(window.timingBuffer).toEqual([
+            '0:connectedCallback',
+            '1:connectedCallback',
+            '2:connectedCallback',
+        ]);
+
+        resetTimingBuffer();
+
+        elm.show = false;
+        await Promise.resolve();
+
+        expect(window.timingBuffer).toEqual([
+            '0:disconnectedCallback',
+            '1:disconnectedCallback',
+            '2:disconnectedCallback',
+        ]);
+    });
+});
 
 if (USE_LIGHT_DOM_SLOT_FORWARDING) {
     describe('slot forwarding', () => {
