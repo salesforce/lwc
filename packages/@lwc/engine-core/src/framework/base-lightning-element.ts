@@ -194,6 +194,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     constructor: LightningElementConstructor;
     template: ShadowRoot | null;
     refs: RefNodes | undefined;
+    elementSelf: Node | undefined;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -540,6 +541,17 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         }
 
         return vm.shadowRoot;
+    },
+
+    get elementSelf(): Node | undefined {
+        const vm = getAssociatedVM(this);
+        const isRenderLight = vm.renderMode === RenderMode.Light;
+
+        if (isRenderLight) {
+            return vm.elm;
+        }
+
+        return vm.shadowRoot?.host;
     },
 
     get refs(): RefNodes | undefined {

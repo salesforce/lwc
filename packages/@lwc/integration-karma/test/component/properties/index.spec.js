@@ -14,6 +14,7 @@ const expectedEnumerableProps = [
     'dir',
     'dispatchEvent',
     'draggable',
+    'elementSelf',
     'firstChild',
     'firstElementChild',
     'getAttribute',
