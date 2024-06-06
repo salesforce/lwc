@@ -545,13 +545,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
 
     get elementSelf(): Node | undefined {
         const vm = getAssociatedVM(this);
-        const isRenderLight = vm.renderMode === RenderMode.Light;
-
-        if (isRenderLight) {
-            return vm.elm;
-        }
-
-        return vm.shadowRoot?.host;
+        return vm.elm;
     },
 
     get refs(): RefNodes | undefined {
