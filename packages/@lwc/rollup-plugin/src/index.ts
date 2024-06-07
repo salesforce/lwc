@@ -65,12 +65,11 @@ const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
-/** Matches all permutations of CJS/ESM, JS/TS, JS/JSX. */
-const SCRIPT_FILE_EXTENSION_REGEX = /^\.[cm]?[jt]sx?$/i;
+const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
 function isImplicitHTMLImport(importee: string, importer: string, importerExt: string): boolean {
     return (
-        SCRIPT_FILE_EXTENSION_REGEX.test(importerExt) &&
+        SCRIPT_FILE_EXTENSIONS.includes(importerExt) &&
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
         path.basename(importer, importerExt) === path.basename(importee, '.html')
