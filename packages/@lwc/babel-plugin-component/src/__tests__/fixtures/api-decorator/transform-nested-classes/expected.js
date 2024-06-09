@@ -22,8 +22,9 @@ _registerDecorators(Outer, {
   },
   fields: ["a"]
 });
-export default _registerComponent(Outer, {
+const __lwc_component_class_internal = _registerComponent(Outer, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 9999999
 });
+export default __lwc_component_class_internal;
