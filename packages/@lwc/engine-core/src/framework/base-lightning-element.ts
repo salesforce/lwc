@@ -24,6 +24,7 @@ import {
     isFunction,
     isNull,
     isObject,
+    isFalse,
     isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
@@ -194,7 +195,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     constructor: LightningElementConstructor;
     template: ShadowRoot | null;
     refs: RefNodes | undefined;
-    elementSelf: Node | undefined;
+    elementSelf: Element;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -543,8 +544,15 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         return vm.shadowRoot;
     },
 
-    get elementSelf(): Node | undefined {
+    get elementSelf(): Element {
         const vm = getAssociatedVM(this);
+
+        if (process.env.NODE_ENV !== 'production') {
+            if (isFalse(vm.elm instanceof Element)) {
+                logError(`this.elementSelf should be an Element, found: ${vm.elm}`);
+            }
+        }
+
         return vm.elm;
     },
 
