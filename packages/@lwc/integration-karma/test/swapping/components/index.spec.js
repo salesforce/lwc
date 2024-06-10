@@ -36,13 +36,19 @@ if (process.env.NODE_ENV !== 'production') {
         it('should throw for invalid old component', () => {
             expect(() => {
                 swapComponent(function () {}, D);
-            }).toThrow();
+            }).toThrowError(
+                TypeError,
+                /Invalid Component: Attempting to swap a non-component with a component/
+            );
         });
 
         it('should throw for invalid new componeont', () => {
             expect(() => {
                 swapComponent(D, function () {});
-            }).toThrow();
+            }).toThrowError(
+                TypeError,
+                /Invalid Component: Attempting to swap a component with a non-component/
+            );
         });
 
         it('should be a no-op for non components', () => {
