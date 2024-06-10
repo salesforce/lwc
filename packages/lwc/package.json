@@ -62,7 +62,7 @@
         "./engine-server": "./engine-server.js",
         "./errors": "./errors.js",
         "./features": "./features.js",
-        "./html": "./html.d.ts",
+        "./types": "./types.d.ts",
         "./module-resolver": "./module-resolver.js",
         "./rollup-plugin": "./rollup-plugin.js",
         "./shared": "./shared.js",
