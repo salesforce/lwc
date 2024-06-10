@@ -238,8 +238,8 @@ function serializeClassAttribute(part: VStaticPartElement, classToken: string) {
 }
 
 const enum FragmentCache {
-    HAS_SCOPED_STYLE = 1 << 0,
-    SHADOW_MODE_SYNTHETIC = 1 << 1,
+    HAS_SCOPED_STYLE = 1,
+    SHADOW_MODE_SYNTHETIC = 2,
 }
 
 // This should be a no-op outside of LWC's Karma tests, where it's not needed
