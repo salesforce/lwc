@@ -9,7 +9,7 @@ import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import { Visitor } from '@babel/core';
-import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
+import { getAPIVersionFromNumber } from '@lwc/shared';
 import {
     COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,
@@ -94,26 +94,17 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
             ]),
         ]);
-        if (
-            isAPIFeatureEnabled(
-                APIFeature.ENABLE_COMPONENT_CLASS_TRANSFORM_FOR_HMR_HOOKS,
-                apiVersion
-            )
-        ) {
-            // Example:
-            // const __lwc_component_class_internal =  registerComponent()
-            //
-            // This provide a way to access the component class for other lwc tools
-            const classIdentifier = t.identifier(COMPONENT_CLASS_ID);
-            declarationPath.parentPath.insertBefore(
-                t.variableDeclaration('const', [
-                    t.variableDeclarator(classIdentifier, registerComponentExpression),
-                ])
-            );
-            return classIdentifier;
-        } else {
-            return registerComponentExpression;
-        }
+
+        // Example:
+        // const __lwc_component_class_internal = registerComponent(cmp, ...);
+        // This provide a way to access the component class for other lwc tools
+        const classIdentifier = t.identifier(COMPONENT_CLASS_ID);
+        declarationPath.parentPath.insertBefore(
+            t.variableDeclaration('const', [
+                t.variableDeclarator(classIdentifier, registerComponentExpression),
+            ])
+        );
+        return classIdentifier;
     }
 
     return {

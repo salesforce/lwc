@@ -101,11 +101,6 @@ export const enum APIFeature {
      * Form-Associated Custom Elements (FACE).
      */
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
-    /**
-     * If enabled, exposes the component class identifier, which can optionally be used to inject HMR hooks.
-     * Should be no effect in behavior when run without hmr capabilities.
-     */
-    ENABLE_COMPONENT_CLASS_TRANSFORM_FOR_HMR_HOOKS,
 }
 
 /**
@@ -130,7 +125,5 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
-        case APIFeature.ENABLE_COMPONENT_CLASS_TRANSFORM_FOR_HMR_HOOKS:
-            return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }
