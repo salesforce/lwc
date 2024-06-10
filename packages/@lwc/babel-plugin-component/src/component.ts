@@ -97,7 +97,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
 
         // Example:
         // const __lwc_component_class_internal = registerComponent(cmp, ...);
-        // This provide a way to access the component class for other lwc tools
+        // This provides a way to access the component class for other lwc tools
         const classIdentifier = t.identifier(COMPONENT_CLASS_ID);
         declarationPath.parentPath.insertBefore(
             t.variableDeclaration('const', [

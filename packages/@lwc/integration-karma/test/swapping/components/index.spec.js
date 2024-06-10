@@ -6,6 +6,8 @@ import B from 'base/b';
 import C from 'base/c';
 import D from 'base/d';
 import E from 'base/e';
+import X from 'base/libraryx';
+import Z from 'base/libraryz';
 
 // Swapping is only enabled in dev mode
 if (process.env.NODE_ENV !== 'production') {
@@ -41,6 +43,16 @@ if (process.env.NODE_ENV !== 'production') {
             expect(() => {
                 swapComponent(D, function () {});
             }).toThrow();
+        });
+
+        it('should be a no-op for non components', () => {
+            const elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
+            expect(elm.testValue).toBe('I may look like a component');
+            expect(swapComponent(Z, X)).toBe(false);
+            return Promise.resolve().then(() => {
+                expect(elm.testValue).toBe('I may look like a component');
+            });
         });
     });
 }
