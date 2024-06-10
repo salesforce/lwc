@@ -22,7 +22,6 @@ branches:
                 - communities/ui-commerce-components
                 - communities/webruntime
                 - lds/lds-plugins
-                - lwc/lwc-platform
                 - salesforce-experience-platform-emu/komaci
                 - salesforce-experience-platform-emu/locker-pentest-app
                 - salesforce-experience-platform-emu/lwr
