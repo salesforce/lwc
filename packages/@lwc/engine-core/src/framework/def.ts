@@ -350,9 +350,7 @@ const lightingElementDef: ComponentDef = {
     render: LightningElement.prototype.render,
 };
 
-const enum PropDefType {
-    any = 'any',
-}
+type PropDefType = 'any';
 
 interface PropDef {
     config: number;
@@ -384,7 +382,7 @@ export function getComponentDef(Ctor: any): PublicComponentDef {
         // avoid leaking the reference to the public props descriptors
         publicProps[key] = {
             config: propsConfig[key] || 0, // a property by default
-            type: PropDefType.any, // no type inference for public services
+            type: 'any', // no type inference for public services
             attr: htmlPropertyToAttribute(key),
         };
     }
