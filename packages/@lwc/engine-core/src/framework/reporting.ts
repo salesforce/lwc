@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -8,16 +8,15 @@ import { noop } from '@lwc/shared';
 
 import { ShadowMode, ShadowSupportMode } from './vm';
 
-export const enum ReportingEventId {
-    CrossRootAriaInSyntheticShadow = 'CrossRootAriaInSyntheticShadow',
-    CompilerRuntimeVersionMismatch = 'CompilerRuntimeVersionMismatch',
-    NonStandardAriaReflection = 'NonStandardAriaReflection',
-    TemplateMutation = 'TemplateMutation',
-    StylesheetMutation = 'StylesheetMutation',
-    ConnectedCallbackWhileDisconnected = 'ConnectedCallbackWhileDisconnected',
-    ShadowModeUsage = 'ShadowModeUsage',
-    ShadowSupportModeUsage = 'ShadowSupportModeUsage',
-}
+type ReportingEventId =
+    | 'CrossRootAriaInSyntheticShadow'
+    | 'CompilerRuntimeVersionMismatch'
+    | 'NonStandardAriaReflection'
+    | 'TemplateMutation'
+    | 'StylesheetMutation'
+    | 'ConnectedCallbackWhileDisconnected'
+    | 'ShadowModeUsage'
+    | 'ShadowSupportModeUsage';
 
 export interface BasePayload {
     tagName?: string;
@@ -59,15 +58,18 @@ export interface ShadowSupportModeUsagePayload extends BasePayload {
 }
 
 export type ReportingPayloadMapping = {
-    [ReportingEventId.CrossRootAriaInSyntheticShadow]: CrossRootAriaInSyntheticShadowPayload;
-    [ReportingEventId.CompilerRuntimeVersionMismatch]: CompilerRuntimeVersionMismatchPayload;
-    [ReportingEventId.NonStandardAriaReflection]: NonStandardAriaReflectionPayload;
-    [ReportingEventId.TemplateMutation]: TemplateMutationPayload;
-    [ReportingEventId.StylesheetMutation]: StylesheetMutationPayload;
-    [ReportingEventId.ConnectedCallbackWhileDisconnected]: ConnectedCallbackWhileDisconnectedPayload;
-    [ReportingEventId.ShadowModeUsage]: ShadowModeUsagePayload;
-    [ReportingEventId.ShadowSupportModeUsage]: ShadowSupportModeUsagePayload;
+    CrossRootAriaInSyntheticShadow: CrossRootAriaInSyntheticShadowPayload;
+    CompilerRuntimeVersionMismatch: CompilerRuntimeVersionMismatchPayload;
+    NonStandardAriaReflection: NonStandardAriaReflectionPayload;
+    TemplateMutation: TemplateMutationPayload;
+    StylesheetMutation: StylesheetMutationPayload;
+    ConnectedCallbackWhileDisconnected: ConnectedCallbackWhileDisconnectedPayload;
+    ShadowModeUsage: ShadowModeUsagePayload;
+    ShadowSupportModeUsage: ShadowSupportModeUsagePayload;
 };
+// We can't assert directly that the mapping is correct, so instead we use an ambient variable.
+declare const validateReportingPayloadMapping: ReportingPayloadMapping;
+validateReportingPayloadMapping satisfies Record<ReportingEventId, BasePayload>;
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
     reportingEventId: T,

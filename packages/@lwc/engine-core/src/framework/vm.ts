@@ -68,7 +68,7 @@ import {
     VStaticPartElement,
 } from './vnodes';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import { isReportingEnabled, report } from './reporting';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -414,7 +414,7 @@ export function createVM<HostNode, HostElement>(
 
     // We don't need to report the shadow mode if we're rendering in light DOM
     if (isReportingEnabled() && vm.renderMode === RenderMode.Shadow) {
-        report(ReportingEventId.ShadowModeUsage, {
+        report('ShadowModeUsage', {
             tagName: vm.tagName,
             mode: vm.shadowMode,
         });
@@ -728,7 +728,7 @@ export function runConnectedCallback(vm: VM) {
                         `LWC and could cause component errors. For details, see: https://sfdc.co/synthetic-lifecycle`
                 );
             }
-            report(ReportingEventId.ConnectedCallbackWhileDisconnected, {
+            report('ConnectedCallbackWhileDisconnected', {
                 tagName: vm.tagName,
             });
         }

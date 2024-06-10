@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
 import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
-import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
+import { onReportingEnabled, report } from '../framework/reporting';
 import { logWarnOnce } from '../shared/logger';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
 import { BaseBridgeElement } from '../framework/base-bridge-element';
@@ -75,7 +75,7 @@ function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, 
         // https://github.com/salesforce/lwc/issues/3284
         setValueType = isNull(setValue) ? 'null' : typeof setValue;
     }
-    report(ReportingEventId.NonStandardAriaReflection, {
+    report('NonStandardAriaReflection', {
         tagName: vm?.tagName,
         propertyName: prop,
         isSetter,

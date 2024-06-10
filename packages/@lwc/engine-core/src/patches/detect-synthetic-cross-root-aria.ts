@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -21,7 +21,7 @@ import {
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
-import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
+import { onReportingEnabled, report } from '../framework/reporting';
 import { getAssociatedVMIfPresent, VM } from '../framework/vm';
 import { logWarnOnce } from '../shared/logger';
 
@@ -61,7 +61,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
         // vm should never be undefined here, but just to be safe, bail out and don't report
         return;
     }
-    report(ReportingEventId.CrossRootAriaInSyntheticShadow, {
+    report('CrossRootAriaInSyntheticShadow', {
         tagName: vm.tagName,
         attributeName: attrName,
     });
