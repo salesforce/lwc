@@ -10,5 +10,6 @@
             "x/multiply": ["./src/playground/modules/x/multiply/multiply"]
         }
     },
+    "files": ["../../lwc/types.d.ts"],
     "include": ["src"]
 }
