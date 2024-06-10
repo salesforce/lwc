@@ -61,6 +61,9 @@ function rehydrateHotTemplate(tpl: Template): boolean {
 
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const activeVMs = activeStyles.get(style);
+    if (!activeVMs.size) {
+        return true;
+    }
     unrenderStylesheet(style);
     for (const vm of activeVMs) {
         // if a style definition is swapped, we must reset

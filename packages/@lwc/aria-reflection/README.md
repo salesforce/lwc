@@ -31,57 +31,66 @@ The polyfill is applied globally to `Element.prototype` as soon as the module is
 
 ## Implementation
 
-The polyfill patches these [standard](https://w3c.github.io/aria/#idl-interface) properties:
+The polyfill patches these [standard](https://w3c.github.io/aria/#ARIAMixin) property/attribute reflections:
 
--   ariaAtomic
--   ariaAutoComplete
--   ariaBusy
--   ariaChecked
--   ariaColCount
--   ariaColIndex
--   ariaColSpan
--   ariaCurrent
--   ariaDisabled
--   ariaExpanded
--   ariaHasPopup
--   ariaHidden
--   ariaInvalid
--   ariaKeyShortcuts
--   ariaLabel
--   ariaLevel
--   ariaLive
--   ariaModal
--   ariaMultiLine
--   ariaMultiSelectable
--   ariaOrientation
--   ariaPlaceholder
--   ariaPosInSet
--   ariaPressed
--   ariaReadOnly
--   ariaRelevant
--   ariaRequired
--   ariaRoleDescription
--   ariaRowCount
--   ariaRowIndex
--   ariaRowSpan
--   ariaSelected
--   ariaSetSize
--   ariaSort
--   ariaValueMax
--   ariaValueMin
--   ariaValueNow
--   ariaValueText
--   role
+| Property                     | Attribute                     |
+| ---------------------------- | ----------------------------- |
+| `ariaAtomic`                 | `aria-atomic`                 |
+| `ariaAutoComplete`           | `aria-autocomplete`           |
+| `ariaBrailleLabel`           | `aria-braillelabel`           |
+| `ariaBrailleRoleDescription` | `aria-brailleroledescription` |
+| `ariaBusy`                   | `aria-busy`                   |
+| `ariaChecked`                | `aria-checked`                |
+| `ariaColCount`               | `aria-colcount`               |
+| `ariaColIndex`               | `aria-colindex`               |
+| `ariaColIndexText`           | `aria-colindextext`           |
+| `ariaColSpan`                | `aria-colspan`                |
+| `ariaCurrent`                | `aria-current`                |
+| `ariaDescription`            | `aria-description`            |
+| `ariaDisabled`               | `aria-disabled`               |
+| `ariaExpanded`               | `aria-expanded`               |
+| `ariaHasPopup`               | `aria-haspopup`               |
+| `ariaHidden`                 | `aria-hidden`                 |
+| `ariaInvalid`                | `aria-invalid`                |
+| `ariaKeyShortcuts`           | `aria-keyshortcuts`           |
+| `ariaLabel`                  | `aria-label`                  |
+| `ariaLevel`                  | `aria-level`                  |
+| `ariaLive`                   | `aria-live`                   |
+| `ariaModal`                  | `aria-modal`                  |
+| `ariaMultiLine`              | `aria-multiline`              |
+| `ariaMultiSelectable`        | `aria-multiselectable`        |
+| `ariaOrientation`            | `aria-orientation`            |
+| `ariaPlaceholder`            | `aria-placeholder`            |
+| `ariaPosInSet`               | `aria-posinset`               |
+| `ariaPressed`                | `aria-pressed`                |
+| `ariaReadOnly`               | `aria-readonly`               |
+| `ariaRelevant`               | `aria-relevant`               |
+| `ariaRequired`               | `aria-required`               |
+| `ariaRoleDescription`        | `aria-roledescription`        |
+| `ariaRowCount`               | `aria-rowcount`               |
+| `ariaRowIndex`               | `aria-rowindex`               |
+| `ariaRowIndexText`           | `aria-rowindextext`           |
+| `ariaRowSpan`                | `aria-rowspan`                |
+| `ariaSelected`               | `aria-selected`               |
+| `ariaSetSize`                | `aria-setsize`                |
+| `ariaSort`                   | `aria-sort`                   |
+| `ariaValueMax`               | `aria-valuemax`               |
+| `ariaValueMin`               | `aria-valuemin`               |
+| `ariaValueNow`               | `aria-valuenow`               |
+| `ariaValueText`              | `aria-valuetext`              |
+| `role`                       | `role`                        |
 
-As well as these [currently non-standard](https://github.com/w3c/aria/issues/1732) properties:
+As well as these [non-standard](https://github.com/w3c/aria/issues/1732) reflections:
 
--   ariaActiveDescendant
--   ariaControls
--   ariaDescribedBy
--   ariaDetails
--   ariaErrorMessage
--   ariaFlowTo
--   ariaLabelledBy
--   ariaOwns
+| Property               | Attribute               |
+| ---------------------- | ----------------------- |
+| `ariaActiveDescendant` | `aria-activedescendant` |
+| `ariaControls`         | `aria-controls`         |
+| `ariaDescribedBy`      | `aria-describedby`      |
+| `ariaDetails`          | `aria-details`          |
+| `ariaErrorMessage`     | `aria-errormessage`     |
+| `ariaFlowTo`           | `aria-flowto`           |
+| `ariaLabelledBy`       | `aria-labelledby`       |
+| `ariaOwns`             | `aria-owns`             |
 
-To determine which browsers already support ARIA reflection, see [this test](https://bl.ocks.org/nolanlawson/raw/66448a53df90680a81bda78ff8486014/).
+To determine which browsers support ARIA reflection, see the relevant [Web Platform Tests](https://web-platform-tests.org/) for [ARIA string reflection](https://wpt.fyi/results/custom-elements/reactions/AriaMixin-string-attributes.html?label=experimental&label=master&aligned) and [ARIA element reflection](https://wpt.fyi/results/custom-elements/reactions/AriaMixin-element-attributes.html?label=experimental&label=master&aligned).

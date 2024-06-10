@@ -231,4 +231,32 @@ describe('resolver', () => {
         // Alias name
         expect(code).not.toContain(`sel: "foo-bar"`);
     });
+
+    it('should resolve inherited template for JavaScript component [#4233]', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/inherited-templates/src/javascript.js'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+        const { code } = result.output[0];
+
+        expect(code).toContain('all your base');
+    });
+
+    it('should resolve inherited template for TypeScript component [#4233]', async () => {
+        const bundle = await rollup({
+            input: path.resolve(__dirname, 'fixtures/inherited-templates/src/typescript.ts'),
+            plugins: [lwc()],
+        });
+
+        const result = await bundle.generate({
+            format: 'esm',
+        });
+        const { code } = result.output[0];
+
+        expect(code).toContain('all your base');
+    });
 });

@@ -82,6 +82,18 @@ function monkeyPatchDomAPIs() {
     } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 }
 
+if (process.env.NODE_ENV !== 'production') {
+    // In dev mode, we must eagerly patch these DOM APIs because `restrictions.ts` in `@lwc/engine-core` does
+    // its own monkey-patching, and the assumption is that its monkey patches will apply on top of our own.
+    // If we _don't_ eagerly monkey-patch, then APIs like `element.appendChild` could end up calling through
+    // directly to the native DOM APIs instead, which would bypass synthetic custom element lifecycle
+    // and cause rendering/`connectedCallback`/`disconnectedCallback` not to fire.
+    // In prod mode, we avoid global patching as a slight perf optimization and because it's good practice
+    // in general to avoid global patching.
+    // See issue #4242 for details.
+    monkeyPatchDomAPIs();
+}
+
 /**
  * Properties defined on the component class, excluding those inherited from `LightningElement`.
  */
