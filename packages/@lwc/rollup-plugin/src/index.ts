@@ -65,13 +65,14 @@ const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
+const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
-function isImplicitHTMLImport(importee: string, importer: string): boolean {
+function isImplicitHTMLImport(importee: string, importer: string, importerExt: string): boolean {
     return (
-        path.extname(importer) === '.js' &&
+        SCRIPT_FILE_EXTENSIONS.includes(importerExt) &&
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
-        path.basename(importer, '.js') === path.basename(importee, '.html')
+        path.basename(importer, importerExt) === path.basename(importee, '.html')
     );
 }
 
@@ -227,7 +228,11 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         parseDescriptorFromFilePath(importeeAbsPath);
 
                     if (
-                        isImplicitHTMLImport(importeeNormalizedFilename, importerFilename) &&
+                        isImplicitHTMLImport(
+                            importeeNormalizedFilename,
+                            importerFilename,
+                            importerExt
+                        ) &&
                         !fs.existsSync(importeeNormalizedFilename)
                     ) {
                         return IMPLICIT_DEFAULT_HTML_PATH;
