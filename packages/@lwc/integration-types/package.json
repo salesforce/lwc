@@ -5,7 +5,7 @@
     "description": "Type validation for LWC packages",
     "type": "module",
     "scripts": {
-        "test": "tsc",
+        "test": "node ./scripts/update-paths.js --check && tsc",
         "playground": "rollup -c src/playground/rollup.config.js --watch"
     },
     "dependencies": {

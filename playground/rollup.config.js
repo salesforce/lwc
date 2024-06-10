@@ -3,6 +3,9 @@ import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 
+// Executing the script to ensure the tsconfig paths are up to date
+await import('./scripts/update-paths.js');
+
 const __ENV__ = process.env.NODE_ENV ?? 'development';
 
 export default (args) => {

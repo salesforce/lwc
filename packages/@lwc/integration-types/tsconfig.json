@@ -5,9 +5,9 @@
         "target": "ESNext",
         "lib": ["ES2021", "DOM"],
         "paths": {
-            "x/app": ["./src/playground/modules/x/app/app.ts"],
-            "x/counter": ["./src/playground/modules/x/counter/counter.ts"],
-            "x/multiply": ["./src/playground/modules/x/multiply/multiply.ts"]
+            "x/app": ["./src/playground/modules/x/app/app"],
+            "x/counter": ["./src/playground/modules/x/counter/counter"],
+            "x/multiply": ["./src/playground/modules/x/multiply/multiply"]
         }
     },
     "include": ["src"]
