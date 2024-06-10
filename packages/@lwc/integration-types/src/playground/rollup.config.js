@@ -12,6 +12,9 @@ import typescript from '@rollup/plugin-typescript';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
 
+// Executing the script to ensure the tsconfig paths are up to date
+await import('../../scripts/update-paths.js');
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('rollup').RollupOptions} */
