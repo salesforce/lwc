@@ -7,7 +7,8 @@
         "paths": {
             "x/app": ["./src/playground/modules/x/app/app"],
             "x/counter": ["./src/playground/modules/x/counter/counter"],
-            "x/multiply": ["./src/playground/modules/x/multiply/multiply"]
+            "x/multiply": ["./src/playground/modules/x/multiply/multiply"],
+            "x/ref": ["./src/playground/modules/x/ref/ref"]
         }
     },
     "files": ["../../lwc/types.d.ts"],
