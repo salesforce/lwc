@@ -100,10 +100,6 @@ export const enum ShadowMode {
 
 export type ShadowSupportMode = 'any' | 'reset' | 'native';
 
-export const enum LwcDomMode {
-    Manual = 'manual',
-}
-
 export interface Context {
     /** The string used for synthetic shadow DOM and light DOM style scoping. */
     stylesheetToken: string | undefined;

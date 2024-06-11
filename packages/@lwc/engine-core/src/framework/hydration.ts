@@ -32,7 +32,6 @@ import {
     runConnectedCallback,
     VMState,
     RenderMode,
-    LwcDomMode,
     VM,
     runRenderedCallback,
     resetRefVNodes,
@@ -289,7 +288,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     const { owner } = vnode;
     const { context } = vnode.data;
     const isDomManual = Boolean(
-        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LwcDomMode.Manual
+        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual'
     );
 
     if (isDomManual) {
