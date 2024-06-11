@@ -6,13 +6,6 @@ import Reset from 'x/reset';
 import None from 'x/none';
 import NativeOnly from 'x/native';
 
-// Should be kept in sync with the enum in vm.ts
-const ShadowSupportMode = {
-    Any: 'any',
-    Default: 'reset',
-    Native: 'native',
-};
-
 /**
  * These tests must be the first ones to generate the component def for the components they use.
  * This is because subsequent calls to create the component will use the cached ctor rather than
@@ -38,7 +31,7 @@ describe('shadow support mode reporting', () => {
         expect(dispatcher).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledWith('ShadowSupportModeUsage', {
             tagName: Any.name,
-            mode: ShadowSupportMode.Any,
+            mode: 'any',
         });
     });
 
@@ -48,7 +41,7 @@ describe('shadow support mode reporting', () => {
         expect(dispatcher).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledWith('ShadowSupportModeUsage', {
             tagName: NativeOnly.name,
-            mode: ShadowSupportMode.Native,
+            mode: 'native',
         });
     });
 

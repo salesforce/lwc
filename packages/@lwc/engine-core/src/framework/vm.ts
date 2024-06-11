@@ -98,11 +98,7 @@ export const enum ShadowMode {
     Synthetic,
 }
 
-export const enum ShadowSupportMode {
-    Any = 'any',
-    Default = 'reset',
-    Native = 'native',
-}
+export type ShadowSupportMode = 'any' | 'reset' | 'native';
 
 export const enum LwcDomMode {
     Manual = 'manual',
@@ -539,7 +535,7 @@ function computeShadowMode(
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (def.shadowSupportMode === ShadowSupportMode.Native) {
+        } else if (def.shadowSupportMode === 'native') {
             shadowMode = ShadowMode.Native;
         } else {
             const shadowAncestor = getNearestShadowAncestor(owner);
