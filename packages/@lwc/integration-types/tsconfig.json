@@ -12,5 +12,6 @@
         }
     },
     "files": ["../../lwc/types.d.ts"],
-    "include": ["src"]
+    "include": ["src"],
+    "exclude": ["src/playground/dist"]
 }
