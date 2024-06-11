@@ -67,9 +67,6 @@ export type ReportingPayloadMapping = {
     ShadowModeUsage: ShadowModeUsagePayload;
     ShadowSupportModeUsage: ShadowSupportModeUsagePayload;
 };
-// We can't assert directly that the mapping is correct, so instead we use an ambient variable.
-declare const validateReportingPayloadMapping: ReportingPayloadMapping;
-validateReportingPayloadMapping satisfies Record<ReportingEventId, BasePayload>;
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
     reportingEventId: T,
