@@ -349,11 +349,9 @@ const lightingElementDef: ComponentDef = {
     render: LightningElement.prototype.render,
 };
 
-type PropDefType = 'any';
-
 interface PropDef {
     config: number;
-    type: PropDefType;
+    type: 'any';
     attr: string;
 }
 type PublicMethod = (...args: any[]) => any;
