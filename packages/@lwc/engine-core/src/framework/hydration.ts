@@ -829,7 +829,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
             const hasMatchingAttrs = validateAttrs(vnode, elm, data, renderer, () => true);
             // Explicitly skip hydration validation when static parts don't contain `style` or `className`.
             // This means the style/class attributes are either static or don't exist on the element and
-            // cannot be effected by hydration.
+            // cannot be affected by hydration.
             const hasMatchingStyleAttr = shouldValidateAttr(data, 'style')
                 ? validateStyleAttr(vnode, elm, data, renderer)
                 : true;
