@@ -53,6 +53,7 @@ const REGISTER_DECORATORS_ID = 'registerDecorators';
 const TEMPLATE_KEY = 'tmpl';
 const COMPONENT_NAME_KEY = 'sel';
 const API_VERSION_KEY = 'apiVersion';
+const COMPONENT_CLASS_ID = '__lwc_component_class_internal';
 
 export {
     AMBIGUOUS_PROP_SET,
@@ -66,4 +67,5 @@ export {
     TEMPLATE_KEY,
     COMPONENT_NAME_KEY,
     API_VERSION_KEY,
+    COMPONENT_CLASS_ID,
 };
