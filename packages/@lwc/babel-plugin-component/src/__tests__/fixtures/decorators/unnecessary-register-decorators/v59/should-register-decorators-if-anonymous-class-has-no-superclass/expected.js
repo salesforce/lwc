@@ -5,8 +5,9 @@ const foo = _registerDecorators(class {
 }, {
   fields: ["foo"]
 });
-export default _registerComponent(foo, {
+const __lwc_component_class_internal = _registerComponent(foo, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 59
 });
+export default __lwc_component_class_internal;

@@ -12,8 +12,9 @@ _registerDecorators(MyElement, {
     }
   }
 });
-export default _registerComponent(MyElement, {
+const __lwc_component_class_internal = _registerComponent(MyElement, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 59
 });
+export default __lwc_component_class_internal;

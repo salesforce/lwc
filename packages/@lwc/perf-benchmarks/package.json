@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "6.6.6",
+    "version": "6.6.7",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -16,10 +16,10 @@
         "Breaking change: https://github.com/google/tachometer/issues/244"
     ],
     "dependencies": {
-        "@lwc/engine-dom": "6.6.6",
-        "@lwc/engine-server": "6.6.6",
-        "@lwc/perf-benchmarks-components": "6.6.6",
-        "@lwc/synthetic-shadow": "6.6.6"
+        "@lwc/engine-dom": "6.6.7",
+        "@lwc/engine-server": "6.6.7",
+        "@lwc/perf-benchmarks-components": "6.6.7",
+        "@lwc/synthetic-shadow": "6.6.7"
     },
     "devDependencies": {
         "@best/cli": "^12.0.2",
