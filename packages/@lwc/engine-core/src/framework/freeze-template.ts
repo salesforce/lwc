@@ -23,7 +23,7 @@ import {
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-import { onReportingEnabled, report } from './reporting';
+import { onReportingEnabled, report, ReportingEventId } from './reporting';
 
 // See @lwc/engine-core/src/framework/template.ts
 const TEMPLATE_PROPS = ['slots', 'stylesheetToken', 'stylesheets', 'renderMode'] as const;
@@ -76,15 +76,19 @@ function getOriginalArrayMethod(prop: (typeof ARRAY_MUTATION_METHODS)[number]) {
 type TemplateProp = (typeof TEMPLATE_PROPS)[number] | 'stylesheetTokens';
 type StylesheetProp = (typeof STYLESHEET_PROPS)[number];
 
-function reportViolation(type: 'template', eventId: 'TemplateMutation', prop: TemplateProp): void;
+function reportViolation(
+    type: 'template',
+    eventId: ReportingEventId.TemplateMutation,
+    prop: TemplateProp
+): void;
 function reportViolation(
     type: 'stylesheet',
-    eventId: 'StylesheetMutation',
+    eventId: ReportingEventId.StylesheetMutation,
     prop: StylesheetProp
 ): void;
 function reportViolation(
     type: 'template' | 'stylesheet',
-    eventId: 'TemplateMutation' | 'StylesheetMutation',
+    eventId: ReportingEventId.TemplateMutation | ReportingEventId.StylesheetMutation,
     prop: TemplateProp | StylesheetProp
 ): void {
     if (process.env.NODE_ENV !== 'production') {
@@ -98,11 +102,11 @@ function reportViolation(
 }
 
 function reportTemplateViolation(prop: TemplateProp) {
-    reportViolation('template', 'TemplateMutation', prop);
+    reportViolation('template', ReportingEventId.TemplateMutation, prop);
 }
 
 function reportStylesheetViolation(prop: StylesheetProp) {
-    reportViolation('stylesheet', 'StylesheetMutation', prop);
+    reportViolation('stylesheet', ReportingEventId.StylesheetMutation, prop);
 }
 
 // Warn if the user tries to mutate a stylesheets array, e.g.:

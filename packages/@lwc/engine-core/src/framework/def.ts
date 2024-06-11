@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -48,7 +48,7 @@ import {
     HTMLElementConstructor,
 } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
-import { isReportingEnabled, report } from './reporting';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 export interface ComponentDef {
     name: string;
@@ -204,7 +204,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             isReportingEnabled() &&
             (shadowSupportMode === 'any' || shadowSupportMode === 'native')
         ) {
-            report('ShadowSupportModeUsage', {
+            report(ReportingEventId.ShadowSupportModeUsage, {
                 tagName: Ctor.name,
                 mode: shadowSupportMode,
             });
