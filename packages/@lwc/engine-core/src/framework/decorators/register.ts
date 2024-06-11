@@ -59,9 +59,7 @@ interface RegisterDecoratorMeta {
     readonly fields?: string[];
 }
 
-type DescriptorType = 'accessor' | 'field' | 'method';
-
-function getClassDescriptorType(descriptor: PropertyDescriptor): DescriptorType {
+function getClassDescriptorType(descriptor: PropertyDescriptor): string {
     if (isFunction(descriptor.value)) {
         return 'method';
     } else if (isFunction(descriptor.set) || isFunction(descriptor.get)) {
