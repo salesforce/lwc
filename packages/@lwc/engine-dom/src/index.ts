@@ -58,3 +58,6 @@ export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
 export { rendererFactory } from './renderer-factory';
 export { createContextProvider } from './renderer/context';
+
+// Engine-dom public types -------------------------------------------------------------------------
+export type { LightningHTMLElement } from './apis/create-element';

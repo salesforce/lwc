@@ -98,10 +98,35 @@ if (process.env.NODE_ENV !== 'production') {
  * Properties defined on the component class, excluding those inherited from `LightningElement`.
  */
 // TODO [#0]: Restrict this to only @api props
-type ComponentClassProperties<T extends typeof LightningElement> = Omit<
-    T['prototype'],
+type ComponentClassProperties<Component extends typeof LightningElement> = Omit<
+    Component['prototype'],
     keyof LightningElement
 >;
+
+/**
+ * The custom element returned when calling {@linkcode createElement} with the given component
+ * constructor.
+ *
+ * NOTE: The returned type incorrectly includes _all_ properties defined on the component class,
+ * even though the runtime object only uses those decorated with `@api`. This is due to a
+ * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
+ * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
+ *
+ * @example ```
+ * class Example extends LightningElement {
+ *   @api exposed = 'hello'
+ *   internal = 'secret'
+ * }
+ * const example = createElement('c-example', { is: Example })
+ * // TypeScript thinks that `example.internal` is a string, when it's actually undefined.
+ * const exposed = example.exposed // type is 'string'
+ * console.log(exposed) // prints 'hello'
+ * const internal = example.internal // type is 'string'
+ * console.log(internal) // prints `undefined`
+ * ```
+ */
+export type LightningHTMLElement<Component extends typeof LightningElement> = HTMLElement &
+    ComponentClassProperties<Component>;
 
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
@@ -109,7 +134,7 @@ type ComponentClassProperties<T extends typeof LightningElement> = Omit<
  * just a string value. The intent is to allow the creation of an element controlled by LWC without
  * having to register the element as a custom element.
  *
- * NOTE: The returned type incorrectly includes all properties defined on the component class,
+ * NOTE: The returned type incorrectly includes _all_ properties defined on the component class,
  * even though the runtime object only uses those decorated with `@api`. This is due to a
  * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
  * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
@@ -128,7 +153,7 @@ export function createElement<T extends typeof LightningElement>(
         is: T;
         mode?: 'open' | 'closed';
     }
-): HTMLElement & ComponentClassProperties<T> {
+): LightningHTMLElement<T> {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
