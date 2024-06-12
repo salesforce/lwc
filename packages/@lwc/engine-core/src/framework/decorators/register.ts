@@ -59,19 +59,13 @@ interface RegisterDecoratorMeta {
     readonly fields?: string[];
 }
 
-const enum DescriptorType {
-    Method = 'method',
-    Accessor = 'accessor',
-    Field = 'field',
-}
-
-function getClassDescriptorType(descriptor: PropertyDescriptor): DescriptorType {
+function getClassDescriptorType(descriptor: PropertyDescriptor): string {
     if (isFunction(descriptor.value)) {
-        return DescriptorType.Method;
+        return 'method';
     } else if (isFunction(descriptor.set) || isFunction(descriptor.get)) {
-        return DescriptorType.Accessor;
+        return 'accessor';
     } else {
-        return DescriptorType.Field;
+        return 'field';
     }
 }
 
