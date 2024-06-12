@@ -42,11 +42,10 @@ export type StylesheetFactory = (
 ) => string;
 
 /**
- * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
- * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via
- * the @import CSS declaration).
+ * The list of stylesheets associated with a template. Each entry is either a `StylesheetFactory` or
+ * an array of factories that a given stylesheet depends on via CSS `@import` declarations.
  */
-export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
+export type Stylesheets = Array<StylesheetFactory | Stylesheets>;
 
 function linkStylesheetToCssContentInDevMode(stylesheet: StylesheetFactory, cssContent: string) {
     // Should never leak to prod; only used for HMR
@@ -171,7 +170,7 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
 }
 
 function evaluateStylesheetsContent(
-    stylesheets: TemplateStylesheetFactories,
+    stylesheets: Stylesheets,
     stylesheetToken: string | undefined,
     vm: VM
 ): string[] {

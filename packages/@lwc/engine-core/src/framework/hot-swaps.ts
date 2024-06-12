@@ -12,7 +12,7 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory, TemplateStylesheetFactories, unrenderStylesheet } from './stylesheet';
+import { StylesheetFactory, Stylesheets, unrenderStylesheet } from './stylesheet';
 import { assertNotProd, flattenStylesheets } from './utils';
 import { WeakMultiMap } from './weak-multimap';
 
@@ -23,7 +23,7 @@ let swappedStyleMap: WeakMap<StylesheetFactory, StylesheetFactory> = /*@__PURE__
 
 // The important thing here is the weak values – VMs are transient (one per component instance) and should be GC'ed,
 // so we don't want to create strong references to them.
-// The weak keys are kind of useless, because Templates, LightningElementConstructors, and StylesheetFactories are
+// The weak keys are kind of useless, because Templates, LightningElementConstructors, and Stylesheets are
 // never GC'ed. But maybe they will be someday, so we may as well use weak keys too.
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
 let activeTemplates: WeakMultiMap<Template, VM> = /*@__PURE__@*/ new WeakMultiMap();
@@ -142,7 +142,7 @@ export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFact
     return style;
 }
 
-function addActiveStylesheets(stylesheets: TemplateStylesheetFactories | undefined | null, vm: VM) {
+function addActiveStylesheets(stylesheets: Stylesheets | undefined | null, vm: VM) {
     if (isUndefined(stylesheets) || isNull(stylesheets)) {
         // Ignore non-existent stylesheets
         return;

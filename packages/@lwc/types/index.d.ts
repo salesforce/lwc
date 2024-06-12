@@ -19,8 +19,8 @@ declare module '*.html' {
 
 /** An LWC component [stylesheet file](https://lwc.dev/guide/css). */
 declare module '*.css' {
-    import type { StylesheetFactory } from '@lwc/engine-core/dist/framework/stylesheet';
+    import type { Stylesheets } from '@lwc/engine-core';
     /** A representation of an [LWC stylesheet](https://lwc.dev/guide/css). */
-    const stylesheet: StylesheetFactory;
+    const stylesheet: Stylesheets;
     export default stylesheet;
 }

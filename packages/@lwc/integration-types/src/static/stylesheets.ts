@@ -9,13 +9,6 @@ import { LightningElement } from 'lwc';
 import unscoped from './stylesheet.css';
 import scoped from './stylesheet.scoped.css';
 
-type StylesheetFactory = (
-    stylesheetToken: string | undefined,
-    useActualHostSelector: boolean,
-    useNativeDirPseudoclass: boolean
-) => string;
-export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
-
 // --- valid usage --- //
 
 export class EmptyArray extends LightningElement {

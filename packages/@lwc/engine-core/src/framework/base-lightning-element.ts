@@ -55,7 +55,7 @@ import { getVMBeingRendered, isUpdatingTemplate, Template } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
-import { TemplateStylesheetFactories } from './stylesheet';
+import { Stylesheets } from './stylesheet';
 import { instrumentInstance } from './runtime-instrumentation';
 import { applyShadowMigrateMode } from './shadow-migration-mode';
 
@@ -142,7 +142,7 @@ export interface LightningElementConstructor {
     renderMode?: 'light' | 'shadow';
     formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
-    stylesheets: TemplateStylesheetFactories;
+    stylesheets: Stylesheets;
 }
 
 type HTMLElementTheGoodParts = { toString: () => string } & Pick<

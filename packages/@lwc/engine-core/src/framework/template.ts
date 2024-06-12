@@ -39,7 +39,7 @@ import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
     getStylesheetsContent,
-    TemplateStylesheetFactories,
+    Stylesheets,
     updateStylesheetToken,
 } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
@@ -54,7 +54,7 @@ export interface Template {
     /** The list of slot names used in the template. */
     slots?: string[];
     /** The stylesheet associated with the template. */
-    stylesheets?: TemplateStylesheetFactories;
+    stylesheets?: Stylesheets;
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
     /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
@@ -476,9 +476,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     return vnodes;
 }
 
-function computeHasScopedStylesInStylesheets(
-    stylesheets: TemplateStylesheetFactories | undefined | null
-): boolean {
+function computeHasScopedStylesInStylesheets(stylesheets: Stylesheets | undefined | null): boolean {
     if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
@@ -499,8 +497,6 @@ export function computeHasScopedStyles(template: Template, vm: VM | undefined): 
     );
 }
 
-export function hasStyles(
-    stylesheets: TemplateStylesheetFactories | undefined | null
-): stylesheets is TemplateStylesheetFactories {
+export function hasStyles(stylesheets: Stylesheets | undefined | null): stylesheets is Stylesheets {
     return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
 }

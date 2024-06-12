@@ -15,7 +15,7 @@ import {
     APIFeature,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { StylesheetFactory, Stylesheets } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
 
@@ -111,7 +111,7 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
     return result;
 }
 
-export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): StylesheetFactory[] {
+export function flattenStylesheets(stylesheets: Stylesheets): StylesheetFactory[] {
     const list: StylesheetFactory[] = [];
     for (const stylesheet of stylesheets) {
         if (!isArray(stylesheet)) {
