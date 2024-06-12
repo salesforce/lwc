@@ -5,22 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/**
- * @file Provides utility type definitions for LWC projects authored using TypeScript. Unlike the
- * other `lwc/*` imports, it is not a re-export of an `@lwc`-scoped package, and it does not have
- * a corresponding JavaScript file.
- */
+// @lwc/types is a types-only package, so there is no corresponding JS file here. The package does
+// not have any exports, only module definitions, which is why we are not exporting anything here.
 
-/** An LWC component template file. */
-declare module '*.html' {
-    import type { Template } from '@lwc/engine-core';
-    const template: Template;
-    export default template;
-}
-
-/** An LWC component CSS file. */
-declare module '*.css' {
-    import type { StylesheetFactory } from '@lwc/engine-core/dist/framework/stylesheet';
-    const stylesheet: StylesheetFactory;
-    export default stylesheet;
-}
+import '@lwc/types';

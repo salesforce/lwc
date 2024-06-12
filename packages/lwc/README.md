@@ -75,14 +75,3 @@ This is equivalent to:
 ```js
 import { renderComponent } from '@lwc/engine-server';
 ```
-
-Additionally, for TypeScript projects, type definitions for HTML and CSS files are exported by `lwc/types`.
-
-```ts
-import 'lwc/types'; // Eanbles the following lines to work without errors
-import template from './my-component.html';
-import stylesheet from './my-component.css';
-```
-
-> [!NOTE]
-> The `import 'lwc/types'` statement only needs to appear once in your project, not in every file. Alternatively, you may include the file in your `tsconfig.json` configuration.

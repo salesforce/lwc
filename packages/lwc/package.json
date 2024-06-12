@@ -34,6 +34,7 @@
         "@lwc/style-compiler": "6.6.7",
         "@lwc/synthetic-shadow": "6.6.7",
         "@lwc/template-compiler": "6.6.7",
+        "@lwc/types": "6.6.7",
         "@lwc/wire-service": "6.6.7"
     },
     "lwc": {

@@ -30,6 +30,12 @@ const LWC_EXPOSED_MODULES = {
     ],
 };
 
+/**
+ * Packages with static content that don't need to be built. The `lwc` package is not included
+ * because this script file only updates `@lwc/` packages.
+ */
+const STATIC_PACKAGES = ['@lwc/types'];
+
 const expectedPkgJsons = [];
 
 for (const dir of globSync('./packages/@lwc/*')) {
@@ -46,6 +52,41 @@ for (const dir of globSync('./packages/@lwc/*')) {
 
     // Keywords aren't really important, but keep any that already exist and add 'lwc'
     keywords = [...new Set((keywords || []).concat(['lwc']))].sort();
+
+    let buildProps;
+    if (STATIC_PACKAGES.includes(name)) {
+        // Static packages may or may not define all of these props; we don't need to worry about
+        // that because JSON.stringify automatically drops anything undefined.
+        buildProps = {
+            main: pkg.main,
+            module: pkg.module,
+            types: pkg.types,
+            files: pkg.files,
+            scripts: pkg.scripts,
+            nx: pkg.nx,
+        };
+    } else {
+        buildProps = {
+            main: 'dist/index.cjs.js',
+            module: 'dist/index.js',
+            types: 'dist/index.d.ts',
+            // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
+            files: ['dist'],
+            scripts: {
+                build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
+                dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
+            },
+            nx: {
+                targets: {
+                    build: {
+                        // It's important to use the `./` here, otherwise NX does not restore the dist files
+                        // See https://github.com/salesforce/lwc/issues/3511
+                        outputs: ['{projectRoot}/dist'],
+                    },
+                },
+            },
+        };
+    }
 
     const expectedJson = {
         '//': [
@@ -65,24 +106,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
         bugs: { url: 'https://github.com/salesforce/lwc/issues' },
         license: 'MIT',
         publishConfig: { access: 'public' },
-        main: 'dist/index.cjs.js',
-        module: 'dist/index.js',
-        types: 'dist/index.d.ts',
-        // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
-        files: ['dist'],
-        scripts: {
-            build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
-            dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
-        },
-        nx: {
-            targets: {
-                build: {
-                    // It's important to use the `./` here, otherwise NX does not restore the dist files
-                    // See https://github.com/salesforce/lwc/issues/3511
-                    outputs: ['{projectRoot}/dist'],
-                },
-            },
-        },
+        ...buildProps,
         dependencies,
         devDependencies,
         peerDependencies,
