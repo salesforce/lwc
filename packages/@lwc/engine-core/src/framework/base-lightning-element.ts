@@ -24,11 +24,11 @@ import {
     isFunction,
     isNull,
     isObject,
-    isFalse,
     isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    assert,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -548,9 +548,10 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         const vm = getAssociatedVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
-            if (isFalse(vm.elm instanceof Element)) {
-                logError(`this.elementSelf should be an Element, found: ${vm.elm}`);
-            }
+            assert.isTrue(
+                vm.elm instanceof Element,
+                `this.elementSelf should be an Element, found: ${vm.elm}`
+            );
         }
 
         return vm.elm;
