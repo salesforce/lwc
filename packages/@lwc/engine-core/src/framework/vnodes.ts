@@ -165,6 +165,11 @@ export interface VElementData extends VNodeData {
     readonly slotData?: any;
     // Corresponds to the slot attribute of the element and indicates which `slot` element it should be assigned to
     readonly slotAssignment?: string;
+    readonly context?: {
+        lwc?: {
+            dom?: 'manual';
+        };
+    };
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
