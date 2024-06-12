@@ -16,6 +16,7 @@ import {
     REGISTER_COMPONENT_ID,
     TEMPLATE_KEY,
     API_VERSION_KEY,
+    COMPONENT_CLASS_ID,
 } from './constants';
 import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
@@ -83,7 +84,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         //       sel: 'x-foo',
         //       apiVersion: '58'
         //     })
-        return t.callExpression(registerComponentId, [
+        const registerComponentExpression = t.callExpression(registerComponentId, [
             node as types.Expression,
             t.objectExpression([
                 t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
@@ -93,6 +94,17 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
             ]),
         ]);
+
+        // Example:
+        // const __lwc_component_class_internal = registerComponent(cmp, ...);
+        // This provides a way to access the component class for other lwc tools
+        const classIdentifier = t.identifier(COMPONENT_CLASS_ID);
+        declarationPath.parentPath.insertBefore(
+            t.variableDeclaration('const', [
+                t.variableDeclarator(classIdentifier, registerComponentExpression),
+            ])
+        );
+        return classIdentifier;
     }
 
     return {

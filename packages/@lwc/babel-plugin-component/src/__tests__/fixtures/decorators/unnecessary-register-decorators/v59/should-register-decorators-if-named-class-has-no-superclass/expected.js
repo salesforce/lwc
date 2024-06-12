@@ -6,8 +6,9 @@ class MyClazz {
 _registerDecorators(MyClazz, {
   fields: ["foo"]
 });
-export default _registerComponent(MyClazz, {
+const __lwc_component_class_internal = _registerComponent(MyClazz, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 59
 });
+export default __lwc_component_class_internal;
