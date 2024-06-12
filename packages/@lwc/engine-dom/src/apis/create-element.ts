@@ -98,10 +98,7 @@ if (process.env.NODE_ENV !== 'production') {
  * Properties defined on the component class, excluding those inherited from `LightningElement`.
  */
 // TODO [#0]: Restrict this to only @api props
-type ComponentClassProperties<Component extends typeof LightningElement> = Omit<
-    Component['prototype'],
-    keyof LightningElement
->;
+type ComponentClassProperties<T> = Omit<T, keyof LightningElement>;
 
 /**
  * The custom element returned when calling {@linkcode createElement} with the given component
@@ -125,8 +122,7 @@ type ComponentClassProperties<Component extends typeof LightningElement> = Omit<
  * console.log(internal) // prints `undefined`
  * ```
  */
-export type LightningHTMLElement<Component extends typeof LightningElement> = HTMLElement &
-    ComponentClassProperties<Component>;
+export type LightningHTMLElement<T> = HTMLElement & ComponentClassProperties<T>;
 
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
@@ -147,13 +143,18 @@ export type LightningHTMLElement<Component extends typeof LightningElement> = HT
  * @example
  * const el = createElement('x-foo', { is: FooCtor });
  */
-export function createElement<T extends typeof LightningElement>(
+export function createElement<Component>(
     sel: string,
     options: {
-        is: T;
+        // Because the `LightningHTMLElement` type is flawed and includes more props than actually
+        // exist, we want to enable customers to provide an explicit generic parameter containing
+        // only the props from the component they want to expose. For example we want to allow this:
+        // class Foo extends LightningElement { @api exposed = 'public'; hidden = 'secret'; }
+        // createElement<{exposed: string}>('x-foo', { is: Foo })
+        is: LightningElement['constructor'] & { new (): Component };
         mode?: 'open' | 'closed';
     }
-): LightningHTMLElement<T> {
+): LightningHTMLElement<Component> {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
