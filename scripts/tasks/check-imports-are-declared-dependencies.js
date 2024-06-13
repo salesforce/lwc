@@ -20,7 +20,7 @@ async function main() {
     const pkgJsonFiles = globSync(path.join(__dirname, '../../packages/@lwc/*/package.json'));
 
     for (const pkgJsonFile of pkgJsonFiles) {
-        const { dependencies, peerDependencies, private } = JSON.parse(
+        const { dependencies, peerDependencies, private, module, types } = JSON.parse(
             fs.readFileSync(pkgJsonFile, 'utf-8')
         );
 
@@ -30,9 +30,12 @@ async function main() {
 
         const allDependencies = { ...dependencies, ...peerDependencies };
 
-        const esmDistFile = path.join(path.dirname(pkgJsonFile), 'dist/index.js');
+        // We use three fields for exports: "main" for CJS, "module" for ESM, "types" for, y'know.
+        // If a package has a "module" defined, we use that as the source of truth, otherwise we
+        // assume it's a types-only package and we check that, instead.
+        const fileToCheck = path.join(path.dirname(pkgJsonFile), module ?? types);
 
-        const esmSource = fs.readFileSync(esmDistFile, 'utf-8');
+        const esmSource = fs.readFileSync(fileToCheck, 'utf-8');
 
         await init;
         const [importeds] = parse(esmSource);
