@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
-import { StylesheetFactory, Stylesheets } from './stylesheet';
+import { Stylesheet, Stylesheets } from './stylesheet';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
 
 // See @lwc/engine-core/src/framework/template.ts
@@ -126,7 +126,7 @@ function warnOnArrayMutation(stylesheets: Stylesheets) {
 
 // Warn if the user tries to mutate a stylesheet factory function, e.g.:
 // `stylesheet.$scoped$ = true`
-function warnOnStylesheetFunctionMutation(stylesheet: StylesheetFactory) {
+function warnOnStylesheetFunctionMutation(stylesheet: Stylesheet) {
     for (const prop of STYLESHEET_PROPS) {
         let value = (stylesheet as any)[prop];
         defineProperty(stylesheet, prop, {
@@ -164,7 +164,7 @@ function deepFreeze(stylesheets: Stylesheets) {
 // Deep-traverse an array (of arrays) of stylesheet factory functions, and call the callback for every array/function
 function traverseStylesheets(
     stylesheets: Stylesheets,
-    callback: (subStylesheets: Stylesheets | StylesheetFactory) => void
+    callback: (subStylesheets: Stylesheets | Stylesheet) => void
 ) {
     callback(stylesheets);
     for (let i = 0; i < stylesheets.length; i++) {

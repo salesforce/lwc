@@ -12,14 +12,14 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory, Stylesheets, unrenderStylesheet } from './stylesheet';
+import { Stylesheet, Stylesheets, unrenderStylesheet } from './stylesheet';
 import { assertNotProd, flattenStylesheets } from './utils';
 import { WeakMultiMap } from './weak-multimap';
 
 let swappedTemplateMap: WeakMap<Template, Template> = /*@__PURE__@*/ new WeakMap();
 let swappedComponentMap: WeakMap<LightningElementConstructor, LightningElementConstructor> =
     /*@__PURE__@*/ new WeakMap();
-let swappedStyleMap: WeakMap<StylesheetFactory, StylesheetFactory> = /*@__PURE__@*/ new WeakMap();
+let swappedStyleMap: WeakMap<Stylesheet, Stylesheet> = /*@__PURE__@*/ new WeakMap();
 
 // The important thing here is the weak values – VMs are transient (one per component instance) and should be GC'ed,
 // so we don't want to create strong references to them.
@@ -29,7 +29,7 @@ let swappedStyleMap: WeakMap<StylesheetFactory, StylesheetFactory> = /*@__PURE__
 let activeTemplates: WeakMultiMap<Template, VM> = /*@__PURE__@*/ new WeakMultiMap();
 let activeComponents: WeakMultiMap<LightningElementConstructor, VM> =
     /*@__PURE__@*/ new WeakMultiMap();
-let activeStyles: WeakMultiMap<StylesheetFactory, VM> = /*@__PURE__@*/ new WeakMultiMap();
+let activeStyles: WeakMultiMap<Stylesheet, VM> = /*@__PURE__@*/ new WeakMultiMap();
 
 // Only used in LWC's Karma tests
 if (process.env.NODE_ENV === 'test-karma-lwc') {
@@ -59,7 +59,7 @@ function rehydrateHotTemplate(tpl: Template): boolean {
     return true;
 }
 
-function rehydrateHotStyle(style: StylesheetFactory): boolean {
+function rehydrateHotStyle(style: Stylesheet): boolean {
     const activeVMs = activeStyles.get(style);
     if (!activeVMs.size) {
         return true;
@@ -129,11 +129,11 @@ export function getComponentOrSwappedComponent(
     return Ctor;
 }
 
-export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFactory {
+export function getStyleOrSwappedStyle(style: Stylesheet): Stylesheet {
     assertNotProd(); // this method should never leak to prod
 
     // TODO [#4154]: shows stale content when swapping content back and forth multiple times
-    const visited: Set<StylesheetFactory> = new Set();
+    const visited: Set<Stylesheet> = new Set();
     while (swappedStyleMap.has(style) && !visited.has(style)) {
         visited.add(style);
         style = swappedStyleMap.get(style)!;
@@ -224,7 +224,7 @@ export function swapComponent(
     return false;
 }
 
-export function swapStyle(oldStyle: StylesheetFactory, newStyle: StylesheetFactory): boolean {
+export function swapStyle(oldStyle: Stylesheet, newStyle: Stylesheet): boolean {
     if (process.env.NODE_ENV !== 'production') {
         // TODO [#1887]: once the support for registering styles is implemented
         // we can add the validation of both styles around this block.
