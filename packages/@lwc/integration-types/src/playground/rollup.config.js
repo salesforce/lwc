@@ -37,7 +37,7 @@ export default {
         serve({
             contentBase: __dirname,
             open: false,
-            port: 3000,
+            port: process.env.PORT ?? 3000,
         }),
         livereload(join(__dirname, 'dist')),
     ],
