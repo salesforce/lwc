@@ -100,7 +100,6 @@ describe('custom elements registry', () => {
 
     beforeEach(() => {
         iframe = document.createElement('iframe');
-        iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
         document.body.appendChild(iframe);
 
         if (window.__coverage__) {
