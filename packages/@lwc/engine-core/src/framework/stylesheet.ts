@@ -43,7 +43,7 @@ export type Stylesheet = (
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a `Stylesheet` or
- * an array of factories that a given stylesheet depends on via CSS `@import` declarations.
+ * an array of stylesheets that a given stylesheet depends on via CSS `@import` declarations.
  */
 export type Stylesheets = Array<Stylesheet | Stylesheets>;
 
