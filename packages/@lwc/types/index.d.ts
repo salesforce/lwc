@@ -21,6 +21,6 @@ declare module '*.html' {
 declare module '*.css' {
     import type { Stylesheets } from '@lwc/engine-core';
     /** A representation of an [LWC stylesheet](https://lwc.dev/guide/css). */
-    const stylesheet: Stylesheets;
-    export default stylesheet;
+    const stylesheets: Stylesheets;
+    export default stylesheets;
 }
