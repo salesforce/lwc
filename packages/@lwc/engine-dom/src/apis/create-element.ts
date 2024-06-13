@@ -97,7 +97,7 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Properties defined on the component class, excluding those inherited from `LightningElement`.
  */
-// TODO [#0]: Restrict this to only @api props
+// TODO [#4292]: Restrict this to only @api props
 type ComponentClassProperties<T> = Omit<T, keyof LightningElement>;
 
 /**
