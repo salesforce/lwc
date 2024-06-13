@@ -7,10 +7,14 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+/** Packages that only contain type definitions, no JavaScript. */
+const tsPackages = ['@lwc/types'];
+
 describe('packaged dependencies are re-exported', () => {
     const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
     test.each(Object.keys(pkg.dependencies))(`%s is exported`, (name) => {
         const relative = name.replace('@lwc', '.');
-        expect(pkg.exports[relative]).toBe(`${relative}.js`);
+        const ext = tsPackages.includes(name) ? '.d.ts' : '.js';
+        expect(pkg.exports[relative]).toBe(relative + ext);
     });
 });
