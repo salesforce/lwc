@@ -67,7 +67,7 @@ import {
     isVFragment,
     VStaticPartElement,
 } from './vnodes';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { Stylesheet, Stylesheets } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -220,7 +220,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Any stylesheets associated with the component
      */
-    stylesheets: TemplateStylesheetFactories | null;
+    stylesheets: Stylesheets | null;
     /**
      * API version associated with this VM
      */
@@ -429,10 +429,10 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFactories): boolean {
+function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean {
     let valid = true;
 
-    const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
+    const validate = (arrayOrStylesheet: Stylesheets | Stylesheet) => {
         if (isArray(arrayOrStylesheet)) {
             for (let i = 0; i < arrayOrStylesheet.length; i++) {
                 validate(arrayOrStylesheet[i]);

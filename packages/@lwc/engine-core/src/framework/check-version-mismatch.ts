@@ -9,7 +9,7 @@ import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 import { logError } from '../shared/logger';
 
 import { Template } from './template';
-import { StylesheetFactory } from './stylesheet';
+import { Stylesheet } from './stylesheet';
 import { LightningElementConstructor } from './base-lightning-element';
 import { report, ReportingEventId } from './reporting';
 
@@ -30,10 +30,10 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
  * @param type
  */
 export function checkVersionMismatch(func: Template, type: 'template'): void;
-export function checkVersionMismatch(func: StylesheetFactory, type: 'stylesheet'): void;
+export function checkVersionMismatch(func: Stylesheet, type: 'stylesheet'): void;
 export function checkVersionMismatch(func: LightningElementConstructor, type: 'component'): void;
 export function checkVersionMismatch(
-    func: Template | StylesheetFactory | LightningElementConstructor,
+    func: Template | Stylesheet | LightningElementConstructor,
     type: 'template' | 'stylesheet' | 'component'
 ) {
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);

@@ -2,7 +2,6 @@
 -local-*
 .DS_Store
 dist/
-types/
 node_modules/
 coverage/
 .idea/

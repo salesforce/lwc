@@ -22,7 +22,7 @@ import {
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { Stylesheet, Stylesheets } from './stylesheet';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
 
 // See @lwc/engine-core/src/framework/template.ts
@@ -111,7 +111,7 @@ function reportStylesheetViolation(prop: StylesheetProp) {
 
 // Warn if the user tries to mutate a stylesheets array, e.g.:
 // `tmpl.stylesheets.push(someStylesheetFunction)`
-function warnOnArrayMutation(stylesheets: TemplateStylesheetFactories) {
+function warnOnArrayMutation(stylesheets: Stylesheets) {
     // We can't handle users calling Array.prototype.slice.call(tmpl.stylesheets), but
     // we can at least warn when they use the most common mutation methods.
     for (const prop of ARRAY_MUTATION_METHODS) {
@@ -126,7 +126,7 @@ function warnOnArrayMutation(stylesheets: TemplateStylesheetFactories) {
 
 // Warn if the user tries to mutate a stylesheet factory function, e.g.:
 // `stylesheet.$scoped$ = true`
-function warnOnStylesheetFunctionMutation(stylesheet: StylesheetFactory) {
+function warnOnStylesheetFunctionMutation(stylesheet: Stylesheet) {
     for (const prop of STYLESHEET_PROPS) {
         let value = (stylesheet as any)[prop];
         defineProperty(stylesheet, prop, {
@@ -144,7 +144,7 @@ function warnOnStylesheetFunctionMutation(stylesheet: StylesheetFactory) {
 }
 
 // Warn on either array or stylesheet (function) mutation, in a deeply-nested array
-function trackStylesheetsMutation(stylesheets: TemplateStylesheetFactories) {
+function trackStylesheetsMutation(stylesheets: Stylesheets) {
     traverseStylesheets(stylesheets, (subStylesheets) => {
         if (isArray(subStylesheets)) {
             warnOnArrayMutation(subStylesheets);
@@ -155,7 +155,7 @@ function trackStylesheetsMutation(stylesheets: TemplateStylesheetFactories) {
 }
 
 // Deeply freeze the entire array (of arrays) of stylesheet factory functions
-function deepFreeze(stylesheets: TemplateStylesheetFactories) {
+function deepFreeze(stylesheets: Stylesheets) {
     traverseStylesheets(stylesheets, (subStylesheets) => {
         freeze(subStylesheets);
     });
@@ -163,8 +163,8 @@ function deepFreeze(stylesheets: TemplateStylesheetFactories) {
 
 // Deep-traverse an array (of arrays) of stylesheet factory functions, and call the callback for every array/function
 function traverseStylesheets(
-    stylesheets: TemplateStylesheetFactories,
-    callback: (subStylesheets: TemplateStylesheetFactories | StylesheetFactory) => void
+    stylesheets: Stylesheets,
+    callback: (subStylesheets: Stylesheets | Stylesheet) => void
 ) {
     callback(stylesheets);
     for (let i = 0; i < stylesheets.length; i++) {
