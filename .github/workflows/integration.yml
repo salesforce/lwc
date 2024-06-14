@@ -17,11 +17,8 @@ on:
             - 'winter*'
 
 env:
-    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
-    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
-    SAUCE_TUNNEL_ID: github-action-tunnel-karma-${{github.run_id}}
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
-    GITHUB_RUN_ID: ${{github.run_id}}
+    CHROMEDRIVER_BINARY: '../../../node_modules/chromedriver/lib/chromedriver/chromedriver' # pin wdio to local chromedriver
 
 jobs:
     run-integration-tests:
@@ -39,15 +36,22 @@ jobs:
                   node-version: '20.12.2'
                   cache: 'yarn'
 
+            # Needed for local browser integration tests
+            # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
+            - name: Setup chrome v124
+              uses: browser-actions/setup-chrome@v1
+              with:
+                  chrome-version: 124
+              id: setup-chrome
+
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v2
-              with:
-                  username: ${{ secrets.SAUCE_USERNAME }}
-                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+            # Pin chromedriver to the same version as Chrome above
+            - name: Install chromedriver v124
+              run: yarn add -W chromedriver@^124
+              working-directory: ./
 
-            - run: yarn sauce:prod --browsers chrome
-            - run: yarn sauce:dev --browsers chrome
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev
