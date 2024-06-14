@@ -28,6 +28,7 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    assert,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -194,6 +195,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
     constructor: LightningElementConstructor;
     template: ShadowRoot | null;
     refs: RefNodes | undefined;
+    hostElement: Element;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -540,6 +542,23 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         }
 
         return vm.shadowRoot;
+    },
+
+    get hostElement(): Element {
+        const vm = getAssociatedVM(this);
+
+        if (!process.env.IS_BROWSER) {
+            assert.fail('this.hostElement is not supported in this environment');
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(
+                vm.elm instanceof Element,
+                `this.hostElement should be an Element, found: ${vm.elm}`
+            );
+        }
+
+        return vm.elm;
     },
 
     get refs(): RefNodes | undefined {

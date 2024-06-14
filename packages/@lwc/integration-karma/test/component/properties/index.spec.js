@@ -24,6 +24,7 @@ const expectedEnumerableProps = [
     'hasAttribute',
     'hasAttributeNS',
     'hidden',
+    'hostElement',
     'id',
     'isConnected',
     'lang',
