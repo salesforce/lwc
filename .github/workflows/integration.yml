@@ -18,6 +18,7 @@ on:
 
 env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
+    CHROMEDRIVER_BINARY: './node_modules/chromedriver/bin/chromedriver' # pin wdio to local chromedriver
 
 jobs:
     run-integration-tests:
@@ -45,7 +46,10 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-              working-directory: ./
+
+            # Pin chromedriver to the same version as Chrome above
+            - name: Install chromedriver v124
+              run: yarn add -W chromedriver@^124
 
             - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod
             - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev

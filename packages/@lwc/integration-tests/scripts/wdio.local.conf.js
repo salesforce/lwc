@@ -11,6 +11,7 @@ const baseConfig = require('./wdio.conf.js');
 
 const headless = process.env.HEADLESS_CHROME !== 'false';
 const chromeBinary = process.env.CHROME_BINARY;
+const chromedriverBinary = process.env.CHROMEDRIVER_BINARY;
 
 exports.config = merge(baseConfig.config, {
     maxInstances: 5,
@@ -22,6 +23,11 @@ exports.config = merge(baseConfig.config, {
                 args: headless ? ['headless=true'] : [],
                 ...(chromeBinary && { binary: chromeBinary }),
             },
+            ...(chromedriverBinary && {
+                'wdio:chromedriverOptions': {
+                    binary: chromedriverBinary,
+                },
+            }),
         },
     ],
 
