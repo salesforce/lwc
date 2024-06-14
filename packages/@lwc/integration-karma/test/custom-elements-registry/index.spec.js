@@ -14,8 +14,8 @@ function getEngineCode() {
         getCode(document.querySelector('script[src*="synthetic-shadow"]').src);
 
     const scripts = [
-        `window.process = { env: { NODE_ENV: "production" } };`,
-        `window.lwcRuntimeFlags = ${JSON.stringify(window.lwcRuntimeFlags)};`, // copy runtime flags to iframe
+        `globalThis.process = { env: { NODE_ENV: "production" } };`,
+        `globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};`, // copy runtime flags to iframe
         syntheticShadowSrc,
         getCode(engineDomSrc),
     ].filter(Boolean);

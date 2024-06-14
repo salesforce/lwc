@@ -19,7 +19,9 @@ describe('W-15904769', () => {
         );
     };
 
-    if (!process.env.NATIVE_SHADOW) {
+    // If `lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE` is true, then components no longer run in a
+    // "mixed" lifecycle mode, so this bug cannot repro.
+    if (!process.env.NATIVE_SHADOW && !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         it('native sloter + synthetic slotee disconnects root and subtree components but does not reconnect synthetic subtree', async () => {
             const elm = createElement('x-native-sloter-synthetic-slotee', {
                 is: NativeSloterSyntheticSlotee,
