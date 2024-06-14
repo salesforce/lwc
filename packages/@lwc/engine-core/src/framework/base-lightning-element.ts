@@ -547,6 +547,10 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     get hostElement(): Element {
         const vm = getAssociatedVM(this);
 
+        if (!process.env.IS_BROWSER) {
+            assert.fail('this.hostElement is not supported in this environment');
+        }
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 vm.elm instanceof Element,
