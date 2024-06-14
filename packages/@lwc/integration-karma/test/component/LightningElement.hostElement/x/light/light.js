@@ -5,6 +5,6 @@ export default class Light extends LightningElement {
 
     @api
     getHostElement() {
-        return this.elementSelf;
+        return this.hostElement;
     }
 }
