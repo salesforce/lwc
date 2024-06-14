@@ -10,6 +10,7 @@ const merge = require('deepmerge');
 const baseConfig = require('./wdio.conf.js');
 
 const headless = process.env.HEADLESS_CHROME !== 'false';
+const chromeBinary = process.env.CHROME_BINARY;
 
 exports.config = merge(baseConfig.config, {
     maxInstances: 5,
@@ -19,6 +20,7 @@ exports.config = merge(baseConfig.config, {
             browserName: 'chrome',
             'goog:chromeOptions': {
                 args: headless ? ['headless=true'] : [],
+                ...(chromeBinary && { binary: chromeBinary }),
             },
         },
     ],

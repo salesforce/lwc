@@ -35,9 +35,17 @@ jobs:
                   node-version: '20.12.2'
                   cache: 'yarn'
 
+            # Needed for local browser integration tests
+            # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
+            - name: Setup chrome v124
+              uses: browser-actions/setup-chrome@v1
+              with:
+                  chrome-version: 124
+              id: setup-chrome
+
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn local:prod
-            - run: yarn local:dev
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev
