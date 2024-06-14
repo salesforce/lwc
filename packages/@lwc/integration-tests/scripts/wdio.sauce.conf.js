@@ -23,7 +23,7 @@ const browsers = [
     {
         commonName: 'chrome',
         browserName: 'chrome',
-        version: 'latest',
+        version: '125',
         // Note chrome fails for Linux and macOS
         platform: 'Windows 11',
     },

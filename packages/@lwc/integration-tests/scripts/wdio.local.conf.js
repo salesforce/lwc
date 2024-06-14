@@ -18,7 +18,7 @@ exports.config = merge(baseConfig.config, {
         {
             browserName: 'chrome',
             'goog:chromeOptions': {
-                args: headless ? ['headless=new'] : [],
+                args: headless ? ['headless=true'] : [],
             },
         },
     ],
