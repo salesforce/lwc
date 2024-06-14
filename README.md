@@ -10,7 +10,7 @@
     <img src="https://packagephobia.now.sh/badge?p=@lwc/engine-dom" alt="install size">
   </a>
 
-  <a href="https://github.com/salesforce/lwc/blob/master/LICENSE">
+  <a href="https://github.com/salesforce/lwc/blob/master/LICENSE"> 
     <img src="https://img.shields.io/npm/l/lwc.svg" alt="license">
   </a>
 
