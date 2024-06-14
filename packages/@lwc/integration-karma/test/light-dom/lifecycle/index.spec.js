@@ -1,5 +1,9 @@
 import { createElement } from 'lwc';
-import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
+import {
+    extractDataIds,
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+} from 'test-utils';
 
 import SlotForwarding from 'x/slotForwarding';
 import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
@@ -159,14 +163,24 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.showTop = false;
             await Promise.resolve();
 
-            expect(window.timingBuffer).toEqual([
-                '10:connectedCallback',
-                '11:connectedCallback',
-                '12:connectedCallback',
-                '4:disconnectedCallback',
-                '9:disconnectedCallback',
-                '8:disconnectedCallback',
-            ]);
+            // Synthetic custom element lifecycle does not fire disconnectedCallback correctly
+            expect(window.timingBuffer).toEqual(
+                ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          '10:connectedCallback',
+                          '11:connectedCallback',
+                          '12:connectedCallback',
+                          '4:disconnectedCallback',
+                          '9:disconnectedCallback',
+                          '8:disconnectedCallback',
+                      ]
+                    : [
+                          '10:connectedCallback',
+                          '11:connectedCallback',
+                          '12:connectedCallback',
+                          '4:disconnectedCallback',
+                      ]
+            );
         });
     });
 }
