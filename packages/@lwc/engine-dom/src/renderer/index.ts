@@ -48,6 +48,10 @@ function previousSibling(node: Node): Node | null {
     return node.previousSibling;
 }
 
+function getParentNode(node: Node): Node | null {
+    return node.parentNode;
+}
+
 function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
     // `shadowRoot` will be non-null in two cases:
     //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
@@ -251,4 +255,5 @@ export {
     assertInstanceOfHTMLElement,
     ownerDocument,
     attachInternals,
+    getParentNode,
 };

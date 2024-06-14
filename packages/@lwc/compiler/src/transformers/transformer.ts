@@ -126,6 +126,8 @@ function transformFile(
         case '.jsx':
         case '.ts':
         case '.js':
+        case '.mts':
+        case '.mjs':
             transformer = options.targetSSR ? compileComponentForSSR : scriptTransformer;
             break;
 

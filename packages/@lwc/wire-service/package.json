@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/wire-service",
-    "version": "6.5.3",
+    "version": "6.7.1",
     "description": "@wire service",
     "keywords": [
         "lwc"
@@ -42,8 +42,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "6.5.3",
-        "@lwc/shared": "6.5.3"
+        "@lwc/engine-core": "6.7.1",
+        "@lwc/shared": "6.7.1"
     },
     "lwc": {
         "modules": [

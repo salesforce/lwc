@@ -31,8 +31,9 @@ _registerDecorators(Text, {
   publicMethods: ["m1"],
   fields: ["privateProp"]
 });
-export default _registerComponent(Text, {
+const __lwc_component_class_internal = _registerComponent(Text, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 9999999
 });
+export default __lwc_component_class_internal;

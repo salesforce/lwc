@@ -55,9 +55,13 @@ function yieldAttrOrPropLiveValue(name: string, value: IrExpression): EsStatemen
     return [bConditionalLiveYield(instanceMemberRef, b.literal(name))];
 }
 
-function reorderAttributes(attrs: (IrAttribute | IrProperty)[]): (IrAttribute | IrProperty)[] {
-    let classAttr: IrAttribute | IrProperty | null = null;
-    let styleAttr: IrAttribute | IrProperty | null = null;
+function reorderAttributes(
+    attrs: IrAttribute[],
+    props: IrProperty[]
+): (IrAttribute | IrProperty)[] {
+    let classAttr: IrAttribute | null = null;
+    let styleAttr: IrAttribute | null = null;
+    let slotAttr: IrAttribute | null = null;
 
     const boringAttrs = attrs.filter((attr) => {
         if (attr.name === 'class') {
@@ -66,18 +70,23 @@ function reorderAttributes(attrs: (IrAttribute | IrProperty)[]): (IrAttribute | 
         } else if (attr.name === 'style') {
             styleAttr = attr;
             return false;
+        } else if (attr.name === 'slot') {
+            slotAttr = attr;
+            return false;
         }
         return true;
     });
 
-    return [classAttr, styleAttr, ...boringAttrs].filter((el): el is IrAttribute => el !== null);
+    return [classAttr, styleAttr, ...boringAttrs, ...props, slotAttr].filter(
+        (el): el is IrAttribute => el !== null
+    );
 }
 
 export const Element: Transformer<IrElement> = function Element(node, cxt): EsStatement[] {
-    const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes([
-        ...node.attributes,
-        ...node.properties,
-    ]);
+    const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes(
+        node.attributes,
+        node.properties
+    );
 
     const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
         cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);

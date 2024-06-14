@@ -1,0 +1,630 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 10,
+            "endColumn": 12,
+            "start": 0,
+            "end": 351,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 10,
+                "startColumn": 1,
+                "endLine": 10,
+                "endColumn": 12,
+                "start": 340,
+                "end": 351
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 339,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 11,
+                        "start": 333,
+                        "end": 339
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " front ",
+                        "value": " front ",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 23,
+                            "start": 29,
+                            "end": 43
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " some ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " some "
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 23,
+                            "endLine": 4,
+                            "endColumn": 9,
+                            "start": 43,
+                            "end": 72
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{dynamic}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "dynamic",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 23,
+                                "endLine": 4,
+                                "endColumn": 9,
+                                "start": 43,
+                                "end": 72
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 23,
+                            "endLine": 4,
+                            "endColumn": 9,
+                            "start": 43,
+                            "end": 72
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " text",
+                        "value": {
+                            "type": "Literal",
+                            "value": " text"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 23,
+                            "endLine": 4,
+                            "endColumn": 9,
+                            "start": 43,
+                            "end": 72
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 57,
+                            "start": 72,
+                            "end": 120,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 15,
+                                "start": 72,
+                                "end": 78
+                            },
+                            "endTag": {
+                                "startLine": 4,
+                                "startColumn": 50,
+                                "endLine": 4,
+                                "endColumn": 57,
+                                "start": 113,
+                                "end": 120
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Comment",
+                                "raw": " inner front ",
+                                "value": " inner front ",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 15,
+                                    "endLine": 4,
+                                    "endColumn": 35,
+                                    "start": 78,
+                                    "end": 98
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": " ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": " "
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 35,
+                                    "endLine": 4,
+                                    "endColumn": 50,
+                                    "start": 98,
+                                    "end": 113
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": "{dynamic}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 8,
+                                    "name": "dynamic",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 35,
+                                        "endLine": 4,
+                                        "endColumn": 50,
+                                        "start": 98,
+                                        "end": 113
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 35,
+                                    "endLine": 4,
+                                    "endColumn": 50,
+                                    "start": 98,
+                                    "end": 113
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": " text",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": " text"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 35,
+                                    "endLine": 4,
+                                    "endColumn": 50,
+                                    "start": 98,
+                                    "end": 113
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "some ",
+                        "value": {
+                            "type": "Literal",
+                            "value": "some "
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 57,
+                            "endLine": 5,
+                            "endColumn": 24,
+                            "start": 120,
+                            "end": 144
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{dynamic}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "dynamic",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 57,
+                                "endLine": 5,
+                                "endColumn": 24,
+                                "start": 120,
+                                "end": 144
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 57,
+                            "endLine": 5,
+                            "endColumn": 24,
+                            "start": 120,
+                            "end": 144
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " "
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 57,
+                            "endLine": 5,
+                            "endColumn": 24,
+                            "start": 120,
+                            "end": 144
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " middle ",
+                        "value": " middle ",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 24,
+                            "endLine": 5,
+                            "endColumn": 39,
+                            "start": 144,
+                            "end": 159
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " text",
+                        "value": {
+                            "type": "Literal",
+                            "value": " text"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 39,
+                            "endLine": 6,
+                            "endColumn": 9,
+                            "start": 159,
+                            "end": 173
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 63,
+                            "start": 173,
+                            "end": 227,
+                            "startTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 15,
+                                "start": 173,
+                                "end": 179
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 56,
+                                "endLine": 6,
+                                "endColumn": 63,
+                                "start": 220,
+                                "end": 227
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "some ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "some "
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 15,
+                                    "endLine": 6,
+                                    "endColumn": 30,
+                                    "start": 179,
+                                    "end": 194
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": "{dynamic}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 8,
+                                    "name": "dynamic",
+                                    "location": {
+                                        "startLine": 6,
+                                        "startColumn": 15,
+                                        "endLine": 6,
+                                        "endColumn": 30,
+                                        "start": 179,
+                                        "end": 194
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 15,
+                                    "endLine": 6,
+                                    "endColumn": 30,
+                                    "start": 179,
+                                    "end": 194
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": " ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": " "
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 15,
+                                    "endLine": 6,
+                                    "endColumn": 30,
+                                    "start": 179,
+                                    "end": 194
+                                }
+                            },
+                            {
+                                "type": "Comment",
+                                "raw": " inner middle ",
+                                "value": " inner middle ",
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 30,
+                                    "endLine": 6,
+                                    "endColumn": 51,
+                                    "start": 194,
+                                    "end": 215
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": " text",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": " text"
+                                },
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 51,
+                                    "endLine": 6,
+                                    "endColumn": 56,
+                                    "start": 215,
+                                    "end": 220
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "some ",
+                        "value": {
+                            "type": "Literal",
+                            "value": "some "
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 63,
+                            "endLine": 7,
+                            "endColumn": 29,
+                            "start": 227,
+                            "end": 256
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{dynamic}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "dynamic",
+                            "location": {
+                                "startLine": 6,
+                                "startColumn": 63,
+                                "endLine": 7,
+                                "endColumn": 29,
+                                "start": 227,
+                                "end": 256
+                            }
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 63,
+                            "endLine": 7,
+                            "endColumn": 29,
+                            "start": 227,
+                            "end": 256
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " text ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " text "
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 63,
+                            "endLine": 7,
+                            "endColumn": 29,
+                            "start": 227,
+                            "end": 256
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " end ",
+                        "value": " end ",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 29,
+                            "endLine": 7,
+                            "endColumn": 41,
+                            "start": 256,
+                            "end": 268
+                        }
+                    },
+                    {
+                        "type": "Element",
+                        "name": "span",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 60,
+                            "start": 277,
+                            "end": 328,
+                            "startTag": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 15,
+                                "start": 277,
+                                "end": 283
+                            },
+                            "endTag": {
+                                "startLine": 8,
+                                "startColumn": 53,
+                                "endLine": 8,
+                                "endColumn": 60,
+                                "start": 321,
+                                "end": 328
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "some ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "some "
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 15,
+                                    "endLine": 8,
+                                    "endColumn": 35,
+                                    "start": 283,
+                                    "end": 303
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": "{dynamic}",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 8,
+                                    "name": "dynamic",
+                                    "location": {
+                                        "startLine": 8,
+                                        "startColumn": 15,
+                                        "endLine": 8,
+                                        "endColumn": 35,
+                                        "start": 283,
+                                        "end": 303
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 15,
+                                    "endLine": 8,
+                                    "endColumn": 35,
+                                    "start": 283,
+                                    "end": 303
+                                }
+                            },
+                            {
+                                "type": "Text",
+                                "raw": " text ",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": " text "
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 15,
+                                    "endLine": 8,
+                                    "endColumn": 35,
+                                    "start": 283,
+                                    "end": 303
+                                }
+                            },
+                            {
+                                "type": "Comment",
+                                "raw": " inner end ",
+                                "value": " inner end ",
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 35,
+                                    "endLine": 8,
+                                    "endColumn": 53,
+                                    "start": 303,
+                                    "end": 321
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

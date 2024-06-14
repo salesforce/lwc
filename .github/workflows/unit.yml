@@ -50,6 +50,8 @@ jobs:
 
             - name: Check package.json integrity
               run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+            - name: Check licenses are up to date
+              run: node ./scripts/tasks/generate-license-files.js --test
             - name: Verify @lwc/shared is tree-shakable
               run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
             - name: Verify that dependencies are declared
