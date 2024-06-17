@@ -1,1 +1,137 @@
-{}
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 53,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 42,
+                "end": 53
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 3,
+                    "endLine": 2,
+                    "endColumn": 31,
+                    "start": 13,
+                    "end": 41,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 3,
+                        "endLine": 2,
+                        "endColumn": 8,
+                        "start": 13,
+                        "end": 18
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 25,
+                        "endLine": 2,
+                        "endColumn": 31,
+                        "start": 35,
+                        "end": 41
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "{ Math.random() }",
+                        "value": {
+                            "type": "CallExpression",
+                            "start": 20,
+                            "end": 33,
+                            "callee": {
+                                "type": "MemberExpression",
+                                "start": 20,
+                                "end": 31,
+                                "object": {
+                                    "type": "Identifier",
+                                    "start": 20,
+                                    "end": 24,
+                                    "name": "Math",
+                                    "location": {
+                                        "startLine": 2,
+                                        "startColumn": 9,
+                                        "endLine": 2,
+                                        "endColumn": 13,
+                                        "start": 20,
+                                        "end": 24
+                                    }
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 25,
+                                    "end": 31,
+                                    "name": "random",
+                                    "location": {
+                                        "startLine": 2,
+                                        "startColumn": 14,
+                                        "endLine": 2,
+                                        "endColumn": 20,
+                                        "start": 25,
+                                        "end": 31
+                                    }
+                                },
+                                "computed": false,
+                                "optional": false,
+                                "location": {
+                                    "startLine": 2,
+                                    "startColumn": 9,
+                                    "endLine": 2,
+                                    "endColumn": 20,
+                                    "start": 20,
+                                    "end": 31
+                                }
+                            },
+                            "arguments": [],
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 9,
+                                "endLine": 2,
+                                "endColumn": 22,
+                                "start": 20,
+                                "end": 33
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 25,
+                            "start": 18,
+                            "end": 35
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

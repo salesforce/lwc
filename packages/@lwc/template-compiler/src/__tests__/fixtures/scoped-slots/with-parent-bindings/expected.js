@@ -8,7 +8,6 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     sp: api_static_part,
     st: api_static_fragment,
     fr: api_fragment,
@@ -16,7 +15,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_text(api_dynamic_text($cmp.title)),
     api_custom_element("x-list", _xList, stc0, [
       api_scoped_slot_factory("", function (item, key) {
         return api_fragment(

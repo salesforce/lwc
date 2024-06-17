@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS = {
     preserveHtmlComments: false,
     enableStaticContentOptimization: true,
     // TODO [#3370]: remove experimental template expression flag
-    experimentalComplexExpressions: false,
+    experimentalComplexExpressions: true,
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
 };

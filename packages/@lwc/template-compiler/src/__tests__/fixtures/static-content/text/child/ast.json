@@ -65,16 +65,16 @@
                         "raw": "{dynamic}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 8,
+                            "start": 21,
+                            "end": 28,
                             "name": "dynamic",
                             "location": {
                                 "startLine": 2,
                                 "startColumn": 10,
                                 "endLine": 2,
-                                "endColumn": 19,
-                                "start": 20,
-                                "end": 29
+                                "endColumn": 17,
+                                "start": 21,
+                                "end": 28
                             }
                         },
                         "location": {

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { parseExpressionAt } from 'acorn';
+import { Node, parseExpressionAt } from 'acorn';
 import {
     DefaultTreeAdapterMap,
     Parser,
@@ -18,6 +18,8 @@ import {
 } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { ChildNode, Document, DocumentFragment, Element, TextNode } from '@parse5/tools';
+import * as ast from '../../shared/ast';
+import { SourceLocation } from '../../shared/types';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
@@ -68,6 +70,49 @@ function validateMatchingExtraParens(leadingChars: string, trailingChars: string
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         ['expression must have balanced parentheses.']
     );
+}
+
+/**
+ * This function normalizes a parsed Acorn Node into our internal source location format.
+ * @param node A node that was parsed by Acorn
+ * @returns Source location metadata for use in our AST
+ */
+function acornNodeToSourceLocation(node: Node): SourceLocation {
+    const { start, end } = node;
+    // We always configure the acorn parser to include location
+    const loc = node.loc!;
+    return ast.sourceLocation({
+        startLine: loc.start.line,
+        startCol: loc.start.column,
+        startOffset: start,
+        endLine: loc.end.line,
+        endCol: loc.end.column,
+        endOffset: end,
+    });
+}
+
+// structuredClone is only available in Node 17+
+// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
+const doStructuredClone =
+    typeof structuredClone === 'function'
+        ? structuredClone
+        : (obj: any) => JSON.parse(JSON.stringify(obj));
+
+function normalizeLocation(node: any) {
+    if (typeof node === 'object' && node !== null) {
+        if (node.loc) {
+            node.location = acornNodeToSourceLocation(node);
+        }
+        Object.values(node).forEach(normalizeLocation);
+    }
+}
+
+function removeProperties(node: any) {
+    if (typeof node === 'object' && node !== null) {
+        delete node.loc;
+        delete node.range;
+        Object.values(node).forEach(removeProperties);
+    }
 }
 
 /**
@@ -122,7 +167,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
         const javascriptExprStart = expressionStart + leadingWhitespaceLen + OPENING_CURLY_LEN;
 
         // Start parsing after the opening curly brace and any leading whitespace.
-        const estreeNode = parseExpressionAt(html, javascriptExprStart, {
+        const acornNode = parseExpressionAt(html, javascriptExprStart, {
             ecmaVersion: TMPL_EXPR_ECMASCRIPT_EDITION,
             allowAwaitOutsideFunction: true,
             locations: true,
@@ -130,10 +175,10 @@ class TemplateHtmlTokenizer extends Tokenizer {
             onComment: () => invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
         });
 
-        const leadingChars = html.slice(expressionStart + 1, estreeNode.start);
-        const trailingChars = getTrailingChars(html.slice(estreeNode.end));
+        const leadingChars = html.slice(expressionStart + 1, acornNode.start);
+        const trailingChars = getTrailingChars(html.slice(acornNode.end));
         validateMatchingExtraParens(leadingChars, trailingChars);
-        const idxOfClosingBracket = estreeNode.end + trailingChars.length;
+        const idxOfClosingBracket = acornNode.end + trailingChars.length;
         // Capture text content between the outer curly braces, inclusive.
         const expressionTextNodeValue = html.slice(
             expressionStart,
@@ -146,10 +191,18 @@ class TemplateHtmlTokenizer extends Tokenizer {
             ['expression must end with curly brace.']
         );
 
+        const estreeNode = (function normalizeToEstree(acornNode) {
+            const normalized = doStructuredClone(acornNode);
+            normalizeLocation(normalized);
+            removeProperties(normalized);
+            return normalized;
+        })(acornNode);
+
         // Parsed expressions that are cached here will be later retrieved when the
         // LWC template AST is being constructed.
         this.parser.preparsedJsExpressions.set(expressionStart, {
-            parsedExpression: estreeNode,
+            acornNode,
+            estreeNode,
             rawText: expressionTextNodeValue,
         });
 
@@ -224,7 +277,7 @@ interface TemplateHtmlParserOptions extends ParserOptions<DefaultTreeAdapterMap>
 }
 
 function isTemplateExpressionTextNodeValue(value: string | undefined): boolean {
-    return value?.[0] === '{';
+    return value !== undefined && value.startsWith('{') && value.length > 2;
 }
 
 function isTextNode(node: ChildNode | undefined): node is TextNode {

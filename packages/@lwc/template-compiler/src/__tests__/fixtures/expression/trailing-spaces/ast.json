@@ -26,33 +26,6 @@
             }
         },
         "directives": [],
-        "children": [
-            {
-                "type": "Text",
-                "raw": "{  foo    }",
-                "value": {
-                    "type": "Identifier",
-                    "start": 3,
-                    "end": 6,
-                    "name": "foo",
-                    "location": {
-                        "startLine": 1,
-                        "startColumn": 11,
-                        "endLine": 3,
-                        "endColumn": 1,
-                        "start": 10,
-                        "end": 27
-                    }
-                },
-                "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
-                    "endLine": 3,
-                    "endColumn": 1,
-                    "start": 10,
-                    "end": 27
-                }
-            }
-        ]
+        "children": []
     }
 }

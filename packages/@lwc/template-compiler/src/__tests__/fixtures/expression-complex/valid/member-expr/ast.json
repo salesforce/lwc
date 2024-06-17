@@ -141,100 +141,62 @@
                                     "type": "MemberExpression",
                                     "start": 57,
                                     "end": 68,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 32
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 43
-                                        }
-                                    },
-                                    "range": [
-                                        57,
-                                        68
-                                    ],
                                     "object": {
                                         "type": "MemberExpression",
                                         "start": 57,
                                         "end": 64,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 32
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 39
-                                            }
-                                        },
-                                        "range": [
-                                            57,
-                                            64
-                                        ],
                                         "object": {
                                             "type": "Identifier",
                                             "start": 57,
                                             "end": 60,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 32
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 35
-                                                }
-                                            },
-                                            "range": [
-                                                57,
-                                                60
-                                            ],
-                                            "name": "foo"
+                                            "name": "foo",
+                                            "location": {
+                                                "startLine": 3,
+                                                "startColumn": 32,
+                                                "endLine": 3,
+                                                "endColumn": 35,
+                                                "start": 57,
+                                                "end": 60
+                                            }
                                         },
                                         "property": {
                                             "type": "Identifier",
                                             "start": 61,
                                             "end": 64,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 36
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 39
-                                                }
-                                            },
-                                            "range": [
-                                                61,
-                                                64
-                                            ],
-                                            "name": "bar"
+                                            "name": "bar",
+                                            "location": {
+                                                "startLine": 3,
+                                                "startColumn": 36,
+                                                "endLine": 3,
+                                                "endColumn": 39,
+                                                "start": 61,
+                                                "end": 64
+                                            }
                                         },
                                         "computed": false,
-                                        "optional": false
+                                        "optional": false,
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 32,
+                                            "endLine": 3,
+                                            "endColumn": 39,
+                                            "start": 57,
+                                            "end": 64
+                                        }
                                     },
                                     "property": {
                                         "type": "Identifier",
                                         "start": 65,
                                         "end": 68,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 40
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 43
-                                            }
-                                        },
-                                        "range": [
-                                            65,
-                                            68
-                                        ],
-                                        "name": "baz"
+                                        "name": "baz",
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 40,
+                                            "endLine": 3,
+                                            "endColumn": 43,
+                                            "start": 65,
+                                            "end": 68
+                                        }
                                     },
                                     "computed": false,
                                     "optional": false,
@@ -242,9 +204,9 @@
                                         "startLine": 3,
                                         "startColumn": 32,
                                         "endLine": 3,
-                                        "endColumn": 45,
-                                        "start": 56,
-                                        "end": 69
+                                        "endColumn": 43,
+                                        "start": 57,
+                                        "end": 68
                                     }
                                 },
                                 "location": {
@@ -339,59 +301,33 @@
                                     "type": "MemberExpression",
                                     "start": 113,
                                     "end": 122,
-                                    "loc": {
-                                        "start": {
-                                            "line": 4,
-                                            "column": 34
-                                        },
-                                        "end": {
-                                            "line": 4,
-                                            "column": 43
-                                        }
-                                    },
-                                    "range": [
-                                        113,
-                                        122
-                                    ],
                                     "object": {
                                         "type": "Identifier",
                                         "start": 114,
                                         "end": 117,
-                                        "loc": {
-                                            "start": {
-                                                "line": 4,
-                                                "column": 35
-                                            },
-                                            "end": {
-                                                "line": 4,
-                                                "column": 38
-                                            }
-                                        },
-                                        "range": [
-                                            114,
-                                            117
-                                        ],
-                                        "name": "biz"
+                                        "name": "biz",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 35,
+                                            "endLine": 4,
+                                            "endColumn": 38,
+                                            "start": 114,
+                                            "end": 117
+                                        }
                                     },
                                     "property": {
                                         "type": "Identifier",
                                         "start": 119,
                                         "end": 122,
-                                        "loc": {
-                                            "start": {
-                                                "line": 4,
-                                                "column": 40
-                                            },
-                                            "end": {
-                                                "line": 4,
-                                                "column": 43
-                                            }
-                                        },
-                                        "range": [
-                                            119,
-                                            122
-                                        ],
-                                        "name": "baz"
+                                        "name": "baz",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 40,
+                                            "endLine": 4,
+                                            "endColumn": 43,
+                                            "start": 119,
+                                            "end": 122
+                                        }
                                     },
                                     "computed": false,
                                     "optional": false,
@@ -399,9 +335,9 @@
                                         "startLine": 4,
                                         "startColumn": 34,
                                         "endLine": 4,
-                                        "endColumn": 45,
-                                        "start": 112,
-                                        "end": 123
+                                        "endColumn": 43,
+                                        "start": 113,
+                                        "end": 122
                                     }
                                 },
                                 "location": {

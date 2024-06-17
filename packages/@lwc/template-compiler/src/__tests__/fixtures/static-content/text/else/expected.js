@@ -14,7 +14,6 @@ const $fragment12 = parseFragment`<div${3}><span${3}>text3LwcElse</span>${"t3"}<
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic_text,
-    t: api_text,
     sp: api_static_part,
     st: api_static_fragment,
     fr: api_fragment,
@@ -24,7 +23,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_text(api_dynamic_text($cmp.firstOutterSiblingLwcIf)),
             api_static_fragment($fragment1, 2, [
               api_static_part(1, null, api_dynamic_text($cmp.solo)),
             ]),
@@ -35,7 +33,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.firstInnerSiblingLwcIf)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.centerOutterSiblingLwcIf)),
             api_static_fragment($fragment3, 6, [
               api_static_part(
                 3,
@@ -50,7 +47,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.middleInnerSiblingLwcIf)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.lastOutterSiblingLwcIf)),
           ],
           0
         )
@@ -58,7 +54,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(
           0,
           [
-            api_text(api_dynamic_text($cmp.firstOutterSiblingLwcElseIf)),
             api_static_fragment($fragment5, 10, [
               api_static_part(1, null, api_dynamic_text($cmp.solo)),
             ]),
@@ -69,7 +64,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.firstInnerSiblingLwcElseIf)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.centerOutterSiblingLwcElseIf)),
             api_static_fragment($fragment7, 14, [
               api_static_part(
                 3,
@@ -84,14 +78,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.middleInnerSiblingLwcElseIf)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.lastOutterSiblingLwcElseIf)),
           ],
           0
         )
       : api_fragment(
           0,
           [
-            api_text(api_dynamic_text($cmp.firstOutterSiblingLwcElse)),
             api_static_fragment($fragment9, 18, [
               api_static_part(1, null, api_dynamic_text($cmp.solo)),
             ]),
@@ -102,7 +94,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.firstInnerSiblingLwcElse)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.centerOutterSiblingLwcElse)),
             api_static_fragment($fragment11, 22, [
               api_static_part(
                 3,
@@ -117,7 +108,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_dynamic_text($cmp.middleInnerSiblingLwcElse)
               ),
             ]),
-            api_text(api_dynamic_text($cmp.lastOutterSiblingLwcElse)),
           ],
           0
         ),

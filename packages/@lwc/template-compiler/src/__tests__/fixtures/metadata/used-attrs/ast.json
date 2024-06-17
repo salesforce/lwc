@@ -98,19 +98,35 @@
                                 "raw": "{obj.sub}",
                                 "value": {
                                     "type": "MemberExpression",
-                                    "start": 1,
-                                    "end": 8,
+                                    "start": 37,
+                                    "end": 44,
                                     "object": {
                                         "type": "Identifier",
-                                        "start": 1,
-                                        "end": 4,
-                                        "name": "obj"
+                                        "start": 37,
+                                        "end": 40,
+                                        "name": "obj",
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 12,
+                                            "endLine": 3,
+                                            "endColumn": 15,
+                                            "start": 37,
+                                            "end": 40
+                                        }
                                     },
                                     "property": {
                                         "type": "Identifier",
-                                        "start": 5,
-                                        "end": 8,
-                                        "name": "sub"
+                                        "start": 41,
+                                        "end": 44,
+                                        "name": "sub",
+                                        "location": {
+                                            "startLine": 3,
+                                            "startColumn": 16,
+                                            "endLine": 3,
+                                            "endColumn": 19,
+                                            "start": 41,
+                                            "end": 44
+                                        }
                                     },
                                     "computed": false,
                                     "optional": false,
@@ -118,9 +134,9 @@
                                         "startLine": 3,
                                         "startColumn": 12,
                                         "endLine": 3,
-                                        "endColumn": 21,
-                                        "start": 36,
-                                        "end": 45
+                                        "endColumn": 19,
+                                        "start": 37,
+                                        "end": 44
                                     }
                                 },
                                 "location": {

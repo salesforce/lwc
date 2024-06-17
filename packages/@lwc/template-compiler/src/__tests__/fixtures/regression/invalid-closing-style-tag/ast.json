@@ -39,48 +39,6 @@
                     "start": 15,
                     "end": 75
                 }
-            },
-            {
-                "type": "Text",
-                "raw": "</style>",
-                "value": {
-                    "type": "Literal",
-                    "value": "</style>"
-                },
-                "location": {
-                    "startLine": 2,
-                    "startColumn": 65,
-                    "endLine": 4,
-                    "endColumn": 1,
-                    "start": 75,
-                    "end": 91
-                }
-            },
-            {
-                "type": "Text",
-                "raw": "{text}",
-                "value": {
-                    "type": "Identifier",
-                    "start": 1,
-                    "end": 5,
-                    "name": "text",
-                    "location": {
-                        "startLine": 2,
-                        "startColumn": 65,
-                        "endLine": 4,
-                        "endColumn": 1,
-                        "start": 75,
-                        "end": 91
-                    }
-                },
-                "location": {
-                    "startLine": 2,
-                    "startColumn": 65,
-                    "endLine": 4,
-                    "endColumn": 1,
-                    "start": 75,
-                    "end": 91
-                }
             }
         ]
     }

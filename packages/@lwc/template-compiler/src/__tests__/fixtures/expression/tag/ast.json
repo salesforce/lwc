@@ -65,16 +65,16 @@
                         "raw": "{text}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 5,
+                            "start": 19,
+                            "end": 23,
                             "name": "text",
                             "location": {
                                 "startLine": 2,
                                 "startColumn": 8,
                                 "endLine": 2,
-                                "endColumn": 14,
-                                "start": 18,
-                                "end": 24
+                                "endColumn": 12,
+                                "start": 19,
+                                "end": 23
                             }
                         },
                         "location": {

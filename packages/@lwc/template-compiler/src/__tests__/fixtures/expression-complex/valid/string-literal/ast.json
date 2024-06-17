@@ -129,29 +129,15 @@
                                     "type": "Literal",
                                     "start": 55,
                                     "end": 64,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 30
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 39
-                                        }
-                                    },
-                                    "range": [
-                                        55,
-                                        64
-                                    ],
                                     "value": "foo foo",
                                     "raw": "'foo foo'",
                                     "location": {
                                         "startLine": 3,
                                         "startColumn": 30,
                                         "endLine": 3,
-                                        "endColumn": 41,
-                                        "start": 54,
-                                        "end": 65
+                                        "endColumn": 39,
+                                        "start": 55,
+                                        "end": 64
                                     }
                                 },
                                 "location": {

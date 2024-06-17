@@ -61,32 +61,6 @@
                 },
                 "children": [
                     {
-                        "type": "Text",
-                        "raw": "{firstOutterSibling}",
-                        "value": {
-                            "type": "Identifier",
-                            "start": 1,
-                            "end": 19,
-                            "name": "firstOutterSibling",
-                            "location": {
-                                "startLine": 2,
-                                "startColumn": 29,
-                                "endLine": 4,
-                                "endColumn": 9,
-                                "start": 39,
-                                "end": 77
-                            }
-                        },
-                        "location": {
-                            "startLine": 2,
-                            "startColumn": 29,
-                            "endLine": 4,
-                            "endColumn": 9,
-                            "start": 39,
-                            "end": 77
-                        }
-                    },
-                    {
                         "type": "Element",
                         "name": "div",
                         "namespace": "http://www.w3.org/1999/xhtml",
@@ -124,16 +98,16 @@
                                 "raw": "{solo}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 5,
+                                    "start": 83,
+                                    "end": 87,
                                     "name": "solo",
                                     "location": {
                                         "startLine": 4,
                                         "startColumn": 14,
                                         "endLine": 4,
-                                        "endColumn": 20,
-                                        "start": 82,
-                                        "end": 88
+                                        "endColumn": 18,
+                                        "start": 83,
+                                        "end": 87
                                     }
                                 },
                                 "location": {
@@ -185,25 +159,25 @@
                                 "raw": "{firstInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 18,
+                                    "start": 122,
+                                    "end": 139,
                                     "name": "firstInnerSibling",
                                     "location": {
-                                        "startLine": 5,
-                                        "startColumn": 14,
-                                        "endLine": 7,
-                                        "endColumn": 13,
-                                        "start": 108,
-                                        "end": 153
+                                        "startLine": 6,
+                                        "startColumn": 13,
+                                        "endLine": 6,
+                                        "endColumn": 30,
+                                        "start": 122,
+                                        "end": 139
                                     }
                                 },
                                 "location": {
-                                    "startLine": 5,
-                                    "startColumn": 14,
-                                    "endLine": 7,
-                                    "endColumn": 13,
-                                    "start": 108,
-                                    "end": 153
+                                    "startLine": 6,
+                                    "startColumn": 13,
+                                    "endLine": 6,
+                                    "endColumn": 32,
+                                    "start": 121,
+                                    "end": 140
                                 }
                             },
                             {
@@ -258,32 +232,6 @@
                                 ]
                             }
                         ]
-                    },
-                    {
-                        "type": "Text",
-                        "raw": "{centerOutterSibling}",
-                        "value": {
-                            "type": "Identifier",
-                            "start": 1,
-                            "end": 20,
-                            "name": "centerOutterSibling",
-                            "location": {
-                                "startLine": 8,
-                                "startColumn": 15,
-                                "endLine": 10,
-                                "endColumn": 9,
-                                "start": 186,
-                                "end": 225
-                            }
-                        },
-                        "location": {
-                            "startLine": 8,
-                            "startColumn": 15,
-                            "endLine": 10,
-                            "endColumn": 9,
-                            "start": 186,
-                            "end": 225
-                        }
                     },
                     {
                         "type": "Element",
@@ -374,25 +322,25 @@
                                 "raw": "{secondInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 19,
+                                    "start": 275,
+                                    "end": 293,
                                     "name": "secondInnerSibling",
                                     "location": {
-                                        "startLine": 11,
-                                        "startColumn": 31,
-                                        "endLine": 13,
-                                        "endColumn": 9,
-                                        "start": 261,
-                                        "end": 303
+                                        "startLine": 12,
+                                        "startColumn": 13,
+                                        "endLine": 12,
+                                        "endColumn": 31,
+                                        "start": 275,
+                                        "end": 293
                                     }
                                 },
                                 "location": {
-                                    "startLine": 11,
-                                    "startColumn": 31,
-                                    "endLine": 13,
-                                    "endColumn": 9,
-                                    "start": 261,
-                                    "end": 303
+                                    "startLine": 12,
+                                    "startColumn": 13,
+                                    "endLine": 12,
+                                    "endColumn": 33,
+                                    "start": 274,
+                                    "end": 294
                                 }
                             }
                         ]
@@ -486,25 +434,25 @@
                                 "raw": "{middleInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 19,
+                                    "start": 368,
+                                    "end": 386,
                                     "name": "middleInnerSibling",
                                     "location": {
-                                        "startLine": 15,
-                                        "startColumn": 31,
-                                        "endLine": 17,
-                                        "endColumn": 13,
-                                        "start": 354,
-                                        "end": 400
+                                        "startLine": 16,
+                                        "startColumn": 13,
+                                        "endLine": 16,
+                                        "endColumn": 31,
+                                        "start": 368,
+                                        "end": 386
                                     }
                                 },
                                 "location": {
-                                    "startLine": 15,
-                                    "startColumn": 31,
-                                    "endLine": 17,
-                                    "endColumn": 13,
-                                    "start": 354,
-                                    "end": 400
+                                    "startLine": 16,
+                                    "startColumn": 13,
+                                    "endLine": 16,
+                                    "endColumn": 33,
+                                    "start": 367,
+                                    "end": 387
                                 }
                             },
                             {
@@ -559,32 +507,6 @@
                                 ]
                             }
                         ]
-                    },
-                    {
-                        "type": "Text",
-                        "raw": "{lastOutterSibling}",
-                        "value": {
-                            "type": "Identifier",
-                            "start": 1,
-                            "end": 18,
-                            "name": "lastOutterSibling",
-                            "location": {
-                                "startLine": 18,
-                                "startColumn": 15,
-                                "endLine": 20,
-                                "endColumn": 5,
-                                "start": 433,
-                                "end": 466
-                            }
-                        },
-                        "location": {
-                            "startLine": 18,
-                            "startColumn": 15,
-                            "endLine": 20,
-                            "endColumn": 5,
-                            "start": 433,
-                            "end": 466
-                        }
                     }
                 ]
             }

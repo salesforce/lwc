@@ -233,16 +233,16 @@
                                                 "raw": "{item}",
                                                 "value": {
                                                     "type": "Identifier",
-                                                    "start": 1,
-                                                    "end": 5,
+                                                    "start": 118,
+                                                    "end": 122,
                                                     "name": "item",
                                                     "location": {
                                                         "startLine": 4,
                                                         "startColumn": 16,
                                                         "endLine": 4,
-                                                        "endColumn": 22,
-                                                        "start": 117,
-                                                        "end": 123
+                                                        "endColumn": 20,
+                                                        "start": 118,
+                                                        "end": 122
                                                     }
                                                 },
                                                 "location": {
@@ -294,16 +294,16 @@
                                                 "raw": "{item2}",
                                                 "value": {
                                                     "type": "Identifier",
-                                                    "start": 1,
-                                                    "end": 6,
+                                                    "start": 144,
+                                                    "end": 149,
                                                     "name": "item2",
                                                     "location": {
                                                         "startLine": 5,
                                                         "startColumn": 16,
                                                         "endLine": 5,
-                                                        "endColumn": 23,
-                                                        "start": 143,
-                                                        "end": 150
+                                                        "endColumn": 21,
+                                                        "start": 144,
+                                                        "end": 149
                                                     }
                                                 },
                                                 "location": {
