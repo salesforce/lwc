@@ -14,7 +14,6 @@
  */
 import {
     AccessibleElementProperties,
-    APIFeature,
     create,
     defineProperties,
     defineProperty,
@@ -28,6 +27,7 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    APIFeature,
     assert,
 } from '@lwc/shared';
 
@@ -185,6 +185,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'tabIndex'
     | 'tagName'
     | 'title'
+    | 'style'
 >;
 
 type RefNodes = { [name: string]: Element };
@@ -726,6 +727,22 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     get tagName() {
         const { elm, renderer } = getAssociatedVM(this);
         return renderer.getTagName(elm);
+    },
+
+    get style() {
+        const { elm, renderer, def } = getAssociatedVM(this);
+        const apiVersion = getComponentAPIVersion(def.ctor);
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_STYLE, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.style` API within LightningElement returning the CSSStyleDeclaration is ' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
+            // Simulate the old behavior for `this.style` to avoid a breaking change
+            return undefined;
+        }
+        return renderer.getStyle(elm);
     },
 
     render(): Template {

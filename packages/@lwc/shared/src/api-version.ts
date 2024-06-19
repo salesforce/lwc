@@ -105,6 +105,11 @@ export const enum APIFeature {
      * If enabled, allow `this.hostElement` within a `LightningElement` to return the host element.
      */
     ENABLE_THIS_DOT_HOST_ELEMENT,
+    /**
+     * If enabled, allow `this.style` within a `LightningElement` to return the `CSSStyleDeclaration`
+     * for that element.
+     */
+    ENABLE_THIS_DOT_STYLE,
 }
 
 /**
@@ -130,6 +135,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
         case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
+        case APIFeature.ENABLE_THIS_DOT_STYLE:
             return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }
