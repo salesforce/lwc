@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./nested.css";
+import _implicitScopedStylesheets from "./nested.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><span${3}>some  text</span><div${3}>${"t5"}<span${3}>${"t7"}</span><div${3}>${"t9"}</div></div></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -21,3 +23,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ud1n1pkbjc";
+tmpl.legacyStylesheetToken = "x-nested_nested";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);
