@@ -56,6 +56,8 @@ jobs:
             - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: LEGACY_BROWSERS=1 yarn sauce:ci
             - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: API_VERSION=58 yarn sauce:ci
             - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
 

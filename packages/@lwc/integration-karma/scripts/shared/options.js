@@ -33,6 +33,9 @@ const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
 const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
+const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
+    process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+);
 
 const baseOptions = {
     API_VERSION,
@@ -44,6 +47,7 @@ const baseOptions = {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     LEGACY_BROWSERS,
     NODE_ENV_FOR_TEST,
+    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 };
 
 /** Unique directory name that encodes the flags that the tests were executed with. */

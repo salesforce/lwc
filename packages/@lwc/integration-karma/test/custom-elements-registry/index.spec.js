@@ -14,8 +14,8 @@ function getEngineCode() {
         getCode(document.querySelector('script[src*="synthetic-shadow"]').src);
 
     const scripts = [
-        `window.process = { env: { NODE_ENV: "production" } };`,
-        `window.lwcRuntimeFlags = ${JSON.stringify(window.lwcRuntimeFlags)};`, // copy runtime flags to iframe
+        `globalThis.process = { env: { NODE_ENV: "production" } };`,
+        `globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};`, // copy runtime flags to iframe
         syntheticShadowSrc,
         getCode(engineDomSrc),
     ].filter(Boolean);
@@ -100,7 +100,6 @@ describe('custom elements registry', () => {
 
     beforeEach(() => {
         iframe = document.createElement('iframe');
-        iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
         document.body.appendChild(iframe);
 
         if (window.__coverage__) {

@@ -815,6 +815,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
         return true;
     }
 
+    const shouldValidateAttr = (data: VStaticPartData, attrName: string) => attrName in data;
     // The validation here relies on 2 key invariants:
     // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
     // 2. It's never the case that `parts` has one length on the server but another on the client
@@ -826,8 +827,15 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
             }
             const { data } = part;
             const hasMatchingAttrs = validateAttrs(vnode, elm, data, renderer, () => true);
-            const hasMatchingStyleAttr = validateStyleAttr(vnode, elm, data, renderer);
-            const hasMatchingClass = validateClassAttr(vnode, elm, data, renderer);
+            // Explicitly skip hydration validation when static parts don't contain `style` or `className`.
+            // This means the style/class attributes are either static or don't exist on the element and
+            // cannot be affected by hydration.
+            const hasMatchingStyleAttr = shouldValidateAttr(data, 'style')
+                ? validateStyleAttr(vnode, elm, data, renderer)
+                : true;
+            const hasMatchingClass = shouldValidateAttr(data, 'className')
+                ? validateClassAttr(vnode, elm, data, renderer)
+                : true;
             if (isFalse(hasMatchingAttrs && hasMatchingStyleAttr && hasMatchingClass)) {
                 return false;
             }

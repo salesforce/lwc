@@ -53,34 +53,33 @@ function createBaseUpgradableConstructor() {
         }
 
         connectedCallback() {
+            // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
             if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
                 connectRootElement(this);
             }
         }
+
         disconnectedCallback() {
+            // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
             if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
                 disconnectRootElement(this);
             }
         }
+
         formAssociatedCallback(form: HTMLFormElement | null) {
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                runFormAssociatedCallback(this, form);
-            }
+            runFormAssociatedCallback(this, form);
         }
+
         formDisabledCallback(disabled: boolean) {
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                runFormDisabledCallback(this, disabled);
-            }
+            runFormDisabledCallback(this, disabled);
         }
+
         formResetCallback() {
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                runFormResetCallback(this);
-            }
+            runFormResetCallback(this);
         }
+
         formStateRestoreCallback(state: FormRestoreState | null, reason: FormRestoreReason) {
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                runFormStateRestoreCallback(this, state, reason);
-            }
+            runFormStateRestoreCallback(this, state, reason);
         }
     };
     BaseHTMLElement = HTMLElement; // cache to track if it changes
@@ -97,6 +96,7 @@ const createUpgradableConstructor = (isFormAssociated: boolean) => {
     // Using a BaseUpgradableConstructor superclass here is a perf optimization to avoid
     // re-defining the same logic (connectedCallback, disconnectedCallback, etc.) over and over.
     class UpgradableConstructor extends (BaseUpgradableConstructor!) {}
+
     if (isFormAssociated) {
         // Perf optimization - the vast majority of components have formAssociated=false,
         // so we can skip the setter in those cases, since undefined works the same as false.

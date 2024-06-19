@@ -22,6 +22,7 @@ const {
     NODE_ENV_FOR_TEST,
     API_VERSION,
     DISABLE_SYNTHETIC,
+    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -35,7 +36,7 @@ function createEnvFile() {
     fs.writeFileSync(
         ENV_FILENAME,
         `
-        window.process = {
+        globalThis.process = {
             env: {
                 API_VERSION: ${JSON.stringify(API_VERSION)},
                 ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: ${ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL},
@@ -45,6 +46,9 @@ function createEnvFile() {
                 NATIVE_SHADOW: ${DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
             }
+        };
+        globalThis.lwcRuntimeFlags = {
+          DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: ${DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE}
         };
     `
     );
