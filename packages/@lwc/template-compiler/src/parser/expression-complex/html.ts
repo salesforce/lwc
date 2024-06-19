@@ -17,7 +17,15 @@ import {
     Token,
 } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import { ChildNode, Document, DocumentFragment, Element, TextNode } from '@parse5/tools';
+import {
+    ChildNode,
+    Document,
+    DocumentFragment,
+    Element,
+    ParentNode,
+    Template,
+    TextNode,
+} from '@parse5/tools';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
@@ -227,6 +235,10 @@ function isTemplateExpressionTextNodeValue(value: string | undefined): boolean {
     return value?.[0] === '{';
 }
 
+function isTemplateElement(node: ParentNode): node is Template {
+    return node.nodeName === 'template';
+}
+
 function isTextNode(node: ChildNode | undefined): node is TextNode {
     return node?.nodeName === '#text';
 }
@@ -277,7 +289,12 @@ class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
             sourceCodeLocation: token.location ? { ...token.location } : null,
             parentNode,
         };
-        parentNode.childNodes.push(textNode);
+
+        if (isTemplateElement(parentNode)) {
+            parentNode.content.childNodes.push(textNode);
+        } else {
+            parentNode.childNodes.push(textNode);
+        }
     }
 }
 
