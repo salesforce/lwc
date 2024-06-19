@@ -5,8 +5,9 @@ const DATA_FROM_NETWORK = [{
 }, {
   id: "2"
 }];
-export default _registerComponent(DATA_FROM_NETWORK, {
+const __lwc_component_class_internal = _registerComponent(DATA_FROM_NETWORK, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 9999999
 });
+export default __lwc_component_class_internal;

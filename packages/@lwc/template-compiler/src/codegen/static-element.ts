@@ -8,11 +8,11 @@ import {
     APIFeature,
     APIVersion,
     ArrayEvery,
+    ArraySome,
     HTML_NAMESPACE,
     isAPIFeatureEnabled,
     isArray,
     isNull,
-    isUndefined,
 } from '@lwc/shared';
 import { isLiteral } from '../shared/estree';
 import {
@@ -120,7 +120,7 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state:
             childrenAreStaticSafe &&= staticNodes.has(childNode);
             // Collect nodes that have dynamic text ahead of time.
             // We only need to know if the direct child has dynamic text.
-            hasDynamicText ||= isText(childNode) && !isStringLiteral(childNode.value);
+            hasDynamicText ||= isTextExpression(childNode);
         });
 
         // for IfBlock and ElseifBlock, traverse down the else branch
@@ -156,9 +156,13 @@ export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
     return staticNodes;
 }
 
-// The purpose of this function is to concatenate the contiguous text nodes into a single array
+// The purpose of this function is to concatenate contiguous text nodes into a single array
 // to simplify the traversing logic when generating static parts and serializing the element.
-export function transformStaticChildren(elm: StaticElement) {
+// Note, comments that are adjacent to text nodes are ignored when preserveComments is false,
+// ex: <span>{dynamic}<!-- comment -->text</span>
+// preserveComments = false => [[text, text]]
+// preserveComments = true => [[text], comment, [text]]
+export function transformStaticChildren(elm: StaticElement, preserveComments: boolean) {
     const children = elm.children;
     if (!children.length || !STATIC_ELEMENT_WITH_DYNAMIC_TEXT_SET.has(elm)) {
         // The element either has no children or its children does not contain dynamic text.
@@ -166,6 +170,7 @@ export function transformStaticChildren(elm: StaticElement) {
     }
 
     if (STATIC_ELEMENT_TO_DYNAMIC_TEXT_CHILDREN_CACHE.has(elm)) {
+        // This will be hit by serializeStaticElement
         return STATIC_ELEMENT_TO_DYNAMIC_TEXT_CHILDREN_CACHE.get(elm)!;
     }
 
@@ -173,37 +178,26 @@ export function transformStaticChildren(elm: StaticElement) {
     const len = children.length;
 
     let current: StaticChildNode;
-    let next: StaticChildNode;
     let contiguousTextNodes: Text[] | null = null;
 
     for (let i = 0; i < len; i++) {
         current = children[i];
-        if (!isText(current)) {
-            contiguousTextNodes = null;
-            result.push(current);
-        } else {
+        if (isText(current)) {
             if (!isNull(contiguousTextNodes)) {
                 // Already in a contiguous text node chain
                 // All contiguous nodes represent an expression in the source, it's guaranteed by the parser.
                 contiguousTextNodes.push(current);
             } else {
-                next = children[i + 1];
-                if (isExpression(current) || (!isUndefined(next) && isText(next))) {
-                    // Text nodes can appear as follows:
-                    // 1. A single text literal node.
-                    // 2. A single text expression node.
-                    // 3. Contiguous series of text nodes (literal/expression mixed) with at least 1 expression.
-                    // When there is an expression in the source, the text nodes are split into contiguous text nodes.
-                    // When there is no expression in the source, the text will appear as a single text literal.
-                    // We normalize all of the contiguous text nodes or single text expression to an array.
-                    // Single text literal nodes (no expression or are not part of a contiguous set of text nodes) remain text nodes
-                    // and will not be consolidated to an array.
-                    // This is to normalize the traversal behavior when creating static parts and when serializing
-                    // the elements.
-                    contiguousTextNodes = [current];
-                }
-                // When contiguousTextNodes is null it is a single string literal.
-                result.push(contiguousTextNodes ?? current);
+                // First time seeing a contiguous text chain
+                contiguousTextNodes = [current];
+                result.push(contiguousTextNodes);
+            }
+        } else {
+            // Non-text nodes signal the end of contiguous text node chain
+            if (!isComment(current) || preserveComments) {
+                // Ignore comment nodes when preserveComments is false
+                contiguousTextNodes = null;
+                result.push(current);
             }
         }
     }
@@ -213,8 +207,11 @@ export function transformStaticChildren(elm: StaticElement) {
     return result;
 }
 
-// Dynamic text is consolidated from individual text arrays into a single Text[].
-// Static text = a single text literal node (not in an array).
-// Dynamic text = At least 1 text expression node + 0 or more text literal nodes (always in an array).
-export const isDynamicText = (nodes: StaticChildNode | StaticChildNode[]): nodes is Text[] =>
-    isArray(nodes) && ArrayEvery.call(nodes, isText);
+// Given a static child, determines wether the child is a contiguous text node.
+// Note this is intended to be used with children generated from transformStaticChildren
+export const isContiguousText = (staticChild: StaticChildNode | Text[]): staticChild is Text[] =>
+    isArray(staticChild) && ArrayEvery.call(staticChild, isText);
+
+export const isTextExpression = (node: ChildNode) => isText(node) && !isStringLiteral(node.value);
+
+export const hasDynamicText = (nodes: Text[]) => ArraySome.call(nodes, isTextExpression);

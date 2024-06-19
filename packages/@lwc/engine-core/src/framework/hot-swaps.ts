@@ -61,6 +61,9 @@ function rehydrateHotTemplate(tpl: Template): boolean {
 
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const activeVMs = activeStyles.get(style);
+    if (!activeVMs.size) {
+        return true;
+    }
     unrenderStylesheet(style);
     for (const vm of activeVMs) {
         // if a style definition is swapped, we must reset
@@ -196,14 +199,28 @@ export function swapComponent(
     newComponent: LightningElementConstructor
 ): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        if (isComponentConstructor(oldComponent) && isComponentConstructor(newComponent)) {
+        const isOldCtorAComponent = isComponentConstructor(oldComponent);
+        const isNewCtorAComponent = isComponentConstructor(newComponent);
+        if (isOldCtorAComponent && isNewCtorAComponent) {
             swappedComponentMap.set(oldComponent, newComponent);
             return rehydrateHotComponent(oldComponent);
+        } else if (isOldCtorAComponent === false && isNewCtorAComponent === true) {
+            throw new TypeError(
+                `Invalid Component: Attempting to swap a non-component with a component`
+            );
+        } else if (isOldCtorAComponent === true && isNewCtorAComponent === false) {
+            throw new TypeError(
+                `Invalid Component: Attempting to swap a component with a non-component`
+            );
         } else {
-            throw new TypeError(`Invalid Component`);
+            // The dev-server relies on the presence of registerComponent() as a way to determine a
+            // component module. However, the compiler cannot definitively add registerComponent()
+            // transformation only to a component constructor. Hence the dev-server may attempt to
+            // hot swap javascript modules that look like a component and should not cause the app
+            // to fail. To allow that, this api ignores such hot swap attempts.
+            return false;
         }
     }
-
     return false;
 }
 

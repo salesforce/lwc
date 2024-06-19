@@ -33,8 +33,9 @@ const Test = _registerDecorators(class extends LightningElement {
   fields: ["state", "record"]
 });
 const foo = Test;
-export default _registerComponent(foo, {
+const __lwc_component_class_internal = _registerComponent(foo, {
   tmpl: _tmpl,
   sel: "lwc-test",
   apiVersion: 9999999
 });
+export default __lwc_component_class_internal;
