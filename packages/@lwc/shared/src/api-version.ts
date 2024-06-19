@@ -133,8 +133,9 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
+            return apiVersion >= APIVersion.V61_250_SUMMER_24;
         case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
         case APIFeature.ENABLE_THIS_DOT_STYLE:
-            return apiVersion >= APIVersion.V61_250_SUMMER_24;
+            return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }
