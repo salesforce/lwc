@@ -102,8 +102,7 @@ export const enum APIFeature {
      */
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
     /**
-     * If enabled, allow `this.style` within a `LightningElement` to return the `CSSStyleDeclaration`
-     * for that element.
+     * If enabled, allow `this.hostElement` within a `LightningElement` to return the host element.
      */
     ENABLE_THIS_DOT_HOST_ELEMENT,
 }
