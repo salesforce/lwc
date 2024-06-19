@@ -101,6 +101,10 @@ export const enum APIFeature {
      * Form-Associated Custom Elements (FACE).
      */
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    /**
+     * If enabled, allow `this.hostElement` within a `LightningElement` to return the host element.
+     */
+    ENABLE_THIS_DOT_HOST_ELEMENT,
 }
 
 /**
@@ -125,5 +129,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
+        case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
+            return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }
