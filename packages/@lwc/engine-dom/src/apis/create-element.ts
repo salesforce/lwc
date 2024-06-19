@@ -95,10 +95,45 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /**
+ * Properties defined on the component class, excluding those inherited from `LightningElement`.
+ */
+// TODO [#4292]: Restrict this to only @api props
+type ComponentClassProperties<T> = Omit<T, keyof LightningElement>;
+
+/**
+ * The custom element returned when calling {@linkcode createElement} with the given component
+ * constructor.
+ *
+ * NOTE: The returned type incorrectly includes _all_ properties defined on the component class,
+ * even though the runtime object only uses those decorated with `@api`. This is due to a
+ * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
+ * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
+ *
+ * @example ```
+ * class Example extends LightningElement {
+ *   @api exposed = 'hello'
+ *   internal = 'secret'
+ * }
+ * const example = createElement('c-example', { is: Example })
+ * // TypeScript thinks that `example.internal` is a string, when it's actually undefined.
+ * const exposed = example.exposed // type is 'string'
+ * console.log(exposed) // prints 'hello'
+ * const internal = example.internal // type is 'string'
+ * console.log(internal) // prints `undefined`
+ * ```
+ */
+export type LightningHTMLElement<T> = HTMLElement & ComponentClassProperties<T>;
+
+/**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
  * difference that in the options, you can pass the `is` property set to a Constructor instead of
  * just a string value. The intent is to allow the creation of an element controlled by LWC without
  * having to register the element as a custom element.
+ *
+ * NOTE: The returned type incorrectly includes _all_ properties defined on the component class,
+ * even though the runtime object only uses those decorated with `@api`. This is due to a
+ * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
+ * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
  * @param sel The tagname of the element to create
  * @param options Control the behavior of the created element
  * @param options.is The LWC component that the element should be
@@ -108,13 +143,18 @@ if (process.env.NODE_ENV !== 'production') {
  * @example
  * const el = createElement('x-foo', { is: FooCtor });
  */
-export function createElement(
+export function createElement<Component>(
     sel: string,
     options: {
-        is: typeof LightningElement;
+        // Because the `LightningHTMLElement` type is flawed and includes more props than actually
+        // exist, we want to enable customers to provide an explicit generic parameter containing
+        // only the props from the component they want to expose. For example we want to allow this:
+        // class Foo extends LightningElement { @api exposed = 'public'; hidden = 'secret'; }
+        // createElement<{exposed: string}>('x-foo', { is: Foo })
+        is: LightningElement['constructor'] & { new (): Component };
         mode?: 'open' | 'closed';
     }
-): HTMLElement {
+): LightningHTMLElement<Component> {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(

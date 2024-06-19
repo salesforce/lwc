@@ -123,9 +123,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (
             !isUndefined(ctorShadowSupportMode) &&
-            ctorShadowSupportMode !== ShadowSupportMode.Any &&
-            ctorShadowSupportMode !== ShadowSupportMode.Default &&
-            ctorShadowSupportMode !== ShadowSupportMode.Native
+            ctorShadowSupportMode !== 'any' &&
+            ctorShadowSupportMode !== 'reset' &&
+            ctorShadowSupportMode !== 'native'
         ) {
             logError(
                 `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
@@ -133,7 +133,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         }
 
         // TODO [#3971]: Completely remove shadowSupportMode "any"
-        if (ctorShadowSupportMode === ShadowSupportMode.Any) {
+        if (ctorShadowSupportMode === 'any') {
             logWarn(
                 `Invalid value 'any' for static property shadowSupportMode. 'any' is deprecated and will be removed in a future release--use 'native' instead.`
             );
@@ -202,8 +202,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (
             isReportingEnabled() &&
-            (shadowSupportMode === ShadowSupportMode.Any ||
-                shadowSupportMode === ShadowSupportMode.Native)
+            (shadowSupportMode === 'any' || shadowSupportMode === 'native')
         ) {
             report(ReportingEventId.ShadowSupportModeUsage, {
                 tagName: Ctor.name,
@@ -342,7 +341,7 @@ const lightingElementDef: ComponentDef = {
     propsConfig: EmptyObject,
     methods: EmptyObject,
     renderMode: RenderMode.Shadow,
-    shadowSupportMode: ShadowSupportMode.Default,
+    shadowSupportMode: 'reset',
     formAssociated: undefined,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
@@ -350,13 +349,9 @@ const lightingElementDef: ComponentDef = {
     render: LightningElement.prototype.render,
 };
 
-const enum PropDefType {
-    any = 'any',
-}
-
 interface PropDef {
     config: number;
-    type: PropDefType;
+    type: 'any';
     attr: string;
 }
 type PublicMethod = (...args: any[]) => any;
@@ -384,7 +379,7 @@ export function getComponentDef(Ctor: any): PublicComponentDef {
         // avoid leaking the reference to the public props descriptors
         publicProps[key] = {
             config: propsConfig[key] || 0, // a property by default
-            type: PropDefType.any, // no type inference for public services
+            type: 'any', // no type inference for public services
             attr: htmlPropertyToAttribute(key),
         };
     }

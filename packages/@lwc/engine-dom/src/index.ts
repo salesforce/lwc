@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -38,6 +38,17 @@ export {
     __unstable__ReportingControl,
 } from '@lwc/engine-core';
 
+// Engine-core public types ------------------------------------------------------------------------
+export type {
+    WireAdapter,
+    WireAdapterConstructor,
+    WireConfigValue,
+    WireContextValue,
+    WireContextConsumer,
+    WireContextProvider,
+    Template,
+} from '@lwc/engine-core';
+
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
@@ -47,3 +58,6 @@ export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
 export { rendererFactory } from './renderer-factory';
 export { createContextProvider } from './renderer/context';
+
+// Engine-dom public types -------------------------------------------------------------------------
+export type { LightningHTMLElement } from './apis/create-element';

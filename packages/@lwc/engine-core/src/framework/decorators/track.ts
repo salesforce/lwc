@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -15,19 +15,15 @@ import { updateComponentValue } from '../update-component-value';
 import { logError } from '../../shared/logger';
 
 /**
- * The @track decorator function marks field values as reactive in
+ * The `@track` decorator function marks field values as reactive in
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
- * @param target
- * @param propertyKey
- * @param descriptor
  */
 export default function track(
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-): any;
-export default function track(target: any): any {
+    value: unknown,
+    context: ClassMemberDecoratorContext | string | symbol
+): void;
+export default function track<T>(target: T): T {
     if (arguments.length === 1) {
         return getReactiveProxy(target);
     }

@@ -176,7 +176,7 @@
         },
         {
             // Not covered by any tsconfig, so typed rules won't work, but we don't need them anyway
-            "files": ["jest.config.js"],
+            "files": ["jest.config.js", "**/rollup.config.js"],
             "extends": ["plugin:@typescript-eslint/disable-type-checked"]
         },
         {

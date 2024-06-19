@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -47,8 +47,12 @@ export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
 export type { RendererAPI, LifecycleCallback } from './renderer';
+export type { Stylesheets } from './stylesheet';
+export type { Template } from './template';
 export type {
     ConfigValue as WireConfigValue,
+    ContextConsumer as WireContextConsumer,
+    ContextProvider as WireContextProvider,
     ContextValue as WireContextValue,
     DataCallback,
     WireAdapter,

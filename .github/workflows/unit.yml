@@ -62,6 +62,8 @@ jobs:
               run: yarn lint
             - name: Check the size of the LWC bundle
               run: yarn bundlesize
+            - name: Check types
+              run: yarn test:types
             - name: Run Jest tests
               run: yarn test:ci
             - name: Upload Jest coverage report

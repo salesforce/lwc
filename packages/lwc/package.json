@@ -34,6 +34,7 @@
         "@lwc/style-compiler": "6.7.2",
         "@lwc/synthetic-shadow": "6.7.2",
         "@lwc/template-compiler": "6.7.2",
+        "@lwc/types": "6.7.2",
         "@lwc/wire-service": "6.7.2"
     },
     "lwc": {
@@ -62,6 +63,7 @@
         "./engine-server": "./engine-server.js",
         "./errors": "./errors.js",
         "./features": "./features.js",
+        "./types": "./types.d.ts",
         "./module-resolver": "./module-resolver.js",
         "./rollup-plugin": "./rollup-plugin.js",
         "./shared": "./shared.js",

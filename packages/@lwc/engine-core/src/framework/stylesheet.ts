@@ -19,7 +19,7 @@ import { assertNotProd } from './utils';
 
 // These are only used for HMR in dev mode
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
-let stylesheetsToCssContent: WeakMap<StylesheetFactory, Set<string>> = /*@__PURE__@*/ new WeakMap();
+let stylesheetsToCssContent: WeakMap<Stylesheet, Set<string>> = /*@__PURE__@*/ new WeakMap();
 let cssContentToAbortControllers: Map<string, AbortController> = /*@__PURE__@*/ new Map();
 
 // Only used in LWC's Karma tests
@@ -35,20 +35,19 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type StylesheetFactory = (
+export type Stylesheet = (
     stylesheetToken: string | undefined,
     useActualHostSelector: boolean,
     useNativeDirPseudoclass: boolean
 ) => string;
 
 /**
- * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
- * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via
- * the @import CSS declaration).
+ * The list of stylesheets associated with a template. Each entry is either a `Stylesheet` or
+ * an array of stylesheets that a given stylesheet depends on via CSS `@import` declarations.
  */
-export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
+export type Stylesheets = Array<Stylesheet | Stylesheets>;
 
-function linkStylesheetToCssContentInDevMode(stylesheet: StylesheetFactory, cssContent: string) {
+function linkStylesheetToCssContentInDevMode(stylesheet: Stylesheet, cssContent: string) {
     // Should never leak to prod; only used for HMR
     assertNotProd();
     let cssContents = stylesheetsToCssContent.get(stylesheet);
@@ -171,7 +170,7 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
 }
 
 function evaluateStylesheetsContent(
-    stylesheets: TemplateStylesheetFactories,
+    stylesheets: Stylesheets,
     stylesheetToken: string | undefined,
     vm: VM
 ): string[] {
@@ -355,7 +354,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null 
     return null;
 }
 
-export function unrenderStylesheet(stylesheet: StylesheetFactory) {
+export function unrenderStylesheet(stylesheet: Stylesheet) {
     // should never leak to prod; only used for HMR
     assertNotProd();
     const cssContents = stylesheetsToCssContent.get(stylesheet);

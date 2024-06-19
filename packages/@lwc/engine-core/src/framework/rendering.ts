@@ -32,7 +32,6 @@ import {
     appendVM,
     createVM,
     getAssociatedVMIfPresent,
-    LwcDomMode,
     removeVM,
     RenderMode,
     rerenderVM,
@@ -642,7 +641,7 @@ function applyDomManual(elm: Element, vnode: VBaseElement) {
         owner,
         data: { context },
     } = vnode;
-    if (owner.shadowMode === ShadowMode.Synthetic && context?.lwc?.dom === LwcDomMode.Manual) {
+    if (owner.shadowMode === ShadowMode.Synthetic && context?.lwc?.dom === 'manual') {
         (elm as any).$domManual$ = true;
     }
 }
@@ -651,7 +650,7 @@ function applyElementRestrictions(elm: Element, vnode: VElement | VStatic) {
     if (process.env.NODE_ENV !== 'production') {
         const isSynthetic = vnode.owner.shadowMode === ShadowMode.Synthetic;
         const isPortal =
-            vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === LwcDomMode.Manual;
+            vnode.type === VNodeType.Element && vnode.data.context?.lwc?.dom === 'manual';
         const isLight = vnode.owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, {
             isPortal,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -12,16 +12,22 @@ import { WireAdapterConstructor } from '../wiring';
 import { updateComponentValue } from '../update-component-value';
 
 /**
- * The @wire decorator wires fields and methods to a wire adapter in
- * LWC Components. This function implements the internals of this
- * decorator.
- * @param _adapter
- * @param _config
+ * Decorator factory to wire a property or method to a wire adapter data source.
+ * @param adapter the adapter used to provision data
+ * @param config configuration object for the adapter
+ * @returns A decorator function
+ * @example
+ * export default class WireExample extends LightningElement {
+ *   \@api bookId;
+ *   \@wire(getBook, { id: '$bookId'}) book;
+ * }
  */
 export default function wire(
-    _adapter: WireAdapterConstructor,
-    _config?: Record<string, any>
-): PropertyDecorator | MethodDecorator {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    adapter: WireAdapterConstructor,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    config?: Record<string, any>
+): (value: unknown, context: ClassMemberDecoratorContext | string | symbol) => void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');
     }

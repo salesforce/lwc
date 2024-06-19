@@ -43,7 +43,11 @@ import {
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
-import { LightningElement, LightningElementConstructor } from './base-lightning-element';
+import {
+    LightningElement,
+    LightningElementConstructor,
+    LightningElementShadowRoot,
+} from './base-lightning-element';
 import {
     logOperationStart,
     logOperationEnd,
@@ -63,7 +67,7 @@ import {
     isVFragment,
     VStaticPartElement,
 } from './vnodes';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { Stylesheet, Stylesheets } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -94,15 +98,7 @@ export const enum ShadowMode {
     Synthetic,
 }
 
-export const enum ShadowSupportMode {
-    Any = 'any',
-    Default = 'reset',
-    Native = 'native',
-}
-
-export const enum LwcDomMode {
-    Manual = 'manual',
-}
+export type ShadowSupportMode = 'any' | 'reset' | 'native';
 
 export interface Context {
     /** The string used for synthetic shadow DOM and light DOM style scoping. */
@@ -190,12 +186,12 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component instance. */
     component: LightningElement;
     /** The custom element shadow root. */
-    shadowRoot: ShadowRoot | null;
+    shadowRoot: LightningElementShadowRoot | null;
     /**
      * The component render root. If the component is a shadow DOM component, it is its shadow
      * root. If the component is a light DOM component it the element itself.
      */
-    renderRoot: ShadowRoot | HostElement;
+    renderRoot: LightningElementShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
     /**
@@ -224,7 +220,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /**
      * Any stylesheets associated with the component
      */
-    stylesheets: TemplateStylesheetFactories | null;
+    stylesheets: Stylesheets | null;
     /**
      * API version associated with this VM
      */
@@ -433,10 +429,10 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function validateComponentStylesheets(vm: VM, stylesheets: TemplateStylesheetFactories): boolean {
+function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean {
     let valid = true;
 
-    const validate = (arrayOrStylesheet: TemplateStylesheetFactories | StylesheetFactory) => {
+    const validate = (arrayOrStylesheet: Stylesheets | Stylesheet) => {
         if (isArray(arrayOrStylesheet)) {
             for (let i = 0; i < arrayOrStylesheet.length; i++) {
                 validate(arrayOrStylesheet[i]);
@@ -535,7 +531,7 @@ function computeShadowMode(
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (def.shadowSupportMode === ShadowSupportMode.Native) {
+        } else if (def.shadowSupportMode === 'native') {
             shadowMode = ShadowMode.Native;
         } else {
             const shadowAncestor = getNearestShadowAncestor(owner);

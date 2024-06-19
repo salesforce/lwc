@@ -26,6 +26,7 @@
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
+        "test:types": "nx test @lwc/integration-types",
         "release:version": "./scripts/release/version.js"
     },
     "//": {
