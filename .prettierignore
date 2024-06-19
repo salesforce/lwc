@@ -10,6 +10,9 @@ types/
 
 __benchmarks_results__/
 
+.nx/
+.nx-cache/
+
 # HTML files are used by tests and may include deliberately invalid/ugly HTML
 # e.g. <input> without self-closing tag, extra leading/trailing whitespace, etc.
 *.html

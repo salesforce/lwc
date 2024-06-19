@@ -263,6 +263,14 @@
             }
         },
         {
+            "files": [
+                "packages/@lwc/integration-karma/**"
+            ],
+            "globals": {
+                "lwcRuntimeFlags": true
+            }
+        },
+        {
             // These files aren't JS files, but are directives used to selectively run test fixtures.
             // We use eslint to break CI if they are accidentally committed. Note that lint-staged
             // uses a different config to prevent them from being committed.

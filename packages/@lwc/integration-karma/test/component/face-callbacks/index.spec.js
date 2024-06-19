@@ -1,8 +1,5 @@
 import { createElement } from 'lwc';
-import {
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE,
-} from 'test-utils';
+import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 
 import Container from 'face/container';
 import FormAssociated from 'face/formAssociated';
@@ -79,6 +76,7 @@ const faceSanityTest = (tagName, ctor) => {
 
         it('is associated with the correct form', () => {
             const form2 = document.createElement('form');
+            document.body.appendChild(form2);
             form2.setAttribute('class', 'form2');
             const face2 = createElement('face-form-associated-2', { is: ctor });
             form2.appendChild(face2);
@@ -148,9 +146,9 @@ const testFaceLifecycleMethodsNotCallable = (createFace) => {
 };
 
 if (typeof ElementInternals !== 'undefined') {
-    if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         // native lifecycle enabled
-        describe('native lifecycle', () => {
+        describe('ElementInternals/FACE enabled', () => {
             if (process.env.NATIVE_SHADOW) {
                 describe('native shadow', () => {
                     faceSanityTest('native-shadow', FormAssociated);
@@ -162,7 +160,9 @@ if (typeof ElementInternals !== 'undefined') {
                         it('cannot be used and throws an error', () => {
                             const face = createFace();
                             const form = createFormElement();
-                            expect(() => form.appendChild(face)).toThrowCallbackReactionError(
+                            expect(() =>
+                                form.appendChild(face)
+                            ).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
                                 'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
                             );
                         });
@@ -175,7 +175,7 @@ if (typeof ElementInternals !== 'undefined') {
             });
         });
     } else {
-        describe('synthetic lifecycle', () => {
+        describe('ElementInternals/FACE disabled', () => {
             [
                 { name: 'shadow DOM', tagName: 'synthetic-lifecycle-shadow', ctor: FormAssociated },
                 {

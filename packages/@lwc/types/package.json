@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/types",
-    "version": "6.7.1",
+    "version": "6.7.2",
     "keywords": [
         "lwc",
         "types",
@@ -29,7 +29,7 @@
         "*.d.ts"
     ],
     "dependencies": {
-        "@lwc/engine-core": "6.7.1",
-        "@lwc/template-compiler": "6.7.1"
+        "@lwc/engine-core": "6.7.2",
+        "@lwc/template-compiler": "6.7.2"
     }
 }
