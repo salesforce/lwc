@@ -578,6 +578,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         USE_LIGHT_DOM_SLOT_FORWARDING: process.env.API_VERSION >= 61,
         ENABLE_THIS_DOT_HOST_ELEMENT: process.env.API_VERSION >= 62,
         ENABLE_THIS_DOT_STYLE: process.env.API_VERSION >= 62,
+        TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
     };
 
     return {

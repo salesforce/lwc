@@ -7,7 +7,12 @@ const stc1 = {
   ref: "bar",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
+  const {
+    b: api_bind,
+    ncls: api_normalize_class_name,
+    sp: api_static_part,
+    st: api_static_fragment,
+  } = $api;
   const { _m0, _m1 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
@@ -40,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         8,
         {
-          className: $cmp.fooClass,
+          className: api_normalize_class_name($cmp.fooClass),
         },
         null
       ),
@@ -73,7 +78,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         13,
         {
-          className: $cmp.barClass,
+          className: api_normalize_class_name($cmp.barClass),
         },
         null
       ),

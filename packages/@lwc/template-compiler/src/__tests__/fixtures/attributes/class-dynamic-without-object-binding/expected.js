@@ -1,17 +1,13 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<section${3}><p${"c1"}${2}></p></section>`;
+const $fragment1 = parseFragment`<div${"c0"}${2}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    ncls: api_normalize_class_name,
-    sp: api_static_part,
-    st: api_static_fragment,
-  } = $api;
+  const { sp: api_static_part, st: api_static_fragment } = $api;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
-        1,
+        0,
         {
-          className: api_normalize_class_name($cmp.bar.foo.baz),
+          className: $cmp.computed,
         },
         null
       ),

@@ -22,6 +22,7 @@ import {
     isTrue,
     isUndefined,
     StringReplace,
+    StringTrim,
     toString,
 } from '@lwc/shared';
 
@@ -733,6 +734,38 @@ function shc(content: unknown): string {
     return sanitizeHtmlContentHook(content);
 }
 
+/**
+ * [ncls] - Normalize class name attribute.
+ *
+ * Transforms the provided class property value from an object/string into a string the diffing algo
+ * can operate on.
+ *
+ * This implementation is borrowed from Vue:
+ * https://github.com/vuejs/core/blob/e790e1bdd7df7be39e14780529db86e4da47a3db/packages/shared/src/normalizeProp.ts#L63-L82
+ */
+function ncls(value: unknown): string {
+    let res = '';
+
+    if (isString(value)) {
+        res = value;
+    } else if (isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+            const normalized = ncls(value[i]);
+            if (normalized) {
+                res += normalized + ' ';
+            }
+        }
+    } else if (isObject(value)) {
+        for (const key in value) {
+            if ((value as any)[key]) {
+                res += key + ' ';
+            }
+        }
+    }
+
+    return StringTrim.call(res);
+}
+
 const api = ObjectFreeze({
     s,
     h,
@@ -754,6 +787,7 @@ const api = ObjectFreeze({
     ssf,
     ddc,
     sp,
+    ncls,
 });
 
 export default api;

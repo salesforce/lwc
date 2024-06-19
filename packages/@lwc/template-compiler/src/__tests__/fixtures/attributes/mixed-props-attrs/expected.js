@@ -26,6 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
     st: api_static_fragment,
     h: api_element,
+    ncls: api_normalize_class_name,
     sp: api_static_part,
   } = $api;
   return [
@@ -70,7 +71,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: $cmp.foo,
+          className: api_normalize_class_name($cmp.foo),
         },
         null
       ),
