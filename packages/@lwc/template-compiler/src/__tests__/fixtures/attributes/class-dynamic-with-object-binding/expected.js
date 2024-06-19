@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./class-dynamic-with-object-binding.css";
+import _implicitScopedStylesheets from "./class-dynamic-with-object-binding.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"c0"}${2}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -21,3 +23,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-agbrffqjb4";
+tmpl.legacyStylesheetToken =
+  "x-class-dynamic-with-object-binding_class-dynamic-with-object-binding";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);
