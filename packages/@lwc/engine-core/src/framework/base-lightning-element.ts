@@ -545,11 +545,23 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         return vm.shadowRoot;
     },
 
-    get hostElement(): Element {
+    get hostElement(): Element | undefined {
         const vm = getAssociatedVM(this);
 
         if (!process.env.IS_BROWSER) {
             assert.fail('this.hostElement is not supported in this environment');
+        }
+
+        const apiVersion = getComponentAPIVersion(vm.def.ctor);
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.hostElement` API within LightningElement is ' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
+            // Simulate the old behavior for `this.hostElement` to avoid a breaking change
+            return undefined;
         }
 
         if (process.env.NODE_ENV !== 'production') {

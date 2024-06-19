@@ -576,6 +576,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             process.env.API_VERSION >= 61 &&
             !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         USE_LIGHT_DOM_SLOT_FORWARDING: process.env.API_VERSION >= 61,
+        ENABLE_THIS_DOT_HOST_ELEMENT: process.env.API_VERSION >= 62,
         ENABLE_THIS_DOT_STYLE: process.env.API_VERSION >= 62,
     };
 
