@@ -84,7 +84,7 @@ function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): V
         factory,
         owner: getVMBeingRendered()!,
         elm: undefined,
-        sel: undefined,
+        sel: '__scoped_slot_fragment__',
         key: undefined,
         slotName,
     };
@@ -100,7 +100,7 @@ function st(
     const fragment = fragmentFactory(parts);
     const vnode: VStatic = {
         type: VNodeType.Static,
-        sel: undefined,
+        sel: '__static__',
         key,
         elm: undefined,
         fragment,
@@ -125,7 +125,7 @@ function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
 
     return {
         type: VNodeType.Fragment,
-        sel: undefined,
+        sel: '__fragment__',
         key,
         elm: undefined,
         children: [leading, ...children, trailing],
@@ -280,7 +280,15 @@ function s(
                         // to the vnode because the current way the diffing algo works, it will replace the original reference
                         // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
                         // Creating a copy of the vnode to preserve a reference to the previous host element.
-                        clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
+                        if (isUndefined(vnode.elm)) {
+                            // vnode.elm is undefined during initial render.
+                            // We don't need to clone at this point because it doesn't need to be unmounted.
+                            vnode.slotAssignment = data.slotAssignment;
+                        } else {
+                            // Clone when the vnode.elm is defined to ensure we don't lose reference to the previous element.
+                            // This is specifically for slot forwarding.
+                            clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
+                        }
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
@@ -495,10 +503,10 @@ function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
 
 // [t]ext node
 function t(text: string): VText {
-    let sel, key, elm;
+    let key, elm;
     return {
         type: VNodeType.Text,
-        sel,
+        sel: '__text__',
         text,
         elm,
         key,
@@ -508,13 +516,13 @@ function t(text: string): VText {
 
 // [co]mment node
 function co(text: string): VComment {
-    let sel, elm;
+    let elm, key;
     return {
         type: VNodeType.Comment,
-        sel,
+        sel: '__comment__',
         text,
         elm,
-        key: 'c',
+        key,
         owner: getVMBeingRendered()!,
     };
 }

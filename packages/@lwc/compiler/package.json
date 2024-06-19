@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "6.6.3",
+    "version": "6.7.2",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
@@ -42,17 +42,17 @@
         }
     },
     "dependencies": {
-        "@babel/core": "7.24.5",
-        "@babel/plugin-transform-async-generator-functions": "7.24.3",
-        "@babel/plugin-transform-async-to-generator": "7.24.1",
-        "@babel/plugin-transform-class-properties": "7.24.1",
-        "@babel/plugin-transform-object-rest-spread": "7.24.5",
+        "@babel/core": "7.24.7",
+        "@babel/plugin-transform-async-generator-functions": "7.24.7",
+        "@babel/plugin-transform-async-to-generator": "7.24.7",
+        "@babel/plugin-transform-class-properties": "7.24.7",
+        "@babel/plugin-transform-object-rest-spread": "7.24.7",
         "@locker/babel-plugin-transform-unforgeables": "0.20.0",
-        "@lwc/babel-plugin-component": "6.6.3",
-        "@lwc/errors": "6.6.3",
-        "@lwc/shared": "6.6.3",
-        "@lwc/ssr-compiler": "6.6.3",
-        "@lwc/style-compiler": "6.6.3",
-        "@lwc/template-compiler": "6.6.3"
+        "@lwc/babel-plugin-component": "6.7.2",
+        "@lwc/errors": "6.7.2",
+        "@lwc/shared": "6.7.2",
+        "@lwc/ssr-compiler": "6.7.2",
+        "@lwc/style-compiler": "6.7.2",
+        "@lwc/template-compiler": "6.7.2"
     }
 }

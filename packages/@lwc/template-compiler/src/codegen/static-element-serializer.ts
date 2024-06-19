@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
-import { Comment, Element, Literal, StaticElement, Text } from '../shared/types';
+import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
 import { isElement, isComment, isExpression, isText } from '../shared/ast';
-import { transformStaticChildren, isDynamicText } from './static-element';
+import { transformStaticChildren, isContiguousText, hasDynamicText } from './static-element';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -102,13 +102,19 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
     return attrs.join('') + (hasClassAttr ? '${2}' : '${3}');
 }
 
-function serializeChildren(node: StaticElement, parentTagName: string, codeGen: CodeGen): string {
+function serializeChildren(
+    children: (StaticChildNode | Text[])[],
+    parentTagName: string,
+    codeGen: CodeGen
+): string {
     let html = '';
 
-    for (const child of transformStaticChildren(node)) {
-        /* istanbul ignore else  */
-        if (isDynamicText(child)) {
-            html += serializeDynamicTextNode(child, codeGen);
+    for (const child of children) {
+        /* istanbul ignore else */
+        if (isContiguousText(child)) {
+            html += hasDynamicText(child)
+                ? serializeDynamicTextNode(child, codeGen)
+                : serializeChildren(child, parentTagName, codeGen);
         } else if (isText(child)) {
             html += serializeStaticTextNode(
                 child,
@@ -165,7 +171,9 @@ export function serializeStaticElement(element: StaticElement, codeGen: CodeGen)
     }
 
     html += '>';
-    html += serializeChildren(element, tagName, codeGen);
+
+    const children = transformStaticChildren(element, codeGen.preserveComments);
+    html += serializeChildren(children, tagName, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;
