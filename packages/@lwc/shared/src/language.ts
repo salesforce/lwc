@@ -143,6 +143,7 @@ const {
     split: StringSplit,
     slice: StringSlice,
     toLowerCase: StringToLowerCase,
+    trim: StringTrim,
 } = String.prototype;
 
 export {
@@ -236,6 +237,8 @@ export {
     StringSlice,
     /** Unbound {@linkcode String.prototype.toLowerCase}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase MDN Reference}. */
     StringToLowerCase,
+    /** Unbound {@linkcode String.prototype.trim}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim MDN Reference}. */
+    StringTrim,
 };
 
 /**

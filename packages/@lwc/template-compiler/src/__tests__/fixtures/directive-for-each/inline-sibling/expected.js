@@ -8,6 +8,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
+    ncls: api_normalize_class_name,
     k: api_key,
     d: api_dynamic_text,
     sp: api_static_part,
@@ -26,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_static_part(
               0,
               {
-                className: item.x,
+                className: api_normalize_class_name(item.x),
               },
               null
             ),

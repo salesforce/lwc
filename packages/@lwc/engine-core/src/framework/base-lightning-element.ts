@@ -14,7 +14,6 @@
  */
 import {
     AccessibleElementProperties,
-    APIFeature,
     create,
     defineProperties,
     defineProperty,
@@ -28,15 +27,16 @@ import {
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
+    APIFeature,
     assert,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { getWrappedComponentsListener } from './component';
+import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import {
     associateVM,
@@ -185,6 +185,7 @@ type HTMLElementTheGoodParts = { toString: () => string } & Pick<
     | 'tabIndex'
     | 'tagName'
     | 'title'
+    | 'style'
 >;
 
 type RefNodes = { [name: string]: Element };
@@ -544,11 +545,23 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         return vm.shadowRoot;
     },
 
-    get hostElement(): Element {
+    get hostElement(): Element | undefined {
         const vm = getAssociatedVM(this);
 
         if (!process.env.IS_BROWSER) {
             assert.fail('this.hostElement is not supported in this environment');
+        }
+
+        const apiVersion = getComponentAPIVersion(vm.def.ctor);
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.hostElement` API within LightningElement is ' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
+            // Simulate the old behavior for `this.hostElement` to avoid a breaking change
+            return undefined;
         }
 
         if (process.env.NODE_ENV !== 'production') {
@@ -714,6 +727,22 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     get tagName() {
         const { elm, renderer } = getAssociatedVM(this);
         return renderer.getTagName(elm);
+    },
+
+    get style() {
+        const { elm, renderer, def } = getAssociatedVM(this);
+        const apiVersion = getComponentAPIVersion(def.ctor);
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_STYLE, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.style` API within LightningElement returning the CSSStyleDeclaration is ' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
+            // Simulate the old behavior for `this.style` to avoid a breaking change
+            return undefined;
+        }
+        return renderer.getStyle(elm);
     },
 
     render(): Template {

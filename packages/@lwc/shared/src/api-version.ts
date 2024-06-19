@@ -101,6 +101,19 @@ export const enum APIFeature {
      * Form-Associated Custom Elements (FACE).
      */
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    /**
+     * If enabled, allow `this.hostElement` within a `LightningElement` to return the host element.
+     */
+    ENABLE_THIS_DOT_HOST_ELEMENT,
+    /**
+     * If enabled, allow `this.style` within a `LightningElement` to return the `CSSStyleDeclaration`
+     * for that element.
+     */
+    ENABLE_THIS_DOT_STYLE,
+    /**
+     * If enabled, add support for complex class expressions in the template.
+     */
+    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
 }
 
 /**
@@ -125,5 +138,9 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
+        case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
+        case APIFeature.ENABLE_THIS_DOT_STYLE:
+        case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
+            return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }
