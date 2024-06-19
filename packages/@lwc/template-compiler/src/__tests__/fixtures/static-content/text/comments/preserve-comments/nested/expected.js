@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./nested.css";
+import _implicitScopedStylesheets from "./nested.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><!-- level 1--><span${3}>some <!-- level 2 --> text</span><div${3}>${"t7"}<!-- level 3 -->${"t9"}<span${3}><!-- level 4 -->${"t12"}</span><div${3}>text <!-- level 5 -->${"t16"}</div></div></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -18,3 +20,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-ud1n1pkbjc";
+tmpl.legacyStylesheetToken = "x-nested_nested";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

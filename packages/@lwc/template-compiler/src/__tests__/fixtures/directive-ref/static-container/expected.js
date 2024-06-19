@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./static-container.css";
+import _implicitScopedStylesheets from "./static-container.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><span${3}></span></div>`;
 const stc0 = {
   ref: "foo",
@@ -9,5 +11,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
-tmpl.stylesheets = [];
 tmpl.hasRefs = true;
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-7160slcn7bl";
+tmpl.legacyStylesheetToken = "x-static-container_static-container";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

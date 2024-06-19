@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./grandchild.css";
+import _implicitScopedStylesheets from "./grandchild.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><div${3}>${"t2"}</div></div>`;
 const $fragment2 = parseFragment`<div${3}><div${3}>${"t2"}<span${3}>text1</span></div><div${3}><span${3}>text2</span>${"t8"}<span${3}>text3</span></div><div${3}><span${3}>text4</span><span${3}>text5</span>${"t16"}</div><div${3}>${"t18"}</div></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -26,3 +28,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-42b236sbaik";
+tmpl.legacyStylesheetToken = "x-grandchild_grandchild";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

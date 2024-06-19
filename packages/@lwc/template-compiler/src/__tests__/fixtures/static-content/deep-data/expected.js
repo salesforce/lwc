@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./deep-data.css";
+import _implicitScopedStylesheets from "./deep-data.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}><div${3}></div><div${3}><div${3}><div${3}></div><div${3}></div><div${"a6:data-name"}${3}></div><div${"s7"}${3}></div><div${"c8"}${2}></div></div></div><div${3}></div><div${3}></div><div${"a11:data-name"}${3}></div><div${"s12"}${3}></div><div${"c13"}${2}></div></div>`;
 const stc0 = {
   ref: "foo",
@@ -87,5 +89,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
-tmpl.stylesheets = [];
 tmpl.hasRefs = true;
+tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-38lifoo63d4";
+tmpl.legacyStylesheetToken = "x-deep-data_deep-data";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

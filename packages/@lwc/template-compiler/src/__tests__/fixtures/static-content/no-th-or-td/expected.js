@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./no-th-or-td.css";
+import _implicitScopedStylesheets from "./no-th-or-td.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<tr${3}><th${3}></th></tr>`;
 const $fragment2 = parseFragment`<tr${3}><td${3}></td></tr>`;
 const stc0 = {
@@ -39,3 +41,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3dqe88fvse3";
+tmpl.legacyStylesheetToken = "x-no-th-or-td_no-th-or-td";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

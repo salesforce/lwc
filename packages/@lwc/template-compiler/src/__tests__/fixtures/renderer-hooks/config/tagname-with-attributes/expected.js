@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./tagname-with-attributes.css";
+import _implicitScopedStylesheets from "./tagname-with-attributes.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate, renderer } from "lwc";
 const $fragment1 = parseFragment`<div${3}>Should not get custom renderer</div>`;
 const stc0 = {
   city: true,
@@ -21,3 +23,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-mfnbsc228l";
+tmpl.legacyStylesheetToken =
+  "x-tagname-with-attributes_tagname-with-attributes";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

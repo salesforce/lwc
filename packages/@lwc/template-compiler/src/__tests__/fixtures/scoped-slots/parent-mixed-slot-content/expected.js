@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./parent-mixed-slot-content.css";
+import _implicitScopedStylesheets from "./parent-mixed-slot-content.scoped.css?scoped=true";
 import _xChild from "x/child";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p${3}>${"t1"}</p>`;
 const $fragment2 = parseFragment`<span${3}>Chocolatier</span>`;
 const stc0 = {
@@ -41,3 +43,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3s5q7c313i4";
+tmpl.legacyStylesheetToken =
+  "x-parent-mixed-slot-content_parent-mixed-slot-content";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./usage-if.css";
+import _implicitScopedStylesheets from "./usage-if.scoped.css?scoped=true";
 import _nsCmp from "ns/cmp";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -28,3 +30,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-6dcki86fmnh";
+tmpl.legacyStylesheetToken = "x-usage-if_usage-if";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

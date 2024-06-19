@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./key-in-slot.css";
+import _implicitScopedStylesheets from "./key-in-slot.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}>Default fallback</div>`;
 const $fragment2 = parseFragment`<div${3}>Named fallback</div>`;
 const stc0 = {
@@ -40,3 +42,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["", "foo"];
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-2b5l14n492j";
+tmpl.legacyStylesheetToken = "x-key-in-slot_key-in-slot";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./expression.css";
+import _implicitScopedStylesheets from "./expression.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"a0:spellcheck"}${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -30,3 +32,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-602vdkaauac";
+tmpl.legacyStylesheetToken = "x-expression_expression";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

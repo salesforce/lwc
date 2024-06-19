@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./mixed-elements.css";
+import _implicitScopedStylesheets from "./mixed-elements.scoped.css?scoped=true";
 import _cDefault from "c/default";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${3}>Elseif!</div>`;
 const stc0 = {
   key: 3,
@@ -30,3 +32,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-c3g2fma7qf";
+tmpl.legacyStylesheetToken = "x-mixed-elements_mixed-elements";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

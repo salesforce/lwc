@@ -1,5 +1,7 @@
+import _implicitStylesheets from "./hidden-global-attr.css";
+import _implicitScopedStylesheets from "./hidden-global-attr.scoped.css?scoped=true";
 import _xFoo from "x/foo";
-import { parseFragment, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>boolean present</p>`;
 const $fragment2 = parseFragment`<p hidden=""${3}>empty string, should be true</p>`;
 const $fragment3 = parseFragment`<p hidden="other than true"${3}>string value, should be true</p>`;
@@ -78,3 +80,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-5hma34rpdl8";
+tmpl.legacyStylesheetToken = "x-hidden-global-attr_hidden-global-attr";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

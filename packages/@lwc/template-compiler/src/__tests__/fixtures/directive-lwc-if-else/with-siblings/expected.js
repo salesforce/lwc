@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./with-siblings.css";
+import _implicitScopedStylesheets from "./with-siblings.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<h1${3}>Happy days!</h1>`;
 const $fragment2 = parseFragment`<h1${"a0:data-dynamic"}${3}>Dynamic attribute</h1>`;
 const $fragment3 = parseFragment`<h1${"c0"}${2}>Dynamic class</h1>`;
@@ -175,3 +177,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-17drfojvaju";
+tmpl.legacyStylesheetToken = "x-with-siblings_with-siblings";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

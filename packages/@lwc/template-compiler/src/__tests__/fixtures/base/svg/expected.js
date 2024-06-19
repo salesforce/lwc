@@ -1,4 +1,6 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import _implicitStylesheets from "./svg.css";
+import _implicitScopedStylesheets from "./svg.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
 const stc0 = {
   classMap: {
     "slds-button__icon": true,
@@ -32,3 +34,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3j142gdvja7";
+tmpl.legacyStylesheetToken = "x-svg_svg";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

@@ -1,4 +1,6 @@
-import { parseFragment, registerTemplate } from "lwc";
+import _implicitStylesheets from "./no-escaping-tags.css";
+import _implicitScopedStylesheets from "./no-escaping-tags.scoped.css?scoped=true";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<xmp${3}>&lt;/xmp&gt;Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></xmp>`;
 const $fragment2 = parseFragment`<iframe${3}>Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></iframe>`;
 const $fragment3 = parseFragment`<noembed${3}>Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></noembed>`;
@@ -15,3 +17,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-49vb5jurkcl";
+tmpl.legacyStylesheetToken = "x-no-escaping-tags_no-escaping-tags";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

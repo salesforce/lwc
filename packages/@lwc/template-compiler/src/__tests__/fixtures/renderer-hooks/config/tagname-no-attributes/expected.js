@@ -1,4 +1,6 @@
-import { registerTemplate, renderer } from "lwc";
+import _implicitStylesheets from "./tagname-no-attributes.css";
+import _implicitScopedStylesheets from "./tagname-no-attributes.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate, renderer } from "lwc";
 const stc0 = {
   city: true,
 };
@@ -27,3 +29,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-15ubc3rrgkq";
+tmpl.legacyStylesheetToken = "x-tagname-no-attributes_tagname-no-attributes";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);

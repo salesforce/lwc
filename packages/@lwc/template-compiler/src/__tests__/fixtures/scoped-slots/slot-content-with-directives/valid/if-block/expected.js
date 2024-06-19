@@ -1,9 +1,11 @@
+import _implicitStylesheets from "./if-block.css";
+import _implicitScopedStylesheets from "./if-block.scoped.css?scoped=true";
 import _xCounter from "x/counter";
 import _xButton1 from "x/button1";
 import _xButton2 from "x/button2";
 import _xButton3 from "x/button3";
 import _xChild from "x/child";
-import { registerTemplate } from "lwc";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
@@ -100,3 +102,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.stylesheetToken = "lwc-3r9m4mhtbbm";
+tmpl.legacyStylesheetToken = "x-if-block_if-block";
+if (_implicitStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+}
+if (_implicitScopedStylesheets) {
+  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
+}
+freezeTemplate(tmpl);
