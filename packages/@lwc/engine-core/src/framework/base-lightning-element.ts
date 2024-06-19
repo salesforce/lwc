@@ -31,12 +31,12 @@ import {
     assert,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { getWrappedComponentsListener } from './component';
+import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import {
     associateVM,
@@ -544,11 +544,23 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         return vm.shadowRoot;
     },
 
-    get hostElement(): Element {
+    get hostElement(): Element | undefined {
         const vm = getAssociatedVM(this);
 
         if (!process.env.IS_BROWSER) {
             assert.fail('this.hostElement is not supported in this environment');
+        }
+
+        const apiVersion = getComponentAPIVersion(vm.def.ctor);
+        if (!isAPIFeatureEnabled(APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT, apiVersion)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logWarnOnce(
+                    'The `this.hostElement` API within LightningElement is ' +
+                        'only supported in API version 62 and above. Increase the API version to use it.'
+                );
+            }
+            // Simulate the old behavior for `this.hostElement` to avoid a breaking change
+            return undefined;
         }
 
         if (process.env.NODE_ENV !== 'production') {
