@@ -1,6 +1,4 @@
 import { createElement } from 'lwc';
-import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
-
 import Test from 'x/test';
 
 describe('Node.isConnected', () => {
@@ -14,7 +12,7 @@ describe('Node.isConnected', () => {
         const frag = document.createDocumentFragment();
         const doAppend = () => frag.appendChild(elm);
 
-        if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+        if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             doAppend();
         } else {
             // Expected warning, since we are working with disconnected nodes

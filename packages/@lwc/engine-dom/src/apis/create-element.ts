@@ -13,15 +13,12 @@ import {
     isUndefined,
     toString,
     StringToLowerCase,
-    isAPIFeatureEnabled,
-    APIFeature,
 } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getComponentAPIVersion,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
@@ -49,14 +46,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-let monkeyPatched = false;
-
 function monkeyPatchDomAPIs() {
-    if (monkeyPatched) {
-        // don't double-patch
-        return;
-    }
-    monkeyPatched = true;
     // Monkey patching Node methods to be able to detect the insertions and removal of root elements
     // created via createElement.
     const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
@@ -82,15 +72,8 @@ function monkeyPatchDomAPIs() {
     } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 }
 
-if (process.env.NODE_ENV !== 'production') {
-    // In dev mode, we must eagerly patch these DOM APIs because `restrictions.ts` in `@lwc/engine-core` does
-    // its own monkey-patching, and the assumption is that its monkey patches will apply on top of our own.
-    // If we _don't_ eagerly monkey-patch, then APIs like `element.appendChild` could end up calling through
-    // directly to the native DOM APIs instead, which would bypass synthetic custom element lifecycle
-    // and cause rendering/`connectedCallback`/`disconnectedCallback` not to fire.
-    // In prod mode, we avoid global patching as a slight perf optimization and because it's good practice
-    // in general to avoid global patching.
-    // See issue #4242 for details.
+// Only enable global monkey-patching if we're using synthetic custom element lifecycle
+if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
     monkeyPatchDomAPIs();
 }
 
@@ -177,12 +160,8 @@ export function createElement<Component>(
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
 
-    const apiVersion = getComponentAPIVersion(Ctor);
-
     const useNativeCustomElementLifecycle =
-        // temporary "kill switch"
-        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
-        isAPIFeatureEnabled(APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE, apiVersion);
+        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;
 
     const isFormAssociated = shouldBeFormAssociated(Ctor);
 
@@ -200,9 +179,6 @@ export function createElement<Component>(
             owner: null,
         });
         if (!useNativeCustomElementLifecycle) {
-            // Monkey-patch on-demand, because if there are no components on the page using an old API
-            // version, then we don't want to monkey patch at all
-            monkeyPatchDomAPIs();
             ConnectingSlot.set(elm, connectRootElement);
             DisconnectingSlot.set(elm, disconnectRootElement);
         }

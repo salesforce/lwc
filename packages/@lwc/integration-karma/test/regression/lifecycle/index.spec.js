@@ -5,7 +5,11 @@ import NativeSloterSyntheticSlotee from 'x/nativeSloterSyntheticSlotee';
 import SyntheticSloterSyntheticSlotee from 'x/syntheticSloterSyntheticSlotee';
 import NativeSloterNativeSlotee from 'x/nativeSloterNativeSlotee';
 
-describe('W-15904769', () => {
+// Skipped currently because we reverted native custom element lifecycle as an API-versioned feature,
+// due to exactly bugs like below that are caused by mixing components running in multiple lifecycle modes.
+// In the future we may still decide to ship API versioning in a "mixed" mode, which would make this test relevant
+// again.
+xdescribe('W-15904769', () => {
     beforeEach(() => {
         window.timingBuffer = [];
     });

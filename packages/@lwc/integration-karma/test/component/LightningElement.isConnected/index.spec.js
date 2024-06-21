@@ -39,11 +39,17 @@ describe('Basic DOM manipulation cases', () => {
     });
     it('should return false for host connected to detached fargment', () => {
         const frag = document.createDocumentFragment();
-        // Expected warning, since we are working with disconnected nodes,
-        // and the Test element is manually constructed, so it will always run in synthetic lifecycle mode
-        expect(() => frag.appendChild(elm)).toLogWarningDev(
-            /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-        );
+        const callback = () => frag.appendChild(elm);
+        if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            // Expected warning, since we are working with disconnected nodes,
+            // and the Test element is manually constructed, so it will always run in synthetic lifecycle mode
+            expect(callback).toLogWarningDev(
+                /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+            );
+        } else {
+            callback(); // no warning
+        }
+
         expect(context.isConnected).toBe(false);
     });
 });
