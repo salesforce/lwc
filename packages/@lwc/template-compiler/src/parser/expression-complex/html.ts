@@ -27,6 +27,7 @@ import {
     TextNode,
 } from '@parse5/tools';
 import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
+import { EXPRESSION_SYMBOL_START } from '../expression';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
 
@@ -251,7 +252,10 @@ function isTemplateExpressionTextNodeValue(
     startOffset: number,
     html: string
 ): boolean {
-    return value.startsWith('{') && html.startsWith('{', startOffset);
+    return (
+        value.startsWith(EXPRESSION_SYMBOL_START) &&
+        html.startsWith(EXPRESSION_SYMBOL_START, startOffset)
+    );
 }
 
 /**
