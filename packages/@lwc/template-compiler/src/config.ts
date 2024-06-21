@@ -10,7 +10,12 @@ import {
     generateCompilerError,
     InstrumentationObject,
 } from '@lwc/errors';
-import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
+import {
+    APIFeature,
+    getAPIVersionFromNumber,
+    hasOwnProperty,
+    isAPIFeatureEnabled,
+} from '@lwc/shared';
 import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
 
@@ -166,12 +171,16 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     }
 
     const apiVersion = getAPIVersionFromNumber(config.apiVersion);
+    const experimentalComplexExpressions = isAPIFeatureEnabled(
+        APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
+        apiVersion
+    );
 
     return {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         // TODO [#3370]: remove experimental template expression flag
-        experimentalComplexExpressions: false,
+        experimentalComplexExpressions,
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
