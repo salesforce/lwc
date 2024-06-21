@@ -64,7 +64,8 @@ describe('setting static values on non custom elements', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
-        expect(getSpellcheckPropertyValue(elm, 'div.boolean-true-v')).toBe(true);
+        // We explicitly don't test the prop value for `.ce.boolean-true-v` here,
+        // since Firefox disagrees with Chrome/Safari. See comment below.
         expect(getSpellcheckPropertyValue(elm, 'div.empty-v')).toBe(true);
         expect(getSpellcheckPropertyValue(elm, 'div.false-v')).toBe(false);
         expect(getSpellcheckPropertyValue(elm, 'div.false-case-insensitive-v')).toBe(false);
