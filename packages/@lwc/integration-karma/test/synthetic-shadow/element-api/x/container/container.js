@@ -11,6 +11,6 @@ export default class Container extends LightningElement {
         createdDiv.appendChild(cmp);
 
         // this.template.insertBefore(createdDiv, lastParagraph);
-        templateDiv.insertBefore(createdDiv);
+        templateDiv.insertBefore(createdDiv, undefined);
     }
 }
