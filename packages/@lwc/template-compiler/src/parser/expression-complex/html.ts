@@ -231,10 +231,6 @@ interface TemplateHtmlParserOptions extends ParserOptions<DefaultTreeAdapterMap>
     preparsedJsExpressions: PreparsedExpressionMap;
 }
 
-function isTemplateExpressionTextNodeValue(value: string | undefined): boolean {
-    return value?.[0] === '{';
-}
-
 function isTemplateElement(node: ParentNode): node is Template {
     return node.nodeName === 'template';
 }
@@ -243,8 +239,19 @@ function isTextNode(node: ChildNode | undefined): node is TextNode {
     return node?.nodeName === '#text';
 }
 
-function isTemplateExpressionTextNode(node: ChildNode | undefined): boolean {
-    return isTextNode(node) && isTemplateExpressionTextNodeValue(node.value);
+function isTemplateExpressionTextNode(node: ChildNode | undefined, html: string): boolean {
+    return (
+        isTextNode(node) &&
+        isTemplateExpressionTextNodeValue(node.value, node.sourceCodeLocation!.startOffset, html)
+    );
+}
+
+function isTemplateExpressionTextNodeValue(
+    value: string,
+    startOffset: number,
+    html: string
+): boolean {
+    return value.startsWith('{') && html.startsWith('{', startOffset);
 }
 
 /**
@@ -274,11 +281,12 @@ class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
     _insertCharacters(token: Token.CharacterToken) {
         const parentNode = this.openElements.current;
         const previousPeer = parentNode.childNodes.at(-1);
+        const html = this.tokenizer.preprocessor.html;
         if (
             // If we're not dealing with a template expression...
-            !isTemplateExpressionTextNodeValue(token.chars) &&
+            !isTemplateExpressionTextNodeValue(token.chars, token.location!.startOffset, html) &&
             // ... and the previous node wasn't a text-node-template-expression...
-            !isTemplateExpressionTextNode(previousPeer)
+            !isTemplateExpressionTextNode(previousPeer, html)
         ) {
             // ... concatenate the provided characters with the previous token's characters.
             return super._insertCharacters(token);
