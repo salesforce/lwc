@@ -1,10 +1,10 @@
 <template>
     <template if:false={ssr}>
-        <!-- `spellcheck` disables static content optimization -->
-        <p style="background-color: red; border-color: red !important;" spellcheck="true">txt</p>
+        <!-- `lwc:spread` disables static content optimization -->
+        <p style="background-color: red; border-color: red !important;" lwc:spread={fake}>txt</p>
     </template>
     <template if:true={ssr}>
-        <!-- onclick disables static content optimization -->
-        <p style="background-color: red; border-color: red;" spellcheck="true">txt</p>
+        <!-- `lwc:spread` disables static content optimization -->
+        <p style="background-color: red; border-color: red;" lwc:spread={fake}>txt</p>
     </template>
 </template>
