@@ -1,0 +1,134 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 87,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 76,
+                "end": 87
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 23,
+                    "start": 15,
+                    "end": 33,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 8,
+                        "start": 15,
+                        "end": 18
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 19,
+                        "endLine": 2,
+                        "endColumn": 23,
+                        "start": 29,
+                        "end": 33
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "foo&amp;bar",
+                        "value": {
+                            "type": "Literal",
+                            "value": "foo&bar"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 19,
+                            "start": 18,
+                            "end": 29
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 42,
+                    "start": 38,
+                    "end": 75,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 8,
+                        "start": 38,
+                        "end": 41
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 38,
+                        "endLine": 3,
+                        "endColumn": 42,
+                        "start": 71,
+                        "end": 75
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "const &#123; foo &#125; = bar;",
+                        "value": {
+                            "type": "Literal",
+                            "value": "const { foo } = bar;"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 8,
+                            "endLine": 3,
+                            "endColumn": 38,
+                            "start": 41,
+                            "end": 71
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
