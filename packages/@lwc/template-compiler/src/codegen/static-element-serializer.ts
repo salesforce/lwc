@@ -62,6 +62,16 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
                 v += '${0}';
             }
         }
+
+        // `spellcheck` string values are specially handled to massage them into booleans.
+        // For backwards compat with non-static-optimized templates, we also treat any non-`"false"`
+        // value other than the valueless format (e.g. `<div spellcheck>`) as `"true"`,
+        // even though per MDN, the empty string and `"true"` are equivalent:
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/spellcheck
+        if (name === 'spellcheck' && typeof v === 'string') {
+            v = String(v.toLowerCase() !== 'false');
+        }
+
         if (typeof v === 'string') {
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
