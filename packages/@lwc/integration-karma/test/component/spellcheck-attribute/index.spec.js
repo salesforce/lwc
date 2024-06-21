@@ -82,24 +82,23 @@ describe('dynamically updating the spellcheck attribute', () => {
 
         await Promise.resolve();
         expect(getSpellcheckValue(elm, '.dynamic')).toBe(null);
-        expect(getSpellcheckPropertyValue(elm, '.dynamic')).toBe(true);
     });
 
     const valuesAndExpectations = [
-        ['', '', true],
-        [null, null, true],
-        [undefined, null, true],
-        [false, 'false', false],
-        ['false', 'false', false],
-        ['fAlSe', 'fAlSe', false],
-        [true, 'true', true],
-        ['true', 'true', true],
-        [0, '0', true],
-        ['0', '0', true],
-        ['truthy', 'truthy', true],
+        ['', ''],
+        [null, null],
+        [undefined, null],
+        [false, 'false'],
+        ['false', 'false'],
+        ['fAlSe', 'fAlSe'],
+        [true, 'true'],
+        ['true', 'true'],
+        [0, '0'],
+        ['0', '0'],
+        ['truthy', 'truthy'],
     ];
 
-    for (const [setValue, expectedAttrValue, expectedPropValue] of valuesAndExpectations) {
+    for (const [setValue, expectedAttrValue] of valuesAndExpectations) {
         it(`sets the value to ${JSON.stringify(setValue)}`, async () => {
             const elm = createElement('x-dynamic', { is: Dynamic });
             document.body.appendChild(elm);
@@ -108,7 +107,9 @@ describe('dynamically updating the spellcheck attribute', () => {
 
             await Promise.resolve();
             expect(getSpellcheckValue(elm, '.dynamic')).toBe(expectedAttrValue);
-            expect(getSpellcheckPropertyValue(elm, '.dynamic')).toBe(expectedPropValue);
+            // We explicitly don't test the expected prop value here, because Firefox (as of v126 anyway) disagrees
+            // with Chrome/Safari on this reflection, and sometimes returns false when the others return true,
+            // so it's kind of pointless to test.
         });
     }
 });
