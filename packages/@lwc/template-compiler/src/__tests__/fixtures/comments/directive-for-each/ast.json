@@ -200,8 +200,22 @@
                                         "raw": "{color}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 6,
+                                            "start": 152,
+                                            "end": 157,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 5,
+                                                    "column": 29
+                                                },
+                                                "end": {
+                                                    "line": 5,
+                                                    "column": 34
+                                                }
+                                            },
+                                            "range": [
+                                                152,
+                                                157
+                                            ],
                                             "name": "color",
                                             "location": {
                                                 "startLine": 5,

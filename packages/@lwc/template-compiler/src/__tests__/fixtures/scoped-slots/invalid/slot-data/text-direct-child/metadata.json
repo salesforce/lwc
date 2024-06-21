@@ -5,10 +5,10 @@
             "message": "LWC1177: <template> tag with lwc:slot-data directive cannot contain a comment or text node as a direct child.",
             "level": 1,
             "location": {
-                "line": 3,
-                "column": 40,
-                "start": 63,
-                "length": 35
+                "line": 4,
+                "column": 13,
+                "start": 76,
+                "length": 22
             }
         },
         {

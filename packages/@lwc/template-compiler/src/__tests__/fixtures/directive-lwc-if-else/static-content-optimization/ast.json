@@ -216,9 +216,9 @@
                                     "startLine": 5,
                                     "startColumn": 15,
                                     "endLine": 5,
-                                    "endColumn": 38,
+                                    "endColumn": 28,
                                     "start": 153,
-                                    "end": 176
+                                    "end": 166
                                 }
                             },
                             {
@@ -226,24 +226,38 @@
                                 "raw": "{insideIf}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 9,
+                                    "start": 167,
+                                    "end": 175,
+                                    "loc": {
+                                        "start": {
+                                            "line": 5,
+                                            "column": 28
+                                        },
+                                        "end": {
+                                            "line": 5,
+                                            "column": 36
+                                        }
+                                    },
+                                    "range": [
+                                        167,
+                                        175
+                                    ],
                                     "name": "insideIf",
                                     "location": {
                                         "startLine": 5,
-                                        "startColumn": 15,
+                                        "startColumn": 28,
                                         "endLine": 5,
                                         "endColumn": 38,
-                                        "start": 153,
+                                        "start": 166,
                                         "end": 176
                                     }
                                 },
                                 "location": {
                                     "startLine": 5,
-                                    "startColumn": 15,
+                                    "startColumn": 28,
                                     "endLine": 5,
                                     "endColumn": 38,
-                                    "start": 153,
+                                    "start": 166,
                                     "end": 176
                                 }
                             }
@@ -439,9 +453,9 @@
                                         "startLine": 10,
                                         "startColumn": 15,
                                         "endLine": 10,
-                                        "endColumn": 42,
+                                        "endColumn": 28,
                                         "start": 358,
-                                        "end": 385
+                                        "end": 371
                                     }
                                 },
                                 {
@@ -449,24 +463,38 @@
                                     "raw": "{insideElseIf}",
                                     "value": {
                                         "type": "Identifier",
-                                        "start": 1,
-                                        "end": 13,
+                                        "start": 372,
+                                        "end": 384,
+                                        "loc": {
+                                            "start": {
+                                                "line": 10,
+                                                "column": 28
+                                            },
+                                            "end": {
+                                                "line": 10,
+                                                "column": 40
+                                            }
+                                        },
+                                        "range": [
+                                            372,
+                                            384
+                                        ],
                                         "name": "insideElseIf",
                                         "location": {
                                             "startLine": 10,
-                                            "startColumn": 15,
+                                            "startColumn": 28,
                                             "endLine": 10,
                                             "endColumn": 42,
-                                            "start": 358,
+                                            "start": 371,
                                             "end": 385
                                         }
                                     },
                                     "location": {
                                         "startLine": 10,
-                                        "startColumn": 15,
+                                        "startColumn": 28,
                                         "endLine": 10,
                                         "endColumn": 42,
-                                        "start": 358,
+                                        "start": 371,
                                         "end": 385
                                     }
                                 }
@@ -648,9 +676,9 @@
                                             "startLine": 15,
                                             "startColumn": 15,
                                             "endLine": 15,
-                                            "endColumn": 40,
+                                            "endColumn": 28,
                                             "start": 548,
-                                            "end": 573
+                                            "end": 561
                                         }
                                     },
                                     {
@@ -658,24 +686,38 @@
                                         "raw": "{insideElse}",
                                         "value": {
                                             "type": "Identifier",
-                                            "start": 1,
-                                            "end": 11,
+                                            "start": 562,
+                                            "end": 572,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 15,
+                                                    "column": 28
+                                                },
+                                                "end": {
+                                                    "line": 15,
+                                                    "column": 38
+                                                }
+                                            },
+                                            "range": [
+                                                562,
+                                                572
+                                            ],
                                             "name": "insideElse",
                                             "location": {
                                                 "startLine": 15,
-                                                "startColumn": 15,
+                                                "startColumn": 28,
                                                 "endLine": 15,
                                                 "endColumn": 40,
-                                                "start": 548,
+                                                "start": 561,
                                                 "end": 573
                                             }
                                         },
                                         "location": {
                                             "startLine": 15,
-                                            "startColumn": 15,
+                                            "startColumn": 28,
                                             "endLine": 15,
                                             "endColumn": 40,
-                                            "start": 548,
+                                            "start": 561,
                                             "end": 573
                                         }
                                     }

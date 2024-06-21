@@ -223,9 +223,9 @@
                                                     "startLine": 5,
                                                     "startColumn": 30,
                                                     "endLine": 5,
-                                                    "endColumn": 37,
+                                                    "endColumn": 31,
                                                     "start": 145,
-                                                    "end": 152
+                                                    "end": 146
                                                 }
                                             },
                                             {
@@ -233,24 +233,38 @@
                                                 "raw": "{item}",
                                                 "value": {
                                                     "type": "Identifier",
-                                                    "start": 1,
-                                                    "end": 5,
+                                                    "start": 147,
+                                                    "end": 151,
+                                                    "loc": {
+                                                        "start": {
+                                                            "line": 5,
+                                                            "column": 31
+                                                        },
+                                                        "end": {
+                                                            "line": 5,
+                                                            "column": 35
+                                                        }
+                                                    },
+                                                    "range": [
+                                                        147,
+                                                        151
+                                                    ],
                                                     "name": "item",
                                                     "location": {
                                                         "startLine": 5,
-                                                        "startColumn": 30,
+                                                        "startColumn": 31,
                                                         "endLine": 5,
                                                         "endColumn": 37,
-                                                        "start": 145,
+                                                        "start": 146,
                                                         "end": 152
                                                     }
                                                 },
                                                 "location": {
                                                     "startLine": 5,
-                                                    "startColumn": 30,
+                                                    "startColumn": 31,
                                                     "endLine": 5,
                                                     "endColumn": 37,
-                                                    "start": 145,
+                                                    "start": 146,
                                                     "end": 152
                                                 }
                                             }

@@ -152,25 +152,39 @@
                         "raw": "{foo}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 4,
+                            "start": 68,
+                            "end": 71,
+                            "loc": {
+                                "start": {
+                                    "line": 4,
+                                    "column": 9
+                                },
+                                "end": {
+                                    "line": 4,
+                                    "column": 12
+                                }
+                            },
+                            "range": [
+                                68,
+                                71
+                            ],
                             "name": "foo",
                             "location": {
-                                "startLine": 3,
-                                "startColumn": 34,
-                                "endLine": 5,
-                                "endColumn": 9,
-                                "start": 58,
-                                "end": 81
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 14,
+                                "start": 67,
+                                "end": 72
                             }
                         },
                         "location": {
-                            "startLine": 3,
-                            "startColumn": 34,
-                            "endLine": 5,
-                            "endColumn": 9,
-                            "start": 58,
-                            "end": 81
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 14,
+                            "start": 67,
+                            "end": 72
                         }
                     },
                     {

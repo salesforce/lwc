@@ -98,8 +98,22 @@
                                 "raw": "{soloGrandChild}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 15,
+                                    "start": 36,
+                                    "end": 50,
+                                    "loc": {
+                                        "start": {
+                                            "line": 3,
+                                            "column": 14
+                                        },
+                                        "end": {
+                                            "line": 3,
+                                            "column": 28
+                                        }
+                                    },
+                                    "range": [
+                                        36,
+                                        50
+                                    ],
                                     "name": "soloGrandChild",
                                     "location": {
                                         "startLine": 3,
@@ -207,25 +221,39 @@
                                 "raw": "{grandChildFirstSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 23,
+                                    "start": 148,
+                                    "end": 170,
+                                    "loc": {
+                                        "start": {
+                                            "line": 8,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 8,
+                                            "column": 35
+                                        }
+                                    },
+                                    "range": [
+                                        148,
+                                        170
+                                    ],
                                     "name": "grandChildFirstSibling",
                                     "location": {
-                                        "startLine": 7,
-                                        "startColumn": 42,
-                                        "endLine": 9,
-                                        "endColumn": 13,
-                                        "start": 134,
-                                        "end": 184
+                                        "startLine": 8,
+                                        "startColumn": 13,
+                                        "endLine": 8,
+                                        "endColumn": 37,
+                                        "start": 147,
+                                        "end": 171
                                     }
                                 },
                                 "location": {
-                                    "startLine": 7,
-                                    "startColumn": 42,
-                                    "endLine": 9,
-                                    "endColumn": 13,
-                                    "start": 134,
-                                    "end": 184
+                                    "startLine": 8,
+                                    "startColumn": 13,
+                                    "endLine": 8,
+                                    "endColumn": 37,
+                                    "start": 147,
+                                    "end": 171
                                 }
                             },
                             {
@@ -383,25 +411,39 @@
                                 "raw": "{grandChildSecondSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 24,
+                                    "start": 318,
+                                    "end": 341,
+                                    "loc": {
+                                        "start": {
+                                            "line": 14,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 14,
+                                            "column": 36
+                                        }
+                                    },
+                                    "range": [
+                                        318,
+                                        341
+                                    ],
                                     "name": "grandChildSecondSibling",
                                     "location": {
-                                        "startLine": 13,
-                                        "startColumn": 31,
-                                        "endLine": 15,
-                                        "endColumn": 13,
-                                        "start": 304,
-                                        "end": 355
+                                        "startLine": 14,
+                                        "startColumn": 13,
+                                        "endLine": 14,
+                                        "endColumn": 38,
+                                        "start": 317,
+                                        "end": 342
                                     }
                                 },
                                 "location": {
-                                    "startLine": 13,
-                                    "startColumn": 31,
-                                    "endLine": 15,
-                                    "endColumn": 13,
-                                    "start": 304,
-                                    "end": 355
+                                    "startLine": 14,
+                                    "startColumn": 13,
+                                    "endLine": 14,
+                                    "endColumn": 38,
+                                    "start": 317,
+                                    "end": 342
                                 }
                             },
                             {
@@ -610,25 +652,39 @@
                                 "raw": "{grandChildLastSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 22,
+                                    "start": 520,
+                                    "end": 541,
+                                    "loc": {
+                                        "start": {
+                                            "line": 21,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 21,
+                                            "column": 34
+                                        }
+                                    },
+                                    "range": [
+                                        520,
+                                        541
+                                    ],
                                     "name": "grandChildLastSibling",
                                     "location": {
-                                        "startLine": 20,
-                                        "startColumn": 31,
-                                        "endLine": 22,
-                                        "endColumn": 9,
-                                        "start": 506,
-                                        "end": 551
+                                        "startLine": 21,
+                                        "startColumn": 13,
+                                        "endLine": 21,
+                                        "endColumn": 36,
+                                        "start": 519,
+                                        "end": 542
                                     }
                                 },
                                 "location": {
-                                    "startLine": 20,
-                                    "startColumn": 31,
-                                    "endLine": 22,
-                                    "endColumn": 9,
-                                    "start": 506,
-                                    "end": 551
+                                    "startLine": 21,
+                                    "startColumn": 13,
+                                    "endLine": 21,
+                                    "endColumn": 36,
+                                    "start": 519,
+                                    "end": 542
                                 }
                             }
                         ]
@@ -689,10 +745,10 @@
                                 "location": {
                                     "startLine": 24,
                                     "startColumn": 42,
-                                    "endLine": 26,
-                                    "endColumn": 9,
+                                    "endLine": 25,
+                                    "endColumn": 29,
                                     "start": 613,
-                                    "end": 665
+                                    "end": 642
                                 }
                             },
                             {
@@ -700,25 +756,39 @@
                                 "raw": "{string}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 7,
+                                    "start": 643,
+                                    "end": 649,
+                                    "loc": {
+                                        "start": {
+                                            "line": 25,
+                                            "column": 29
+                                        },
+                                        "end": {
+                                            "line": 25,
+                                            "column": 35
+                                        }
+                                    },
+                                    "range": [
+                                        643,
+                                        649
+                                    ],
                                     "name": "string",
                                     "location": {
-                                        "startLine": 24,
-                                        "startColumn": 42,
-                                        "endLine": 26,
-                                        "endColumn": 9,
-                                        "start": 613,
-                                        "end": 665
+                                        "startLine": 25,
+                                        "startColumn": 29,
+                                        "endLine": 25,
+                                        "endColumn": 37,
+                                        "start": 642,
+                                        "end": 650
                                     }
                                 },
                                 "location": {
-                                    "startLine": 24,
-                                    "startColumn": 42,
-                                    "endLine": 26,
-                                    "endColumn": 9,
-                                    "start": 613,
-                                    "end": 665
+                                    "startLine": 25,
+                                    "startColumn": 29,
+                                    "endLine": 25,
+                                    "endColumn": 37,
+                                    "start": 642,
+                                    "end": 650
                                 }
                             },
                             {
@@ -729,11 +799,11 @@
                                     "value": " value"
                                 },
                                 "location": {
-                                    "startLine": 24,
-                                    "startColumn": 42,
+                                    "startLine": 25,
+                                    "startColumn": 37,
                                     "endLine": 26,
                                     "endColumn": 9,
-                                    "start": 613,
+                                    "start": 650,
                                     "end": 665
                                 }
                             }
