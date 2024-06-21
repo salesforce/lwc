@@ -329,8 +329,8 @@ export default class CodeGen {
         return classExpression;
     }
 
-    genNormalizeClassName(className: t.Expression): t.CallExpression {
-        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className]);
+    genNormalizeClassName(className: t.Expression): t.CallExpression | t.ConditionalExpression {
+        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className], className);
     }
 
     /**
@@ -491,7 +491,17 @@ export default class CodeGen {
     private _renderApiCall(
         primitive: RenderPrimitiveDefinition,
         params: t.Expression[]
-    ): t.CallExpression {
+    ): t.CallExpression;
+    private _renderApiCall(
+        primitive: RenderPrimitiveDefinition,
+        params: t.Expression[],
+        fallbackForCompilerEngineVersionMismatch: t.Expression
+    ): t.ConditionalExpression;
+    private _renderApiCall(
+        primitive: RenderPrimitiveDefinition,
+        params: t.Expression[],
+        fallbackForCompilerEngineVersionMismatch?: t.Expression
+    ): t.CallExpression | t.ConditionalExpression {
         const { name, alias } = primitive;
 
         let identifier = this.usedApis[name];
@@ -499,7 +509,17 @@ export default class CodeGen {
             identifier = this.usedApis[name] = t.identifier(alias);
         }
 
-        return t.callExpression(identifier, params);
+        const callExpression = t.callExpression(identifier, params);
+
+        // Check if the property actually exists before calling, to allow
+        // for older engines to work with newer compilers
+        return fallbackForCompilerEngineVersionMismatch
+            ? t.conditionalExpression(
+                  identifier,
+                  callExpression,
+                  fallbackForCompilerEngineVersionMismatch
+              )
+            : callExpression;
     }
 
     beginScope(): void {

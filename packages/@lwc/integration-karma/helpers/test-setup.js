@@ -61,6 +61,15 @@ function patchConsole() {
         var originalMethod = console[method];
         // eslint-disable-next-line no-console
         console[method] = function () {
+            // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
+            if (
+                process.env.FORCE_LWC_V6_ENGINE_FOR_TEST &&
+                arguments[0] &&
+                arguments[0].includes('template was compiled with v6')
+            ) {
+                // ignore this warning; this is expected
+                return;
+            }
             consoleCallCount++;
             return originalMethod.apply(this, arguments);
         };
