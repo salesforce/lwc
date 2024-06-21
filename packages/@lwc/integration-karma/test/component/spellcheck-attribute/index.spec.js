@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import Container from 'x/container';
+import Dynamic from 'x/dynamic';
 
 function getSpellcheckValue(container, selector) {
     const elm = container.shadowRoot.querySelector(selector);
@@ -72,4 +73,42 @@ describe('setting static values on non custom elements', () => {
         expect(getSpellcheckPropertyValue(elm, 'div.falsy-v')).toBe(true);
         expect(getSpellcheckPropertyValue(elm, 'div.truthy-v')).toBe(true);
     });
+});
+
+describe('dynamically updating the spellcheck attribute', () => {
+    it('sets the initial value', async () => {
+        const elm = createElement('x-dynamic', { is: Dynamic });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+        expect(getSpellcheckValue(elm, '.dynamic')).toBe(null);
+        expect(getSpellcheckPropertyValue(elm, '.dynamic')).toBe(true);
+    });
+
+    const valuesAndExpectations = [
+        ['', '', true],
+        [null, null, true],
+        [undefined, null, true],
+        [false, 'false', false],
+        ['false', 'false', false],
+        ['fAlSe', 'fAlSe', false],
+        [true, 'true', true],
+        ['true', 'true', true],
+        [0, '0', true],
+        ['0', '0', true],
+        ['truthy', 'truthy', true],
+    ];
+
+    for (const [setValue, expectedAttrValue, expectedPropValue] of valuesAndExpectations) {
+        it(`sets the value to ${JSON.stringify(setValue)}`, async () => {
+            const elm = createElement('x-dynamic', { is: Dynamic });
+            document.body.appendChild(elm);
+
+            elm.theSpellcheck = setValue;
+
+            await Promise.resolve();
+            expect(getSpellcheckValue(elm, '.dynamic')).toBe(expectedAttrValue);
+            expect(getSpellcheckPropertyValue(elm, '.dynamic')).toBe(expectedPropValue);
+        });
+    }
 });

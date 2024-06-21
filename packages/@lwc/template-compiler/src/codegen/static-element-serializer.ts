@@ -68,7 +68,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         // value other than the valueless format (e.g. `<div spellcheck>`) as `"true"`,
         // even though per MDN, the empty string and `"true"` are equivalent:
         // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/spellcheck
-        if (name === 'spellcheck' && typeof v === 'string') {
+        if (name === 'spellcheck' && typeof v === 'string' && !hasExpression) {
             v = String(v.toLowerCase() !== 'false');
         }
 
