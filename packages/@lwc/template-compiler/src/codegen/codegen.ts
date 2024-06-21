@@ -513,6 +513,7 @@ export default class CodeGen {
 
         // Check if the property actually exists before calling, to allow
         // for older engines to work with newer compilers
+        // TODO [#4313]: remove temporary logic to support v6 compiler + v7 engine
         return fallbackForCompilerEngineVersionMismatch
             ? t.conditionalExpression(
                   identifier,
