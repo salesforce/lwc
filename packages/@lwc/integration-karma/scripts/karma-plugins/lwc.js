@@ -13,7 +13,7 @@
 
 const path = require('path');
 const { rollup } = require('rollup');
-const lwcRollupPlugin = require('@lwc/rollup-plugin');
+const { FORCE_LWC_V6_COMPILER_FOR_TEST } = require('../shared/options.js');
 
 const {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
@@ -50,6 +50,11 @@ function createPreprocessor(config, emitter, logger) {
         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
 
         const createRollupPlugin = (options) => {
+            // TODO [#4313]: remove temporary logic to support v6 compiler + v7 engine
+            const lwcRollupPlugin = FORCE_LWC_V6_COMPILER_FOR_TEST
+                ? require('@lwc/rollup-plugin-v6')
+                : require('@lwc/rollup-plugin');
+
             return lwcRollupPlugin({
                 // Sourcemaps don't work with Istanbul coverage
                 sourcemap: !process.env.COVERAGE,

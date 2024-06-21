@@ -5,7 +5,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { ncls: api_normalize_class_name, h: api_element } = $api;
   return [
     api_element("div", {
-      className: api_normalize_class_name($cmp.computed),
+      className: api_normalize_class_name
+        ? api_normalize_class_name($cmp.computed)
+        : $cmp.computed,
       key: 0,
     }),
   ];

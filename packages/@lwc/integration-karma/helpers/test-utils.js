@@ -576,9 +576,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             process.env.API_VERSION >= 61 &&
             !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         USE_LIGHT_DOM_SLOT_FORWARDING: process.env.API_VERSION >= 61,
-        ENABLE_THIS_DOT_HOST_ELEMENT: process.env.API_VERSION >= 62,
-        ENABLE_THIS_DOT_STYLE: process.env.API_VERSION >= 62,
-        TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
+        // TODO [#4313]: remove temporary logic to support v6 compiler + v7 engine
+        ENABLE_THIS_DOT_HOST_ELEMENT:
+            process.env.API_VERSION >= 62 && !process.env.FORCE_LWC_V6_COMPILER_FOR_TEST,
+        ENABLE_THIS_DOT_STYLE:
+            process.env.API_VERSION >= 62 && !process.env.FORCE_LWC_V6_COMPILER_FOR_TEST,
+        TEMPLATE_CLASS_NAME_OBJECT_BINDING:
+            process.env.API_VERSION >= 62 && !process.env.FORCE_LWC_V6_COMPILER_FOR_TEST,
     };
 
     return {

@@ -21,6 +21,7 @@
         "@lwc/engine-dom": "7.0.0",
         "@lwc/engine-server": "7.0.0",
         "@lwc/rollup-plugin": "7.0.0",
+        "@lwc/rollup-plugin-v6": "npm:@lwc/rollup-plugin@6.4.5",
         "@lwc/synthetic-shadow": "7.0.0",
         "chokidar": "^3.6.0",
         "istanbul-lib-coverage": "^3.2.2",
