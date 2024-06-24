@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./error-computed-attribute.css";
-import _implicitScopedStylesheets from "./error-computed-attribute.scoped.css?scoped=true";
+import _implicitStylesheets from "./computed-attribute.css";
+import _implicitScopedStylesheets from "./computed-attribute.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<section${3}><p${"c1"}${2}></p></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -23,9 +23,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-5b60b0bk9p0";
-tmpl.legacyStylesheetToken =
-  "x-error-computed-attribute_error-computed-attribute";
+tmpl.stylesheetToken = "lwc-ih359ggehf";
+tmpl.legacyStylesheetToken = "x-computed-attribute_computed-attribute";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
