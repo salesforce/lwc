@@ -139,6 +139,8 @@ jobs:
             - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+            - run: FORCE_LWC_V6_ENGINE_FOR_TEST=1 yarn sauce:ci
+            - run: FORCE_LWC_V6_ENGINE_FOR_TEST=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: yarn hydration:sauce:ci

@@ -25,12 +25,16 @@ const BASE_DIR = path.resolve(__dirname, '../../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
 const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
-const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
+const CURRENT_LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
+const LWC_V6_ENGINE = require.resolve('@lwc/engine-dom-v6/dist/index.js');
 const WIRE_SERVICE = require.resolve('@lwc/wire-service/dist/index.js');
 const ARIA_REFLECTION = require.resolve('@lwc/aria-reflection/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
+
+// TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
+const LWC_ENGINE = process.env.FORCE_LWC_V6_ENGINE_FOR_TEST ? LWC_V6_ENGINE : CURRENT_LWC_ENGINE;
 
 const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, WIRE_SERVICE, ARIA_REFLECTION];
 
