@@ -66,6 +66,9 @@ function monkeyPatchDomAPIs() {
             return callNodeSlot(appendedNode, ConnectingSlot);
         },
         insertBefore(newChild, referenceNode) {
+            if (arguments.length < 2) {
+                throw new TypeError("Failed to execute 'insertBefore' on 'Node': 2 arguments required, but only 1 present.");
+            }
             const insertedNode = insertBefore.call(this, newChild, referenceNode);
             return callNodeSlot(insertedNode, ConnectingSlot);
         },
