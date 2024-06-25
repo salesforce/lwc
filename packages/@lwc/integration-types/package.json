@@ -18,6 +18,6 @@
         "@rollup/plugin-typescript": "^11.1.6",
         "rollup": "^4.17.2",
         "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-serve": "^1.1.1"
+        "rollup-plugin-serve": "^3.0.0"
     }
 }
