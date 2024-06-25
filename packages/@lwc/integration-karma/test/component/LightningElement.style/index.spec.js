@@ -39,9 +39,18 @@ if (ENABLE_THIS_DOT_STYLE) {
 
         expect(elm.style.color).toEqual('');
         let thisDotStyle;
-        expect(() => {
+
+        const callback = () => {
             thisDotStyle = elm.thisDotStyle;
-        }).toLogWarningDev(/only supported in API version 62 and above/);
+        };
+
+        if (process.env.FORCE_LWC_V6_ENGINE_FOR_TEST) {
+            // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
+            callback(); // no warning
+        } else {
+            expect(callback).toLogWarningDev(/only supported in API version 62 and above/);
+        }
+
         expect(thisDotStyle).toBeUndefined();
     });
 }

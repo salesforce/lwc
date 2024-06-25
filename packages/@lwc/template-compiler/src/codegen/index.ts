@@ -420,6 +420,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedId(attrValue.value);
             }
 
+            // `spellcheck` string values are specially handled to massage them into booleans.
             if (attrName === 'spellcheck') {
                 return t.literal(attrValue.value.toLowerCase() !== 'false');
             }
