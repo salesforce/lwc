@@ -21,10 +21,19 @@ it('should throw if a component tries to use a template that is not registered',
         document.body.appendChild(elm);
     };
 
-    expect(func).toThrowCallbackReactionError(
-        TypeError,
-        /Invalid template returned by the render\(\) method on x-test/
-    );
+    // This will throw synchronously vs asynchronously depending on native vs synthetic lifecycle,
+    // unless we are running the v6 engine – then it will always throw synchronously because the component has no API
+    // version, and thus defaults to the oldest (i.e. synthetic custom element lifecycle events).
+    // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
+    if (process.env.FORCE_LWC_V6_ENGINE_FOR_TEST) {
+        expect(func).toThrowError(TypeError);
+        expect(func).toThrowError(/Invalid template returned by the render\(\) method on x-test/);
+    } else {
+        expect(func).toThrowCallbackReactionError(
+            TypeError,
+            /Invalid template returned by the render\(\) method on x-test/
+        );
+    }
 });
 
 it('should not throw if the template is registered first', () => {
