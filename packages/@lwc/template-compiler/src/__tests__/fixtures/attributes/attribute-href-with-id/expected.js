@@ -1,6 +1,7 @@
 import _implicitStylesheets from "./attribute-href-with-id.css";
 import _implicitScopedStylesheets from "./attribute-href-with-id.scoped.css?scoped=true";
-import { freezeTemplate, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<h1${"a0:id"}${3}>Don&#x27;t forget your passport!</h1>`;
 const stc0 = {
   key: 1,
 };
@@ -10,6 +11,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     gid: api_scoped_id,
+    sp: api_static_part,
+    st: api_static_fragment,
   } = $api;
   return [
     api_element(
@@ -36,16 +39,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 3,
       }),
     ]),
-    api_element(
-      "h1",
-      {
-        attrs: {
-          id: api_scoped_id("kansai-airport"),
+    api_static_fragment($fragment1, 5, [
+      api_static_part(
+        0,
+        {
+          attrs: {
+            id: api_scoped_id("kansai-airport"),
+          },
         },
-        key: 4,
-      },
-      [api_text("Don't forget your passport!")]
-    ),
+        null
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

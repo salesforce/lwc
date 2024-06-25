@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import { isIdReferencingAttribute } from '../parser/attribute';
 import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
-import { isElement, isComment, isExpression, isText } from '../shared/ast';
+import { isElement, isComment, isExpression, isText, isStringLiteral } from '../shared/ast';
 import { transformStaticChildren, isContiguousText, hasDynamicText } from './static-element';
 import type CodeGen from './codegen';
 
@@ -45,10 +46,12 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         name,
         value,
         hasExpression,
+        isIdOrIdRef,
     }: {
         name: string;
         value: string | boolean;
         hasExpression?: boolean;
+        isIdOrIdRef?: boolean;
     }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
@@ -73,9 +76,16 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         }
 
         if (typeof v === 'string') {
+            // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
+            // Skip serializing here and handle it as if it were a dynamic attribute instead.
+            // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
+            // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
+            // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
+            const needsPlaceholder = hasExpression || isIdOrIdRef;
+
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
-            attrs.push(hasExpression ? `\${"${v}"}` : ` ${name}="${htmlEscape(v, true)}"`);
+            attrs.push(needsPlaceholder ? `\${"${v}"}` : ` ${name}="${htmlEscape(v, true)}"`);
         } else {
             attrs.push(` ${name}`);
         }
@@ -83,13 +93,24 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
     element.attributes
         .map((attr) => {
-            const hasExpression = isExpression(attr.value);
+            const { name, value } = attr;
+
+            const hasExpression = isExpression(value);
+            // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
+            // Note that for backwards compat we only consider non-booleans to be dynamic IDs/IDRefs
+            // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
+            const isIdOrIdRef =
+                (name === 'id' || isIdReferencingAttribute(name)) &&
+                (isExpression(value) || isStringLiteral(value));
+
             return {
                 hasExpression,
-                name: attr.name,
-                value: hasExpression
-                    ? codeGen.getStaticExpressionToken(attr)
-                    : (attr.value as Literal).value,
+                isIdOrIdRef,
+                name,
+                value:
+                    hasExpression || isIdOrIdRef
+                        ? codeGen.getStaticExpressionToken(attr)
+                        : (value as Literal).value,
             };
         })
         .forEach(collector);

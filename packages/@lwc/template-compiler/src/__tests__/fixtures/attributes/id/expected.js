@@ -4,15 +4,15 @@ import _xSubject from "x/subject";
 import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<input${"a0:id"}${3}>`;
-const $fragment2 = parseFragment`<p${"a0:id"}${3}>description text</p>`;
-const $fragment3 = parseFragment`<input${"a0:aria-describedby"}${3}>`;
+const $fragment1 = parseFragment`<label${"a0:for"}${3}>label text</label>`;
+const $fragment2 = parseFragment`<input${"a0:id"}${3}>`;
+const $fragment3 = parseFragment`<input${"a0:id"}${3}>`;
+const $fragment4 = parseFragment`<p${"a0:id"}${3}>description text</p>`;
+const $fragment5 = parseFragment`<input${"a0:aria-describedby"}${3}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
     c: api_custom_element,
-    t: api_text,
-    h: api_element,
     sp: api_static_part,
     st: api_static_fragment,
     k: api_key,
@@ -52,23 +52,29 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 4,
     }),
-    api_element(
-      "label",
-      {
-        attrs: {
-          for: api_scoped_id("boof"),
+    api_static_fragment($fragment1, 6, [
+      api_static_part(
+        0,
+        {
+          attrs: {
+            for: api_scoped_id("boof"),
+          },
         },
-        key: 5,
-      },
-      [api_text("label text")]
-    ),
-    api_element("input", {
-      attrs: {
-        id: api_scoped_id("boof"),
-      },
-      key: 6,
-    }),
-    api_static_fragment($fragment1, 8, [
+        null
+      ),
+    ]),
+    api_static_fragment($fragment2, 8, [
+      api_static_part(
+        0,
+        {
+          attrs: {
+            id: api_scoped_id("boof"),
+          },
+        },
+        null
+      ),
+    ]),
+    api_static_fragment($fragment3, 10, [
       api_static_part(
         0,
         {
@@ -81,7 +87,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ]),
     api_iterator($cmp.things, function (thing) {
       return [
-        api_static_fragment($fragment2, api_key(10, thing.key), [
+        api_static_fragment($fragment4, api_key(12, thing.key), [
           api_static_part(
             0,
             {
@@ -92,7 +98,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             null
           ),
         ]),
-        api_static_fragment($fragment3, api_key(12, thing.key), [
+        api_static_fragment($fragment5, api_key(14, thing.key), [
           api_static_part(
             0,
             {
