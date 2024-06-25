@@ -1,9 +1,5 @@
 import { createElement } from 'lwc';
-import {
-    extractDataIds,
-    USE_LIGHT_DOM_SLOT_FORWARDING,
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-} from 'test-utils';
+import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
 
 import SlotForwarding from 'x/slotForwarding';
 import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
@@ -165,7 +161,7 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
 
             // Synthetic custom element lifecycle does not fire disconnectedCallback correctly
             expect(window.timingBuffer).toEqual(
-                ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                     ? [
                           '10:connectedCallback',
                           '11:connectedCallback',

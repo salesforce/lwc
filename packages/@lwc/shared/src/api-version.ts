@@ -92,11 +92,6 @@ export const enum APIFeature {
      */
     USE_LIGHT_DOM_SLOT_FORWARDING,
     /**
-     * If enabled, we use the native custom element lifecycle events: connectedCallback, disconnectedCallback
-     * rather than synthetic events.
-     */
-    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-    /**
      * If enabled, allows usage of the `attachInternals` and `ElementInternals` APIs, as well as
      * Form-Associated Custom Elements (FACE).
      */
@@ -135,7 +130,6 @@ export function isAPIFeatureEnabled(
         case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
             return apiVersion >= APIVersion.V60_248_SPRING_24;
         case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
-        case APIFeature.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
         case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
             return apiVersion >= APIVersion.V61_250_SUMMER_24;
         case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:

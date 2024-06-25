@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
 import Parent from 'x/parent';
 import LightParent from 'x/lightParent';
 import Symbol from 'x/symbol';
@@ -73,7 +72,7 @@ describe('dynamic slotting', () => {
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual('BigInt');
     });
-    if (!ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         // it actually throws in this scenario as well, but in a different callstack, so we can't assert
         it('should throw on symbol', () => {
             expect(() => {
@@ -82,7 +81,7 @@ describe('dynamic slotting', () => {
             }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
         });
     }
-    if (!ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         it('should throw on empty object', () => {
             expect(() => {
                 const elm = createElement('x-emptyobject', { is: EmptyObject });

@@ -24,7 +24,7 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { RendererAPI } from './renderer';
-import { EmptyArray, shouldBeFormAssociated, shouldUseNativeCustomElementLifecycle } from './utils';
+import { EmptyArray, shouldBeFormAssociated } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
@@ -70,7 +70,6 @@ import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
 import { mountStaticParts, patchStaticParts } from './modules/static-parts';
-import { LightningElementConstructor } from './base-lightning-element';
 import { patchTextVNode, updateTextContent } from './modules/text';
 
 export function patchChildren(
@@ -328,9 +327,7 @@ function mountCustomElement(
     // compiler may generate tagnames with uppercase letters so - for backwards
     // compatibility, we lower case the tagname here.
     const normalizedTagname = sel.toLowerCase();
-    const useNativeLifecycle = shouldUseNativeCustomElementLifecycle(
-        ctor as LightningElementConstructor
-    );
+    const useNativeLifecycle = !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;
     const isFormAssociated = shouldBeFormAssociated(ctor);
     const elm = createCustomElement(
         normalizedTagname,

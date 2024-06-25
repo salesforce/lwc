@@ -1,6 +1,4 @@
 import { createElement } from 'lwc';
-import { ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE } from 'test-utils';
-
 import Single from 'x/single';
 import Parent from 'x/parent';
 import ParentIf from 'x/parentIf';
@@ -171,7 +169,7 @@ describe('invocation order', () => {
 
                 let expected;
                 if (testName === 'shadow' && process.env.NATIVE_SHADOW) {
-                    if (ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                    if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                         expected = [
                             'foo-a:connectedCallback',
                             'foo-internal-a:connectedCallback',
@@ -300,7 +298,7 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
                 document.body.appendChild(elm);
                 // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
                 expect(window.timingBuffer).toEqual(
-                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                         ? [
                               'parent:connectedCallback',
                               'parent:renderedCallback',
@@ -321,7 +319,7 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
 
                 document.body.appendChild(elm);
                 expect(window.timingBuffer).toEqual(
-                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                         ? ['parent:connectedCallback', 'child:connectedCallback']
                         : ['parent:connectedCallback']
                 );
@@ -358,7 +356,7 @@ describe('timing when reordering a list', () => {
 
                 expect(window.timingBuffer).toEqual(
                     // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
-                    ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                         ? [
                               'item-wrapper-1:disconnectedCallback',
                               'item-1:disconnectedCallback',

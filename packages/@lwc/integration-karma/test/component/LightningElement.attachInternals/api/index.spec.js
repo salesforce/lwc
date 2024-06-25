@@ -102,7 +102,7 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         const elm = createElement('unsupported-api-version-component', { is: ShadowDomCmp });
         // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
         // attachInternals API.
-        expect(() => document.body.appendChild(elm)).toThrowError(
+        expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
             /The attachInternals API is only supported in API version 61 and above/
         );
     });

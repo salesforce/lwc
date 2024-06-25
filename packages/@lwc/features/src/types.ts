@@ -27,8 +27,8 @@ export interface FeatureFlagMap {
     PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
 
     /**
-     * When true, disables native custom element lifecycle, even if the API version is high enough to support it.
-     * This is designed as a temporary "kill switch."
+     * When true, disables native custom element lifecycle globally (i.e. uses synthetic custom element lifecycle).
+     * When false, native custom element lifecycle is enabled globally.
      */
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
 
