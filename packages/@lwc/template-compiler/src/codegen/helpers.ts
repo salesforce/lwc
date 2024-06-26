@@ -273,10 +273,10 @@ export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t
     const styles: Array<[string, string] | [string, string, boolean]> = Object.entries(
         styleMap
     ).map(([key, value]) => {
-        const important = value.endsWith('!important');
+        const importantRegex = /\s*!\s*important\s*$/;
+        const important = importantRegex.test(value);
         if (important) {
-            // trim off the trailing "!important" (10 chars)
-            value = value.substring(0, value.length - 10).trim();
+            value = value.replace(importantRegex, '').trim();
         }
         return [key, value, important];
     });
