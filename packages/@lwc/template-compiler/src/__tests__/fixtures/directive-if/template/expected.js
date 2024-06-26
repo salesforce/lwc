@@ -9,9 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       $cmp.isTrue
-        ? api_text(
-            api_dynamic_text($cmp.foo) + " " + api_dynamic_text($cmp.bar)
-          )
+        ? api_text(api_dynamic_text($cmp.foo) + api_dynamic_text($cmp.bar))
         : null,
     ]),
   ];

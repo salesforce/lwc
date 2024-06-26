@@ -6,6 +6,7 @@ import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<span${3}>${"t1"}</span>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
+    t: api_text,
     d: api_dynamic_text,
     sp: api_static_part,
     st: api_static_fragment,
@@ -38,6 +39,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   key: 1,
                 },
                 [
+                  api_text(" "),
                   api_scoped_slot_factory("", function (column, key) {
                     return api_fragment(
                       key,
@@ -46,7 +48,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                           api_static_part(
                             1,
                             null,
-                            "Coordinates: " +
+                            " " +
+                              "Coordinates: " +
                               api_dynamic_text(row.number) +
                               " - " +
                               api_dynamic_text(column.number) +
