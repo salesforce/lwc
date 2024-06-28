@@ -33,12 +33,7 @@ import {
     isText,
 } from '../shared/ast';
 import { STATIC_SAFE_DIRECTIVES } from '../shared/constants';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
+import { isAllowedFragOnlyUrlsXHTML, isFragmentOnlyUrl, isSvgUseHref } from '../parser/attribute';
 import State from '../state';
 import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 
@@ -74,9 +69,6 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
         const isStaticSafeLiteral =
             isLiteral(value) &&
             name !== 'slot' &&
-            // check for ScopedId
-            name !== 'id' &&
-            !isIdReferencingAttribute(name) &&
             // svg href needs sanitization.
             !isSvgUseHref(nodeName, name, namespace) &&
             // Check for ScopedFragId

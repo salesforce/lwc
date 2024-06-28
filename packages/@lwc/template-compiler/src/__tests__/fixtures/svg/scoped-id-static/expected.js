@@ -1,6 +1,12 @@
 import _implicitStylesheets from "./scoped-id-static.css";
 import _implicitScopedStylesheets from "./scoped-id-static.scoped.css?scoped=true";
-import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
+import {
+  freezeTemplate,
+  parseSVGFragment,
+  registerTemplate,
+  sanitizeAttribute,
+} from "lwc";
+const $fragment1 = parseSVGFragment`<defs${3}><circle${"a1:id"} r="10" cx="10" cy="10" fill="black"${3}/><circle${"a2:id"} r="10" cx="14" cy="14" fill="red"${3}/></defs>`;
 const stc0 = {
   attrs: {
     width: "100px",
@@ -10,37 +16,35 @@ const stc0 = {
   key: 0,
   svg: true,
 };
-const stc1 = {
-  key: 1,
-  svg: true,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, h: api_element, fid: api_scoped_frag_id } = $api;
+  const {
+    gid: api_scoped_id,
+    sp: api_static_part,
+    st: api_static_fragment,
+    fid: api_scoped_frag_id,
+    h: api_element,
+  } = $api;
   return [
     api_element("svg", stc0, [
-      api_element("defs", stc1, [
-        api_element("circle", {
-          attrs: {
-            id: api_scoped_id("black"),
-            r: "10",
-            cx: "10",
-            cy: "10",
-            fill: "black",
+      api_static_fragment($fragment1, 2, [
+        api_static_part(
+          1,
+          {
+            attrs: {
+              id: api_scoped_id("black"),
+            },
           },
-          key: 2,
-          svg: true,
-        }),
-        api_element("circle", {
-          attrs: {
-            id: api_scoped_id("red"),
-            r: "10",
-            cx: "14",
-            cy: "14",
-            fill: "red",
+          null
+        ),
+        api_static_part(
+          2,
+          {
+            attrs: {
+              id: api_scoped_id("red"),
+            },
           },
-          key: 3,
-          svg: true,
-        }),
+          null
+        ),
       ]),
       api_element("use", {
         attrs: {
@@ -51,7 +55,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_scoped_frag_id("#black")
           ),
         },
-        key: 4,
+        key: 3,
         svg: true,
       }),
       api_element("use", {
@@ -63,7 +67,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_scoped_frag_id("#red")
           ),
         },
-        key: 5,
+        key: 4,
         svg: true,
       }),
     ]),

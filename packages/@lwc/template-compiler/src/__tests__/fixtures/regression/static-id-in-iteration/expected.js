@@ -1,38 +1,45 @@
 import _implicitStylesheets from "./static-id-in-iteration.css";
 import _implicitScopedStylesheets from "./static-id-in-iteration.scoped.css?scoped=true";
-import { freezeTemplate, registerTemplate } from "lwc";
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${3}><span${"a1:id"}${3}></span></div>`;
+const $fragment2 = parseFragment`<span${"a0:id"}${3}></span>`;
+const $fragment3 = parseFragment`<div${3}><span${"a1:id"}${3}></span></div>`;
+const $fragment4 = parseFragment`<span${"a0:id"}${3}></span>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     gid: api_scoped_id,
-    h: api_element,
+    sp: api_static_part,
+    st: api_static_fragment,
     i: api_iterator,
     f: api_flatten,
   } = $api;
   return api_flatten([
     api_iterator($cmp.items, function (item) {
-      return api_element(
-        "div",
-        {
-          key: api_key(0, item.key),
-        },
-        [
-          api_element("span", {
+      return api_static_fragment($fragment1, api_key(1, item.key), [
+        api_static_part(
+          1,
+          {
             attrs: {
               id: api_scoped_id("a"),
             },
-            key: 1,
-          }),
-        ]
-      );
+          },
+          null
+        ),
+      ]);
     }),
     api_iterator($cmp.items, function (item) {
-      return api_element("span", {
-        attrs: {
-          id: api_scoped_id("b"),
-        },
-        key: api_key(2, item.key),
-      });
+      return api_static_fragment($fragment2, api_key(3, item.key), [
+        api_static_part(
+          0,
+          {
+            attrs: {
+              id: api_scoped_id("b"),
+            },
+          },
+          null
+        ),
+      ]);
     }),
     api_iterator(
       $cmp.items,
@@ -43,20 +50,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           first: itemFirst,
           last: itemLast,
         };
-        return api_element(
-          "div",
-          {
-            key: api_key(3, item.key),
-          },
-          [
-            api_element("span", {
+        return api_static_fragment($fragment3, api_key(5, item.key), [
+          api_static_part(
+            1,
+            {
               attrs: {
                 id: api_scoped_id("c"),
               },
-              key: 4,
-            }),
-          ]
-        );
+            },
+            null
+          ),
+        ]);
       }
     ),
     api_iterator(
@@ -68,12 +72,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           first: itemFirst,
           last: itemLast,
         };
-        return api_element("span", {
-          attrs: {
-            id: api_scoped_id("d"),
-          },
-          key: api_key(5, item.key),
-        });
+        return api_static_fragment($fragment4, api_key(7, item.key), [
+          api_static_part(
+            0,
+            {
+              attrs: {
+                id: api_scoped_id("d"),
+              },
+            },
+            null
+          ),
+        ]);
       }
     ),
   ]);

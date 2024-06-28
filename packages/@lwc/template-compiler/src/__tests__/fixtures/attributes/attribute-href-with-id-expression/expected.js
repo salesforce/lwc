@@ -2,6 +2,7 @@ import _implicitStylesheets from "./attribute-href-with-id-expression.css";
 import _implicitScopedStylesheets from "./attribute-href-with-id-expression.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<a${"a0:href"}${3}>KIX</a>`;
+const $fragment2 = parseFragment`<h1${"a0:id"}${3}>Time to travel!</h1>`;
 const stc0 = {
   key: 2,
 };
@@ -12,7 +13,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
     h: api_element,
     gid: api_scoped_id,
-    t: api_text,
   } = $api;
   return [
     api_static_fragment($fragment1, 1, [
@@ -40,16 +40,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 4,
       }),
     ]),
-    api_element(
-      "h1",
-      {
-        attrs: {
-          id: api_scoped_id("#narita"),
+    api_static_fragment($fragment2, 6, [
+      api_static_part(
+        0,
+        {
+          attrs: {
+            id: api_scoped_id("#narita"),
+          },
         },
-        key: 5,
-      },
-      [api_text("Time to travel!")]
-    ),
+        null
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

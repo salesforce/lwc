@@ -1,46 +1,24 @@
 import _implicitStylesheets from "./linear-gradient.css";
 import _implicitScopedStylesheets from "./linear-gradient.scoped.css?scoped=true";
-import { freezeTemplate, parseSVGFragment, registerTemplate } from "lwc";
-const $fragment1 = parseSVGFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/>`;
-const $fragment2 = parseSVGFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/>`;
-const $fragment3 = parseSVGFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/>`;
-const stc0 = {
-  attrs: {
-    height: "150",
-    width: "400",
-  },
-  key: 0,
-  svg: true,
-};
-const stc1 = {
-  key: 1,
-  svg: true,
-};
+import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<svg height="150" width="400"${3}><defs${3}><linearGradient${"a2:id"} x1="0%" y1="0%" x2="100%" y2="0%"${3}><stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/><stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/></linearGradient></defs><ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/></svg>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, st: api_static_fragment, h: api_element } = $api;
+  const {
+    gid: api_scoped_id,
+    sp: api_static_part,
+    st: api_static_fragment,
+  } = $api;
   return [
-    api_element("svg", stc0, [
-      api_element("defs", stc1, [
-        api_element(
-          "linearGradient",
-          {
-            attrs: {
-              id: api_scoped_id("grad1"),
-              x1: "0%",
-              y1: "0%",
-              x2: "100%",
-              y2: "0%",
-            },
-            key: 2,
-            svg: true,
+    api_static_fragment($fragment1, 1, [
+      api_static_part(
+        2,
+        {
+          attrs: {
+            id: api_scoped_id("grad1"),
           },
-          [
-            api_static_fragment($fragment1, 4),
-            api_static_fragment($fragment2, 6),
-          ]
-        ),
-      ]),
-      api_static_fragment($fragment3, 8),
+        },
+        null
+      ),
     ]),
   ];
   /*LWC compiler vX.X.X*/

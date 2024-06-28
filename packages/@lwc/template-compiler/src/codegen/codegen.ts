@@ -48,6 +48,7 @@ import {
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
+import { isIdReferencingAttribute } from '../parser/attribute';
 import { memorizeHandler, objectToAST } from './helpers';
 import {
     transformStaticChildren,
@@ -737,7 +738,15 @@ export default class CodeGen {
 
                 for (const attribute of elm.attributes) {
                     const { name, value } = attribute;
-                    if (isExpression(value)) {
+
+                    // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
+                    // Note that for backwards compat we only consider non-booleans to be dynamic IDs/IDRefs
+                    // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
+                    const isIdOrIdRef =
+                        (name === 'id' || isIdReferencingAttribute(name)) &&
+                        (isExpression(value) || isStringLiteral(value));
+
+                    if (isExpression(value) || isIdOrIdRef) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
@@ -750,11 +759,14 @@ export default class CodeGen {
                             databag.push(
                                 t.property(
                                     t.identifier('className'),
-                                    this.genClassExpression(value)
+                                    this.genClassExpression(value as Expression)
                                 )
                             );
                         } else {
+                            // non-class, non-style (i.e. generic attribute or ID/IDRef)
+
                             partToken = `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${name}`;
+
                             attributeExpressions.push(
                                 t.property(
                                     t.literal(name),
