@@ -273,7 +273,7 @@ export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t
     const styles: Array<[string, string] | [string, string, boolean]> = Object.entries(
         styleMap
     ).map(([key, value]) => {
-        const importantRegex = /\s*!\s*important\s*$/;
+        const importantRegex = /\s*!\s*important\s*$/i;
         const important = importantRegex.test(value);
         if (important) {
             value = value.replace(importantRegex, '').trim();
