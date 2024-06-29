@@ -8,7 +8,7 @@ describe('important styling and style override', () => {
 
         await Promise.resolve();
 
-        for (const div of elm.shadowRoot.querySelectorAll('.imporant')) {
+        for (const div of elm.shadowRoot.querySelectorAll('.important')) {
             expect(getComputedStyle(div).getPropertyValue('color')).toBe('rgb(255, 0, 0)');
             expect(div.style.getPropertyPriority('color')).toBe('important');
         }
