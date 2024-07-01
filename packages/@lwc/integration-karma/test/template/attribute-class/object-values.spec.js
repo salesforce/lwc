@@ -37,6 +37,16 @@ function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
     });
 }
 
+/** Stub of LBC's `classSet`. Has enumerable keys on the prototype. */
+function classSet(props) {
+    const proto = {
+        add() {},
+        invert() {},
+        toString() {},
+    };
+    return Object.assign(Object.create(proto), props);
+}
+
 describe('type coercion', () => {
     testClassNameValue('object', {}, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : '[object Object]');
     testClassNameValue('true', true, TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'true');
@@ -50,6 +60,7 @@ describe('type coercion', () => {
         function () {},
         TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'function () {}'
     );
+    testClassNameValue('enumerable proto', classSet({ foo: true }), 'foo');
 
     // Passing a symbol as a class name prior to API v61 would throw an error.
     if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
@@ -77,6 +88,7 @@ if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
 
         testClassNameValue('symbols keys', { [Symbol('foo')]: true }, '');
         testClassNameValue('null proto', Object.create(null), '');
+        testClassNameValue('enumerable proto', classSet({ foo: true }), 'foo');
     });
 
     describe('array class value', () => {

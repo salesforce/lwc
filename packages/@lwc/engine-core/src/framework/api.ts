@@ -755,9 +755,12 @@ function ncls(value: unknown): string {
                 res += normalized + ' ';
             }
         }
-    } else if (isObject(value)) {
-        for (const key in value) {
-            if ((value as any)[key]) {
+    } else if (isObject(value) && value !== null) {
+        // Iterate own enumerable keys of the object
+        const keys = Object.keys(value);
+        for (let i = 0; i < keys.length; i += 1) {
+            const key = keys[i];
+            if ((value as Record<string, unknown>)[key]) {
                 res += key + ' ';
             }
         }
