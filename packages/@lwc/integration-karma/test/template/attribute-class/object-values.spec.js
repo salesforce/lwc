@@ -42,7 +42,12 @@ function classSet(props) {
     const proto = {
         add() {},
         invert() {},
-        toString() {},
+        toString() {
+            return Object.entries(props)
+                .filter(([, val]) => val)
+                .map(([key]) => key)
+                .join(' ');
+        },
     };
     return Object.assign(Object.create(proto), props);
 }
