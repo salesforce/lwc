@@ -444,7 +444,8 @@ function transform(codeGen: CodeGen): t.Expression {
             }
 
             if (isSvgUseHref(elmName, attrName, namespace)) {
-                // apply the fragment id tranformation if necessary
+                // Apply the fragment id scoping transformation if necessary.
+                // This scoping can be skipped if the value is a string literal that doesn't start with a "#"
                 const value = isFragmentOnlyUrl(attrValue.value)
                     ? codeGen.genScopedFragId(attrValue.value)
                     : t.literal(attrValue.value);

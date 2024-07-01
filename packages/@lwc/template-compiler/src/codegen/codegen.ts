@@ -38,6 +38,7 @@ import {
 } from '../shared/constants';
 import {
     isAttribute,
+    isBooleanLiteral,
     isComment,
     isElement,
     isExpression,
@@ -48,7 +49,8 @@ import {
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { isIdReferencingAttribute } from '../parser/attribute';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
+import { isIdReferencingAttribute, isSvgUseHref } from '../parser/attribute';
 import { memorizeHandler, objectToAST } from './helpers';
 import {
     transformStaticChildren,
@@ -675,6 +677,8 @@ export default class CodeGen {
         const partIdsToArgs = new Map<number, { text: t.Expression; databag: t.Expression }>();
         let partId = -1;
 
+        const addSanitizationHook = isCustomRendererHookRequired(element, this.state);
+
         const getPartIdArgs = (partId: number) => {
             let args = partIdsToArgs.get(partId);
             if (!args) {
@@ -744,9 +748,13 @@ export default class CodeGen {
                     // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
                     const isIdOrIdRef =
                         (name === 'id' || isIdReferencingAttribute(name)) &&
-                        (isExpression(value) || isStringLiteral(value));
+                        !isBooleanLiteral(value);
 
-                    if (isExpression(value) || isIdOrIdRef) {
+                    // For boolean literals (e.g. `<use xlink:href>`), there is no reason to sanitize since it's empty
+                    const isSvgHref =
+                        isSvgUseHref(elm.name, name, elm.namespace) && !isBooleanLiteral(value);
+
+                    if (isExpression(value) || isIdOrIdRef || isSvgHref) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
@@ -763,14 +771,19 @@ export default class CodeGen {
                                 )
                             );
                         } else {
-                            // non-class, non-style (i.e. generic attribute or ID/IDRef)
+                            // non-class, non-style (i.e. generic attribute or ID/IDRef or svg use href)
 
                             partToken = `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${name}`;
 
                             attributeExpressions.push(
                                 t.property(
                                     t.literal(name),
-                                    bindAttributeExpression(attribute, elm, this, false)
+                                    bindAttributeExpression(
+                                        attribute,
+                                        elm,
+                                        this,
+                                        !addSanitizationHook
+                                    )
                                 )
                             );
                         }

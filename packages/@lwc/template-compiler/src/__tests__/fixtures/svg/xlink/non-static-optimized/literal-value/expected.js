@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./xlink-with-literal-value.css";
-import _implicitScopedStylesheets from "./xlink-with-literal-value.scoped.css?scoped=true";
+import _implicitStylesheets from "./literal-value.css";
+import _implicitScopedStylesheets from "./literal-value.scoped.css?scoped=true";
 import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
 const stc0 = {
   classMap: {
@@ -34,9 +34,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-59dgv24hpm8";
-tmpl.legacyStylesheetToken =
-  "x-xlink-with-literal-value_xlink-with-literal-value";
+tmpl.stylesheetToken = "lwc-20i8lahhlnu";
+tmpl.legacyStylesheetToken = "x-literal-value_literal-value";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
