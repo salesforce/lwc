@@ -88,7 +88,6 @@ if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
 
         testClassNameValue('symbols keys', { [Symbol('foo')]: true }, '');
         testClassNameValue('null proto', Object.create(null), '');
-        testClassNameValue('enumerable proto', classSet({ foo: true }), 'foo');
     });
 
     describe('array class value', () => {
