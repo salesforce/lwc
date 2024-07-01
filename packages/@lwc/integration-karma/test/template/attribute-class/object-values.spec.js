@@ -65,7 +65,7 @@ describe('type coercion', () => {
         function () {},
         TEMPLATE_CLASS_NAME_OBJECT_BINDING ? '' : 'function () {}'
     );
-    testClassNameValue('enumerable proto', classSet({ foo: true }), 'foo');
+    testClassNameValue('object with enumerable prototype props', classSet({ foo: true }), 'foo');
 
     // Passing a symbol as a class name prior to API v61 would throw an error.
     if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
@@ -93,6 +93,18 @@ if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
 
         testClassNameValue('symbols keys', { [Symbol('foo')]: true }, '');
         testClassNameValue('null proto', Object.create(null), '');
+
+        testClassNameValue(
+            'non-enumerable property',
+            Object.defineProperties(
+                {},
+                {
+                    enumerable: { enumerable: true, value: true },
+                    hidden: { value: true },
+                }
+            ),
+            'enumerable'
+        );
     });
 
     describe('array class value', () => {
