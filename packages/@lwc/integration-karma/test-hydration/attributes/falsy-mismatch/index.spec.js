@@ -28,14 +28,13 @@ export default {
             expect(divs[i].getAttribute('data-foo')).toEqual(expectedAttrValues[i]);
         }
 
-        expect(consoleCalls.warn).toHaveSize(0);
-        expect(consoleCalls.error).toHaveSize(3);
-        expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "undefined" but found null'
-        );
-        expect(consoleCalls.error[1][0].message).toContain(
-            'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "null" but found null'
-        );
-        expect(consoleCalls.error[2][0].message).toContain('Hydration completed with errors.');
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
+            warn: [],
+            error: [
+                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "undefined" but found null',
+                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "null" but found null',
+                'Hydration completed with errors.',
+            ],
+        });
     },
 };

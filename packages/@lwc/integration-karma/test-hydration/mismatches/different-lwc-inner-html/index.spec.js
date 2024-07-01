@@ -21,10 +21,11 @@ export default {
         expect(p).not.toBe(snapshot.p);
         expect(p.textContent).toBe('different-content');
 
-        expect(consoleCalls.warn).toHaveSize(1);
-        expect(consoleCalls.warn[0][0].message).toContain(
-            'Mismatch hydrating element <div>: innerHTML values do not match for element, will recover from the difference'
-        );
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
+            warn: [
+                'Mismatch hydrating element <div>: innerHTML values do not match for element, will recover from the difference',
+            ],
+        });
 
         target.content = '<p>another-content</p>';
 

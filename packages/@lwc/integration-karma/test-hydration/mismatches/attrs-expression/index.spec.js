@@ -17,10 +17,11 @@ export default {
         expect(div.getAttribute('data-foo')).toBe('client');
         expect(div.getAttribute('data-static')).toBe('same-value');
 
-        expect(consoleCalls.error).toHaveSize(2);
-        expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "client" but found "server"'
-        );
-        expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [
+                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "client" but found "server"',
+                'Hydration completed with errors.',
+            ],
+        });
     },
 };

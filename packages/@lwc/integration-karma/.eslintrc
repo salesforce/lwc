@@ -2,7 +2,8 @@
     "globals": {
         "process": true,
         "LWC": true,
-        "spyOnAllFunctions": true
+        "spyOnAllFunctions": true,
+        "TestUtils": true
     },
 
     "env": {

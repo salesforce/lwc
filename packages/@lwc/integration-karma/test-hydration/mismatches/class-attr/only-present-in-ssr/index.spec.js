@@ -10,12 +10,12 @@ export default {
 
         hydrateComponent(target, Component, {});
 
-        expect(consoleSpy.calls.error).toHaveSize(2);
-        expect(consoleSpy.calls.error[0][0].message).toEqual(
-            '[LWC error]: Mismatch hydrating element <x-child>: attribute "class" has different values, expected "" but found "foo"\n'
-        );
-        expect(consoleSpy.calls.error[1][0].message).toEqual(
-            '[LWC error]: Hydration completed with errors.\n'
-        );
+        const consoleCalls = consoleSpy.calls;
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [
+                '[LWC error]: Mismatch hydrating element <x-child>: attribute "class" has different values, expected "" but found "foo"\n',
+                '[LWC error]: Hydration completed with errors.\n',
+            ],
+        });
     },
 };
