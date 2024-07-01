@@ -266,6 +266,8 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
     return styleMap;
 }
 
+const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
+
 // Given a map of CSS property keys to values, return an array AST like:
 // ['color', 'blue', false]    // { color: 'blue' }
 // ['background', 'red', true] // { background: 'red !important' }
@@ -273,10 +275,9 @@ export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t
     const styles: Array<[string, string] | [string, string, boolean]> = Object.entries(
         styleMap
     ).map(([key, value]) => {
-        const important = value.endsWith('!important');
+        const important = IMPORTANT_FLAG.test(value);
         if (important) {
-            // trim off the trailing "!important" (10 chars)
-            value = value.substring(0, value.length - 10).trim();
+            value = value.replace(IMPORTANT_FLAG, '').trim();
         }
         return [key, value, important];
     });
