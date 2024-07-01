@@ -14,7 +14,7 @@ const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options')
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
-const { GREP, COVERAGE } = require('../../shared/options');
+const { GREP, COVERAGE, COVERAGE_DIR_FOR_OPTIONS } = require('../../shared/options');
 const { createPattern } = require('../utils');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
@@ -98,7 +98,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, 'hydration'),
+            dir: path.resolve(COVERAGE_DIR, 'hydration', COVERAGE_DIR_FOR_OPTIONS),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }

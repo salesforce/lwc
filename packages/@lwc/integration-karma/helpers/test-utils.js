@@ -565,6 +565,34 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
 
+    // Designed for hydration tests, this helper asserts certain error/warn console messages were logged
+    function createExpectConsoleCallsFunc(devOnly) {
+        return (consoleCalls, methods) => {
+            for (const [method, matchers] of Object.entries(methods)) {
+                const calls = consoleCalls[method];
+                if (devOnly && process.env.NODE_ENV === 'production') {
+                    // assume no console errors/warnings in production
+                    expect(calls).toHaveSize(0);
+                } else {
+                    expect(calls).toHaveSize(matchers.length);
+                    for (let i = 0; i < matchers.length; i++) {
+                        const matcher = matchers[i];
+                        const call = calls[i][0];
+                        const message = typeof call === 'string' ? call : call.message;
+                        if (typeof matcher === 'string') {
+                            expect(message).toContain(matcher);
+                        } else {
+                            expect(message).toMatch(matcher);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    const expectConsoleCalls = createExpectConsoleCallsFunc(false);
+    const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -604,6 +632,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         attachReportingControlDispatcher,
         detachReportingControlDispatcher,
         IS_SYNTHETIC_SHADOW_LOADED,
+        expectConsoleCalls,
+        expectConsoleCallsDev,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);
