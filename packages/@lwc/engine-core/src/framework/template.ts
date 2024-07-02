@@ -159,6 +159,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         // 4. For non-attributes everything from index 1 to the string length is the partId.
         // Ex, attribute: a0:data-name, a = an attribute, 0 = partId, data-name = attribute name.
         // Ex, style: s0, s = a style attribute, 0 = partId.
+        // Note some attributes contain a `:`, e.g. `xlink:href` may be encoded as `a0:xlink:href`.
         const type = StringCharAt.call(partToken, 0);
         let delimiterIndex = partToken.length;
         let attrName = '';
