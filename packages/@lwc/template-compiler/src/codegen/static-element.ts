@@ -33,7 +33,7 @@ import {
     isText,
 } from '../shared/ast';
 import { STATIC_SAFE_DIRECTIVES } from '../shared/constants';
-import { isAllowedFragOnlyUrlsXHTML, isFragmentOnlyUrl, isSvgUseHref } from '../parser/attribute';
+import { isAllowedFragOnlyUrlsXHTML, isFragmentOnlyUrl } from '../parser/attribute';
 import State from '../state';
 import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 
@@ -69,19 +69,12 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
         const isStaticSafeLiteral =
             isLiteral(value) &&
             name !== 'slot' &&
-            // svg href needs sanitization.
-            !isSvgUseHref(nodeName, name, namespace) &&
             // Check for ScopedFragId
             !(
                 isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
                 isFragmentOnlyUrl(value.value as string)
             );
-        const isStaticSafeExpression =
-            isExpression(value) &&
-            name !== 'slot' &&
-            // TODO [#3624]: Revisit whether svgs can be included in static content optimization
-            // svg href needs sanitization.
-            !isSvgUseHref(nodeName, name, namespace);
+        const isStaticSafeExpression = isExpression(value) && name !== 'slot';
         return isStaticSafeLiteral || isStaticSafeExpression;
     });
 
