@@ -1,0 +1,167 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 139,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 128,
+                "end": 139
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 127,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 67,
+                        "start": 15,
+                        "end": 77
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 121,
+                        "end": 127
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "aria-hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "true"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 28,
+                            "start": 20,
+                            "end": 38
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "slds-icon"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 29,
+                            "endLine": 2,
+                            "endColumn": 46,
+                            "start": 39,
+                            "end": 56
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "title",
+                        "value": {
+                            "type": "Literal",
+                            "value": "when needed"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 47,
+                            "endLine": 2,
+                            "endColumn": 66,
+                            "start": 57,
+                            "end": 76
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "use",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 39,
+                            "start": 86,
+                            "end": 116,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 33,
+                                "start": 86,
+                                "end": 110
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 33,
+                                "endLine": 3,
+                                "endColumn": 39,
+                                "start": 110,
+                                "end": 116
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "xlink:href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "#case"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 14,
+                                    "endLine": 3,
+                                    "endColumn": 32,
+                                    "start": 91,
+                                    "end": 109
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}
