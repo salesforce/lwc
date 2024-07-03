@@ -73,6 +73,12 @@ This will connect to Sauce Labs, start the browser, and run the tests.
 
 You can also pass in `--log-level=debug` to `karma` for debug logging.
 
+## Running specific tests
+
+In the main test suite, you can use `fdescribe()` instead of `describe()` or `fit()` instead of `it()` to only run certain tests.
+
+In the hydration tests, you can create an empty `.only` file alongside an `index.spec.js` file to run just that test.
+
 ## Contributing
 
 -   The test suite uses jasmine for test runner. You can find more details about jasmine here: https://jasmine.github.io/api/3.3/global
