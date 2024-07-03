@@ -49,7 +49,6 @@ import {
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import { isIdReferencingAttribute, isSvgUseHref } from '../parser/attribute';
 import { memorizeHandler, objectToAST } from './helpers';
 import {
@@ -677,8 +676,6 @@ export default class CodeGen {
         const partIdsToArgs = new Map<number, { text: t.Expression; databag: t.Expression }>();
         let partId = -1;
 
-        const addSanitizationHook = isCustomRendererHookRequired(element, this.state);
-
         const getPartIdArgs = (partId: number) => {
             let args = partIdsToArgs.get(partId);
             if (!args) {
@@ -782,7 +779,9 @@ export default class CodeGen {
                                         attribute,
                                         currentNode,
                                         this,
-                                        !addSanitizationHook
+                                        // `addLegacySanitizationHook` is true because `isCustomRendererHookRequired`
+                                        // being false is a precondition for static nodes.
+                                        true
                                     )
                                 )
                             );
