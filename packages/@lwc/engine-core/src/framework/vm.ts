@@ -693,7 +693,16 @@ export function runConnectedCallback(vm: VM) {
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
 
+        if (!process.env.IS_BROWSER) {
+            // Track host element mutations in SSR mode to add the `data-lwc-host-mutated` attribute if necessary
+            vm.renderer.startTrackingMutations(vm.elm);
+        }
+
         invokeComponentCallback(vm, connectedCallback);
+
+        if (!process.env.IS_BROWSER) {
+            vm.renderer.stopTrackingMutations(vm.elm);
+        }
 
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }

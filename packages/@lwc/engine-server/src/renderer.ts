@@ -34,6 +34,11 @@ import {
     HostContextProvidersKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import {
+    reportMutation,
+    startTrackingMutations,
+    stopTrackingMutations,
+} from './utils/mutation-tracking';
 import { registerContextConsumer } from './context';
 
 function unsupportedMethod(name: string): () => never {
@@ -253,6 +258,7 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
+    reportMutation(element);
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
@@ -273,6 +279,7 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
+    reportMutation(element);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
         (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
@@ -298,6 +305,7 @@ function getClassList(element: E) {
 
     return {
         add(...names: string[]): void {
+            reportMutation(element);
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
@@ -305,6 +313,7 @@ function getClassList(element: E) {
             classAttribute.value = tokenListToClassName(tokenList);
         },
         remove(...names: string[]): void {
+            reportMutation(element);
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
@@ -488,4 +497,6 @@ export const renderer = {
     attachInternals,
     defineCustomElement: getUpgradableElement,
     getParentNode,
+    startTrackingMutations,
+    stopTrackingMutations,
 };

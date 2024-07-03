@@ -7,6 +7,7 @@ export default {
     test(target, snapshots, consoleCalls) {
         const hydratedSnapshot = this.snapshot(target);
         expect(hydratedSnapshot.classes).toBe(snapshots.classes);
+        expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(0);
     },
 };
