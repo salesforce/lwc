@@ -60,11 +60,13 @@ it('should not transform fragment-only urls when the template has no ids', () =>
     const elm = createElement('x-href-dangling', { is: HrefDangling });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('a').getAttribute('href')).toBe('#foo');
+    expect(elm.shadowRoot.querySelector('area').getAttribute('href')).toBe('#bar');
 });
 // Enable this test when we transform all href values with fragment-only urls
-// https://github.com/salesforce/lwc/issues/1150
+// TODO [#1150]: Always mangle frag-id href attribute values
 xit('should transform fragment-only urls even when the template has no ids', () => {
     const elm = createElement('x-href-dangling', { is: HrefDangling });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('a').getAttribute('href')).not.toBe('#foo');
+    expect(elm.shadowRoot.querySelector('area').getAttribute('href')).not.toBe('#bar');
 });

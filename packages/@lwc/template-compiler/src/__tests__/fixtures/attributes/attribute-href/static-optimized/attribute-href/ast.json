@@ -1,0 +1,221 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 7,
+            "endColumn": 12,
+            "start": 0,
+            "end": 156,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 7,
+                "startColumn": 1,
+                "endLine": 7,
+                "endColumn": 12,
+                "start": 145,
+                "end": 156
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "a",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 43,
+                    "start": 15,
+                    "end": 53,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 28,
+                        "start": 15,
+                        "end": 38
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 39,
+                        "endLine": 2,
+                        "endColumn": 43,
+                        "start": 49,
+                        "end": 53
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "href",
+                        "value": {
+                            "type": "Literal",
+                            "value": "#yasaka-taxi"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 27,
+                            "start": 18,
+                            "end": 37
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Yasaka Taxi",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Yasaka Taxi"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 28,
+                            "endLine": 2,
+                            "endColumn": 39,
+                            "start": 38,
+                            "end": 49
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "map",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 11,
+                    "start": 58,
+                    "end": 144,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 10,
+                        "start": 58,
+                        "end": 63
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 11,
+                        "start": 138,
+                        "end": 144
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "area",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 34,
+                            "start": 72,
+                            "end": 97,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 34,
+                                "start": 72,
+                                "end": 97
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "#eneos-gas"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 15,
+                                    "endLine": 4,
+                                    "endColumn": 32,
+                                    "start": 78,
+                                    "end": 95
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "area",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 36,
+                            "start": 106,
+                            "end": 133,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 36,
+                                "start": 106,
+                                "end": 133
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "#kawaramachi"
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 34,
+                                    "start": 112,
+                                    "end": 131
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

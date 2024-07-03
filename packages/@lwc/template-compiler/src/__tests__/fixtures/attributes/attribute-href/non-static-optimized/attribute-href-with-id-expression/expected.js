@@ -1,7 +1,6 @@
-import _implicitStylesheets from "./attribute-href-with-id.css";
-import _implicitScopedStylesheets from "./attribute-href-with-id.scoped.css?scoped=true";
-import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<h1${"a0:id"}${3}>Don&#x27;t forget your passport!</h1>`;
+import _implicitStylesheets from "./attribute-href-with-id-expression.css";
+import _implicitScopedStylesheets from "./attribute-href-with-id-expression.scoped.css?scoped=true";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 1,
 };
@@ -11,15 +10,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     gid: api_scoped_id,
-    sp: api_static_part,
-    st: api_static_fragment,
   } = $api;
   return [
     api_element(
       "a",
       {
         attrs: {
-          href: api_scoped_frag_id("#kansai-airport"),
+          href: api_scoped_frag_id($cmp.narita),
         },
         key: 0,
       },
@@ -28,35 +25,35 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("map", stc0, [
       api_element("area", {
         attrs: {
-          href: api_scoped_frag_id("#eneos-gas"),
+          href: api_scoped_frag_id($cmp.haneda),
         },
         key: 2,
       }),
       api_element("area", {
         attrs: {
-          href: api_scoped_frag_id("#kawaramachi"),
+          href: api_scoped_frag_id($cmp.chubu),
         },
         key: 3,
       }),
     ]),
-    api_static_fragment($fragment1, 5, [
-      api_static_part(
-        0,
-        {
-          attrs: {
-            id: api_scoped_id("kansai-airport"),
-          },
+    api_element(
+      "h1",
+      {
+        attrs: {
+          id: api_scoped_id("#narita"),
         },
-        null
-      ),
-    ]),
+        key: 4,
+      },
+      [api_text("Time to travel!")]
+    ),
   ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-k7u0u67but";
-tmpl.legacyStylesheetToken = "x-attribute-href-with-id_attribute-href-with-id";
+tmpl.stylesheetToken = "lwc-4s0jmj9uli4";
+tmpl.legacyStylesheetToken =
+  "x-attribute-href-with-id-expression_attribute-href-with-id-expression";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

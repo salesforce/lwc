@@ -49,7 +49,12 @@ import {
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { isIdReferencingAttribute, isSvgUseHref } from '../parser/attribute';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 import { memorizeHandler, objectToAST } from './helpers';
 import {
     transformStaticChildren,
@@ -751,7 +756,15 @@ export default class CodeGen {
                         isSvgUseHref(currentNode.name, name, currentNode.namespace) &&
                         !isBooleanLiteral(value);
 
-                    if (isExpression(value) || isIdOrIdRef || isSvgHref) {
+                    // `<a href="#foo">` and `<area href="#foo">` must be dynamic due to synthetic shadow scoping
+                    // Note this only applies if there is an `id` attribute somewhere in the template
+                    const isScopedFragmentRef =
+                        this.scopeFragmentId &&
+                        isStringLiteral(value) &&
+                        isAllowedFragOnlyUrlsXHTML(currentNode.name, name, currentNode.namespace) &&
+                        isFragmentOnlyUrl(value.value);
+
+                    if (isExpression(value) || isIdOrIdRef || isSvgHref || isScopedFragmentRef) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
