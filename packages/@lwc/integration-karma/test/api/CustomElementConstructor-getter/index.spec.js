@@ -68,7 +68,6 @@ it('should create custom element if it exists before customElements.define', () 
 describe('non-empty custom element', () => {
     let consoleSpy;
     beforeEach(() => {
-        // eslint-disable-next-line no-undef
         consoleSpy = TestUtils.spyConsole();
     });
     afterEach(() => {
