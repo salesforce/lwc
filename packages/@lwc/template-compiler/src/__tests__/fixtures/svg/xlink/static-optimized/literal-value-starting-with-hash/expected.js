@@ -1,14 +1,18 @@
-import _implicitStylesheets from "./svg.css";
-import _implicitScopedStylesheets from "./svg.scoped.css?scoped=true";
+import _implicitStylesheets from "./literal-value-starting-with-hash.css";
+import _implicitScopedStylesheets from "./literal-value-starting-with-hash.scoped.css?scoped=true";
 import {
   freezeTemplate,
   parseFragment,
   registerTemplate,
   sanitizeAttribute,
 } from "lwc";
-const $fragment1 = parseFragment`<svg viewBox="0 0 5 5" aria-hidden="true" class="slds-button__icon${0}"${2}><use${"a1:xlink:href"}${3}/></svg>`;
+const $fragment1 = parseFragment`<svg aria-hidden="true" class="slds-icon${0}" title="when needed"${2}><use${"a1:xlink:href"}${3}/></svg>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { sp: api_static_part, st: api_static_fragment } = $api;
+  const {
+    fid: api_scoped_frag_id,
+    sp: api_static_part,
+    st: api_static_fragment,
+  } = $api;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
@@ -19,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "use",
               "http://www.w3.org/2000/svg",
               "xlink:href",
-              "/x"
+              api_scoped_frag_id("#case")
             ),
           },
         },
@@ -31,8 +35,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-3j142gdvja7";
-tmpl.legacyStylesheetToken = "x-svg_svg";
+tmpl.stylesheetToken = "lwc-p1v8cfa11m";
+tmpl.legacyStylesheetToken =
+  "x-literal-value-starting-with-hash_literal-value-starting-with-hash";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

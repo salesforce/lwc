@@ -11,10 +11,11 @@ import { isBooleanAttribute } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
-import { isProperty } from '../shared/ast';
+import { isProperty, isStringLiteral } from '../shared/ast';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isAttribute,
+    isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
@@ -215,6 +216,12 @@ export function bindAttributeExpression(
         return codeGen.genScopedFragId(expression);
     }
     if (isSvgUseHref(elmName, attrName, namespace)) {
+        // Apply the fragment id scoping transformation if necessary.
+        // This scoping can be skipped if the value is a string literal that doesn't start with a "#"
+        const value =
+            isStringLiteral(attrValue) && !isFragmentOnlyUrl(attrValue.value)
+                ? t.literal(attrValue.value)
+                : codeGen.genScopedFragId(expression);
         if (addLegacySanitizationHook) {
             codeGen.usedLwcApis.add('sanitizeAttribute');
 
@@ -222,10 +229,10 @@ export function bindAttributeExpression(
                 t.literal(elmName),
                 t.literal(namespace),
                 t.literal(attrName),
-                codeGen.genScopedFragId(expression),
+                value,
             ]);
         }
-        return codeGen.genScopedFragId(expression);
+        return value;
     }
 
     return expression;

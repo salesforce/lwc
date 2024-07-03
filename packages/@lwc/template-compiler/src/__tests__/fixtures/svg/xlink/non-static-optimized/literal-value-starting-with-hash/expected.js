@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./xlink-with-literal-value.css";
-import _implicitScopedStylesheets from "./xlink-with-literal-value.scoped.css?scoped=true";
+import _implicitStylesheets from "./literal-value-starting-with-hash.css";
+import _implicitScopedStylesheets from "./literal-value-starting-with-hash.scoped.css?scoped=true";
 import { freezeTemplate, registerTemplate, sanitizeAttribute } from "lwc";
 const stc0 = {
   classMap: {
@@ -13,7 +13,7 @@ const stc0 = {
   svg: true,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+  const { fid: api_scoped_frag_id, h: api_element } = $api;
   return [
     api_element("svg", stc0, [
       api_element("use", {
@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "use",
             "http://www.w3.org/2000/svg",
             "xlink:href",
-            "/assets/icons/standard-sprite/svg/symbols.svg#case"
+            api_scoped_frag_id("#case")
           ),
         },
         key: 1,
@@ -34,9 +34,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-59dgv24hpm8";
+tmpl.stylesheetToken = "lwc-p1v8cfa11m";
 tmpl.legacyStylesheetToken =
-  "x-xlink-with-literal-value_xlink-with-literal-value";
+  "x-literal-value-starting-with-hash_literal-value-starting-with-hash";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

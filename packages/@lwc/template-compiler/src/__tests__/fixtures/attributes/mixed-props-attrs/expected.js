@@ -9,32 +9,22 @@ import {
   sanitizeAttribute,
 } from "lwc";
 const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
-const $fragment2 = parseFragment`<table bgcolor="x"${3}></table>`;
-const $fragment3 = parseFragment`<div${"c0"} aria-hidden="hidden"${2}></div>`;
+const $fragment2 = parseFragment`<svg class="cubano${0}" focusable="true"${2}><use${"a1:xlink:href"}${3}/></svg>`;
+const $fragment3 = parseFragment`<table bgcolor="x"${3}></table>`;
+const $fragment4 = parseFragment`<div${"c0"} aria-hidden="hidden"${2}></div>`;
 const stc0 = {
   r: true,
 };
 const stc1 = {
   "data-xx": "foo",
 };
-const stc2 = {
-  classMap: {
-    cubano: true,
-  },
-  attrs: {
-    focusable: "true",
-  },
-  key: 4,
-  svg: true,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
     c: api_custom_element,
     st: api_static_fragment,
-    h: api_element,
-    ncls: api_normalize_class_name,
     sp: api_static_part,
+    ncls: api_normalize_class_name,
   } = $api;
   return [
     api_custom_element("ns-foo", _nsFoo, {
@@ -59,22 +49,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 3,
     }),
-    api_element("svg", stc2, [
-      api_element("use", {
-        attrs: {
-          "xlink:href": sanitizeAttribute(
-            "use",
-            "http://www.w3.org/2000/svg",
-            "xlink:href",
-            "xx"
-          ),
+    api_static_fragment($fragment2, 5, [
+      api_static_part(
+        1,
+        {
+          attrs: {
+            "xlink:href": sanitizeAttribute(
+              "use",
+              "http://www.w3.org/2000/svg",
+              "xlink:href",
+              "xx"
+            ),
+          },
         },
-        key: 5,
-        svg: true,
-      }),
+        null
+      ),
     ]),
-    api_static_fragment($fragment2, 7),
-    api_static_fragment($fragment3, 9, [
+    api_static_fragment($fragment3, 7),
+    api_static_fragment($fragment4, 9, [
       api_static_part(
         0,
         {
