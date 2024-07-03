@@ -263,7 +263,9 @@
             }
         },
         {
-            "files": ["packages/@lwc/integration-karma/**"],
+            "files": [
+                "packages/@lwc/integration-karma/**"
+            ],
             "globals": {
                 "lwcRuntimeFlags": true
             }
