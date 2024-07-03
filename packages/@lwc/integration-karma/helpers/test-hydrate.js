@@ -10,23 +10,27 @@ window.HydrateTest = (function (lwc, testUtils) {
         sanitizeHtmlContent: (content) => content,
     });
 
-    function parseStringToDom(html) {
-        const fragment = new DOMParser().parseFromString(html, 'text/html', {
-            includeShadowRoots: true,
-        });
-        return fragment.body.firstChild;
-    }
-
-    // As of this writing, Safari does not support programmatic access to serializing/parsing DSD,
-    // e.g. getInnerHTML or DOMParser with includeShadowRoots.
-    // See: https://webkit.org/blog/13851/declarative-shadow-dom/
+    // As of this writing, Firefox does not support programmatic access to parsing DSD,
+    // i.e. `Document.parseHTMLUnsafe`
+    // See: https://developer.mozilla.org/en-US/docs/Web/API/Document/parseHTMLUnsafe_static
     function testSupportsProgrammaticDSD() {
         const html = '<div><template shadowrootmode="open"></template></div>';
-        const element = parseStringToDom(html);
-        return !!element.shadowRoot;
+        try {
+            return !!Document.parseHTMLUnsafe(html).body.firstChild.shadowRoot;
+        } catch (err) {
+            return false;
+        }
     }
 
     const browserSupportsProgrammaticDSD = testSupportsProgrammaticDSD();
+
+    function parseStringToDom(html) {
+        if (browserSupportsProgrammaticDSD) {
+            return Document.parseHTMLUnsafe(html).body.firstChild;
+        } else {
+            return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
+        }
+    }
 
     function polyfillDeclarativeShadowDom(root) {
         root.querySelectorAll('template[shadowrootmode]').forEach((template) => {

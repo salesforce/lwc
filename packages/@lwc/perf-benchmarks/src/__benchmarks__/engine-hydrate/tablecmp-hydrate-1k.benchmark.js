@@ -27,10 +27,7 @@ benchmark(`hydrate/table-component/hydrate/1k`, () => {
         };
 
         const ssrHtml = renderComponent('benchmark-table', Table, props);
-
-        const fragment = new DOMParser().parseFromString(ssrHtml, 'text/html', {
-            includeShadowRoots: true,
-        });
+        const fragment = Document.parseHTMLUnsafe(ssrHtml);
 
         tableElement = fragment.querySelector('benchmark-table');
 
