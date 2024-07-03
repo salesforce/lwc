@@ -14,6 +14,7 @@ import {
 import { rendererFactory } from './renderer-factory';
 import type { RendererAPI } from '@lwc/engine-core';
 
+// Host element mutation tracking is for SSR only
 const startTrackingMutations = noop;
 const stopTrackingMutations = noop;
 
