@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const path = require('path');
-const vm = require('vm');
-const { format } = require('util');
+const path = require('node:path');
+const vm = require('node:vm');
+const fs = require('node:fs/promises');
+const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const ssr = require('@lwc/engine-server');
@@ -34,13 +35,23 @@ const TEMPLATE = `
         // Test config, set as config
         %s;
         
-        describe(%s, () => {
+        %s(%s, () => {
             it('test', () => {
                 return hydrateTest.runTest(ssrRendered, Main, config);
             })
         });
     })(window.HydrateTest);
 `;
+
+// Like `fs.existsSync` but async
+async function exists(path) {
+    try {
+        await fs.access(path);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
 
 let cache;
 
@@ -146,6 +157,8 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const { code: componentDef, watchFiles: componentWatchFiles } = await getCompiledModule(
                 suiteDir
             );
+            // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
+            const onlyFileExists = await exists(path.join(suiteDir, '.only'));
 
             const ssrOutput = getSsrCode(componentDef, testCode);
 
@@ -155,6 +168,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                 JSON.stringify(ssrOutput),
                 componentDef,
                 testCode,
+                onlyFileExists ? 'fdescribe' : 'describe',
                 JSON.stringify(describeTitle)
             );
             done(null, newContent);
