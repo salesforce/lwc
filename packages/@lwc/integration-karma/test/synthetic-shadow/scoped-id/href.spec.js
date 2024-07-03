@@ -85,7 +85,7 @@ describe('boolean true', () => {
 
     scenarios.forEach(({ name, Ctor, tagName }) => {
         describe(name, () => {
-            // For the odd "boolean true" case (e.g. `<a href>` or `<area href`), no transformation is applied
+            // For the "boolean true" case (e.g. `<a href>` or `<area href>`), no transformation is applied
             it('does not transform href', () => {
                 const elm = createElement(tagName, { is: Ctor });
                 document.body.appendChild(elm);
