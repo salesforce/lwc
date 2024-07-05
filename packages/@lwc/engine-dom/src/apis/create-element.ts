@@ -25,6 +25,7 @@ import {
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
+import { logWarnOnce } from '../../../engine-core/src/shared/logger';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
@@ -67,7 +68,7 @@ function monkeyPatchDomAPIs() {
         },
         insertBefore(newChild, referenceNode) {
             if (arguments.length < 2) {
-                throw new TypeError("Failed to execute 'insertBefore' on 'Node': 2 arguments required, but only 1 present.");
+                logWarnOnce('insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported.');
             }
             const insertedNode = insertBefore.call(this, newChild, referenceNode);
             return callNodeSlot(insertedNode, ConnectingSlot);
