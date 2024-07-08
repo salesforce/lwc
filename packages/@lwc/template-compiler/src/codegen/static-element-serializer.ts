@@ -5,9 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
-import { isIdReferencingAttribute, isSvgUseHref } from '../parser/attribute';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
-import { isElement, isComment, isExpression, isText, isBooleanLiteral } from '../shared/ast';
+import {
+    isElement,
+    isComment,
+    isExpression,
+    isText,
+    isBooleanLiteral,
+    isStringLiteral,
+} from '../shared/ast';
 import { transformStaticChildren, isContiguousText, hasDynamicText } from './static-element';
 import type CodeGen from './codegen';
 
@@ -48,12 +60,14 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         hasExpression,
         hasIdOrIdRef,
         hasSvgUseHref,
+        hasScopedFragmentRef,
     }: {
         name: string;
         value: string | boolean;
         hasExpression?: boolean;
         hasIdOrIdRef?: boolean;
         hasSvgUseHref?: boolean;
+        hasScopedFragmentRef?: boolean;
     }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
@@ -83,7 +97,8 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
             // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
-            const needsPlaceholder = hasExpression || hasIdOrIdRef || hasSvgUseHref;
+            const needsPlaceholder =
+                hasExpression || hasIdOrIdRef || hasSvgUseHref || hasScopedFragmentRef;
 
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
@@ -109,13 +124,22 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             const hasSvgUseHref =
                 isSvgUseHref(element.name, name, element.namespace) && !isBooleanLiteral(value);
 
+            // `<a href="#foo">` and `<area href="#foo">` must be dynamic due to synthetic shadow scoping
+            // Note this only applies if there is an `id` attribute somewhere in the template
+            const hasScopedFragmentRef =
+                codeGen.scopeFragmentId &&
+                isStringLiteral(value) &&
+                isAllowedFragOnlyUrlsXHTML(element.name, name, element.namespace) &&
+                isFragmentOnlyUrl(value.value);
+
             return {
                 hasExpression,
                 hasIdOrIdRef,
                 hasSvgUseHref,
+                hasScopedFragmentRef,
                 name,
                 value:
-                    hasExpression || hasIdOrIdRef || hasSvgUseHref
+                    hasExpression || hasIdOrIdRef || hasSvgUseHref || hasScopedFragmentRef
                         ? codeGen.getStaticExpressionToken(attr)
                         : (value as Literal).value,
             };

@@ -1,0 +1,289 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 8,
+            "endColumn": 12,
+            "start": 0,
+            "end": 269,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 8,
+                "startColumn": 1,
+                "endLine": 8,
+                "endColumn": 12,
+                "start": 258,
+                "end": 269
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "a",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 57,
+                    "start": 15,
+                    "end": 67,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 50,
+                        "start": 15,
+                        "end": 60
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 53,
+                        "endLine": 2,
+                        "endColumn": 57,
+                        "start": 63,
+                        "end": 67
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "href",
+                        "value": {
+                            "type": "Literal",
+                            "value": "https://example.com/kansai-airport"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 49,
+                            "start": 18,
+                            "end": 59
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "KIX",
+                        "value": {
+                            "type": "Literal",
+                            "value": "KIX"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 50,
+                            "endLine": 2,
+                            "endColumn": 53,
+                            "start": 60,
+                            "end": 63
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "map",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 11,
+                    "start": 72,
+                    "end": 196,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 10,
+                        "start": 72,
+                        "end": 77
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 11,
+                        "start": 190,
+                        "end": 196
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "area",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 53,
+                            "start": 86,
+                            "end": 130,
+                            "startTag": {
+                                "startLine": 4,
+                                "startColumn": 9,
+                                "endLine": 4,
+                                "endColumn": 53,
+                                "start": 86,
+                                "end": 130
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "https://example.com/eneos-gas"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 15,
+                                    "endLine": 4,
+                                    "endColumn": 51,
+                                    "start": 92,
+                                    "end": 128
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "area",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 55,
+                            "start": 139,
+                            "end": 185,
+                            "startTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 55,
+                                "start": 139,
+                                "end": 185
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "https://example.com/kawaramachi"
+                                },
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 15,
+                                    "endLine": 5,
+                                    "endColumn": 53,
+                                    "start": 145,
+                                    "end": 183
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "h1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 7,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 61,
+                    "start": 201,
+                    "end": 257,
+                    "startTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 29,
+                        "start": 201,
+                        "end": 225
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 56,
+                        "endLine": 7,
+                        "endColumn": 61,
+                        "start": 252,
+                        "end": 257
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "id",
+                        "value": {
+                            "type": "Literal",
+                            "value": "kansai-airport"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 28,
+                            "start": 205,
+                            "end": 224
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Don't forget your passport!",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Don't forget your passport!"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 29,
+                            "endLine": 7,
+                            "endColumn": 56,
+                            "start": 225,
+                            "end": 252
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
