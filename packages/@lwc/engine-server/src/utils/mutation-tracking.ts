@@ -13,11 +13,11 @@ const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 export function reportMutation(element: HostElement) {
     if (elementsToTrackForMutations.has(element)) {
         const hasMutationAttribute = element[HostAttributesKey].find(
-            (attr) => attr.name === ATTRIBUTE_NAME && attr[HostNamespaceKey] === null
+            (attr) => attr.name === MUTATION_TRACKING_ATTRIBUTE && attr[HostNamespaceKey] === null
         );
-        if (!hasAttribute) {
+        if (!hasMutationAttribute) {
             element[HostAttributesKey].push({
-                name: ATTRIBUTE_NAME,
+                name: MUTATION_TRACKING_ATTRIBUTE,
                 [HostNamespaceKey]: null,
                 value: '',
             });
