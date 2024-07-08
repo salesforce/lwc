@@ -12,7 +12,7 @@ const ATTRIBUTE_NAME = 'data-lwc-host-mutated';
 
 export function reportMutation(element: HostElement) {
     if (elementsToTrackForMutations.has(element)) {
-        const hasAttribute = element[HostAttributesKey].find(
+        const hasMutationAttribute = element[HostAttributesKey].find(
             (attr) => attr.name === ATTRIBUTE_NAME && attr[HostNamespaceKey] === null
         );
         if (!hasAttribute) {
