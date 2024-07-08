@@ -8,7 +8,7 @@ import { HostAttributesKey, HostElement, HostNamespaceKey } from '../types';
 
 const elementsToTrackForMutations: WeakSet<HostElement> = new WeakSet();
 
-const ATTRIBUTE_NAME = 'data-lwc-host-mutated';
+const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 
 export function reportMutation(element: HostElement) {
     if (elementsToTrackForMutations.has(element)) {
