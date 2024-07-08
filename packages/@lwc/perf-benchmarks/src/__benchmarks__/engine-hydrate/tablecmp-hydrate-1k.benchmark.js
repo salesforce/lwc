@@ -27,7 +27,13 @@ benchmark(`hydrate/table-component/hydrate/1k`, () => {
         };
 
         const ssrHtml = renderComponent('benchmark-table', Table, props);
-        const fragment = Document.parseHTMLUnsafe(ssrHtml);
+
+        // parseHTMLUnsafe landed in Chrome 124 https://caniuse.com/mdn-api_document_parsehtmlunsafe_static
+        const fragment = Document.parseHTMLUnsafe
+            ? Document.parseHTMLUnsafe(ssrHtml)
+            : new DOMParser().parseFromString(ssrHtml, 'text/html', {
+                  includeShadowRoots: true,
+              });
 
         tableElement = fragment.querySelector('benchmark-table');
 
