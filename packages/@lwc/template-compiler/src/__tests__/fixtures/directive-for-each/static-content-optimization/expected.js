@@ -46,9 +46,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             7,
             {
               style: $cmp.baaz,
-              className: api_normalize_class_name
-                ? api_normalize_class_name($cmp.bar)
-                : $cmp.bar,
+              className: api_normalize_class_name($cmp.bar),
               attrs: {
                 "data-dynamic": $cmp.foo,
               },

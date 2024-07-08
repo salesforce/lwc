@@ -47,9 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         8,
         {
-          className: api_normalize_class_name
-            ? api_normalize_class_name($cmp.fooClass)
-            : $cmp.fooClass,
+          className: api_normalize_class_name($cmp.fooClass),
         },
         null
       ),
@@ -82,9 +80,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         13,
         {
-          className: api_normalize_class_name
-            ? api_normalize_class_name($cmp.barClass)
-            : $cmp.barClass,
+          className: api_normalize_class_name($cmp.barClass),
         },
         null
       ),

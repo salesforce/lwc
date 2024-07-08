@@ -40,13 +40,7 @@ describe('Basic DOM manipulation cases', () => {
     it('should return false for host connected to detached fragment', () => {
         const frag = document.createDocumentFragment();
         const callback = () => frag.appendChild(elm);
-        // In LWC v6 engine this will issue a warning, because the component has no API
-        // version, and thus defaults to the oldest (i.e. synthetic custom element lifecycle events).
-        // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
-        if (
-            lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE ||
-            process.env.FORCE_LWC_V6_ENGINE_FOR_TEST
-        ) {
+        if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             // Expected warning, since we are working with disconnected nodes,
             // and the Test element is manually constructed, so it will always run in synthetic lifecycle mode
             expect(callback).toLogWarningDev(

@@ -24,8 +24,7 @@ const expectedEnumerableProps = [
     'hasAttribute',
     'hasAttributeNS',
     'hidden',
-    // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
-    ...(process.env.FORCE_LWC_V6_ENGINE_FOR_TEST ? [] : ['hostElement']),
+    'hostElement',
     'id',
     'isConnected',
     'lang',
@@ -43,8 +42,7 @@ const expectedEnumerableProps = [
     'setAttributeNS',
     'shadowRoot',
     'spellcheck',
-    // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
-    ...(process.env.FORCE_LWC_V6_ENGINE_FOR_TEST ? [] : ['style']),
+    'style',
     'tabIndex',
     'tagName',
     'template',
