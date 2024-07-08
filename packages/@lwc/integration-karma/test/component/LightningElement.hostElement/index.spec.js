@@ -48,16 +48,9 @@ if (ENABLE_THIS_DOT_HOST_ELEMENT) {
 
         let hostElement;
 
-        const callback = () => {
+        expect(() => {
             hostElement = shadowElement.getHostElement();
-        };
-
-        if (process.env.FORCE_LWC_V6_ENGINE_FOR_TEST) {
-            // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
-            callback(); // no warning
-        } else {
-            expect(callback).toLogWarningDev(/Increase the API version to use it/);
-        }
+        }).toLogWarningDev(/Increase the API version to use it/);
 
         expect(hostElement).toBeUndefined();
     });

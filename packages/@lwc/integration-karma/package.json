@@ -19,7 +19,6 @@
     "devDependencies": {
         "@lwc/compiler": "7.0.3",
         "@lwc/engine-dom": "7.0.3",
-        "@lwc/engine-dom-v6": "npm:@lwc/engine-dom@6.7.2",
         "@lwc/engine-server": "7.0.3",
         "@lwc/rollup-plugin": "7.0.3",
         "@lwc/synthetic-shadow": "7.0.3",
