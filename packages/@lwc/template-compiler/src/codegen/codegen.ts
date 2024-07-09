@@ -49,7 +49,12 @@ import {
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import State from '../state';
-import { isIdReferencingAttribute, isSvgUseHref } from '../parser/attribute';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 import { memorizeHandler, objectToAST } from './helpers';
 import {
     transformStaticChildren,
@@ -331,8 +336,8 @@ export default class CodeGen {
         return classExpression;
     }
 
-    genNormalizeClassName(className: t.Expression): t.CallExpression | t.ConditionalExpression {
-        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className], className);
+    genNormalizeClassName(className: t.Expression): t.CallExpression {
+        return this._renderApiCall(RENDER_APIS.normalizeClassName, [className]);
     }
 
     /**
@@ -493,17 +498,7 @@ export default class CodeGen {
     private _renderApiCall(
         primitive: RenderPrimitiveDefinition,
         params: t.Expression[]
-    ): t.CallExpression;
-    private _renderApiCall(
-        primitive: RenderPrimitiveDefinition,
-        params: t.Expression[],
-        fallbackForCompilerEngineVersionMismatch: t.Expression
-    ): t.ConditionalExpression;
-    private _renderApiCall(
-        primitive: RenderPrimitiveDefinition,
-        params: t.Expression[],
-        fallbackForCompilerEngineVersionMismatch?: t.Expression
-    ): t.CallExpression | t.ConditionalExpression {
+    ): t.CallExpression {
         const { name, alias } = primitive;
 
         let identifier = this.usedApis[name];
@@ -511,18 +506,7 @@ export default class CodeGen {
             identifier = this.usedApis[name] = t.identifier(alias);
         }
 
-        const callExpression = t.callExpression(identifier, params);
-
-        // Check if the property actually exists before calling, to allow
-        // for older engines to work with newer compilers
-        // TODO [#4313]: remove temporary logic to support v7 compiler + v6 engine
-        return fallbackForCompilerEngineVersionMismatch
-            ? t.conditionalExpression(
-                  identifier,
-                  callExpression,
-                  fallbackForCompilerEngineVersionMismatch
-              )
-            : callExpression;
+        return t.callExpression(identifier, params);
     }
 
     beginScope(): void {
@@ -751,7 +735,15 @@ export default class CodeGen {
                         isSvgUseHref(currentNode.name, name, currentNode.namespace) &&
                         !isBooleanLiteral(value);
 
-                    if (isExpression(value) || isIdOrIdRef || isSvgHref) {
+                    // `<a href="#foo">` and `<area href="#foo">` must be dynamic due to synthetic shadow scoping
+                    // Note this only applies if there is an `id` attribute somewhere in the template
+                    const isScopedFragmentRef =
+                        this.scopeFragmentId &&
+                        isStringLiteral(value) &&
+                        isAllowedFragOnlyUrlsXHTML(currentNode.name, name, currentNode.namespace) &&
+                        isFragmentOnlyUrl(value.value);
+
+                    if (isExpression(value) || isIdOrIdRef || isSvgHref || isScopedFragmentRef) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;

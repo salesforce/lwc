@@ -7,7 +7,7 @@
             "endLine": 8,
             "endColumn": 12,
             "start": 0,
-            "end": 175,
+            "end": 173,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 8,
                 "endColumn": 12,
-                "start": 164,
-                "end": 175
+                "start": 162,
+                "end": 173
             }
         },
         "directives": [],
@@ -115,7 +115,7 @@
                     "endLine": 6,
                     "endColumn": 11,
                     "start": 44,
-                    "end": 121,
+                    "end": 119,
                     "startTag": {
                         "startLine": 3,
                         "startColumn": 5,
@@ -129,8 +129,8 @@
                         "startColumn": 5,
                         "endLine": 6,
                         "endColumn": 11,
-                        "start": 115,
-                        "end": 121
+                        "start": 113,
+                        "end": 119
                     }
                 },
                 "attributes": [],
@@ -146,16 +146,16 @@
                             "startLine": 4,
                             "startColumn": 9,
                             "endLine": 4,
-                            "endColumn": 31,
+                            "endColumn": 30,
                             "start": 58,
-                            "end": 80,
+                            "end": 79,
                             "startTag": {
                                 "startLine": 4,
                                 "startColumn": 9,
                                 "endLine": 4,
-                                "endColumn": 31,
+                                "endColumn": 30,
                                 "start": 58,
-                                "end": 80
+                                "end": 79
                             }
                         },
                         "attributes": [
@@ -163,8 +163,18 @@
                                 "type": "Attribute",
                                 "name": "href",
                                 "value": {
-                                    "type": "Literal",
-                                    "value": "#haneda"
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 7,
+                                    "name": "haneda",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 15,
+                                        "endLine": 4,
+                                        "endColumn": 29,
+                                        "start": 64,
+                                        "end": 78
+                                    }
                                 },
                                 "location": {
                                     "startLine": 4,
@@ -189,16 +199,16 @@
                             "startLine": 5,
                             "startColumn": 9,
                             "endLine": 5,
-                            "endColumn": 30,
-                            "start": 89,
-                            "end": 110,
+                            "endColumn": 29,
+                            "start": 88,
+                            "end": 108,
                             "startTag": {
                                 "startLine": 5,
                                 "startColumn": 9,
                                 "endLine": 5,
-                                "endColumn": 30,
-                                "start": 89,
-                                "end": 110
+                                "endColumn": 29,
+                                "start": 88,
+                                "end": 108
                             }
                         },
                         "attributes": [
@@ -206,16 +216,26 @@
                                 "type": "Attribute",
                                 "name": "href",
                                 "value": {
-                                    "type": "Literal",
-                                    "value": "#chubu"
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 6,
+                                    "name": "chubu",
+                                    "location": {
+                                        "startLine": 5,
+                                        "startColumn": 15,
+                                        "endLine": 5,
+                                        "endColumn": 28,
+                                        "start": 94,
+                                        "end": 107
+                                    }
                                 },
                                 "location": {
                                     "startLine": 5,
                                     "startColumn": 15,
                                     "endLine": 5,
                                     "endColumn": 28,
-                                    "start": 95,
-                                    "end": 108
+                                    "start": 94,
+                                    "end": 107
                                 }
                             }
                         ],
@@ -235,23 +255,23 @@
                     "startColumn": 5,
                     "endLine": 7,
                     "endColumn": 42,
-                    "start": 126,
-                    "end": 163,
+                    "start": 124,
+                    "end": 161,
                     "startTag": {
                         "startLine": 7,
                         "startColumn": 5,
                         "endLine": 7,
                         "endColumn": 22,
-                        "start": 126,
-                        "end": 143
+                        "start": 124,
+                        "end": 141
                     },
                     "endTag": {
                         "startLine": 7,
                         "startColumn": 37,
                         "endLine": 7,
                         "endColumn": 42,
-                        "start": 158,
-                        "end": 163
+                        "start": 156,
+                        "end": 161
                     }
                 },
                 "attributes": [
@@ -267,8 +287,8 @@
                             "startColumn": 9,
                             "endLine": 7,
                             "endColumn": 21,
-                            "start": 130,
-                            "end": 142
+                            "start": 128,
+                            "end": 140
                         }
                     }
                 ],
@@ -288,8 +308,8 @@
                             "startColumn": 22,
                             "endLine": 7,
                             "endColumn": 37,
-                            "start": 143,
-                            "end": 158
+                            "start": 141,
+                            "end": 156
                         }
                     }
                 ]

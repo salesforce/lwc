@@ -173,8 +173,6 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-            - run: FORCE_LWC_V6_ENGINE_FOR_TEST=1 yarn sauce:ci
-            - run: FORCE_LWC_V6_ENGINE_FOR_TEST=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: yarn hydration:sauce:ci

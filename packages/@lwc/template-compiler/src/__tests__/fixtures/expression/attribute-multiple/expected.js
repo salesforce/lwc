@@ -13,18 +13,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          className: api_normalize_class_name
-            ? api_normalize_class_name($cmp.foo.c)
-            : $cmp.foo.c,
+          className: api_normalize_class_name($cmp.foo.c),
         },
         null
       ),
       api_static_part(
         1,
         {
-          className: api_normalize_class_name
-            ? api_normalize_class_name($cmp.bar.c)
-            : $cmp.bar.c,
+          className: api_normalize_class_name($cmp.bar.c),
         },
         null
       ),

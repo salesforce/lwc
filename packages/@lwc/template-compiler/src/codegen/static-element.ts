@@ -28,12 +28,10 @@ import {
     isComment,
     isConditionalParentBlock,
     isElement,
-    isExpression,
     isStringLiteral,
     isText,
 } from '../shared/ast';
 import { STATIC_SAFE_DIRECTIVES } from '../shared/constants';
-import { isAllowedFragOnlyUrlsXHTML, isFragmentOnlyUrl } from '../parser/attribute';
 import State from '../state';
 import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 
@@ -49,7 +47,7 @@ const STATIC_ELEMENT_TO_DYNAMIC_TEXT_CHILDREN_CACHE = new WeakMap<
 
 function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     let result = true;
-    const { name: nodeName, namespace = '', attributes, directives, properties } = node;
+    const { namespace = '', attributes, directives, properties } = node;
 
     // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
     // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
@@ -65,17 +63,10 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
 
     // all attrs are static-safe
     // the criteria to determine safety can be found in computeAttrValue
-    result &&= attributes.every(({ name, value }) => {
-        const isStaticSafeLiteral =
-            isLiteral(value) &&
-            name !== 'slot' &&
-            // Check for ScopedFragId
-            !(
-                isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
-                isFragmentOnlyUrl(value.value as string)
-            );
-        const isStaticSafeExpression = isExpression(value) && name !== 'slot';
-        return isStaticSafeLiteral || isStaticSafeExpression;
+    result &&= attributes.every(({ name }) => {
+        // Slots are not safe because the VDOM handles them specially in synthetic shadow and light DOM mode
+        // TODO [#4351]: `disableSyntheticShadowSupport` should allow slots to be static-optimized
+        return name !== 'slot';
     });
 
     // all directives are static-safe
