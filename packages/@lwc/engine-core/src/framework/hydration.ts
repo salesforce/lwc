@@ -160,8 +160,16 @@ function textNodeContentsAreEqual(
 // Any attribute names specified in that array will not be validated, and the
 // LWC runtime will assume that VDOM attrs and DOM attrs are in sync.
 function getValidationPredicate(
+    elm: Node,
+    renderer: RendererAPI,
     optOutStaticProp: string[] | true | undefined
 ): AttrValidationPredicate {
+    // `data-lwc-host-mutated` is a special attribute added by the SSR engine itself,
+    // which does the same thing as an explicit `static validationOptOut = true`.
+    if (renderer.getAttribute(elm, 'data-lwc-host-mutated') === '') {
+        return (_attrName: string) => false;
+    }
+
     if (isUndefined(optOutStaticProp)) {
         return (_attrName: string) => true;
     }
@@ -335,7 +343,7 @@ function hydrateCustomElement(
     renderer: RendererAPI
 ): Node | null {
     const { validationOptOut } = vnode.ctor;
-    const shouldValidateAttr = getValidationPredicate(validationOptOut);
+    const shouldValidateAttr = getValidationPredicate(elm, renderer, validationOptOut);
 
     // The validationOptOut static property can be an array of attribute names.
     // Any attribute names specified in that array will not be validated, and the

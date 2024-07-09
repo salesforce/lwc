@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assign, hasOwnProperty, KEY__SHADOW_TOKEN } from '@lwc/shared';
+import { assign, hasOwnProperty, KEY__SHADOW_TOKEN, noop } from '@lwc/shared';
 import { insertStylesheet } from './styles';
 import {
     createCustomElement,
@@ -13,6 +13,10 @@ import {
 } from './custom-elements/create-custom-element';
 import { rendererFactory } from './renderer-factory';
 import type { RendererAPI } from '@lwc/engine-core';
+
+// Host element mutation tracking is for SSR only
+const startTrackingMutations = noop;
+const stopTrackingMutations = noop;
 
 /**
  * The base renderer that will be used by engine-core.
@@ -30,5 +34,7 @@ export const renderer: RendererAPI = assign(
         createCustomElement,
         defineCustomElement: getUpgradableConstructor,
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
+        startTrackingMutations,
+        stopTrackingMutations,
     }
 );

@@ -82,4 +82,6 @@ export interface RendererAPI {
         subscriptionPayload: WireContextSubscriptionPayload
     ) => void;
     attachInternals: (elm: E) => ElementInternals;
+    startTrackingMutations: (elm: E) => void;
+    stopTrackingMutations: (elm: E) => void;
 }
