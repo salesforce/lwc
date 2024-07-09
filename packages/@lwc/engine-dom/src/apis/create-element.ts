@@ -64,7 +64,10 @@ function monkeyPatchDomAPIs() {
         },
         insertBefore(newChild, referenceNode) {
             if (process.env.NODE_ENV !== 'production' && arguments.length < 2) {
-                console.warn('insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported.');
+                // eslint-disable-next-line no-console
+                console.warn(
+                    'insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported.'
+                );
             }
             const insertedNode = insertBefore.call(this, newChild, referenceNode);
             return callNodeSlot(insertedNode, ConnectingSlot);
