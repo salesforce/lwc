@@ -238,7 +238,7 @@ if (process.env.NODE_ENV !== 'production') {
             expect(() => {
                 implicitTemplate.stylesheets = style;
             }).toLogWarningDev(/Mutating the "stylesheets" property on a template/);
-            // reswap the tempalte to implicit template
+            // reswap the template to implicit template
             swapTemplate(newTemplate, implicitTemplate);
             await Promise.resolve();
 
