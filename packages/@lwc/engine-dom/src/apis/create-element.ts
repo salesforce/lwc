@@ -22,7 +22,6 @@ import {
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
-import { logWarnOnce } from '../../../engine-core/src/shared/logger';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
