@@ -65,7 +65,7 @@ function monkeyPatchDomAPIs() {
         },
         insertBefore(newChild, referenceNode) {
             if (arguments.length < 2) {
-                logWarnOnce('insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported.');
+                console.warn('insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported.');
             }
             const insertedNode = insertBefore.call(this, newChild, referenceNode);
             return callNodeSlot(insertedNode, ConnectingSlot);
