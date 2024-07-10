@@ -23,10 +23,10 @@
         "@wdio/sauce-service": "^8.39.1",
         "@wdio/spec-reporter": "^8.39.0",
         "@wdio/static-server-service": "^8.39.0",
-        "deepmerge": "^4.3.0",
+        "deepmerge": "^4.3.1",
         "dotenv": "^16.4.5",
         "lwc": "7.1.0",
         "minimist": "^1.2.8",
-        "webdriverio": "^8.35.1"
+        "webdriverio": "^8.39.1"
     }
 }

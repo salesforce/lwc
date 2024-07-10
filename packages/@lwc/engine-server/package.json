@@ -46,7 +46,7 @@
         "@lwc/rollup-plugin": "7.1.0",
         "@lwc/shared": "7.1.0",
         "@parse5/tools": "^0.5.0",
-        "@rollup/plugin-virtual": "^3.0.1",
+        "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^7.1.2"
     }
 }
