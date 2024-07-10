@@ -13,7 +13,17 @@
     "env": {
         "es6": true
     },
-
+    "files": ["**/*.ts", "**/*.mjs", "**/*.js", "**/*.only", "**/*.skip"],
+    "ignores": [
+        "**/node_modules/",
+        "**/dist/",
+        "**/lib/",
+        "**/coverage/",
+        "**/fixtures/",
+        "**/public/",
+        "**/__benchmarks_results__/",
+        "**/playground/"
+    ],
     "reportUnusedDisableDirectives": true,
     "rules": {
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],

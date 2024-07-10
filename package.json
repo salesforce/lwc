@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prepare": "husky && yarn build",
-        "lint": "eslint packages/ scripts/ --ext=js,mjs,ts,only,skip",
+        "lint": "eslint packages/ scripts/",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
@@ -51,7 +51,7 @@
         "@typescript-eslint/parser": "^7.16.0",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.5.4",
-        "eslint": "^8.57.0",
+        "eslint": "^9.6.0",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jest": "^28.6.0",
