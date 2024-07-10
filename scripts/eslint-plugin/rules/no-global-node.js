@@ -25,6 +25,7 @@ module.exports = {
     },
 
     create(context) {
+        const sourceCode = context.sourceCode ?? context.getSourceCode();
         return {
             'Identifier[name="Node"]': function (node) {
                 if (isTypescriptType(node.parent.type)) {
@@ -33,7 +34,9 @@ module.exports = {
 
                 // `scope.through` is the array of references which could not be resolved in this
                 // scope (i.e., they were defined on another scope).
-                const { through } = context.getScope();
+                const { through } = sourceCode.getScope
+                    ? sourceCode.getScope(context)
+                    : context.getScope();
                 const reference = through.find((ref) => ref.identifier === node);
                 if (reference && isGlobalRef(reference)) {
                     context.report({

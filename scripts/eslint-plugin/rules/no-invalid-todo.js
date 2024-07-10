@@ -25,7 +25,7 @@ module.exports = {
     },
 
     create(context) {
-        const sourceCode = context.getSourceCode();
+        const sourceCode = context.sourceCode ?? context.getSourceCode();
 
         function checkComment(comment) {
             const { value } = comment;
