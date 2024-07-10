@@ -15,7 +15,7 @@ function resetCounts() {
 
 function getFocusCounts() {
     return browser.execute(function () {
-        var container = document.querySelector('integration-focus-event-while-navigating');
+        const container = document.querySelector('integration-focus-event-while-navigating');
         return {
             host: container.hostFocusCount(),
             shadow: container.shadowFocusCount(),

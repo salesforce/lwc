@@ -46,7 +46,7 @@ describe('sequential focus navigation coverage', () => {
 
                 // Set the type
                 await browser.execute(function (type) {
-                    var container = document.querySelector('integration-focusable-coverage');
+                    const container = document.querySelector('integration-focusable-coverage');
                     container.type = type;
                 }, type);
 

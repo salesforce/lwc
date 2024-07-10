@@ -29,7 +29,7 @@ describe('clipboard-event-composed polyfill', () => {
         await copy();
 
         const didHandleCopy = await browser.execute(() => {
-            var container = document.querySelector('integration-clipboard-event-composed');
+            const container = document.querySelector('integration-clipboard-event-composed');
             return container.didHandleCopy();
         });
         assert.strictEqual(didHandleCopy, true);
@@ -44,7 +44,7 @@ describe('clipboard-event-composed polyfill', () => {
         await paste();
 
         const didHandlePaste = await browser.execute(() => {
-            var container = document.querySelector('integration-clipboard-event-composed');
+            const container = document.querySelector('integration-clipboard-event-composed');
             return container.didHandlePaste();
         });
         assert.strictEqual(didHandlePaste, true);

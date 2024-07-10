@@ -35,7 +35,7 @@ module.exports = {
                 // `scope.through` is the array of references which could not be resolved in this
                 // scope (i.e., they were defined on another scope).
                 const { through } = sourceCode.getScope
-                    ? sourceCode.getScope(context)
+                    ? sourceCode.getScope(node)
                     : context.getScope();
                 const reference = through.find((ref) => ref.identifier === node);
                 if (reference && isGlobalRef(reference)) {

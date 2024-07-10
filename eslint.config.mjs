@@ -20,6 +20,20 @@ const compat = new FlatCompat({
 });
 
 export default [
+    {
+        ignores: [
+            '**/node_modules/',
+            '**/dist/',
+            '**/lib/',
+            '**/coverage/',
+            '**/fixtures/',
+            '**/public/',
+            '**/__benchmarks_results__/',
+            '**/playground/',
+            '**/*.html',
+            '**/*.css',
+        ],
+    },
     ...compat
         .extends('eslint:recommended', 'plugin:@typescript-eslint/recommended-type-checked')
         .map((config) => ({
@@ -307,6 +321,14 @@ export default [
             globals: {
                 lwcRuntimeFlags: true,
             },
+        },
+    },
+    {
+        files: ['packages/@lwc/integration-karma/**'],
+
+        rules: {
+            'no-var': 'off',
+            'prefer-rest-params': 'off',
         },
     },
     ...compat.extends('plugin:@typescript-eslint/disable-type-checked').map((config) => ({

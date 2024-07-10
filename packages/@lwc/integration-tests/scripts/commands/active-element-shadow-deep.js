@@ -17,7 +17,7 @@ module.exports = function (browser) {
      */
     browser.addCommand('activeElementShadowDeep', function () {
         return this.$(function () {
-            var active = document.activeElement;
+            const active = document.activeElement;
             while (active.shadowRoot && active.shadowRoot.activeElement) {
                 active = active.shadowRoot.activeElement;
             }
