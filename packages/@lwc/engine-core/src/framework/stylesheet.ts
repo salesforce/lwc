@@ -364,9 +364,9 @@ export function unrenderStylesheet(stylesheet: Stylesheet) {
     }
     for (const cssContent of cssContents) {
         const abortController = cssContentToAbortControllers.get(cssContent);
-        /* istanbul ignore if */
         if (isUndefined(abortController)) {
-            throw new Error('Cannot find AbortController for CSS content');
+            // Two stylesheets with the same content will share an abort controller, in which case it only needs to be called once.
+            continue;
         }
         abortController.abort();
         // remove association with AbortController in case stylesheet is rendered again

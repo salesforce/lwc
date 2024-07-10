@@ -1,4 +1,4 @@
-import { createElement, swapStyle } from 'lwc';
+import { createElement, swapStyle, swapTemplate } from 'lwc';
 import { extractDataIds } from 'test-utils';
 import ShadowUsesStaticStylesheets from 'shadow/usesStaticStylesheets';
 import LightUsesStaticStylesheets from 'light/usesStaticStylesheets';
@@ -13,6 +13,8 @@ import LibraryUserA from 'x/libraryUserA';
 import LibraryUserB from 'x/libraryUserB';
 import libraryStyle from 'x/library';
 import libraryStyleV2 from 'x/libraryV2';
+import IdenticalStylesheets from 'shadow/identicalStylesheets';
+import IdenticalStylesheetsContainer from 'shadow/identicalStylesheetsContainer';
 
 function expectStyles(elm, styles) {
     const computed = getComputedStyle(elm);
@@ -209,6 +211,45 @@ if (process.env.NODE_ENV !== 'production') {
                         display: 'none',
                     });
                 });
+            });
+        });
+
+        it('should be able to swap stylesheets that produce identical content', async () => {
+            const { style, identicalStyle, newStyle, implicitTemplate, newTemplate } =
+                IdenticalStylesheets;
+            const elm = createElement(`identical-stylesheets`, {
+                is: IdenticalStylesheetsContainer,
+            });
+            document.body.appendChild(elm);
+
+            // Step 1: wait for first render
+            // implicitTemplate is associated with identicalStyle
+            await Promise.resolve();
+            expectStyles(extractDataIds(elm).paragraph, {
+                display: 'inline',
+            });
+
+            // Step 2: swap template with a new template to trigger rehydration
+            swapTemplate(implicitTemplate, newTemplate);
+            await Promise.resolve();
+
+            // Step 3: Associate an identical stylesheet with the same template(or a template with the same shadow token)
+            // associate identical stylesheet with the original template
+            expect(() => {
+                implicitTemplate.stylesheets = style;
+            }).toLogWarningDev(/Mutating the "stylesheets" property on a template/);
+            // reswap the template to implicit template
+            swapTemplate(newTemplate, implicitTemplate);
+            await Promise.resolve();
+
+            // Act to trigger the unrender of the identical stylesheets
+            swapStyle(style[0], newStyle[0]);
+            swapStyle(identicalStyle[0], newStyle[0]);
+            await Promise.resolve();
+
+            // Assert that the swap is successful
+            expectStyles(extractDataIds(elm).paragraph, {
+                display: 'none',
             });
         });
 
