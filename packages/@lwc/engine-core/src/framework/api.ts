@@ -744,7 +744,13 @@ function shc(content: unknown): string {
  * This implementation is borrowed from Vue:
  * https://github.com/vuejs/core/blob/e790e1bdd7df7be39e14780529db86e4da47a3db/packages/shared/src/normalizeProp.ts#L63-L82
  */
-function ncls(value: unknown): string {
+function ncls(value: unknown): string | undefined {
+    if (isUndefined(value) || isNull(value)) {
+        // Returning undefined here improves initial render cost, because the old vnode's class will be considered
+        // undefined in the `patchClassAttribute` routine, so `oldClass === newClass` will be true so we return early
+        return undefined;
+    }
+
     let res = '';
 
     if (isString(value)) {
