@@ -16,8 +16,6 @@ export default [
             '**/fixtures/',
             '**/public/',
             '**/__benchmarks_results__/',
-            '**/*.html',
-            '**/*.css',
         ],
     },
     js.configs.recommended,
@@ -27,7 +25,6 @@ export default [
 
         plugins: {
             '@lwc/lwc-internal': lwcInternal,
-            '@typescript-eslint': tseslint.plugin,
             import: fixupPluginRules(_import),
             header,
         },
@@ -38,7 +35,7 @@ export default [
 
         languageOptions: {
             globals: {
-                ...globals.es6,
+                ...globals.es2021,
             },
 
             parserOptions: {
@@ -202,7 +199,13 @@ export default [
         ...tseslint.configs.disableTypeChecked,
     },
     {
-        files: ['commitlint.config.js', '**/jest.config.cjs'],
+        files: [
+            'commitlint.config.js',
+            '**/jest.config.cjs',
+            'packages/@lwc/perf-benchmarks-components/**',
+            '**/scripts/**',
+            '**/jest.config.js',
+        ],
         languageOptions: {
             globals: {
                 ...globals.node,
@@ -274,15 +277,7 @@ export default [
         },
     },
     {
-        files: ['./*.js', '**/scripts/**', '**/jest.config.js'],
-
-        languageOptions: {
-            globals: {
-                ...globals.node,
-                ...globals.jest,
-            },
-        },
-
+        files: ['**/scripts/**', '**/jest.config.js'],
         rules: {
             'no-console': 'off',
         },
@@ -308,19 +303,7 @@ export default [
         languageOptions: {
             globals: {
                 browser: true,
-                ...globals.node,
             },
-        },
-    },
-    {
-        files: [
-            'packages/@lwc/integration-tests/src/**/!(*.spec.js)',
-            'packages/@lwc/integration-karma/test/**',
-            'packages/@lwc/integration-karma/test-hydration/**',
-        ],
-
-        rules: {
-            'header/header': 'off',
         },
     },
     {
