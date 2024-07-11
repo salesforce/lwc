@@ -6,7 +6,7 @@ export default function (define) {
             function _interopDefaultLegacy(e) {
                 return e && typeof e === 'object' && 'default' in e ? e : { default: e };
             }
-            var _uiOutputpercent__default = /*#__PURE__*/ _interopDefaultLegacy(_uiOutputpercent);
+            const _uiOutputpercent__default = /*#__PURE__*/ _interopDefaultLegacy(_uiOutputpercent);
             function tmpl($api, $cmp, $slotset, $ctx) {
                 const { b: api_bind, c: api_custom_element } = $api;
                 const { _m0 } = $ctx;

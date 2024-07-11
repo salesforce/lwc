@@ -20,7 +20,7 @@ describe('Tab navigation when tabindex 0', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var activeElementHost = await browser.activeElementShadowDeep();
+        const activeElementHost = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElementHost.getTagName(), 'integration-child');
 
         const activeElementShadow = await browser.execute(function (host) {

@@ -13,7 +13,6 @@
     "env": {
         "es6": true
     },
-
     "reportUnusedDisableDirectives": true,
     "rules": {
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],

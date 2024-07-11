@@ -74,8 +74,8 @@ export default class Store {
     }
 
     buildData(count = 1000) {
-        var data = [];
-        for (var i = 0; i < count; i++)
+        const data = [];
+        for (let i = 0; i < count; i++)
             data.push({
                 id: this.id++,
                 label:
@@ -90,7 +90,7 @@ export default class Store {
 
     updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
-        var newData = [];
+        const newData = [];
         for (let i = 0; i < this.data.length; i++) {
             if (i % 10 === 0) {
                 newData[i] = Object.assign({}, this.data[i], {
@@ -140,7 +140,7 @@ export default class Store {
             const d4 = this.data[4];
             const d9 = this.data[9];
 
-            var newData = this.data.map(function (data, i) {
+            const newData = this.data.map(function (data, i) {
                 if (i === 4) {
                     return d9;
                 } else if (i === 9) {

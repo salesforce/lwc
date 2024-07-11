@@ -94,8 +94,8 @@ describe('relatedTarget', () => {
 
     it('should be `undefined` if the event lacks a relatedTarget getter', async () => {
         const relatedTarget = await browser.execute(function () {
-            var relatedTarget = null;
-            var container = document.querySelector('integration-related-target');
+            let relatedTarget = null;
+            const container = document.querySelector('integration-related-target');
             container.addEventListener('foo', function (event) {
                 relatedTarget = event.relatedTarget;
             });
