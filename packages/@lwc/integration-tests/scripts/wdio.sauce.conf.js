@@ -64,6 +64,7 @@ if (!accessKey) {
 const tunnelId = process.env.SAUCE_TUNNEL_ID;
 const buildId = process.env.GITHUB_RUN_ID || Date.now();
 
+// eslint-disable-next-line no-redeclare
 const name = ['integration-test', mode].join(' - ');
 const build = ['integration-test', buildId, mode].join(' - ');
 const tags = [mode];

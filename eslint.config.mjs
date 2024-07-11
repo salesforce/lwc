@@ -1,23 +1,11 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
 import { fixupPluginRules } from '@eslint/compat';
-import tsParser from '@typescript-eslint/parser';
 import globals from 'globals';
 import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all,
-});
+import tseslint from 'typescript-eslint';
 
 export default [
     {
@@ -34,19 +22,14 @@ export default [
             '**/*.css',
         ],
     },
-    ...compat
-        .extends('eslint:recommended', 'plugin:@typescript-eslint/recommended-type-checked')
-        .map((config) => ({
-            ...config,
-            files: ['**/*.ts', '**/*.mjs', '**/*.js', '**/*.only', '**/*.skip'],
-        })),
+    js.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
     {
-        files: ['**/*.ts', '**/*.mjs', '**/*.js', '**/*.only', '**/*.skip'],
+        files: ['**/*.ts', '**/*.mjs', '**/*.js'],
 
         plugins: {
-            jest,
             '@lwc/lwc-internal': lwcInternal,
-            '@typescript-eslint': typescriptEslint,
+            '@typescript-eslint': tseslint.plugin,
             import: fixupPluginRules(_import),
             header,
         },
@@ -56,10 +39,9 @@ export default [
         },
 
         languageOptions: {
-            globals: {},
-            parser: tsParser,
-            ecmaVersion: 5,
-            sourceType: 'module',
+            globals: {
+                ...globals.es6,
+            },
 
             parserOptions: {
                 project: true,
@@ -217,10 +199,18 @@ export default [
             },
         },
     },
-    ...compat.extends('plugin:@typescript-eslint/disable-type-checked').map((config) => ({
-        ...config,
-        files: ['**/jest.config.js', '**/rollup.config.js'],
-    })),
+    {
+        files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+        ...tseslint.configs.disableTypeChecked,
+    },
+    {
+        files: ['commitlint.config.js', '**/jest.config.cjs'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
     {
         files: [
             '**/scripts/**',
@@ -258,7 +248,12 @@ export default [
         languageOptions: {
             globals: {
                 ...globals.jest,
+                ...globals.es2021,
             },
+        },
+
+        plugins: {
+            jest,
         },
 
         rules: {
@@ -274,6 +269,9 @@ export default [
             globals: {
                 $: true,
                 browser: true,
+                ...globals.browser,
+                ...globals.mocha,
+                ...globals.node,
             },
         },
     },
@@ -300,6 +298,19 @@ export default [
                 before: true,
                 benchmark: true,
                 run: true,
+                browser: true,
+                ...globals.browser,
+                ...globals.node,
+            },
+        },
+    },
+    {
+        files: ['packages/@lwc/perf-benchmarks-components/**'],
+
+        languageOptions: {
+            globals: {
+                browser: true,
+                ...globals.node,
             },
         },
     },
@@ -320,39 +331,36 @@ export default [
         languageOptions: {
             globals: {
                 lwcRuntimeFlags: true,
+                process: true,
+                LWC: true,
+                spyOnAllFunctions: true,
+                TestUtils: true,
+                ...globals.browser,
+                ...globals.jasmine,
             },
         },
-    },
-    {
-        files: ['packages/@lwc/integration-karma/**'],
 
         rules: {
             'no-var': 'off',
             'prefer-rest-params': 'off',
         },
     },
-    ...compat.extends('plugin:@typescript-eslint/disable-type-checked').map((config) => ({
-        ...config,
-        files: ['**/.only'],
-    })),
     {
-        files: ['**/.only'],
+        files: ['packages/@lwc/synthetic-shadow/**'],
 
-        rules: {
-            'header/header': 'off',
-            '@lwc/lwc-internal/forbidden-filename': 'error',
+        languageOptions: {
+            globals: {
+                process: true,
+                ...globals.browser,
+            },
         },
     },
-    ...compat.extends('plugin:@typescript-eslint/disable-type-checked').map((config) => ({
-        ...config,
-        files: ['**/.skip'],
-    })),
     {
-        files: ['**/.skip'],
-
+        // These are empty files used to help debug test fixtures
+        files: ['**/.only', '**/.skip'],
+        plugins: { '@lwc/lwc-internal': lwcInternal },
         rules: {
-            'header/header': 'off',
-            '@lwc/lwc-internal/forbidden-filename': 'off',
+            '@lwc/lwc-internal/forbidden-filename': 'error',
         },
     },
 ];

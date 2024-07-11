@@ -12,6 +12,7 @@
  * so that this is not shipped as part of the package.
  */
 
+// eslint-disable-next-line  @typescript-eslint/no-var-requires
 const BASE_CONFIG = require('../../scripts/jest/base.config');
 
 module.exports = {
