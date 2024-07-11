@@ -354,10 +354,18 @@ export default [
     },
     {
         // These are empty files used to help debug test fixtures
-        files: ['**/.only', '**/.skip'],
+        files: ['**/.only'],
         plugins: { '@lwc/lwc-internal': lwcInternal },
         rules: {
             '@lwc/lwc-internal/forbidden-filename': 'error',
+        },
+    },
+    {
+        // These are empty files used to help debug test fixtures
+        files: ['**/.skip'],
+        plugins: { '@lwc/lwc-internal': lwcInternal },
+        rules: {
+            '@lwc/lwc-internal/forbidden-filename': 'off',
         },
     },
 ];
