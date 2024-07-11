@@ -12,12 +12,10 @@ export default [
         ignores: [
             '**/node_modules/',
             '**/dist/',
-            '**/lib/',
             '**/coverage/',
             '**/fixtures/',
             '**/public/',
             '**/__benchmarks_results__/',
-            '**/playground/',
             '**/*.html',
             '**/*.css',
         ],
@@ -351,6 +349,22 @@ export default [
         languageOptions: {
             globals: {
                 process: true,
+                ...globals.browser,
+            },
+        },
+    },
+    {
+        files: ['**/rollup.config.js'],
+        languageOptions: {
+            globals: {
+                process: true,
+            },
+        },
+    },
+    {
+        files: ['playground/**/*.js'],
+        languageOptions: {
+            globals: {
                 ...globals.browser,
             },
         },
