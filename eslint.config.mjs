@@ -311,7 +311,6 @@ export default tseslint.config(
                 lwcRuntimeFlags: true,
                 process: true,
                 LWC: true,
-                spyOnAllFunctions: true,
                 TestUtils: true,
                 ...globals.browser,
                 ...globals.jasmine,
