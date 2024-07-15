@@ -1,22 +1,19 @@
+// @ts-check
 import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
+// @ts-expect-error CJS module; TS can't detect that it has a default export
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
 import { fixupPluginRules } from '@eslint/compat';
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import gitignore from 'eslint-config-flat-gitignore';
 
-export default [
+export default tseslint.config(
+    gitignore(),
     {
-        ignores: [
-            '**/node_modules/',
-            '**/dist/',
-            '**/coverage/',
-            '**/fixtures/',
-            '**/public/',
-            '**/__benchmarks_results__/',
-        ],
+        ignores: ['**/fixtures'],
     },
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
@@ -367,5 +364,5 @@ export default [
         rules: {
             '@lwc/lwc-internal/forbidden-filename': 'off',
         },
-    },
-];
+    }
+);
