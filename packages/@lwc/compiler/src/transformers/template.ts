@@ -44,6 +44,7 @@ export default function templateTransform(
         namespace,
         name,
         apiVersion,
+        disableSyntheticShadowSupport,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -62,6 +63,7 @@ export default function templateTransform(
             enableDynamicComponents,
             instrumentation,
             apiVersion,
+            disableSyntheticShadowSupport,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

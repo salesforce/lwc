@@ -170,6 +170,12 @@ export default class CodeGen {
      */
     readonly state: State;
 
+    /**
+     * True if this is a synthetic shadow template - otherwise, we may apply certain optimizations
+     * that only exist for native shadow and light DOM.
+     */
+    readonly isSyntheticShadow: boolean;
+
     currentId = 0;
     currentKey = 0;
     innerHtmlInstances = 0;
@@ -209,6 +215,10 @@ export default class CodeGen {
         this.scope = this.createScope();
         this.state = state;
         this.apiVersion = getAPIVersionFromNumber(state.config.apiVersion);
+
+        this.isSyntheticShadow =
+            this.renderMode !== LWCDirectiveRenderMode.light &&
+            !this.state.config.disableSyntheticShadowSupport;
     }
 
     generateKey() {
@@ -310,18 +320,16 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.flatten, children);
     }
 
-    genScopedId(id: string | t.Expression): t.CallExpression {
-        if (typeof id === 'string') {
-            return this._renderApiCall(RENDER_APIS.scopedId, [t.literal(id)]);
-        }
-        return this._renderApiCall(RENDER_APIS.scopedId, [id]);
+    genScopedId(id: string | t.Expression): t.Expression | t.Literal {
+        const value = typeof id === 'string' ? t.literal(id) : id;
+        return this.isSyntheticShadow ? this._renderApiCall(RENDER_APIS.scopedId, [value]) : value;
     }
 
-    genScopedFragId(id: string | t.Expression): t.CallExpression {
-        if (typeof id === 'string') {
-            return this._renderApiCall(RENDER_APIS.scopedFragId, [t.literal(id)]);
-        }
-        return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
+    genScopedFragId(id: string | t.Expression): t.Expression | t.Literal {
+        const value = typeof id === 'string' ? t.literal(id) : id;
+        return this.isSyntheticShadow
+            ? this._renderApiCall(RENDER_APIS.scopedFragId, [value])
+            : value;
     }
 
     genClassExpression(value: Expression) {
@@ -725,7 +733,6 @@ export default class CodeGen {
 
                     // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
                     // Note that for backwards compat we only consider non-booleans to be dynamic IDs/IDRefs
-                    // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
                     const isIdOrIdRef =
                         (name === 'id' || isIdReferencingAttribute(name)) &&
                         !isBooleanLiteral(value);
@@ -743,7 +750,10 @@ export default class CodeGen {
                         isAllowedFragOnlyUrlsXHTML(currentNode.name, name, currentNode.namespace) &&
                         isFragmentOnlyUrl(value.value);
 
-                    if (isExpression(value) || isIdOrIdRef || isSvgHref || isScopedFragmentRef) {
+                    const hasDynamicScoping =
+                        this.isSyntheticShadow && (isIdOrIdRef || isScopedFragmentRef);
+
+                    if (isExpression(value) || isSvgHref || hasDynamicScoping) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;

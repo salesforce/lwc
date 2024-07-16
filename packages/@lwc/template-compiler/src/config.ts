@@ -90,6 +90,9 @@ export interface Config {
      * The API version to associate with the compiled template
      */
     apiVersion?: number;
+
+    /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
+    disableSyntheticShadowSupport?: boolean;
 }
 type OptionalConfigNames = 'customRendererConfig' | 'instrumentation' | 'namespace' | 'name';
 type RequiredConfigOptions = Required<Omit<Config, OptionalConfigNames>>;
@@ -110,6 +113,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'instrumentation',
     'namespace',
     'name',
+    'disableSyntheticShadowSupport',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -176,6 +180,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: true,
+        disableSyntheticShadowSupport: false,
         ...config,
         apiVersion, // overrides the config apiVersion
         ...{ customRendererConfig },
