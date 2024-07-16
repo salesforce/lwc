@@ -10,16 +10,25 @@ const elementsToTrackForMutations: WeakSet<HostElement> = new WeakSet();
 
 const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 
-export function reportMutation(element: HostElement) {
+export function reportMutation(element: HostElement, attributeName: string) {
     if (elementsToTrackForMutations.has(element)) {
-        const hasMutationAttribute = element[HostAttributesKey].find(
+        const existingMutationAttribute = element[HostAttributesKey].find(
             (attr) => attr.name === MUTATION_TRACKING_ATTRIBUTE && attr[HostNamespaceKey] === null
         );
-        if (!hasMutationAttribute) {
+        const attrNameValues = new Set(
+            existingMutationAttribute ? existingMutationAttribute.value.split(' ') : []
+        );
+        attrNameValues.add(attributeName.toLowerCase());
+
+        const newMutationAttributeValue = [...attrNameValues].sort().join(' ');
+
+        if (existingMutationAttribute) {
+            existingMutationAttribute.value = newMutationAttributeValue;
+        } else {
             element[HostAttributesKey].push({
                 name: MUTATION_TRACKING_ATTRIBUTE,
                 [HostNamespaceKey]: null,
-                value: '',
+                value: newMutationAttributeValue,
             });
         }
     }

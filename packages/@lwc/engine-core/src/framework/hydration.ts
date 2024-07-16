@@ -20,6 +20,7 @@ import {
     APIFeature,
     isAPIFeatureEnabled,
     isFalse,
+    StringSplit,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
@@ -165,9 +166,11 @@ function getValidationPredicate(
     optOutStaticProp: string[] | true | undefined
 ): AttrValidationPredicate {
     // `data-lwc-host-mutated` is a special attribute added by the SSR engine itself,
-    // which does the same thing as an explicit `static validationOptOut = true`.
-    if (renderer.getAttribute(elm, 'data-lwc-host-mutated') === '') {
-        return (_attrName: string) => false;
+    // which does the same thing as an explicit `static validationOptOut = ['attr1', 'attr2']`.
+    const hostMutatedValue = renderer.getAttribute(elm, 'data-lwc-host-mutated');
+    if (isString(hostMutatedValue)) {
+        const mutatedAttrValues = new Set(StringSplit.call(hostMutatedValue, / /));
+        return (attrName: string) => !mutatedAttrValues.has(attrName);
     }
 
     if (isUndefined(optOutStaticProp)) {
