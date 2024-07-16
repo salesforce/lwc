@@ -38,6 +38,7 @@ describe('fixtures', () => {
             );
 
             return {
+                // TODO [#4386]: Prettier v3 returns a promise - add an `await` here
                 'expected.js': prettier.format(code, { parser: 'babel' }),
                 'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
