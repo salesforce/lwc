@@ -810,7 +810,7 @@ if (process.env.IS_BROWSER) {
     // aria* properties
     for (const [propName, descriptor] of entries(ariaReflectionPolyfillDescriptors) as [
         name: string,
-        descriptor: PropertyDescriptor
+        descriptor: PropertyDescriptor,
     ][]) {
         lightningBasedDescriptors[propName] = createBridgeToElementDescriptor(propName, descriptor);
     }

@@ -89,7 +89,7 @@ export interface EventListener extends BaseNode {
 }
 
 export interface Directive<
-    T extends keyof typeof ElementDirectiveName | keyof typeof RootDirectiveName
+    T extends keyof typeof ElementDirectiveName | keyof typeof RootDirectiveName,
 > extends BaseNode {
     type: 'Directive';
     name: T;

@@ -53,11 +53,11 @@ async function main() {
     const bundledLicenses = await Promise.all(
         BUNDLED_DEPENDENCIES.map(async (depName) => {
             return `## ${depName}\n\n` + (await findLicenseText(depName));
-        }),
+        })
     );
     const newLicense =
         `# LWC core license\n\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
-            '\n',
+            '\n'
         )}`.trim() + '\n';
 
     const formattedLicense = await prettier.format(newLicense, {
@@ -82,14 +82,14 @@ async function main() {
     await Promise.all(
         packages.map(async (pkg) => {
             await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
-        }),
+        })
     );
 
     if (shouldWarnChanges) {
         const relativeFilename = path.relative(process.cwd(), __filename);
         throw new Error(
             'Either the LWC core license or the license of a bundled dependency has been updated.\n' +
-                `Please run \`node ${relativeFilename}\` and commit the result.`,
+                `Please run \`node ${relativeFilename}\` and commit the result.`
         );
     }
 }

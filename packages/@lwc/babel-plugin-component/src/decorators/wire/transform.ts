@@ -267,7 +267,7 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments') as [
             NodePath,
-            NodePath<types.ObjectExpression> | undefined
+            NodePath<types.ObjectExpression> | undefined,
         ];
 
         const propertyName = (path.parentPath.get('key.name') as any).node as string;
