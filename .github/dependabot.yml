@@ -18,7 +18,7 @@ updates:
           # We are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.
           # See: https://github.com/google/tachometer/issues/244
           - dependency-name: 'tachometer'
-          # TODO [#]:
+          # TODO [#4386]: Stop ignoring when we've done the upgrade ourselves
           - dependency-name: 'prettier'
             versions: '>= 3'
           - dependency-name: '@types/prettier'
