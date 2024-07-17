@@ -1,6 +1,6 @@
 {
     "name": "lwc",
-    "version": "7.1.1",
+    "version": "7.1.2",
     "description": "Lightning Web Components (LWC)",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -20,22 +20,22 @@
         "*.d.ts"
     ],
     "dependencies": {
-        "@lwc/aria-reflection": "7.1.1",
-        "@lwc/babel-plugin-component": "7.1.1",
-        "@lwc/compiler": "7.1.1",
-        "@lwc/engine-core": "7.1.1",
-        "@lwc/engine-dom": "7.1.1",
-        "@lwc/engine-server": "7.1.1",
-        "@lwc/errors": "7.1.1",
-        "@lwc/features": "7.1.1",
-        "@lwc/module-resolver": "7.1.1",
-        "@lwc/rollup-plugin": "7.1.1",
-        "@lwc/shared": "7.1.1",
-        "@lwc/style-compiler": "7.1.1",
-        "@lwc/synthetic-shadow": "7.1.1",
-        "@lwc/template-compiler": "7.1.1",
-        "@lwc/types": "7.1.1",
-        "@lwc/wire-service": "7.1.1"
+        "@lwc/aria-reflection": "7.1.2",
+        "@lwc/babel-plugin-component": "7.1.2",
+        "@lwc/compiler": "7.1.2",
+        "@lwc/engine-core": "7.1.2",
+        "@lwc/engine-dom": "7.1.2",
+        "@lwc/engine-server": "7.1.2",
+        "@lwc/errors": "7.1.2",
+        "@lwc/features": "7.1.2",
+        "@lwc/module-resolver": "7.1.2",
+        "@lwc/rollup-plugin": "7.1.2",
+        "@lwc/shared": "7.1.2",
+        "@lwc/style-compiler": "7.1.2",
+        "@lwc/synthetic-shadow": "7.1.2",
+        "@lwc/template-compiler": "7.1.2",
+        "@lwc/types": "7.1.2",
+        "@lwc/wire-service": "7.1.2"
     },
     "lwc": {
         "modules": [
