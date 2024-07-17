@@ -258,7 +258,7 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
-    reportMutation(element);
+    reportMutation(element, name);
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
@@ -279,7 +279,7 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    reportMutation(element);
+    reportMutation(element, name);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
         (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
@@ -305,7 +305,7 @@ function getClassList(element: E) {
 
     return {
         add(...names: string[]): void {
-            reportMutation(element);
+            reportMutation(element, 'class');
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
@@ -313,7 +313,7 @@ function getClassList(element: E) {
             classAttribute.value = tokenListToClassName(tokenList);
         },
         remove(...names: string[]): void {
-            reportMutation(element);
+            reportMutation(element, 'class');
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
