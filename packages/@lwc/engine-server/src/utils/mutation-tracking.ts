@@ -12,6 +12,15 @@ const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 
 export function reportMutation(element: HostElement, attributeName: string) {
     if (elementsToTrackForMutations.has(element)) {
+        // Add warning for host mutations during SSR
+        if (process.env.NODE_ENV !== 'test') {
+            // eslint-disable-next-line no-console
+            console.warn(
+                `Warning: Host mutation detected during SSR for attribute "${attributeName}". ` +
+                    `This is an anti-pattern and should be avoided.`
+            );
+        }
+
         const existingMutationAttribute = element[HostAttributesKey].find(
             (attr) => attr.name === MUTATION_TRACKING_ATTRIBUTE && attr[HostNamespaceKey] === null
         );
