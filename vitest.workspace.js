@@ -8,4 +8,5 @@ export default defineWorkspace([
     'packages/@lwc/features',
     'packages/@lwc/signals',
     'packages/@lwc/rollup-plugin',
+    'packages/@lwc/engine-core',
 ]);
