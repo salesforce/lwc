@@ -6,4 +6,5 @@ export default defineWorkspace([
     'packages/@lwc/style-compiler',
     'packages/@lwc/errors',
     'packages/@lwc/features',
+    'packages/@lwc/signals',
 ]);
