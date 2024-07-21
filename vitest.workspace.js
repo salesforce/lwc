@@ -5,4 +5,5 @@ export default defineWorkspace([
     'packages/@lwc/wire-service',
     'packages/@lwc/style-compiler',
     'packages/@lwc/errors',
+    'packages/@lwc/features',
 ]);
