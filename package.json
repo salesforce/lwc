@@ -18,6 +18,7 @@
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
         "copy-fork": "./scripts/tasks/unsafe-external-contributor-ci-workaround.sh",
         "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
+        "test:vi": "vitest --workspace vitest.workspace.js",
         "test": "jest --config ./scripts/jest/root.config.js",
         "test:bespoke": "nx run-many --target=test",
         "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
@@ -49,6 +50,7 @@
         "@types/jest": "^29.5.12",
         "@types/node": "^20.14.10",
         "@types/prettier": "^2.7.3",
+        "@vitest/ui": "^2.0.3",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.5.4",
         "eslint": "^9.7.0",
@@ -71,7 +73,8 @@
         "ts-jest": "^29.2.2",
         "tslib": "^2.6.3",
         "typescript": "5.5.3",
-        "typescript-eslint": "^7.16.1"
+        "typescript-eslint": "^7.16.1",
+        "vitest": "^2.0.3"
     },
     "lint-staged": {
         "*.{js,mjs,ts}": "eslint",
