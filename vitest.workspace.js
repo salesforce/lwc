@@ -7,4 +7,5 @@ export default defineWorkspace([
     'packages/@lwc/errors',
     'packages/@lwc/features',
     'packages/@lwc/signals',
+    'packages/@lwc/rollup-plugin',
 ]);
