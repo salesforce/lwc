@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { vi } from 'vitest';
 import { noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transform, transformSync } from '../transformer';
@@ -121,7 +122,7 @@ it('should not apply babel plugins when Lightning Web Security is off', async ()
 
 describe('instrumentation', () => {
     it('should gather metrics for transforming dynamic imports', async () => {
-        const incrementCounter = jest.fn();
+        const incrementCounter = vi.fn();
         const actual = `
             export async function test() {
                 const x = await import("foo");
