@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 set -e
 node ./scripts/tasks/check-and-rewrite-package-json.js --test
 node ./scripts/tasks/generate-license-files.js --test
