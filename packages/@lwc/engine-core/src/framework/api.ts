@@ -394,12 +394,12 @@ function i(
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
     const vmBeingRendered = getVMBeingRendered()!;
-    if (isUndefined(iterable) || iterable === null) {
+    if (isUndefined(iterable) || isNull(iterable)) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
-                `Invalid template iteration for value "${toString(
+                `Invalid template iteration for value \`${toString(
                     iterable
-                )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
+                )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`,
                 vmBeingRendered!
             );
         }
