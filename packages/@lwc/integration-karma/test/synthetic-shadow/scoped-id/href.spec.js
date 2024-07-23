@@ -5,6 +5,9 @@ import HrefDynamic from 'x/hrefDynamic';
 import HrefDangling from 'x/hrefDangling';
 import HrefBooleanTrue from 'x/hrefBooleanTrue';
 import HrefBooleanTrueNoId from 'x/hrefBooleanTrueNoId';
+import HrefDynamicEmptyString from 'x/hrefDynamicEmptyString';
+import HrefDynamicUndefined from 'x/hrefDynamicUndefined';
+import HrefDynamicNull from 'x/hrefDynamicNull';
 
 function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
@@ -92,6 +95,33 @@ describe('boolean true', () => {
 
                 expect(elm.shadowRoot.querySelector('a').getAttribute('href')).toBe('');
                 expect(elm.shadowRoot.querySelector('area').getAttribute('href')).toBe('');
+            });
+        });
+    });
+});
+
+describe('dynamic empty value', () => {
+    const scenarios = [
+        {
+            name: 'empty string',
+            Ctor: HrefDynamicEmptyString,
+            tagName: 'x-href-dynamic-empty-string',
+        },
+        { name: 'undefined', Ctor: HrefDynamicUndefined, tagName: 'x-href-dynamic-undefined' },
+        { name: 'null', Ctor: HrefDynamicNull, tagName: 'x-href-dynamic-null' },
+    ];
+
+    scenarios.forEach(({ name, Ctor, tagName }) => {
+        describe(name, () => {
+            it('renders href as expected', () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+
+                const expected = name === 'empty string' ? '' : null;
+
+                expect(elm.shadowRoot.querySelector('.sanjo').getAttribute('id')).toBe(expected);
+                expect(elm.shadowRoot.querySelector('a').getAttribute('href')).toBe(expected);
+                expect(elm.shadowRoot.querySelector('area').getAttribute('href')).toBe(expected);
             });
         });
     });

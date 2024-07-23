@@ -564,12 +564,6 @@ function k(compilerKey: number, obj: any): string | void {
 function gid(id: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
-        if (process.env.NODE_ENV !== 'production') {
-            logError(
-                `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
-                vmBeingRendered
-            );
-        }
         return id;
     }
     // We remove attributes when they are assigned a value of null
@@ -587,14 +581,6 @@ function gid(id: string | undefined | null): string | null | undefined {
 function fid(url: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(url) || url === '') {
-        if (process.env.NODE_ENV !== 'production') {
-            if (isUndefined(url)) {
-                logError(
-                    `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
-                    vmBeingRendered
-                );
-            }
-        }
         return url;
     }
     // We remove attributes when they are assigned a value of null

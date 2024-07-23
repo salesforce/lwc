@@ -19,11 +19,7 @@ describe('scoped-ids', () => {
         describe('custom elements', () => {
             it('should render expected id attribute value when its value is set to `undefined`', () => {
                 const elm = createElement('x-foo', { is: CustomElementIdValueUndefined });
-                expect(() => {
-                    document.body.appendChild(elm);
-                }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./
-                );
+                document.body.appendChild(elm);
                 const child = elm.shadowRoot.querySelector('x-child');
                 // #1769: The difference in behavior of id attribute is tracked with this issue
                 expect(child.getAttribute('id')).toBe('undefined');
@@ -31,11 +27,7 @@ describe('scoped-ids', () => {
 
             it('should render the id attribute as a boolean attribute when its value is set to an empty string', () => {
                 const elm = createElement('x-foo', { is: CustomElementIdValueEmpty });
-                expect(() => {
-                    document.body.appendChild(elm);
-                }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./
-                );
+                document.body.appendChild(elm);
                 const child = elm.shadowRoot.querySelector('x-child');
                 expect(child.getAttribute('id')).toBe('');
             });
@@ -44,22 +36,14 @@ describe('scoped-ids', () => {
         describe('native elements', () => {
             it('should not render id attribute when its value is set to null', () => {
                 const elm = createElement('x-foo', { is: IdValueUndefined });
-                expect(() => {
-                    document.body.appendChild(elm);
-                }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "undefined". The id attribute must contain a non-empty string./
-                );
+                document.body.appendChild(elm);
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toBeNull();
             });
 
             it('should render the id attribute as a boolean attribute when its value is set to an empty string', () => {
                 const elm = createElement('x-foo', { is: IdValueEmpty });
-                expect(() => {
-                    document.body.appendChild(elm);
-                }).toLogErrorDev(
-                    /\[LWC error\]: Invalid id value "". The id attribute must contain a non-empty string./
-                );
+                document.body.appendChild(elm);
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toBe('');
             });
