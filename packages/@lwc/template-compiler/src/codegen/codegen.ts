@@ -750,10 +750,12 @@ export default class CodeGen {
                         isAllowedFragOnlyUrlsXHTML(currentNode.name, name, currentNode.namespace) &&
                         isFragmentOnlyUrl(value.value);
 
-                    const hasDynamicScoping =
+                    // If we're not running in synthetic shadow mode (light or shadow+disableSyntheticShadowSupport),
+                    // then static IDs/IDrefs/fragment refs will be rendered directly into HTML strings.
+                    const needsScoping =
                         this.isSyntheticShadow && (isIdOrIdRef || isScopedFragmentRef);
 
-                    if (isExpression(value) || isSvgHref || hasDynamicScoping) {
+                    if (isExpression(value) || isSvgHref || needsScoping) {
                         let partToken = '';
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;

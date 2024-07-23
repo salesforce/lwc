@@ -59,13 +59,13 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         value,
         hasExpression,
         hasSvgUseHref,
-        hasDynamicScoping,
+        needsScoping,
     }: {
         name: string;
         value: string | boolean;
         hasExpression?: boolean;
         hasSvgUseHref?: boolean;
-        hasDynamicScoping?: boolean;
+        needsScoping?: boolean;
     }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
@@ -94,7 +94,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
-            const needsPlaceholder = hasExpression || hasSvgUseHref || hasDynamicScoping;
+            const needsPlaceholder = hasExpression || hasSvgUseHref || needsScoping;
 
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
@@ -127,16 +127,18 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
                 isAllowedFragOnlyUrlsXHTML(element.name, name, element.namespace) &&
                 isFragmentOnlyUrl(value.value);
 
-            const hasDynamicScoping =
+            // If we're not running in synthetic shadow mode (light or shadow+disableSyntheticShadowSupport),
+            // then static IDs/IDrefs/fragment refs will be rendered directly into HTML strings.
+            const needsScoping =
                 codeGen.isSyntheticShadow && (hasIdOrIdRef || hasScopedFragmentRef);
 
             return {
                 hasExpression,
                 hasSvgUseHref,
-                hasDynamicScoping,
+                needsScoping,
                 name,
                 value:
-                    hasExpression || hasSvgUseHref || hasDynamicScoping
+                    hasExpression || hasSvgUseHref || needsScoping
                         ? codeGen.getStaticExpressionToken(attr)
                         : (value as Literal).value,
             };
