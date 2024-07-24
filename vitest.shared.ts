@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitest/config';
+
+// @ts-expect-error remove during vitest migration
 import { plugins } from './scripts/rollup/rollup.config';
 
 export default defineConfig({
