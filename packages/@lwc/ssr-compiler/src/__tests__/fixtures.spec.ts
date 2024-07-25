@@ -92,9 +92,9 @@ function testFixtures() {
                     'expected.html': formatHTML(result),
                     'error.txt': '',
                 };
-            } catch (_err: any) {
+            } catch (err: any) {
                 return {
-                    'error.txt': _err.message,
+                    'error.txt': err.message,
                     'expected.html': '',
                 };
             }
