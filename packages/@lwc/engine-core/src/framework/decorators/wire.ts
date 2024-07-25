@@ -9,7 +9,13 @@ import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
 import type { LightningElement } from '../base-lightning-element';
-import type { ConfigValue, ContextValue, WireAdapterConstructor, WireDecorator } from '../wiring';
+import type {
+    ConfigValue,
+    ContextValue,
+    ReplaceReactiveValues,
+    WireAdapterConstructor,
+    WireDecorator,
+} from '../wiring';
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
@@ -23,14 +29,14 @@ import type { ConfigValue, ContextValue, WireAdapterConstructor, WireDecorator }
  * }
  */
 export default function wire<
-    Config extends ConfigValue = ConfigValue,
+    ReactiveConfig extends ConfigValue = ConfigValue,
     Value = any,
     Context extends ContextValue = ContextValue
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    adapter: WireAdapterConstructor<Config, Value, Context>,
+    adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig>, Value, Context>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config?: Config
+    config?: ReactiveConfig
 ): WireDecorator<Value> {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');

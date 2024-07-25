@@ -125,3 +125,12 @@ export type RegisterContextProviderFn = (
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
+
+/**
+ * String values starting with "$" are reactive; they get replaced by values from the component.
+ * We don't have access to the component, and we don't expect all reactive strings to be typed as
+ * literals, so we just replace all strings with `any`.
+ */
+export type ReplaceReactiveValues<T> = {
+    [K in keyof T]: T[K] extends string ? any : T[K];
+};

@@ -14,6 +14,7 @@ export {
     ContextProvider,
     ContextValue,
     DataCallback,
+    ReplaceReactiveValues,
     WireAdapter,
     WireAdapterConstructor,
     WireAdapterSchemaValue,
