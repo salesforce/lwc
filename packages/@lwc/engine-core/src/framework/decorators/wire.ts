@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert } from '@lwc/shared';
-import { LightningElement } from '../base-lightning-element';
 import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
-import { WireAdapterConstructor } from '../wiring';
 import { updateComponentValue } from '../update-component-value';
+import type { LightningElement } from '../base-lightning-element';
+import type { ConfigValue, ContextValue, WireAdapterConstructor, WireDecorator } from '../wiring';
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
@@ -22,12 +22,16 @@ import { updateComponentValue } from '../update-component-value';
  *   \@wire(getBook, { id: '$bookId'}) book;
  * }
  */
-export default function wire(
+export default function wire<
+    Config extends ConfigValue = ConfigValue,
+    Value = any,
+    Context extends ContextValue = ContextValue
+>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    adapter: WireAdapterConstructor,
+    adapter: WireAdapterConstructor<Config, Value, Context>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config?: Record<string, any>
-): (value: unknown, context: ClassMemberDecoratorContext | string | symbol) => void {
+    config?: Config
+): WireDecorator<Value> {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');
     }

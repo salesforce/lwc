@@ -19,6 +19,7 @@ export {
     WireAdapterSchemaValue,
     WireContextSubscriptionPayload,
     WireContextSubscriptionCallback,
+    WireDecorator,
 } from './types';
 
 export {

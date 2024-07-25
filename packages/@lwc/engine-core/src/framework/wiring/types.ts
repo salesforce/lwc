@@ -35,6 +35,44 @@ export interface WireAdapterConstructor<
     contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
 }
 
+/**
+ * The decorator returned by `@wire()`; not the `wire` factory function.
+ *
+ * If you're using `@wire(adapter) property` and getting an opaque type error, ensure that the
+ * property is explicitly typed and the type matches the value used by the adapter. Note that one
+ * of the following conditions must always be true:
+ * - The adapter uses `undefined` as a possible value
+ * - The property is marked as optional
+ * - The property is assigned a default value (not provided by the adapter)
+ */
+export interface WireDecorator<Value = any> {
+    // For modern decorators, we get the property value as part of the decorator signature,
+    // so we can directly compare that value with the generic `Value` from the interface.
+    // We also use a generic with a constraint to ensure that we only decorate LightningElements.
+    /** Property decorator for `"experimentalDecorators": false`. */
+    <Class extends LightningElement>(
+        target: undefined,
+        ctx: ClassFieldDecoratorContext<Class, Value>
+    ): void;
+    /** Method decorator for `"experimentalDecorators": false`. */
+    <Class extends LightningElement>(
+        target: DataCallback<Value>,
+        ctx: ClassMethodDecoratorContext<Class, DataCallback<Value>>
+    ): void | DataCallback<Value>;
+    // For experimental decorators, we don't get the property value, just the class (`target`) and
+    // the property name. To ensure the property value matches the interface's generic `Value`,
+    // we indirectly check that the class has the correct key/value. This results in a very unclear
+    // type error when the values don't match, but it's the best we can get.
+    /** Property decorator for `"experimentalDecorators": true`. */
+    <K extends string | symbol>(target: Record<K, Value>, propertyKey: K): void;
+    /** Method decorator for `"experimentalDecorators": true`. */
+    <K extends string | symbol>(
+        target: Record<K, DataCallback<Value>>,
+        propertyKey: K,
+        descriptor: TypedPropertyDescriptor<DataCallback<Value>>
+    ): void;
+}
+
 export interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
