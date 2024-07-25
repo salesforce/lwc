@@ -6,7 +6,7 @@ export default mergeConfig(
     defineProject({
         test: {
             name: 'lwc-module-resolver',
-            setupFiles: ['./scripts/jest/setup-test.ts'],
+            setupFiles: ['./scripts/test/setup-test.ts'],
         },
     })
 );
