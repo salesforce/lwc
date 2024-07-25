@@ -7,7 +7,6 @@ export default mergeConfig(
         test: {
             name: 'lwc-wire-service',
             environment: 'jsdom',
-            root: 'src',
         },
     })
 );
