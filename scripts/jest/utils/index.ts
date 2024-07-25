@@ -6,3 +6,4 @@
  */
 import './matchers'; // File has no exports, but registers jest matchers
 export * from './test-fixture-dir';
+export * from './format-html';
