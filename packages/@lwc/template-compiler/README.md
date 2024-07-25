@@ -62,6 +62,7 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 -   `enableLwcSpread` (boolean, optional, `true` by default) - Deprecated. Ignored by template-compiler. `lwc:spread` is always enabled.
 -   `customRendererConfig` (CustomRendererConfig, optional) - specifies a configuration to use to match elements. Matched elements will get a custom renderer hook in the generated template.
 -   `instrumentation` (InstrumentationObject, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
+-   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output.
 
     -   Example 1: Config to match `<use>` elements under the `svg` namespace and have `href` attribute set.
 
