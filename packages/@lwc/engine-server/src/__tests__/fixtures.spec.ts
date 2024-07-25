@@ -15,7 +15,16 @@ import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import { vi } from 'vitest';
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
-vi.mock('lwc', () => import('../index'));
+
+vi.mock('lwc', async () => {
+    const lwcEngineServer = await import('../index');
+    lwcEngineServer!.setHooks({
+        sanitizeHtmlContent(content: unknown) {
+            return content as string;
+        },
+    });
+    return lwcEngineServer;
+});
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -197,17 +206,6 @@ function testFixtures() {
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, true);
             });
-
-            try {
-                lwcEngineServer!.setHooks({
-                    sanitizeHtmlContent(content: unknown) {
-                        return content as string;
-                    },
-                });
-            } catch (a) {
-                // eslint-disable-next-line no-console
-                console.warn(a);
-            }
 
             let result;
             let err;
