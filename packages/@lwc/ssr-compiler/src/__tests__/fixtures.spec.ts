@@ -90,12 +90,12 @@ function testFixtures() {
                 );
                 return {
                     'expected.html': formatHTML(result),
-                    'error.txt': undefined,
+                    'error.txt': '',
                 };
             } catch (_err: any) {
                 return {
                     'error.txt': _err.message,
-                    'expected.html': undefined,
+                    'expected.html': '',
                 };
             }
         }
