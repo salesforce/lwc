@@ -1,0 +1,22 @@
+[2mexpect([22m[31mreceived[39m[2m).[22mtoThrowError[2m([22m[32mexpected[39m[2m)[22m
+
+Expected substring: [32m"\"dispatchEvent\" is not supported in this environment"[39m
+Received message:   [31m"this.dispatchEvent is not a function"[39m
+
+    [0m [90m  9 |[39m [36mclass[39m [33mMethodsUnsupported[39m [36mextends[39m ssrRuntime[33m.[39m[33mLightningElement[39m {
+     [90m 10 |[39m   connectedCallback() {
+    [31m[1m>[22m[39m[90m 11 |[39m     expect(() [33m=>[39m [36mthis[39m[33m.[39mdispatchEvent([36mnew[39m [33mCustomEvent[39m([32m"foo"[39m)))[33m.[39mtoThrowError([32m"\"dispatchEvent\" is not supported in this environment"[39m)[33m;[39m
+     [90m    |[39m                       [31m[1m^[22m[39m
+     [90m 12 |[39m     expect(() [33m=>[39m [36mthis[39m[33m.[39mgetBoundingClientRect())[33m.[39mtoThrowError([32m"\"getBoundingClientRect\" is not supported in this environment"[39m)[33m;[39m
+     [90m 13 |[39m     expect(() [33m=>[39m [36mthis[39m[33m.[39mquerySelector([32m".foo"[39m))[33m.[39mtoThrowError([32m"\"querySelector\" is not supported in this environment"[39m)[33m;[39m
+     [90m 14 |[39m     expect(() [33m=>[39m [36mthis[39m[33m.[39mquerySelectorAll([32m".foo"[39m))[33m.[39mtoThrowError([32m"\"querySelectorAll\" is not supported in this environment"[39m)[33m;[39m[0m
+
+      [2mat [22mpackages/@lwc/engine-server/src/__tests__/fixtures/methods-unsupported/dist/compiled-experimental-ssr.js[2m:11:23[22m
+      [2mat Object.<anonymous> ([22mnode_modules/expect/build/toThrowMatchers.js[2m:74:11)[22m
+      [2mat Object.throwingMatcher [as toThrowError] ([22mnode_modules/expect/build/index.js[2m:320:21)[22m
+      [2mat MethodsUnsupported.connectedCallback ([22mpackages/@lwc/engine-server/src/__tests__/fixtures/methods-unsupported/dist/compiled-experimental-ssr.js[2m:11:62)[22m
+      [2mat generateMarkup ([22mpackages/@lwc/engine-server/src/__tests__/fixtures/methods-unsupported/dist/compiled-experimental-ssr.js[2m:28:31)[22m
+          at generateMarkup.next (<anonymous>)
+      [2mat serverSideRenderComponent ([22mpackages/@lwc/ssr-runtime/src/index.ts[2m:175:22)[22m
+      [2mat [22mpackages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts[2m:169:63[22m
+      [2mat Object.<anonymous> ([22mscripts/jest/utils/test-fixture-dir.ts[2m:86:29)[22m
