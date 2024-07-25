@@ -411,7 +411,7 @@ function i(
             isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
-            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
+            )}\` in ${vmBeingRendered}. It must be an array-like object.`
         );
     }
     const iterator = iterable[SymbolIterator]();
