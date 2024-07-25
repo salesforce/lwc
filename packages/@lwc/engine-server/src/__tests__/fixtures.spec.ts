@@ -11,7 +11,7 @@ import path from 'path';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { vi } from 'vitest';
-import { testFixtureDir, formatHTML } from '@lwc/jest-utils-lwc-internals';
+import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import type * as lwc from '../index';
 
 interface FixtureModule {

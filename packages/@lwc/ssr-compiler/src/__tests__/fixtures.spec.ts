@@ -11,7 +11,7 @@ import path from 'path';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
-import { testFixtureDir, formatHTML } from '@lwc/jest-utils-lwc-internals';
+import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 
 interface FixtureModule {
