@@ -1,11 +1,13 @@
-import { defineProject, mergeConfig } from 'vitest/config';
-import baseConfig from '../../../vitest.shared';
+import { mergeConfig, defineProject } from 'vitest/config';
+import sharedConfig from '../../../vitest.shared';
+import rollupConfig from '../../../scripts/rollup/rollup.config';
 
 export default mergeConfig(
-    baseConfig,
+    sharedConfig,
     defineProject({
         test: {
             name: 'babel-plugin-component',
         },
+        plugins: rollupConfig.plugins,
     })
 );

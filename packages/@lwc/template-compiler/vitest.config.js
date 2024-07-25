@@ -1,5 +1,6 @@
 import { mergeConfig, defineProject } from 'vitest/config';
 import sharedConfig from '../../../vitest.shared';
+import rollupConfig from '../../../scripts/rollup/rollup.config';
 
 export default mergeConfig(
     sharedConfig,
@@ -7,5 +8,6 @@ export default mergeConfig(
         test: {
             name: 'lwc-template-compiler',
         },
+        plugins: rollupConfig.plugins,
     })
 );
