@@ -12,16 +12,10 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
-import type * as lwc from '../index';
+import { vi } from 'vitest';
 
-interface FixtureModule {
-    tagName: string;
-    default: typeof lwc.LightningElement;
-    props?: { [key: string]: any };
-    features?: any[];
-}
-
-jest.setTimeout(10_000 /* 10 seconds */);
+vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
+vi.mock('lwc', () => import('../index'));
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -50,7 +44,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 
     await bundle.write({
         file: outputFile,
-        format: 'cjs',
+        format: 'esm',
         exports: 'named',
     });
 
@@ -196,23 +190,24 @@ function testFixtures() {
             // On top of this, the engine also checks if the component constructor is an instance of
             // the LightningElement. Therefor the compiled module should also be evaluated in the
             // same sandbox registry as the engine.
-            let lwcEngineServer: typeof lwc | undefined;
-            let module: FixtureModule | undefined;
-            jest.isolateModules(() => {
-                lwcEngineServer = require('../index');
-                module = require(compiledFixturePath);
-            });
+            const lwcEngineServer = await import('../index');
+            const module = await import(compiledFixturePath);
 
             const features = module!.features ?? [];
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, true);
             });
 
-            lwcEngineServer!.setHooks({
-                sanitizeHtmlContent(content: unknown) {
-                    return content as string;
-                },
-            });
+            try {
+                lwcEngineServer!.setHooks({
+                    sanitizeHtmlContent(content: unknown) {
+                        return content as string;
+                    },
+                });
+            } catch (a) {
+                // eslint-disable-next-line no-console
+                console.warn(a);
+            }
 
             let result;
             let err;

@@ -14,4 +14,5 @@ export default defineWorkspace([
     'packages/@lwc/compiler',
     'packages/@lwc/babel-plugin-component',
     'packages/@lwc/module-resolver',
+    'packages/@lwc/engine-server',
 ]);
