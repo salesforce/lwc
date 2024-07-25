@@ -199,8 +199,8 @@ describe('transformSync', () => {
                     experimentalDynamicDirective: false,
                     ...TRANSFORMATION_OPTIONS,
                 })
-            ).toThrowErrorMatchingSnapshot(
-                '"LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature."'
+            ).toThrowErrorMatchingInlineSnapshot(
+                `[Error: LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.]`
             );
         });
 
