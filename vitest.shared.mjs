@@ -11,7 +11,6 @@ export default defineConfig({
         coverage: {
             exclude: [
                 '/node_modules/',
-                '/fixtures/',
                 '/dist/',
                 // Ignore helper files like test-utils.ts that might exist alongside spec files
                 '/__tests__/',

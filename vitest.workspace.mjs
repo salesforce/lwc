@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { defineWorkspace } from 'vitest/config';
 
 export default defineWorkspace([

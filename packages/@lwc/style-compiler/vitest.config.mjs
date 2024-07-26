@@ -1,11 +1,11 @@
 import { mergeConfig, defineProject } from 'vitest/config';
-import sharedConfig from '../../../vitest.shared';
+import sharedConfig from '../../../vitest.shared.mjs';
 
 export default mergeConfig(
     sharedConfig,
     defineProject({
         test: {
-            name: 'lwc-features',
+            name: 'lwc-style-compiler',
         },
     })
 );

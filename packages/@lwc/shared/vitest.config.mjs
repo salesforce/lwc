@@ -1,12 +1,11 @@
 import { defineProject, mergeConfig } from 'vitest/config';
-import sharedConfig from '../../../vitest.shared';
+import baseConfig from '../../../vitest.shared.mjs';
 
 export default mergeConfig(
-    sharedConfig,
+    baseConfig,
     defineProject({
         test: {
-            name: 'lwc-wire-service',
-            environment: 'jsdom',
+            name: 'lwc-shared',
         },
     })
 );
