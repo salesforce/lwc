@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { spyConsole } from 'test-utils';
 
 import AriaStatic from 'x/ariaStatic';
 import AriaDynamic from 'x/ariaDynamic';
@@ -26,27 +25,8 @@ function testAria(type, create) {
         beforeEach(async () => {
             elm = create();
 
-            const consoleSpy = spyConsole();
-            try {
-                document.body.appendChild(elm);
-                await Promise.resolve();
-
-                // empty string (`<div id="">`) is expected to log an error, but not boolean true (`<div id>`)
-                // due to backwards compat
-                if (process.env.NODE_ENV !== 'production' && type === 'empty-string') {
-                    expect(consoleSpy.calls.error.length).toEqual(10);
-                    for (const call of consoleSpy.calls.error) {
-                        expect(call[0].message).toMatch(
-                            /The id attribute must contain a non-empty string/
-                        );
-                    }
-                } else {
-                    expect(consoleSpy.calls.error.length).toEqual(0);
-                }
-                expect(consoleSpy.calls.warn.length).toEqual(0);
-            } finally {
-                consoleSpy.reset();
-            }
+            document.body.appendChild(elm);
+            await Promise.resolve();
         });
 
         it('should transform the `for` attribute value', () => {

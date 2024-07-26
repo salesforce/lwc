@@ -19,6 +19,9 @@ module.exports = {
         '<rootDir>/packages/@lwc/rollup-plugin',
         '<rootDir>/packages/@lwc/shared',
         '<rootDir>/packages/@lwc/signals',
+        // We will enable this for realsies once all the tests are passing, but for now having the env var avoids
+        // running these tests in CI while still allowing for local testing.
+        ...(process.env.TEST_SSR_COMPILER ? ['<rootDir>/packages/@lwc/ssr-compiler'] : []),
         '<rootDir>/packages/@lwc/style-compiler',
         '<rootDir>/packages/@lwc/synthetic-shadow',
         '<rootDir>/packages/@lwc/template-compiler',

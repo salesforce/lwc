@@ -15,7 +15,7 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 import { getComponentInternalDef } from './def';
-import { assertNotProd } from './utils';
+import { assertNotProd, EmptyArray } from './utils';
 
 // These are only used for HMR in dev mode
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
@@ -248,22 +248,32 @@ function evaluateStylesheetsContent(
     return content;
 }
 
-export function getStylesheetsContent(vm: VM, template: Template): string[] {
+export function getStylesheetsContent(vm: VM, template: Template): ReadonlyArray<string> {
     const { stylesheets, stylesheetToken } = template;
     const { stylesheets: vmStylesheets } = vm;
 
-    let content: string[] = [];
+    const hasTemplateStyles = hasStyles(stylesheets);
+    const hasVmStyles = hasStyles(vmStylesheets);
 
-    if (hasStyles(stylesheets)) {
-        content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
+    if (hasTemplateStyles) {
+        const content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
+        if (hasVmStyles) {
+            // Slow path – merge the template styles and vm styles
+            ArrayPush.apply(
+                content,
+                evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm)
+            );
+        }
+        return content;
     }
 
-    // VM (component) stylesheets apply after template stylesheets
-    if (hasStyles(vmStylesheets)) {
-        ArrayPush.apply(content, evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm));
+    if (hasVmStyles) {
+        // No template styles, so return vm styles directly
+        return evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm);
     }
 
-    return content;
+    // Fastest path - no styles, so return an empty array
+    return EmptyArray;
 }
 
 // It might be worth caching this to avoid doing the lookup repeatedly, but
@@ -323,7 +333,7 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null {
+export function createStylesheet(vm: VM, stylesheets: ReadonlyArray<string>): VNode[] | null {
     const {
         renderMode,
         shadowMode,

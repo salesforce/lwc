@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import { HTML_NAMESPACE, htmlEscape, isVoidElement } from '@lwc/shared';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -13,14 +13,14 @@ import {
 } from '../parser/attribute';
 import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
 import {
-    isElement,
-    isComment,
-    isExpression,
-    isText,
     isBooleanLiteral,
+    isComment,
+    isElement,
+    isExpression,
     isStringLiteral,
+    isText,
 } from '../shared/ast';
-import { transformStaticChildren, isContiguousText, hasDynamicText } from './static-element';
+import { hasDynamicText, isContiguousText, transformStaticChildren } from './static-element';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -58,16 +58,14 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         name,
         value,
         hasExpression,
-        hasIdOrIdRef,
         hasSvgUseHref,
-        hasScopedFragmentRef,
+        needsScoping,
     }: {
         name: string;
         value: string | boolean;
         hasExpression?: boolean;
-        hasIdOrIdRef?: boolean;
         hasSvgUseHref?: boolean;
-        hasScopedFragmentRef?: boolean;
+        needsScoping?: boolean;
     }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
@@ -96,9 +94,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
-            // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
-            const needsPlaceholder =
-                hasExpression || hasIdOrIdRef || hasSvgUseHref || hasScopedFragmentRef;
+            const needsPlaceholder = hasExpression || hasSvgUseHref || needsScoping;
 
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
@@ -114,15 +110,14 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
             const hasExpression = isExpression(value);
 
-            // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
-            // Note that for backwards compat we only consider non-booleans to be dynamic IDs/IDRefs
-            // TODO [#3658]: `disableSyntheticShadowSupport` should also disable this dynamic behavior
-            const hasIdOrIdRef =
-                (name === 'id' || isIdReferencingAttribute(name)) && !isBooleanLiteral(value);
-
             // For boolean literals (e.g. `<use xlink:href>`), there is no reason to sanitize since it's empty
             const hasSvgUseHref =
                 isSvgUseHref(element.name, name, element.namespace) && !isBooleanLiteral(value);
+
+            // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
+            // Note that for backwards compat we only consider non-booleans to be dynamic IDs/IDRefs
+            const hasIdOrIdRef =
+                (name === 'id' || isIdReferencingAttribute(name)) && !isBooleanLiteral(value);
 
             // `<a href="#foo">` and `<area href="#foo">` must be dynamic due to synthetic shadow scoping
             // Note this only applies if there is an `id` attribute somewhere in the template
@@ -132,14 +127,18 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
                 isAllowedFragOnlyUrlsXHTML(element.name, name, element.namespace) &&
                 isFragmentOnlyUrl(value.value);
 
+            // If we're not running in synthetic shadow mode (light or shadow+disableSyntheticShadowSupport),
+            // then static IDs/IDrefs/fragment refs will be rendered directly into HTML strings.
+            const needsScoping =
+                codeGen.isSyntheticShadow && (hasIdOrIdRef || hasScopedFragmentRef);
+
             return {
                 hasExpression,
-                hasIdOrIdRef,
                 hasSvgUseHref,
-                hasScopedFragmentRef,
+                needsScoping,
                 name,
                 value:
-                    hasExpression || hasIdOrIdRef || hasSvgUseHref || hasScopedFragmentRef
+                    hasExpression || hasSvgUseHref || needsScoping
                         ? codeGen.getStaticExpressionToken(attr)
                         : (value as Literal).value,
             };
