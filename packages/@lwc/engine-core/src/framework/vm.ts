@@ -511,6 +511,8 @@ function computeShadowMode(
         // on, but components running in actual native shadow mode
         (process.env.NODE_ENV === 'test-karma-lwc' &&
             process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
+        // If synthetic shadow is explicitly disabled, use pure-native
+        lwcRuntimeFlags.DISABLE_SYNTHETIC_SHADOW ||
         // hydration only supports native shadow
         isTrue(hydrated)
     ) {
