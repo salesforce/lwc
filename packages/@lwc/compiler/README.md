@@ -56,7 +56,7 @@ const { code } = transformSync(source, filename, options);
     -   `customRendererConfig` (type: `object`, optional) - custom renderer config to pass to `@lwc/template-compiler`. See that package's README for details.
     -   `enableLightningWebSecurityTransforms` (type: `boolean`, default: `false`) - The configuration to enable Lighting Web Security specific transformations.
     -   `enableLwcSpread` (boolean, optional, `true` by default) - Deprecated. Ignored by compiler. `lwc:spread` is always enabled.
-    -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller output.
+    -   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output.
     -   `instrumentation` (type: `InstrumentationObject`, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
     -   `apiVersion` (type: `number`, optional) - API version to associate with the compiled module.
 

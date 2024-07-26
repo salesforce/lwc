@@ -115,7 +115,7 @@ export interface TransformOptions {
     customRendererConfig?: CustomRendererConfig;
     /** @deprecated Ignored by compiler. `lwc:spread` is always enabled. */
     enableLwcSpread?: boolean;
-    /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller output. */
+    /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
     disableSyntheticShadowSupport?: boolean;
     /**
      * Enable transformations specific to {@link https://developer.salesforce.com/docs/platform/lwc/guide/security-lwsec-intro.html Lighting Web Security}.

@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { spyConsole } from 'test-utils';
 import XTest from 'x/test';
 import XTestStatic from 'x/testStatic';
 import XTestCustomElement from 'x/testCustomElement';
@@ -66,8 +67,40 @@ it('should throw an error when the passing a non iterable', () => {
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm Test \(\d+\)]\. It must be an array-like object and not `null` nor `undefined`\.|is not a function/
+        /Invalid template iteration for value `\[object (ProxyObject|Object)]` in \[object:vm Test \(\d+\)]\. It must be an array-like object\.|is not a function/
     );
+});
+
+describe('null/undefined values', () => {
+    let spy;
+
+    beforeEach(() => {
+        spy = spyConsole();
+    });
+
+    afterEach(() => {
+        spy.reset();
+    });
+
+    [undefined, null].forEach((value) => {
+        it(`should log an error when passing in ${value}`, async () => {
+            const elm = createElement('x-test', { is: XTest });
+            elm.items = null;
+
+            document.body.appendChild(elm);
+            await Promise.resolve();
+
+            expect(elm.shadowRoot.querySelector('ul').children.length).toBe(0);
+
+            if (process.env.NODE_ENV === 'production') {
+                expect(spy.calls.error.length).toBe(0);
+            } else {
+                expect(spy.calls.error.length).toBe(1);
+                // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+                expect(spy.calls.error[0]).toMatch(/It must be an array-like object/);
+            }
+        });
+    });
 });
 
 it('should render an array of objects with null prototype', () => {

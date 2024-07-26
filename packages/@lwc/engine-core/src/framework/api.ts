@@ -394,12 +394,12 @@ function i(
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
     const vmBeingRendered = getVMBeingRendered()!;
-    if (isUndefined(iterable) || iterable === null) {
+    if (isUndefined(iterable) || isNull(iterable)) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
-                `Invalid template iteration for value "${toString(
+                `Invalid template iteration for value \`${toString(
                     iterable
-                )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
+                )}\` in ${vmBeingRendered}. It must be an array-like object.`,
                 vmBeingRendered!
             );
         }
@@ -411,7 +411,7 @@ function i(
             isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
-            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
+            )}\` in ${vmBeingRendered}. It must be an array-like object.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -564,12 +564,6 @@ function k(compilerKey: number, obj: any): string | void {
 function gid(id: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
-        if (process.env.NODE_ENV !== 'production') {
-            logError(
-                `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
-                vmBeingRendered
-            );
-        }
         return id;
     }
     // We remove attributes when they are assigned a value of null
@@ -587,14 +581,6 @@ function gid(id: string | undefined | null): string | null | undefined {
 function fid(url: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(url) || url === '') {
-        if (process.env.NODE_ENV !== 'production') {
-            if (isUndefined(url)) {
-                logError(
-                    `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
-                    vmBeingRendered
-                );
-            }
-        }
         return url;
     }
     // We remove attributes when they are assigned a value of null
