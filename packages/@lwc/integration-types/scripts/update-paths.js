@@ -41,6 +41,8 @@ async function generatePaths(moduleDirs) {
             }
         }
     }
+    // workaround for: https://github.com/vitest-dev/vitest/issues/4567
+    paths['rollup/parseAst'] = ['../../../node_modules/rollup/dist/parseAst'];
     return paths;
 }
 

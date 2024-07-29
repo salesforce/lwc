@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { vi } from 'vitest';
 import { Signal } from './signal';
 
 describe('signal protocol', () => {
@@ -17,13 +18,13 @@ describe('signal protocol', () => {
         const s = new Signal();
         expect('subscribe' in s).toBe(true);
         expect(typeof s.subscribe).toBe('function');
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         expect(() => s.subscribe(onUpdate)).not.toThrow();
     });
 
     it('should be able to notify subscribers', () => {
         const s = new Signal();
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         s.subscribe(onUpdate);
         s.value = 1;
         expect(onUpdate).toHaveBeenCalledTimes(1);
@@ -31,15 +32,15 @@ describe('signal protocol', () => {
 
     it('subscribe should return an unsubscribe function', () => {
         const s = new Signal();
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         const unsubscribe = s.subscribe(onUpdate);
         expect(typeof unsubscribe).toBe('function');
     });
 
     it('should not notify once unsubscribed', () => {
         const s = new Signal(0);
-        const onUpdate1 = jest.fn();
-        const onUpdate2 = jest.fn();
+        const onUpdate1 = vi.fn();
+        const onUpdate2 = vi.fn();
         const unsubscribe1 = s.subscribe(onUpdate1);
         const unsubscribe2 = s.subscribe(onUpdate2);
 
@@ -62,7 +63,7 @@ describe('signal protocol', () => {
 
     it('SignalBaseClass does not subscribe duplicate OnUpdate callback functions', () => {
         const s = new Signal(0);
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         s.subscribe(onUpdate);
         s.subscribe(onUpdate);
 

@@ -5,20 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { MockInstance, vi } from 'vitest';
 import { lwcRuntimeFlags, setFeatureFlag } from '../index';
 
 describe('setFeatureFlag', () => {
     ['development', 'production'].forEach((env) => {
         describe(`${env} mode`, () => {
             let originalNodeEnv: any;
-            let info: jest.SpyInstance;
-            let error: jest.SpyInstance;
+            let info: MockInstance;
+            let error: MockInstance;
 
             beforeEach(() => {
                 originalNodeEnv = process.env.NODE_ENV;
                 process.env.NODE_ENV = env;
-                info = jest.spyOn(console, 'info').mockImplementation(() => {});
-                error = jest.spyOn(console, 'error').mockImplementation(() => {});
+                info = vi.spyOn(console, 'info').mockImplementation(() => {});
+                error = vi.spyOn(console, 'error').mockImplementation(() => {});
             });
 
             afterEach(() => {

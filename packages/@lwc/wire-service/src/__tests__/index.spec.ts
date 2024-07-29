@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { vi } from 'vitest';
 import { register, WireEventTarget, ValueChangedEvent } from '../index';
 
 describe('WireEventTarget from register', () => {
@@ -17,8 +18,8 @@ describe('WireEventTarget from register', () => {
             register(adapterId, adapterFactory);
             const adapter = new (adapterId as any).adapter(() => {});
 
-            const listener1 = jest.fn();
-            const listener2 = jest.fn();
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
             wireEventTarget!.addEventListener('connect', listener1);
             wireEventTarget!.addEventListener('connect', listener2);
 
@@ -32,15 +33,15 @@ describe('WireEventTarget from register', () => {
         it('should invoke disconnected listeners', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
             register(adapterId, adapterFactory);
             const adapter = new (adapterId as any).adapter(dataCallback);
 
-            const listener1 = jest.fn();
-            const listener2 = jest.fn();
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
             wireEventTarget!.addEventListener('disconnect', listener1);
             wireEventTarget!.addEventListener('disconnect', listener2);
 
@@ -54,15 +55,15 @@ describe('WireEventTarget from register', () => {
         it('should invoke config listeners', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
             register(adapterId, adapterFactory);
             const adapter = new (adapterId as any).adapter(dataCallback);
 
-            const listener1 = jest.fn();
-            const listener2 = jest.fn();
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
             wireEventTarget!.addEventListener('config', listener1);
             wireEventTarget!.addEventListener('config', listener2);
 
@@ -82,12 +83,12 @@ describe('WireEventTarget from register', () => {
                 (wireEventTarget = wireEvtTarget);
 
             register(adapterId, adapterFactory);
-            const adapter = new (adapterId as any).adapter(jest.fn());
+            const adapter = new (adapterId as any).adapter(vi.fn());
             const expectedConfig = {};
 
             adapter.update(expectedConfig);
 
-            const listener = jest.fn();
+            const listener = vi.fn();
             wireEventTarget!.addEventListener('config', listener);
             expect(listener).toHaveBeenCalledTimes(1);
             expect(listener.mock.calls[0][0]).toBe(expectedConfig);
@@ -100,8 +101,8 @@ describe('WireEventTarget from register', () => {
                 (wireEventTarget = wireEvtTarget);
 
             register(adapterId, adapterFactory);
-            const adapter = new (adapterId as any).adapter(jest.fn());
-            const listener = jest.fn();
+            const adapter = new (adapterId as any).adapter(vi.fn());
+            const listener = vi.fn();
             wireEventTarget!.addEventListener('config', listener);
 
             expect(listener).not.toBeCalled();
@@ -118,7 +119,7 @@ describe('WireEventTarget from register', () => {
         it('should invoke data callback when dispatchEvent', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget | undefined;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
@@ -135,9 +136,9 @@ describe('WireEventTarget from register', () => {
         it('should dispatchEvent in wiredComponent when dispatching event with type wirecontextevent', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget | undefined;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const wiredElementMock = {
-                dispatchEvent: jest.fn(),
+                dispatchEvent: vi.fn(),
             };
             (dataCallback as any).$$DeprecatedWiredElementHostKey$$ = wiredElementMock;
             (dataCallback as any).$$DeprecatedWiredParamsMetaKey$$ = [];
@@ -164,7 +165,7 @@ describe('WireEventTarget from register', () => {
         it('should throw on non-ValueChangedEvent', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget | undefined;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
@@ -187,7 +188,7 @@ describe('WireEventTarget from register', () => {
         it('should throw when adding unknown event listener type', () => {
             const adapterId = {};
             let wireEventTarget: WireEventTarget;
-            const dataCallback = jest.fn();
+            const dataCallback = vi.fn();
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
@@ -215,11 +216,11 @@ describe('WireEventTarget from register', () => {
 
                 register(adapterId, adapterFactory);
 
-                const dataCallback = jest.fn();
+                const dataCallback = vi.fn();
                 (dataCallback as any).$$DeprecatedWiredParamsMetaKey$$ = [];
                 const adapter = new (adapterId as any).adapter(dataCallback);
 
-                const listener = jest.fn();
+                const listener = vi.fn();
                 (wireEventTarget as any).addEventListener(eventType, listener);
                 adapter[(eventToAdapterMethod as any)[eventType]]({});
 
@@ -242,15 +243,15 @@ describe('WireEventTarget from register', () => {
 
             expect(() => {
                 const testEvent = 'test' as any;
-                wireEventTarget.removeEventListener(testEvent, jest.fn());
+                wireEventTarget.removeEventListener(testEvent, vi.fn());
             }).toThrowError('Invalid event type test.');
         });
     });
 
     it('should invoke adapter factory once per wire', () => {
         const adapterId = {};
-        const dataCallback = jest.fn();
-        const adapterFactory = jest.fn();
+        const dataCallback = vi.fn();
+        const adapterFactory = vi.fn();
 
         register(adapterId, adapterFactory);
         new (adapterId as any).adapter(dataCallback);
