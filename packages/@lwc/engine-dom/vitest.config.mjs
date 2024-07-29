@@ -13,7 +13,7 @@ export default mergeConfig(
             // Using `src` also ensures that the test coverage is accurately reported
             alias: Object.fromEntries(
                 Object.keys(pkg.dependencies ?? {})
-                    .filter((_) => _.startsWith('@lwc/'))
+                    .filter((dep) => dep.startsWith('@lwc/'))
                     .map((dep) => [dep, `${dep}/src`])
             ),
         },
