@@ -7,7 +7,7 @@ export default mergeConfig(
     defineProject({
         test: {
             name: 'lwc-features',
-            // Workaround to fix `const enum`, which is required because we use e.g. `APIFeature` from `@lwc/shared`
+            // To properly resolve `const enum`, we need to point to the TypeScript source files
             // See https://github.com/vitest-dev/vitest/discussions/3964
             // Using `src` also ensures that the test coverage is accurately reported
             alias: Object.fromEntries(
