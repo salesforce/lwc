@@ -44,6 +44,7 @@
         }
     },
     "dependencies": {
+        "@lwc/shared": "7.2.0",
         "@lwc/template-compiler": "7.2.0",
         "acorn": "8.12.1",
         "astring": "^1.8.6",
