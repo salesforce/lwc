@@ -6,7 +6,7 @@ export default mergeConfig(
     baseConfig,
     defineProject({
         test: {
-            name: 'lwc-compiler',
+            name: 'lwc-ssr-compiler',
             // Workaround to fix `const enum`, which is required because we use e.g. `APIFeature` from `@lwc/shared`
             // See https://github.com/vitest-dev/vitest/discussions/3964
             // Using `src` also ensures that the test coverage is accurately reported

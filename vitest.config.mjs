@@ -8,12 +8,13 @@ export default defineConfig({
             provider: 'v8',
             exclude: [
                 // Ignore test files, config files, scripts, deps, and generated files
+                '**/*.config.*',
+                '**/.nx-cache/**',
                 '**/.rollup.cache/**',
                 '**/__tests__/**',
                 '**/dist/**',
                 '**/node_modules/**',
                 '**/scripts/**',
-                '**/*.config.*',
                 '**/vitest.*',
                 // Ignore browser-only modules which are only lightly tested in unit tests
                 // These are mostly tested in integration/karma tests

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import pkg from './package.json';
 
 export default defineConfig({
     test: {
@@ -8,5 +9,8 @@ export default defineConfig({
             printBasicPrototype: true,
             callToJSON: true,
         },
+    },
+    define: {
+        'process.env.LWC_VERSION': JSON.stringify(pkg.version),
     },
 });
