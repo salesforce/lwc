@@ -52,7 +52,13 @@ describe('default exports are not forgotten', () => {
         .filter((f) => f.endsWith('.js') && f !== 'index.js' && f !== 'vitest.config.js')
         .map((f) => f.slice(0, -3));
     test.each(packages)('@lwc/%s', async (pkg) => {
-        const realModule = await import(`@lwc/${pkg}/dist/index.js`);
+        const pathToEsmDistFile = path.join(
+            PACKAGE_ROOT,
+            '../../packages/@lwc',
+            pkg,
+            'dist/index.js'
+        );
+        const realModule = await import(pathToEsmDistFile);
         // When jest properly supports ESM, this will be a lot simpler
         // const aliasedModule = await import(`lwc/${pkg}`);
         // expect(aliasedModule.default).toBe(realModule.default);
