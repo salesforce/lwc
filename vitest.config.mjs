@@ -36,9 +36,10 @@ export default defineConfig({
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                branches: 80,
+                branches: 95,
                 functions: 90,
-                lines: 90,
+                lines: 95,
+                statements: 95,
             },
             reporter: ['clover', 'json', 'lcov', 'text', ['text', { file: 'coverage.txt' }]],
         },
