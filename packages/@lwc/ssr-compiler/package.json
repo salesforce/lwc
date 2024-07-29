@@ -47,9 +47,9 @@
         "@lwc/template-compiler": "7.2.0",
         "acorn": "8.12.1",
         "astring": "^1.8.6",
-        "estree-toolkit": "^1.7.5",
+        "estree-toolkit": "^1.7.6",
         "immer": "^10.1.1",
-        "meriyah": "^4.5.0"
+        "meriyah": "^5.0.0"
     },
     "devDependencies": {
         "@types/estree": "^1.0.5"
