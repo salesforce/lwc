@@ -41,7 +41,14 @@ export default defineConfig({
                 lines: 95,
                 statements: 95,
             },
-            reporter: ['clover', 'json', 'lcov', 'text', ['text', { file: 'coverage.txt' }]],
+            reporter: [
+                'clover',
+                'html',
+                'json',
+                'lcov',
+                'text',
+                ['text', { file: 'coverage.txt' }],
+            ],
         },
     },
 });
