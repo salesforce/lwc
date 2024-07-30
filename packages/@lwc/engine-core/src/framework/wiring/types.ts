@@ -49,10 +49,10 @@ export interface WireDecorator<Value> {
     <Class extends LightningElement>(
         target: unknown,
         context:
-            | ClassFieldDecoratorContext<Class, Value>
-            | ClassMethodDecoratorContext<Class, DataCallback<Value>>
-            | ClassGetterDecoratorContext<Class, Value>
-            | ClassSetterDecoratorContext<Class, Value>
+            | ClassFieldDecoratorContext<Class, Value | undefined>
+            | ClassMethodDecoratorContext<Class, DataCallback<Value | undefined>>
+            | ClassGetterDecoratorContext<Class, Value | undefined>
+            | ClassSetterDecoratorContext<Class, Value | undefined>
     ): void;
 }
 
