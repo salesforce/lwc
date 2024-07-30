@@ -12,9 +12,9 @@ import type { LightningElement } from '../base-lightning-element';
 import type {
     ConfigValue,
     ContextValue,
+    DataCallback,
     ReplaceReactiveValues,
     WireAdapterConstructor,
-    WireDecorator,
 } from '../wiring';
 
 /**
@@ -31,13 +31,21 @@ import type {
 export default function wire<
     ReactiveConfig extends ConfigValue = ConfigValue,
     Value = any,
-    Context extends ContextValue = ContextValue
+    Context extends ContextValue = ContextValue,
+    Class extends LightningElement = LightningElement
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig>, Value, Context>,
+    adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     config?: ReactiveConfig
-): WireDecorator<Value> {
+): (
+    target: unknown,
+    context:
+        | ClassFieldDecoratorContext<Class, Value | undefined>
+        | ClassMethodDecoratorContext<Class, DataCallback<Value | undefined>>
+        | ClassGetterDecoratorContext<Class, Value | undefined>
+        | ClassSetterDecoratorContext<Class, Value | undefined>
+) => void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');
     }

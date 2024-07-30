@@ -35,18 +35,6 @@ export interface WireAdapterConstructor<
     contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
 }
 
-/** The decorator returned by `@wire(adapter)`, not the `wire` factory function. */
-export interface WireDecorator<Value> {
-    <Class extends LightningElement>(
-        target: unknown,
-        context:
-            | ClassFieldDecoratorContext<Class, Value | undefined>
-            | ClassMethodDecoratorContext<Class, DataCallback<Value | undefined>>
-            | ClassGetterDecoratorContext<Class, Value | undefined>
-            | ClassSetterDecoratorContext<Class, Value | undefined>
-    ): void;
-}
-
 export interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
@@ -100,11 +88,33 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
+/** Resolves a property chain to the corresponding value on the target type. */
+type ResolveReactiveValue<Target, Keys> = Keys extends keyof Target
+    ? Target[Keys]
+    : Keys extends `${infer K}.${infer Rest}`
+    ? K extends keyof Target
+        ? ResolveReactiveValue<Target[K], Rest>
+        : undefined
+    : undefined;
+
 /**
- * String values starting with "$" are reactive; they get replaced by values from the component.
- * We don't have access to the component, and we don't expect all reactive strings to be typed as
- * literals, so we just replace all strings with `any`.
+ * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
+ * properties to the corresponding value on the target type.
  */
-export type ReplaceReactiveValues<T> = {
-    [K in keyof T]: T[K] extends string ? any : T[K];
+type ResolveValueIfReactive<Value, Target> = Value extends string
+    ? string extends Value // `Value` is type `string`
+        ? // Workaround for not being able to enforce `as const` assertions -- we don't know if this
+          // is a true string value (e.g. `@wire(adapter, {val: 'str'})`) or if it's a reactive prop
+          // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
+          any
+        : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
+        ? ResolveReactiveValue<Target, Keys>
+        : Value // String literal *not* starting with "$", e.g. `"hello world"`
+    : Value; // non-string type
+
+export type ReplaceReactiveValues<
+    Config extends ConfigValue,
+    Component extends LightningElement
+> = {
+    [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
 };
