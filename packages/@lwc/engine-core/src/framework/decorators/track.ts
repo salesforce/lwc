@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, toString } from '@lwc/shared';
+import { assert, isUndefined, toString } from '@lwc/shared';
 import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
@@ -23,8 +23,12 @@ export default function track<Class extends LightningElement>(
     target: undefined,
     context: ClassFieldDecoratorContext<Class>
 ): void;
-export default function track<T>(target: T): T {
-    if (arguments.length === 1) {
+export default function track<T>(target: T, context?: never): T;
+export default function track(
+    target: unknown,
+    context?: ClassFieldDecoratorContext | undefined
+): unknown {
+    if (isUndefined(context)) {
         return getReactiveProxy(target);
     }
     if (process.env.NODE_ENV !== 'production') {
