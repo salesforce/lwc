@@ -43,6 +43,7 @@ export default class Decorators extends LightningElement {
     @wire(FakeWireAdapter, { config: 'config' } as const) baseConstConfigMethod(_?: WireValue) {}
     @wire(FakeWireAdapter, { config: '$plainProp' } as const)
     reactiveConstConfigMethod(_?: WireValue) {}
+    @wire(FakeWireAdapter, { config: 'config' }) emptyMethod() {}
 
     // Invalid cases
     // @ts-expect-error prop type is `string` but the adapter needs `WireValue`
@@ -56,6 +57,11 @@ export default class Decorators extends LightningElement {
     wrongMethodSignature(_?: 'wrong type') {}
     // @ts-expect-error config type is `{wrong: string}` but the adapter needs `WireConfig`
     @wire(FakeWireAdapter, { wrong: 'type' }) wrongConfigMethod(_?: WireValue) {}
+    // @ts-expect-error too many arguments
+    @wire(FakeWireAdapter, { config: 'config' }) tooManyArguments(
+        _a: WireValue | undefined,
+        _b: unknown
+    ): void {}
 
     // Ambiguous cases -- possibly shouldn't be valid?
     // Passing a config is optional because adapters don't strictly need to use it.
