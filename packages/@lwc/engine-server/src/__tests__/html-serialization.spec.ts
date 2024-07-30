@@ -12,6 +12,7 @@ import { rollup, RollupLog } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
+import { vi } from 'vitest';
 import * as engineServer from '../index';
 
 /**
@@ -20,7 +21,7 @@ import * as engineServer from '../index';
  * robust than snapshots, which may have invalid/incorrect HTML.
  */
 
-jest.setTimeout(10_000 /* 10 seconds */);
+vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 // Compile a component to an HTML string, using the full LWC compilation pipeline
 async function compileComponent(tagName: string, componentName: string) {

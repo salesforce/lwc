@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
+import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import { LWC_VERSION } from '@lwc/shared';
 
 import { transform, Config } from '../index';

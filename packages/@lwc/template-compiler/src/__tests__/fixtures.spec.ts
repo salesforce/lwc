@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
-import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
+import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 
 import compiler, { Config } from '../index';
 

@@ -8,10 +8,11 @@
 import fs from 'fs';
 import path from 'path';
 
+import { vi } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
-import { testFixtureDir, formatHTML } from '@lwc/jest-utils-lwc-internals';
+import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 
 interface FixtureModule {
@@ -22,7 +23,7 @@ interface FixtureModule {
     features?: FeatureFlagName[];
 }
 
-jest.setTimeout(10_000 /* 10 seconds */);
+vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -51,7 +52,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 
     await bundle.write({
         file: outputFile,
-        format: 'cjs',
+        format: 'esm',
         exports: 'named',
     });
 
@@ -77,10 +78,7 @@ function testFixtures() {
                 dirname,
             });
 
-            let module: FixtureModule;
-            jest.isolateModules(() => {
-                module = require(compiledFixturePath);
-            });
+            const module = (await import(compiledFixturePath)) as FixtureModule;
 
             try {
                 const result = await serverSideRenderComponent(

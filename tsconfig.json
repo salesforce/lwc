@@ -13,7 +13,7 @@
         "lib": ["es2021"],
 
         // Disable automatic inclusion of @types packages
-        "types": ["node", "jest"],
+        "types": ["node", "vitest/globals"],
 
         // @rollup/plugin-typescript is actually responsible for writing dist files. Using "." as the declarationDir
         // ensures that .d.ts files are co-located with JS files, e.g. `dist/index.js` and `dist/index.d.ts`.

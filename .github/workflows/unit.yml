@@ -64,12 +64,12 @@ jobs:
               run: yarn bundlesize
             - name: Check types
               run: yarn test:types
-            - name: Run Jest tests
+            - name: Run unit tests
               run: yarn test:ci
-            - name: Upload Jest coverage report
+            - name: Upload unit test coverage report
               uses: actions/upload-artifact@v3
               with:
-                  name: jest-coverage-report
+                  name: test-coverage-report
                   path: coverage/
             - name: Run benchmark smoke tests
               run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
