@@ -5,11 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/**
- * This file contains basic decorator usage and is tested with `experimentalDecorators` set to both
- * `true` and `false`, to validate that the method signatures work in both cases.
- */
-
 import { WireAdapter } from '@lwc/engine-core';
 import { LightningElement, WireAdapterConstructor, api, track, wire } from 'lwc';
 
