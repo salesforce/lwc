@@ -45,20 +45,15 @@ export interface WireAdapterConstructor<
  * - The property is marked as optional
  * - The property is assigned a default value (not recommended)
  */
-export interface WireDecorator<Value = any> {
-    // For modern decorators, we get the property value as part of the decorator signature,
-    // so we can directly compare that value with the generic `Value` from the interface.
-    // We also use a generic with a constraint to ensure that we only decorate LightningElements.
-    /** Property decorator for `"experimentalDecorators": false`. */
+export interface WireDecorator<Value> {
     <Class extends LightningElement>(
-        target: undefined,
-        ctx: ClassFieldDecoratorContext<Class, Value>
+        target: unknown,
+        context:
+            | ClassFieldDecoratorContext<Class, Value>
+            | ClassMethodDecoratorContext<Class, DataCallback<Value>>
+            | ClassGetterDecoratorContext<Class, Value>
+            | ClassSetterDecoratorContext<Class, Value>
     ): void;
-    /** Method decorator for `"experimentalDecorators": false`. */
-    <Class extends LightningElement>(
-        target: DataCallback<Value>,
-        ctx: ClassMethodDecoratorContext<Class, DataCallback<Value>>
-    ): void | DataCallback<Value>;
 }
 
 export interface WireDef {
