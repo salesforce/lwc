@@ -35,16 +35,7 @@ export interface WireAdapterConstructor<
     contextSchema?: Record<keyof Context, WireAdapterSchemaValue>;
 }
 
-/**
- * The decorator returned by `@wire()`; not the `wire` factory function.
- *
- * If you're using `@wire(adapter) property` and getting an opaque type error, ensure that the
- * property is explicitly typed and the type matches the value used by the adapter. Note that one
- * of the following conditions must always be true:
- * - The adapter uses `undefined` as a possible value
- * - The property is marked as optional
- * - The property is assigned a default value (not recommended)
- */
+/** The decorator returned by `@wire(adapter)`, not the `wire` factory function. */
 export interface WireDecorator<Value> {
     <Class extends LightningElement>(
         target: unknown,
