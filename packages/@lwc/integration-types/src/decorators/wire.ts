@@ -6,7 +6,7 @@
  */
 
 import { WireAdapter } from '@lwc/engine-core';
-import { LightningElement, WireAdapterConstructor, api, track, wire } from 'lwc';
+import { LightningElement, WireAdapterConstructor, wire } from 'lwc';
 
 type WireConfig = { config: 'config' };
 type WireValue = { value: 'value' };
@@ -21,13 +21,14 @@ const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig,
     disconnect() {}
 } satisfies WireAdapterConstructor<WireConfig, WireValue, WireContext>;
 
+// @ts-expect-error bare decorator cannot be used
+wire(FakeWireAdapter, { config: 'config' })();
+
 export default class Decorators extends LightningElement {
     plainProp = 'config' as const;
     otherProp = 123;
 
     // Valid cases
-    @api apiProp?: string;
-    @track trackedProp?: Record<string, unknown>;
     @wire(FakeWireAdapter, { config: 'config' }) baseConfigProp!: WireValue;
     @wire(FakeWireAdapter, { config: '$plainProp' }) reactiveConfigProp!: WireValue;
     @wire(FakeWireAdapter, { config: 'config' } as const) baseConstConfigProp!: WireValue;
