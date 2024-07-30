@@ -12,6 +12,8 @@ type WireConfig = { config: 'config' };
 type WireValue = { value: 'value' };
 type WireContext = { context: 'context' };
 
+// `class C implements A` validates that the class instance matches type A
+// `const C = class C {} satisfies B` validates that the class constructor matches type B
 const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig, WireContext> {
     constructor(private cb: (value: WireValue) => void) {}
     update(_cfg: WireConfig, _ctx: WireContext) {}
