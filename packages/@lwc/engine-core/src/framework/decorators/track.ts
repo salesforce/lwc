@@ -19,9 +19,9 @@ import { logError } from '../../shared/logger';
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
  */
-export default function track(
-    value: unknown,
-    context: ClassMemberDecoratorContext | string | symbol
+export default function track<Class extends LightningElement>(
+    target: undefined,
+    context: ClassFieldDecoratorContext<Class>
 ): void;
 export default function track<T>(target: T): T {
     if (arguments.length === 1) {
