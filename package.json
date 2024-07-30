@@ -94,13 +94,9 @@
     "resolutions": {
         "//": {
             "http-cache-semantics": "Pinned to address security vulnerability",
-            "jsonwebtoken": "Pinned to address security vulnerability",
-            "semver": "Pinned to address security vulnerability",
-            "systeminformation": "Pinned to address security vulnerability"
+            "semver": "Pinned to address security vulnerability"
         },
         "http-cache-semantics": "4.1.1",
-        "jsonwebtoken": "9.0.2",
-        "semver": "7.6.0",
-        "systeminformation": "5.22.7"
+        "semver": "7.6.0"
     }
 }
