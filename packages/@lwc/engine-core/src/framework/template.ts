@@ -16,7 +16,6 @@ import {
     isUndefined,
     KEY__SCOPED_CSS,
     keys,
-    noop,
     StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
@@ -47,6 +46,7 @@ import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
+import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -238,40 +238,11 @@ function serializeClassAttribute(part: VStaticPartElement, classToken: string) {
     return computedClassName.length ? ` class="${htmlEscape(computedClassName, true)}"` : '';
 }
 
-const enum FragmentCache {
-    HAS_SCOPED_STYLE = 1,
-    SHADOW_MODE_SYNTHETIC = 2,
-}
-
-// This should be a no-op outside of LWC's Karma tests, where it's not needed
-let registerFragmentCache: (fragmentCache: any) => void = noop;
-
-// Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
-    // Keep track of fragmentCaches, so we can clear them in LWC's Karma tests
-    const fragmentCaches: any[] = [];
-    registerFragmentCache = (fragmentCache: any) => {
-        fragmentCaches.push(fragmentCache);
-    };
-
-    (window as any).__lwcResetFragmentCaches = () => {
-        for (const fragmentCache of fragmentCaches) {
-            for (const key of keys(fragmentCache)) {
-                delete fragmentCache[key];
-            }
-        }
-    };
-}
-
 function buildParseFragmentFn(
     createFragmentFn: (html: string, renderer: RendererAPI) => Element
 ): (strings: string[], ...keys: (string | number)[]) => () => Element {
-    return (strings: string[], ...keys: (string | number)[]) => {
-        const cache = create(null);
-
-        registerFragmentCache(cache);
-
-        return function (parts?: VStaticPart[]): Element {
+    return function parseFragment(strings: string[], ...keys: (string | number)[]) {
+        return function applyFragmentParts(parts?: VStaticPart[]): Element {
             const {
                 context: { hasScopedStyles, stylesheetToken, legacyStylesheetToken },
                 shadowMode,
@@ -284,16 +255,16 @@ function buildParseFragmentFn(
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
-                cacheKey |= FragmentCache.HAS_SCOPED_STYLE;
+                cacheKey |= FragmentCacheKey.HAS_SCOPED_STYLE;
             }
             if (hasStyleToken && isSyntheticShadow) {
-                cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
+                cacheKey |= FragmentCacheKey.SHADOW_MODE_SYNTHETIC;
             }
 
             // Cache is only here to prevent calling innerHTML multiple times which doesn't happen on the server.
             if (process.env.IS_BROWSER) {
                 // Disable this on the server to prevent cache poisoning when expressions are used.
-                const cached = cache[cacheKey];
+                const cached = getFromFragmentCache(cacheKey, strings);
                 if (!isUndefined(cached)) {
                     return cached;
                 }
@@ -343,9 +314,11 @@ function buildParseFragmentFn(
 
             htmlFragment += strings[strings.length - 1];
 
-            cache[cacheKey] = createFragmentFn(htmlFragment, renderer);
+            const element = createFragmentFn(htmlFragment, renderer);
 
-            return cache[cacheKey];
+            setInFragmentCache(cacheKey, strings, element);
+
+            return element;
         };
     };
 }
