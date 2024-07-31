@@ -89,3 +89,20 @@ export default class Decorators extends LightningElement {
     @wire(FakeWireAdapter, { config: '$nested.wrong' }) falsePositiveNestedReactiveProp?: WireValue;
     @wire(FakeWireAdapter, { config: '$otherProp' }) falsePositiveWrongReactiveProp?: WireValue;
 }
+
+// @ts-expect-error decorator doesn't work on non-component classes
+@wire(FakeWireAdapter, { config: 'config' })
+export class NonComponent {
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) optionalProperty?: string;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) propertyWithDefault = true;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) nonNullAssertedProperty!: object;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) method() {}
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) getter(): undefined {}
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @wire(FakeWireAdapter, { config: 'config' }) setter(_: string) {}
+}

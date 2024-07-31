@@ -29,3 +29,20 @@ export default class Test extends LightningElement {
     // @ts-expect-error cannot be used on setters
     @track setter(_: string) {}
 }
+
+// @ts-expect-error decorator doesn't work on non-component classes
+@track
+export class NonComponent {
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track optionalProperty?: string;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track propertyWithDefault = true;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track nonNullAssertedProperty!: object;
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track method() {}
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track getter(): undefined {}
+    // @ts-expect-error decorator doesn't work on non-component classes
+    @track setter(_: string) {}
+}
