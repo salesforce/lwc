@@ -11,6 +11,7 @@ import { LightningElement, WireAdapterConstructor, wire } from 'lwc';
 type WireConfig = { config: 'config' };
 type WireValue = { value: 'value' };
 type WireContext = { context: 'context' };
+type DeepConfig = { deep: { config: number } };
 
 const config: WireConfig = { config: 'config' };
 
@@ -22,6 +23,13 @@ const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig,
     connect() {}
     disconnect() {}
 } satisfies WireAdapterConstructor<WireConfig, WireValue, WireContext>;
+
+const DeepConfigAdapter = class DeepConfigAdapter implements WireAdapter<DeepConfig, WireValue> {
+    constructor(private cb: (value: WireValue) => void) {}
+    update(_cfg: DeepConfig) {}
+    connect() {}
+    disconnect() {}
+} satisfies WireAdapterConstructor<DeepConfig, WireValue>;
 
 // @ts-expect-error bare decorator cannot be used
 wire(FakeWireAdapter, { config: 'config' })();
@@ -55,6 +63,7 @@ export class PropDecorators extends LightningElement {
     @wire(FakeWireAdapter, { config: '$plainProp' } as const) reactiveConstConfig?: WireValue;
     @wire(FakeWireAdapter, { config: '$nested.object' } as const)
     nestedReactiveConstConfig?: WireValue;
+    @wire(DeepConfigAdapter, { deep: { config: 123 } }) deepObjectConfig: any;
 
     // Invalid cases
     // @ts-expect-error prop type is `string` but the adapter needs `WireValue`
@@ -70,6 +79,9 @@ export class PropDecorators extends LightningElement {
     wrongNestedReactiveProp?: WireValue;
     // @ts-expect-error `otherProp` is the wrong type
     @wire(FakeWireAdapter, { config: '$otherProp' } as const) wrongReactivePropType?: WireValue;
+    // @ts-expect-error nested props are not reactive
+    @wire(DeepConfigAdapter, { deep: { config: '$otherProp' } })
+    nonReactiveDeepObjectConfig?: WireValue;
 
     // Ambiguous case: Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config if the adapter does?
