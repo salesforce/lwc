@@ -43,16 +43,16 @@ export default class Decorators extends LightningElement {
     nestedReactiveConstConfigProp?: WireValue;
 
     // Valid cases -- method
-    @wire(FakeWireAdapter, { config: 'config' }) baseConfigMethod(_?: WireValue) {}
-    @wire(FakeWireAdapter, config) configVarMethod(_?: WireValue) {}
-    @wire(FakeWireAdapter, { config: '$plainProp' }) reactiveConfigMethod(_?: WireValue) {}
+    @wire(FakeWireAdapter, { config: 'config' }) baseConfigMethod(_: WireValue) {}
+    @wire(FakeWireAdapter, config) configVarMethod(_: WireValue) {}
+    @wire(FakeWireAdapter, { config: '$plainProp' }) reactiveConfigMethod(_: WireValue) {}
     @wire(FakeWireAdapter, { config: '$nested.object' })
-    nestedReactiveConfigMethod(_?: WireValue) {}
-    @wire(FakeWireAdapter, { config: 'config' } as const) baseConstConfigMethod(_?: WireValue) {}
+    nestedReactiveConfigMethod(_: WireValue) {}
+    @wire(FakeWireAdapter, { config: 'config' } as const) baseConstConfigMethod(_: WireValue) {}
     @wire(FakeWireAdapter, { config: '$plainProp' } as const)
-    reactiveConstConfigMethod(_?: WireValue) {}
+    reactiveConstConfigMethod(_: WireValue) {}
     @wire(FakeWireAdapter, { config: '$nested.object' } as const)
-    nestedReactiveConstConfigMethod(_?: WireValue) {}
+    nestedReactiveConstConfigMethod(_: WireValue) {}
     @wire(FakeWireAdapter, { config: 'config' }) emptyMethod() {}
 
     // Invalid cases -- prop
@@ -72,9 +72,9 @@ export default class Decorators extends LightningElement {
 
     // Invalid cases -- method
     // @ts-expect-error prop type is `string` but the adapter needs `WireValue`
-    @wire(FakeWireAdapter, { config: 'config' }) wrongMethodSignature(_?: 'wrong type') {}
+    @wire(FakeWireAdapter, { config: 'config' }) wrongMethodSignature(_: 'wrong type') {}
     // @ts-expect-error config type is `{wrong: string}` but the adapter needs `WireConfig`
-    @wire(FakeWireAdapter, { wrong: 'type' }) wrongConfigMethod(_?: WireValue) {}
+    @wire(FakeWireAdapter, { wrong: 'type' }) wrongConfigMethod(_: WireValue) {}
     // @ts-expect-error too many arguments
     @wire(FakeWireAdapter, { config: 'config' })
     tooManyArguments(_a: WireValue | undefined, _b: unknown): void {}
@@ -83,7 +83,7 @@ export default class Decorators extends LightningElement {
     // Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config if the adapter does?
     @wire(FakeWireAdapter) noConfigProp?: WireValue;
-    @wire(FakeWireAdapter) noConfigMethod(_?: WireValue) {}
+    @wire(FakeWireAdapter) noConfigMethod(_: WireValue) {}
     // These types are inferred as `string`, so we can't do any further checking on them :\
     @wire(FakeWireAdapter, { config: '$wrongProp' }) falsePositiveReactiveProp?: WireValue;
     @wire(FakeWireAdapter, { config: '$nested.wrong' }) falsePositiveNestedReactiveProp?: WireValue;

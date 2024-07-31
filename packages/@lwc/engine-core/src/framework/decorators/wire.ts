@@ -42,7 +42,7 @@ export default function wire<
     target: unknown,
     context:
         | ClassFieldDecoratorContext<Class, Value | undefined>
-        | ClassMethodDecoratorContext<Class, DataCallback<Value | undefined>>
+        | ClassMethodDecoratorContext<Class, DataCallback<Value>>
         | ClassGetterDecoratorContext<Class, Value | undefined>
         | ClassSetterDecoratorContext<Class, Value | undefined>
 ) => void {
