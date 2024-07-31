@@ -5,7 +5,10 @@ export const enum FragmentCacheKey {
     SHADOW_MODE_SYNTHETIC = 2,
 }
 
-// Mapping of cacheKeys to token array (assumed to come from a tagged template literal) to an Element
+// Mapping of cacheKeys to `string[]` (assumed to come from a tagged template literal) to an Element.
+// Note that every unique tagged template literal will have a unique `string[]`. So by using `string[]`
+// as the WeakMap key, we effectively associate each Element with a unique tagged template literal.
+// See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
 const fragmentCache: Map<number, WeakMap<string[], Element>> = new Map();
 
 // Only used in LWC's Karma tests
