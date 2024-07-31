@@ -316,7 +316,10 @@ function buildParseFragmentFn(
 
             const element = createFragmentFn(htmlFragment, renderer);
 
-            setInFragmentCache(cacheKey, strings, element);
+            // Cache is only here to prevent calling innerHTML multiple times which doesn't happen on the server.
+            if (process.env.IS_BROWSER) {
+                setInFragmentCache(cacheKey, strings, element);
+            }
 
             return element;
         };
