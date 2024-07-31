@@ -43,8 +43,6 @@ export default function wire<
     context:
         | ClassFieldDecoratorContext<Class, Value | undefined>
         | ClassMethodDecoratorContext<Class, DataCallback<Value>>
-        | ClassGetterDecoratorContext<Class, Value | undefined>
-        | ClassSetterDecoratorContext<Class, Value | undefined>
 ) => void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');

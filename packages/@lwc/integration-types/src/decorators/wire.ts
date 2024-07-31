@@ -26,6 +26,20 @@ const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig,
 // @ts-expect-error bare decorator cannot be used
 wire(FakeWireAdapter, { config: 'config' })();
 
+// @ts-expect-error decorator cannot be used on classes
+@wire(FakeWireAdapter, { config: 'config' })
+export class InvalidDecoratorContexts extends LightningElement {
+    // @ts-expect-error decorator cannot be used on getters
+    @wire(FakeWireAdapter, { config: 'config' })
+    get getter(): WireValue {
+        return { value: 'value' };
+    }
+
+    // @ts-expect-error decorator cannot be used on setters
+    @wire(FakeWireAdapter, { config: 'config' })
+    set setter(v: WireValue) {}
+}
+
 /** Validations for decorated properties */
 export class PropDecorators extends LightningElement {
     plainProp = 'config' as const;
