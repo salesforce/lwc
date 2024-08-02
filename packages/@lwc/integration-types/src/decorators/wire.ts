@@ -24,7 +24,7 @@ const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig,
     disconnect() {}
 } satisfies WireAdapterConstructor<WireConfig, WireValue, WireContext>;
 
-const DeepConfigAdapter = class DeepConfigAdapter implements WireAdapter<DeepConfig, WireValue> {
+const DeepConfigAdapter = class DeepConfigAdapter implements WireAdapter<DeepConfig, WireContext> {
     constructor(private cb: (value: WireValue) => void) {}
     update(_cfg: DeepConfig) {}
     connect() {}
