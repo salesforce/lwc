@@ -106,7 +106,7 @@ export class MethodDecorators extends LightningElement {
     @wire(FakeWireAdapter, { config: 'config' }) emptyMethod() {}
 
     // Invalid cases -- method
-    // @ts-expect-error prop type is `string` but the adapter needs `WireValue`
+    // @ts-expect-error method param is `string` but the adapter needs `WireValue`
     @wire(FakeWireAdapter, { config: 'config' }) wrongMethodSignature(_: 'wrong type') {}
     // @ts-expect-error config type is `{wrong: string}` but the adapter needs `WireConfig`
     @wire(FakeWireAdapter, { wrong: 'type' }) wrongConfigType(_: WireValue) {}
