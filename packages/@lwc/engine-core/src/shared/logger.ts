@@ -32,7 +32,7 @@ function log(method: 'warn' | 'error', message: string, vm: VM | undefined, once
         alreadyLoggedMessages.add(msg);
     }
 
-    // In Jest tests, reduce the warning and error verbosity by not printing the callstack
+    // In Vitest tests, reduce the warning and error verbosity by not printing the callstack
     if (process.env.NODE_ENV === 'test') {
         /* eslint-disable-next-line no-console */
         console[method](msg);

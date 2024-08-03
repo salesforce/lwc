@@ -31,7 +31,7 @@
         "release:version": "./scripts/release/version.js"
     },
     "//": {
-        "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
+        "prettier": "Outdated since Jest has been replaced with vitest: v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
     },
     "devDependencies": {
         "@commitlint/cli": "^19.3.0",
