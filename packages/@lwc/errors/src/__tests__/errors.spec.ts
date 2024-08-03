@@ -17,19 +17,18 @@ const ERROR_CODE_RANGES = {
     },
 };
 
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace jest {
-        interface Matchers<R> {
-            __type: R; // unused, but makes TypeScript happy
-            toBeUniqueCode: (key: string, seenErrorCodes: Set<number>) => object;
-            toBeInRange: (min: number, max: number, key: string) => object;
-        }
-    }
+interface CustomMatchers<R = unknown> {
+    toBeUniqueCode: (key: string, seenErrorCodes: Set<number>) => R;
+    toBeInRange: (range: { min: number; max: number }, key: string) => R;
+}
+
+declare module 'vitest' {
+    interface Assertion<T = any> extends CustomMatchers<T> {}
+    interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 
 expect.extend({
-    toBeInRange(code, min, max, key) {
+    toBeInRange(code, { min, max }, key) {
         const pass = Number.isInteger(code) && code >= min && code <= max;
         const message = () =>
             `expected ${key}'s error code '${code}'${
@@ -68,11 +67,7 @@ function traverseErrorInfo(
 describe('error validation', () => {
     it('compiler error codes are in the correct range', () => {
         function validate(errorInfo: LWCErrorInfo, key: string) {
-            expect(errorInfo.code).toBeInRange(
-                ERROR_CODE_RANGES.compiler.min,
-                ERROR_CODE_RANGES.compiler.max,
-                key
-            );
+            expect(errorInfo.code).toBeInRange(ERROR_CODE_RANGES.compiler, key);
         }
 
         traverseErrorInfo(CompilerErrors, validate, 'compiler');
