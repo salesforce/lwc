@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-// export {}; // required to have a module with just `declare vitest` in it
-
+/// <reference types="vitest/globals" />
 import 'vitest';
 
 interface CustomMatchers<R = unknown> {
