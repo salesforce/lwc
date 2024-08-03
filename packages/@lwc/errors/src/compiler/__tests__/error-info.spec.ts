@@ -14,7 +14,7 @@ const errorInfoMatcher = {
     code: expect.any(Number),
     message: expect.any(String),
     url: expect.any(String),
-    // Technically not *any* number, but jest doesn't have oneOf
+    // Technically not *any* number, but vitest doesn't have oneOf
     level: expect.any(Number),
 };
 
