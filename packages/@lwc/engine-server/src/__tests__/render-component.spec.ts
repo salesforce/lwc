@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import { it } from 'vitest';
 import { renderComponent, LightningElement } from '../index';
 
 class Test extends LightningElement {}
