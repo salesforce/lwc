@@ -15,6 +15,8 @@ type DeepConfig = { deep: { config: number } };
 
 const config: WireConfig = { config: 'config' };
 
+declare const AnyAdapter: any;
+
 // `class C implements A` validates that the class instance matches type A
 // `const C = class C {} satisfies B` validates that the class constructor matches type B
 const FakeWireAdapter = class FakeWireAdapter implements WireAdapter<WireConfig, WireContext> {
@@ -56,6 +58,8 @@ export class PropDecorators extends LightningElement {
 
     // Valid cases
     @wire(FakeWireAdapter, { config: 'config' }) basicConfig?: WireValue;
+    @wire(AnyAdapter, { config: 'config' }) anyAdapter?: WireValue;
+    @wire(AnyAdapter, { any: true }) anyValues?: 12345;
     @wire(FakeWireAdapter, config) configAsVar?: WireValue;
     @wire(FakeWireAdapter, { config: '$plainProp' }) reactiveConfig?: WireValue;
     @wire(FakeWireAdapter, { config: '$nested.object' }) nestedReactiveConfig?: WireValue;
@@ -95,6 +99,8 @@ export class MethodDecorators extends LightningElement {
     nested = { object: 'config' as const };
     // Valid cases
     @wire(FakeWireAdapter, { config: 'config' }) baseConfig(_: WireValue) {}
+    @wire(AnyAdapter, { config: config }) anyAdapter(_: WireValue) {}
+    @wire(AnyAdapter, { any: true }) anyValue(_: 12345) {}
     @wire(FakeWireAdapter, { config: 'config' }) optionalParam(_?: WireValue) {}
     @wire(FakeWireAdapter, config) configAsVar(_: WireValue) {}
     @wire(FakeWireAdapter, { config: '$plainProp' }) reactiveConfig(_: WireValue) {}

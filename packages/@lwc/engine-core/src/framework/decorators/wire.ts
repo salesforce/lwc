@@ -8,14 +8,36 @@ import { assert } from '@lwc/shared';
 import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
-import type { LightningElement } from '../base-lightning-element';
+import { LightningElement } from '../base-lightning-element';
 import type {
     ConfigValue,
     ContextValue,
-    DataCallback,
     ReplaceReactiveValues,
     WireAdapterConstructor,
 } from '../wiring';
+
+/**
+ * The decorator returned by `@wire()`; not the `wire` function. Each overload corresponds to a
+ * decorator type - field (prop), method, getter, or setter. There are two overloads for method
+ * decorators due to a limitation of type inferencing.
+ */
+interface WireDecorator<Value, Class> {
+    /** Field (prop) decorator */
+    (target: undefined, context: ClassFieldDecoratorContext<Class, Value | undefined>): void;
+    /** Method decorator (when adapter is type `WireAdapterConstructor`) */
+    (
+        target: (this: Class, value: Value) => void,
+        context: ClassMethodDecoratorContext<Class, (this: Class, value: Value) => void>
+    ): void;
+    /** Method decorator (when adapter is type `any`) */
+    (
+        target: Value,
+        context: ClassMethodDecoratorContext<
+            Class,
+            Value extends (this: Class, value: any) => any ? Value : never
+        >
+    ): void;
+}
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
@@ -38,12 +60,7 @@ export default function wire<
     adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     config?: ReactiveConfig
-): (
-    target: unknown,
-    context:
-        | ClassFieldDecoratorContext<Class, Value | undefined>
-        | ClassMethodDecoratorContext<Class, DataCallback<Value>>
-) => void {
+): WireDecorator<Value, Class> {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');
     }
