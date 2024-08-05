@@ -46,3 +46,20 @@ export class NonComponent {
     // @ts-expect-error decorator doesn't work on non-component classes
     @track setter(_: string) {}
 }
+
+// @ts-expect-error decorator doesn't work on classes with non-component superclass
+@track
+export class Extendo extends class InlineNonsense {} {
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track optionalProperty?: string;
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track propertyWithDefault = true;
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track nonNullAssertedProperty!: object;
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track method() {}
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track getter(): undefined {}
+    // @ts-expect-error decorator doesn't work on classes with non-component superclass
+    @track setter(_: string) {}
+}
