@@ -140,3 +140,20 @@ export class NonComponent {
     // @ts-expect-error decorator doesn't work on non-component classes
     @wire(FakeWireAdapter, { config: 'config' }) setter(_: string) {}
 }
+
+// @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+@wire(FakeWireAdapter, { config: 'config' })
+export class TheAmazingExtendo extends NonComponent {
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) optionalProperty?: string;
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) propertyWithDefault = true;
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) nonNullAssertedProperty!: object;
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) method() {}
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) getter(): undefined {}
+    // @ts-expect-error decorator doesn't work on classes with a non-LightningElement superclass
+    @wire(FakeWireAdapter, { config: 'config' }) setter(_: string) {}
+}
