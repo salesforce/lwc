@@ -37,6 +37,7 @@ BENCHMARK_CPU_THROTTLING_RATE =
     BENCHMARK_CPU_THROTTLING_RATE && toInt(BENCHMARK_CPU_THROTTLING_RATE);
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
+const packageRootDir = path.resolve(__dirname, '..');
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
 const swappablePackages = [
@@ -72,6 +73,9 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThr
         sampleSize: BENCHMARK_SAMPLE_SIZE,
         autoSampleConditions: [BENCHMARK_AUTO_SAMPLE_CONDITIONS],
         timeout: BENCHMARK_TIMEOUT,
+        // The root must be whatever dir contains your `node_modules`, so that Tachometer can resolve bare npm imports
+        // See: https://github.com/google/tachometer/issues/244#issuecomment-2267191898
+        root: path.relative(path.dirname(htmlFilename), packageRootDir),
         benchmarks: [
             {
                 url: htmlFilename,
