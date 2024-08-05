@@ -42,7 +42,7 @@ describe('decorator APIs used as non-decorators', () => {
         const obj = { foo: 'bar' };
         const proxy = track(obj);
 
-        expect(proxy.foo).toBe('bar');
+        expect(proxy).toEqual(obj);
         expect(proxy).not.toBe(obj);
     });
 });
