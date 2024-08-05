@@ -13,7 +13,7 @@ export const enum FragmentCacheKey {
 }
 
 // Maximum cache key we need to account for in the array size.
-// (HAS_SCOPED_STYLE | SHADOW_MODE_SYNTHETIC = 3) + 1
+// (HAS_SCOPED_STYLE | SHADOW_MODE_SYNTHETIC = 3)
 const MAX_CACHE_KEY = 3;
 
 // Mapping of cacheKeys to `string[]` (assumed to come from a tagged template literal) to an Element.
