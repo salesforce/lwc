@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { LWC_VERSION } from '@lwc/shared';
-import { format } from 'prettier';
+import prettier from 'prettier';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 
 import compiler, { Config } from '../index';
@@ -38,8 +38,10 @@ describe('fixtures', () => {
             );
 
             return {
-                // TODO [#4386]: Prettier v3 returns a promise - add an `await` here
-                'expected.js': await format(code, { parser: 'babel', trailingComma: 'es5' }),
+                'expected.js': await prettier.format(code, {
+                    parser: 'babel',
+                    trailingComma: 'es5',
+                }),
                 'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
             };
