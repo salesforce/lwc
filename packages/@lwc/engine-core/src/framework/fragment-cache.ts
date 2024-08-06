@@ -33,10 +33,22 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
     };
 }
 
+function checkIsBrowser() {
+    // The fragment cache only serves prevent calling innerHTML multiple times which doesn't happen on the server.
+    /* istanbul ignore next */
+    if (!process.env.IS_BROWSER) {
+        throw new Error(
+            'The fragment cache is intended to only be used in @lwc/engine-dom, not @lwc/engine-server'
+        );
+    }
+}
+
 export function getFromFragmentCache(cacheKey: number, strings: string[]) {
+    checkIsBrowser();
     return fragmentCache[cacheKey].get(strings);
 }
 
 export function setInFragmentCache(cacheKey: number, strings: string[], element: Element) {
+    checkIsBrowser();
     fragmentCache[cacheKey].set(strings, element);
 }
