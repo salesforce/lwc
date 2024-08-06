@@ -54,7 +54,7 @@ export default function wire<
     ReactiveConfig extends ConfigValue = ConfigValue,
     Value = any,
     Context extends ContextValue = ContextValue,
-    Class extends LightningElement = LightningElement
+    Class = LightningElement
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>,

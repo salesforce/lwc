@@ -112,9 +112,6 @@ type ResolveValueIfReactive<Value, Target> = Value extends string
         : Value // String literal *not* starting with "$", e.g. `"hello world"`
     : Value; // non-string type
 
-export type ReplaceReactiveValues<
-    Config extends ConfigValue,
-    Component extends LightningElement
-> = {
+export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
     [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
 };
