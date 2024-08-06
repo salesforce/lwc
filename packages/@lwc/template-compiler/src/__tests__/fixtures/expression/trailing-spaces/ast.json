@@ -32,24 +32,38 @@
                 "raw": "{  foo    }",
                 "value": {
                     "type": "Identifier",
-                    "start": 3,
-                    "end": 6,
+                    "start": 18,
+                    "end": 21,
+                    "loc": {
+                        "start": {
+                            "line": 2,
+                            "column": 7
+                        },
+                        "end": {
+                            "line": 2,
+                            "column": 10
+                        }
+                    },
+                    "range": [
+                        18,
+                        21
+                    ],
                     "name": "foo",
                     "location": {
-                        "startLine": 1,
-                        "startColumn": 11,
+                        "startLine": 2,
+                        "startColumn": 5,
                         "endLine": 3,
                         "endColumn": 1,
-                        "start": 10,
+                        "start": 15,
                         "end": 27
                     }
                 },
                 "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
+                    "startLine": 2,
+                    "startColumn": 5,
                     "endLine": 3,
                     "endColumn": 1,
-                    "start": 10,
+                    "start": 15,
                     "end": 27
                 }
             }

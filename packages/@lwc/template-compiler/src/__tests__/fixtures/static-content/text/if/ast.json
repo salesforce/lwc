@@ -65,24 +65,38 @@
                         "raw": "{firstOutterSibling}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 19,
+                            "start": 49,
+                            "end": 67,
+                            "loc": {
+                                "start": {
+                                    "line": 3,
+                                    "column": 9
+                                },
+                                "end": {
+                                    "line": 3,
+                                    "column": 27
+                                }
+                            },
+                            "range": [
+                                49,
+                                67
+                            ],
                             "name": "firstOutterSibling",
                             "location": {
-                                "startLine": 2,
-                                "startColumn": 29,
+                                "startLine": 3,
+                                "startColumn": 9,
                                 "endLine": 4,
                                 "endColumn": 9,
-                                "start": 39,
+                                "start": 48,
                                 "end": 77
                             }
                         },
                         "location": {
-                            "startLine": 2,
-                            "startColumn": 29,
+                            "startLine": 3,
+                            "startColumn": 9,
                             "endLine": 4,
                             "endColumn": 9,
-                            "start": 39,
+                            "start": 48,
                             "end": 77
                         }
                     },
@@ -124,8 +138,22 @@
                                 "raw": "{solo}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 5,
+                                    "start": 83,
+                                    "end": 87,
+                                    "loc": {
+                                        "start": {
+                                            "line": 4,
+                                            "column": 14
+                                        },
+                                        "end": {
+                                            "line": 4,
+                                            "column": 18
+                                        }
+                                    },
+                                    "range": [
+                                        83,
+                                        87
+                                    ],
                                     "name": "solo",
                                     "location": {
                                         "startLine": 4,
@@ -185,25 +213,39 @@
                                 "raw": "{firstInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 18,
+                                    "start": 122,
+                                    "end": 139,
+                                    "loc": {
+                                        "start": {
+                                            "line": 6,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 6,
+                                            "column": 30
+                                        }
+                                    },
+                                    "range": [
+                                        122,
+                                        139
+                                    ],
                                     "name": "firstInnerSibling",
                                     "location": {
-                                        "startLine": 5,
-                                        "startColumn": 14,
-                                        "endLine": 7,
-                                        "endColumn": 13,
-                                        "start": 108,
-                                        "end": 153
+                                        "startLine": 6,
+                                        "startColumn": 13,
+                                        "endLine": 6,
+                                        "endColumn": 32,
+                                        "start": 121,
+                                        "end": 140
                                     }
                                 },
                                 "location": {
-                                    "startLine": 5,
-                                    "startColumn": 14,
-                                    "endLine": 7,
-                                    "endColumn": 13,
-                                    "start": 108,
-                                    "end": 153
+                                    "startLine": 6,
+                                    "startColumn": 13,
+                                    "endLine": 6,
+                                    "endColumn": 32,
+                                    "start": 121,
+                                    "end": 140
                                 }
                             },
                             {
@@ -264,24 +306,38 @@
                         "raw": "{centerOutterSibling}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 20,
+                            "start": 196,
+                            "end": 215,
+                            "loc": {
+                                "start": {
+                                    "line": 9,
+                                    "column": 9
+                                },
+                                "end": {
+                                    "line": 9,
+                                    "column": 28
+                                }
+                            },
+                            "range": [
+                                196,
+                                215
+                            ],
                             "name": "centerOutterSibling",
                             "location": {
-                                "startLine": 8,
-                                "startColumn": 15,
+                                "startLine": 9,
+                                "startColumn": 9,
                                 "endLine": 10,
                                 "endColumn": 9,
-                                "start": 186,
+                                "start": 195,
                                 "end": 225
                             }
                         },
                         "location": {
-                            "startLine": 8,
-                            "startColumn": 15,
+                            "startLine": 9,
+                            "startColumn": 9,
                             "endLine": 10,
                             "endColumn": 9,
-                            "start": 186,
+                            "start": 195,
                             "end": 225
                         }
                     },
@@ -374,25 +430,39 @@
                                 "raw": "{secondInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 19,
+                                    "start": 275,
+                                    "end": 293,
+                                    "loc": {
+                                        "start": {
+                                            "line": 12,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 12,
+                                            "column": 31
+                                        }
+                                    },
+                                    "range": [
+                                        275,
+                                        293
+                                    ],
                                     "name": "secondInnerSibling",
                                     "location": {
-                                        "startLine": 11,
-                                        "startColumn": 31,
-                                        "endLine": 13,
-                                        "endColumn": 9,
-                                        "start": 261,
-                                        "end": 303
+                                        "startLine": 12,
+                                        "startColumn": 13,
+                                        "endLine": 12,
+                                        "endColumn": 33,
+                                        "start": 274,
+                                        "end": 294
                                     }
                                 },
                                 "location": {
-                                    "startLine": 11,
-                                    "startColumn": 31,
-                                    "endLine": 13,
-                                    "endColumn": 9,
-                                    "start": 261,
-                                    "end": 303
+                                    "startLine": 12,
+                                    "startColumn": 13,
+                                    "endLine": 12,
+                                    "endColumn": 33,
+                                    "start": 274,
+                                    "end": 294
                                 }
                             }
                         ]
@@ -486,25 +556,39 @@
                                 "raw": "{middleInnerSibling}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 19,
+                                    "start": 368,
+                                    "end": 386,
+                                    "loc": {
+                                        "start": {
+                                            "line": 16,
+                                            "column": 13
+                                        },
+                                        "end": {
+                                            "line": 16,
+                                            "column": 31
+                                        }
+                                    },
+                                    "range": [
+                                        368,
+                                        386
+                                    ],
                                     "name": "middleInnerSibling",
                                     "location": {
-                                        "startLine": 15,
-                                        "startColumn": 31,
-                                        "endLine": 17,
-                                        "endColumn": 13,
-                                        "start": 354,
-                                        "end": 400
+                                        "startLine": 16,
+                                        "startColumn": 13,
+                                        "endLine": 16,
+                                        "endColumn": 33,
+                                        "start": 367,
+                                        "end": 387
                                     }
                                 },
                                 "location": {
-                                    "startLine": 15,
-                                    "startColumn": 31,
-                                    "endLine": 17,
-                                    "endColumn": 13,
-                                    "start": 354,
-                                    "end": 400
+                                    "startLine": 16,
+                                    "startColumn": 13,
+                                    "endLine": 16,
+                                    "endColumn": 33,
+                                    "start": 367,
+                                    "end": 387
                                 }
                             },
                             {
@@ -565,24 +649,38 @@
                         "raw": "{lastOutterSibling}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 18,
+                            "start": 443,
+                            "end": 460,
+                            "loc": {
+                                "start": {
+                                    "line": 19,
+                                    "column": 9
+                                },
+                                "end": {
+                                    "line": 19,
+                                    "column": 26
+                                }
+                            },
+                            "range": [
+                                443,
+                                460
+                            ],
                             "name": "lastOutterSibling",
                             "location": {
-                                "startLine": 18,
-                                "startColumn": 15,
+                                "startLine": 19,
+                                "startColumn": 9,
                                 "endLine": 20,
                                 "endColumn": 5,
-                                "start": 433,
+                                "start": 442,
                                 "end": 466
                             }
                         },
                         "location": {
-                            "startLine": 18,
-                            "startColumn": 15,
+                            "startLine": 19,
+                            "startColumn": 9,
                             "endLine": 20,
                             "endColumn": 5,
-                            "start": 433,
+                            "start": 442,
                             "end": 466
                         }
                     }

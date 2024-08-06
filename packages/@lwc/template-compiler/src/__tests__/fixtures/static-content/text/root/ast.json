@@ -32,24 +32,38 @@
                 "raw": "{dynamic}",
                 "value": {
                     "type": "Identifier",
-                    "start": 1,
-                    "end": 8,
+                    "start": 16,
+                    "end": 23,
+                    "loc": {
+                        "start": {
+                            "line": 2,
+                            "column": 5
+                        },
+                        "end": {
+                            "line": 2,
+                            "column": 12
+                        }
+                    },
+                    "range": [
+                        16,
+                        23
+                    ],
                     "name": "dynamic",
                     "location": {
-                        "startLine": 1,
-                        "startColumn": 11,
+                        "startLine": 2,
+                        "startColumn": 5,
                         "endLine": 3,
                         "endColumn": 1,
-                        "start": 10,
+                        "start": 15,
                         "end": 25
                     }
                 },
                 "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
+                    "startLine": 2,
+                    "startColumn": 5,
                     "endLine": 3,
                     "endColumn": 1,
-                    "start": 10,
+                    "start": 15,
                     "end": 25
                 }
             }

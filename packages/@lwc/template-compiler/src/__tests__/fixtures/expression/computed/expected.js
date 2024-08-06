@@ -11,15 +11,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_text(
       api_dynamic_text($cmp.val) +
-        " " +
         api_dynamic_text($cmp.val[$cmp.state.foo]) +
-        " " +
         api_dynamic_text($cmp.val[$cmp.state.foo][$cmp.state.bar])
     ),
     api_iterator($cmp.arr, function (item, index) {
       return api_text(
         api_dynamic_text($cmp.arr[index]) +
-          " " +
           api_dynamic_text($cmp.arr[$cmp.state.val])
       );
     }),

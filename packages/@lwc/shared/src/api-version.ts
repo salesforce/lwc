@@ -109,6 +109,10 @@ export const enum APIFeature {
      * If enabled, add support for complex class expressions in the template.
      */
     TEMPLATE_CLASS_NAME_OBJECT_BINDING,
+    /**
+     * If enabled, adds support for complex template expressions.
+     */
+    ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
 }
 
 /**
@@ -135,6 +139,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
         case APIFeature.ENABLE_THIS_DOT_STYLE:
         case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
+        case APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS:
             return apiVersion >= APIVersion.V62_252_WINTER_25;
     }
 }

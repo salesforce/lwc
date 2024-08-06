@@ -65,8 +65,22 @@
                         "raw": "{ (foo) }",
                         "value": {
                             "type": "Identifier",
-                            "start": 3,
-                            "end": 6,
+                            "start": 23,
+                            "end": 26,
+                            "loc": {
+                                "start": {
+                                    "line": 2,
+                                    "column": 12
+                                },
+                                "end": {
+                                    "line": 2,
+                                    "column": 15
+                                }
+                            },
+                            "range": [
+                                23,
+                                26
+                            ],
                             "name": "foo",
                             "location": {
                                 "startLine": 2,
@@ -126,8 +140,22 @@
                         "raw": "{ ((foo)) }",
                         "value": {
                             "type": "Identifier",
-                            "start": 4,
-                            "end": 7,
+                            "start": 49,
+                            "end": 52,
+                            "loc": {
+                                "start": {
+                                    "line": 3,
+                                    "column": 13
+                                },
+                                "end": {
+                                    "line": 3,
+                                    "column": 16
+                                }
+                            },
+                            "range": [
+                                49,
+                                52
+                            ],
                             "name": "foo",
                             "location": {
                                 "startLine": 3,
@@ -187,18 +215,60 @@
                         "raw": "{ ((foo.bar)) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 4,
-                            "end": 11,
+                            "start": 76,
+                            "end": 83,
+                            "loc": {
+                                "start": {
+                                    "line": 4,
+                                    "column": 13
+                                },
+                                "end": {
+                                    "line": 4,
+                                    "column": 20
+                                }
+                            },
+                            "range": [
+                                76,
+                                83
+                            ],
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
+                                "start": 76,
+                                "end": 79,
+                                "loc": {
+                                    "start": {
+                                        "line": 4,
+                                        "column": 13
+                                    },
+                                    "end": {
+                                        "line": 4,
+                                        "column": 16
+                                    }
+                                },
+                                "range": [
+                                    76,
+                                    79
+                                ],
                                 "name": "foo"
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 8,
-                                "end": 11,
+                                "start": 80,
+                                "end": 83,
+                                "loc": {
+                                    "start": {
+                                        "line": 4,
+                                        "column": 17
+                                    },
+                                    "end": {
+                                        "line": 4,
+                                        "column": 20
+                                    }
+                                },
+                                "range": [
+                                    80,
+                                    83
+                                ],
                                 "name": "bar"
                             },
                             "computed": false,
@@ -261,18 +331,60 @@
                         "raw": "{ ((foo).bar) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 3,
-                            "end": 12,
+                            "start": 106,
+                            "end": 115,
+                            "loc": {
+                                "start": {
+                                    "line": 5,
+                                    "column": 12
+                                },
+                                "end": {
+                                    "line": 5,
+                                    "column": 21
+                                }
+                            },
+                            "range": [
+                                106,
+                                115
+                            ],
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
+                                "start": 107,
+                                "end": 110,
+                                "loc": {
+                                    "start": {
+                                        "line": 5,
+                                        "column": 13
+                                    },
+                                    "end": {
+                                        "line": 5,
+                                        "column": 16
+                                    }
+                                },
+                                "range": [
+                                    107,
+                                    110
+                                ],
                                 "name": "foo"
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 9,
-                                "end": 12,
+                                "start": 112,
+                                "end": 115,
+                                "loc": {
+                                    "start": {
+                                        "line": 5,
+                                        "column": 18
+                                    },
+                                    "end": {
+                                        "line": 5,
+                                        "column": 21
+                                    }
+                                },
+                                "range": [
+                                    112,
+                                    115
+                                ],
                                 "name": "bar"
                             },
                             "computed": false,
@@ -335,18 +447,60 @@
                         "raw": "{ ((foo).bar) }",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 3,
-                            "end": 12,
+                            "start": 137,
+                            "end": 146,
+                            "loc": {
+                                "start": {
+                                    "line": 6,
+                                    "column": 12
+                                },
+                                "end": {
+                                    "line": 6,
+                                    "column": 21
+                                }
+                            },
+                            "range": [
+                                137,
+                                146
+                            ],
                             "object": {
                                 "type": "Identifier",
-                                "start": 4,
-                                "end": 7,
+                                "start": 138,
+                                "end": 141,
+                                "loc": {
+                                    "start": {
+                                        "line": 6,
+                                        "column": 13
+                                    },
+                                    "end": {
+                                        "line": 6,
+                                        "column": 16
+                                    }
+                                },
+                                "range": [
+                                    138,
+                                    141
+                                ],
                                 "name": "foo"
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 9,
-                                "end": 12,
+                                "start": 143,
+                                "end": 146,
+                                "loc": {
+                                    "start": {
+                                        "line": 6,
+                                        "column": 18
+                                    },
+                                    "end": {
+                                        "line": 6,
+                                        "column": 21
+                                    }
+                                },
+                                "range": [
+                                    143,
+                                    146
+                                ],
                                 "name": "bar"
                             },
                             "computed": false,

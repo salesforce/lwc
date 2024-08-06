@@ -32,24 +32,38 @@
                 "raw": "{text}",
                 "value": {
                     "type": "Identifier",
-                    "start": 1,
-                    "end": 5,
+                    "start": 16,
+                    "end": 20,
+                    "loc": {
+                        "start": {
+                            "line": 2,
+                            "column": 5
+                        },
+                        "end": {
+                            "line": 2,
+                            "column": 9
+                        }
+                    },
+                    "range": [
+                        16,
+                        20
+                    ],
                     "name": "text",
                     "location": {
-                        "startLine": 1,
-                        "startColumn": 11,
+                        "startLine": 2,
+                        "startColumn": 5,
                         "endLine": 3,
                         "endColumn": 1,
-                        "start": 10,
+                        "start": 15,
                         "end": 22
                     }
                 },
                 "location": {
-                    "startLine": 1,
-                    "startColumn": 11,
+                    "startLine": 2,
+                    "startColumn": 5,
                     "endLine": 3,
                     "endColumn": 1,
-                    "start": 10,
+                    "start": 15,
                     "end": 22
                 }
             }
