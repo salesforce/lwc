@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { describe, it } from 'vitest';
 import * as errorInfo from '../error-info';
 // All exported objects are maps of label/error info, except for GENERIC_COMPILER_ERROR,
 // which is a top-level error info object
