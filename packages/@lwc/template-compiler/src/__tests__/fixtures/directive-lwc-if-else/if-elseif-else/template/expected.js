@@ -7,8 +7,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     $cmp.visible
       ? api_fragment(0, [api_text("Conditional Text")], 0)
       : $cmp.elseifCondition
-      ? api_fragment(0, [api_text("Elseif!")], 0)
-      : api_fragment(0, [api_text("Else!")], 0),
+        ? api_fragment(0, [api_text("Elseif!")], 0)
+        : api_fragment(0, [api_text("Else!")], 0),
   ];
   /*LWC compiler vX.X.X*/
 }

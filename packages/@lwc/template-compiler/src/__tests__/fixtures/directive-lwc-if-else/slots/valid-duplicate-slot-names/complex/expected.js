@@ -73,39 +73,39 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     $cmp.doubleNested
                       ? api_fragment(4, [api_text("Double Nested")], 0)
                       : $cmp.doubleNestedAlt
-                      ? api_fragment(
-                          4,
-                          [
-                            $cmp.tripleNested
-                              ? api_fragment(
-                                  5,
-                                  [
-                                    api_element("div", stc3, [
-                                      api_element("div", stc4, [
-                                        api_text("Triple Nested Text"),
-                                        api_slot(
-                                          "nested-slot",
-                                          stc5,
-                                          stc1,
-                                          $slotset
-                                        ),
+                        ? api_fragment(
+                            4,
+                            [
+                              $cmp.tripleNested
+                                ? api_fragment(
+                                    5,
+                                    [
+                                      api_element("div", stc3, [
+                                        api_element("div", stc4, [
+                                          api_text("Triple Nested Text"),
+                                          api_slot(
+                                            "nested-slot",
+                                            stc5,
+                                            stc1,
+                                            $slotset
+                                          ),
+                                        ]),
                                       ]),
-                                    ]),
-                                  ],
-                                  0
-                                )
-                              : null,
-                          ],
-                          0
-                        )
-                      : api_fragment(
-                          4,
-                          [
-                            api_text("Else"),
-                            api_slot("nested-slot", stc6, stc1, $slotset),
-                          ],
-                          0
-                        ),
+                                    ],
+                                    0
+                                  )
+                                : null,
+                            ],
+                            0
+                          )
+                        : api_fragment(
+                            4,
+                            [
+                              api_text("Else"),
+                              api_slot("nested-slot", stc6, stc1, $slotset),
+                            ],
+                            0
+                          ),
                   ],
                   0
                 ),

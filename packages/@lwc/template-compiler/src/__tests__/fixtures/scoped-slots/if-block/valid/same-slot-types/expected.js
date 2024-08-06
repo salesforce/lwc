@@ -26,23 +26,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0
         )
       : $cmp.showVariant
-      ? api_fragment(
-          0,
-          [
-            api_slot(
-              "slotname1",
-              {
-                attrs: stc0,
-                key: 2,
-                slotData: $cmp.slot1VariantData,
-              },
-              stc1,
-              $slotset
-            ),
-          ],
-          0
-        )
-      : null,
+        ? api_fragment(
+            0,
+            [
+              api_slot(
+                "slotname1",
+                {
+                  attrs: stc0,
+                  key: 2,
+                  slotData: $cmp.slot1VariantData,
+                },
+                stc1,
+                $slotset
+              ),
+            ],
+            0
+          )
+        : null,
   ];
   /*LWC compiler vX.X.X*/
 }

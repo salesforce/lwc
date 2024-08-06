@@ -32,29 +32,29 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     $cmp.condition
       ? api_fragment(0, [api_text("Conditional Text")], 0)
       : $cmp.altCondition
-      ? api_fragment(
-          0,
-          [
-            api_element("div", stc0, [
-              api_slot("outside-slot", stc1, stc2, $slotset),
-            ]),
-          ],
-          0
-        )
-      : api_fragment(0, [api_slot("outside-slot", stc3, stc2, $slotset)], 0),
+        ? api_fragment(
+            0,
+            [
+              api_element("div", stc0, [
+                api_slot("outside-slot", stc1, stc2, $slotset),
+              ]),
+            ],
+            0
+          )
+        : api_fragment(0, [api_slot("outside-slot", stc3, stc2, $slotset)], 0),
     $cmp.anotherCondition
       ? api_fragment(4, [api_text("Another Conditional Text")], 0)
       : $cmp.anotherAltCondition
-      ? api_fragment(
-          4,
-          [
-            api_element("div", stc4, [
-              api_slot("outside-slot", stc5, stc2, $slotset),
-            ]),
-          ],
-          0
-        )
-      : null,
+        ? api_fragment(
+            4,
+            [
+              api_element("div", stc4, [
+                api_slot("outside-slot", stc5, stc2, $slotset),
+              ]),
+            ],
+            0
+          )
+        : null,
   ];
   /*LWC compiler vX.X.X*/
 }
