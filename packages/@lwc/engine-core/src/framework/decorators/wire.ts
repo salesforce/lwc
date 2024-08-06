@@ -8,7 +8,7 @@ import { assert } from '@lwc/shared';
 import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
-import { LightningElement } from '../base-lightning-element';
+import type { LightningElement } from '../base-lightning-element';
 import type {
     ConfigValue,
     ContextValue,
@@ -22,20 +22,18 @@ import type {
  * decorators due to a limitation of type inferencing.
  */
 interface WireDecorator<Value, Class> {
-    /** Field (prop) decorator */
-    (target: undefined, context: ClassFieldDecoratorContext<Class, Value | undefined>): void;
-    /** Method decorator (when adapter is type `WireAdapterConstructor`) */
     (
-        target: (this: Class, value: Value) => void,
-        context: ClassMethodDecoratorContext<Class, (this: Class, value: Value) => void>
-    ): void;
-    /** Method decorator (when adapter is type `any`) */
-    (
-        target: Value,
-        context: ClassMethodDecoratorContext<
-            Class,
-            Value extends (this: Class, value: any) => any ? Value : never
-        >
+        target: unknown,
+        context:
+            | ClassFieldDecoratorContext<Class, Value | undefined>
+            | ClassMethodDecoratorContext<
+                  Class,
+                  // The generic isn't inferred correctly when the adapter is type `any`;
+                  // This conditional is a workaround for that case
+                  Value extends (value: any) => any ? Value : (this: Class, value: Value) => void
+              >
+            | ClassGetterDecoratorContext<Class, Value>
+            | ClassSetterDecoratorContext<Class, Value>
     ): void;
 }
 
