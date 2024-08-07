@@ -89,12 +89,20 @@ export type RegisterContextProviderFn = (
 ) => void;
 
 /** Resolves a property chain to the corresponding value on the target type. */
-type ResolveReactiveValue<Target, Keys> = Keys extends keyof Target
-    ? Target[Keys]
-    : Keys extends `${infer K}.${infer Rest}`
-    ? K extends keyof Target
-        ? ResolveReactiveValue<Target[K], Rest>
+type ResolveReactiveValue<
+    /** The object to search for properties; initially the component. */
+    Target,
+    /** A string representing a chain of of property keys, e.g. "data.user.name". */
+    Keys extends string
+> = Keys extends `${infer FirstKey}.${infer Rest}`
+    ? // If the string is "a.b.c", check if "a" is a prop on the target object
+      FirstKey extends keyof Target
+        ? // If "a" exists on the target, check `target["a"]` for "b.c"
+          ResolveReactiveValue<Target[FirstKey], Rest>
         : undefined
+    : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
+    Keys extends keyof Target
+    ? Target[Keys]
     : undefined;
 
 /**
