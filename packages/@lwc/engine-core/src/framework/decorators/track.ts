@@ -19,15 +19,12 @@ import type { LightningElement } from '../base-lightning-element';
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
  */
-export default function track<Class>(
-    target: undefined,
-    context: ClassFieldDecoratorContext<Class>
-): void;
+export default function track(target: undefined, context: ClassFieldDecoratorContext): void;
 export default function track<T>(target: T, context?: never): T;
 export default function track(
     target: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context?: ClassFieldDecoratorContext | undefined
+    context?: ClassFieldDecoratorContext
 ): unknown {
     if (arguments.length === 1) {
         return getReactiveProxy(target);

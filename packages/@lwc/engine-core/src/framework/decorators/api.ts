@@ -17,15 +17,11 @@ import type { LightningElement } from '../base-lightning-element';
  * LWC Components. This function implements the internals of this
  * decorator.
  */
-export default function api<Class>(
+export default function api(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     value: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context:
-        | ClassFieldDecoratorContext<Class, unknown>
-        | ClassMethodDecoratorContext<Class, (this: Class, ...args: any) => any>
-        | ClassGetterDecoratorContext<Class, unknown>
-        | ClassSetterDecoratorContext<Class, unknown>
+    context: ClassMemberDecoratorContext
 ): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(`@api decorator can only be used as a decorator function.`);
