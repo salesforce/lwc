@@ -60,8 +60,7 @@ async function main() {
             '\n'
         )}`.trim() + '\n';
 
-    // TODO [#4386]: Prettier v3 returns a promise - add an `await` here
-    const formattedLicense = prettier.format(newLicense, {
+    const formattedLicense = await prettier.format(newLicense, {
         parser: 'markdown',
     });
 

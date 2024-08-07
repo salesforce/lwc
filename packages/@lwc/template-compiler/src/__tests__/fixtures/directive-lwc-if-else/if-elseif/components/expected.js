@@ -22,16 +22,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0
         )
       : $cmp.elseifCondition
-      ? api_fragment(
-          0,
-          [
-            api_custom_element("c-custom", _cCustom, stc1, [
-              api_text("First Alternative Header"),
-            ]),
-          ],
-          0
-        )
-      : null,
+        ? api_fragment(
+            0,
+            [
+              api_custom_element("c-custom", _cCustom, stc1, [
+                api_text("First Alternative Header"),
+              ]),
+            ],
+            0
+          )
+        : null,
   ];
   /*LWC compiler vX.X.X*/
 }

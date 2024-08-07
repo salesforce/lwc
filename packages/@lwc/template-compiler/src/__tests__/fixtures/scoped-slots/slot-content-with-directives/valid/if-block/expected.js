@@ -51,18 +51,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   0
                 )
               : variations.variation2
-              ? api_fragment(
-                  1,
-                  [api_custom_element("x-counter", _xCounter, stc2)],
-                  0
-                )
-              : variations.variation2
-              ? api_fragment(
-                  1,
-                  [api_custom_element("x-counter", _xCounter, stc3)],
-                  0
-                )
-              : null,
+                ? api_fragment(
+                    1,
+                    [api_custom_element("x-counter", _xCounter, stc2)],
+                    0
+                  )
+                : variations.variation2
+                  ? api_fragment(
+                      1,
+                      [api_custom_element("x-counter", _xCounter, stc3)],
+                      0
+                    )
+                  : null,
           ],
           0
         );
@@ -82,16 +82,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   0
                 )
               : variations.variation2
-              ? api_fragment(
-                  5,
-                  [api_custom_element("x-button2", _xButton2, stc5)],
-                  0
-                )
-              : api_fragment(
-                  5,
-                  [api_custom_element("x-button3", _xButton3, stc6)],
-                  0
-                ),
+                ? api_fragment(
+                    5,
+                    [api_custom_element("x-button2", _xButton2, stc5)],
+                    0
+                  )
+                : api_fragment(
+                    5,
+                    [api_custom_element("x-button3", _xButton3, stc6)],
+                    0
+                  ),
           ],
           0
         );

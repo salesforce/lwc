@@ -139,7 +139,7 @@ function esTemplateImpl<RetType = EsNode, ArgTypes extends ReplacementNode[] = R
 
 export function esTemplate<
     RetType = EsNode,
-    ArgTypes extends ReplacementNode[] = ReplacementNode[]
+    ArgTypes extends ReplacementNode[] = ReplacementNode[],
 >(
     javascriptSegments: TemplateStringsArray,
     ...validatorFns: Validator[]
@@ -149,7 +149,7 @@ export function esTemplate<
 
 export function esTemplateWithYield<
     RetType = EsNode,
-    ArgTypes extends ReplacementNode[] = ReplacementNode[]
+    ArgTypes extends ReplacementNode[] = ReplacementNode[],
 >(
     javascriptSegments: TemplateStringsArray,
     ...validatorFns: Validator[]

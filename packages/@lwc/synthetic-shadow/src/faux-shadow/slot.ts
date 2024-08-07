@@ -156,7 +156,7 @@ defineProperties(HTMLSlotElement.prototype, {
                 return originalAssignedElements.apply(
                     this,
                     ArraySlice.call(arguments as unknown as unknown[]) as [
-                        options?: AssignedNodesOptions
+                        options?: AssignedNodesOptions,
                     ]
                 );
             }
@@ -176,7 +176,7 @@ defineProperties(HTMLSlotElement.prototype, {
                 return originalAssignedNodes.apply(
                     this,
                     ArraySlice.call(arguments as unknown as unknown[]) as [
-                        options?: AssignedNodesOptions
+                        options?: AssignedNodesOptions,
                     ]
                 );
             }

@@ -31,24 +31,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           0
         )
       : $cmp.visible.elseif
-      ? api_fragment(
-          0,
-          [
-            api_dynamic_component($cmp.ctor2, stc1, [
-              api_static_fragment($fragment2, 6),
-            ]),
-          ],
-          0
-        )
-      : api_fragment(
-          0,
-          [
-            api_dynamic_component($cmp.ctor3, stc2, [
-              api_static_fragment($fragment3, 9),
-            ]),
-          ],
-          0
-        ),
+        ? api_fragment(
+            0,
+            [
+              api_dynamic_component($cmp.ctor2, stc1, [
+                api_static_fragment($fragment2, 6),
+              ]),
+            ],
+            0
+          )
+        : api_fragment(
+            0,
+            [
+              api_dynamic_component($cmp.ctor3, stc2, [
+                api_static_fragment($fragment3, 9),
+              ]),
+            ],
+            0
+          ),
   ];
   /*LWC compiler vX.X.X*/
 }

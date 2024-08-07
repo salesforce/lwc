@@ -564,7 +564,7 @@ function getTemplateRoot(
         ctx.throw(
             ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
             [],
-            duplicateRoot ? ast.sourceLocation(duplicateRoot) : duplicateRoot ?? undefined
+            duplicateRoot ? ast.sourceLocation(duplicateRoot) : (duplicateRoot ?? undefined)
         );
     }
 
