@@ -26,7 +26,7 @@
         "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",
         "istanbul-reports": "^3.1.7",
-        "karma": "6.4.3",
+        "karma": "6.4.4",
         "karma-chrome-launcher": "^3.2.0",
         "karma-coverage": "^2.2.1",
         "karma-jasmine": "^5.1.0",

@@ -38,8 +38,12 @@ const {
     setPrototypeOf,
 } = Object;
 
-/** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
-const { isArray } = Array;
+const {
+    /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
+    isArray,
+    /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
+    from: ArrayFrom,
+} = Array;
 
 /** The most extensible array type. */
 type BaseArray = readonly unknown[];
@@ -152,6 +156,8 @@ export {
      */
     /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
     isArray,
+    /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
+    ArrayFrom,
     /*
      * Array prototype
      */

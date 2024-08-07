@@ -11,9 +11,7 @@
         "test:best:ci": "best src --runner remote"
     },
     "//": [
-        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
-        "Also note we are pinned to Tachometer 0.5.10 due to a breaking change in 0.6.0.",
-        "Breaking change: https://github.com/google/tachometer/issues/244"
+        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies."
     ],
     "dependencies": {
         "@lwc/engine-dom": "7.2.1",
@@ -27,7 +25,7 @@
         "@best/runner-remote": "^12.0.2",
         "folder-hash": "4.0.4",
         "markdown-table": "^3.0.3",
-        "tachometer": "0.5.10"
+        "tachometer": "^0.7.1"
     },
     "nx": {
         "targets": {
