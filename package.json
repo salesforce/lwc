@@ -28,7 +28,8 @@
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "test:types": "nx test @lwc/integration-types",
-        "release:version": "nx release version"
+        "release:version": "nx release version",
+        "release:publish": "nx release publish --registry https://registry.npmjs.org"
     },
     "//": {
         "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
