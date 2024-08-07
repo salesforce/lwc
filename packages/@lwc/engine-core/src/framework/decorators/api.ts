@@ -8,16 +8,16 @@ import { assert, isFunction, isNull, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
-import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import type { LightningElement } from '../base-lightning-element';
 
 /**
  * The `@api` decorator marks public fields and public methods in
  * LWC Components. This function implements the internals of this
  * decorator.
  */
-export default function api<Class extends LightningElement>(
+export default function api<Class>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     value: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

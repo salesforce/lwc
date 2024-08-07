@@ -9,17 +9,17 @@ import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { getReactiveProxy } from '../membrane';
-import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 import { updateComponentValue } from '../update-component-value';
 import { logError } from '../../shared/logger';
+import type { LightningElement } from '../base-lightning-element';
 
 /**
  * The `@track` decorator function marks field values as reactive in
  * LWC Components. This function can also be invoked directly
  * with any value to obtain the trackable version of the value.
  */
-export default function track<Class extends LightningElement>(
+export default function track<Class>(
     target: undefined,
     context: ClassFieldDecoratorContext<Class>
 ): void;
