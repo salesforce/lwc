@@ -17,19 +17,27 @@ import type {
 } from '../wiring';
 
 /**
- * The decorator returned by `@wire()`; not the `wire` function. Each overload corresponds to a
- * decorator type - field (prop), method, getter, or setter. There are two overloads for method
- * decorators due to a limitation of type inferencing.
+ * The decorator returned by `@wire()`; not the `wire` function.
+ *
+ * For TypeScript users:
+ * - If you are seeing an unclear error message, ensure that both the type of the decorated prop and
+ * the config used match the types expected by the wire adapter.
+ * - String literal types in the config are resolved to the corresponding prop on the component.
+ * For example, a component with `id = 555` and `@wire(getBook, {id: "$id"} as const) book` will
+ * have `"$id"` resolve to type `number`.
  */
 interface WireDecorator<Value, Class> {
     (
         target: unknown,
-        context:
-            | ClassFieldDecoratorContext<Class, Value | undefined>
+        context: // A wired prop doesn't have any data when first created, so we must allow `undefined`
+        | ClassFieldDecoratorContext<Class, Value | undefined>
             | ClassMethodDecoratorContext<
                   Class,
-                  // The generic isn't inferred correctly when the adapter is type `any`;
-                  // This conditional is a workaround for that case
+                  // When a wire adapter is typed as `WireAdapterConstructor`, then this `Value`
+                  // generic is inferred as the value used by the adapter for all decorator contexts
+                  // (field/method/getter/setter). But when the adapter is typed as `any`, then
+                  // decorated methods have `Value` inferred as the full method. (I'm not sure why.)
+                  // This conditional checks `Value` so that we get the correct decorator context.
                   Value extends (value: any) => any ? Value : (this: Class, value: Value) => void
               >
             | ClassGetterDecoratorContext<Class, Value>
