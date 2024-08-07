@@ -231,6 +231,12 @@ export class GetterDecorators extends LightningElement {
     get basic() {
         return testValue;
     }
+    @wire(TestAdapter, { config: 'config' })
+    get undefined() {
+        // The function implementation of a wired getter is ignored, but TypeScript enforces that
+        // we must return something. Since we don't have any data to return, we return `undefined`
+        return undefined;
+    }
     @wire(TestAdapter, { config: '$config' })
     get simpleReactive() {
         return testValue;

@@ -29,7 +29,7 @@ import type {
 interface WireDecorator<Value, Class> {
     (
         target: unknown,
-        context: // A wired prop doesn't have any data when first created, so we must allow `undefined`
+        context: // A wired prop doesn't have any data on creation, so we must allow `undefined`
         | ClassFieldDecoratorContext<Class, Value | undefined>
             | ClassMethodDecoratorContext<
                   Class,
@@ -40,7 +40,9 @@ interface WireDecorator<Value, Class> {
                   // This conditional checks `Value` so that we get the correct decorator context.
                   Value extends (value: any) => any ? Value : (this: Class, value: Value) => void
               >
-            | ClassGetterDecoratorContext<Class, Value>
+            // The implementation of a wired getter/setter is ignored; they are treated identically
+            // to wired props. Wired props don't have data on creation, so we must allow `undefined`
+            | ClassGetterDecoratorContext<Class, Value | undefined>
             | ClassSetterDecoratorContext<Class, Value>
     ): void;
 }
