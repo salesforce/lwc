@@ -70,6 +70,9 @@ export class PropertyDecorators extends LightningElement {
     // @ts-expect-error Invalid adapter type
     @wire(InvalidAdapter, { config: 'config' })
     invalidAdapter?: TestValue;
+    // @ts-expect-error Missing wire parameters
+    @wire()
+    missingWireParams?: TestValue;
     // @ts-expect-error Too many wire parameters
     @wire(TestAdapter, { config: 'config' }, {})
     tooManyWireParams?: TestValue;
@@ -101,7 +104,7 @@ export class PropertyDecorators extends LightningElement {
     deepReactive?: TestValue;
     // @ts-expect-error Looks like a method, but it's actually a prop
     @wire(TestAdapter, { config: 'config' })
-    weird = (_: TestValue): void => {};
+    propValueIsMethod = function (this: PropertyDecorators, _: TestValue): void {};
 
     // --- AMBIGUOUS --- //
     // Passing a config is optional because adapters don't strictly need to use it.
@@ -121,7 +124,6 @@ export class PropertyDecorators extends LightningElement {
 }
 
 /** Validations for decorated methods */
-
 export class MethodDecorators extends LightningElement {
     // Helper props
     configProp = 'config' as const;
@@ -138,9 +140,9 @@ export class MethodDecorators extends LightningElement {
     simpleReactive(_: TestValue) {}
     @wire(TestAdapter, { config: '$nested.prop' })
     nestedReactive(_: TestValue) {}
-    @wire(TestAdapter, testConfig)
+    @wire(TestAdapter, { config: '$config' })
     optionalParam(_?: TestValue) {}
-    @wire(TestAdapter, testConfig)
+    @wire(TestAdapter, { config: '$config' })
     noParam() {}
     // Valid - as const
     @wire(TestAdapter, { config: 'config' } as const)
@@ -161,6 +163,9 @@ export class MethodDecorators extends LightningElement {
     // @ts-expect-error Invalid adapter type
     @wire(InvalidAdapter, { config: 'config' })
     invalidAdapter(_: TestValue) {}
+    // @ts-expect-error Missing wire parameters
+    @wire()
+    missingWireParams() {}
     // @ts-expect-error Too many wire parameters
     @wire(TestAdapter, { config: 'config' }, {})
     tooManyWireParams(_: TestValue) {}
@@ -210,4 +215,115 @@ export class MethodDecorators extends LightningElement {
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapter, { config: 'config' })
     implicitDefaultType(_ = testValue) {}
+}
+
+/** Validations for decorated getters */
+export class GetterDecorators extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    'nested.prop' = false; // should be unused
+    number = 123;
+    // --- VALID --- //
+
+    // Valid - basic
+    @wire(TestAdapter, { config: 'config' })
+    get basic() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: '$config' })
+    get simpleReactive() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: '$nested.prop' })
+    get nestedReactive() {
+        return testValue;
+    }
+    // Valid - as const
+    @wire(TestAdapter, { config: 'config' } as const)
+    get basicAsConst() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: '$configProp' } as const)
+    get simpleReactiveAsConst() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: '$nested.prop' } as const)
+    get nestedReactiveAsConst() {
+        return testValue;
+    }
+    // Valid - using `any`
+    @wire(TestAdapter, {} as any)
+    get configAsAny() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: 'config' })
+    get valueAsAny() {
+        return null as any;
+    }
+    @wire(AnyAdapter, { config: 'config' })
+    get adapterAsAny() {
+        return testValue;
+    }
+    @wire(AnyAdapter, { config: 'config' })
+    get anyAdapterOtherValue() {
+        return 12345;
+    }
+
+    // --- INVALID --- //
+    // @ts-expect-error Invalid adapter type
+    @wire(InvalidAdapter, { config: 'config' })
+    get invalidAdapter() {
+        return testValue;
+    }
+    // @ts-expect-error Too many wire parameters
+    @wire(TestAdapter, { config: 'config' }, {})
+    get tooManyWireParams() {
+        return testValue;
+    }
+    // @ts-expect-error Missing wire parameters
+    @wire()
+    get missingWireParams() {
+        return testValue;
+    }
+    // @ts-expect-error Bad config type
+    @wire(TestAdapter, { bad: 'value' })
+    get badConfig() {
+        return testValue;
+    }
+    // @ts-expect-error Bad value type
+    @wire(TestAdapter, { config: 'config' })
+    get badValueType() {
+        return { bad: 'value' };
+    }
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    get nonExistentReactiveProp() {
+        return testValue;
+    }
+    // @ts-expect-error Referenced reactive prop is the wrong type
+    @wire(TestAdapter, { config: '$number' } as const)
+    get numberReactiveProp() {
+        return testValue;
+    }
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
+    get nonexistentNestedReactiveProp() {
+        return testValue;
+    }
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.invalid' } as const)
+    get invalidNestedReactiveProp() {
+        return testValue;
+    }
+    // @ts-expect-error Incorrect non-reactive string literal type
+    @wire(TestAdapter, { config: 'not reactive' } as const)
+    get nonReactiveStringLiteral() {
+        return testValue;
+    }
+    // @ts-expect-error Nested props are not reactive - only top level
+    @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
+    get deepReactive() {
+        return testValue;
+    }
 }
