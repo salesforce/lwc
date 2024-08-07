@@ -37,7 +37,7 @@ const bYieldEscapedString = esTemplateWithYield<
         EsIdentifier,
         EsIdentifier,
         EsIdentifier,
-        EsIdentifier
+        EsIdentifier,
     ]
 >`
     const ${is.identifier} = ${is.expression};

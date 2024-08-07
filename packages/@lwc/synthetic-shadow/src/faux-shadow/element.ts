@@ -408,7 +408,7 @@ if (process.env.NODE_ENV !== 'test') {
                         this,
                         ArraySlice.call(arguments as unknown as unknown[]) as [
                             namespace: string,
-                            localName: string
+                            localName: string,
                         ]
                     )
                 );
