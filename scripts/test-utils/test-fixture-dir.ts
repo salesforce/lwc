@@ -13,13 +13,13 @@ const { globSync } = glob;
 type TestFixtureOutput = { [filename: string]: unknown };
 
 /**
- * Facilitates the use of jest's `test.only`/`test.skip` in fixture files.
+ * Facilitates the use of vitest's `test.only`/`test.skip` in fixture files.
  * @param dirname fixture directory to check for "directive" files
  * @returns `test.only` if `.only` exists, `test.skip` if `.skip` exists, otherwise `test`
  * @throws if you have both `.only` and `.skip` in the directory
  * @example getTestFunc('/fixtures/some-test')
  */
-function getTestFunc(dirname: string): jest.It {
+function getTestFunc(dirname: string) {
     const isOnly = fs.existsSync(path.join(dirname, '.only'));
     const isSkip = fs.existsSync(path.join(dirname, '.skip'));
     if (isOnly && isSkip) {

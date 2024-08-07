@@ -20,6 +20,7 @@ const expectExportDefaultFromPackageInFile = (pkgName: string, ext: string) => {
 };
 
 /*
+ * This comment needs to be updated:
  * Jest uses CommonJS, which means that packages with no explicit export statements actually export
  * the default `module.exports` empty object. That export is an empty object with the prototype set
  * to an empty object with null prototype.
@@ -59,6 +60,7 @@ describe('default exports are not forgotten', () => {
             'dist/index.js'
         );
         const realModule = await import(pathToEsmDistFile);
+        // The commend below needs to be updated:
         // When jest properly supports ESM, this will be a lot simpler
         // const aliasedModule = await import(`lwc/${pkg}`);
         // expect(aliasedModule.default).toBe(realModule.default);

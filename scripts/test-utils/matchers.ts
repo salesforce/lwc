@@ -6,21 +6,16 @@
  */
 
 import fs from 'fs';
-import MatcherUtils = jest.MatcherUtils;
-import CustomMatcherResult = jest.CustomMatcherResult;
+import type { MatcherState } from '@vitest/expect';
 
 /**
- * Jest matcher to assert that the content received matches the content in fixture file.
+ * Vitest matcher to assert that the content received matches the content in fixture file.
  * @param receivedContent the fixture content
  * @param filename the fixture absolute path
  * @returns matcher result
  * @example expect(content).toMatchFile(outputPath)
  */
-function toMatchFile(
-    this: MatcherUtils,
-    receivedContent: string,
-    filename: string
-): CustomMatcherResult {
+function toMatchFile(this: MatcherState, receivedContent: string, filename: string) {
     const { snapshotState, expand, utils } = this;
 
     const fileExists = fs.existsSync(filename);
@@ -29,10 +24,10 @@ function toMatchFile(
         const expectedContent = fs.readFileSync(filename, 'utf-8');
 
         if (receivedContent === null || receivedContent === undefined) {
-            // If the file exists but the expected content is undefined or null. If the Jest is
+            // If the file exists but the expected content is undefined or null. If Vitest is
             // running with the update snapshot flag the file should be deleted. Otherwise fails
             // the assertion stating that the file is not expected to be there.
-            if (snapshotState._updateSnapshot === 'all') {
+            if (snapshotState['_updateSnapshot'] === 'all') {
                 fs.unlinkSync(filename);
 
                 snapshotState.updated++;
@@ -57,10 +52,10 @@ function toMatchFile(
             // content everything is fine.
             return { pass: true, message: () => '' };
         } else {
-            // If the expected file is present but the content is not matching. if Jest is running
+            // If the expected file is present but the content is not matching. if Vitest is running
             // with the update snapshot flag override the expected content. Otherwise fails the
             // assertion with a diff.
-            if (snapshotState._updateSnapshot === 'all') {
+            if (snapshotState['_updateSnapshot'] === 'all') {
                 fs.writeFileSync(filename, receivedContent);
 
                 snapshotState.updated++;
@@ -93,7 +88,10 @@ function toMatchFile(
 
         // If expected file doesn't exists but got a received content and if the snapshots
         // should be updated, create the new snapshot. Otherwise fails the assertion.
-        if (snapshotState._updateSnapshot === 'new' || snapshotState._updateSnapshot === 'all') {
+        if (
+            snapshotState['_updateSnapshot'] === 'new' ||
+            snapshotState['_updateSnapshot'] === 'all'
+        ) {
             fs.writeFileSync(filename, receivedContent);
 
             snapshotState.added++;
@@ -113,15 +111,16 @@ function toMatchFile(
     }
 }
 
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace jest {
-        interface Matchers<R> {
-            __type: R; // unused, but makes TypeScript happy
-            toMatchFile(receivedContent: string, filename?: string): CustomMatcherResult;
-        }
-    }
+import 'vitest';
+
+interface CustomMatchers<R = unknown> {
+    toMatchFile: (receivedContent: string, filename?: string) => R;
 }
 
-// Register jest matcher.
+declare module 'vitest' {
+    interface Assertion<T = any> extends CustomMatchers<T> {}
+    interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
+
+// Register vitest matcher.
 expect.extend({ toMatchFile });

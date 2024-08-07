@@ -53,7 +53,7 @@ yarn dev
 
 ### Unit Testing LWC
 
-When developing LWC, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the following command from the root directory:
+When developing LWC, utilize [vitest](https://vitest.dev/) unit testing to provide test coverage for new functionality. To run the vitest tests use the following command from the root directory:
 
 ```bash
 yarn test
@@ -84,11 +84,11 @@ If you want to debug these tests, you can do as follow:
 3. Click on "Open dedicated DevTools for Node"
 4. In your terminal, type the following command: `yarn test:debug <path_to_test>`
 
-Your test should now be running in the Chrome debugger which you can use to poke around and explore. Now simply hit Enter in the terminal running your Jest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
+Your test should now be running in the Chrome debugger which you can use to poke around and explore. Now simply hit Enter in the terminal running your Vitest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
 
 ### Debugging Test Fixtures LWC
 
-Test fixtures are file-based tests that are executed using a helper called [`testFixtureDir`](./scripts/jest/utils/test-fixture-dir.ts). Because this helper does not list tests individually, jest's [`test.only`](https://jestjs.io/docs/api#testonlyname-fn-timeout) and [`test.skip`](https://jestjs.io/docs/api#testskipname-fn) cannot be used. Instead, to achieve the same behavior, "directive" files can be added to individual test fixtures. If a file called `.only` is found in a test fixture, that test will use `test.only`. Similarly, if a file called `.skip` is found, `test.skip` will be used.
+Test fixtures are file-based tests that are executed using a helper called [`testFixtureDir`](./scripts/test-utils/test-fixture-dir.ts). Because this helper does not list tests individually, vitest's [`test.only`](https://vitest.dev/api/#test-only) and [`test.skip`](https://vitest.dev/api/#test-skip) cannot be used. Instead, to achieve the same behavior, "directive" files can be added to individual test fixtures. If a file called `.only` is found in a test fixture, that test will use `test.only`. Similarly, if a file called `.skip` is found, `test.skip` will be used.
 
 ### Integration Testing LWC
 

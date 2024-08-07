@@ -25,7 +25,7 @@ describe('customRendererConfig normalization', () => {
             },
         });
         expect(normalizedConfig.apiVersion).toBe(HIGHEST_API_VERSION);
-        normalizedConfig.apiVersion = -1; // avoid testing in inline snapshot so that Jest can easily update it
+        normalizedConfig.apiVersion = -1; // avoid testing in inline snapshot so that vitest can easily update it
 
         expect(normalizedConfig).toMatchInlineSnapshot(`
             {
