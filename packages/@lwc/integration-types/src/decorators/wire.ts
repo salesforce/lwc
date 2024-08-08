@@ -30,7 +30,9 @@ export class PropertyDecorators extends LightningElement {
     // Helper props
     configProp = 'config' as const;
     nested = { prop: 'config', invalid: 123 } as const;
-    'nested.prop' = false; // should be unused
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
     number = 123;
     // --- VALID --- //
     // Valid - basic
@@ -128,7 +130,9 @@ export class MethodDecorators extends LightningElement {
     // Helper props
     configProp = 'config' as const;
     nested = { prop: 'config', invalid: 123 } as const;
-    'nested.prop' = false; // should be unused
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
     number = 123;
     // --- VALID --- //
     // Valid - basic
@@ -222,7 +226,9 @@ export class GetterDecorators extends LightningElement {
     // Helper props
     configProp = 'config' as const;
     nested = { prop: 'config', invalid: 123 } as const;
-    'nested.prop' = false; // should be unused
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
     number = 123;
     // --- VALID --- //
 
@@ -339,7 +345,9 @@ export class Setter extends LightningElement {
     // Helper props
     configProp = 'config' as const;
     nested = { prop: 'config', invalid: 123 } as const;
-    'nested.prop' = false; // should be unused
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
     number = 123;
     // --- VALID --- //
 
