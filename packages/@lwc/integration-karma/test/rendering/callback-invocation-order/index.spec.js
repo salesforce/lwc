@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import ShadowParent from 'x/shadowParent';
 import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
@@ -296,22 +297,20 @@ it('should invoke callbacks on the right order when multiple templates are used 
 });
 
 describe('regression test (#3827)', () => {
-    let originalOnError;
-    function onError(event) {
-        event.preventDefault(); // don't log the error
-    }
+    let caughtErrors;
 
     beforeEach(() => {
-        // These error handlers are here to capture errors thrown in synthetic shadow mode
-        // after the rerendering happens.
-        window.onerror;
-        window.onerror = null;
-        window.addEventListener('error', onError);
+        caughtErrors = [];
+    });
+
+    // TODO [#4451]: synthetic shadow throws unhandled rejection errors
+    // These handlers capture errors thrown in synthetic shadow mode after the rerendering happens.
+    catchUnhandledRejectionsAndErrors((error) => {
+        caughtErrors.push(error);
     });
 
     afterEach(() => {
-        window.onerror = originalOnError;
-        window.removeEventListener('error', onError);
+        caughtErrors = undefined;
     });
 
     const fixtures = [
@@ -404,6 +403,23 @@ describe('regression test (#3827)', () => {
             previousLeafName = currentLeafName;
             currentLeafName = container.getLeaf().name;
             expect(window.timingBuffer).toEqual(elseIfBlock(currentLeafName, previousLeafName));
+
+            // TODO [#4451]: synthetic shadow throws unhandled rejection errors
+            // Remove the element and wait two macrotasks - this is when the unhandled rejections occur
+            document.body.removeChild(container);
+            await new Promise((resolve) => setTimeout(resolve));
+            await new Promise((resolve) => setTimeout(resolve));
+
+            if (fixtureName === 'shadow DOM' && !process.env.NATIVE_SHADOW) {
+                expect(caughtErrors.length).toBe(2);
+                for (const caughtError of caughtErrors) {
+                    expect(caughtError.message).toMatch(
+                        /The node to be removed is not a child of this node|The object can not be found here/
+                    );
+                }
+            } else {
+                expect(caughtErrors.length).toBe(0);
+            }
         });
     });
 });
