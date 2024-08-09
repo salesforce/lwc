@@ -39,9 +39,11 @@ describe('standard slotting', () => {
         elm.show = false;
         await Promise.resolve();
 
-        // order of disconnectedCallbacks is not guaranteed
-        expect(new Set(window.timingBuffer)).toEqual(
-            new Set(['0:disconnectedCallback', '1:disconnectedCallback', '2:disconnectedCallback'])
+        // Timing of disconnectedCallback differs between native/synthetic lifecycle
+        expect(window.timingBuffer).toEqual(
+            lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                ? ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
+                : ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
         );
     });
 
@@ -90,16 +92,25 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.showTop = true;
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '3:connectedCallback',
-                    '4:connectedCallback',
-                    '5:connectedCallback',
-                    '2:disconnectedCallback',
-                    '1:disconnectedCallback',
-                    '0:disconnectedCallback',
-                ])
+            // Timing of disconnectedCallback differs between native/synthetic lifecycle
+            expect(window.timingBuffer).toEqual(
+                lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          '3:connectedCallback',
+                          '4:connectedCallback',
+                          '5:connectedCallback',
+                          '2:disconnectedCallback',
+                          '0:disconnectedCallback',
+                          '1:disconnectedCallback',
+                      ]
+                    : [
+                          '3:connectedCallback',
+                          '4:connectedCallback',
+                          '5:connectedCallback',
+                          '2:disconnectedCallback',
+                          '0:disconnectedCallback',
+                          '1:disconnectedCallback',
+                      ]
             );
 
             resetTimingBuffer();
@@ -107,16 +118,25 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.showTop = false;
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '6:connectedCallback',
-                    '7:connectedCallback',
-                    '8:connectedCallback',
-                    '5:disconnectedCallback',
-                    '4:disconnectedCallback',
-                    '3:disconnectedCallback',
-                ])
+            // Timing of disconnectedCallback differs between native/synthetic lifecycle
+            expect(window.timingBuffer).toEqual(
+                lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          '6:connectedCallback',
+                          '7:connectedCallback',
+                          '8:connectedCallback',
+                          '5:disconnectedCallback',
+                          '3:disconnectedCallback',
+                          '4:disconnectedCallback',
+                      ]
+                    : [
+                          '6:connectedCallback',
+                          '7:connectedCallback',
+                          '8:connectedCallback',
+                          '5:disconnectedCallback',
+                          '3:disconnectedCallback',
+                          '4:disconnectedCallback',
+                      ]
             );
         });
 
@@ -138,16 +158,25 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.showTop = true;
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '3:connectedCallback',
-                    '4:connectedCallback',
-                    '5:connectedCallback',
-                    '2:disconnectedCallback',
-                    '1:disconnectedCallback',
-                    '0:disconnectedCallback',
-                ])
+            // Timing of disconnectedCallback differs between native/synthetic lifecycle
+            expect(window.timingBuffer).toEqual(
+                lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          '3:connectedCallback',
+                          '4:connectedCallback',
+                          '5:connectedCallback',
+                          '2:disconnectedCallback',
+                          '0:disconnectedCallback',
+                          '1:disconnectedCallback',
+                      ]
+                    : [
+                          '3:connectedCallback',
+                          '4:connectedCallback',
+                          '5:connectedCallback',
+                          '2:disconnectedCallback',
+                          '0:disconnectedCallback',
+                          '1:disconnectedCallback',
+                      ]
             );
 
             resetTimingBuffer();
@@ -157,15 +186,12 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.topBottom = 'top';
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '6:connectedCallback',
-                    '5:disconnectedCallback',
-                    '7:connectedCallback',
-                    '3:disconnectedCallback',
-                ])
-            );
+            expect(window.timingBuffer).toEqual([
+                '6:connectedCallback',
+                '5:disconnectedCallback',
+                '7:connectedCallback',
+                '3:disconnectedCallback',
+            ]);
 
             resetTimingBuffer();
 
@@ -175,15 +201,12 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             topSlot.bottom = 'bottom';
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '8:connectedCallback',
-                    '6:disconnectedCallback',
-                    '9:connectedCallback',
-                    '7:disconnectedCallback',
-                ])
-            );
+            expect(window.timingBuffer).toEqual([
+                '8:connectedCallback',
+                '6:disconnectedCallback',
+                '9:connectedCallback',
+                '7:disconnectedCallback',
+            ]);
 
             resetTimingBuffer();
 
@@ -191,16 +214,25 @@ if (USE_LIGHT_DOM_SLOT_FORWARDING) {
             elm.showTop = false;
             await Promise.resolve();
 
-            // order of disconnectedCallbacks is not guaranteed
-            expect(new Set(window.timingBuffer)).toEqual(
-                new Set([
-                    '10:connectedCallback',
-                    '11:connectedCallback',
-                    '12:connectedCallback',
-                    '4:disconnectedCallback',
-                    '9:disconnectedCallback',
-                    '8:disconnectedCallback',
-                ])
+            // Timing of disconnectedCallback differs between native/synthetic lifecycle
+            expect(window.timingBuffer).toEqual(
+                lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? [
+                          '10:connectedCallback',
+                          '11:connectedCallback',
+                          '12:connectedCallback',
+                          '8:disconnectedCallback',
+                          '9:disconnectedCallback',
+                          '4:disconnectedCallback',
+                      ]
+                    : [
+                          '10:connectedCallback',
+                          '11:connectedCallback',
+                          '12:connectedCallback',
+                          '8:disconnectedCallback',
+                          '9:disconnectedCallback',
+                          '4:disconnectedCallback',
+                      ]
             );
         });
     });

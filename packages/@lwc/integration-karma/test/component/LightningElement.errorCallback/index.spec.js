@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { catchUnhandledRejectionOrError } from 'test-utils';
 import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
 import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
 import XBoundaryChildRenderThrow from 'x/boundaryChildRenderThrow';
@@ -291,39 +292,14 @@ describe('errorCallback error caught by another errorCallback', () => {
 // These tests are important because certain code paths are only hit when errorCallback throws an error
 // after a value mutation. this causes flushRehydrationQueue to be called, which has a try/catch for this error.
 describe('errorCallback throws after value mutation', () => {
-    let originalOnError;
     let caughtError;
 
-    // Depending on whether native custom elements lifecycle is enabled or not, this may be an unhandled error or an
-    // unhandled rejection
-    const onError = (e) => {
-        e.preventDefault(); // Avoids logging to the console
-        caughtError = e;
-    };
-
-    const onRejection = (e) => {
-        // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
-        e.preventDefault();
-        caughtError = e.reason;
-    };
-
-    beforeEach(() => {
-        // Overriding window.onerror disables Jasmine's global error handler, so we can listen for errors
-        // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
-        // https://github.com/jasmine/jasmine/pull/1860
-        originalOnError = window.onerror;
-        // Dummy onError because Jasmine tries to call it in case of a rejection:
-        // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
-        window.onerror = () => {};
-        caughtError = undefined;
-        window.addEventListener('error', onError);
-        window.addEventListener('unhandledrejection', onRejection);
+    catchUnhandledRejectionOrError((error) => {
+        caughtError = error;
     });
 
     afterEach(() => {
-        window.removeEventListener('error', onError);
-        window.removeEventListener('unhandledrejection', onRejection);
-        window.onerror = originalOnError;
+        caughtError = undefined;
     });
 
     function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {

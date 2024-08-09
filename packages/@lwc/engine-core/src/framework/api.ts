@@ -281,12 +281,10 @@ function s(
                         // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
                         // Creating a copy of the vnode preserves a reference to the previous host element.
                         clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
-                        // For disconnectedCallback to work correctly in synthetic lifecycle mode,
-                        // we need to link the current VM to the clone, so that when the VM
-                        // unmounts, the clone will also unmount.
-                        // Note this only applies to CustomElements since those are the elements
-                        // that we manually need to call disconnectedCallback for, when running
-                        // in synthetic lifecycle mode.
+                        // For disconnectedCallback to work correctly in synthetic lifecycle mode, we need to link the
+                        // current VM to the clone, so that when the VM unmounts, the clone will also unmount.
+                        // Note this only applies to VCustomElements, since those are the elements that we manually need
+                        // to call disconnectedCallback for, when running in synthetic lifecycle mode.
                         if (isVCustomElement(vnode)) {
                             addVNodeToChildLWC(clonedVNode as VCustomElement);
                         }
