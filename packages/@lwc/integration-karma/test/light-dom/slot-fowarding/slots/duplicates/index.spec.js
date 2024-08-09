@@ -41,7 +41,7 @@ scenarios.forEach(({ name, tagName, Ctor }) => {
 
             document.body.appendChild(elm);
 
-            // step 1 - initial render with isTablet=false
+            // Step 1 - initial render with isTablet=false
             await Promise.resolve();
 
             let header;
@@ -60,13 +60,15 @@ scenarios.forEach(({ name, tagName, Ctor }) => {
 
             assertExpectedHtml();
 
-            // step 2 - change child property without going through the parent
+            // Step 2 - change child property _without_ going through the parent
+            // This is important to trigger the bug - the child must re-render without a parent re-render
+            // (In the real world, this would most likely happen with an `@wire`)
             header.isTablet = true;
             await Promise.resolve();
 
             assertExpectedHtml();
 
-            // step 3 - toggle back to original state
+            // Step 3 - toggle back to original state
             header.isTablet = false;
             await Promise.resolve();
 
