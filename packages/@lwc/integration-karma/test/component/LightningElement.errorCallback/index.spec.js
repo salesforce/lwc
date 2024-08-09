@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionOrError } from 'test-utils';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
 import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
 import XBoundaryChildRenderThrow from 'x/boundaryChildRenderThrow';
@@ -296,7 +296,7 @@ describe('errorCallback throws after value mutation', () => {
 
     // Depending on whether native custom elements lifecycle is enabled or not, this may be an unhandled error or an
     // unhandled rejection. This utility captures both.
-    catchUnhandledRejectionOrError((error) => {
+    catchUnhandledRejectionsAndErrors((error) => {
         caughtError = error;
     });
 

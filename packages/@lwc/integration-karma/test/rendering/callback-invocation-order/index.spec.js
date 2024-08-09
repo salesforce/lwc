@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionOrError } from 'test-utils';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import ShadowParent from 'x/shadowParent';
 import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
@@ -305,7 +305,7 @@ describe('regression test (#3827)', () => {
 
     // TODO [#4451]: synthetic shadow throws unhandled rejection errors
     // These handlers capture errors thrown in synthetic shadow mode after the rerendering happens.
-    catchUnhandledRejectionOrError((error) => {
+    catchUnhandledRejectionsAndErrors((error) => {
         caughtErrors.push(error);
     });
 
