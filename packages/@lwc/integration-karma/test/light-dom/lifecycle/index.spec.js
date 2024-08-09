@@ -41,9 +41,11 @@ describe('standard slotting', () => {
 
         // Timing of disconnectedCallback differs between native/synthetic lifecycle
         expect(window.timingBuffer).toEqual(
-            lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                ? ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
-                : ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
+            USE_LIGHT_DOM_SLOT_FORWARDING
+                ? lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                    ? ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
+                    : ['2:disconnectedCallback', '0:disconnectedCallback', '1:disconnectedCallback']
+                : ['0:disconnectedCallback', '1:disconnectedCallback', '2:disconnectedCallback']
         );
     });
 
