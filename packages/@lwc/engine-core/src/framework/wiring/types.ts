@@ -93,7 +93,7 @@ type ResolveReactiveValue<
     /** The object to search for properties; initially the component. */
     Target,
     /** A string representing a chain of of property keys, e.g. "data.user.name". */
-    Keys extends string
+    Keys extends string,
 > = Keys extends `${infer FirstKey}.${infer Rest}`
     ? // If the string is "a.b.c", check if "a" is a prop on the target object
       FirstKey extends keyof Target
@@ -101,9 +101,9 @@ type ResolveReactiveValue<
           ResolveReactiveValue<Target[FirstKey], Rest>
         : undefined
     : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
-    Keys extends keyof Target
-    ? Target[Keys]
-    : undefined;
+      Keys extends keyof Target
+      ? Target[Keys]
+      : undefined;
 
 /**
  * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
@@ -116,8 +116,8 @@ type ResolveValueIfReactive<Value, Target> = Value extends string
           // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
           any
         : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
-        ? ResolveReactiveValue<Target, Keys>
-        : Value // String literal *not* starting with "$", e.g. `"hello world"`
+          ? ResolveReactiveValue<Target, Keys>
+          : Value // String literal *not* starting with "$", e.g. `"hello world"`
     : Value; // non-string type
 
 export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
