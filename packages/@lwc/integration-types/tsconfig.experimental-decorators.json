@@ -1,8 +1,0 @@
-// This file is used for tests that need to have the `experimentalDecorators` flag set.
-{
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "experimentalDecorators": true
-    },
-    "files": ["./src/decorators.ts"]
-}

@@ -5,11 +5,47 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert } from '@lwc/shared';
-import { LightningElement } from '../base-lightning-element';
 import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
-import { WireAdapterConstructor } from '../wiring';
 import { updateComponentValue } from '../update-component-value';
+import type { LightningElement } from '../base-lightning-element';
+import type {
+    ConfigValue,
+    ContextValue,
+    ReplaceReactiveValues,
+    WireAdapterConstructor,
+} from '../wiring';
+
+/**
+ * The decorator returned by `@wire()`; not the `wire` function.
+ *
+ * For TypeScript users:
+ * - If you are seeing an unclear error message, ensure that both the type of the decorated prop and
+ * the config used match the types expected by the wire adapter.
+ * - String literal types in the config are resolved to the corresponding prop on the component.
+ * For example, a component with `id = 555` and `@wire(getBook, {id: "$id"} as const) book` will
+ * have `"$id"` resolve to type `number`.
+ */
+interface WireDecorator<Value, Class> {
+    (
+        target: unknown,
+        context: // A wired prop doesn't have any data on creation, so we must allow `undefined`
+        | ClassFieldDecoratorContext<Class, Value | undefined>
+            | ClassMethodDecoratorContext<
+                  Class,
+                  // When a wire adapter is typed as `WireAdapterConstructor`, then this `Value`
+                  // generic is inferred as the value used by the adapter for all decorator contexts
+                  // (field/method/getter/setter). But when the adapter is typed as `any`, then
+                  // decorated methods have `Value` inferred as the full method. (I'm not sure why.)
+                  // This conditional checks `Value` so that we get the correct decorator context.
+                  Value extends (value: any) => any ? Value : (this: Class, value: Value) => void
+              >
+            // The implementation of a wired getter/setter is ignored; they are treated identically
+            // to wired props. Wired props don't have data on creation, so we must allow `undefined`
+            | ClassGetterDecoratorContext<Class, Value | undefined>
+            | ClassSetterDecoratorContext<Class, Value>
+    ): void;
+}
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
@@ -22,12 +58,17 @@ import { updateComponentValue } from '../update-component-value';
  *   \@wire(getBook, { id: '$bookId'}) book;
  * }
  */
-export default function wire(
+export default function wire<
+    ReactiveConfig extends ConfigValue = ConfigValue,
+    Value = any,
+    Context extends ContextValue = ContextValue,
+    Class = LightningElement,
+>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    adapter: WireAdapterConstructor,
+    adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config?: Record<string, any>
-): (value: unknown, context: ClassMemberDecoratorContext | string | symbol) => void {
+    config?: ReactiveConfig
+): WireDecorator<Value, Class> {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail('@wire(adapter, config?) may only be used as a decorator.');
     }
