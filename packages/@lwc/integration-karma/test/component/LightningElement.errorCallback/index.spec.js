@@ -294,6 +294,8 @@ describe('errorCallback error caught by another errorCallback', () => {
 describe('errorCallback throws after value mutation', () => {
     let caughtError;
 
+    // Depending on whether native custom elements lifecycle is enabled or not, this may be an unhandled error or an
+    // unhandled rejection. This utility captures both.
     catchUnhandledRejectionOrError((error) => {
         caughtError = error;
     });
