@@ -596,18 +596,18 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // Utility to handle unhandled rejections or errors without allowing Jasmine to handle them first.
     // Captures both onunhandledrejection and onerror events, since you might want both depending on
     // native vs synthetic lifecycle timing differences.
-    function catchUnhandledRejectionOrError(onUnhandledRejection) {
+    function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
         let originalOnError;
 
         const onError = (e) => {
             e.preventDefault(); // Avoids logging to the console
-            onUnhandledRejection(e);
+            onUnhandledRejectionOrError(e);
         };
 
         const onRejection = (e) => {
             // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
             e.preventDefault();
-            onUnhandledRejection(e.reason);
+            onUnhandledRejectionOrError(e.reason);
         };
 
         beforeEach(() => {
@@ -666,7 +666,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         IS_SYNTHETIC_SHADOW_LOADED,
         expectConsoleCalls,
         expectConsoleCallsDev,
-        catchUnhandledRejectionOrError,
+        catchUnhandledRejectionsAndErrors,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);
