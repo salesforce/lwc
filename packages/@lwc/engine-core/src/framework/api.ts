@@ -276,15 +276,27 @@ function s(
                         (isVBaseElement(vnode) || isVStatic(vnode)) &&
                         vnode.slotAssignment !== data.slotAssignment
                     ) {
-                        // When the light DOM slot assignment (slot attribute) changes we can't use the same reference
-                        // to the vnode because the current way the diffing algo works, it will replace the original reference
-                        // to the host element with a new one. This means the new element will be mounted and immediately unmounted.
-                        // Creating a copy of the vnode preserves a reference to the previous host element.
+                        // When the light DOM slot assignment (slot attribute) changes, we can't use the same reference
+                        // to the vnode because the current way the diffing algo works, it will replace the original
+                        // reference to the host element with a new one. This means the new element will be mounted and
+                        // immediately unmounted. Creating a copy of the vnode preserves a reference to the previous
+                        // host element.
                         clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
                         // For disconnectedCallback to work correctly in synthetic lifecycle mode, we need to link the
-                        // current VM to the clone, so that when the VM unmounts, the clone will also unmount.
+                        // current VM's velements to the clone, so that when the VM unmounts, the clone also unmounts.
                         // Note this only applies to VCustomElements, since those are the elements that we manually need
                         // to call disconnectedCallback for, when running in synthetic lifecycle mode.
+                        //
+                        // You might think it would make more sense to add the clonedVNode to the same velements array
+                        // as the original vnode's VM (i.e. `vnode.owner.velements`) rather than the current VM (i.e.
+                        // `vmBeingRendered.velements`), but this actually might not trigger disconnectedCallback
+                        // in synthetic lifecycle mode. The reason for this is that a reactivity change may cause
+                        // the slottable component to unmount, but _not_ the slotter component (see issue #4446).
+                        //
+                        // If this occurs, then the slottable component (i.e .this component we are rendering right
+                        // now) is the one that needs to own the clone. Whereas if a reactivity change higher in the
+                        // tree causes the slotter to unmount, then the slottable will also unmount. So using the
+                        // current VM works either way.
                         if (isVCustomElement(vnode)) {
                             addVNodeToChildLWC(clonedVNode as VCustomElement);
                         }
