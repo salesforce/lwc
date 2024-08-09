@@ -44,13 +44,13 @@ scenarios.forEach(({ name, tagName, Ctor }) => {
             // step 1 - initial render with isTablet=false
             await Promise.resolve();
 
-            let header, menu, span;
+            let header;
 
             const assertExpectedHtml = () => {
                 const root = elm.shadowRoot || elm;
                 header = root.querySelector('light-header,shadow-header');
-                menu = root.querySelector('light-menu,shadow-menu');
-                span = root.querySelector('span');
+                const menu = root.querySelector('light-menu,shadow-menu');
+                const span = root.querySelector('span');
 
                 expect(header).not.toBeNull();
                 expect(menu).not.toBeNull();
