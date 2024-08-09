@@ -151,12 +151,10 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
         const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
         try {
-            const { code: testCode, watchFiles: testWatchFiles } = await getTestModuleCode(
-                filePath
-            );
-            const { code: componentDef, watchFiles: componentWatchFiles } = await getCompiledModule(
-                suiteDir
-            );
+            const { code: testCode, watchFiles: testWatchFiles } =
+                await getTestModuleCode(filePath);
+            const { code: componentDef, watchFiles: componentWatchFiles } =
+                await getCompiledModule(suiteDir);
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await exists(path.join(suiteDir, '.only'));
 

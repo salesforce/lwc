@@ -18,7 +18,7 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.html',
         },
-        ({ src, dirname }) => {
+        async ({ src, dirname }) => {
             const configPath = path.resolve(dirname, 'config.json');
             const filename = path.basename(dirname);
 
@@ -38,8 +38,10 @@ describe('fixtures', () => {
             );
 
             return {
-                // TODO [#4386]: Prettier v3 returns a promise - add an `await` here
-                'expected.js': prettier.format(code, { parser: 'babel' }),
+                'expected.js': await prettier.format(code, {
+                    parser: 'babel',
+                    trailingComma: 'es5',
+                }),
                 'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
             };

@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import diff from 'jest-diff';
-import MatcherUtils = jest.MatcherUtils;
+import diff from '@vitest/utils/diff';
+import type { MatcherState } from '@vitest/expect';
 
 export function toThrowErrorWithCode(
-    this: MatcherUtils,
+    this: MatcherState,
     received: any,
     code: string,
     message?: string

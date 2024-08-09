@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "7.2.0",
+    "version": "7.2.1",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -28,10 +28,8 @@
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "test:types": "nx test @lwc/integration-types",
-        "release:version": "./scripts/release/version.js"
-    },
-    "//": {
-        "prettier": "v3 requires ESM, and we use prettier in our Jest tests. Jest does not support ESM yet."
+        "release:version": "nx release version",
+        "release:publish": "nx release publish --registry https://registry.npmjs.org"
     },
     "devDependencies": {
         "@commitlint/cli": "^19.3.0",
@@ -39,38 +37,43 @@
         "@eslint/js": "^9.8.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
+        "@nx/js": "19.5.6",
         "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-inject": "^5.0.5",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-replace": "^5.0.7",
         "@rollup/plugin-typescript": "^11.1.6",
+        "@swc-node/register": "~1.9.1",
+        "@swc/core": "~1.5.7",
+        "@swc/helpers": "~0.5.11",
         "@types/babel__core": "^7.20.5",
-        "@types/node": "^20.14.11",
-        "@types/prettier": "^2.7.3",
-        "@vitest/coverage-v8": "^2.0.3",
-        "@vitest/ui": "^2.0.3",
+        "@types/node": "^22.1.0",
+        "@vitest/coverage-v8": "^2.0.5",
+        "@vitest/expect": "^2.0.5",
+        "@vitest/ui": "^2.0.5",
+        "@vitest/utils": "^2.0.5",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.5.4",
         "eslint": "^9.8.0",
         "eslint-config-flat-gitignore": "^0.1.8",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.29.1",
-        "eslint-plugin-jest": "^28.6.0",
+        "eslint-plugin-jest": "^28.7.0",
         "glob": "^11.0.0",
-        "globals": "^15.8.0",
+        "globals": "^15.9.0",
         "husky": "^9.1.4",
         "isbinaryfile": "^5.0.2",
         "jsdom": "^24.1.1",
-        "lint-staged": "^15.2.7",
+        "lint-staged": "^15.2.8",
         "magic-string": "^0.30.11",
-        "nx": "19.5.3",
-        "prettier": "^2.8.8",
-        "rollup": "^4.19.1",
+        "nx": "19.5.6",
+        "prettier": "^3.3.3",
+        "rollup": "^4.20.0",
         "terser": "^5.31.3",
         "tslib": "^2.6.3",
         "typescript": "5.5.4",
         "typescript-eslint": "^7.17.0",
-        "vitest": "^2.0.3"
+        "vitest": "^2.0.5"
     },
     "lint-staged": {
         "*.{js,mjs,ts}": "eslint",
@@ -94,13 +97,10 @@
     "resolutions": {
         "//": {
             "http-cache-semantics": "Pinned to address security vulnerability",
-            "jsonwebtoken": "Pinned to address security vulnerability",
-            "semver": "Pinned to address security vulnerability",
-            "systeminformation": "Pinned to address security vulnerability"
+            "semver": "Pinned to address security vulnerability"
         },
         "http-cache-semantics": "4.1.1",
-        "jsonwebtoken": "9.0.2",
-        "semver": "7.6.0",
-        "systeminformation": "5.22.7"
-    }
+        "semver": "7.6.0"
+    },
+    "dependencies": {}
 }

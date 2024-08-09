@@ -91,13 +91,13 @@ describe('slot forwarding', () => {
         const defaultSlotTextIndex = USE_LIGHT_DOM_SLOT_FORWARDING
             ? 12
             : USE_COMMENTS_FOR_FRAGMENT_BOOKENDS
-            ? 11
-            : 4;
+              ? 11
+              : 4;
         const defaultSlotCommentIndex = USE_LIGHT_DOM_SLOT_FORWARDING
             ? 13
             : USE_COMMENTS_FOR_FRAGMENT_BOOKENDS
-            ? 12
-            : 5;
+              ? 12
+              : 5;
 
         expect(lightLightLeaf.childNodes[defaultSlotTextIndex].textContent).toEqual(
             expectedDefaultSlot.textContent

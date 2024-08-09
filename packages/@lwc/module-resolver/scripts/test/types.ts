@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export {}; // required to have a module with just `declare global` in it
+/// <reference types="vitest/globals" />
+import 'vitest';
 
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace jest {
-        interface Matchers<R> {
-            __type: R; // unused, but makes TypeScript happy
-            toThrowErrorWithCode(received: any, ctor: any, message?: string): CustomMatcherResult;
-            toThrowErrorWithType(received: any, ctor: any, message?: string): CustomMatcherResult;
-        }
-    }
+interface CustomMatchers<R = unknown> {
+    toThrowErrorWithCode: (received: any, ctor: any, message?: string) => R;
+    toThrowErrorWithType: (received: any, ctor: any, message?: string) => R;
+}
+
+declare module 'vitest' {
+    interface Assertion<T = any> extends CustomMatchers<T> {}
+    interface AsymmetricMatchersContaining extends CustomMatchers {}
 }

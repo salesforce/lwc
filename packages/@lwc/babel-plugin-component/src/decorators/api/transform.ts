@@ -55,30 +55,33 @@ function computePublicPropsConfig(
     publicPropertyMetas: DecoratorMeta[],
     classBodyItems: NodePath<ClassBodyItem>[]
 ) {
-    return publicPropertyMetas.reduce((acc, { propertyName, decoratedNodeType }) => {
-        if (!(propertyName in acc)) {
-            acc[propertyName] = {};
-        }
-        acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
-
-        if (
-            decoratedNodeType === DECORATOR_TYPES.GETTER ||
-            decoratedNodeType === DECORATOR_TYPES.SETTER
-        ) {
-            // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
-            // We need to add the proper bitmask for the sibling getter/setter if it exists.
-            const pairType = getSiblingGetSetPairType(
-                propertyName,
-                decoratedNodeType,
-                classBodyItems
-            );
-            if (pairType) {
-                acc[propertyName].config |= getPropertyBitmask(pairType);
+    return publicPropertyMetas.reduce(
+        (acc, { propertyName, decoratedNodeType }) => {
+            if (!(propertyName in acc)) {
+                acc[propertyName] = {};
             }
-        }
+            acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
 
-        return acc;
-    }, {} as { [key: string]: { [key: string]: number } });
+            if (
+                decoratedNodeType === DECORATOR_TYPES.GETTER ||
+                decoratedNodeType === DECORATOR_TYPES.SETTER
+            ) {
+                // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
+                // We need to add the proper bitmask for the sibling getter/setter if it exists.
+                const pairType = getSiblingGetSetPairType(
+                    propertyName,
+                    decoratedNodeType,
+                    classBodyItems
+                );
+                if (pairType) {
+                    acc[propertyName].config |= getPropertyBitmask(pairType);
+                }
+            }
+
+            return acc;
+        },
+        {} as { [key: string]: { [key: string]: number } }
+    );
 }
 
 export default function transform(

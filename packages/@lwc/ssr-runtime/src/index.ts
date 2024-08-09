@@ -124,7 +124,7 @@ export class LightningElement {
 
     getAttribute(attrName: string): string | null {
         const value = this.__attrs?.[attrName];
-        return value === true ? '' : value ?? null;
+        return value === true ? '' : (value ?? null);
     }
 }
 

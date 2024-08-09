@@ -328,20 +328,20 @@ describe('regression test (#3827)', () => {
                 process.env.NATIVE_SHADOW
                     ? []
                     : !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                    ? [
-                          `leaf:${currentLeafName}:connectedCallback`,
-                          `leaf:${previousLeafName}:disconnectedCallback`,
-                      ]
-                    : [`leaf:${currentLeafName}:connectedCallback`],
+                      ? [
+                            `leaf:${currentLeafName}:connectedCallback`,
+                            `leaf:${previousLeafName}:disconnectedCallback`,
+                        ]
+                      : [`leaf:${currentLeafName}:connectedCallback`],
             elseIfBlock: (currentLeafName, previousLeafName) =>
                 process.env.NATIVE_SHADOW
                     ? []
                     : !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                    ? [
-                          `leaf:${currentLeafName}:connectedCallback`,
-                          `leaf:${previousLeafName}:disconnectedCallback`,
-                      ]
-                    : [`leaf:${currentLeafName}:connectedCallback`],
+                      ? [
+                            `leaf:${currentLeafName}:connectedCallback`,
+                            `leaf:${previousLeafName}:disconnectedCallback`,
+                        ]
+                      : [`leaf:${currentLeafName}:connectedCallback`],
         },
         {
             fixtureName: 'light DOM',

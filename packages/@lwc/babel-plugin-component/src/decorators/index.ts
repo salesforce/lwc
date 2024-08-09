@@ -77,19 +77,22 @@ function validateImportedLwcDecoratorUsage(
 ) {
     engineImportSpecifiers
         .filter(({ name }) => isLwcDecoratorName(name))
-        .reduce((acc, { name, path }) => {
-            // Get a list of all the  local references
-            const local = path.get('imported') as NodePath<types.Identifier>;
-            const references = getReferences(local).map((reference) => ({
-                name,
-                reference,
-            }));
+        .reduce(
+            (acc, { name, path }) => {
+                // Get a list of all the  local references
+                const local = path.get('imported') as NodePath<types.Identifier>;
+                const references = getReferences(local).map((reference) => ({
+                    name,
+                    reference,
+                }));
 
-            return [...acc, ...references] as {
-                name: string;
-                reference: NodePath<types.Node>;
-            }[];
-        }, [] as { name: string; reference: NodePath<types.Node> }[])
+                return [...acc, ...references] as {
+                    name: string;
+                    reference: NodePath<types.Node>;
+                }[];
+            },
+            [] as { name: string; reference: NodePath<types.Node> }[]
+        )
         .forEach(({ name, reference }) => {
             // Get the decorator from the identifier
             // If the the decorator is:
