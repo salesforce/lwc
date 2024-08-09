@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionOrError } from 'test-utils';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import LightContainer from 'light/container';
 import ShadowContainer from 'shadow/container';
 
@@ -26,7 +26,7 @@ scenarios.forEach(({ name, tagName, Ctor }) => {
 
         // TODO [#4451]: synthetic shadow throws unhandled rejection errors
         // These handlers capture errors thrown in synthetic shadow mode after the rerendering happens.
-        catchUnhandledRejectionOrError((error) => {
+        catchUnhandledRejectionsAndErrors((error) => {
             caughtErrors.push(error);
         });
 
