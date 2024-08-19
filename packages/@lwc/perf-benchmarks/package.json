@@ -20,7 +20,7 @@
         "@lwc/synthetic-shadow": "7.2.1"
     },
     "devDependencies": {
-        "@best/cli": "^12.0.2",
+        "@best/cli": "^13.0.0",
         "@best/runner-headless": "^12.0.2",
         "@best/runner-remote": "^12.0.2",
         "folder-hash": "4.0.4",
