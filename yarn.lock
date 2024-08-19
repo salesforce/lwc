@@ -3178,6 +3178,16 @@
     loglevel-plugin-prefix "^0.8.4"
     strip-ansi "^7.1.0"
 
+"@wdio/logger@9.0.4":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-9.0.4.tgz#63e901b9f0f29fa1ded5af54006fbd4df2354c33"
+  integrity sha512-b6gcu0PTVb3fgK4kyAH/k5UUWN5FOUdAfhA4PAY/IZvxZTMFYMqnrZb0WRWWWqL6nu9pcrOVtCOdPBvj0cb+Nw==
+  dependencies:
+    chalk "^5.1.2"
+    loglevel "^1.6.0"
+    loglevel-plugin-prefix "^0.8.4"
+    strip-ansi "^7.1.0"
+
 "@wdio/mocha-framework@^8.40.2":
   version "8.40.2"
   resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-8.40.2.tgz#c259da7b766b025d81062a8f0b25e2a3580684cf"
@@ -3214,14 +3224,14 @@
   dependencies:
     "@types/node" "^20.1.0"
 
-"@wdio/reporter@8.39.0":
-  version "8.39.0"
-  resolved "https://registry.yarnpkg.com/@wdio/reporter/-/reporter-8.39.0.tgz#e4d16a0b996b3dbeeb8a1f38ef2dfa3d763f3226"
-  integrity sha512-XahXhmaA1okdwg4/ThHFSqy/41KywxhbtszPcTzyXB+9INaqFNHA1b1vvWs0mrD5+tTtKbg4caTcEHVJU4iv0w==
+"@wdio/reporter@9.0.4":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@wdio/reporter/-/reporter-9.0.4.tgz#e6c8f07af41678587f44a1ed6d9f16eedf81c868"
+  integrity sha512-g55MiqToKEZ+L5quk7Ddk3m1fKgh2U2rq3zLG8bZUYU+3KFglfRC/Ld5yTso8S1tG4EDgl5HKSN5Bl8I5gncbg==
   dependencies:
     "@types/node" "^20.1.0"
-    "@wdio/logger" "8.38.0"
-    "@wdio/types" "8.39.0"
+    "@wdio/logger" "9.0.4"
+    "@wdio/types" "9.0.4"
     diff "^5.0.0"
     object-inspect "^1.12.0"
 
@@ -3254,16 +3264,16 @@
     saucelabs "7.5.0"
     webdriverio "8.40.2"
 
-"@wdio/spec-reporter@^8.39.0":
-  version "8.39.0"
-  resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-8.39.0.tgz#56ae921da2f67a95417505b2800c8fe855688038"
-  integrity sha512-2DX0+xvP+PyeVTBd6iGCH/RU66WXaa8HL+HpsJXZu5rSkZ4+6B2Tv8JB3ZE/pOWGNpI+B4ac/NfDs1DrX9sB7A==
+"@wdio/spec-reporter@^9.0.4":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-9.0.4.tgz#9eed69ab2dc3b764c613f097df2834fa2943ad92"
+  integrity sha512-3OJS8GlBrwwU6sTiDfSTR79r2VeeRVqGvlAC+P+GHFy8cMdMJ+eMP0cbb6+Uh5yo8eLJqYzwCPVt+W4RA0RRuA==
   dependencies:
-    "@wdio/reporter" "8.39.0"
-    "@wdio/types" "8.39.0"
+    "@wdio/reporter" "9.0.4"
+    "@wdio/types" "9.0.4"
     chalk "^5.1.2"
     easy-table "^1.2.0"
-    pretty-ms "^7.0.0"
+    pretty-ms "^9.0.0"
 
 "@wdio/static-server-service@^8.39.0":
   version "8.39.0"
@@ -3287,6 +3297,13 @@
   version "8.39.0"
   resolved "https://registry.yarnpkg.com/@wdio/types/-/types-8.39.0.tgz#21032c638ded2dfb72b87114a8086e6777b43aae"
   integrity sha512-86lcYROTapOJuFd9ouomFDfzDnv3Kn+jE0RmqfvN9frZAeLVJ5IKjX9M6HjplsyTZhjGO1uCaehmzx+HJus33Q==
+  dependencies:
+    "@types/node" "^20.1.0"
+
+"@wdio/types@9.0.4":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@wdio/types/-/types-9.0.4.tgz#794716fddff049ca7a58d1420c6ddd719135a0dd"
+  integrity sha512-MN7O4Uk3zPWvkN8d6SNdIjd7qHUlTxS7j0QfRPu6TdlYbHu6BJJ8Rr84y7GcUzCnTAJ1nOIpvUyR8MY3hOaVKg==
   dependencies:
     "@types/node" "^20.1.0"
 
@@ -9720,10 +9737,10 @@ parse-json@^7.0.0:
     lines-and-columns "^2.0.3"
     type-fest "^3.8.0"
 
-parse-ms@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-2.1.0.tgz#348565a753d4391fa524029956b172cb7753097d"
-  integrity sha512-kHt7kzLoS9VBZfUsiKjv43mr91ea+U05EyKkEtqp7vNbHxmaVuEqN7XxeEVnGrMtYOAxGrDElSi96K7EgO1zCA==
+parse-ms@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-4.0.0.tgz#c0c058edd47c2a590151a718990533fd62803df4"
+  integrity sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==
 
 parse-passwd@^1.0.0:
   version "1.0.0"
@@ -10065,12 +10082,12 @@ pretty-format@^29.7.0:
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
 
-pretty-ms@^7.0.0:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-7.0.1.tgz#7d903eaab281f7d8e03c66f867e239dc32fb73e8"
-  integrity sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==
+pretty-ms@^9.0.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-9.1.0.tgz#0ad44de6086454f48a168e5abb3c26f8db1b3253"
+  integrity sha512-o1piW0n3tgKIKCwk2vpM/vOV13zjJzvP37Ioze54YlTHE06m4tjEbzg9WsKkvTuyYln2DHjo5pY4qrZGI0otpw==
   dependencies:
-    parse-ms "^2.1.0"
+    parse-ms "^4.0.0"
 
 proc-log@^3.0.0:
   version "3.0.0"
