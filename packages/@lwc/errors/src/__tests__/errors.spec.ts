@@ -22,6 +22,8 @@ interface CustomMatchers<R = unknown> {
     toBeInRange: (range: { min: number; max: number }, key: string) => R;
 }
 
+import 'vitest';
+
 declare module 'vitest' {
     interface Assertion<T = any> extends CustomMatchers<T> {}
     interface AsymmetricMatchersContaining extends CustomMatchers {}
