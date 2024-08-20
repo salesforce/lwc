@@ -406,14 +406,10 @@ export default class CodeGen {
         // Cache the `on` object on the `$ctx` object
         return t.property(
             t.identifier('on'),
-            t.logicalExpression(
-                '||',
+            t.assignmentExpression(
+                '||=',
                 t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), onObjectId),
-                t.assignmentExpression(
-                    '=',
-                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), onObjectId),
-                    listenerObjectAST
-                )
+                listenerObjectAST
             )
         );
     }

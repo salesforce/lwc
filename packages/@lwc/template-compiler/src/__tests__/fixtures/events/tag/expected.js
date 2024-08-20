@@ -10,22 +10,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         1,
         {
-          on:
-            $ctx._m0 ||
-            ($ctx._m0 = {
-              click: api_bind($cmp.handleClick),
-            }),
+          on: ($ctx._m0 ||= {
+            click: api_bind($cmp.handleClick),
+          }),
         },
         null
       ),
       api_static_part(
         3,
         {
-          on:
-            $ctx._m1 ||
-            ($ctx._m1 = {
-              press: api_bind($cmp.handlePress),
-            }),
+          on: ($ctx._m1 ||= {
+            press: api_bind($cmp.handlePress),
+          }),
         },
         null
       ),

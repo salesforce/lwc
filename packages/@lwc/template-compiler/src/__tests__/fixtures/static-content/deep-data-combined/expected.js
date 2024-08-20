@@ -15,11 +15,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         4,
         {
-          on:
-            $ctx._m0 ||
-            ($ctx._m0 = {
-              click: api_bind($cmp.onClickBaz),
-            }),
+          on: ($ctx._m0 ||= {
+            click: api_bind($cmp.onClickBaz),
+          }),
           ref: "foo",
           style: $cmp.fooStyle,
           attrs: {
@@ -32,11 +30,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         6,
         {
-          on:
-            $ctx._m1 ||
-            ($ctx._m1 = {
-              click: api_bind($cmp.onClickQuux),
-            }),
+          on: ($ctx._m1 ||= {
+            click: api_bind($cmp.onClickQuux),
+          }),
           ref: "bar",
           style: $cmp.barStyle,
           attrs: {

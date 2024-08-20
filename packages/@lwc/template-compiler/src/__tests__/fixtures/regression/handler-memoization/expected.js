@@ -22,11 +22,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on:
-            $ctx._m1 ||
-            ($ctx._m1 = {
-              click: api_bind($cmp.create),
-            }),
+          on: ($ctx._m1 ||= {
+            click: api_bind($cmp.create),
+          }),
         },
         null
       ),
@@ -40,11 +38,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           api_static_part(
             2,
             {
-              on:
-                $ctx._m2 ||
-                ($ctx._m2 = {
-                  click: api_bind(task.delete),
-                }),
+              on: ($ctx._m2 ||= {
+                click: api_bind(task.delete),
+              }),
             },
             null
           ),
