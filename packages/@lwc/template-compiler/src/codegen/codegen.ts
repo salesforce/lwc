@@ -55,7 +55,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { memorizeHandler, objectToAST } from './helpers';
+import { objectToAST } from './helpers';
 import {
     transformStaticChildren,
     getStaticNodes,
@@ -397,9 +397,7 @@ export default class CodeGen {
         );
         const listenerObjectAST = objectToAST(listenerObj, (key) => {
             const componentHandler = this.bindExpression(listenerObj[key].handler);
-            const handler = this.genBind(componentHandler);
-
-            return memorizeHandler(this, componentHandler, handler);
+            return this.genBind(componentHandler);
         });
 
         // Generate a unique identifier for the `on` object

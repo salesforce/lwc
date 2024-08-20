@@ -9,11 +9,7 @@ import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
 import { isBaseElement, isForBlock, isIf, isParentNode, isSlot } from '../shared/ast';
-import {
-    IMPLICIT_STYLESHEET_IMPORTS,
-    TEMPLATE_FUNCTION_NAME,
-    TEMPLATE_PARAMS,
-} from '../shared/constants';
+import { IMPLICIT_STYLESHEET_IMPORTS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -86,30 +82,6 @@ export function hasIdAttribute(node: Node): boolean {
     }
 
     return false;
-}
-
-export function memorizeHandler(
-    codeGen: CodeGen,
-    componentHandler: t.Expression,
-    handler: t.Expression
-): t.Expression {
-    // #439 - The handler can only be memorized if it is bound to component instance
-    const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = !codeGen.isLocalIdentifier(id);
-
-    // Apply memorization if the handler is memorizable.
-    //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
-    if (shouldMemorizeHandler) {
-        const memorizedId = codeGen.getMemorizationId();
-        const memorization = t.assignmentExpression(
-            '=',
-            t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memorizedId),
-            handler
-        );
-
-        handler = t.logicalExpression('||', memorizedId, memorization);
-    }
-    return handler;
 }
 
 export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {

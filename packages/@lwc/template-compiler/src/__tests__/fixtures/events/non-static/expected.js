@@ -6,15 +6,15 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, h: api_element } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0 } = $ctx;
   return [
     api_element("div", stc0, [
       api_element("button", {
         key: 1,
         on:
-          $ctx._m1 ||
-          ($ctx._m1 = {
-            click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
+          $ctx._m0 ||
+          ($ctx._m0 = {
+            click: api_bind($cmp.handleClick),
           }),
       }),
     ]),

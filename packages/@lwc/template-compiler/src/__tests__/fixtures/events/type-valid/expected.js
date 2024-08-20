@@ -7,33 +7,16 @@ const $fragment3 = parseFragment`<div${3}>Click</div>`;
 const $fragment4 = parseFragment`<div${3}>Click</div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
-  const {
-    _m0,
-    _m1,
-    _m2,
-    _m3,
-    _m4,
-    _m5,
-    _m6,
-    _m7,
-    _m8,
-    _m9,
-    _m10,
-    _m11,
-    _m12,
-    _m13,
-    _m14,
-    _m15,
-  } = $ctx;
+  const { _m0, _m1, _m2, _m3, _m4, _m5, _m6, _m7 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
         0,
         {
           on:
-            $ctx._m3 ||
-            ($ctx._m3 = {
-              a123: _m2 || ($ctx._m2 = api_bind($cmp.handleClick)),
+            $ctx._m1 ||
+            ($ctx._m1 = {
+              a123: api_bind($cmp.handleClick),
             }),
         },
         null
@@ -44,9 +27,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         0,
         {
           on:
-            $ctx._m7 ||
-            ($ctx._m7 = {
-              foo_bar: _m6 || ($ctx._m6 = api_bind($cmp.handleClick)),
+            $ctx._m3 ||
+            ($ctx._m3 = {
+              foo_bar: api_bind($cmp.handleClick),
             }),
         },
         null
@@ -57,9 +40,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         0,
         {
           on:
-            $ctx._m11 ||
-            ($ctx._m11 = {
-              foo_: _m10 || ($ctx._m10 = api_bind($cmp.handleClick)),
+            $ctx._m5 ||
+            ($ctx._m5 = {
+              foo_: api_bind($cmp.handleClick),
             }),
         },
         null
@@ -70,9 +53,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         0,
         {
           on:
-            $ctx._m15 ||
-            ($ctx._m15 = {
-              a123: _m14 || ($ctx._m14 = api_bind($cmp.handleClick)),
+            $ctx._m7 ||
+            ($ctx._m7 = {
+              a123: api_bind($cmp.handleClick),
             }),
         },
         null

@@ -9,16 +9,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     sp: api_static_part,
     st: api_static_fragment,
   } = $api;
-  const { _m0, _m1, _m2, _m3 } = $ctx;
+  const { _m0, _m1 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
         0,
         {
           on:
-            $ctx._m3 ||
-            ($ctx._m3 = {
-              click: _m2 || ($ctx._m2 = api_bind($cmp.bar.arr[$cmp.baz])),
+            $ctx._m1 ||
+            ($ctx._m1 = {
+              click: api_bind($cmp.bar.arr[$cmp.baz]),
             }),
         },
         null
