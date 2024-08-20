@@ -27,6 +27,6 @@
         "dotenv": "^16.4.5",
         "lwc": "7.2.1",
         "minimist": "^1.2.8",
-        "webdriverio": "^8.40.2"
+        "webdriverio": "^9.0.5"
     }
 }
