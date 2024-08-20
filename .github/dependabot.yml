@@ -13,6 +13,7 @@ updates:
                   - '@babel/*'
           best:
               patterns:
+                  - 'best'
                   - '@best/*'
           rollup:
               patterns:
@@ -20,6 +21,7 @@ updates:
                   - '@rollup/*'
           webdriverio:
               patterns:
+                  - 'webdriverio'
                   - '@wdio/*'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
