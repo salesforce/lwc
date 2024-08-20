@@ -7,14 +7,16 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, c: api_custom_element, h: api_element } = $api;
-  const { _m0 } = $ctx;
+  const { _m0, _m1 } = $ctx;
   return [
     api_element("section", stc0, [
       api_custom_element("ns-foo", _nsFoo, {
         key: 1,
-        on: {
-          foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo)),
-        },
+        on:
+          $ctx._m1 ||
+          ($ctx._m1 = {
+            foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo)),
+          }),
       }),
     ]),
   ];

@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
     dc: api_dynamic_component,
   } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0, _m1, _m2, _m3 } = $ctx;
   return [
     api_dynamic_component(
       $cmp.ctor1,
@@ -23,9 +23,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: stc0,
         props: stc1,
         key: 0,
-        on: {
-          click: _m0 || ($ctx._m0 = api_bind($cmp.handleOuterClick)),
-        },
+        on:
+          $ctx._m1 ||
+          ($ctx._m1 = {
+            click: _m0 || ($ctx._m0 = api_bind($cmp.handleOuterClick)),
+          }),
       },
       [
         api_static_fragment($fragment1, 2),
@@ -35,9 +37,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc0,
             props: stc1,
             key: 3,
-            on: {
-              click: _m1 || ($ctx._m1 = api_bind($cmp.handleOuterClick)),
-            },
+            on:
+              $ctx._m3 ||
+              ($ctx._m3 = {
+                click: _m2 || ($ctx._m2 = api_bind($cmp.handleOuterClick)),
+              }),
           },
           [api_static_fragment($fragment2, 5)]
         ),

@@ -10,15 +10,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     st: api_static_fragment,
     i: api_iterator,
   } = $api;
-  const { _m0 } = $ctx;
+  const { _m0, _m1 } = $ctx;
   return api_iterator($cmp.bento, function (okazu) {
     return api_static_fragment($fragment1, api_key(1, okazu), [
       api_static_part(
         1,
         {
-          on: {
-            click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),
-          },
+          on:
+            $ctx._m1 ||
+            ($ctx._m1 = {
+              click: _m0 || ($ctx._m0 = api_bind(() => $cmp.taberu(okazu))),
+            }),
         },
         null
       ),

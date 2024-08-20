@@ -4,15 +4,17 @@ import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<div${"a0:data-name"}${"s0"}${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, sp: api_static_part, st: api_static_fragment } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0, _m1, _m2, _m3 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
         0,
         {
-          on: {
-            click: _m1 || ($ctx._m1 = api_bind($cmp.onClick)),
-          },
+          on:
+            $ctx._m3 ||
+            ($ctx._m3 = {
+              click: _m2 || ($ctx._m2 = api_bind($cmp.onClick)),
+            }),
           ref: "foo",
           style: $cmp.fooStyle,
           attrs: {

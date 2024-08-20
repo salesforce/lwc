@@ -9,15 +9,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     sp: api_static_part,
     st: api_static_fragment,
   } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0, _m1, _m2, _m3 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
         1,
         {
-          on: {
-            click: _m0 || ($ctx._m0 = api_bind($cmp.onClickFoo)),
-          },
+          on:
+            $ctx._m1 ||
+            ($ctx._m1 = {
+              click: _m0 || ($ctx._m0 = api_bind($cmp.onClickFoo)),
+            }),
           ref: "foo",
           style: $cmp.fooStyle,
           className: api_normalize_class_name($cmp.fooClass),
@@ -30,9 +32,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         3,
         {
-          on: {
-            click: _m1 || ($ctx._m1 = api_bind($cmp.onClickBar)),
-          },
+          on:
+            $ctx._m3 ||
+            ($ctx._m3 = {
+              click: _m2 || ($ctx._m2 = api_bind($cmp.onClickBar)),
+            }),
           ref: "bar",
           style: $cmp.barStyle,
           className: api_normalize_class_name($cmp.barClass),

@@ -402,7 +402,22 @@ export default class CodeGen {
             return memorizeHandler(this, componentHandler, handler);
         });
 
-        return t.property(t.identifier('on'), listenerObjectAST);
+        // Generate a unique identifier for the `on` object
+        const onObjectId = this.getMemorizationId();
+
+        // Cache the `on` object on the `$ctx` object
+        return t.property(
+            t.identifier('on'),
+            t.logicalExpression(
+                '||',
+                t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), onObjectId),
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), onObjectId),
+                    listenerObjectAST
+                )
+            )
+        );
     }
 
     genRef(ref: RefDirective) {
