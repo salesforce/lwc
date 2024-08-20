@@ -15,9 +15,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on: ($ctx._m1 ||= {
-            click: api_bind($cmp.bar.arr[$cmp.baz]),
-          }),
+          on:
+            _m1 ||
+            ($ctx._m1 = {
+              click: api_bind($cmp.bar.arr[$cmp.baz]),
+            }),
         },
         null
       ),

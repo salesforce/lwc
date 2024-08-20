@@ -13,9 +13,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on: ($ctx._m1 ||= {
-            a123: api_bind($cmp.handleClick),
-          }),
+          on:
+            _m1 ||
+            ($ctx._m1 = {
+              a123: api_bind($cmp.handleClick),
+            }),
         },
         null
       ),
@@ -24,9 +26,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on: ($ctx._m3 ||= {
-            foo_bar: api_bind($cmp.handleClick),
-          }),
+          on:
+            _m3 ||
+            ($ctx._m3 = {
+              foo_bar: api_bind($cmp.handleClick),
+            }),
         },
         null
       ),
@@ -35,9 +39,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on: ($ctx._m5 ||= {
-            foo_: api_bind($cmp.handleClick),
-          }),
+          on:
+            _m5 ||
+            ($ctx._m5 = {
+              foo_: api_bind($cmp.handleClick),
+            }),
         },
         null
       ),
@@ -46,9 +52,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(
         0,
         {
-          on: ($ctx._m7 ||= {
-            a123: api_bind($cmp.handleClick),
-          }),
+          on:
+            _m7 ||
+            ($ctx._m7 = {
+              a123: api_bind($cmp.handleClick),
+            }),
         },
         null
       ),
