@@ -392,9 +392,11 @@ export default class CodeGen {
     }
 
     genEventListeners(listeners: EventListener[]) {
-        const listenerObj = Object.fromEntries(
-            listeners.map((listener) => [listener.name, listener])
-        );
+        const listenerObj: Record<string, EventListener> = {};
+        for (const listener of listeners) {
+            listenerObj[listener.name] = listener;
+        }
+
         const listenerObjectAST = objectToAST(listenerObj, (key) => {
             const componentHandler = this.bindExpression(listenerObj[key].handler);
             return this.genBind(componentHandler);
