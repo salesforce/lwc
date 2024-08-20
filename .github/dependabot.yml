@@ -15,6 +15,10 @@ updates:
               patterns:
                   - 'best'
                   - '@best/*'
+          nx:
+              patterns:
+                  - 'nx'
+                  - '@nx/*'
           rollup:
               patterns:
                   - 'rollup'
