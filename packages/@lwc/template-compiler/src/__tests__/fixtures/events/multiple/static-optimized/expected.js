@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./multiple-static-optimized.css";
-import _implicitScopedStylesheets from "./multiple-static-optimized.scoped.css?scoped=true";
+import _implicitStylesheets from "./static-optimized.css";
+import _implicitScopedStylesheets from "./static-optimized.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<button${3}></button>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -26,9 +26,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-7ppqi31636p";
-tmpl.legacyStylesheetToken =
-  "x-multiple-static-optimized_multiple-static-optimized";
+tmpl.stylesheetToken = "lwc-7n28hdp1g54";
+tmpl.legacyStylesheetToken = "x-static-optimized_static-optimized";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./multiple-non-static-optimized.css";
-import _implicitScopedStylesheets from "./multiple-non-static-optimized.scoped.css?scoped=true";
+import _implicitStylesheets from "./non-static-optimized.css";
+import _implicitScopedStylesheets from "./non-static-optimized.scoped.css?scoped=true";
 import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, h: api_element } = $api;
@@ -20,9 +20,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-3c8br5010o7";
-tmpl.legacyStylesheetToken =
-  "x-multiple-non-static-optimized_multiple-non-static-optimized";
+tmpl.stylesheetToken = "lwc-d9girnpd2k";
+tmpl.legacyStylesheetToken = "x-non-static-optimized_non-static-optimized";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
