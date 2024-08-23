@@ -106,6 +106,9 @@ for (const dir of globSync('./packages/@lwc/*')) {
         bugs: { url: 'https://github.com/salesforce/lwc/issues' },
         license: 'MIT',
         publishConfig: { access: 'public' },
+        engines: {
+            node: '>=18',
+        },
         ...buildProps,
         dependencies,
         devDependencies,

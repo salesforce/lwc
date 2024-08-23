@@ -24,6 +24,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "engines": {
+        "node": ">=18"
+    },
     "types": "index.d.ts",
     "files": [
         "*.d.ts"

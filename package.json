@@ -87,11 +87,8 @@
         "packages/lwc",
         "playground"
     ],
-    "engines": {
-        "node": ">=10"
-    },
     "volta": {
-        "node": "20.12.2",
+        "node": "22.7.0",
         "yarn": "1.22.22"
     },
     "resolutions": {
