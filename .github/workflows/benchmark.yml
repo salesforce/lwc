@@ -24,7 +24,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
-                  node-version: '18.0.0'
+                  node-version: '18.18.0' # earliest node version we support (via "engines" in package.json)
                   cache: 'yarn'
 
             - name: Install dependencies

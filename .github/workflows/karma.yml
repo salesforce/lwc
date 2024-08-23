@@ -22,7 +22,7 @@ env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
     GITHUB_RUN_ID: ${{github.run_id}}
     COVERAGE: '1'
-    NODE_VERSION: '18.0.0'
+    NODE_VERSION: '18.18.0' # earliest node version we support (via "engines" in package.json)
 
 jobs:
     run-karma-tests-group-1:

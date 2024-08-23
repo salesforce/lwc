@@ -107,7 +107,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
         license: 'MIT',
         publishConfig: { access: 'public' },
         engines: {
-            node: '>=18',
+            node: '>=18.18.0',
         },
         ...buildProps,
         dependencies,
