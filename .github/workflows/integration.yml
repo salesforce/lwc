@@ -33,7 +33,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v3
               with:
-                  node-version: '18.18.0' # earliest node version we support (via "engines" in package.json)
+                  node-version: '20.0.0' # earliest node version we support (via "engines" in package.json)
                   cache: 'yarn'
 
             # Needed for local browser integration tests
