@@ -4,7 +4,7 @@
         <template for:each={list} for:item="task">
             <li key={task.id}>
                 {task.title}
-                <button onclick={task.delete}>[X]</button>
+                <button onclick={task.delete} ontouchstart={foo}>[X]</button>
             </li>
         </template>
     </ul>

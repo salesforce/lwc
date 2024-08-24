@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     h: api_element,
   } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { _m0, _m1, _m2 } = $ctx;
   return [
     api_static_fragment($fragment1, 1, [
       api_static_part(
@@ -42,6 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               on: {
                 click: api_bind(task.delete),
+                touchstart: _m2 || ($ctx._m2 = api_bind($cmp.foo)),
               },
             },
             null
