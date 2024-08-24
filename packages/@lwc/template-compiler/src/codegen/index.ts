@@ -661,12 +661,12 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
                   ]),
               ];
 
-    if (codeGen.memorizedIds.length) {
+    if (codeGen.memoizedIds.length) {
         body.push(
             t.variableDeclaration('const', [
                 t.variableDeclarator(
                     t.objectPattern(
-                        codeGen.memorizedIds.map((id) =>
+                        codeGen.memoizedIds.map((id) =>
                             t.assignmentProperty(id, id, { shorthand: true })
                         )
                     ),

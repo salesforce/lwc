@@ -184,7 +184,7 @@ export default class CodeGen {
     usedLwcApis: Set<string> = new Set();
 
     slotNames: Set<string> = new Set();
-    memorizedIds: t.Identifier[] = [];
+    memoizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
 
@@ -378,13 +378,13 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.tabindex, children);
     }
 
-    getMemorizationId() {
+    getMemoizationId() {
         const currentId = this.currentId++;
-        const memorizationId = t.identifier(`_m${currentId}`);
+        const memoizationId = t.identifier(`_m${currentId}`);
 
-        this.memorizedIds.push(memorizationId);
+        this.memoizedIds.push(memoizationId);
 
-        return memorizationId;
+        return memoizationId;
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
@@ -409,7 +409,7 @@ export default class CodeGen {
         }
 
         const memoize = (expr: t.Expression) => {
-            const memoizedId = this.getMemorizationId();
+            const memoizedId = this.getMemoizationId();
             return t.logicalExpression(
                 '||',
                 memoizedId,
