@@ -423,18 +423,26 @@ export default class CodeGen {
 
         const listenerObjAST = objectToAST(
             listenerObj,
-            // If there are local listeners, we need to memoize individual handlers
             hasLocalListeners
-                ? (k) => {
+                ? // If there are local listeners, we need to memoize individual handlers
+                  // Example input: <template for:each={list} for:item="task">
+                  //                  <button onclick={task.delete}>[X]</button>
+                  //                </template>
+                  // Output: { click: api_bind(task.delete) }
+                  (k) => {
                       const { isLocal, handler } = listenerObj[k];
                       return isLocal ? handler : memoize(handler);
                   }
-                : (k) => listenerObj[k].handler
+                : // If there are no local listeners, we can memoize the entire object
+                  // Input: <template>
+                  //          <button onclick={create}>New</button>
+                  //        </template>
+                  // Output: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
+                  (k) => listenerObj[k].handler
         );
 
         return t.property(
             t.identifier('on'),
-            // If there are no local listeners, we can memoize the entire object
             hasLocalListeners ? listenerObjAST : memoize(listenerObjAST)
         );
     }
