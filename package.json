@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "7.2.1",
+    "version": "7.2.2",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -28,7 +28,7 @@
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "test:types": "nx test @lwc/integration-types",
-        "release:version": "nx release version",
+        "release:version": "node ./scripts/release/version.js",
         "release:publish": "nx release publish --registry https://registry.npmjs.org"
     },
     "devDependencies": {
@@ -37,7 +37,7 @@
         "@eslint/js": "^9.9.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
-        "@nx/js": "19.6.0",
+        "@nx/js": "19.6.1",
         "@rollup/plugin-commonjs": "^26.0.1",
         "@rollup/plugin-inject": "^5.0.5",
         "@rollup/plugin-node-resolve": "^15.2.3",
@@ -61,12 +61,12 @@
         "eslint-plugin-jest": "^28.8.0",
         "glob": "^11.0.0",
         "globals": "^15.9.0",
-        "husky": "^9.1.4",
+        "husky": "^9.1.5",
         "isbinaryfile": "^5.0.2",
         "jsdom": "^24.1.1",
         "lint-staged": "^15.2.9",
         "magic-string": "^0.30.11",
-        "nx": "19.6.0",
+        "nx": "19.6.1",
         "prettier": "^3.3.3",
         "rollup": "^4.21.0",
         "terser": "^5.31.6",
