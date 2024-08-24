@@ -392,63 +392,50 @@ export default class CodeGen {
     }
 
     genEventListeners(listeners: EventListener[]) {
-        const entries = listeners.map(({ name, handler }) => {
-            const componentHandler = this.bindExpression(handler);
-            const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-            const shouldMemoizeHandler = !this.isLocalIdentifier(id);
-            return { name, componentHandler, shouldMemoizeHandler };
-        });
+        let hasLocalListeners = false;
 
-        const memoizeWholeObject = !entries.some(
-            ({ shouldMemoizeHandler }) => !shouldMemoizeHandler
-        );
+        const listenerObj: Record<string, { handler: t.Expression; isLocal: boolean }> = {};
 
-        const listenerObj = Object.fromEntries(
-            entries.map(({ name, componentHandler, shouldMemoizeHandler }) => [
-                name,
-                { componentHandler, shouldMemoizeHandler },
-            ])
-        );
+        for (const { name, handler } of listeners) {
+            const componentHandler = this.bindExpression(handler) as t.MemberExpression;
+            const id = getMemberExpressionRoot(componentHandler);
+            const isLocal = this.isLocalIdentifier(id);
 
-        if (!memoizeWholeObject) {
-            const listenerObjectAST = objectToAST(listenerObj, (key) => {
-                const { shouldMemoizeHandler, componentHandler } = listenerObj[key];
-                const handler = this.genBind(componentHandler);
-                if (shouldMemoizeHandler) {
-                    const memorizedId = this.getMemorizationId();
-                    const memorization = t.assignmentExpression(
-                        '=',
-                        t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memorizedId),
-                        handler
-                    );
-                    return t.logicalExpression('||', memorizedId, memorization);
-                } else {
-                    return handler;
-                }
-            });
+            if (isLocal) {
+                hasLocalListeners = true;
+            }
 
-            return t.property(t.identifier('on'), listenerObjectAST);
+            listenerObj[name] = { handler: this.genBind(componentHandler), isLocal };
         }
 
-        const listenerObjectAST = objectToAST(listenerObj, (key) => {
-            return this.genBind(listenerObj[key].componentHandler);
-        });
-
-        // Generate a unique identifier for the `on` object
-        const onObjectId = this.getMemorizationId();
-
-        // Cache the `on` object on the `$ctx` object
-        return t.property(
-            t.identifier('on'),
-            t.logicalExpression(
+        const memoize = (expr: t.Expression) => {
+            const memoizedId = this.getMemorizationId();
+            return t.logicalExpression(
                 '||',
-                onObjectId,
+                memoizedId,
                 t.assignmentExpression(
                     '=',
-                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), onObjectId),
-                    listenerObjectAST
+                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memoizedId),
+                    expr
                 )
-            )
+            );
+        };
+
+        const listenerObjAST = objectToAST(
+            listenerObj,
+            // If there are local listeners, we need to memoize individual handlers
+            hasLocalListeners
+                ? (k) => {
+                      const { isLocal, handler } = listenerObj[k];
+                      return isLocal ? handler : memoize(handler);
+                  }
+                : (k) => listenerObj[k].handler
+        );
+
+        return t.property(
+            t.identifier('on'),
+            // If there are no local listeners, we can memoize the entire object
+            hasLocalListeners ? listenerObjAST : memoize(listenerObjAST)
         );
     }
 
