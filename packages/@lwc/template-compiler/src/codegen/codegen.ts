@@ -399,17 +399,40 @@ export default class CodeGen {
             return { name, componentHandler, shouldMemoizeHandler };
         });
 
-        const listenerObj = Object.fromEntries(
-            entries.map(({ name, componentHandler }) => [name, componentHandler])
+        const memoizeWholeObject = !entries.some(
+            ({ shouldMemoizeHandler }) => !shouldMemoizeHandler
         );
 
-        const listenerObjectAST = objectToAST(listenerObj, (key) => {
-            return this.genBind(listenerObj[key]);
-        });
+        const listenerObj = Object.fromEntries(
+            entries.map(({ name, componentHandler, shouldMemoizeHandler }) => [
+                name,
+                { componentHandler, shouldMemoizeHandler },
+            ])
+        );
 
-        if (entries.some(({ shouldMemoizeHandler }) => !shouldMemoizeHandler)) {
+        if (!memoizeWholeObject) {
+            const listenerObjectAST = objectToAST(listenerObj, (key) => {
+                const { shouldMemoizeHandler, componentHandler } = listenerObj[key];
+                const handler = this.genBind(componentHandler);
+                if (shouldMemoizeHandler) {
+                    const memorizedId = this.getMemorizationId();
+                    const memorization = t.assignmentExpression(
+                        '=',
+                        t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memorizedId),
+                        handler
+                    );
+                    return t.logicalExpression('||', memorizedId, memorization);
+                } else {
+                    return handler;
+                }
+            });
+
             return t.property(t.identifier('on'), listenerObjectAST);
         }
+
+        const listenerObjectAST = objectToAST(listenerObj, (key) => {
+            return this.genBind(listenerObj[key].componentHandler);
+        });
 
         // Generate a unique identifier for the `on` object
         const onObjectId = this.getMemorizationId();
