@@ -55,7 +55,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { objectToAST } from './helpers';
+import { getMemberExpressionRoot, objectToAST } from './helpers';
 import {
     transformStaticChildren,
     getStaticNodes,
@@ -392,15 +392,24 @@ export default class CodeGen {
     }
 
     genEventListeners(listeners: EventListener[]) {
-        const listenerObj: Record<string, EventListener> = {};
-        for (const listener of listeners) {
-            listenerObj[listener.name] = listener;
-        }
+        const entries = listeners.map(({ name, handler }) => {
+            const componentHandler = this.bindExpression(handler);
+            const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
+            const shouldMemoizeHandler = !this.isLocalIdentifier(id);
+            return { name, componentHandler, shouldMemoizeHandler };
+        });
+
+        const listenerObj = Object.fromEntries(
+            entries.map(({ name, componentHandler }) => [name, componentHandler])
+        );
 
         const listenerObjectAST = objectToAST(listenerObj, (key) => {
-            const componentHandler = this.bindExpression(listenerObj[key].handler);
-            return this.genBind(componentHandler);
+            return this.genBind(listenerObj[key]);
         });
+
+        if (entries.some(({ shouldMemoizeHandler }) => !shouldMemoizeHandler)) {
+            return t.property(t.identifier('on'), listenerObjectAST);
+        }
 
         // Generate a unique identifier for the `on` object
         const onObjectId = this.getMemorizationId();
