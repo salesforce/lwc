@@ -31,6 +31,7 @@ describe('deep listener', () => {
 
     // In this case, the click listener is re-bound on every render, because the referenced
     // listener is scoped inside a <template for:each>
+    // TODO [#4467]: consider optimizing locally-scoped listeners
     it('does redefine the onClick for a list of deep click listeners', async () => {
         const elm = createElement('x-list', { is: List });
         document.body.appendChild(elm);
