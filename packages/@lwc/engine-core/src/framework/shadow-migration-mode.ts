@@ -20,7 +20,7 @@ async function fetchStylesheet(elm: HTMLStyleElement | HTMLLinkElement) {
         const { href } = elm;
         try {
             return await (await fetch(href)).text();
-        } catch (err) {
+        } catch (_err) {
             logWarnOnce(`Ignoring cross-origin stylesheet in migrate mode: ${href}`);
             // ignore errors with cross-origin stylesheets - nothing we can do for those
             return '';

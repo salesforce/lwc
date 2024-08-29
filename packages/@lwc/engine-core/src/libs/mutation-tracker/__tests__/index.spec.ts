@@ -59,7 +59,7 @@ describe('reactive-service', () => {
             ro.observe(() => {
                 throw new Error('this should not break the observing phase flags');
             });
-        } catch (ignore) {
+        } catch (_ignore) {
             /* ignore this error */
         }
         // this observing should do nothing because the observing phase throws but the internal flagging is recovered

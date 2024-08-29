@@ -16,7 +16,7 @@ Object.entries({
 
     describe(topLevelFnName, () => {
         describe('failure upon parse', () => {
-            yieldStmtsAllowed ||
+            if (!yieldStmtsAllowed) {
                 test('with yield statements', () => {
                     const createTemplate = () => topLevelFn`
                     const foo = "bar";
@@ -24,6 +24,7 @@ Object.entries({
                 `;
                     expect(createTemplate).toThrow('Unexpected token');
                 });
+            }
 
             test('when attempting to replace unreplaceable code constructs', () => {
                 // Someone might try to create a template where 'class' or 'function'
@@ -61,11 +62,11 @@ Object.entries({
         });
 
         describe('successful replacement', () => {
-            yieldStmtsAllowed &&
+            if (yieldStmtsAllowed) {
                 test('with yield statements', () => {
                     const tmpl = topLevelFn`
-                    yield ${is.literal};
-                `;
+    yield ${is.literal};
+`;
                     const replacedAst = tmpl(b.literal('foo'));
 
                     expect(replacedAst).toMatchObject({
@@ -80,7 +81,7 @@ Object.entries({
                         type: 'ExpressionStatement',
                     });
                 });
-
+            }
             test('with LH identifier nodes', () => {
                 const tmpl = topLevelFn`
                     const ${is.identifier} = 'foobar'

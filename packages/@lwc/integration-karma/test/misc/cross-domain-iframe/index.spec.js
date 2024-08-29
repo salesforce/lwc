@@ -46,7 +46,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     testContentWindowProperty('frames', (contentWindow) => contentWindow.frames);
     testContentWindowProperty('length', (contentWindow) => contentWindow.length);
     testContentWindowProperty('location', (contentWindow) => {
-        contentWindow.location;
+        void contentWindow.location;
         contentWindow.location = 'http://example.com';
     });
     testContentWindowProperty('opener', (contentWindow) => contentWindow.opener);

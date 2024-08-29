@@ -16,8 +16,7 @@ export default class SlottedChild extends LightningElement {
     }
 
     disconnectedCallback() {
-        window.timingBuffer &&
-            window.timingBuffer.push(`child-${this.identifier}:disconnectedCallback`);
+        window.timingBuffer?.push(`child-${this.identifier}:disconnectedCallback`);
     }
 
     renderedCallback() {

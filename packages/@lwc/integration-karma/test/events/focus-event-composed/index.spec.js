@@ -4,7 +4,7 @@ function isFocusEventConstructorSupported() {
     try {
         new FocusEvent();
         return true;
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }

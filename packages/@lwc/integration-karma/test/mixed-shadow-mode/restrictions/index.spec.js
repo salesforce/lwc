@@ -70,7 +70,7 @@ describe('restrictions', () => {
                 container.attachShadow({ mode: 'open' }).innerHTML = '<div></div>';
                 container.shadowRoot.querySelector('div').outerHTML = '';
                 return false;
-            } catch (e) {
+            } catch (_err) {
                 return true;
             }
         }
