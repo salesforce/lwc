@@ -23,6 +23,7 @@ const {
     API_VERSION,
     DISABLE_SYNTHETIC,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -39,6 +40,7 @@ function createEnvFile() {
         globalThis.process = {
             env: {
                 API_VERSION: ${JSON.stringify(API_VERSION)},
+                DISABLE_STATIC_CONTENT_OPTIMIZATION: ${DISABLE_STATIC_CONTENT_OPTIMIZATION},
                 ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: ${ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL},
                 ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: ${ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION},
                 FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
