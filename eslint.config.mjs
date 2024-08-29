@@ -11,6 +11,10 @@ import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
 
 export default tseslint.config(
+    // ------------- //
+    // Global config //
+    // ------------- //
+
     gitignore(),
     {
         ignores: ['**/fixtures'],
@@ -18,8 +22,6 @@ export default tseslint.config(
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
-        files: ['**/*.ts', '**/*.mjs', '**/*.js'],
-
         plugins: {
             '@lwc/lwc-internal': lwcInternal,
             import: fixupPluginRules(_import),
@@ -36,7 +38,14 @@ export default tseslint.config(
             },
 
             parserOptions: {
-                project: true,
+                projectService: {
+                    allowDefaultProject: [
+                        // I'm not sure why these files aren't picked up... :\
+                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-code.ts',
+                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-type.ts',
+                        'packages/@lwc/module-resolver/scripts/test/setup-test.ts',
+                    ],
+                },
             },
         },
 
@@ -45,6 +54,7 @@ export default tseslint.config(
                 'error',
                 {
                     argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
                 },
             ],
 
@@ -176,32 +186,20 @@ export default tseslint.config(
         },
     },
     {
-        files: [
-            '**/__tests__/**',
-            'packages/@lwc/*/scripts/**',
-            'packages/@lwc/synthetic-shadow/index.js',
-        ],
-
-        languageOptions: {
-            ecmaVersion: 5,
-            sourceType: 'script',
-
-            parserOptions: {
-                project: './tsconfig.eslint.json',
-            },
-        },
-    },
-    {
         files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
         ...tseslint.configs.disableTypeChecked,
     },
+
+    // -------------------------------- //
+    // Scripts, tests, and config files //
+    // -------------------------------- //
+    // aka things that run in node and might still use `require`
     {
         files: [
             'commitlint.config.js',
-            '**/jest.config.cjs',
-            'packages/@lwc/perf-benchmarks-components/**',
             '**/scripts/**',
-            '**/jest.config.js',
+            '**/rollup.config.js',
+            '**/rollup.config.mjs',
         ],
         languageOptions: {
             globals: {
@@ -210,34 +208,10 @@ export default tseslint.config(
         },
     },
     {
-        files: [
-            '**/scripts/**',
-            '**/jest.config.js',
-            'packages/@lwc/integration-tests/src/components/**/*.spec.js',
-        ],
+        files: ['**/scripts/**', 'packages/@lwc/integration-tests/src/components/**/*.spec.js'],
 
         rules: {
-            '@typescript-eslint/no-var-requires': 'off',
-        },
-    },
-    {
-        files: ['packages/lwc/**'],
-
-        rules: {
-            'no-restricted-imports': 'off',
-        },
-    },
-    {
-        files: [
-            'packages/@lwc/engine-core/**',
-            'packages/@lwc/engine-dom/**',
-            'packages/@lwc/synthetic-shadow/**',
-        ],
-
-        rules: {
-            '@lwc/lwc-internal/no-global-node': 'error',
-            'prefer-rest-params': 'off',
-            'prefer-spread': 'off',
+            '@typescript-eslint/no-require-imports': 'off',
         },
     },
     {
@@ -261,6 +235,29 @@ export default tseslint.config(
         },
     },
     {
+        files: ['**/scripts/**'],
+        rules: {
+            'no-console': 'off',
+        },
+    },
+
+    // ---------------------- //
+    // Package-specific rules //
+    // ---------------------- //
+    {
+        files: [
+            'packages/@lwc/engine-core/**',
+            'packages/@lwc/engine-dom/**',
+            'packages/@lwc/synthetic-shadow/**',
+        ],
+
+        rules: {
+            '@lwc/lwc-internal/no-global-node': 'error',
+            'prefer-rest-params': 'off',
+            'prefer-spread': 'off',
+        },
+    },
+    {
         files: ['packages/@lwc/integration-tests/**'],
 
         languageOptions: {
@@ -271,12 +268,6 @@ export default tseslint.config(
                 ...globals.mocha,
                 ...globals.node,
             },
-        },
-    },
-    {
-        files: ['**/scripts/**', '**/jest.config.js'],
-        rules: {
-            'no-console': 'off',
         },
     },
     {
@@ -300,6 +291,7 @@ export default tseslint.config(
         languageOptions: {
             globals: {
                 browser: true,
+                ...globals.node,
             },
         },
     },
@@ -333,21 +325,25 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/rollup.config.js'],
-        languageOptions: {
-            globals: {
-                process: true,
-            },
+        // We normally restrict importing @lwc/features, but we need to do so in these files
+        files: ['packages/lwc/features.js', 'packages/lwc/features.d.ts'],
+        rules: {
+            'no-restricted-imports': 'off',
         },
     },
     {
-        files: ['playground/**/*.js'],
+        files: ['playground/**'],
         languageOptions: {
             globals: {
                 ...globals.browser,
             },
         },
     },
+
+    // --------------------- //
+    // Weird file extensions //
+    // --------------------- //
+
     {
         // These are empty files used to help debug test fixtures
         files: ['**/.only'],
