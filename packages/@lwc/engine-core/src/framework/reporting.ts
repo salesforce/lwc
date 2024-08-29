@@ -46,6 +46,7 @@ export interface StylesheetMutationPayload extends BasePayload {
     propertyName: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ConnectedCallbackWhileDisconnectedPayload extends BasePayload {}
 
 export interface ShadowModeUsagePayload extends BasePayload {

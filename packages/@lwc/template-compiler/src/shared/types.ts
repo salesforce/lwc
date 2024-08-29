@@ -213,6 +213,7 @@ export interface BaseLwcElement<T extends `${LwcTagName}`> extends AbstractBaseE
 /**
  * Node representing the lwc:component element
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LwcComponent extends BaseLwcElement<'lwc:component'> {}
 
 /**
@@ -272,6 +273,7 @@ export interface ElseifBlock extends DirectiveParentNode<'ElseifBlock'> {
 /**
  * Node representing the lwc:else directive
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ElseBlock extends DirectiveParentNode<'ElseBlock'> {}
 
 export interface ForEach extends DirectiveParentNode<'ForEach'> {

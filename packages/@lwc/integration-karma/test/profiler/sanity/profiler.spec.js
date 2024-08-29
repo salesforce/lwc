@@ -154,7 +154,7 @@ describe('Profiler Sanity Test', () => {
 
         try {
             errorButton.click();
-        } catch (e) {
+        } catch (_err) {
             // do nothing
         }
 

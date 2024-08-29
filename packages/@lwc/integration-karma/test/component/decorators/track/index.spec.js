@@ -171,6 +171,8 @@ describe('non-observable values', () => {
         const elm = createElement('x-foo', { is: NonObservable });
         elm.foo = new Map();
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.foo;
         }).not.toThrow();
     });

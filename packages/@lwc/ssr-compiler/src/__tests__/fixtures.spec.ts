@@ -70,6 +70,8 @@ function testFixtures() {
 
             let config: any = {};
             if (fs.existsSync(configPath)) {
+                // Using require() to read JSON, rather than load a module
+                // eslint-disable-next-line @typescript-eslint/no-require-imports
                 config = require(configPath);
             }
 

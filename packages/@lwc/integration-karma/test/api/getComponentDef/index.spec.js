@@ -160,6 +160,8 @@ describe('@api', () => {
         document.body.appendChild(elm);
 
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm['privateProp'];
         }).toLogWarningDev(message('privateProp'));
     });
@@ -178,6 +180,8 @@ describe('@api', () => {
         document.body.appendChild(elm);
 
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm['publicProb'];
         }).not.toLogWarningDev();
     });
@@ -196,6 +200,8 @@ describe('@api', () => {
         document.body.appendChild(elm);
 
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm['nonDecoratedPrivateProp'];
         }).toLogWarningDev(message('nonDecoratedPrivateProp'));
     });
@@ -205,6 +211,8 @@ describe('@api', () => {
         document.body.appendChild(elm);
 
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm['trackedProp'];
         }).toLogWarningDev(message('trackedProp'));
     });
@@ -214,9 +222,14 @@ describe('@api', () => {
         document.body.appendChild(elm);
 
         expect(() => {
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.constructor;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.tabIndex;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.title;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.attributes;
         }).not.toLogWarningDev();
 
