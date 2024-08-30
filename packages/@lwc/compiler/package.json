@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "7.2.2",
+    "version": "7.2.3",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
@@ -51,8 +51,8 @@
         "@lwc/babel-plugin-component": "7.2.2",
         "@lwc/errors": "7.2.2",
         "@lwc/shared": "7.2.2",
-        "@lwc/ssr-compiler": "7.2.2",
+        "@lwc/ssr-compiler": "7.2.3",
         "@lwc/style-compiler": "7.2.2",
-        "@lwc/template-compiler": "7.2.2"
+        "@lwc/template-compiler": "7.2.3"
     }
 }
