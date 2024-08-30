@@ -31,5 +31,11 @@
     },
     "exclude-paths": ["playground"],
     "include-component-in-tag": false,
-    "release-type": "node"
+    "release-type": "node",
+    "plugins": [
+        {
+            "type": "node-workspace",
+            "updatePeerDependencies": true
+        }
+    ]
 }
