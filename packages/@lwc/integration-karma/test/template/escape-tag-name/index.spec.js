@@ -38,7 +38,7 @@ it('should render tag names with proper escaping', async () => {
         expect(elm.shadowRoot.children.length).toBe(0); // does not render
         expect(caughtError).not.toBeUndefined();
         expect(caughtError.message).toMatch(
-            /Failed to execute 'createElement'|Invalid qualified name|String contains an invalid character/
+            /Failed to execute 'createElement'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
         );
     } else {
         expect(elm.shadowRoot.children[0].tagName).toBe('S\\ECTION');
