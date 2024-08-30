@@ -224,7 +224,10 @@ export function serializeStaticElement(element: StaticElement, codeGen: CodeGen)
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    let html = `<${tagName}${serializeAttrs(element, codeGen)}`;
+    // See W-16469970
+    const escapedTagName = templateStringEscape(tagName);
+
+    let html = `<${escapedTagName}${serializeAttrs(element, codeGen)}`;
 
     if (isForeignElement && !hasChildren) {
         html += '/>';
@@ -237,7 +240,7 @@ export function serializeStaticElement(element: StaticElement, codeGen: CodeGen)
     html += serializeChildren(children, tagName, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
-        html += `</${tagName}>`;
+        html += `</${escapedTagName}>`;
     }
 
     return html;
