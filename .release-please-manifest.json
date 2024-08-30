@@ -1,5 +1,4 @@
 {
-    "$schema": "./node_modules/release-please/schemas/manifest.json",
     ".": "7.2.2",
     "packages/@lwc/aria-reflection": "7.2.2",
     "packages/@lwc/babel-plugin-component": "7.2.2",
