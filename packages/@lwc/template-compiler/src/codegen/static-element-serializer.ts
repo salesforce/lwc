@@ -91,6 +91,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             v = String(v.toLowerCase() !== 'false');
         }
 
+        // See W-16614169
+        const escapedAttributeName = templateStringEscape(name);
+
         if (typeof v === 'string') {
             // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
@@ -102,9 +105,13 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
-            attrs.push(needsPlaceholder ? `\${"${v}"}` : ` ${name}="${htmlEscape(v, true)}"`);
+            attrs.push(
+                needsPlaceholder
+                    ? `\${"${v}"}`
+                    : ` ${escapedAttributeName}="${htmlEscape(v, true)}"`
+            );
         } else {
-            attrs.push(` ${name}`);
+            attrs.push(` ${escapedAttributeName}`);
         }
     };
 
