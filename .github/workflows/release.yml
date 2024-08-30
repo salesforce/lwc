@@ -1,0 +1,33 @@
+on:
+  push:
+    branches:
+      - master
+
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          # this assumes that you have created a personal access token
+          # (PAT) and configured it as a GitHub action secret named
+          # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).
+          # Defaults to secrets.GITHUB_TOKEN
+          token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+
+      # only publish to npm when a new release is created
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+      - if: ${{ steps.release.outputs.release_created }}
+        run: yarn install
+      - if: ${{ steps.release.outputs.release_created }}
+        run: yarn run release:publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

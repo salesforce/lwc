@@ -1,0 +1,113 @@
+{
+    "$schema": "./node_modules/release-please/schemas/config.json",
+    "packages": {
+        ".": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/aria-reflection": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/babel-plugin-component": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/compiler": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/engine-core": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/engine-dom": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/engine-server": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/errors": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/features": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/integration-karma": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/integration-tests": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/integration-types": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/module-resolver": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/perf-benchmarks": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/perf-benchmarks-components": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/rollup-plugin": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/shared": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/signals": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/ssr-compiler": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/ssr-runtime": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/style-compiler": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/synthetic-shadow": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/template-compiler": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/types": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/@lwc/wire-service": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "packages/lwc": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        },
+        "playground": {
+            "include-component-in-tag": false,
+            "last-release-sha": "39af4df1fd18d2d4835fcc532795b9b65e1ba23b"
+        }
+    }
+}
