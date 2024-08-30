@@ -55,7 +55,7 @@ scenarios.forEach(({ name, expectedValue, Ctor, tagName }) => {
                 expect(elm.shadowRoot.children.length).toBe(0); // does not render
                 expect(caughtError).not.toBeUndefined();
                 expect(caughtError.message).toMatch(
-                    /Failed to execute 'setAttribute' on 'Element'|Invalid qualified name|The string contains invalid characters/
+                    /Failed to execute 'setAttribute' on 'Element'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
                 );
             } else {
                 expect(elm.shadowRoot.children[0].getAttribute('a`b`c')).toBe(expectedValue);
