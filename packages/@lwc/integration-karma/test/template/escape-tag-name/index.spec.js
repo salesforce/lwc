@@ -3,7 +3,7 @@ import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Component from 'x/component';
 
 // Browsers treat tag names containing the \ (backslash) character differently
-// depending on whether the HTML is parsed or you call `setAttribute` directly.
+// depending on whether the HTML is parsed or you call `createElement` directly.
 //
 // Succeeds:
 //
