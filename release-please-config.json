@@ -34,6 +34,39 @@
     "release-type": "node",
     "plugins": [
         {
+            "type": "linked-versions",
+            "groupName": "LWC",
+            "components": [
+                ".",
+                "packages/@lwc/aria-reflection",
+                "packages/@lwc/babel-plugin-component",
+                "packages/@lwc/compiler",
+                "packages/@lwc/engine-core",
+                "packages/@lwc/engine-dom",
+                "packages/@lwc/engine-server",
+                "packages/@lwc/errors",
+                "packages/@lwc/features",
+                "packages/@lwc/integration-karma",
+                "packages/@lwc/integration-tests",
+                "packages/@lwc/integration-types",
+                "packages/@lwc/module-resolver",
+                "packages/@lwc/perf-benchmarks",
+                "packages/@lwc/perf-benchmarks-components",
+                "packages/@lwc/rollup-plugin",
+                "packages/@lwc/shared",
+                "packages/@lwc/signals",
+                "packages/@lwc/ssr-compiler",
+                "packages/@lwc/ssr-runtime",
+                "packages/@lwc/style-compiler",
+                "packages/@lwc/synthetic-shadow",
+                "packages/@lwc/template-compiler",
+                "packages/@lwc/types",
+                "packages/@lwc/wire-service",
+                "packages/lwc",
+                "playground"
+            ]
+        },
+        {
             "type": "node-workspace",
             "updatePeerDependencies": true
         }
