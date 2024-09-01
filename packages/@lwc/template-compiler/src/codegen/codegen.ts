@@ -442,7 +442,7 @@ export default class CodeGen {
                   // Input: <template>
                   //          <button onclick={create}>New</button>
                   //        </template>
-                  // Output: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
+                  // Output: on: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
                   (k) => listenerObj[k].handler
         );
 
