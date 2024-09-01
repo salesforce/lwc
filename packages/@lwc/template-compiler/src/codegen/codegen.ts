@@ -426,30 +426,34 @@ export default class CodeGen {
             );
         };
 
-        const listenerObjAST = objectToAST(
-            listenerObj,
-            hasLocalListeners
-                ? // If there are local listeners, we need to memoize individual handlers
-                  // Example input: <template for:each={list} for:item="task">
-                  //                  <button onclick={task.delete}>[X]</button>
-                  //                </template>
-                  // Output: { click: api_bind(task.delete) }
-                  (k) => {
-                      const { isLocal, handler } = listenerObj[k];
-                      return isLocal ? handler : memoize(handler);
-                  }
-                : // If there are no local listeners, we can memoize the entire `on` object
-                  // Input: <template>
-                  //          <button onclick={create}>New</button>
-                  //        </template>
-                  // Output: on: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
-                  (k) => listenerObj[k].handler
-        );
-
-        return t.property(
-            t.identifier('on'),
-            hasLocalListeners ? listenerObjAST : memoize(listenerObjAST)
-        );
+        if (hasLocalListeners) {
+            // If there are local listeners, we need to memoize individual handlers
+            // Input: <template for:each={list} for:item="task">
+            //          <button onclick={task.delete} ontouchstart={foo}>[X]</button>
+            //        </template>
+            // Output:
+            //   on: {
+            //     click: api_bind(task.delete),
+            //     touchstart: _m2 || ($ctx._m2 = api_bind($cmp.foo))
+            //   }
+            return t.property(
+                t.identifier('on'),
+                objectToAST(listenerObj, (k) => {
+                    const { isLocal, handler } = listenerObj[k];
+                    return isLocal ? handler : memoize(handler);
+                })
+            );
+        } else {
+            // If there are no local listeners, we can memoize the entire `on` object
+            // Input: <template>
+            //          <button onclick={create}>New</button>
+            //        </template>
+            // Output: on: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
+            return t.property(
+                t.identifier('on'),
+                memoize(objectToAST(listenerObj, (k) => listenerObj[k].handler))
+            );
+        }
     }
 
     genRef(ref: RefDirective) {
