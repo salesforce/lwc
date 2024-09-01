@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Deep from 'x/deep';
 import List from 'x/list';
+import Mixed from 'x/mixed';
 
 describe('deep listener', () => {
     beforeEach(() => {
@@ -45,5 +46,29 @@ describe('deep listener', () => {
         await Promise.resolve();
         elm.shadowRoot.querySelector('button').click();
         expect(window.clickBuffer).toEqual([1, 2]);
+    });
+
+    // In this case, the click listener is re-bound on every render, because the referenced
+    // listener is scoped inside a <template for:each>. However, `mainLogger.onChange` is
+    // never re-bound because the `mainLogger` is scoped to the component.
+    it('does redefine onClick for a list of deep click listeners but not the onChange for a single deep listener', async () => {
+        const elm = createElement('x-mixed', { is: Mixed });
+        document.body.appendChild(elm);
+
+        elm.loggers = [{ id: 1, onClick: () => window.clickBuffer.push(1) }];
+        elm.mainLogger = {
+            onChange: () => window.clickBuffer.push('foo'),
+        };
+        await Promise.resolve();
+        elm.shadowRoot.querySelector('input').click();
+        expect(window.clickBuffer).toEqual([1, 'foo']);
+
+        elm.loggers = [{ id: 2, onClick: () => window.clickBuffer.push(2) }];
+        elm.mainLogger = {
+            onChange: () => window.clickBuffer.push('bar'),
+        };
+        await Promise.resolve();
+        elm.shadowRoot.querySelector('input').click();
+        expect(window.clickBuffer).toEqual([1, 'foo', 2, 'foo']);
     });
 });
