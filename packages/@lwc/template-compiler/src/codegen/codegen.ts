@@ -438,7 +438,7 @@ export default class CodeGen {
                       const { isLocal, handler } = listenerObj[k];
                       return isLocal ? handler : memoize(handler);
                   }
-                : // If there are no local listeners, we can memoize the entire object
+                : // If there are no local listeners, we can memoize the entire `on` object
                   // Input: <template>
                   //          <button onclick={create}>New</button>
                   //        </template>
