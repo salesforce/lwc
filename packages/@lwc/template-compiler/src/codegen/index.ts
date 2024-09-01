@@ -165,7 +165,11 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformForBlock(child));
             } else if (isIf(child)) {
                 const children = transformIf(child);
-                Array.isArray(children) ? res.push(...children) : res.push(children);
+                if (Array.isArray(children)) {
+                    res.push(...children);
+                } else {
+                    res.push(children);
+                }
             } else if (isBaseElement(child)) {
                 const slotParentName = isSlot(parent) ? parent.slotName : undefined;
                 res.push(transformElement(child, slotParentName));

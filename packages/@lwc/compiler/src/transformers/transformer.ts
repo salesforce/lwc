@@ -66,7 +66,7 @@ export function transform(
             const res = transformSync(src, filename, options);
             resolve(res);
         } catch (error) {
-            reject(error);
+            reject(error as Error);
         }
     });
 }

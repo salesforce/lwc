@@ -89,6 +89,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             v = String(v.toLowerCase() !== 'false');
         }
 
+        // See W-16614169
+        const escapedAttributeName = templateStringEscape(name);
+
         if (typeof v === 'string') {
             // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
@@ -98,9 +101,13 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
             // Inject a placeholder where the staticPartId will go when an expression occurs.
             // This is only needed for SSR to inject the expression value during serialization.
-            attrs.push(needsPlaceholder ? `\${"${v}"}` : ` ${name}="${htmlEscape(v, true)}"`);
+            attrs.push(
+                needsPlaceholder
+                    ? `\${"${v}"}`
+                    : ` ${escapedAttributeName}="${htmlEscape(v, true)}"`
+            );
         } else {
-            attrs.push(` ${name}`);
+            attrs.push(` ${escapedAttributeName}`);
         }
     };
 
@@ -224,7 +231,10 @@ export function serializeStaticElement(element: StaticElement, codeGen: CodeGen)
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    let html = `<${tagName}${serializeAttrs(element, codeGen)}`;
+    // See W-16469970
+    const escapedTagName = templateStringEscape(tagName);
+
+    let html = `<${escapedTagName}${serializeAttrs(element, codeGen)}`;
 
     if (isForeignElement && !hasChildren) {
         html += '/>';
@@ -237,7 +247,7 @@ export function serializeStaticElement(element: StaticElement, codeGen: CodeGen)
     html += serializeChildren(children, tagName, codeGen);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
-        html += `</${tagName}>`;
+        html += `</${escapedTagName}>`;
     }
 
     return html;

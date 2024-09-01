@@ -48,7 +48,7 @@ async function exists(path) {
     try {
         await fs.access(path);
         return true;
-    } catch (err) {
+    } catch (_err) {
         return false;
     }
 }

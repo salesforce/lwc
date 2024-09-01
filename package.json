@@ -1,6 +1,6 @@
 {
     "name": "lwc-monorepo",
-    "version": "7.2.2",
+    "version": "7.2.3",
     "private": true,
     "description": "Lightning Web Components",
     "repository": {
@@ -72,7 +72,7 @@
         "terser": "^5.31.6",
         "tslib": "^2.7.0",
         "typescript": "5.5.4",
-        "typescript-eslint": "^7.17.0",
+        "typescript-eslint": "^8.3.0",
         "vitest": "^2.0.5"
     },
     "lint-staged": {

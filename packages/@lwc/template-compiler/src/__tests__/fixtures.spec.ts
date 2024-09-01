@@ -24,6 +24,8 @@ describe('fixtures', () => {
 
             let config: Config = { namespace: 'x', name: filename };
             if (fs.existsSync(configPath)) {
+                // Using require() to read JSON, rather than load a module
+                // eslint-disable-next-line @typescript-eslint/no-require-imports
                 config = { ...config, ...require(configPath) };
             }
 

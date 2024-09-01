@@ -8,7 +8,6 @@
 const activeElement = require('./active-element');
 const activeElementShadow = require('./active-element-shadow');
 const activeElementShadowDeep = require('./active-element-shadow-deep');
-// eslint-disable-next-line no-redeclare
 const focus = require('./focus');
 const shadowDeep$ = require('./shadow-deep-selector');
 

@@ -298,7 +298,7 @@ export function isBoolean(obj: unknown): obj is boolean {
  * @returns `true` if the value is a function.
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function isFunction(obj: unknown): obj is Function {
     return typeof obj === 'function';
 }
