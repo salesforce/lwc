@@ -408,6 +408,11 @@ export default class CodeGen {
             listenerObj[name] = { handler: this.genBind(componentHandler), isLocal };
         }
 
+        // Individually memoize a non-local event handler
+        // Example input: <template for:each={list} for:item="task">
+        //                  <button [...] ontouchstart={foo}>[X]</button>
+        //                </template>
+        // Output: [...] touchstart: _m2 || ($ctx._m2 = api_bind($cmp.foo))
         const memoize = (expr: t.Expression) => {
             const memoizedId = this.getMemoizationId();
             return t.logicalExpression(
