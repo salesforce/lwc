@@ -11,22 +11,32 @@ updates:
           babel:
               patterns:
                   - '@babel/*'
+              update-types:
+                  - 'major'
           best:
               patterns:
                   - 'best'
                   - '@best/*'
+              update-types:
+                  - 'major'
           nx:
               patterns:
                   - 'nx'
                   - '@nx/*'
+              update-types:
+                  - 'major'
           rollup:
               patterns:
                   - 'rollup'
                   - '@rollup/*'
+              update-types:
+                  - 'major'
           webdriverio:
               patterns:
                   - 'webdriverio'
                   - '@wdio/*'
+              update-types:
+                  - 'major'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:
