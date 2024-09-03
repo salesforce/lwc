@@ -26,7 +26,13 @@ import { Stylesheet, Stylesheets } from './stylesheet';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
 
 // See @lwc/engine-core/src/framework/template.ts
-const TEMPLATE_PROPS = ['slots', 'stylesheetToken', 'stylesheets', 'renderMode'] as const;
+const TEMPLATE_PROPS = [
+    'slots',
+    'stylesheetToken',
+    'stylesheets',
+    'renderMode',
+    'legacyStylesheetToken',
+] as const;
 
 // Expandos that may be placed on a stylesheet factory function, and which are meaningful to LWC at runtime
 const STYLESHEET_PROPS = [
