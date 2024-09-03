@@ -51,7 +51,7 @@ props.forEach((prop) => {
 
                 expect(caughtError).not.toBeUndefined();
                 expect(caughtError.message).toMatch(
-                    /stylesheet token must be a string|Failed to execute 'setAttribute'|Invalid qualified name|String contains an invalid character/
+                    /stylesheet token must be a string|Failed to execute 'setAttribute'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
                 );
 
                 if (process.env.NODE_ENV === 'production') {
