@@ -37,14 +37,20 @@ props.forEach((prop) => {
         it('W-16614556 should not render arbitrary content via stylesheet token', async () => {
             const elm = createElement('x-component', { is: Component });
             elm.propToUse = prop;
-            document.body.appendChild(elm);
+            try {
+                document.body.appendChild(elm);
+            } catch (err) {
+                // In synthetic custom element lifecycle, the error is thrown synchronously on `appendChild`
+                caughtError = err;
+            }
 
             await Promise.resolve();
 
             if (process.env.NATIVE_SHADOW && process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
                 // If we're rendering in native shadow and the static content optimization is disabled,
                 // then there's no problem with non-string stylesheet tokens because they are only rendered
-                // as class attribute values using either `classList` or `setAttribute`.
+                // as class attribute values using either `classList` or `setAttribute` (and this only applies
+                // when `*.scoped.css` is being used).
                 expect(elm.shadowRoot.children.length).toBe(1);
             } else {
                 expect(elm.shadowRoot.children.length).toBe(0); // does not render
