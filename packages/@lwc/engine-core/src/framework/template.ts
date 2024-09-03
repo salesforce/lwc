@@ -299,6 +299,14 @@ function buildParseFragmentFn(
                 }
             }
 
+            // See W-16614556
+            if (
+                (hasStyleToken && !isString(stylesheetToken)) ||
+                (hasLegacyToken && !isString(legacyStylesheetToken))
+            ) {
+                throw new Error('stylesheet token must be a string');
+            }
+
             // If legacy stylesheet tokens are required, then add them to the rendered string
             const stylesheetTokenToRender =
                 stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
