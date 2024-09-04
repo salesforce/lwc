@@ -76,11 +76,11 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-const VALID_SCOPE_TOKEN_CHARS = /^[a-zA-Z0-9\-_]+$/;
+const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
 // See W-16614556
 function isValidScopeToken(token: any) {
-    return isString(token) && VALID_SCOPE_TOKEN_CHARS.test(token);
+    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
 }
 
 function validateSlots(vm: VM) {
