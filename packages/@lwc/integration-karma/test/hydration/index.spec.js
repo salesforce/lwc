@@ -15,7 +15,7 @@ if (process.env.NATIVE_SHADOW) {
         expect(() => {
             try {
                 hydrateComponent(anElement, anElement.constructor, {});
-            } catch (error) {
+            } catch (_error) {
                 // Ignore the rehydration error.
             }
         }).toLogError(

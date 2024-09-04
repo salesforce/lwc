@@ -8,6 +8,8 @@
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
 
+// Unused for now, so it doesn't really matter...
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface TransformOptions {}
 
 export interface CompilationResult {

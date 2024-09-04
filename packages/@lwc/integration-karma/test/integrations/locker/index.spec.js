@@ -35,6 +35,8 @@ describe('Locker hooks', () => {
     describe('getHook', () => {
         it('invokes getHook when reading a public property', () => {
             const elm = createElement('x-hooks', { is: LockerHooks });
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicProp;
 
             expect(hooks.getHook).toHaveBeenCalledTimes(1);
@@ -43,6 +45,8 @@ describe('Locker hooks', () => {
 
         it('invokes getHook when reading a public property via an accessor', () => {
             const elm = createElement('x-hooks', { is: LockerHooks });
+            // Testing the getter; don't need to use the return value
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicAccessor;
 
             expect(hooks.getHook).toHaveBeenCalledTimes(1);

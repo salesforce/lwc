@@ -9,7 +9,7 @@ describe('elementsFromPoint', () => {
         try {
             document.elementsFromPoint(0, 0);
             return true;
-        } catch (err) {
+        } catch (_err) {
             /* ignore */
         }
         return false;

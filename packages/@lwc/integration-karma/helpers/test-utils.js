@@ -593,6 +593,42 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     const expectConsoleCalls = createExpectConsoleCallsFunc(false);
     const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
 
+    // Utility to handle unhandled rejections or errors without allowing Jasmine to handle them first.
+    // Captures both onunhandledrejection and onerror events, since you might want both depending on
+    // native vs synthetic lifecycle timing differences.
+    function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
+        let originalOnError;
+
+        const onError = (e) => {
+            e.preventDefault(); // Avoids logging to the console
+            onUnhandledRejectionOrError(e);
+        };
+
+        const onRejection = (e) => {
+            // Avoids logging the error to the console, except in Firefox sadly https://bugzilla.mozilla.org/1642147
+            e.preventDefault();
+            onUnhandledRejectionOrError(e.reason);
+        };
+
+        beforeEach(() => {
+            // Overriding window.onerror disables Jasmine's global error handler, so we can listen for errors
+            // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
+            // https://github.com/jasmine/jasmine/pull/1860
+            originalOnError = window.onerror;
+            // Dummy onError because Jasmine tries to call it in case of a rejection:
+            // https://github.com/jasmine/jasmine/blob/169a2a8/src/core/GlobalErrors.js#L104-L106
+            window.onerror = () => {};
+            window.addEventListener('error', onError);
+            window.addEventListener('unhandledrejection', onRejection);
+        });
+
+        afterEach(() => {
+            window.removeEventListener('error', onError);
+            window.removeEventListener('unhandledrejection', onRejection);
+            window.onerror = originalOnError;
+        });
+    }
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -630,6 +666,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         IS_SYNTHETIC_SHADOW_LOADED,
         expectConsoleCalls,
         expectConsoleCallsDev,
+        catchUnhandledRejectionsAndErrors,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

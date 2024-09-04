@@ -195,9 +195,12 @@ export function getLwcConfig(dirname: string): LwcConfig {
     const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
 
     if (fs.existsSync(lwcConfigPath)) {
+        // Using require() to read JSON, rather than load a module
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         return require(lwcConfigPath);
     } else {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // Using require() to read JSON, rather than load a module
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         return require(packageJsonPath).lwc ?? {};
     }
 }

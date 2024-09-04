@@ -60,6 +60,7 @@ function sharedPlugins() {
     return [
         typescript({
             tsconfig: path.join(packageRoot, 'tsconfig.json'),
+            exclude: ['**/__tests__/**'],
             noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
             ...(watchMode && {
                 incremental: true,

@@ -9,7 +9,9 @@ const URL = '/related-target';
 
 function getEvents(elm) {
     return browser.execute(function (elm) {
-        return elm.getEvents();
+        // parse/stringify is necessary because this is a Proxy object that doesn't get
+        // serialized correctly when passed through WebDriver
+        return JSON.parse(JSON.stringify(elm.getEvents()));
     }, elm);
 }
 
