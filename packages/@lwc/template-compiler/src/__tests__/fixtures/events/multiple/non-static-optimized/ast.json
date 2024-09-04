@@ -1,0 +1,145 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 114,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 103,
+                "end": 114
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 92,
+                    "start": 15,
+                    "end": 102,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 83,
+                        "start": 15,
+                        "end": 93
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 83,
+                        "endLine": 2,
+                        "endColumn": 92,
+                        "start": 93,
+                        "end": 102
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [
+                    {
+                        "type": "EventListener",
+                        "name": "click",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 8,
+                            "name": "onClick",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 13,
+                                "endLine": 2,
+                                "endColumn": 30,
+                                "start": 23,
+                                "end": 40
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 13,
+                            "endLine": 2,
+                            "endColumn": 30,
+                            "start": 23,
+                            "end": 40
+                        }
+                    },
+                    {
+                        "type": "EventListener",
+                        "name": "touchstart",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 13,
+                            "name": "onTouchStart",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 31,
+                                "endLine": 2,
+                                "endColumn": 58,
+                                "start": 41,
+                                "end": 68
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 31,
+                            "endLine": 2,
+                            "endColumn": 58,
+                            "start": 41,
+                            "end": 68
+                        }
+                    },
+                    {
+                        "type": "EventListener",
+                        "name": "touchend",
+                        "handler": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 11,
+                            "name": "onTouchEnd",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 59,
+                                "endLine": 2,
+                                "endColumn": 82,
+                                "start": 69,
+                                "end": 92
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 59,
+                            "endLine": 2,
+                            "endColumn": 82,
+                            "start": 69,
+                            "end": 92
+                        }
+                    }
+                ],
+                "children": []
+            }
+        ]
+    }
+}

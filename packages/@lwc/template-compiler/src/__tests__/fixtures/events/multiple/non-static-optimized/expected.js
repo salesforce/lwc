@@ -1,21 +1,18 @@
-import _implicitStylesheets from "./attributes.css";
-import _implicitScopedStylesheets from "./attributes.scoped.css?scoped=true";
+import _implicitStylesheets from "./non-static-optimized.css";
+import _implicitScopedStylesheets from "./non-static-optimized.scoped.css?scoped=true";
 import { freezeTemplate, registerTemplate } from "lwc";
-const stc0 = {
-  "slds-style": true,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { b: api_bind, dc: api_dynamic_component } = $api;
+  const { b: api_bind, h: api_element } = $api;
   const { _m0 } = $ctx;
   return [
-    api_dynamic_component($cmp.ctor, {
-      classMap: stc0,
-      slotAssignment: "slotName",
+    api_element("button", {
       key: 0,
       on:
         _m0 ||
         ($ctx._m0 = {
-          click: api_bind($cmp.handleClick),
+          click: api_bind($cmp.onClick),
+          touchstart: api_bind($cmp.onTouchStart),
+          touchend: api_bind($cmp.onTouchEnd),
         }),
     }),
   ];
@@ -23,8 +20,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-33v8klcvlb2";
-tmpl.legacyStylesheetToken = "x-attributes_attributes";
+tmpl.stylesheetToken = "lwc-d9girnpd2k";
+tmpl.legacyStylesheetToken = "x-non-static-optimized_non-static-optimized";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
