@@ -65,24 +65,35 @@ props.forEach((prop) => {
 
                     await Promise.resolve();
 
-                    expect(elm.shadowRoot.children.length).toBe(0); // does not render
-
-                    expect(caughtError).not.toBeUndefined();
-                    expect(caughtError.message).toMatch(
-                        /stylesheet token must be a valid string|Failed to execute 'setAttribute'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
-                    );
-
-                    if (process.env.NODE_ENV === 'production') {
-                        // no warnings in prod mode
-                        expect(logger).not.toHaveBeenCalled();
+                    if (
+                        process.env.NATIVE_SHADOW &&
+                        process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
+                    ) {
+                        // If we're rendering in native shadow and the static content optimization is disabled,
+                        // then there's no problem with non-string stylesheet tokens because they are only rendered
+                        // as class attribute values using either `classList` or `setAttribute` (and this only applies
+                        // when `*.scoped.css` is being used).
+                        expect(elm.shadowRoot.children.length).toBe(1);
                     } else {
-                        // dev mode
-                        expect(logger).toHaveBeenCalledTimes(1);
-                        expect(logger.calls.allArgs()[0]).toMatch(
-                            new RegExp(
-                                `Mutating the "${prop}" property on a template is deprecated`
-                            )
+                        expect(elm.shadowRoot.children.length).toBe(0); // does not render
+
+                        expect(caughtError).not.toBeUndefined();
+                        expect(caughtError.message).toMatch(
+                            /stylesheet token must be a valid string|Failed to execute 'setAttribute'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
                         );
+
+                        if (process.env.NODE_ENV === 'production') {
+                            // no warnings in prod mode
+                            expect(logger).not.toHaveBeenCalled();
+                        } else {
+                            // dev mode
+                            expect(logger).toHaveBeenCalledTimes(1);
+                            expect(logger.calls.allArgs()[0]).toMatch(
+                                new RegExp(
+                                    `Mutating the "${prop}" property on a template is deprecated`
+                                )
+                            );
+                        }
                     }
                 });
             });

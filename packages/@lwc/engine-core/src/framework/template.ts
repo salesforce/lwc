@@ -76,7 +76,7 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
+const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_.]+$/;
 
 // See W-16614556
 function isValidScopeToken(token: any) {
