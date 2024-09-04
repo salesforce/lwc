@@ -79,6 +79,7 @@ export function setVMBeingRendered(vm: VM | null) {
 const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_.]+$/;
 
 // See W-16614556
+// TODO [#2826]: freeze the template object
 function isValidScopeToken(token: any) {
     return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
 }
