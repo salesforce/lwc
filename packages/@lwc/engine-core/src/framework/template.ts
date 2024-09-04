@@ -76,6 +76,13 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
+const VALID_SCOPE_TOKEN_CHARS = /^[a-zA-Z0-9\-_]+$/;
+
+// See W-16614556
+function isValidScopeToken(token: any) {
+    return isString(token) && VALID_SCOPE_TOKEN_CHARS.test(token);
+}
+
 function validateSlots(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
@@ -272,10 +279,10 @@ function buildParseFragmentFn(
 
             // See W-16614556
             if (
-                (hasStyleToken && !isString(stylesheetToken)) ||
-                (hasLegacyToken && !isString(legacyStylesheetToken))
+                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
+                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
             ) {
-                throw new Error('stylesheet token must be a string');
+                throw new Error('stylesheet token must be a valid string');
             }
 
             // If legacy stylesheet tokens are required, then add them to the rendered string
