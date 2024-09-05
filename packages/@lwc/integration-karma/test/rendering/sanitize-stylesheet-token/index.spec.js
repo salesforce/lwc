@@ -48,7 +48,7 @@ props.forEach((prop) => {
                     setFeatureFlagForTest('ENABLE_LEGACY_SCOPE_TOKENS', false);
                     // We keep a cache of parsed static fragments; these need to be reset
                     // since they can vary based on whether we use the legacy scope token or not.
-                    window.__lwcResetFragmentCache();
+                    window.__lwcResetFragmentCaches();
                     // Reset template object for clean state between tests
                     Ctor.resetTemplate();
                 });
