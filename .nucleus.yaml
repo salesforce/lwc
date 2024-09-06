@@ -71,4 +71,4 @@ steps:
     npm-publish-release:
         params:
             access: public
-            tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
+            tag: winter25 # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
