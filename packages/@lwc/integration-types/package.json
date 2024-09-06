@@ -5,8 +5,7 @@
     "description": "Type validation for LWC packages",
     "type": "module",
     "scripts": {
-        "test": "node ./scripts/update-paths.js --check && tsc && yarn run test:experimental-decorators",
-        "test:experimental-decorators": "tsc -p tsconfig.experimental-decorators.json",
+        "test": "node ./scripts/update-paths.js --check && tsc",
         "playground": "rollup -c src/playground/rollup.config.js --watch"
     },
     "dependencies": {

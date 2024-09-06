@@ -8,9 +8,9 @@ import { assert, isFunction, isNull, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
-import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import type { LightningElement } from '../base-lightning-element';
 
 /**
  * The `@api` decorator marks public fields and public methods in
@@ -21,7 +21,7 @@ export default function api(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     value: unknown,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context: ClassMemberDecoratorContext | string | symbol
+    context: ClassMemberDecoratorContext
 ): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(`@api decorator can only be used as a decorator function.`);
