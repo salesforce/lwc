@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "7.2.6",
+    "version": "8.0.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -14,10 +14,10 @@
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "7.2.6",
-        "@lwc/engine-server": "7.2.6",
-        "@lwc/perf-benchmarks-components": "7.2.6",
-        "@lwc/synthetic-shadow": "7.2.6"
+        "@lwc/engine-dom": "8.0.0",
+        "@lwc/engine-server": "8.0.0",
+        "@lwc/perf-benchmarks-components": "8.0.0",
+        "@lwc/synthetic-shadow": "8.0.0"
     },
     "devDependencies": {
         "@best/cli": "^13.0.0",
