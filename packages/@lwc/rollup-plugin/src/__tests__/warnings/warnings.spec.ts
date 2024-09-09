@@ -37,6 +37,7 @@ describe('warnings', () => {
                     apiVersion: APIVersion.V58_244_SUMMER_23,
                 }),
             ],
+            external: ['lwc'],
             onwarn(warning) {
                 warnings.push(warning);
             },

@@ -17,6 +17,7 @@ describe('enableStaticContentOptimization: ', () => {
         const bundle = await rollup({
             input: path.resolve(__dirname, pathname),
             plugins: [lwc(options)],
+            external: ['lwc'],
             onwarn(warning) {
                 warnings.push(warning);
             },
