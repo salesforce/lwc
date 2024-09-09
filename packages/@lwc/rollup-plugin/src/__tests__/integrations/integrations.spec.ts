@@ -15,6 +15,7 @@ describe('integration', () => {
             const bundle = await rollup({
                 input: path.resolve(__dirname, 'fixtures/typescript/typescript.ts'),
                 plugins: [lwc()],
+                external: ['lwc'],
             });
 
             const result = await bundle.generate({

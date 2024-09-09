@@ -5,19 +5,36 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'path';
-import { rollup, RollupLog } from 'rollup';
+import { rollup, type RollupLog, type RollupBuild } from 'rollup';
 
-import lwc from '../../index';
+import lwc, { type RollupLwcOptions } from '../../index';
+
+async function runRollup(
+    pathname: string,
+    options: RollupLwcOptions = {},
+    { external = [] as string[] } = {}
+): Promise<{ bundle: RollupBuild; warnings: RollupLog[] }> {
+    const warnings: RollupLog[] = [];
+
+    const bundle = await rollup({
+        input: path.resolve(__dirname, 'fixtures', pathname),
+        plugins: [lwc(options)],
+        external: ['lwc', ...external],
+        onwarn(warning) {
+            warnings.push(warning);
+        },
+    });
+
+    return {
+        bundle,
+        warnings,
+    };
+}
 
 describe('templateConfig', () => {
     it('compile with preserveHtmlComments option', async () => {
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/test/test.js'),
-            plugins: [
-                lwc({
-                    preserveHtmlComments: true,
-                }),
-            ],
+        const { bundle } = await runRollup('test/test.js', {
+            preserveHtmlComments: true,
         });
 
         const { output } = await bundle.generate({
@@ -28,13 +45,8 @@ describe('templateConfig', () => {
     });
 
     it('should accept disableSyntheticShadowSupport config flag', async () => {
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/test/test.js'),
-            plugins: [
-                lwc({
-                    disableSyntheticShadowSupport: true,
-                }),
-            ],
+        const { bundle } = await runRollup('test/test.js', {
+            disableSyntheticShadowSupport: true,
         });
 
         const { output } = await bundle.generate({
@@ -47,13 +59,8 @@ describe('templateConfig', () => {
     });
 
     it('should accept enableDynamicComponents config flag', async () => {
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/dynamicComponent/dynamicComponent.js'),
-            plugins: [
-                lwc({
-                    enableDynamicComponents: true,
-                }),
-            ],
+        const { bundle } = await runRollup('dynamicComponent/dynamicComponent.js', {
+            enableDynamicComponents: true,
         });
 
         const { output } = await bundle.generate({
@@ -64,17 +71,8 @@ describe('templateConfig', () => {
     });
 
     it('should accept experimentalDynamicDirective config flag', async () => {
-        const warnings: RollupLog[] = [];
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/experimentalDynamic/experimentalDynamic.js'),
-            plugins: [
-                lwc({
-                    experimentalDynamicDirective: true,
-                }),
-            ],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
+        const { bundle, warnings } = await runRollup('experimentalDynamic/experimentalDynamic.js', {
+            experimentalDynamicDirective: true,
         });
 
         const { output } = await bundle.generate({
@@ -92,15 +90,15 @@ describe('templateConfig', () => {
 describe('javaScriptConfig', () => {
     it('should accept experimentalDynamicComponent config flag', async () => {
         const CUSTOM_LOADER = '@salesforce/loader';
-        const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/dynamicImportConfig/dynamicImportConfig.js'),
-            plugins: [
-                lwc({
-                    experimentalDynamicComponent: { loader: CUSTOM_LOADER, strictSpecifier: true },
-                }),
-            ],
-            external: [CUSTOM_LOADER],
-        });
+        const { bundle } = await runRollup(
+            'dynamicImportConfig/dynamicImportConfig.js',
+            {
+                experimentalDynamicComponent: { loader: CUSTOM_LOADER, strictSpecifier: true },
+            },
+            {
+                external: [CUSTOM_LOADER],
+            }
+        );
 
         const { output } = await bundle.generate({
             format: 'esm',
@@ -116,17 +114,12 @@ describe('lwsConfig', () => {
             return string.replace(/\s/g, '');
         }
 
-        const bundle = await rollup({
-            input: path.resolve(
-                __dirname,
-                'fixtures/lightningWebSecurityTransforms/lightningWebSecurityTransforms.js'
-            ),
-            plugins: [
-                lwc({
-                    enableLightningWebSecurityTransforms: true,
-                }),
-            ],
-        });
+        const { bundle } = await runRollup(
+            'lightningWebSecurityTransforms/lightningWebSecurityTransforms.js',
+            {
+                enableLightningWebSecurityTransforms: true,
+            }
+        );
 
         const { output } = await bundle.generate({
             format: 'esm',
