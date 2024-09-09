@@ -49,6 +49,27 @@ const operationIdNameMapping = [
     'lwc-rehydrate',
 ] as const;
 
+const operationTooltipMapping = [
+    // constructor
+    'component constructor()',
+    // render
+    'component render() and virtual DOM rendered',
+    // patch
+    'component DOM rendered',
+    // connectedCallback
+    'component connectedCallback()',
+    // renderedCallback
+    'component renderedCallback()',
+    // disconnectedCallback
+    'component disconnectedCallback()',
+    // errorCallback
+    'component errorCallback()',
+    // lwc-hydrate
+    'component first rendered',
+    // lwc-rehydrate
+    'component re-rendered',
+] as const;
+
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
 const isUserTimingSupported: boolean =
@@ -82,6 +103,7 @@ const end = !isUserTimingSupported
                   | 'tertiary-dark'
                   | 'error';
               properties?: [string, string][];
+              tooltipText?: string;
           }
       ) => {
           performance.measure(measureName, {
@@ -122,6 +144,10 @@ function getProperties(vm: VM<any, any>): [string, string][] {
         ['Render Mode', vm.renderMode === RenderMode.Light ? 'light DOM' : 'shadow DOM'],
         ['Shadow Mode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
     ];
+}
+
+function getTooltipText(measureName: string, opId: OperationId) {
+    return `${measureName} - ${operationTooltipMapping[opId]}`;
 }
 
 /** Indicates if operations should be logged via the User Timing API. */
@@ -172,6 +198,7 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
         const measureName = getMeasureName(opId, vm);
         end(measureName, markName, {
             properties: getProperties(vm),
+            tooltipText: getTooltipText(measureName, opId),
             color: opId === OperationId.Render ? 'primary' : 'secondary',
         });
     }
@@ -223,6 +250,7 @@ export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
         const markName = getMarkName(opId, vm);
         end(opName, markName, {
             properties: getProperties(vm),
+            tooltipText: getTooltipText(opName, opId),
             color: 'tertiary',
         });
     }
