@@ -95,7 +95,7 @@ const endMark = !isUserTimingSupported
                   detail: {
                       devtools: {
                           dataType: 'track-entry',
-                          color: 'primary',
+                          color: opId === OperationId.Render ? 'primary' : 'tertiary',
                           track: '⚡️ Lightning Web Components',
                           properties: vm ? [['tagName', vm.tagName]] : [],
                       },
