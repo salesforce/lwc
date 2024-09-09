@@ -86,28 +86,26 @@ const endMark = !isUserTimingSupported
           const start = `${name}_start`;
           const end = `${name}_end`;
 
-          if (performance.getEntriesByName(start).length > 0) {
-              performance.mark(end);
+          performance.mark(end);
 
-              performance.measure(name, {
-                  start,
-                  end,
-                  detail: {
-                      devtools: {
-                          dataType: 'track-entry',
-                          color: opId === OperationId.Render ? 'primary' : 'tertiary',
-                          track: '⚡️ Lightning Web Components',
-                          properties: vm ? [['tagName', vm.tagName]] : [],
-                      },
+          performance.measure(name, {
+              start,
+              end,
+              detail: {
+                  devtools: {
+                      dataType: 'track-entry',
+                      color: opId === OperationId.Render ? 'primary' : 'tertiary',
+                      track: '⚡️ Lightning Web Components',
+                      properties: vm ? [['tagName', vm.tagName]] : [],
                   },
-              });
+              },
+          });
 
-              // Clear the created marks and measure to avoid filling the performance entries buffer.
-              // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
-              performance.clearMarks(start);
-              performance.clearMarks(end);
-              performance.clearMeasures(name);
-          }
+          // Clear the created marks and measure to avoid filling the performance entries buffer.
+          // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
+          performance.clearMarks(start);
+          performance.clearMarks(end);
+          performance.clearMeasures(name);
       };
 
 /** Indicates if operations should be logged via the User Timing API. */
