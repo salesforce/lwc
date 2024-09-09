@@ -58,36 +58,57 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-const start = !isUserTimingSupported
-    ? noop
-    : (markName: string) => {
-          performance.mark(markName);
-      };
+function getMarkName(opId: OperationId, vm?: VM): string {
+    const opName = operationIdNameMapping[opId];
 
-const end = !isUserTimingSupported
-    ? noop
-    : (measureName: string, markName: string) => {
-          performance.measure(measureName, markName);
+    if (isUndefined(vm)) {
+        return opName;
+    }
 
-          // Clear the created marks and measure to avoid filling the performance entries buffer.
-          // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
-          performance.clearMarks(markName);
-          performance.clearMeasures(measureName);
-      };
+    const measureName = `${getComponentTag(vm)} - ${opName}`;
 
-function getOperationName(opId: OperationId): string {
-    return operationIdNameMapping[opId];
-}
-
-function getMeasureName(opId: OperationId, vm: VM): string {
-    return `${getComponentTag(vm)} - ${getOperationName(opId)}`;
-}
-
-function getMarkName(opId: OperationId, vm: VM): string {
     // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
     // the right measures for components that are recursive.
-    return `${getMeasureName(opId, vm)} - ${vm.idx}`;
+    return `${measureName} - ${vm.idx}`;
 }
+
+const recordMark = !isUserTimingSupported
+    ? noop
+    : (opId: OperationId, vm?: VM) => {
+          const name = getMarkName(opId, vm);
+          performance.mark(`${name}_start`);
+      };
+
+const endMark = !isUserTimingSupported
+    ? noop
+    : (opId: OperationId, vm?: VM) => {
+          const name = getMarkName(opId, vm);
+          const start = `${name}_start`;
+          const end = `${name}_end`;
+
+          if (performance.getEntriesByName(start).length > 0) {
+              performance.mark(end);
+
+              performance.measure(name, {
+                  start,
+                  end,
+                  detail: {
+                      devtools: {
+                          dataType: 'track-entry',
+                          color: 'primary',
+                          track: '⚡️ Lightning Web Components',
+                          properties: vm ? [['tagName', vm.tagName]] : [],
+                      },
+                  },
+              });
+
+              // Clear the created marks and measure to avoid filling the performance entries buffer.
+              // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
+              performance.clearMarks(start);
+              performance.clearMarks(end);
+              performance.clearMeasures(name);
+          }
+      };
 
 /** Indicates if operations should be logged via the User Timing API. */
 const isMeasureEnabled = process.env.NODE_ENV !== 'production';
@@ -122,8 +143,7 @@ export const profilerControl = {
 
 export function logOperationStart(opId: OperationId, vm: VM) {
     if (isMeasureEnabled) {
-        const markName = getMarkName(opId, vm);
-        start(markName);
+        recordMark(opId, vm);
     }
 
     if (isProfilerEnabled) {
@@ -133,9 +153,7 @@ export function logOperationStart(opId: OperationId, vm: VM) {
 
 export function logOperationEnd(opId: OperationId, vm: VM) {
     if (isMeasureEnabled) {
-        const markName = getMarkName(opId, vm);
-        const measureName = getMeasureName(opId, vm);
-        end(measureName, markName);
+        endMark(opId, vm);
     }
 
     if (isProfilerEnabled) {
@@ -145,9 +163,7 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
 
 export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
     if (isMeasureEnabled) {
-        const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
-        start(markName);
+        recordMark(opId, vm);
     }
 
     if (isProfilerEnabled) {
@@ -157,9 +173,7 @@ export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
 
 export function logGlobalOperationEnd(opId: GlobalOperationId, vm?: VM) {
     if (isMeasureEnabled) {
-        const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
-        end(opName, markName);
+        endMark(opId, vm);
     }
 
     if (isProfilerEnabled) {
