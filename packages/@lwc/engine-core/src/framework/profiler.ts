@@ -117,10 +117,10 @@ function getMarkName<T extends OperationId = OperationId>(opId: T, vm: VM) {
 
 function getProperties(vm: VM<any, any>): [string, string][] {
     return [
-        ['tagName', vm.tagName],
-        ['idx', String(vm.idx)],
-        ['renderMode', vm.renderMode === RenderMode.Light ? 'light' : 'shadow'],
-        ['shadowMode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
+        ['Tag Name', vm.tagName],
+        ['Component ID', String(vm.idx)],
+        ['Render Mode', vm.renderMode === RenderMode.Light ? 'light DOM' : 'shadow DOM'],
+        ['Shadow Mode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
     ];
 }
 
