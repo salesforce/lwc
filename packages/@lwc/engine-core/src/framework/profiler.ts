@@ -66,14 +66,31 @@ const start = !isUserTimingSupported
 
 const end = !isUserTimingSupported
     ? noop
-    : (measureName: string, markName: string, properties: [string, string][] = []) => {
+    : (
+          measureName: string,
+          markName: string,
+          devtools?: {
+              color?:
+                  | 'primary'
+                  | 'primary-light'
+                  | 'primary-dark'
+                  | 'secondary'
+                  | 'secondary-light'
+                  | 'secondary-dark'
+                  | 'tertiary'
+                  | 'tertiary-light'
+                  | 'tertiary-dark'
+                  | 'error';
+              properties?: [string, string][];
+          }
+      ) => {
           performance.measure(measureName, {
               start: markName,
               detail: {
                   devtools: {
                       dataType: 'track-entry',
                       track: '⚡️ Lightning Web Components',
-                      properties,
+                      ...devtools,
                   },
               },
           });
@@ -153,7 +170,10 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     if (isMeasureEnabled) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
-        end(measureName, markName, getProperties(vm));
+        end(measureName, markName, {
+            properties: getProperties(vm),
+            color: opId === OperationId.Render ? 'primary' : 'secondary',
+        });
     }
 
     if (isProfilerEnabled) {
@@ -187,7 +207,9 @@ export function logGlobalOperationEnd(opId: GlobalOperationId) {
     if (isMeasureEnabled) {
         const opName = getOperationName(opId);
         const markName = opName;
-        end(opName, markName);
+        end(opName, markName, {
+            color: 'tertiary',
+        });
     }
 
     if (isProfilerEnabled) {
@@ -199,7 +221,10 @@ export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
     if (isMeasureEnabled) {
         const opName = getOperationName(opId);
         const markName = getMarkName(opId, vm);
-        end(opName, markName, getProperties(vm));
+        end(opName, markName, {
+            properties: getProperties(vm),
+            color: 'tertiary',
+        });
     }
 
     if (isProfilerEnabled) {
