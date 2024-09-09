@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, noop } from '@lwc/shared';
+import { noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -47,7 +47,7 @@ const operationIdNameMapping = [
     'errorCallback',
     'lwc-hydrate',
     'lwc-rehydrate',
-];
+] as const;
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
@@ -66,8 +66,34 @@ const start = !isUserTimingSupported
 
 const end = !isUserTimingSupported
     ? noop
-    : (measureName: string, markName: string) => {
-          performance.measure(measureName, markName);
+    : (
+          measureName: string,
+          markName: string,
+          devtools?: {
+              color?:
+                  | 'primary'
+                  | 'primary-light'
+                  | 'primary-dark'
+                  | 'secondary'
+                  | 'secondary-light'
+                  | 'secondary-dark'
+                  | 'tertiary'
+                  | 'tertiary-light'
+                  | 'tertiary-dark'
+                  | 'error';
+              properties?: [string, string][];
+          }
+      ) => {
+          performance.measure(measureName, {
+              start: markName,
+              detail: {
+                  devtools: {
+                      dataType: 'track-entry',
+                      track: '⚡️ Lightning Web Components',
+                      ...devtools,
+                  },
+              },
+          });
 
           // Clear the created marks and measure to avoid filling the performance entries buffer.
           // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
@@ -75,18 +101,27 @@ const end = !isUserTimingSupported
           performance.clearMeasures(measureName);
       };
 
-function getOperationName(opId: OperationId): string {
+function getOperationName<T extends OperationId = OperationId>(opId: T) {
     return operationIdNameMapping[opId];
 }
 
-function getMeasureName(opId: OperationId, vm: VM): string {
-    return `${getComponentTag(vm)} - ${getOperationName(opId)}`;
+function getMeasureName<T extends OperationId = OperationId>(opId: T, vm: VM) {
+    return `${getComponentTag(vm)} - ${getOperationName(opId)}` as const;
 }
 
-function getMarkName(opId: OperationId, vm: VM): string {
+function getMarkName<T extends OperationId = OperationId>(opId: T, vm: VM) {
     // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
     // the right measures for components that are recursive.
-    return `${getMeasureName(opId, vm)} - ${vm.idx}`;
+    return `${getMeasureName(opId, vm)} - ${vm.idx}` as const;
+}
+
+function getProperties(vm: VM<any, any>): [string, string][] {
+    return [
+        ['Tag Name', vm.tagName],
+        ['Component ID', String(vm.idx)],
+        ['Render Mode', vm.renderMode === RenderMode.Light ? 'light DOM' : 'shadow DOM'],
+        ['Shadow Mode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
+    ];
 }
 
 /** Indicates if operations should be logged via the User Timing API. */
@@ -135,7 +170,10 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     if (isMeasureEnabled) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
-        end(measureName, markName);
+        end(measureName, markName, {
+            properties: getProperties(vm),
+            color: opId === OperationId.Render ? 'primary' : 'secondary',
+        });
     }
 
     if (isProfilerEnabled) {
@@ -143,26 +181,53 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     }
 }
 
-export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
+export function logGlobalOperationStart(opId: GlobalOperationId) {
     if (isMeasureEnabled) {
-        const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
+        const markName = getOperationName(opId);
         start(markName);
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Start, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
+        currentDispatcher(opId, Phase.Start);
     }
 }
 
-export function logGlobalOperationEnd(opId: GlobalOperationId, vm?: VM) {
+export function logGlobalOperationStartWithVM(opId: GlobalOperationId, vm: VM) {
     if (isMeasureEnabled) {
-        const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
-        end(opName, markName);
+        const markName = getMarkName(opId, vm);
+        start(markName);
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Stop, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
+        currentDispatcher(opId, Phase.Start, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
+    }
+}
+
+export function logGlobalOperationEnd(opId: GlobalOperationId) {
+    if (isMeasureEnabled) {
+        const opName = getOperationName(opId);
+        const markName = opName;
+        end(opName, markName, {
+            color: 'tertiary',
+        });
+    }
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Stop);
+    }
+}
+
+export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
+    if (isMeasureEnabled) {
+        const opName = getOperationName(opId);
+        const markName = getMarkName(opId, vm);
+        end(opName, markName, {
+            properties: getProperties(vm),
+            color: 'tertiary',
+        });
+    }
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Stop, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
     }
 }
