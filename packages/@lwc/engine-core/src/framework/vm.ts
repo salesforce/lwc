@@ -48,6 +48,8 @@ import {
     OperationId,
     logGlobalOperationEnd,
     logGlobalOperationStart,
+    logGlobalOperationStartWithVM,
+    logGlobalOperationEndWithVM,
 } from './profiler';
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
@@ -251,7 +253,7 @@ export function rerenderVM(vm: VM) {
 export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
-    logGlobalOperationStart(OperationId.GlobalHydrate, vm);
+    logGlobalOperationStartWithVM(OperationId.GlobalHydrate, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -262,7 +264,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
+    logGlobalOperationEndWithVM(OperationId.GlobalHydrate, vm);
 }
 
 export function disconnectRootElement(elm: any) {

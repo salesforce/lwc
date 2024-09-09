@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, noop } from '@lwc/shared';
+import { noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -66,13 +66,14 @@ const start = !isUserTimingSupported
 
 const end = !isUserTimingSupported
     ? noop
-    : (measureName: string, markName: string) => {
+    : (measureName: string, markName: string, properties: [string, string][] = []) => {
           performance.measure(measureName, {
               start: markName,
               detail: {
                   devtools: {
                       dataType: 'track-entry',
                       track: '⚡️ Lightning Web Components',
+                      properties,
                   },
               },
           });
@@ -95,6 +96,15 @@ function getMarkName<T extends OperationId = OperationId>(opId: T, vm: VM) {
     // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
     // the right measures for components that are recursive.
     return `${getMeasureName(opId, vm)} - ${vm.idx}` as const;
+}
+
+function getProperties(vm: VM<any, any>): [string, string][] {
+    return [
+        ['tagName', vm.tagName],
+        ['idx', String(vm.idx)],
+        ['renderMode', vm.renderMode === RenderMode.Light ? 'light' : 'shadow'],
+        ['shadowMode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
+    ];
 }
 
 /** Indicates if operations should be logged via the User Timing API. */
@@ -143,7 +153,7 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     if (isMeasureEnabled) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
-        end(measureName, markName);
+        end(measureName, markName, getProperties(vm));
     }
 
     if (isProfilerEnabled) {
@@ -151,26 +161,48 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     }
 }
 
-export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
+export function logGlobalOperationStart(opId: GlobalOperationId) {
     if (isMeasureEnabled) {
-        const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
+        const markName = getOperationName(opId);
         start(markName);
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Start, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
+        currentDispatcher(opId, Phase.Start);
     }
 }
 
-export function logGlobalOperationEnd(opId: GlobalOperationId, vm?: VM) {
+export function logGlobalOperationStartWithVM(opId: GlobalOperationId, vm: VM) {
+    if (isMeasureEnabled) {
+        const markName = getMarkName(opId, vm);
+        start(markName);
+    }
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Start, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
+    }
+}
+
+export function logGlobalOperationEnd(opId: GlobalOperationId) {
     if (isMeasureEnabled) {
         const opName = getOperationName(opId);
-        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
+        const markName = opName;
         end(opName, markName);
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Stop, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
+        currentDispatcher(opId, Phase.Stop);
+    }
+}
+
+export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
+    if (isMeasureEnabled) {
+        const opName = getOperationName(opId);
+        const markName = getMarkName(opId, vm);
+        end(opName, markName, getProperties(vm));
+    }
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Stop, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
     }
 }
