@@ -68,7 +68,7 @@ it('Does deep mutation logging on an object', async () => {
 
     expect(entries.length).toBe(1);
     expect(entries[0].name).toBe('lwc-rehydrate');
-    expect(entries[0].detail.devtools.properties).toEqual([['<x-child>', 'first']]);
+    expect(entries[0].detail.devtools.properties).toEqual([['<x-child>', 'previousName.first']]);
 });
 
 it('Does deep mutation logging on an array', async () => {
@@ -86,5 +86,5 @@ it('Does deep mutation logging on an array', async () => {
 
     expect(entries.length).toBe(1);
     expect(entries[0].name).toBe('lwc-rehydrate');
-    expect(entries[0].detail.devtools.properties).toEqual([['<x-child>', 'length']]);
+    expect(entries[0].detail.devtools.properties).toEqual([['<x-child>', 'aliases.length']]);
 });

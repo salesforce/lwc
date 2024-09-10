@@ -41,7 +41,7 @@ export function valueMutated(target: object, key: PropertyKey) {
             for (let i = 0, len = reactiveObservers.length; i < len; i += 1) {
                 const ro = reactiveObservers[i];
                 if (process.env.NODE_ENV !== 'production') {
-                    logMutation(ro, key);
+                    logMutation(ro, target, key);
                 }
                 ro.notify();
             }

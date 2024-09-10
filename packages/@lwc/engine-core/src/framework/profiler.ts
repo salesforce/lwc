@@ -157,13 +157,13 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     const tagNamesToKeys = new Map();
     for (const {
         vm: { tagName },
-        key,
+        prop,
     } of mutationLogs) {
         let keys = tagNamesToKeys.get(tagName);
         if (isUndefined(keys)) {
             tagNamesToKeys.set(tagName, (keys = new Set()));
         }
-        keys.add(key);
+        keys.add(prop);
     }
     const result: [string, string][] = [];
     for (const [tagName, keys] of tagNamesToKeys.entries()) {

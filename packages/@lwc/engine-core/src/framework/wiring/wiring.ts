@@ -6,9 +6,10 @@
  */
 
 import { assert, create, isUndefined, ArrayPush, defineProperty, noop } from '@lwc/shared';
+import { associateReactiveObserverWithVM } from '../mutation-logger';
 import { LightningElement } from '../base-lightning-element';
 import { createReactiveObserver, ReactiveObserver } from '../mutation-tracker';
-import { runWithBoundaryProtection, VMState, VM } from '../vm';
+import { runWithBoundaryProtection, VMState, VM, getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
 import { createContextWatcher } from './context';
 import type {
@@ -72,6 +73,9 @@ function createConfigWatcher(
             });
         }
     });
+    if (process.env.NODE_ENV !== 'production') {
+        associateReactiveObserverWithVM(ro, getAssociatedVM(component));
+    }
     const computeConfigAndUpdate = () => {
         let config: ConfigValue;
         ro.observe(() => (config = configCallback(component)));

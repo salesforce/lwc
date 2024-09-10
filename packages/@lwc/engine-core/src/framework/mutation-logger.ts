@@ -7,17 +7,18 @@
 //
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
-import { ArrayPush, ArraySplice } from '@lwc/shared';
+import { ArrayPush, ArraySplice, isUndefined, toString, isObject, isNull } from '@lwc/shared';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { VM } from './vm';
 import { assertNotProd } from './utils';
 
 export interface MutationLog {
     vm: VM;
-    key: PropertyKey;
+    prop: string;
 }
 
-const reactiveObserversToVMs = new WeakMap();
+const reactiveObserversToVMs = new WeakMap<ReactiveObserver, VM>();
+const trackedTargetsToPropertyKeys = new WeakMap<object, PropertyKey>();
 
 let mutationLogs: MutationLog[] = [];
 
@@ -36,10 +37,14 @@ export function getAndFlushMutationLogs() {
  * @param reactiveObserver - relevant ReactiveObserver
  * @param key - key (property) that was mutated
  */
-export function logMutation(reactiveObserver: ReactiveObserver, key: PropertyKey) {
+export function logMutation(reactiveObserver: ReactiveObserver, target: object, key: PropertyKey) {
     assertNotProd();
-    const vm = reactiveObserversToVMs.get(reactiveObserver);
-    ArrayPush.call(mutationLogs, { vm, key });
+    const parentKey = trackedTargetsToPropertyKeys.get(target);
+    const vm = reactiveObserversToVMs.get(reactiveObserver)!;
+    const displayKey = isUndefined(parentKey)
+        ? toString(key)
+        : `${toString(parentKey)}.${toString(key)}`;
+    ArrayPush.call(mutationLogs, { vm, prop: displayKey });
 }
 
 /**
@@ -58,4 +63,12 @@ export function flushMutationLogsForVM(vm: VM) {
 // Keep a mapping of reactive observers to VMs which makes it simpler to track mutations
 export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserver, vm: VM) {
     reactiveObserversToVMs.set(reactiveObserver, vm);
+}
+
+// Keep a mapping of reactive observer to an object that is deeply observed (e.g. using `@track`)
+export function associateTargetWithPropertyKey(key: PropertyKey, target: object) {
+    if (isObject(target) && !isNull(target)) {
+        // only track non-primitives; others are invalid as weakmap keys
+        trackedTargetsToPropertyKeys.set(target, key);
+    }
 }
