@@ -28,7 +28,6 @@ export interface MutationLog {
 
 const reactiveObserversToVMs = new WeakMap<ReactiveObserver, VM>();
 const trackedTargetsToPropertyKeys = new WeakMap<object, PropertyKey>();
-
 let mutationLogs: MutationLog[] = [];
 
 /**
@@ -42,7 +41,7 @@ export function getAndFlushMutationLogs() {
 }
 
 /**
- * Log a new mutation
+ * Log a new mutation for this reactive observer.
  * @param reactiveObserver - relevant ReactiveObserver
  * @param target - target object that is being observed
  * @param key - key (property) that was mutated
@@ -61,7 +60,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
 }
 
 /**
- * Flush logs associated with a given VM
+ * Flush logs associated with a given VM.
  * @param vm - given VM
  */
 export function flushMutationLogsForVM(vm: VM) {
@@ -73,14 +72,18 @@ export function flushMutationLogsForVM(vm: VM) {
     }
 }
 
-// Keep a mapping of reactive observers to VMs which makes it simpler to track mutations
+/**
+ * Mark this ReactiveObserver as related to this VM. This is only needed for mutation tracking in dev mode.
+ * @param reactiveObserver
+ * @param vm
+ */
 export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserver, vm: VM) {
     assertNotProd();
     reactiveObserversToVMs.set(reactiveObserver, vm);
 }
 
 /**
- * Deeply track all objects in a target and associate with a given key
+ * Deeply track all objects in a target and associate with a given key.
  * @param key - key associated with the object in the component
  * @param target - tracked target object
  */
