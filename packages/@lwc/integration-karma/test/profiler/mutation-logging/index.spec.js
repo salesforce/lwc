@@ -159,7 +159,12 @@ if (process.env.NODE_ENV === 'production') {
 
             await waitForSentinelMeasure();
             expect(entries).toEqual(
-                arr([obj({ name: 'lwc-hydrate' }), obj({ name: 'lwc-hydrate' })])
+                arr(
+                    // synthetic lifecycle considers this one hydration event rather than two
+                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+                        ? [obj({ name: 'lwc-hydrate' })]
+                        : [obj({ name: 'lwc-hydrate' }), obj({ name: 'lwc-hydrate' })]
+                )
             );
             entries = []; // reset
         });
@@ -171,7 +176,7 @@ if (process.env.NODE_ENV === 'production') {
             expectRehydrationEntry('x-parent', 'firstName');
         });
 
-        it('logs a mutation on the parent only', async () => {
+        it('logs a mutation on the child only', async () => {
             child.lastName = 'Magellan';
 
             await waitForSentinelMeasure();
