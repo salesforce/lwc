@@ -27,7 +27,7 @@ export interface MutationLog {
 }
 
 const reactiveObserversToVMs = new WeakMap<ReactiveObserver, VM>();
-const trackedTargetsToPropertyKeys = new WeakMap<object, PropertyKey>();
+const targetsToPropertyKeys = new WeakMap<object, PropertyKey>();
 let mutationLogs: MutationLog[] = [];
 
 /**
@@ -48,7 +48,7 @@ export function getAndFlushMutationLogs() {
  */
 export function logMutation(reactiveObserver: ReactiveObserver, target: object, key: PropertyKey) {
     assertNotProd();
-    const parentKey = trackedTargetsToPropertyKeys.get(target);
+    const parentKey = targetsToPropertyKeys.get(target);
     const vm = reactiveObserversToVMs.get(reactiveObserver);
 
     /* istanbul ignore if */
@@ -99,7 +99,7 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: object) 
     assertNotProd();
     if (isObject(target) && !isNull(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
-        trackedTargetsToPropertyKeys.set(target, key);
+        targetsToPropertyKeys.set(target, key);
 
         // Deeply traverse arrays and objects to track every object within
         if (isArray(target)) {
