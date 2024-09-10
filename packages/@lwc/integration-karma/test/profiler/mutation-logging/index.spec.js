@@ -58,134 +58,150 @@ function expectRehydrationEntry(tagName, propString) {
     expect(entries).toEqual(arr([rehydrationEntry(tagName, propString)]));
 }
 
-describe('basic', () => {
-    let elm;
-
-    beforeEach(async () => {
-        elm = createElement('x-child', { is: Child });
+if (process.env.NODE_ENV === 'production') {
+    it('No perf measures in prod mode', async () => {
+        const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
 
         await waitForSentinelMeasure();
-        expect(entries).toEqual(arr([obj({ name: 'lwc-hydrate' })]));
-        entries = []; // reset
-    });
-
-    it('Does basic mutation logging', async () => {
         elm.firstName = 'Ferdinand';
 
         await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'firstName');
+        expect(entries).toEqual([]);
+    });
+} else {
+    // dev mode
+    describe('basic', () => {
+        let elm;
+
+        beforeEach(async () => {
+            elm = createElement('x-child', { is: Child });
+            document.body.appendChild(elm);
+
+            await waitForSentinelMeasure();
+            expect(entries).toEqual(arr([obj({ name: 'lwc-hydrate' })]));
+            entries = []; // reset
+        });
+
+        it('Does basic mutation logging', async () => {
+            elm.firstName = 'Ferdinand';
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'firstName');
+        });
+
+        it('Does deep mutation logging on an object', async () => {
+            elm.setPreviousName('first', 'Vancouver');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'previousName.first');
+        });
+
+        it('Does doubly-deep mutation logging on an object', async () => {
+            elm.setPreviousNameSuffix('short', 'Jr.');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'previousName.suffix.short');
+        });
+
+        it('Does deep mutation logging on an array', async () => {
+            elm.addAlias('Magellan');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'aliases.length');
+        });
+
+        it('Does deep mutation logging on an object within an array', async () => {
+            elm.setFavoriteIceCreamFlavor('vanilla');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'favoriteFlavors[0].flavor');
+        });
+
+        it('Tracks multiple mutations on the same component', async () => {
+            elm.firstName = 'Ferdinand';
+            elm.setPreviousNameSuffix('short', 'Jr.');
+            elm.setFavoriteIceCreamFlavor('vanilla');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry(
+                'x-child',
+                'favoriteFlavors[0].flavor, firstName, previousName.suffix.short'
+            );
+        });
+
+        it('tracks a component mutation while another component is rendered for the first time', async () => {
+            const elm2 = createElement('x-child', { is: Child });
+            document.body.appendChild(elm2);
+            elm.firstName = 'Ferdinand';
+
+            await waitForSentinelMeasure();
+            expect(entries).toEqual(
+                arr([
+                    obj({
+                        name: 'lwc-hydrate',
+                    }),
+                    rehydrationEntry('x-child', 'firstName'),
+                ])
+            );
+        });
     });
 
-    it('Does deep mutation logging on an object', async () => {
-        elm.setPreviousName('first', 'Vancouver');
+    describe('parent-child', () => {
+        let elm;
+        let child;
 
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'previousName.first');
-    });
+        beforeEach(async () => {
+            elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
+            await Promise.resolve();
+            child = elm.shadowRoot.querySelector('x-child');
 
-    it('Does doubly-deep mutation logging on an object', async () => {
-        elm.setPreviousNameSuffix('short', 'Jr.');
+            await waitForSentinelMeasure();
+            expect(entries).toEqual(
+                arr([obj({ name: 'lwc-hydrate' }), obj({ name: 'lwc-hydrate' })])
+            );
+            entries = []; // reset
+        });
 
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'previousName.suffix.short');
-    });
+        it('logs a mutation on the parent only', async () => {
+            elm.firstName = 'Ferdinand';
 
-    it('Does deep mutation logging on an array', async () => {
-        elm.addAlias('Magellan');
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-parent', 'firstName');
+        });
 
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'aliases.length');
-    });
+        it('logs a mutation on the parent only', async () => {
+            child.lastName = 'Magellan';
 
-    it('Does deep mutation logging on an object within an array', async () => {
-        elm.setFavoriteIceCreamFlavor('vanilla');
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'lastName');
+        });
 
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'favoriteFlavors[0].flavor');
-    });
+        it('logs a mutation on both parent and child', async () => {
+            elm.firstName = 'Ferdinand';
+            child.lastName = 'Magellan';
 
-    it('Tracks multiple mutations on the same component', async () => {
-        elm.firstName = 'Ferdinand';
-        elm.setPreviousNameSuffix('short', 'Jr.');
-        elm.setFavoriteIceCreamFlavor('vanilla');
-
-        await waitForSentinelMeasure();
-        expectRehydrationEntry(
-            'x-child',
-            'favoriteFlavors[0].flavor, firstName, previousName.suffix.short'
-        );
-    });
-
-    it('tracks a component mutation while another component is rendered for the first time', async () => {
-        const elm2 = createElement('x-child', { is: Child });
-        document.body.appendChild(elm2);
-        elm.firstName = 'Ferdinand';
-
-        await waitForSentinelMeasure();
-        expect(entries).toEqual(
-            arr([
-                obj({
-                    name: 'lwc-hydrate',
-                }),
-                rehydrationEntry('x-child', 'firstName'),
-            ])
-        );
-    });
-});
-
-describe('parent-child', () => {
-    let elm;
-    let child;
-
-    beforeEach(async () => {
-        elm = createElement('x-parent', { is: Parent });
-        document.body.appendChild(elm);
-        await Promise.resolve();
-        child = elm.shadowRoot.querySelector('x-child');
-
-        await waitForSentinelMeasure();
-        expect(entries).toEqual(arr([obj({ name: 'lwc-hydrate' }), obj({ name: 'lwc-hydrate' })]));
-        entries = []; // reset
-    });
-
-    it('logs a mutation on the parent only', async () => {
-        elm.firstName = 'Ferdinand';
-
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-parent', 'firstName');
-    });
-
-    it('logs a mutation on the parent only', async () => {
-        child.lastName = 'Magellan';
-
-        await waitForSentinelMeasure();
-        expectRehydrationEntry('x-child', 'lastName');
-    });
-
-    it('logs a mutation on both parent and child', async () => {
-        elm.firstName = 'Ferdinand';
-        child.lastName = 'Magellan';
-
-        await waitForSentinelMeasure();
-        expect(entries).toEqual(
-            arr([
-                obj({
-                    name: 'lwc-rehydrate',
-                    detail: obj({
-                        devtools: obj({
-                            properties: arr([
-                                arr([
-                                    'Re-rendered Components',
-                                    str(/<x-child> \(id: \d+\), <x-parent> \(id: \d+\)/),
+            await waitForSentinelMeasure();
+            expect(entries).toEqual(
+                arr([
+                    obj({
+                        name: 'lwc-rehydrate',
+                        detail: obj({
+                            devtools: obj({
+                                properties: arr([
+                                    arr([
+                                        'Re-rendered Components',
+                                        str(/<x-child> \(id: \d+\), <x-parent> \(id: \d+\)/),
+                                    ]),
+                                    arr([str(/<x-child> \(id: \d+\)/), 'lastName']),
+                                    arr([str(/<x-parent> \(id: \d+\)/), 'firstName']),
                                 ]),
-                                arr([str(/<x-child> \(id: \d+\)/), 'lastName']),
-                                arr([str(/<x-parent> \(id: \d+\)/), 'firstName']),
-                            ]),
+                            }),
                         }),
                     }),
-                }),
-            ])
-        );
+                ])
+            );
+        });
     });
-});
+}

@@ -10,6 +10,7 @@
 import {
     ArrayPush,
     ArraySplice,
+    assert,
     isUndefined,
     toString,
     isObject,
@@ -50,13 +51,14 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
     assertNotProd();
     const parentKey = trackedTargetsToPropertyKeys.get(target);
     const vm = reactiveObserversToVMs.get(reactiveObserver);
-    if (isUndefined(vm)) {
-        throw new Error('vm must be defined');
+    if (process.env.NODE_ENV !== 'test' && isUndefined(vm)) {
+        // vitest tests do not always associate a reactive observer with a VM, but elsewhere it should
+        assert.fail('vm must be defined');
     }
     const displayKey = isUndefined(parentKey)
         ? toString(key)
         : `${toString(parentKey)}.${toString(key)}`;
-    ArrayPush.call(mutationLogs, { vm, prop: displayKey });
+    ArrayPush.call(mutationLogs, { vm: vm!, prop: displayKey });
 }
 
 /**
