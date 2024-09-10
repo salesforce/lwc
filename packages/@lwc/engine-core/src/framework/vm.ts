@@ -53,6 +53,7 @@ import {
 } from './profiler';
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
+import { getAndFlushMutationLogs } from './mutation-logger';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import {
     VNodes,
@@ -650,6 +651,10 @@ export function runRenderedCallback(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
+    // gather the logs before rehydration starts so that the logs can be reported at the end
+    const mutationLogs =
+        process.env.NODE_ENV !== 'production' ? getAndFlushMutationLogs() : undefined;
+
     logGlobalOperationStart(OperationId.GlobalRehydrate);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -673,7 +678,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRehydrate);
+            logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -681,7 +686,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    logGlobalOperationEnd(OperationId.GlobalRehydrate);
+    logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
 }
 
 export function runConnectedCallback(vm: VM) {

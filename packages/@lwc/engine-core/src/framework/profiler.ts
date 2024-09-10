@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { noop } from '@lwc/shared';
+import { ArrayJoin, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
+import { EmptyArray } from './utils';
+import type { MutationLog } from './mutation-logger';
 
 export const enum OperationId {
     Constructor = 0,
@@ -146,6 +148,33 @@ function getProperties(vm: VM<any, any>): [string, string][] {
     ];
 }
 
+// Create a list of tag names to the properties that were mutated, to help answer the question of
+// "why did this component re-render?"
+function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string, string][] {
+    if (isUndefined(mutationLogs)) {
+        return EmptyArray;
+    }
+    const tagNamesToKeys = new Map();
+    for (const {
+        vm: { tagName },
+        key,
+    } of mutationLogs) {
+        let keys = tagNamesToKeys.get(tagName);
+        if (isUndefined(keys)) {
+            tagNamesToKeys.set(tagName, (keys = new Set()));
+        }
+        keys.add(key);
+    }
+    const result: [string, string][] = [];
+    for (const [tagName, keys] of tagNamesToKeys.entries()) {
+        result.push([
+            `<${tagName}>`,
+            `Mutated properties: ${ArrayJoin.call(ArraySort.call([...keys]), ', ')}`,
+        ]);
+    }
+    return result;
+}
+
 function getTooltipText(measureName: string, opId: OperationId) {
     return `${measureName} - ${operationTooltipMapping[opId]}`;
 }
@@ -230,12 +259,17 @@ export function logGlobalOperationStartWithVM(opId: GlobalOperationId, vm: VM) {
     }
 }
 
-export function logGlobalOperationEnd(opId: GlobalOperationId) {
+export function logGlobalOperationEnd(
+    opId: GlobalOperationId,
+    mutationLogs: MutationLog[] | undefined
+) {
     if (isMeasureEnabled) {
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
             color: 'tertiary',
+            tooltipText: getTooltipText(opName, opId),
+            properties: getMutationProperties(mutationLogs),
         });
     }
 
