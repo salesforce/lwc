@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayMap, ArraySort, isUndefined, noop } from '@lwc/shared';
+import { ArrayJoin, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -154,30 +154,31 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     if (isUndefined(mutationLogs)) {
         return EmptyArray;
     }
-    const tagNamesToKeys = new Map();
+    const tagNamesAndIdsToKeys = new Map();
     for (const {
-        vm: { tagName },
+        vm: { tagName, idx },
         prop,
     } of mutationLogs) {
-        let keys = tagNamesToKeys.get(tagName);
+        const tagNameAndId = `<${tagName}> (id: ${idx})`;
+        let keys = tagNamesAndIdsToKeys.get(tagNameAndId);
         if (isUndefined(keys)) {
-            tagNamesToKeys.set(tagName, (keys = new Set()));
+            tagNamesAndIdsToKeys.set(tagNameAndId, (keys = new Set()));
         }
         keys.add(prop);
     }
+    const components = ArraySort.call([...tagNamesAndIdsToKeys.keys()]);
     const result: [string, string][] = [
         [
-            'Re-rendered Components',
-            ArrayJoin.call(
-                ArraySort.call(
-                    ArrayMap.call([...tagNamesToKeys.keys()], (tagName) => `<${tagName}>`)
-                ),
-                ', '
-            ),
+            `Re-rendered Component${components.length !== 1 ? 's' : ''}`,
+            ArrayJoin.call(components, ', '),
         ],
     ];
-    for (const [tagName, keys] of tagNamesToKeys.entries()) {
-        result.push([`<${tagName}>`, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
+    // Sort tag names
+    const entries = ArraySort.call([...tagNamesAndIdsToKeys.entries()], (a, b) =>
+        a[0].localeCompare(b[0])
+    );
+    for (const [tagNameAndId, keys] of entries) {
+        result.push([tagNameAndId, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
     return result;
 }
