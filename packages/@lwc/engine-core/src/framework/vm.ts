@@ -53,7 +53,7 @@ import {
 } from './profiler';
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
-import { getAndFlushMutationLogs } from './mutation-logger';
+import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logger';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import {
     VNodes,
@@ -253,6 +253,10 @@ export function rerenderVM(vm: VM) {
 
 export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
+
+    if (process.env.NODE_ENV !== 'production') {
+        flushMutationLogsForVM(vm);
+    }
 
     logGlobalOperationStartWithVM(OperationId.GlobalHydrate, vm);
 

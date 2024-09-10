@@ -167,10 +167,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     }
     const result: [string, string][] = [];
     for (const [tagName, keys] of tagNamesToKeys.entries()) {
-        result.push([
-            `<${tagName}>`,
-            `Mutated properties: ${ArrayJoin.call(ArraySort.call([...keys]), ', ')}`,
-        ]);
+        result.push([`<${tagName}>`, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
     return result;
 }

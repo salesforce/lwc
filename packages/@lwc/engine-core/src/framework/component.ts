@@ -25,6 +25,7 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { associateReactiveObserverWithVM } from './mutation-logger';
 
 type ComponentConstructorMetadata = {
     tmpl: Template;
@@ -83,13 +84,19 @@ export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVe
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
-    return createReactiveObserver(() => {
+    const reactiveObserver = createReactiveObserver(() => {
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);
             scheduleRehydration(vm);
         }
     });
+
+    if (process.env.NODE_ENV !== 'production') {
+        associateReactiveObserverWithVM(reactiveObserver, vm);
+    }
+
+    return reactiveObserver;
 }
 
 export function resetTemplateObserverAndUnsubscribe(vm: VM) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -15,7 +15,6 @@ import {
 } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
 import { VM } from './vm';
-import { logMutation } from './mutation-logger';
 
 const DUMMY_REACTIVE_OBSERVER = {
     observe(job: JobFunction) {
@@ -28,10 +27,6 @@ const DUMMY_REACTIVE_OBSERVER = {
 export function componentValueMutated(vm: VM, key: PropertyKey) {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     if (process.env.IS_BROWSER) {
-        if (process.env.NODE_ENV !== 'production') {
-            // Track mutations in dev mode for the perf profiler
-            logMutation(vm, key);
-        }
         valueMutated(vm.component, key);
     }
 }

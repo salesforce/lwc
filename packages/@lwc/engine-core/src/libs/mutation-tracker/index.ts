@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2019, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isUndefined, ArrayIndexOf, ArrayPush, ArrayPop } from '@lwc/shared';
+import { logMutation } from '../../framework/mutation-logger';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
@@ -39,6 +40,9 @@ export function valueMutated(target: object, key: PropertyKey) {
         if (!isUndefined(reactiveObservers)) {
             for (let i = 0, len = reactiveObservers.length; i < len; i += 1) {
                 const ro = reactiveObservers[i];
+                if (process.env.NODE_ENV !== 'production') {
+                    logMutation(ro, key);
+                }
                 ro.notify();
             }
         }

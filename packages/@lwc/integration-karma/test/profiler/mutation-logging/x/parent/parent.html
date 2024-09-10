@@ -1,0 +1,13 @@
+<template>
+    <div><strong>First name:</strong> {firstName}</div>
+    <div><strong>Last name:</strong> {lastName}</div>
+    <div><strong>Previous first name:</strong> {previousName.first}</div>
+    <div><strong>Previous last name:</strong> {previousName.last}</div>
+    <div><strong>Child:</strong></div>
+    <ul>
+        <template for:each={aliases} for:item="alias">
+            <li key={alias}>{alias}</li>
+        </template>
+    </ul>
+    <x-child></x-child>
+</template>
