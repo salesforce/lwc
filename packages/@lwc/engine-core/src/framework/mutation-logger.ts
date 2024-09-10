@@ -63,7 +63,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
         const prop = isUndefined(parentKey)
             ? toString(key)
             : `${toString(parentKey)}.${toString(key)}`;
-        ArrayPush.call(mutationLogs, { vm, prop: prop });
+        ArrayPush.call(mutationLogs, { vm, prop });
     }
 }
 
