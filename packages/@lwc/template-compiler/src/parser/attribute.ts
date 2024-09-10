@@ -6,6 +6,8 @@
  */
 import { ParserDiagnostics } from '@lwc/errors';
 import {
+    APIFeature,
+    isAPIFeatureEnabled,
     isAriaAttribute,
     isBooleanAttribute,
     isGlobalHtmlAttribute,
@@ -109,7 +111,10 @@ export function normalizeAttributeValue(
     const isQuoted = isQuotedAttribute(rawAttrVal);
     const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
-        if (isQuoted) {
+        if (
+            isQuoted &&
+            !isAPIFeatureEnabled(APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS, ctx.apiVersion)
+        ) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
 

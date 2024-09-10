@@ -1,0 +1,37 @@
+{
+    "warnings": [
+        {
+            "code": 1034,
+            "message": "LWC1034: Ambiguous attribute value foo=\"{bar}\". If you want to make it a valid identifier you should remove the surrounding quotes foo={bar}. If you want to make it a string you should escape it foo=\"\\{bar}\".",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 12,
+                "start": 22,
+                "length": 11
+            }
+        },
+        {
+            "code": 1034,
+            "message": "LWC1034: Ambiguous attribute value title=\"{adjacent}\". If you want to make it a valid identifier you should remove the surrounding quotes title={adjacent}. If you want to make it a string you should escape it title=\"\\{adjacent}\".",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 54,
+                "length": 18
+            }
+        },
+        {
+            "code": 1034,
+            "message": "LWC1034: Ambiguous attribute value class=\"{space}\". If you want to make it a valid identifier you should remove the surrounding quotes class={space}. If you want to make it a string you should escape it class=\"\\{space}\".",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 12,
+                "start": 86,
+                "length": 15
+            }
+        }
+    ]
+}

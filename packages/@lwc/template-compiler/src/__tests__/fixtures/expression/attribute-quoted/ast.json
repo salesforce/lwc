@@ -1,0 +1,252 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 149,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 138,
+                "end": 149
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 32,
+                    "start": 15,
+                    "end": 42,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 24,
+                        "start": 15,
+                        "end": 34
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 24,
+                        "endLine": 2,
+                        "endColumn": 32,
+                        "start": 34,
+                        "end": 42
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "foo",
+                        "attributeName": "foo",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "bar",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 12,
+                                "endLine": 2,
+                                "endColumn": 23,
+                                "start": 22,
+                                "end": 33
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 23,
+                            "start": 22,
+                            "end": 33
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 32,
+                    "start": 47,
+                    "end": 74,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 32,
+                        "start": 47,
+                        "end": 74
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "title",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "name": "adjacent",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 30,
+                                "start": 54,
+                                "end": 72
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 30,
+                            "start": 54,
+                            "end": 72
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 30,
+                    "start": 79,
+                    "end": 104,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 30,
+                        "start": 79,
+                        "end": 104
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "space",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 12,
+                                "endLine": 4,
+                                "endColumn": 27,
+                                "start": 86,
+                                "end": 101
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 12,
+                            "endLine": 4,
+                            "endColumn": 27,
+                            "start": 86,
+                            "end": 101
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-bar",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 33,
+                    "start": 109,
+                    "end": 137,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 25,
+                        "start": 109,
+                        "end": 129
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 25,
+                        "endLine": 5,
+                        "endColumn": 33,
+                        "start": 129,
+                        "end": 137
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "bar",
+                        "attributeName": "bar",
+                        "value": {
+                            "type": "Literal",
+                            "value": "{foo}"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 12,
+                            "endLine": 5,
+                            "endColumn": 24,
+                            "start": 116,
+                            "end": 128
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
