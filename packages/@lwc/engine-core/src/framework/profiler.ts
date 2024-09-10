@@ -49,7 +49,28 @@ const operationIdNameMapping = [
     'errorCallback',
     'lwc-hydrate',
     'lwc-rehydrate',
-] as const;
+] as const satisfies Record<OperationId, string>;
+
+const operationTooltipMapping = [
+    // constructor
+    'component constructor()',
+    // render
+    'component render() and virtual DOM rendered',
+    // patch
+    'component DOM rendered',
+    // connectedCallback
+    'component connectedCallback()',
+    // renderedCallback
+    'component renderedCallback()',
+    // disconnectedCallback
+    'component disconnectedCallback()',
+    // errorCallback
+    'component errorCallback()',
+    // lwc-hydrate
+    'component first rendered',
+    // lwc-rehydrate
+    'component re-rendered',
+] as const satisfies Record<OperationId, string>;
 
 const operationTooltipMapping = [
     // constructor
@@ -264,6 +285,7 @@ export function logGlobalOperationEnd(
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
+            tooltipText: getTooltipText(opName, opId),
             color: 'tertiary',
             tooltipText: getTooltipText(opName, opId),
             properties: getMutationProperties(mutationLogs),
