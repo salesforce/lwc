@@ -68,7 +68,7 @@ const operationTooltipMapping = [
     'component first rendered',
     // lwc-rehydrate
     'component re-rendered',
-] as const;
+] as const satisfies Record<OperationId, string>;
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
