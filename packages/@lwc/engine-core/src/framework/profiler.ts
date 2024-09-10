@@ -47,7 +47,7 @@ const operationIdNameMapping = [
     'errorCallback',
     'lwc-hydrate',
     'lwc-rehydrate',
-] as const;
+] as const satisfies Record<OperationId, string>;
 
 const operationTooltipMapping = [
     // constructor
