@@ -90,35 +90,55 @@ if (process.env.NODE_ENV === 'production') {
             expectRehydrationEntry('x-child', 'firstName');
         });
 
-        it('Does deep mutation logging on an object', async () => {
+        it('Logs subsequent mutations on the same component', async () => {
+            elm.firstName = 'Ferdinand';
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'firstName');
+            entries = []; // reset
+
+            elm.lastName = 'Magellan';
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'lastName');
+            entries = []; // reset
+
+            elm.firstName = 'Vasco';
+            elm.lastName = 'da Gama';
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'firstName, lastName');
+        });
+
+        it('Logs deep mutation on an object', async () => {
             elm.setPreviousName('first', 'Vancouver');
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'previousName.first');
         });
 
-        it('Does doubly-deep mutation logging on an object', async () => {
+        it('Logs doubly-deep mutation on an object', async () => {
             elm.setPreviousNameSuffix('short', 'Jr.');
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'previousName.suffix.short');
         });
 
-        it('Does deep mutation logging on an array', async () => {
+        it('Logs deep mutation on an array', async () => {
             elm.addAlias('Magellan');
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'aliases.length');
         });
 
-        it('Does deep mutation logging on an object within an array', async () => {
+        it('Logs deep mutation on an object within an array', async () => {
             elm.setFavoriteIceCreamFlavor('vanilla');
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'favoriteFlavors[0].flavor');
         });
 
-        it('Tracks multiple mutations on the same component', async () => {
+        it('Logs multiple mutations on the same component', async () => {
             elm.firstName = 'Ferdinand';
             elm.setPreviousNameSuffix('short', 'Jr.');
             elm.setFavoriteIceCreamFlavor('vanilla');
@@ -130,7 +150,7 @@ if (process.env.NODE_ENV === 'production') {
             );
         });
 
-        it('tracks a component mutation while another component is rendered for the first time', async () => {
+        it('Logs a component mutation while another component is rendered for the first time', async () => {
             const elm2 = createElement('x-child', { is: Child });
             document.body.appendChild(elm2);
             elm.firstName = 'Ferdinand';
@@ -169,21 +189,21 @@ if (process.env.NODE_ENV === 'production') {
             entries = []; // reset
         });
 
-        it('logs a mutation on the parent only', async () => {
+        it('Logs a mutation on the parent only', async () => {
             elm.firstName = 'Ferdinand';
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-parent', 'firstName');
         });
 
-        it('logs a mutation on the child only', async () => {
+        it('Logs a mutation on the child only', async () => {
             child.lastName = 'Magellan';
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'lastName');
         });
 
-        it('logs a mutation on both parent and child', async () => {
+        it('Logs a mutation on both parent and child', async () => {
             elm.firstName = 'Ferdinand';
             child.lastName = 'Magellan';
 

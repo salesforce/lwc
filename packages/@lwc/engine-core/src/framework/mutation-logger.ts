@@ -10,7 +10,6 @@
 import {
     ArrayPush,
     ArraySplice,
-    assert,
     isUndefined,
     toString,
     isObject,
@@ -51,14 +50,21 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
     assertNotProd();
     const parentKey = trackedTargetsToPropertyKeys.get(target);
     const vm = reactiveObserversToVMs.get(reactiveObserver);
-    if (process.env.NODE_ENV !== 'test' && isUndefined(vm)) {
-        // vitest tests do not always associate a reactive observer with a VM, but elsewhere it should
-        assert.fail('vm must be defined');
+
+    /* istanbul ignore if */
+    if (isUndefined(vm)) {
+        // VM should only be undefined in vitest tests, where a reactive observer is not always associated with a VM
+        // because the unit tests just create Reactive Observers on-the-fly.
+        if (process.env.NODE_ENV === 'test-karma-lwc') {
+            throw new Error('The VM should always be defined except possibly in unit tests');
+        }
+    } else {
+        // Human-readable prop like `items[0].name` on a deep object/array
+        const prop = isUndefined(parentKey)
+            ? toString(key)
+            : `${toString(parentKey)}.${toString(key)}`;
+        ArrayPush.call(mutationLogs, { vm, prop: prop });
     }
-    const displayKey = isUndefined(parentKey)
-        ? toString(key)
-        : `${toString(parentKey)}.${toString(key)}`;
-    ArrayPush.call(mutationLogs, { vm: vm!, prop: displayKey });
 }
 
 /**

@@ -255,6 +255,8 @@ export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
     if (process.env.NODE_ENV !== 'production') {
+        // Flush any logs for this VM so that the initial properties from the constructor don't "count"
+        // in subsequent re-renders (lwc-rehydrate). Right now we're at the first render (lwc-hydrate).
         flushMutationLogsForVM(vm);
     }
 
@@ -655,7 +657,8 @@ export function runRenderedCallback(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
-    // gather the logs before rehydration starts so that the logs can be reported at the end
+    // Gather the logs before rehydration starts so they can be reported at the end of rehydration.
+    // Note that we also clear all existing logs at this point so that subsequent re-renders start from a clean slate.
     const mutationLogs =
         process.env.NODE_ENV !== 'production' ? getAndFlushMutationLogs() : undefined;
 
