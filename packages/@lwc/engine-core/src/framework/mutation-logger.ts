@@ -7,7 +7,16 @@
 //
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
-import { ArrayPush, ArraySplice, isUndefined, toString, isObject, isNull } from '@lwc/shared';
+import {
+    ArrayPush,
+    ArraySplice,
+    isUndefined,
+    toString,
+    isObject,
+    isNull,
+    isArray,
+    keys,
+} from '@lwc/shared';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { VM } from './vm';
 import { assertNotProd } from './utils';
@@ -66,13 +75,30 @@ export function flushMutationLogsForVM(vm: VM) {
 
 // Keep a mapping of reactive observers to VMs which makes it simpler to track mutations
 export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserver, vm: VM) {
+    assertNotProd();
     reactiveObserversToVMs.set(reactiveObserver, vm);
 }
 
-// Keep a mapping of reactive observer to an object that is deeply observed (e.g. using `@track`)
-export function associateTargetWithPropertyKey(key: PropertyKey, target: object) {
+/**
+ * Deeply track all objects in a target and associate with a given key
+ * @param key - key associated with the object in the component
+ * @param target - tracked target object
+ */
+export function trackTargetForMutationLogging(key: PropertyKey, target: object) {
+    assertNotProd();
     if (isObject(target) && !isNull(target)) {
-        // only track non-primitives; others are invalid as weakmap keys
+        // only track non-primitives; others are invalid as WeakMap keys
         trackedTargetsToPropertyKeys.set(target, key);
+
+        // Deeply traverse arrays and objects to track every object within
+        if (isArray(target)) {
+            for (let i = 0; i < target.length; i++) {
+                trackTargetForMutationLogging(`${toString(key)}[${i}]`, target[i]);
+            }
+        } else {
+            for (const prop of keys(target)) {
+                trackTargetForMutationLogging(`${toString(key)}.${prop}`, (target as any)[prop]);
+            }
+        }
     }
 }

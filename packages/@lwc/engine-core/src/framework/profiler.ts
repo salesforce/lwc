@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArraySort, isUndefined, noop } from '@lwc/shared';
+import { ArrayJoin, ArrayMap, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -71,27 +71,6 @@ const operationTooltipMapping = [
     // lwc-rehydrate
     'component re-rendered',
 ] as const satisfies Record<OperationId, string>;
-
-const operationTooltipMapping = [
-    // constructor
-    'component constructor()',
-    // render
-    'component render() and virtual DOM rendered',
-    // patch
-    'component DOM rendered',
-    // connectedCallback
-    'component connectedCallback()',
-    // renderedCallback
-    'component renderedCallback()',
-    // disconnectedCallback
-    'component disconnectedCallback()',
-    // errorCallback
-    'component errorCallback()',
-    // lwc-hydrate
-    'component first rendered',
-    // lwc-rehydrate
-    'component re-rendered',
-] as const;
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
@@ -186,7 +165,17 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         }
         keys.add(prop);
     }
-    const result: [string, string][] = [];
+    const result: [string, string][] = [
+        [
+            'Re-rendered Components',
+            ArrayJoin.call(
+                ArraySort.call(
+                    ArrayMap.call([...tagNamesToKeys.keys()], (tagName) => `<${tagName}>`)
+                ),
+                ', '
+            ),
+        ],
+    ];
     for (const [tagName, keys] of tagNamesToKeys.entries()) {
         result.push([`<${tagName}>`, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
@@ -244,9 +233,9 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
         end(measureName, markName, {
-            properties: getProperties(vm),
-            tooltipText: getTooltipText(measureName, opId),
             color: opId === OperationId.Render ? 'primary' : 'secondary',
+            tooltipText: getTooltipText(measureName, opId),
+            properties: getProperties(vm),
         });
     }
 
@@ -285,8 +274,8 @@ export function logGlobalOperationEnd(
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
-            tooltipText: getTooltipText(opName, opId),
-            color: 'tertiary',
+            // not really an error, but we want to draw attention to re-renders since folks may want to debug it
+            color: 'error',
             tooltipText: getTooltipText(opName, opId),
             properties: getMutationProperties(mutationLogs),
         });
@@ -302,9 +291,9 @@ export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
         const opName = getOperationName(opId);
         const markName = getMarkName(opId, vm);
         end(opName, markName, {
-            properties: getProperties(vm),
-            tooltipText: getTooltipText(opName, opId),
             color: 'tertiary',
+            tooltipText: getTooltipText(opName, opId),
+            properties: getProperties(vm),
         });
     }
 

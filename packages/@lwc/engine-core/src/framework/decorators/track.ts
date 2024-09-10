@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, toString } from '@lwc/shared';
-import { associateTargetWithPropertyKey } from '../mutation-logger';
+import { trackTargetForMutationLogging } from '../mutation-logger';
 import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
@@ -67,7 +67,7 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
             }
             const reactiveOrAnyValue = getReactiveProxy(newValue);
             if (process.env.NODE_ENV !== 'production') {
-                associateTargetWithPropertyKey(key, newValue);
+                trackTargetForMutationLogging(key, newValue);
             }
             updateComponentValue(vm, key, reactiveOrAnyValue);
         },
