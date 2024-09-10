@@ -35,12 +35,16 @@ export function getAndFlushMutationLogs() {
 /**
  * Log a new mutation
  * @param reactiveObserver - relevant ReactiveObserver
+ * @param target - target object that is being observed
  * @param key - key (property) that was mutated
  */
 export function logMutation(reactiveObserver: ReactiveObserver, target: object, key: PropertyKey) {
     assertNotProd();
     const parentKey = trackedTargetsToPropertyKeys.get(target);
-    const vm = reactiveObserversToVMs.get(reactiveObserver)!;
+    const vm = reactiveObserversToVMs.get(reactiveObserver);
+    if (isUndefined(vm)) {
+        throw new Error('vm must be defined');
+    }
     const displayKey = isUndefined(parentKey)
         ? toString(key)
         : `${toString(parentKey)}.${toString(key)}`;
