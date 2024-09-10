@@ -235,6 +235,7 @@ export function logGlobalOperationEnd(opId: GlobalOperationId) {
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
+            tooltipText: getTooltipText(opName, opId),
             color: 'tertiary',
         });
     }
