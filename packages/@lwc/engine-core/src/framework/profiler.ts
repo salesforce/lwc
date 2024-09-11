@@ -166,7 +166,10 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         }
         keys.add(prop);
     }
-    const components = ArraySort.call([...tagNamesAndIdsToKeys.keys()]);
+    const entries = ArraySort.call([...tagNamesAndIdsToKeys], (a, b) =>
+        a[0].localeCompare(b[0])
+    );
+    const components = ArrayMap.call(entries, (item) => item[0]);
     const result: [string, string][] = [
         [
             `Re-rendered Component${components.length !== 1 ? 's' : ''}`,
