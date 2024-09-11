@@ -151,33 +151,57 @@ function getProperties(vm: VM<any, any>): [string, string][] {
 // Create a list of tag names to the properties that were mutated, to help answer the question of
 // "why did this component re-render?"
 function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string, string][] {
-    if (isUndefined(mutationLogs)) {
+    // `mutationLogs` should never have length 0, but bail out if it does for whatever reason
+    if (isUndefined(mutationLogs) || mutationLogs.length === 0) {
         return EmptyArray;
     }
-    const tagNamesAndIdsToKeys = new Map<string, Set<string>>();
+
+    // Keep track of unique IDs per tag name so we can just report a raw count at the end, e.g.
+    // `<x-foo> (x2)` to indicate that two instances of `<x-foo>` were rendered.
+    const tagNamesToIdsAndProps = new Map<string, { ids: Set<number>; keys: Set<string> }>();
     for (const {
         vm: { tagName, idx },
         prop,
     } of mutationLogs) {
-        const tagNameAndId = `<${tagName}> (id: ${idx})`;
-        let keys = tagNamesAndIdsToKeys.get(tagNameAndId);
-        if (isUndefined(keys)) {
-            keys = new Set();
-            tagNamesAndIdsToKeys.set(tagNameAndId, keys);
+        let idsAndProps = tagNamesToIdsAndProps.get(tagName);
+        if (isUndefined(idsAndProps)) {
+            idsAndProps = { ids: new Set(), keys: new Set() };
+            tagNamesToIdsAndProps.set(tagName, idsAndProps);
         }
-        keys.add(prop);
+        idsAndProps.ids.add(idx);
+        idsAndProps.keys.add(prop);
     }
-    const entries = ArraySort.call([...tagNamesAndIdsToKeys], (a, b) => a[0].localeCompare(b[0]));
-    const components = ArrayMap.call(entries, (item) => item[0]);
+
+    // Sort by tag name
+    const entries = ArraySort.call([...tagNamesToIdsAndProps], (a, b) => a[0].localeCompare(b[0]));
+    const tagNames = ArrayMap.call(entries, (item) => item[0]) as string[];
+
+    // Show e.g. `<x-foo>` for one instance, or `<x-foo> (x2)` for two instances. (\u00D7 is multiplication symbol)
+    const tagNamesToDisplayTagNames = new Map<string, string>();
+    for (const tagName of tagNames) {
+        const { ids } = tagNamesToIdsAndProps.get(tagName)!;
+        const displayTagName = `<${tagName}>${ids.size > 1 ? ` (\u00D7${ids.size})` : ''}`;
+        tagNamesToDisplayTagNames.set(tagName, displayTagName);
+    }
+
+    // Summary row
+    const usePlural = tagNames.length > 1 || tagNamesToIdsAndProps.get(tagNames[0])!.ids.size > 1;
     const result: [string, string][] = [
         [
-            `Re-rendered Component${components.length !== 1 ? 's' : ''}`,
-            ArrayJoin.call(components, ', '),
+            `Re-rendered Component${usePlural ? 's' : ''}`,
+            ArrayJoin.call(
+                ArrayMap.call(tagNames, (_) => tagNamesToDisplayTagNames.get(_)),
+                ', '
+            ),
         ],
     ];
-    for (const [tagNameAndId, keys] of entries) {
-        ArrayPush.call(result, [tagNameAndId, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
+
+    // Detail rows
+    for (const [prettyTagName, { keys }] of entries) {
+        const displayTagName = tagNamesToDisplayTagNames.get(prettyTagName)!;
+        ArrayPush.call(result, [displayTagName, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
+
     return result;
 }
 

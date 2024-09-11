@@ -4,7 +4,6 @@ import Child from 'x/child';
 
 const arr = jasmine.arrayWithExactContents;
 const obj = jasmine.objectContaining;
-const str = jasmine.stringMatching;
 
 const sentinelObserver = new EventTarget();
 
@@ -40,14 +39,13 @@ async function waitForSentinelMeasure() {
 }
 
 function rehydrationEntry(tagName, propString) {
-    const tagNameRegex = new RegExp(`<${tagName}> \\(id: \\d+\\)`);
     return obj({
         name: 'lwc-rehydrate',
         detail: obj({
             devtools: obj({
                 properties: arr([
-                    arr(['Re-rendered Component', str(tagNameRegex)]),
-                    arr([str(tagNameRegex), propString]),
+                    arr(['Re-rendered Component', `<${tagName}>`]),
+                    arr([`<${tagName}>`, propString]),
                 ]),
             }),
         }),
@@ -172,6 +170,48 @@ if (process.env.NODE_ENV === 'production') {
                 ])
             );
         });
+
+        it('Logs two mutations on two instances of same component', async () => {
+            const elm2 = createElement('x-child', { is: Child });
+            document.body.appendChild(elm2);
+
+            await waitForSentinelMeasure();
+            expect(entries).toEqual(
+                arr([
+                    obj({
+                        name: 'lwc-hydrate',
+                    }),
+                ])
+            );
+            entries = []; // reset
+
+            elm.firstName = 'Marco';
+            elm2.lastName = 'Polo';
+
+            await waitForSentinelMeasure();
+
+            expect(entries).toEqual(
+                arr([
+                    obj({
+                        name: 'lwc-rehydrate',
+                        detail: obj({
+                            devtools: obj({
+                                properties: arr([
+                                    arr([
+                                        'Re-rendered Components',
+                                        `<x-child> (\u00D72)`, // x2 with multiplication symbol
+                                    ]),
+                                    arr([
+                                        `<x-child> (\u00D72)`, // x2 with multiplication symbol
+                                        'firstName, lastName',
+                                    ]),
+                                ]),
+                            }),
+                        }),
+                    }),
+                ])
+            );
+        });
     });
 
     describe('parent-child', () => {
@@ -222,12 +262,9 @@ if (process.env.NODE_ENV === 'production') {
                         detail: obj({
                             devtools: obj({
                                 properties: arr([
-                                    arr([
-                                        'Re-rendered Components',
-                                        str(/<x-child> \(id: \d+\), <x-parent> \(id: \d+\)/),
-                                    ]),
-                                    arr([str(/<x-child> \(id: \d+\)/), 'lastName']),
-                                    arr([str(/<x-parent> \(id: \d+\)/), 'firstName']),
+                                    arr(['Re-rendered Components', '<x-child>, <x-parent>']),
+                                    arr(['<x-child>', 'lastName']),
+                                    arr(['<x-parent>', 'firstName']),
                                 ]),
                             }),
                         }),
