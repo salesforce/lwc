@@ -213,18 +213,18 @@ if (process.env.NODE_ENV === 'production') {
             );
         });
 
-        it('Logs for non-enumerable props', async () => {
+        it('Logs for deep non-enumerable prop mutation', async () => {
             elm.setWackyAccessorDeepValue('yolo');
 
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'wackyAccessors.foo.bar');
         });
 
-        it('Logs for symbol props', async () => {
+        it('Logs for deep symbol prop mutation', async () => {
             elm.setWackyAccessorSymbol('haha');
 
             await waitForSentinelMeasure();
-            expectRehydrationEntry('x-child', 'wackyAccessors["Symbol(yolo)"]');
+            expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
         });
     });
 

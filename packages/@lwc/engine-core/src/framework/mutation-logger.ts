@@ -17,6 +17,7 @@ import {
     ArrayFilter,
     getOwnPropertyNames,
     getOwnPropertySymbols,
+    isString,
 } from '@lwc/shared';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { VM } from './vm';
@@ -66,6 +67,9 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
         let prop;
         if (isUndefined(parentKey)) {
             prop = stringKey;
+        } else if (!isString(key)) {
+            // symbol/number, e.g. `obj[Symbol("foo")]` or `obj[1234]`
+            prop = `${toString(parentKey)}[${stringKey}]`;
         } else if (/^\w+$/.test(stringKey)) {
             // Human-readable prop like `items[0].name` on a deep object/array
             prop = `${toString(parentKey)}.${stringKey}`;
