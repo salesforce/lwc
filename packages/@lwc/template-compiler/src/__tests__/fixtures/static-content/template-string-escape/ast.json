@@ -490,9 +490,9 @@
                             "startLine": 12,
                             "startColumn": 10,
                             "endLine": 12,
-                            "endColumn": 22,
+                            "endColumn": 18,
                             "start": 314,
-                            "end": 326
+                            "end": 322
                         }
                     },
                     {
@@ -500,24 +500,38 @@
                         "raw": "{me}",
                         "value": {
                             "type": "Identifier",
-                            "start": 1,
-                            "end": 3,
+                            "start": 323,
+                            "end": 325,
+                            "loc": {
+                                "start": {
+                                    "line": 12,
+                                    "column": 18
+                                },
+                                "end": {
+                                    "line": 12,
+                                    "column": 20
+                                }
+                            },
+                            "range": [
+                                323,
+                                325
+                            ],
                             "name": "me",
                             "location": {
                                 "startLine": 12,
-                                "startColumn": 10,
+                                "startColumn": 18,
                                 "endLine": 12,
                                 "endColumn": 22,
-                                "start": 314,
+                                "start": 322,
                                 "end": 326
                             }
                         },
                         "location": {
                             "startLine": 12,
-                            "startColumn": 10,
+                            "startColumn": 18,
                             "endLine": 12,
                             "endColumn": 22,
-                            "start": 314,
+                            "start": 322,
                             "end": 326
                         }
                     }

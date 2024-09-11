@@ -51,7 +51,7 @@ describe('customRendererConfig normalization', () => {
               "enableDynamicComponents": false,
               "enableLwcSpread": true,
               "enableStaticContentOptimization": true,
-              "experimentalComplexExpressions": false,
+              "experimentalComplexExpressions": true,
               "experimentalComputedMemberExpression": false,
               "experimentalDynamicDirective": false,
               "instrumentation": undefined,
