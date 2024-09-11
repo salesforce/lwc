@@ -9,13 +9,13 @@
 //
 import {
     ArrayPush,
-    ArraySplice,
     isUndefined,
     toString,
     isObject,
     isNull,
     isArray,
     keys,
+    ArrayFilter,
 } from '@lwc/shared';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { VM } from './vm';
@@ -73,7 +73,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
  */
 export function flushMutationLogsForVM(vm: VM) {
     assertNotProd();
-    mutationLogs = ArrayFilter.call(mutationLogs, (log) => log.vm !== vm)
+    mutationLogs = ArrayFilter.call(mutationLogs, (log) => log.vm !== vm);
 }
 
 /**
