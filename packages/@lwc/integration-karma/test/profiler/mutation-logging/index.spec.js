@@ -44,7 +44,7 @@ function rehydrationEntry(tagName, propString) {
         detail: obj({
             devtools: obj({
                 properties: arr([
-                    arr(['Re-rendered Component', `<${tagName}>`]),
+                    arr(['Component', `<${tagName}>`]),
                     arr([`<${tagName}>`, propString]),
                 ]),
             }),
@@ -198,7 +198,7 @@ if (process.env.NODE_ENV === 'production') {
                             devtools: obj({
                                 properties: arr([
                                     arr([
-                                        'Re-rendered Components',
+                                        'Components',
                                         `<x-child> (\u00D72)`, // x2 with multiplication symbol
                                     ]),
                                     arr([
@@ -290,7 +290,7 @@ if (process.env.NODE_ENV === 'production') {
                         detail: obj({
                             devtools: obj({
                                 properties: arr([
-                                    arr(['Re-rendered Components', '<x-child>, <x-parent>']),
+                                    arr(['Components', '<x-child>, <x-parent>']),
                                     arr(['<x-child>', 'lastName']),
                                     arr(['<x-parent>', 'firstName']),
                                 ]),

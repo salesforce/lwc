@@ -194,7 +194,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     const usePlural = tagNames.length > 1 || tagNamesToIdsAndProps.get(tagNames[0])!.ids.size > 1;
     const result: [string, string][] = [
         [
-            `Re-rendered Component${usePlural ? 's' : ''}`,
+            `Component${usePlural ? 's' : ''}`,
             ArrayJoin.call(
                 ArrayMap.call(tagNames, (_) => tagNamesToDisplayTagNames.get(_)),
                 ', '
