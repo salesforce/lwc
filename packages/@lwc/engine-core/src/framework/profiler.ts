@@ -303,8 +303,7 @@ export function logGlobalOperationEnd(
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
-            // not really an error, but we want to draw attention to re-renders since folks may want to debug it
-            color: 'error',
+            color: 'tertiary',
             tooltipText: getTooltipText(opName, opId),
             properties: getMutationProperties(mutationLogs),
         });

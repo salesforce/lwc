@@ -124,10 +124,16 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
             // Track only own property names and symbols (including non-enumerated)
             // This is consistent with what observable-membrane does:
             // https://github.com/salesforce/observable-membrane/blob/b85417f/src/base-handler.ts#L142-L143
-            const props = [...getOwnPropertyNames(target), ...getOwnPropertySymbols(target)];
-            for (const prop of props) {
+            // Note this code path is very hot, hence doing two separate for-loops rather than creatinng a new array.
+            for (const prop of getOwnPropertyNames(target)) {
                 trackTargetForMutationLogging(
                     `${toString(key)}.${toString(prop)}`,
+                    (target as any)[prop]
+                );
+            }
+            for (const prop of getOwnPropertySymbols(target)) {
+                trackTargetForMutationLogging(
+                    `${toString(key)}[${toString(prop)}]`,
                     (target as any)[prop]
                 );
             }

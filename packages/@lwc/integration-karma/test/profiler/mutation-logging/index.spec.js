@@ -227,6 +227,13 @@ if (process.env.NODE_ENV === 'production') {
             expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
         });
 
+        it('Logs for doubly deep symbol prop mutation', async () => {
+            elm.setWackyAccessorDoublyDeepSymbol('wahoo');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(whoa)].baz');
+        });
+
         it('Logs for mutation on deeply-recursive object', async () => {
             elm.setOnRecursiveObject('woohoo');
 

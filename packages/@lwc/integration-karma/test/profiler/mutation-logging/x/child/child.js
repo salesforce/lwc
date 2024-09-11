@@ -1,6 +1,8 @@
 import { LightningElement, api, track } from 'lwc';
 
 const symbol = Symbol('yolo');
+const anotherSymbol = Symbol('whoa');
+
 const createWackyAccessors = () => {
     const res = {};
     const deep = {};
@@ -16,6 +18,7 @@ const createWackyAccessors = () => {
         value: '',
     });
     res[symbol] = '';
+    res[anotherSymbol] = { baz: '' };
     return res;
 };
 
@@ -49,7 +52,7 @@ export default class extends LightningElement {
     }
 
     get formattedWackyAccessors() {
-        return `${this.wackyAccessors.foo.bar} - ${this.wackyAccessors[symbol]}`;
+        return `${this.wackyAccessors.foo.bar} - ${this.wackyAccessors[symbol]} - ${this.wackyAccessors[anotherSymbol].baz}`;
     }
 
     @api setPreviousName(prop, value) {
@@ -78,6 +81,10 @@ export default class extends LightningElement {
 
     @api setWackyAccessorSymbol(value) {
         this.wackyAccessors[symbol] = value;
+    }
+
+    @api setWackyAccessorDoublyDeepSymbol(value) {
+        this.wackyAccessors[anotherSymbol].baz = value;
     }
 
     @api setOnRecursiveObject(value) {
