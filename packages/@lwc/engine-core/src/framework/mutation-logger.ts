@@ -73,11 +73,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
  */
 export function flushMutationLogsForVM(vm: VM) {
     assertNotProd();
-    for (let i = mutationLogs.length - 1; i >= 0; i--) {
-        if (mutationLogs[i].vm === vm) {
-            ArraySplice.call(mutationLogs, i, 1);
-        }
-    }
+    mutationLogs = ArrayFilter.call(mutationLogs, (log) => log.vm !== vm)
 }
 
 /**
