@@ -178,7 +178,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         a[0].localeCompare(b[0])
     );
     for (const [tagNameAndId, keys] of entries) {
-        result.push([tagNameAndId, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
+        ArrayPush.call(result, [tagNameAndId, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
     return result;
 }
