@@ -162,7 +162,8 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         const tagNameAndId = `<${tagName}> (id: ${idx})`;
         let keys = tagNamesAndIdsToKeys.get(tagNameAndId);
         if (isUndefined(keys)) {
-            tagNamesAndIdsToKeys.set(tagNameAndId, (keys = new Set()));
+            keys = new Set();
+            tagNamesAndIdsToKeys.set(tagNameAndId, keys);
         }
         keys.add(prop);
     }
