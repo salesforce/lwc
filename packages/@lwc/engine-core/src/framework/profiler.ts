@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArraySort, isUndefined, noop } from '@lwc/shared';
+import { ArrayJoin, ArrayMap, ArrayPush, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -167,9 +167,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         }
         keys.add(prop);
     }
-    const entries = ArraySort.call([...tagNamesAndIdsToKeys], (a, b) =>
-        a[0].localeCompare(b[0])
-    );
+    const entries = ArraySort.call([...tagNamesAndIdsToKeys], (a, b) => a[0].localeCompare(b[0]));
     const components = ArrayMap.call(entries, (item) => item[0]);
     const result: [string, string][] = [
         [
@@ -177,10 +175,6 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
             ArrayJoin.call(components, ', '),
         ],
     ];
-    // Sort tag names
-    const entries = ArraySort.call([...tagNamesAndIdsToKeys.entries()], (a, b) =>
-        a[0].localeCompare(b[0])
-    );
     for (const [tagNameAndId, keys] of entries) {
         ArrayPush.call(result, [tagNameAndId, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
     }
