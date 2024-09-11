@@ -95,7 +95,7 @@ export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserv
  * @param key - key associated with the object in the component
  * @param target - tracked target object
  */
-export function trackTargetForMutationLogging(key: PropertyKey, target: object) {
+export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
     assertNotProd();
     if (isObject(target) && !isNull(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
