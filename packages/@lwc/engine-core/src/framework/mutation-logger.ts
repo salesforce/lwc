@@ -14,8 +14,9 @@ import {
     isObject,
     isNull,
     isArray,
-    keys,
     ArrayFilter,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
 } from '@lwc/shared';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { VM } from './vm';
@@ -112,8 +113,15 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
                 trackTargetForMutationLogging(`${toString(key)}[${i}]`, target[i]);
             }
         } else {
-            for (const prop of keys(target)) {
-                trackTargetForMutationLogging(`${toString(key)}.${prop}`, (target as any)[prop]);
+            // Track only own property names and symbols (including non-enumerated)
+            // This is consistent with what observable-membrane does:
+            // https://github.com/salesforce/observable-membrane/blob/b85417f/src/base-handler.ts#L142-L143
+            const props = [...getOwnPropertyNames(target), ...getOwnPropertySymbols(target)];
+            for (const prop of props) {
+                trackTargetForMutationLogging(
+                    `${toString(key)}.${toString(prop)}`,
+                    (target as any)[prop]
+                );
             }
         }
     }
