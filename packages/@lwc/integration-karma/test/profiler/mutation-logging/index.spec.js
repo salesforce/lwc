@@ -117,6 +117,13 @@ if (process.env.NODE_ENV === 'production') {
             expectRehydrationEntry('x-child', 'previousName.first');
         });
 
+        it('Logs deep mutation on an object - characters requiring bracket member notation', async () => {
+            elm.setPreviousNameFullName('George Vancouver');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'previousName["full name"]');
+        });
+
         it('Logs doubly-deep mutation on an object', async () => {
             elm.setPreviousNameSuffix('short', 'Jr.');
 

@@ -1,9 +1,7 @@
 <template>
     <div><strong>First name:</strong> {firstName}</div>
     <div><strong>Last name:</strong> {lastName}</div>
-    <div><strong>Previous first name:</strong>{previousName.first}</div>
-    <div><strong>Previous last name:</strong>{previousName.last}</div>
-    <div><strong>Previous name suffix:</strong>{previousName.suffix.short} ({previousName.suffix.long})</div>
+    <div><strong>Previous name:</strong>{prettyPreviousName}</div>
     <div><strong>Aliases:</strong></div>
     <ul>
         <template for:each={aliases} for:item="alias">

@@ -61,10 +61,17 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
             throw new Error('The VM should always be defined except possibly in unit tests');
         }
     } else {
-        // Human-readable prop like `items[0].name` on a deep object/array
-        const prop = isUndefined(parentKey)
-            ? toString(key)
-            : `${toString(parentKey)}.${toString(key)}`;
+        const stringKey = toString(key);
+        let prop;
+        if (isUndefined(parentKey)) {
+            prop = stringKey;
+        } else if (/^\w+$/.test(stringKey)) {
+            // Human-readable prop like `items[0].name` on a deep object/array
+            prop = `${toString(parentKey)}.${stringKey}`;
+        } else {
+            // e.g. `obj["prop with spaces"]`
+            prop = `${toString(parentKey)}[${JSON.stringify(stringKey)}]`;
+        }
         ArrayPush.call(mutationLogs, { vm, prop });
     }
 }
