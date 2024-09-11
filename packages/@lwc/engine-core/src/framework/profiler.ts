@@ -156,6 +156,12 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         return EmptyArray;
     }
 
+    if (!mutationLogs.length) {
+        // Currently this only occurs for experimental signals, because those mutations are not triggered by accessors
+        // TODO [#4546]: support signals in mutation logging
+        return EmptyArray;
+    }
+
     // Keep track of unique IDs per tag name so we can just report a raw count at the end, e.g.
     // `<x-foo> (x2)` to indicate that two instances of `<x-foo>` were rendered.
     const tagNamesToIdsAndProps = new Map<string, { ids: Set<number>; keys: Set<string> }>();
