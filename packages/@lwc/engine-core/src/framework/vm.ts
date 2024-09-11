@@ -660,7 +660,7 @@ function flushRehydrationQueue() {
     // Gather the logs before rehydration starts so they can be reported at the end of rehydration.
     // Note that we also clear all existing logs at this point so that subsequent re-renders start from a clean slate.
     const mutationLogs =
-        process.env.NODE_ENV !== 'production' ? getAndFlushMutationLogs() : undefined;
+        process.env.NODE_ENV === 'production' ? undefined : getAndFlushMutationLogs();
 
     logGlobalOperationStart(OperationId.GlobalRehydrate);
 
