@@ -152,7 +152,7 @@ function getProperties(vm: VM<any, any>): [string, string][] {
 // "why did this component re-render?"
 function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string, string][] {
     // `mutationLogs` should never have length 0, but bail out if it does for whatever reason
-    if (isUndefined(mutationLogs) || mutationLogs.length === 0) {
+    if (isUndefined(mutationLogs)) {
         return EmptyArray;
     }
 
