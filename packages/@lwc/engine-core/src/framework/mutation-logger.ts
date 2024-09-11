@@ -107,6 +107,10 @@ export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserv
  */
 export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
     assertNotProd();
+    if (targetsToPropertyKeys.has(target)) {
+        // Guard against recursive objects - don't traverse forever
+        return;
+    }
     if (isObject(target) && !isNull(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
         targetsToPropertyKeys.set(target, key);

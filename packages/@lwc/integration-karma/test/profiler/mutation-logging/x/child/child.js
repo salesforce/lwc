@@ -19,6 +19,17 @@ const createWackyAccessors = () => {
     return res;
 };
 
+const createRecursiveObject = () => {
+    const deep = {
+        foo: '',
+    };
+    const res = {
+        deep,
+    };
+    deep.deep = res;
+    return res;
+};
+
 export default class extends LightningElement {
     @api firstName;
     @api lastName;
@@ -31,6 +42,7 @@ export default class extends LightningElement {
     @track wackyAccessors = createWackyAccessors();
     @track aliases = [];
     @track favoriteFlavors = [{ food: 'ice cream', flavor: '' }];
+    @track recursiveObject = createRecursiveObject();
 
     get prettyPreviousName() {
         return `${this.previousName.first} ${this.previousName.last} (${this.previousName['full name']}) ${this.previousName.suffix.short} (${this.previousName.suffix.long})`;
@@ -66,5 +78,9 @@ export default class extends LightningElement {
 
     @api setWackyAccessorSymbol(value) {
         this.wackyAccessors[symbol] = value;
+    }
+
+    @api setOnRecursiveObject(value) {
+        this.recursiveObject.deep.deep.foo = value;
     }
 }

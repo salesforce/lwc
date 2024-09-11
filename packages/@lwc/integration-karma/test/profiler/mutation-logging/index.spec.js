@@ -226,6 +226,13 @@ if (process.env.NODE_ENV === 'production') {
             await waitForSentinelMeasure();
             expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
         });
+
+        it('Logs for mutation on deeply-recursive object', async () => {
+            elm.setOnRecursiveObject('woohoo');
+
+            await waitForSentinelMeasure();
+            expectRehydrationEntry('x-child', 'recursiveObject.foo');
+        });
     });
 
     describe('parent-child', () => {
