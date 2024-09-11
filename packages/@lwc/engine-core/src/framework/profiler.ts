@@ -154,7 +154,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     if (isUndefined(mutationLogs)) {
         return EmptyArray;
     }
-    const tagNamesAndIdsToKeys = new Map();
+    const tagNamesAndIdsToKeys = new Map<string, Set<string>>();
     for (const {
         vm: { tagName, idx },
         prop,
