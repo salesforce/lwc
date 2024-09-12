@@ -27,6 +27,7 @@ import {
     isExpression,
     isPotentialExpression,
 } from './expression';
+import { isComplexTemplateExpressionEnabled } from './expression-complex';
 import {
     ATTR_NAME,
     DATA_RE,
@@ -109,7 +110,7 @@ export function normalizeAttributeValue(
     const isQuoted = isQuotedAttribute(rawAttrVal);
     const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
-        if (isQuoted) {
+        if (isQuoted && !isComplexTemplateExpressionEnabled(ctx)) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
 
