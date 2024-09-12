@@ -39,6 +39,18 @@ type LogDispatcher = (
     shadowMode?: ShadowMode
 ) => void;
 
+type TrackColor =
+    | 'primary'
+    | 'primary-light'
+    | 'primary-dark'
+    | 'secondary'
+    | 'secondary-light'
+    | 'secondary-dark'
+    | 'tertiary'
+    | 'tertiary-light'
+    | 'tertiary-dark'
+    | 'error';
+
 const operationIdNameMapping = [
     'constructor',
     'render',
@@ -93,17 +105,7 @@ const end = !isUserTimingSupported
           measureName: string,
           markName: string,
           devtools?: {
-              color?:
-                  | 'primary'
-                  | 'primary-light'
-                  | 'primary-dark'
-                  | 'secondary'
-                  | 'secondary-light'
-                  | 'secondary-dark'
-                  | 'tertiary'
-                  | 'tertiary-light'
-                  | 'tertiary-dark'
-                  | 'error';
+              color?: TrackColor;
               properties?: [string, string][];
               tooltipText?: string;
           }
@@ -146,6 +148,23 @@ function getProperties(vm: VM<any, any>): [string, string][] {
         ['Render Mode', vm.renderMode === RenderMode.Light ? 'light DOM' : 'shadow DOM'],
         ['Shadow Mode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
     ];
+}
+
+function getColor(opId: OperationId): TrackColor {
+    // As of Sept 2024: primary (dark blue), secondary (light blue), tertiary (green)
+    switch (opId) {
+        // GlobalHydrate and Constructor tend to occur at the top level
+        case OperationId.GlobalHydrate:
+        case OperationId.Constructor:
+            return 'primary';
+        // GlobalRehydrate also occurs at the top level, but we want to use tertiary (green) because it's easier to
+        // distinguish from primary, and at a glance you should be able to easily tell re-renders from first renders.
+        case OperationId.GlobalRehydrate:
+            return 'tertiary';
+        // Everything else (patch/render/callbacks)
+        default:
+            return 'secondary';
+    }
 }
 
 // Create a list of tag names to the properties that were mutated, to help answer the question of
@@ -262,7 +281,7 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
         end(measureName, markName, {
-            color: opId === OperationId.Render ? 'primary' : 'secondary',
+            color: getColor(opId),
             tooltipText: getTooltipText(measureName, opId),
             properties: getProperties(vm),
         });
@@ -303,7 +322,7 @@ export function logGlobalOperationEnd(
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
-            color: 'tertiary',
+            color: getColor(opId),
             tooltipText: getTooltipText(opName, opId),
             properties: getMutationProperties(mutationLogs),
         });
@@ -319,7 +338,7 @@ export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
         const opName = getOperationName(opId);
         const markName = getMarkName(opId, vm);
         end(opName, markName, {
-            color: 'tertiary',
+            color: getColor(opId),
             tooltipText: getTooltipText(opName, opId),
             properties: getProperties(vm),
         });
