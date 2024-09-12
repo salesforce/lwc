@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { noop } from '@lwc/shared';
+import { ArrayJoin, ArrayMap, ArrayPush, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode, VM } from './vm';
+import { EmptyArray } from './utils';
+import type { MutationLog } from './mutation-logger';
 
 export const enum OperationId {
     Constructor = 0,
@@ -36,6 +38,18 @@ type LogDispatcher = (
     renderMode?: RenderMode,
     shadowMode?: ShadowMode
 ) => void;
+
+type TrackColor =
+    | 'primary'
+    | 'primary-light'
+    | 'primary-dark'
+    | 'secondary'
+    | 'secondary-light'
+    | 'secondary-dark'
+    | 'tertiary'
+    | 'tertiary-light'
+    | 'tertiary-dark'
+    | 'error';
 
 const operationIdNameMapping = [
     'constructor',
@@ -91,17 +105,7 @@ const end = !isUserTimingSupported
           measureName: string,
           markName: string,
           devtools?: {
-              color?:
-                  | 'primary'
-                  | 'primary-light'
-                  | 'primary-dark'
-                  | 'secondary'
-                  | 'secondary-light'
-                  | 'secondary-dark'
-                  | 'tertiary'
-                  | 'tertiary-light'
-                  | 'tertiary-dark'
-                  | 'error';
+              color?: TrackColor;
               properties?: [string, string][];
               tooltipText?: string;
           }
@@ -144,6 +148,86 @@ function getProperties(vm: VM<any, any>): [string, string][] {
         ['Render Mode', vm.renderMode === RenderMode.Light ? 'light DOM' : 'shadow DOM'],
         ['Shadow Mode', vm.shadowMode === ShadowMode.Native ? 'native' : 'synthetic'],
     ];
+}
+
+function getColor(opId: OperationId): TrackColor {
+    // As of Sept 2024: primary (dark blue), secondary (light blue), tertiary (green)
+    switch (opId) {
+        // GlobalHydrate and Constructor tend to occur at the top level
+        case OperationId.GlobalHydrate:
+        case OperationId.Constructor:
+            return 'primary';
+        // GlobalRehydrate also occurs at the top level, but we want to use tertiary (green) because it's easier to
+        // distinguish from primary, and at a glance you should be able to easily tell re-renders from first renders.
+        case OperationId.GlobalRehydrate:
+            return 'tertiary';
+        // Everything else (patch/render/callbacks)
+        default:
+            return 'secondary';
+    }
+}
+
+// Create a list of tag names to the properties that were mutated, to help answer the question of
+// "why did this component re-render?"
+function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string, string][] {
+    // `mutationLogs` should never have length 0, but bail out if it does for whatever reason
+    if (isUndefined(mutationLogs)) {
+        return EmptyArray;
+    }
+
+    if (!mutationLogs.length) {
+        // Currently this only occurs for experimental signals, because those mutations are not triggered by accessors
+        // TODO [#4546]: support signals in mutation logging
+        return EmptyArray;
+    }
+
+    // Keep track of unique IDs per tag name so we can just report a raw count at the end, e.g.
+    // `<x-foo> (x2)` to indicate that two instances of `<x-foo>` were rendered.
+    const tagNamesToIdsAndProps = new Map<string, { ids: Set<number>; keys: Set<string> }>();
+    for (const {
+        vm: { tagName, idx },
+        prop,
+    } of mutationLogs) {
+        let idsAndProps = tagNamesToIdsAndProps.get(tagName);
+        if (isUndefined(idsAndProps)) {
+            idsAndProps = { ids: new Set(), keys: new Set() };
+            tagNamesToIdsAndProps.set(tagName, idsAndProps);
+        }
+        idsAndProps.ids.add(idx);
+        idsAndProps.keys.add(prop);
+    }
+
+    // Sort by tag name
+    const entries = ArraySort.call([...tagNamesToIdsAndProps], (a, b) => a[0].localeCompare(b[0]));
+    const tagNames = ArrayMap.call(entries, (item) => item[0]) as string[];
+
+    // Show e.g. `<x-foo>` for one instance, or `<x-foo> (x2)` for two instances. (\u00D7 is multiplication symbol)
+    const tagNamesToDisplayTagNames = new Map<string, string>();
+    for (const tagName of tagNames) {
+        const { ids } = tagNamesToIdsAndProps.get(tagName)!;
+        const displayTagName = `<${tagName}>${ids.size > 1 ? ` (\u00D7${ids.size})` : ''}`;
+        tagNamesToDisplayTagNames.set(tagName, displayTagName);
+    }
+
+    // Summary row
+    const usePlural = tagNames.length > 1 || tagNamesToIdsAndProps.get(tagNames[0])!.ids.size > 1;
+    const result: [string, string][] = [
+        [
+            `Component${usePlural ? 's' : ''}`,
+            ArrayJoin.call(
+                ArrayMap.call(tagNames, (_) => tagNamesToDisplayTagNames.get(_)),
+                ', '
+            ),
+        ],
+    ];
+
+    // Detail rows
+    for (const [prettyTagName, { keys }] of entries) {
+        const displayTagName = tagNamesToDisplayTagNames.get(prettyTagName)!;
+        ArrayPush.call(result, [displayTagName, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
+    }
+
+    return result;
 }
 
 function getTooltipText(measureName: string, opId: OperationId) {
@@ -197,9 +281,9 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
         const markName = getMarkName(opId, vm);
         const measureName = getMeasureName(opId, vm);
         end(measureName, markName, {
-            properties: getProperties(vm),
+            color: getColor(opId),
             tooltipText: getTooltipText(measureName, opId),
-            color: opId === OperationId.Render ? 'primary' : 'secondary',
+            properties: getProperties(vm),
         });
     }
 
@@ -230,13 +314,17 @@ export function logGlobalOperationStartWithVM(opId: GlobalOperationId, vm: VM) {
     }
 }
 
-export function logGlobalOperationEnd(opId: GlobalOperationId) {
+export function logGlobalOperationEnd(
+    opId: GlobalOperationId,
+    mutationLogs: MutationLog[] | undefined
+) {
     if (isMeasureEnabled) {
         const opName = getOperationName(opId);
         const markName = opName;
         end(opName, markName, {
+            color: getColor(opId),
             tooltipText: getTooltipText(opName, opId),
-            color: 'tertiary',
+            properties: getMutationProperties(mutationLogs),
         });
     }
 
@@ -250,9 +338,9 @@ export function logGlobalOperationEndWithVM(opId: GlobalOperationId, vm: VM) {
         const opName = getOperationName(opId);
         const markName = getMarkName(opId, vm);
         end(opName, markName, {
-            properties: getProperties(vm),
+            color: getColor(opId),
             tooltipText: getTooltipText(opName, opId),
-            color: 'tertiary',
+            properties: getProperties(vm),
         });
     }
 
