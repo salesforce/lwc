@@ -32,6 +32,24 @@ const reactiveObserversToVMs = new WeakMap<ReactiveObserver, VM>();
 const targetsToPropertyKeys = new WeakMap<object, PropertyKey>();
 let mutationLogs: MutationLog[] = [];
 
+// Create a human-readable member access notation like `obj.foo` or `arr[1]`,
+// handling edge cases like `obj[Symbol("bar")]` and `obj["spaces here"]`
+function toPrettyMemberNotation(parent: PropertyKey | undefined, child: PropertyKey) {
+    if (isUndefined(parent)) {
+        // Bare prop, just stringify the child
+        return toString(child);
+    } else if (!isString(child)) {
+        // Symbol/number, e.g. `obj[Symbol("foo")]` or `obj[1234]`
+        return `${toString(parent)}[${toString(child)}]`;
+    } else if (/^\w+$/.test(child)) {
+        // Dot-notation-safe string, e.g. `obj.foo`
+        return `${toString(parent)}.${child}`;
+    } else {
+        // Bracket-notation-requiring string, e.g. `obj["prop with spaces"]`
+        return `${toString(parent)}[${JSON.stringify(child)}]`;
+    }
+}
+
 /**
  * Flush all the logs we've written so far and return the current logs.
  */
@@ -63,20 +81,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
             throw new Error('The VM should always be defined except possibly in unit tests');
         }
     } else {
-        const stringKey = toString(key);
-        let prop;
-        if (isUndefined(parentKey)) {
-            prop = stringKey;
-        } else if (!isString(key)) {
-            // symbol/number, e.g. `obj[Symbol("foo")]` or `obj[1234]`
-            prop = `${toString(parentKey)}[${stringKey}]`;
-        } else if (/^\w+$/.test(stringKey)) {
-            // Human-readable prop like `items[0].name` on a deep object/array
-            prop = `${toString(parentKey)}.${stringKey}`;
-        } else {
-            // e.g. `obj["prop with spaces"]`
-            prop = `${toString(parentKey)}[${JSON.stringify(stringKey)}]`;
-        }
+        const prop = toPrettyMemberNotation(parentKey, key);
         ArrayPush.call(mutationLogs, { vm, prop });
     }
 }
@@ -118,7 +123,7 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
         // Deeply traverse arrays and objects to track every object within
         if (isArray(target)) {
             for (let i = 0; i < target.length; i++) {
-                trackTargetForMutationLogging(`${toString(key)}[${i}]`, target[i]);
+                trackTargetForMutationLogging(toPrettyMemberNotation(key, i), target[i]);
             }
         } else {
             // Track only own property names and symbols (including non-enumerated)
@@ -127,13 +132,13 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
             // Note this code path is very hot, hence doing two separate for-loops rather than creating a new array.
             for (const prop of getOwnPropertyNames(target)) {
                 trackTargetForMutationLogging(
-                    `${toString(key)}.${toString(prop)}`,
+                    toPrettyMemberNotation(key, prop),
                     (target as any)[prop]
                 );
             }
             for (const prop of getOwnPropertySymbols(target)) {
                 trackTargetForMutationLogging(
-                    `${toString(key)}[${toString(prop)}]`,
+                    toPrettyMemberNotation(key, prop),
                     (target as any)[prop]
                 );
             }
