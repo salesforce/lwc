@@ -161,6 +161,19 @@ describe('observed-fields', () => {
         });
     });
 
+    it('should rerender component when computed field with symbol is mutated', () => {
+        const elm = createElement('x-computed', { is: Computed });
+        document.body.appendChild(elm);
+
+        expect(elm.getValue(Computed.symbol)).toBe('symbol!');
+
+        elm.setValue(Computed.symbol, 'mutated');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.symbol').textContent).toBe('mutated');
+        });
+    });
+
     describe('restrictions', () => {
         it('logs a property error when a reactive field conflicts with a method', () => {
             expect(() => {

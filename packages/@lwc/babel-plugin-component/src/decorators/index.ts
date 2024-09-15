@@ -254,16 +254,21 @@ function getMetadataObjectPropertyList(
         .map((field) => {
             switch (field.node.key.type) {
                 case 'Identifier':
-                    return field.node.key.name;
+                    if (field.node.computed) {
+                        return field.node.key;
+                    } else {
+                        return t.stringLiteral(field.node.key.name);
+                    }
                 case 'StringLiteral':
-                    return field.node.key.value;
+                    return field.node.key;
                 case 'NumericLiteral':
-                    return field.node.key.value;
+                    return field.node.key;
             }
         })
         .filter((fieldName) => fieldName !== undefined);
+
     if (fieldNames.length) {
-        list.push(t.objectProperty(t.identifier('fields'), t.valueToNode(fieldNames)));
+        list.push(t.objectProperty(t.identifier('fields'), t.arrayExpression(fieldNames)));
     }
 
     return list;

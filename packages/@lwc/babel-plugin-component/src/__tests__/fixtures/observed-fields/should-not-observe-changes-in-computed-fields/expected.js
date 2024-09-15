@@ -1,15 +1,17 @@
 import { registerDecorators as _registerDecorators, createElement, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
+const symbol = Symbol("haha");
 const PREFIX = "prefix";
 class Test extends LightningElement {
   interface;
   ["a"] = 0;
   [1337] = 0;
+  [symbol] = "symbol!";
   [`${PREFIX}Field`] = "prefixed field";
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
-  fields: ["interface", "a", 1337]
+  fields: ["interface", "a", 1337, symbol]
 });
 const __lwc_component_class_internal = _registerComponent(Test, {
   tmpl: _tmpl,
