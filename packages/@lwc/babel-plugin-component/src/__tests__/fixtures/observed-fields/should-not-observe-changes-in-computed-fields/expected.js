@@ -4,11 +4,12 @@ const PREFIX = "prefix";
 class Test extends LightningElement {
   interface;
   ["a"] = 0;
+  [1337] = 0;
   [`${PREFIX}Field`] = "prefixed field";
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
-  fields: ["interface"]
+  fields: ["interface", "a", 1337]
 });
 const __lwc_component_class_internal = _registerComponent(Test, {
   tmpl: _tmpl,

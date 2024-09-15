@@ -249,9 +249,19 @@ function getMetadataObjectPropertyList(
     ];
 
     const fieldNames = classBodyItems
-        .filter((field) => field.isClassProperty({ computed: false, static: false }))
-        .filter((field) => !(field.node as types.ClassProperty).decorators)
-        .map((field) => ((field.node as types.ClassProperty).key as types.Identifier).name);
+        .filter((field) => field.isClassProperty({ static: false }))
+        .filter((field) => !field.node.decorators)
+        .map((field) => {
+            switch (field.node.key.type) {
+                case 'Identifier':
+                    return field.node.key.name;
+                case 'StringLiteral':
+                    return field.node.key.value;
+                case 'NumericLiteral':
+                    return field.node.key.value;
+            }
+        })
+        .filter((fieldName) => fieldName !== undefined);
     if (fieldNames.length) {
         list.push(t.objectProperty(t.identifier('fields'), t.valueToNode(fieldNames)));
     }

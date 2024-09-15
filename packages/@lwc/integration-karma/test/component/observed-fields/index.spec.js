@@ -6,6 +6,8 @@ import FieldForCache from 'x/fieldForCache';
 
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
+import Computed from 'x/computed';
+
 describe('observed-fields', () => {
     it('should rerender component when field is mutated', () => {
         const elm = createElement('x-simple', { is: Simple });
@@ -130,6 +132,32 @@ describe('observed-fields', () => {
             expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe(
                 'static value modified'
             );
+        });
+    });
+
+    it('should rerender component when computed field with spaces is mutated', () => {
+        const elm = createElement('x-computed', { is: Computed });
+        document.body.appendChild(elm);
+
+        expect(elm.getValue('with spaces')).toBe('spaces!');
+
+        elm.setValue('with spaces', 'mutated');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.spaces').textContent).toBe('mutated');
+        });
+    });
+
+    it('should rerender component when computed field with number is mutated', () => {
+        const elm = createElement('x-computed', { is: Computed });
+        document.body.appendChild(elm);
+
+        expect(elm.getValue(1337)).toBe('number!');
+
+        elm.setValue(1337, 'mutated');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.number').textContent).toBe('mutated');
         });
     });
 

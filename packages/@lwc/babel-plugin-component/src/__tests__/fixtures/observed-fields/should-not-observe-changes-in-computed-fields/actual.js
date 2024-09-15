@@ -3,5 +3,6 @@ const PREFIX = "prefix";
 export default class Test extends LightningElement {
   interface;
   ["a"] = 0;
+  [1337] = 0;
   [`${PREFIX}Field`] = "prefixed field";
 }
