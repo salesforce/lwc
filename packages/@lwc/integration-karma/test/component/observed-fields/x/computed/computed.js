@@ -1,14 +1,17 @@
 import { api, LightningElement } from 'lwc';
 
-const symbol = Symbol('haha');
+const SYMBOL = Symbol('haha');
+const PREFIX = 'prefix';
 
 export default class App extends LightningElement {
-    static symbol = symbol;
+    static symbol = SYMBOL;
+    static prefix = PREFIX;
     // eslint-disable-next-line no-useless-computed-key
     ['with spaces'] = 'spaces!';
     // eslint-disable-next-line no-useless-computed-key
     [1337] = 'number!';
-    [symbol] = 'symbol!';
+    [SYMBOL] = 'symbol!';
+    [`${PREFIX}Field`] = 'prefixed!';
 
     get spaces() {
         return this['with spaces'];
@@ -19,7 +22,11 @@ export default class App extends LightningElement {
     }
 
     get symbol() {
-        return this[symbol];
+        return this[SYMBOL];
+    }
+
+    get prefixed() {
+        return this[`${PREFIX}Field`];
     }
 
     @api setValue(field, value) {

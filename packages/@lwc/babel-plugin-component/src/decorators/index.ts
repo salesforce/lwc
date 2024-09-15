@@ -263,6 +263,8 @@ function getMetadataObjectPropertyList(
                     return field.node.key;
                 case 'NumericLiteral':
                     return field.node.key;
+                case 'TemplateLiteral':
+                    return field.node.key;
             }
         })
         .filter((fieldName) => fieldName !== undefined);
