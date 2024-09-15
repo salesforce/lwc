@@ -7,6 +7,7 @@ import FieldForCache from 'x/fieldForCache';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 import Computed from 'x/computed';
+import Literal from 'x/literal';
 
 describe('observed-fields', () => {
     it('should rerender component when field is mutated', () => {
@@ -132,6 +133,30 @@ describe('observed-fields', () => {
             expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe(
                 'static value modified'
             );
+        });
+    });
+
+    it('should rerender component when literal string field is mutated', () => {
+        const elm = createElement('x-literal', { is: Literal });
+        document.body.appendChild(elm);
+
+        expect(elm.getValue('reg')).toBe('string!');
+        elm.setValue('reg', 'mutated');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.string').textContent).toBe('mutated');
+        });
+    });
+
+    it('should rerender component when literal number field is mutated', () => {
+        const elm = createElement('x-literal', { is: Literal });
+        document.body.appendChild(elm);
+
+        expect(elm.getValue(1337)).toBe('number!');
+        elm.setValue(1337, 'mutated');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.number').textContent).toBe('mutated');
         });
     });
 
