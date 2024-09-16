@@ -238,6 +238,17 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
     return styleMap;
 }
 
+export function normalizeStyleAttribute(style: string): string {
+    const styleMap = parseStyleText(style);
+
+    const styles = Object.entries(styleMap).map(([key, value]) => {
+        value = value.replace(IMPORTANT_FLAG, ' !important').trim();
+        return `${key}: ${value};`;
+    });
+
+    return styles.join(' ');
+}
+
 const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 
 // Given a map of CSS property keys to values, return an array AST like:

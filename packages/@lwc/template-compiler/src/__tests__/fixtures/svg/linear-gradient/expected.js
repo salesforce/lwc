@@ -1,7 +1,7 @@
 import _implicitStylesheets from "./linear-gradient.css";
 import _implicitScopedStylesheets from "./linear-gradient.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<svg height="150" width="400"${3}><defs${3}><linearGradient${"a2:id"} x1="0%" y1="0%" x2="100%" y2="0%"${3}><stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${3}/><stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${3}/></linearGradient></defs><ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/></svg>`;
+const $fragment1 = parseFragment`<svg height="150" width="400"${3}><defs${3}><linearGradient${"a2:id"} x1="0%" y1="0%" x2="100%" y2="0%"${3}><stop offset="0%" style="stop-color: rgb(255,255,0); stop-opacity: 1;"${3}/><stop offset="100%" style="stop-color: rgb(255,0,0); stop-opacity: 1;"${3}/></linearGradient></defs><ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${3}/></svg>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
