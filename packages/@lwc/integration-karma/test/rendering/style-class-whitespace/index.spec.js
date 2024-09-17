@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
 
-describe('whitespace normalization for style attribute', () => {
-    it('should render !important styles correctly', async () => {
+describe('style and class whitespace normalization', () => {
+    it('should normalize style whitespace', async () => {
         const elm = createElement('x-component', { is: Component });
         document.body.appendChild(elm);
-
         await Promise.resolve();
+
         const actual = [...elm.shadowRoot.querySelectorAll('[style]')].map((elm) =>
             elm.getAttribute('style')
         );
@@ -30,6 +30,24 @@ describe('whitespace normalization for style attribute', () => {
             'color: red; background-color: aqua;',
             '--its-a-tab: red;',
             '--its-a-tab-and-a-space: red;',
+        ]);
+    });
+    it('should normalize class whitespace', async () => {
+        const elm = createElement('x-component', { is: Component });
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        const actual = [...elm.shadowRoot.querySelectorAll('[class]')].map((elm) =>
+            elm.getAttribute('class')
+        );
+        expect(actual).toEqual([
+            'boo',
+            'boo',
+            'foo bar',
+            'foo bar',
+            'foo bar',
+            'foo bar',
+            'foo bar',
         ]);
     });
 });
