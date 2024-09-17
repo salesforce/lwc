@@ -32,7 +32,7 @@ export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: Com
     state.cssExplicitImports.set(specifier.local.name, path.node!.source.value);
 }
 
-const componentNamePattern = /(?<componentName>[a-z_-]+)\.[tj]s$/i;
+const componentNamePattern = /(?<componentName>[^/]+)\.[tj]s$/;
 
 /**
  * This adds implicit style imports to the compiled component artifact.
