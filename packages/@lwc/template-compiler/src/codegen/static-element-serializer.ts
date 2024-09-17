@@ -47,7 +47,7 @@ function templateStringEscape(str: string): string {
 }
 
 function normalizeWhitespace(str: string): string {
-    return str.trim().replace(/\s{2,}/, ' ');
+    return str.trim().replace(/\s+/, ' ');
 }
 
 function serializeAttrs(element: Element, codeGen: CodeGen): string {
