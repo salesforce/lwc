@@ -44,6 +44,7 @@ describe('style and class whitespace normalization', () => {
             'boo',
             'boo',
             'foo bar',
+            'foo bar baz',
             'foo bar',
             'foo bar',
             'foo bar',
