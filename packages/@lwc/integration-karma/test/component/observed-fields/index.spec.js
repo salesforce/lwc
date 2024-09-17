@@ -199,18 +199,6 @@ describe('observed-fields', () => {
         });
     });
 
-    it('should rerender component when computed field with prefixed field is mutated', () => {
-        const elm = createElement('x-computed', { is: Computed });
-        document.body.appendChild(elm);
-
-        expect(elm.getValue(`${Computed.prefix}Field`)).toBe('prefixed!');
-        elm.setValue(`${Computed.prefix}Field`, 'mutated');
-
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.prefixed').textContent).toBe('mutated');
-        });
-    });
-
     describe('restrictions', () => {
         it('logs a property error when a reactive field conflicts with a method', () => {
             expect(() => {

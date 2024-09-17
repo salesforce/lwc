@@ -248,7 +248,7 @@ function getMetadataObjectPropertyList(
         ...wire.transform(t, decoratorMetas),
     ];
 
-    const fieldNames = classBodyItems
+    const fieldKeys = classBodyItems
         .filter((field) => field.isClassProperty({ static: false }))
         .filter((field) => !field.node.decorators)
         .map((field) => {
@@ -263,14 +263,12 @@ function getMetadataObjectPropertyList(
                     return field.node.key;
                 case 'NumericLiteral':
                     return field.node.key;
-                case 'TemplateLiteral':
-                    return field.node.key;
             }
         })
-        .filter((fieldName) => fieldName !== undefined);
+        .filter((fieldKey) => fieldKey !== undefined);
 
-    if (fieldNames.length) {
-        list.push(t.objectProperty(t.identifier('fields'), t.arrayExpression(fieldNames)));
+    if (fieldKeys.length) {
+        list.push(t.objectProperty(t.identifier('fields'), t.arrayExpression(fieldKeys)));
     }
 
     return list;

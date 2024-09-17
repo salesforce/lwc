@@ -11,7 +11,7 @@ class Test extends LightningElement {
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
-  fields: ["interface", "a", 1337, symbol, `${PREFIX}Field`]
+  fields: ["interface", "a", 1337, symbol]
 });
 const __lwc_component_class_internal = _registerComponent(Test, {
   tmpl: _tmpl,
