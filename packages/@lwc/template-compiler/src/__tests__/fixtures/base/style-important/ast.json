@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 3,
+            "endLine": 4,
             "endColumn": 12,
             "start": 0,
-            "end": 111,
+            "end": 200,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 3,
+                "startLine": 4,
                 "startColumn": 1,
-                "endLine": 3,
+                "endLine": 4,
                 "endColumn": 12,
-                "start": 100,
-                "end": 111
+                "start": 189,
+                "end": 200
             }
         },
         "directives": [],
@@ -70,6 +70,57 @@
                             "endColumn": 82,
                             "start": 20,
                             "end": 92
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 89,
+                    "start": 104,
+                    "end": 188,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 83,
+                        "start": 104,
+                        "end": 182
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 83,
+                        "endLine": 3,
+                        "endColumn": 89,
+                        "start": 182,
+                        "end": 188
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "background: blue !IMPORTANT; color: red; opacity: 0.5 !IMPORTANT"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 10,
+                            "endLine": 3,
+                            "endColumn": 82,
+                            "start": 109,
+                            "end": 181
                         }
                     }
                 ],

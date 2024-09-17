@@ -21,6 +21,7 @@ import {
     isText,
 } from '../shared/ast';
 import { hasDynamicText, isContiguousText, transformStaticChildren } from './static-element';
+import { normalizeStyleAttribute } from './helpers';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -43,6 +44,10 @@ const rawContentElements = new Set([
  */
 function templateStringEscape(str: string): string {
     return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+}
+
+function normalizeWhitespace(str: string): string {
+    return str.trim().replace(/\s+/g, ' ');
 }
 
 function serializeAttrs(element: Element, codeGen: CodeGen): string {
@@ -76,8 +81,15 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // The token is only needed when the class attribute is static.
             // The token will be injected at runtime for expressions in parseFragmentFn.
             if (!hasExpression) {
+                if (typeof v === 'string') {
+                    v = normalizeWhitespace(v);
+                }
                 v += '${0}';
             }
+        }
+
+        if (name === 'style' && !hasExpression && typeof v === 'string') {
+            v = normalizeStyleAttribute(v);
         }
 
         // `spellcheck` string values are specially handled to massage them into booleans.
