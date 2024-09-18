@@ -16,6 +16,10 @@ const bDefaultStyleImport = esTemplate<ImportDeclaration>`
     import defaultStylesheets from '${is.literal}';
 `;
 
+const bDefaultScopedStyleImport = esTemplate<ImportDeclaration>`
+    import defaultScopedStylesheets from '${is.literal}';
+`;
+
 export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
     const specifier = path.node!.specifiers[0];
 
@@ -32,26 +36,27 @@ export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: Com
     state.cssExplicitImports.set(specifier.local.name, path.node!.source.value);
 }
 
-const componentNamePattern = /(?<componentName>[^/]+)\.[tj]s$/;
-
 /**
  * This adds implicit style imports to the compiled component artifact.
  */
-export function addStylesheetImports(ast: Program, state: ComponentMetaState, filepath: string) {
-    const componentName = componentNamePattern.exec(filepath)?.groups?.componentName;
-    if (!componentName) {
-        throw new Error(`Could not determine component name from file path: ${filepath}`);
+export function getStylesheetImports(filepath: string) {
+    const moduleName = /(?<moduleName>[^/]+)\.html$/.exec(filepath)?.groups?.moduleName;
+    if (!moduleName) {
+        throw new Error(`Could not determine module name from file path: ${filepath}`);
     }
 
-    if (state.cssExplicitImports || state.staticStylesheetIds) {
-        throw new Error(
-            `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
-                '  \n'
-            )}`
-        );
-    }
+    // if (state.cssExplicitImports || state.staticStylesheetIds) {
+    //     throw new Error(
+    //         `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
+    //             '  \n'
+    //         )}`
+    //     );
+    // }
 
-    ast.body.unshift(bDefaultStyleImport(b.literal(`./${componentName}.css`)));
+    return [
+        bDefaultStyleImport(b.literal(`./${moduleName}.css`)),
+        bDefaultScopedStyleImport(b.literal(`./${moduleName}.scoped.css`)),
+    ];
 }
 
 export function catalogStaticStylesheets(ids: string[], state: ComponentMetaState) {

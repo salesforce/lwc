@@ -18,6 +18,7 @@ import type {
     Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
 } from 'estree';
+import {getStylesheetImports} from "../compile-js/stylesheets";
 
 const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
 
@@ -25,30 +26,33 @@ const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
     [EsLiteral, EsStatement[], EsLiteral]
 >`
-    export default async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
+    export default async function* tmpl(props, attrs, slotted, Cmp, instance) {    
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
 
-        for (const stylesheet of stylesheets ?? []) {
-            // TODO
-            const token = null;
-            const useActualHostSelector = true;
-            const useNativeDirPseudoclass = null;
-            yield '<style type="text/css">';
-            yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-            yield '</style>';
+        if (defaultStylesheets) {
+            for (const stylesheet of defaultStylesheets) {
+                // TODO
+                const token = null;
+                const useActualHostSelector = true;
+                const useNativeDirPseudoclass = null;
+                yield '<style type="text/css">';
+                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                yield '</style>';
+            }
         }
+        // TODO: defaultScopedStylesheets
 
         ${is.statement};
 
         if (!${isBool} && Cmp.renderMode !== 'light') {
-            yield '</template>'
+            yield '</template>';
         }
     }
 `;
 
-export default function compileTemplate(src: string, _filename: string) {
+export default function compileTemplate(src: string, filename: string) {
     const { root, warnings } = parse(src);
     if (!root || warnings.length) {
         for (const warning of warnings) {
@@ -78,6 +82,12 @@ export default function compileTemplate(src: string, _filename: string) {
         ),
     ];
     const program = b.program(moduleBody, 'module');
+
+    const stylesheetImports = getStylesheetImports(filename)
+
+    program.body.unshift(
+        ...stylesheetImports
+    )
 
     return {
         code: generate(program, {}),
