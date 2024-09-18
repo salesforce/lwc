@@ -97,6 +97,18 @@ When developing LWC, use integration testing to ensure functionality is correctl
 -   @lwc/integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
 -   @lwc/integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
 
+To run the Karma tests from the root:
+
+```shell
+yarn test:karma
+```
+
+To run in watch mode:
+
+```shell
+yarn test:karma:start
+```
+
 ### Performance testing LWC
 
 ```shell
