@@ -462,12 +462,6 @@ describe('static content optimization with attribute', () => {
         expect(cmp.getAttribute('class')).toEqual(expected);
 
     it('preserves static values', () => {
-        /*
-    <div data-id="staticEmptyStyle" style=""></div>
-    <div data-id="staticSpacesStyle" style="   "></div>
-    <div data-id="staticInvalidStyle" style="invalid"></div>
-    <div data-id="staticSpacesClass" class="   "></div>
-    <div data-id="staticEmptyClass" class=""></div>*/
         const {
             staticAttr,
             staticStyle,
