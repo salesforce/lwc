@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 6,
+            "endLine": 8,
             "endColumn": 12,
             "start": 0,
-            "end": 152,
+            "end": 206,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 6,
+                "startLine": 8,
                 "startColumn": 1,
-                "endLine": 6,
+                "endLine": 8,
                 "endColumn": 12,
-                "start": 141,
-                "end": 152
+                "start": 195,
+                "end": 206
             }
         },
         "directives": [],
@@ -223,6 +223,108 @@
                             "endColumn": 27,
                             "start": 116,
                             "end": 133
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 25,
+                    "start": 145,
+                    "end": 165,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 19,
+                        "start": 145,
+                        "end": 159
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 19,
+                        "endLine": 6,
+                        "endColumn": 25,
+                        "start": 159,
+                        "end": 165
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 10,
+                            "endLine": 6,
+                            "endColumn": 18,
+                            "start": 150,
+                            "end": 158
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 7,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 29,
+                    "start": 170,
+                    "end": 194,
+                    "startTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 23,
+                        "start": 170,
+                        "end": 188
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 23,
+                        "endLine": 7,
+                        "endColumn": 29,
+                        "start": 188,
+                        "end": 194
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "    "
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 10,
+                            "endLine": 7,
+                            "endColumn": 22,
+                            "start": 175,
+                            "end": 187
                         }
                     }
                 ],

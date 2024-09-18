@@ -462,6 +462,12 @@ describe('static content optimization with attribute', () => {
         expect(cmp.getAttribute('class')).toEqual(expected);
 
     it('preserves static values', () => {
+        /*
+    <div data-id="staticEmptyStyle" style=""></div>
+    <div data-id="staticSpacesStyle" style="   "></div>
+    <div data-id="staticInvalidStyle" style="invalid"></div>
+    <div data-id="staticSpacesClass" class="   "></div>
+    <div data-id="staticEmptyClass" class=""></div>*/
         const {
             staticAttr,
             staticStyle,
@@ -471,6 +477,11 @@ describe('static content optimization with attribute', () => {
             staticClassNested,
             staticCombined,
             staticCombinedNested,
+            staticEmptyStyle,
+            staticSpacesStyle,
+            staticInvalidStyle,
+            staticSpacesClass,
+            staticEmptyClass,
         } = nodes;
 
         // styles
@@ -479,6 +490,9 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'color: red;' },
             { cmp: staticStyleNested, expected: 'color: white;' },
             { cmp: staticCombinedNested, expected: 'color: orange;' },
+            { cmp: staticEmptyStyle, expected: null },
+            { cmp: staticSpacesStyle, expected: null },
+            { cmp: staticInvalidStyle, expected: null },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
 
         // class
@@ -487,6 +501,8 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'combined class' },
             { cmp: staticClassNested, expected: 'static nested class' },
             { cmp: staticCombinedNested, expected: 'static combined nested' },
+            { cmp: staticSpacesClass, expected: null },
+            { cmp: staticEmptyClass, expected: null },
         ].forEach(verifyClassAppliedCorrectly);
 
         // attributes

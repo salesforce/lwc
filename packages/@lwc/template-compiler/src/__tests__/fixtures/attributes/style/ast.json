@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 12,
+            "endLine": 17,
             "endColumn": 12,
             "start": 0,
-            "end": 392,
+            "end": 545,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 12,
+                "startLine": 17,
                 "startColumn": 1,
-                "endLine": 12,
+                "endLine": 17,
                 "endColumn": 12,
-                "start": 381,
-                "end": 392
+                "start": 534,
+                "end": 545
             }
         },
         "directives": [],
@@ -376,6 +376,261 @@
                             "endColumn": 52,
                             "start": 331,
                             "end": 373
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 12,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 25,
+                    "start": 385,
+                    "end": 405,
+                    "startTag": {
+                        "startLine": 12,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 19,
+                        "start": 385,
+                        "end": 399
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 19,
+                        "endLine": 12,
+                        "endColumn": 25,
+                        "start": 399,
+                        "end": 405
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 10,
+                            "endLine": 12,
+                            "endColumn": 18,
+                            "start": 390,
+                            "end": 398
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 13,
+                    "startColumn": 5,
+                    "endLine": 13,
+                    "endColumn": 29,
+                    "start": 410,
+                    "end": 434,
+                    "startTag": {
+                        "startLine": 13,
+                        "startColumn": 5,
+                        "endLine": 13,
+                        "endColumn": 23,
+                        "start": 410,
+                        "end": 428
+                    },
+                    "endTag": {
+                        "startLine": 13,
+                        "startColumn": 23,
+                        "endLine": 13,
+                        "endColumn": 29,
+                        "start": 428,
+                        "end": 434
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "    "
+                        },
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 10,
+                            "endLine": 13,
+                            "endColumn": 22,
+                            "start": 415,
+                            "end": 427
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 14,
+                    "startColumn": 5,
+                    "endLine": 14,
+                    "endColumn": 40,
+                    "start": 439,
+                    "end": 474,
+                    "startTag": {
+                        "startLine": 14,
+                        "startColumn": 5,
+                        "endLine": 14,
+                        "endColumn": 34,
+                        "start": 439,
+                        "end": 468
+                    },
+                    "endTag": {
+                        "startLine": 14,
+                        "startColumn": 34,
+                        "endLine": 14,
+                        "endColumn": 40,
+                        "start": 468,
+                        "end": 474
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": ";;;;;;;;;;;;;;;"
+                        },
+                        "location": {
+                            "startLine": 14,
+                            "startColumn": 10,
+                            "endLine": 14,
+                            "endColumn": 33,
+                            "start": 444,
+                            "end": 467
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 15,
+                    "startColumn": 5,
+                    "endLine": 15,
+                    "endColumn": 32,
+                    "start": 479,
+                    "end": 506,
+                    "startTag": {
+                        "startLine": 15,
+                        "startColumn": 5,
+                        "endLine": 15,
+                        "endColumn": 26,
+                        "start": 479,
+                        "end": 500
+                    },
+                    "endTag": {
+                        "startLine": 15,
+                        "startColumn": 26,
+                        "endLine": 15,
+                        "endColumn": 32,
+                        "start": 500,
+                        "end": 506
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "invalid"
+                        },
+                        "location": {
+                            "startLine": 15,
+                            "startColumn": 10,
+                            "endLine": 15,
+                            "endColumn": 25,
+                            "start": 484,
+                            "end": 499
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 16,
+                    "startColumn": 5,
+                    "endLine": 16,
+                    "endColumn": 27,
+                    "start": 511,
+                    "end": 533,
+                    "startTag": {
+                        "startLine": 16,
+                        "startColumn": 5,
+                        "endLine": 16,
+                        "endColumn": 21,
+                        "start": 511,
+                        "end": 527
+                    },
+                    "endTag": {
+                        "startLine": 16,
+                        "startColumn": 21,
+                        "endLine": 16,
+                        "endColumn": 27,
+                        "start": 527,
+                        "end": 533
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": ":;"
+                        },
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 10,
+                            "endLine": 16,
+                            "endColumn": 20,
+                            "start": 516,
+                            "end": 526
                         }
                     }
                 ],
