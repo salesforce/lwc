@@ -71,7 +71,20 @@ function getProperty(node: Node, key: string): any {
     return (node as any)[key];
 }
 
-function setProperty(node: Node, key: string, value: any): void {
+function setProperty<K extends string>(
+    node: Node & Record<K, unknown>,
+    key: K,
+    value: unknown
+): void {
+    if (key === 'innerHTML' || key === 'outerHTML') {
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.warn(
+                `Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`
+            );
+        }
+        return;
+    }
     (node as any)[key] = value;
 }
 
