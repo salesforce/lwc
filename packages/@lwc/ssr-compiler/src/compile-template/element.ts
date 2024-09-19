@@ -103,6 +103,8 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        // FIXME: this class should be combined with any user-defined classes
+        bYield(b.identifier('stylesheetScopeTokenClass')),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
         ...irChildrenToEs(node.children, cxt),

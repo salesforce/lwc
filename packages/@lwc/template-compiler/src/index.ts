@@ -24,6 +24,7 @@ export { CustomRendererConfig, CustomRendererElementConfig } from './shared/rend
 export { Config } from './config';
 export { toPropertyName } from './shared/utils';
 export { kebabcaseToCamelcase } from './shared/naming';
+export { generateScopeTokens } from './scopeTokens';
 
 /**
  * Parses HTML markup into an AST

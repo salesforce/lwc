@@ -9,16 +9,16 @@ import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
-import { templateIrToEsTree } from './ir-to-es';
+import { getStylesheetImports } from '../compile-js/stylesheets';
+import { addScopeTokenDeclarations } from '../compile-js/stylesheet-token';
 import { optimizeAdjacentYieldStmts } from './shared';
-
+import { templateIrToEsTree } from './ir-to-es';
 import type {
     Node as EsNode,
     Statement as EsStatement,
     Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
 } from 'estree';
-import {getStylesheetImports} from "../compile-js/stylesheets";
 
 const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
 
@@ -26,23 +26,23 @@ const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
     [EsLiteral, EsStatement[], EsLiteral]
 >`
-    export default async function* tmpl(props, attrs, slotted, Cmp, instance) {    
+    export default async function* tmpl(props, attrs, slotted, Cmp, instance) {
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
 
-        if (defaultStylesheets) {
-            for (const stylesheet of defaultStylesheets) {
-                // TODO
-                const token = null;
-                const useActualHostSelector = true;
-                const useNativeDirPseudoclass = null;
-                yield '<style type="text/css">';
-                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-                yield '</style>';
-            }
+        const stylesheets = [
+            ...(defaultStylesheets ?? []), 
+            ...(defaultScopedStylesheets ?? [])
+        ]
+        for (const stylesheet of stylesheets) {
+            const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+            const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+            const useNativeDirPseudoclass = true;
+            yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
+            yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            yield '</style>';
         }
-        // TODO: defaultScopedStylesheets
 
         ${is.statement};
 
@@ -83,11 +83,10 @@ export default function compileTemplate(src: string, filename: string) {
     ];
     const program = b.program(moduleBody, 'module');
 
-    const stylesheetImports = getStylesheetImports(filename)
+    addScopeTokenDeclarations(program, filename);
 
-    program.body.unshift(
-        ...stylesheetImports
-    )
+    const stylesheetImports = getStylesheetImports(filename);
+    program.body.unshift(...stylesheetImports);
 
     return {
         code: generate(program, {}),

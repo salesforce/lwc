@@ -9,7 +9,7 @@ import { is, builders as b } from 'estree-toolkit';
 import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall, isNullableOf } from '../estree/validators';
-import { bImportDeclaration } from '../estree/builders';
+import { bImportDeclaration, bNamedImportDeclaration } from '../estree/builders';
 
 import type {
     ExportNamedDeclaration,
@@ -31,6 +31,7 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         instance.isConnected = true;
         instance.connectedCallback?.();
         yield \`<\${tagName}\`;
+        yield ${is.identifier}; // stylesheetScopeTokenHostClass
         yield *__renderAttrs(attrs)
         yield '>';
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
@@ -118,6 +119,12 @@ export function addGenerateMarkupExport(
     if (!tmplExplicitImports) {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
         program.body.unshift(bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath)));
+        program.body.unshift(
+            bNamedImportDeclaration(
+                b.identifier('stylesheetScopeTokenHostClass'),
+                b.literal(defaultTmplPath)
+            )
+        );
     }
 
     let attrsAugmentation: ExpressionStatement | null = null;
@@ -128,9 +135,17 @@ export function addGenerateMarkupExport(
         [...state.reflectedPropsInPlay].map((propName) => b.literal(propName))
     );
 
+    const stylesheetScopeTokenHostClassIdentifier = b.identifier('stylesheetScopeTokenHostClass');
+
     program.body.unshift(bInsertFallbackTmplImport());
     program.body.push(bCreateReflectedPropArr(reflectedPropArr));
     program.body.push(
-        bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall, classIdentifier)
+        bGenerateMarkup(
+            attrsAugmentation,
+            classIdentifier,
+            stylesheetScopeTokenHostClassIdentifier,
+            renderCall,
+            classIdentifier
+        )
     );
 }

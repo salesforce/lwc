@@ -7,9 +7,8 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-
 import type { NodePath } from 'estree-toolkit';
-import type { Program, ImportDeclaration } from 'estree';
+import type { ImportDeclaration } from 'estree';
 import type { ComponentMetaState } from './types';
 
 const bDefaultStyleImport = esTemplate<ImportDeclaration>`
@@ -45,17 +44,9 @@ export function getStylesheetImports(filepath: string) {
         throw new Error(`Could not determine module name from file path: ${filepath}`);
     }
 
-    // if (state.cssExplicitImports || state.staticStylesheetIds) {
-    //     throw new Error(
-    //         `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
-    //             '  \n'
-    //         )}`
-    //     );
-    // }
-
     return [
         bDefaultStyleImport(b.literal(`./${moduleName}.css`)),
-        bDefaultScopedStyleImport(b.literal(`./${moduleName}.scoped.css`)),
+        bDefaultScopedStyleImport(b.literal(`./${moduleName}.scoped.css?scoped=true`)),
     ];
 }
 

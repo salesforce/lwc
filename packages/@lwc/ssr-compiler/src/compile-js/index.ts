@@ -145,6 +145,14 @@ export default function compileJS(src: string, filename: string) {
         };
     }
 
+    if (state.cssExplicitImports || state.staticStylesheetIds) {
+        throw new Error(
+            `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
+                '  \n'
+            )}`
+        );
+    }
+
     addGenerateMarkupExport(ast, state, filename);
 
     return {
