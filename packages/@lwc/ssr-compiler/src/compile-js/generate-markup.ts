@@ -30,11 +30,11 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
         instance.isConnected = true;
         instance.connectedCallback?.();
+        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        yield ${is.identifier}; // stylesheetScopeTokenHostClass
+        yield tmplFn.stylesheetScopeTokenHostClass;
         yield *__renderAttrs(attrs)
         yield '>';
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
         yield \`</\${tagName}>\`;
     }
@@ -116,7 +116,13 @@ export function addGenerateMarkupExport(
         ? b.callExpression(b.memberExpression(b.identifier('instance'), b.identifier('render')), [])
         : b.identifier('tmpl');
 
-    if (!tmplExplicitImports) {
+    if (tmplExplicitImports) {
+        // //     const stylesheetScopeTokenHostClass = ''
+        // // FIXME: get the stylesheetScopeTokenHostClass from the `render()`d template
+        // program.body.unshift(b.variableDeclaration('const', [
+        //     b.variableDeclarator(b.identifier('stylesheetScopeTokenHostClass'), b.literal(''))
+        // ]))
+    } else {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
         program.body.unshift(bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath)));
         program.body.unshift(
@@ -135,17 +141,11 @@ export function addGenerateMarkupExport(
         [...state.reflectedPropsInPlay].map((propName) => b.literal(propName))
     );
 
-    const stylesheetScopeTokenHostClassIdentifier = b.identifier('stylesheetScopeTokenHostClass');
+    // const stylesheetScopeTokenHostClassIdentifier = b.identifier('stylesheetScopeTokenHostClass');
 
     program.body.unshift(bInsertFallbackTmplImport());
     program.body.push(bCreateReflectedPropArr(reflectedPropArr));
     program.body.push(
-        bGenerateMarkup(
-            attrsAugmentation,
-            classIdentifier,
-            stylesheetScopeTokenHostClassIdentifier,
-            renderCall,
-            classIdentifier
-        )
+        bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall, classIdentifier)
     );
 }

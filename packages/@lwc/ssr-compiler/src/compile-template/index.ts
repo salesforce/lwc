@@ -10,7 +10,7 @@ import { is, builders as b } from 'estree-toolkit';
 import { parse } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
-import { addScopeTokenDeclarations } from '../compile-js/stylesheet-token';
+import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
