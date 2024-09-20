@@ -1,25 +1,184 @@
 import { LightningElement, renderAttrs, fallbackTmpl } from '@lwc/ssr-runtime';
 import '@lwc/shared';
 
-var defaultStylesheets = undefined;
+var defaultScopedStylesheets = undefined;
 
-async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
+const stylesheetScopeToken = "lwc-1hl7358i549";
+const stylesheetScopeTokenClass = '';
+const stylesheetScopeTokenHostClass = '';
+async function* tmpl(props, attrs, slotted, Cmp, instance) {
   if (Cmp.renderMode !== 'light') {
     yield `<template shadowrootmode="open"${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>`;
   }
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+  const stylesheets = [defaultScopedStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<div style=\"color: red !important\"></div><div style=\"color: red !important\"></div><div style=\"color: red  !important\"></div><div style=\"color: red  !important\"></div><div style=\"color: red ! important\"></div><div style=\"color: red ! important\"></div><div style=\"color: red !IMPORTANT\"></div><div style=\"color: red !IMPORTANT\"></div><div style=\"color: red  !IMPORTANT\"></div><div style=\"color: red  !IMPORTANT\"></div><div style=\"color: red ! IMPORTANT\"></div><div style=\"color: red ! IMPORTANT\"></div><div style=\"color  :  red  !  IMPORTANT  ;\"></div><div style=\"color  :  red  !  IMPORTAnt  ;\"></div><div style=\"color  :  red    ;\"></div><div style=\"color: red; background-color: aqua\"></div><div style=\"color: red ; background-color: aqua;\"></div><div style=\"--its-a-tab:\tred    ;\"></div><div style=\"--its-a-tab-and-a-space:\t red    ;\"></div><div class=\" boo \"></div><div class=\"\tboo\"></div><div class=\" foo bar   \"></div><div class=\" foo  bar  baz \"></div><div class=\"foo   bar\"></div><div class=\"\tfoo  bar \"></div><div class=\" foo\tbar \"></div><div class=\" foo bar\t\"></div>";
+  yield "<div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red !important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red !important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red  !important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red  !important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red ! important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red ! important" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red !IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red !IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red  !IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red  !IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red ! IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red ! IMPORTANT" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color  :  red  !  IMPORTANT  ;" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color  :  red  !  IMPORTAnt  ;" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color  :  red    ;" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red; background-color: aqua" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "color: red ; background-color: aqua;" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "--its-a-tab:\tred    ;" + '"';
+  }
+  yield "></div><div";
+  yield stylesheetScopeTokenClass;
+  {
+    const prefix = '';
+    yield ' ' + "style" + '="' + prefix + "--its-a-tab-and-a-space:\t red    ;" + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + " boo " + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + "\tboo" + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + " foo bar   " + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + " foo  bar  baz " + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + "foo   bar" + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + "\tfoo  bar " + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + " foo\tbar " + '"';
+  }
+  yield "></div><div";
+  {
+    const prefix = '';
+    yield ' ' + "class" + '="' + prefix + " foo bar\t" + '"';
+  }
+  yield "></div>";
   if (Cmp.renderMode !== 'light') {
     yield '</template>';
   }
 }
+tmpl.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 
 class Foo extends LightningElement {}
 const __REFLECTED_PROPS__ = [];
@@ -31,11 +190,12 @@ async function* generateMarkup(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Foo, instance, defaultStylesheets);
+  yield* tmplFn(props, attrs, slotted, Foo, instance);
   yield `</${tagName}>`;
 }
 

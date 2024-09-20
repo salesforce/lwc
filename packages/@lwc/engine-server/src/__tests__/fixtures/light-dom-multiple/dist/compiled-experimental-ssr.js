@@ -14,6 +14,8 @@ function stylesheet$2(token, useActualHostSelector, useNativeDirPseudoclass) {
 }
 var defaultStylesheets$2 = [stylesheet0, stylesheet$2];
 
+var defaultScopedStylesheets = undefined;
+
 function stylesheet$1(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   return "p" + shadowSelector + " {color: saddlebrown;}";
@@ -21,17 +23,24 @@ function stylesheet$1(token, useActualHostSelector, useNativeDirPseudoclass) {
 }
 var defaultStylesheets$1 = [stylesheet$1];
 
-async function* tmpl$2(props, attrs, slotted, Cmp, instance, stylesheets) {
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+const stylesheetScopeToken$2 = "lwc-2c15n1201lc";
+const stylesheetScopeTokenClass$2 = '';
+const stylesheetScopeTokenHostClass$2 = '';
+async function* tmpl$2(props, attrs, slotted, Cmp, instance) {
+  const stylesheets = [defaultStylesheets$1, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken$2 : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass$2 + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<p>one</p>";
+  yield "<p";
+  yield stylesheetScopeTokenClass$2;
+  yield ">one</p>";
 }
+tmpl$2.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass$2;
 
 class One extends LightningElement {
   static renderMode = "light";
@@ -45,11 +54,12 @@ async function* generateMarkup$2(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__$2, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl$2 ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl$2 ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, One, instance, defaultStylesheets$1);
+  yield* tmplFn(props, attrs, slotted, One, instance);
   yield `</${tagName}>`;
 }
 
@@ -60,17 +70,24 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
 }
 var defaultStylesheets = [stylesheet];
 
-async function* tmpl$1(props, attrs, slotted, Cmp, instance, stylesheets) {
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+const stylesheetScopeToken$1 = "lwc-7r2h5lcc";
+const stylesheetScopeTokenClass$1 = '';
+const stylesheetScopeTokenHostClass$1 = '';
+async function* tmpl$1(props, attrs, slotted, Cmp, instance) {
+  const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken$1 : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass$1 + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<p>two</p>";
+  yield "<p";
+  yield stylesheetScopeTokenClass$1;
+  yield ">two</p>";
 }
+tmpl$1.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass$1;
 
 class Two extends LightningElement {
   static renderMode = "light";
@@ -84,24 +101,31 @@ async function* generateMarkup$1(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__$1, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl$1 ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl$1 ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Two, instance, defaultStylesheets);
+  yield* tmplFn(props, attrs, slotted, Two, instance);
   yield `</${tagName}>`;
 }
 
-async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+const stylesheetScopeToken = "lwc-ts1rr7v761";
+const stylesheetScopeTokenClass = '';
+const stylesheetScopeTokenHostClass = '';
+async function* tmpl(props, attrs, slotted, Cmp, instance) {
+  const stylesheets = [defaultStylesheets$2, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<p>Hello</p>";
+  yield "<p";
+  yield stylesheetScopeTokenClass;
+  yield ">Hello</p>";
   {
     const childProps = {};
     const childAttrs = {};
@@ -115,6 +139,7 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
     yield* generateMarkup$1("x-two", childProps, childAttrs, childSlottedContentGenerators);
   }
 }
+tmpl.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 
 class Parent extends LightningElement {
   static renderMode = "light";
@@ -128,11 +153,12 @@ async function* generateMarkup(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Parent, instance, defaultStylesheets$2);
+  yield* tmplFn(props, attrs, slotted, Parent, instance);
   yield `</${tagName}>`;
 }
 

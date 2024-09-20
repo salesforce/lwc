@@ -1,23 +1,31 @@
 import { LightningElement, renderAttrs, fallbackTmpl } from '@lwc/ssr-runtime';
 import { htmlEscape } from '@lwc/shared';
 
-var defaultStylesheets = undefined;
+var defaultScopedStylesheets = undefined;
 
-async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
+const stylesheetScopeToken = "lwc-429691ij06";
+const stylesheetScopeTokenClass = '';
+const stylesheetScopeTokenHostClass = '';
+async function* tmpl(props, attrs, slotted, Cmp, instance) {
   if (Cmp.renderMode !== 'light') {
     yield `<template shadowrootmode="open"${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>`;
   }
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+  const stylesheets = [defaultScopedStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<ol>";
+  yield "<ol";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   for (let [index, item] of Object.entries(instance.list ?? ({}))) {
-    yield "<li>";
+    yield "<li";
+    yield stylesheetScopeTokenClass;
+    yield ">";
     const a = item.continent;
     if (typeof a === 'string') {
       yield a === '' ? '\u200D' : htmlEscape(a);
@@ -26,9 +34,13 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
     } else {
       yield htmlEscape((a ?? '').toString());
     }
-    yield "<ul>";
+    yield "<ul";
+    yield stylesheetScopeTokenClass;
+    yield ">";
     for (let [innerindex, city] of Object.entries(item.cities ?? ({}))) {
-      yield "<li>";
+      yield "<li";
+      yield stylesheetScopeTokenClass;
+      yield ">";
       const b = city;
       if (typeof b === 'string') {
         yield b === '' ? '\u200D' : htmlEscape(b);
@@ -46,6 +58,7 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
     yield '</template>';
   }
 }
+tmpl.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 
 class Test extends LightningElement {
   list;
@@ -59,11 +72,12 @@ async function* generateMarkup(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Test, instance, defaultStylesheets);
+  yield* tmplFn(props, attrs, slotted, Test, instance);
   yield `</${tagName}>`;
 }
 

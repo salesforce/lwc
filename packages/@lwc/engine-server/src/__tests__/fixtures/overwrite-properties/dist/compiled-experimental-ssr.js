@@ -1,21 +1,27 @@
 import { LightningElement, renderAttrs, fallbackTmpl } from '@lwc/ssr-runtime';
 import { htmlEscape } from '@lwc/shared';
 
-var defaultStylesheets = undefined;
+var defaultScopedStylesheets = undefined;
 
-async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
+const stylesheetScopeToken = "lwc-11055soke37";
+const stylesheetScopeTokenClass = '';
+const stylesheetScopeTokenHostClass = '';
+async function* tmpl(props, attrs, slotted, Cmp, instance) {
   if (Cmp.renderMode !== 'light') {
     yield `<template shadowrootmode="open"${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>`;
   }
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+  const stylesheets = [defaultScopedStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<p>";
+  yield "<p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const a = instance.name;
   if (typeof a === 'string') {
     yield a === '' ? '\u200D' : htmlEscape(a);
@@ -24,7 +30,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((a ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const b = instance.namespace;
   if (typeof b === 'string') {
     yield b === '' ? '\u200D' : htmlEscape(b);
@@ -33,7 +41,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((b ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const c = instance.type;
   if (typeof c === 'string') {
     yield c === '' ? '\u200D' : htmlEscape(c);
@@ -42,7 +52,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((c ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const d = instance.parent;
   if (typeof d === 'string') {
     yield d === '' ? '\u200D' : htmlEscape(d);
@@ -51,7 +63,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((d ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const e = instance.value;
   if (typeof e === 'string') {
     yield e === '' ? '\u200D' : htmlEscape(e);
@@ -60,7 +74,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((e ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const f = instance.shadowRoot;
   if (typeof f === 'string') {
     yield f === '' ? '\u200D' : htmlEscape(f);
@@ -69,7 +85,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((f ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const g = instance.children;
   if (typeof g === 'string') {
     yield g === '' ? '\u200D' : htmlEscape(g);
@@ -78,7 +96,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((g ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const h = instance.attributes;
   if (typeof h === 'string') {
     yield h === '' ? '\u200D' : htmlEscape(h);
@@ -87,7 +107,9 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
   } else {
     yield htmlEscape((h ?? '').toString());
   }
-  yield "</p><p>";
+  yield "</p><p";
+  yield stylesheetScopeTokenClass;
+  yield ">";
   const i = instance.eventListeners;
   if (typeof i === 'string') {
     yield i === '' ? '\u200D' : htmlEscape(i);
@@ -101,6 +123,7 @@ async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
     yield '</template>';
   }
 }
+tmpl.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 
 class Cmp extends LightningElement {
   name;
@@ -122,11 +145,12 @@ async function* generateMarkup(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Cmp, instance, defaultStylesheets);
+  yield* tmplFn(props, attrs, slotted, Cmp, instance);
   yield `</${tagName}>`;
 }
 

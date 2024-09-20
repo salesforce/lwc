@@ -1,23 +1,40 @@
 import { LightningElement, renderAttrs, fallbackTmpl } from '@lwc/ssr-runtime';
 
-function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
+function stylesheet$1(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   return "p" + shadowSelector + " {color: red;}";
   /*LWC compiler v8.1.0*/
 }
-var defaultStylesheets = [stylesheet];
+var defaultStylesheets = [stylesheet$1];
 
-async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
-  for (const stylesheet of stylesheets ?? []) {
-    const token = null;
-    const useActualHostSelector = true;
-    const useNativeDirPseudoclass = null;
-    yield '<style type="text/css">';
+function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
+  var shadowSelector = token ? ("." + token) : "";
+  var hostSelector = token ? ("." + token + "-host") : "";
+  return "p" + shadowSelector + " {background-color: blue;}" + ((useActualHostSelector ? ":host {" : hostSelector + " {")) + "display: block;border: 1px solid black;}";
+  /*LWC compiler v8.1.0*/
+}
+stylesheet.$scoped$ = true;
+var defaultScopedStylesheets = [stylesheet];
+
+const stylesheetScopeToken = "lwc-1rssj1tib70";
+const hasScopedStylesheets = defaultScopedStylesheets && defaultScopedStylesheets.length > 0;
+const stylesheetScopeTokenClass = hasScopedStylesheets ? ` class="${stylesheetScopeToken}"` : '';
+const stylesheetScopeTokenHostClass = hasScopedStylesheets ? ` class="${stylesheetScopeToken}-host"` : '';
+async function* tmpl(props, attrs, slotted, Cmp, instance) {
+  const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+  for (const stylesheet of stylesheets) {
+    const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+    const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+    const useNativeDirPseudoclass = true;
+    yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
     yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
     yield '</style>';
   }
-  yield "<p>Hello</p>";
+  yield "<p";
+  yield stylesheetScopeTokenClass;
+  yield ">Hello</p>";
 }
+tmpl.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 
 class Basic extends LightningElement {
   static renderMode = "light";
@@ -31,11 +48,12 @@ async function* generateMarkup(tagName, props, attrs, slotted) {
   instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
   instance.isConnected = true;
   instance.connectedCallback?.();
+  const tmplFn = tmpl ?? fallbackTmpl;
   yield `<${tagName}`;
+  yield tmplFn.stylesheetScopeTokenHostClass;
   yield* renderAttrs(attrs);
   yield '>';
-  const tmplFn = tmpl ?? fallbackTmpl;
-  yield* tmplFn(props, attrs, slotted, Basic, instance, defaultStylesheets);
+  yield* tmplFn(props, attrs, slotted, Basic, instance);
   yield `</${tagName}>`;
 }
 
