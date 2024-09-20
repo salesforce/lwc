@@ -1,0 +1,7 @@
+:dir(rtl) {
+  margin-left: 0;
+}
+
+:host {
+  color: red;
+}
