@@ -1,3 +1,7 @@
 :dir(ltr) {
     margin-right: 0;
 }
+
+:host {
+    color: blue;
+}
