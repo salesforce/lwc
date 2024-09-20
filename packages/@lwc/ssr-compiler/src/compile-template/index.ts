@@ -30,11 +30,10 @@ const bExportTemplate = esTemplate<
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
+        
+        // Flatten all stylesheets infinitely and concatenate
+        const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
 
-        const stylesheets = [
-            ...(defaultStylesheets ?? []), 
-            ...(defaultScopedStylesheets ?? [])
-        ]
         for (const stylesheet of stylesheets) {
             const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
             const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
