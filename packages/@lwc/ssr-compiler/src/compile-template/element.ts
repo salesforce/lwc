@@ -29,7 +29,7 @@ import type { Transformer } from './types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 const bConditionalLiveYield = esTemplateWithYield<EsBlockStatement>`
     {
-        const prefix = (${is.literal} && stylesheetScopeTokenClassPrefix) || '';
+        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
         const attrOrPropValue = ${is.expression};
         const valueType = typeof attrOrPropValue;
         if (attrOrPropValue && (valueType === 'string' || valueType === 'boolean')) {
@@ -43,7 +43,7 @@ const bConditionalLiveYield = esTemplateWithYield<EsBlockStatement>`
 
 const bStringLiteralYield = esTemplateWithYield<EsBlockStatement>`
     {
-        const prefix = (${is.literal} && stylesheetScopeTokenClassPrefix) || '';
+        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
         yield ' ' + ${is.literal} + '="' + prefix + "${is.literal}" + '"'
     }
 `;
@@ -56,7 +56,6 @@ function yieldAttrOrPropLiteralValue(
     const { value, type } = valueNode;
     if (typeof value === 'string') {
         const yieldedValue = name === 'style' ? cleanStyleAttrVal(value) : value;
-        // return [bYield(b.literal(` ${name}="${yieldedValue}"`))];
         return [bStringLiteralYield(b.literal(isClass), b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         return [bYield(b.literal(` ${name}`))];
@@ -108,15 +107,19 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
 
     let hasClassAttribute = false;
     const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
-        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-        const isClass = attr.type === 'Attribute' && attr.name === 'class';
+        const { name, value, type } = attr;
+
+        // For classes, these may need to be prefixed with the scope token
+        const isClass = type === 'Attribute' && name === 'class';
         if (isClass) {
             hasClassAttribute = true;
         }
-        if (attr.value.type === 'Literal') {
-            return yieldAttrOrPropLiteralValue(attr.name, attr.value, isClass);
+
+        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+        if (value.type === 'Literal') {
+            return yieldAttrOrPropLiteralValue(name, value, isClass);
         } else {
-            return yieldAttrOrPropLiveValue(attr.name, attr.value, isClass);
+            return yieldAttrOrPropLiveValue(name, value, isClass);
         }
     });
 
@@ -126,6 +129,7 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bYield(b.identifier('stylesheetScopeTokenClass'))]),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),

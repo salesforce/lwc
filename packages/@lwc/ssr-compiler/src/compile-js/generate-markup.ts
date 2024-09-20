@@ -9,7 +9,7 @@ import { is, builders as b } from 'estree-toolkit';
 import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall, isNullableOf } from '../estree/validators';
-import { bImportDeclaration, bNamedImportDeclaration } from '../estree/builders';
+import { bImportDeclaration } from '../estree/builders';
 
 import type {
     ExportNamedDeclaration,
@@ -116,21 +116,9 @@ export function addGenerateMarkupExport(
         ? b.callExpression(b.memberExpression(b.identifier('instance'), b.identifier('render')), [])
         : b.identifier('tmpl');
 
-    if (tmplExplicitImports) {
-        // //     const stylesheetScopeTokenHostClass = ''
-        // // FIXME: get the stylesheetScopeTokenHostClass from the `render()`d template
-        // program.body.unshift(b.variableDeclaration('const', [
-        //     b.variableDeclarator(b.identifier('stylesheetScopeTokenHostClass'), b.literal(''))
-        // ]))
-    } else {
+    if (!tmplExplicitImports) {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
         program.body.unshift(bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath)));
-        program.body.unshift(
-            bNamedImportDeclaration(
-                b.identifier('stylesheetScopeTokenHostClass'),
-                b.literal(defaultTmplPath)
-            )
-        );
     }
 
     let attrsAugmentation: ExpressionStatement | null = null;
@@ -140,8 +128,6 @@ export function addGenerateMarkupExport(
     const reflectedPropArr = b.arrayExpression(
         [...state.reflectedPropsInPlay].map((propName) => b.literal(propName))
     );
-
-    // const stylesheetScopeTokenHostClassIdentifier = b.identifier('stylesheetScopeTokenHostClass');
 
     program.body.unshift(bInsertFallbackTmplImport());
     program.body.push(bCreateReflectedPropArr(reflectedPropArr));

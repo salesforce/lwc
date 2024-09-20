@@ -14,7 +14,3 @@ import type { ImportDeclaration } from 'estree';
 export const bImportDeclaration = esTemplate<ImportDeclaration>`
     import ${is.identifier} from "${isStringLiteral}";
 `;
-
-export const bNamedImportDeclaration = esTemplate<ImportDeclaration>`
-    import { ${is.identifier} } from "${isStringLiteral}";
-`;

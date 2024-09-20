@@ -5,7 +5,8 @@ import { esTemplate } from '../estemplate';
 import type { BlockStatement, ExportNamedDeclaration, Program, VariableDeclaration } from 'estree';
 
 function generateStylesheetScopeToken(filename: string) {
-    // FIXME: should pass in the namespace since we might not have it from the filename alone
+    // FIXME: we should be getting the namespace/name from the config options,
+    // since these actually come from the component filename, not the template filename.
     const split = filename.split('/');
     const namespace = split.at(-3)!;
     const baseName = split.at(-1)!;
@@ -23,36 +24,24 @@ const bStylesheetTokenDeclaration = esTemplate<VariableDeclaration>`
     const stylesheetScopeToken = '${is.literal}';
 `;
 
-const bScopeTokenHasScopedStylesheetsDeclaration = esTemplate<VariableDeclaration>`
-    const hasScopedStylesheets = defaultScopedStylesheets && defaultScopedStylesheets.length > 0;
-`;
+const bAdditionalDeclarations = [
+    esTemplate<VariableDeclaration>`
+        const hasScopedStylesheets = defaultScopedStylesheets && defaultScopedStylesheets.length > 0;
+    `,
+    esTemplate<ExportNamedDeclaration>`
+        const stylesheetScopeTokenClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}"\` : '';
+    `,
+    esTemplate<ExportNamedDeclaration>`
+        const stylesheetScopeTokenHostClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}-host"\` : '';
+    `,
+    esTemplate<ExportNamedDeclaration>`
+        const stylesheetScopeTokenClassPrefix = hasScopedStylesheets ? (stylesheetScopeToken + ' ') : '';
+    `,
+];
 
-const bScopeTokenClassDeclaration = esTemplate<ExportNamedDeclaration>`
-    const stylesheetScopeTokenClass = hasScopedStylesheets
-        ? \` class="\${stylesheetScopeToken}"\`
-        : '';
-`;
-
-const bScopeTokenHostClassDeclaration = esTemplate<ExportNamedDeclaration>`
-    const stylesheetScopeTokenHostClass = hasScopedStylesheets
-        ? \` class="\${stylesheetScopeToken}-host"\`
-        : '';
-`;
-
-const bScopeTokenClassPrefixDeclaration = esTemplate<ExportNamedDeclaration>`
-    const stylesheetScopeTokenClassPrefix = hasScopedStylesheets
-        ? (stylesheetScopeToken + ' ')
-        : '';
-`;
-
+// Scope tokens are associated with a given template. This is assigned here so that it can be used in `generateMarkup`.
 const tmplAssignmentBlock = esTemplate<BlockStatement>`
-    Object.assign(${is.identifier}, {
-        stylesheetScopeToken,
-        hasScopedStylesheets,
-        stylesheetScopeTokenClass,
-        stylesheetScopeTokenHostClass,
-        stylesheetScopeTokenClassPrefix
-    });
+    ${is.identifier}.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 `;
 
 export function addScopeTokenDeclarations(program: Program, filename: string) {
@@ -60,10 +49,7 @@ export function addScopeTokenDeclarations(program: Program, filename: string) {
 
     program.body.unshift(
         bStylesheetTokenDeclaration(b.literal(scopeToken)),
-        bScopeTokenHasScopedStylesheetsDeclaration(),
-        bScopeTokenClassDeclaration(),
-        bScopeTokenHostClassDeclaration(),
-        bScopeTokenClassPrefixDeclaration()
+        ...bAdditionalDeclarations.map((declaration) => declaration())
     );
 
     program.body.push(tmplAssignmentBlock(b.identifier('tmpl')));
