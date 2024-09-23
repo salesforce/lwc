@@ -727,8 +727,13 @@ export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook)
 }
 
 // [s]anitize [h]tml [c]ontent
+const isTrustedContent = Symbol('lwc-trusted-content');
 function shc(content: unknown): string {
-    return sanitizeHtmlContentHook(content);
+    const sanitized = sanitizeHtmlContentHook(content);
+    const object = ObjectCreate(null);
+    object[isTrustedContent] = true;
+    object[Symbol.toPrimitive] = () => sanitized;
+    return object;
 }
 
 /**
