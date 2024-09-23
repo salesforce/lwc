@@ -1,7 +1,7 @@
 <template>
-  <!-- <div data-id="div-inner-static" inner-h-t-m-l="<p>Ü</p>">original</div>
-  <div data-id="div-inner-computed" inner-h-t-m-l={computed}>original</div> -->
-  <div data-id="div-inner-spread" lwc:spread={spread}>original</div>
+  <div data-id="div-inner-static" inner-h-t-m-l="<p>Ü</p>">original</div>
+  <div data-id="div-inner-computed" inner-h-t-m-l={computed}>original</div>
+  <div data-id="div-inner-spread" data-expect-warning lwc:spread={spread}>original</div>
 
   <!-- <x-component data-id="cmp-inner-static" inner-h-t-m-l="<p>Ü</p>">original</x-component>
   <x-component data-id="cmp-inner-computed" inner-h-t-m-l={computed}>original</x-component>
