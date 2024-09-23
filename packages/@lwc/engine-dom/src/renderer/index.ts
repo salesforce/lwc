@@ -76,6 +76,7 @@ function setProperty<K extends string>(
     key: K,
     value: unknown
 ): void {
+    // See W-16614337
     if (key === 'innerHTML' || key === 'outerHTML') {
         if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line no-console

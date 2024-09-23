@@ -13,6 +13,7 @@ beforeEach(() => {
 });
 
 for (const whatter of ['inner', 'outer']) {
+    // See W-16614337
     it(`does not render ${whatter} HTML from attributes`, async () => {
         const Whatter = whatter === 'inner' ? Inner : Outer;
         const elm = createElement(`x-${whatter}`, { is: Whatter });
