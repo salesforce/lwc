@@ -32,15 +32,17 @@ const bExportTemplate = esTemplate<
         }
         
         // Flatten all stylesheets infinitely and concatenate
-        const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
-
-        for (const stylesheet of stylesheets) {
-            const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
-            const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
-            const useNativeDirPseudoclass = true;
-            yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
-            yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-            yield '</style>';
+        if (defaultStylesheets && defaultScopedStylesheets) {
+            const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+    
+            for (const stylesheet of stylesheets) {
+                const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+                const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+                const useNativeDirPseudoclass = true;
+                yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
+                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                yield '</style>';
+            }
         }
 
         ${is.statement};
