@@ -49,9 +49,9 @@ export type scopeTokens = {
 /**
  * Generate the scope tokens for a given component. Note that this API is NOT stable and should be
  * considered internal to the LWC framework.
- * @param filename - full filename, e.g. `path/to/x/foo/foo.html`
- * @param namespace - namespace, e.g. 'x' for `x/foo/foo.html`
- * @param componentName - component name, e.g. 'foo' for `x/foo/foo.html`
+ * @param filename - full filename, e.g. `path/to/x/foo/foo.js`
+ * @param namespace - namespace, e.g. 'x' for `x/foo/foo.js`
+ * @param componentName - component name, e.g. 'foo' for `x/foo/foo.js`
  */
 export function generateScopeTokens(
     filename: string,
