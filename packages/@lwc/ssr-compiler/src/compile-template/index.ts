@@ -31,8 +31,8 @@ const bExportTemplate = esTemplate<
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
         
-        // Flatten all stylesheets infinitely and concatenate
-        if (defaultStylesheets && defaultScopedStylesheets) {
+        if (defaultStylesheets || defaultScopedStylesheets) {
+            // Flatten all stylesheets infinitely and concatenate
             const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
     
             for (const stylesheet of stylesheets) {
