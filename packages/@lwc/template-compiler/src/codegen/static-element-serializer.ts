@@ -72,54 +72,50 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         hasSvgUseHref?: boolean;
         needsScoping?: boolean;
     }) => {
-        let v = typeof value === 'string' ? templateStringEscape(value) : value;
-        const isBooleanAttribute = typeof value === 'boolean';
-
-        if (name === 'class') {
-            if (isBooleanAttribute) {
-                return;
-            }
-            // ${0} maps to class token that will be appended to the string.
-            // See buildParseFragmentFn for details.
-            // The token is only needed when the class attribute is static.
-            // The token will be injected at runtime for expressions in parseFragmentFn.
-            if (!hasExpression) {
-                if (typeof v === 'string') {
-                    v = normalizeWhitespace(v);
-                }
-                if (v === '') {
-                    // Do not serialize empty class attribute (consistent with non-static optimized)
-                    return;
-                }
-                v += '${0}';
-            }
-            hasClassAttr = true;
-        }
-
-        if (name === 'style' && isBooleanAttribute) {
+        // Do not serialize boolean class/style attribute (consistent with non-static optimized)
+        if (typeof value === 'boolean' && (name === 'class' || name === 'style')) {
             return;
-        }
-        if (name === 'style' && !hasExpression && typeof v === 'string') {
-            v = normalizeStyleAttribute(v);
-            if (v === '') {
-                // Do not serialize empty style attribute (consistent with non-static optimized)
-                return;
-            }
-        }
-
-        // `spellcheck` string values are specially handled to massage them into booleans.
-        // For backwards compat with non-static-optimized templates, we also treat any non-`"false"`
-        // value other than the valueless format (e.g. `<div spellcheck>`) as `"true"`,
-        // even though per MDN, the empty string and `"true"` are equivalent:
-        // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/spellcheck
-        if (name === 'spellcheck' && typeof v === 'string' && !hasExpression) {
-            v = String(v.toLowerCase() !== 'false');
         }
 
         // See W-16614169
         const escapedAttributeName = templateStringEscape(name);
 
-        if (typeof v === 'string') {
+        if (typeof value === 'string') {
+            let v = templateStringEscape(value);
+
+            if (name === 'class') {
+                // ${0} maps to class token that will be appended to the string.
+                // See buildParseFragmentFn for details.
+                // The token is only needed when the class attribute is static.
+                // The token will be injected at runtime for expressions in parseFragmentFn.
+                if (!hasExpression) {
+                    v = normalizeWhitespace(v);
+                    if (v === '') {
+                        // Do not serialize empty class attribute (consistent with non-static optimized)
+                        return;
+                    }
+                    v += '${0}';
+                }
+                hasClassAttr = true;
+            }
+
+            // `spellcheck` string values are specially handled to massage them into booleans.
+            // For backwards compat with non-static-optimized templates, we also treat any non-`"false"`
+            // value other than the valueless format (e.g. `<div spellcheck>`) as `"true"`,
+            // even though per MDN, the empty string and `"true"` are equivalent:
+            // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/spellcheck
+            if (name === 'spellcheck' && !hasExpression) {
+                v = String(v.toLowerCase() !== 'false');
+            }
+
+            if (name === 'style' && !hasExpression) {
+                v = normalizeStyleAttribute(v);
+                if (v === '') {
+                    // Do not serialize empty style attribute (consistent with non-static optimized)
+                    return;
+                }
+            }
+
             // IDs/IDRefs must be handled dynamically at runtime due to synthetic shadow scoping.
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
