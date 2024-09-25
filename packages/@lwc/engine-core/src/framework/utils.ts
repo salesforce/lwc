@@ -14,7 +14,7 @@ import {
     isAPIFeatureEnabled,
     APIFeature,
 } from '@lwc/shared';
-import { logWarnOnce } from '../shared/logger';
+import { logWarn, logWarnOnce } from '../shared/logger';
 import { Stylesheet, Stylesheets } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -149,10 +149,7 @@ export function shouldSetProperty(key: string, value: unknown): boolean {
             return true;
         }
         if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line no-console
-            console.warn(
-                `Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`
-            );
+            logWarn(`Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`);
         }
         return false;
     }
