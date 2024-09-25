@@ -61,6 +61,9 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     // it is an element
     result &&= isElement(node);
 
+    // See W-16784305
+    result &&= node.name !== 'noframes';
+
     // all attrs are static-safe
     // the criteria to determine safety can be found in computeAttrValue
     result &&= attributes.every(({ name }) => {

@@ -23,7 +23,7 @@
         "@lwc/rollup-plugin": "8.1.0",
         "@lwc/synthetic-shadow": "8.1.0",
         "@types/jasmine": "^5.1.4",
-        "chokidar": "^4.0.0",
+        "chokidar": "^4.0.1",
         "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",
         "istanbul-reports": "^3.1.7",
