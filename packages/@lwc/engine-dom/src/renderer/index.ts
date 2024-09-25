@@ -76,16 +76,6 @@ function setProperty<K extends string>(
     key: K,
     value: unknown
 ): void {
-    // See W-16614337
-    if (key === 'innerHTML' || key === 'outerHTML') {
-        if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line no-console
-            console.warn(
-                `Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`
-            );
-        }
-        return;
-    }
     (node as any)[key] = value;
 }
 

@@ -26,7 +26,12 @@ import {
 import { logError, logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
-import { cloneAndOmitKey, parseStyleText, shouldBeFormAssociated } from './utils';
+import {
+    cloneAndOmitKey,
+    parseStyleText,
+    shouldBeFormAssociated,
+    shouldSetProperty,
+} from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
@@ -240,7 +245,10 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    setProperty(node, NODE_VALUE_PROP, vnode.text ?? null);
+    const value = vnode.text ?? null;
+    if (shouldSetProperty(NODE_VALUE_PROP, value)) {
+        setProperty(node, NODE_VALUE_PROP, value);
+    }
     vnode.elm = node;
 
     return node;

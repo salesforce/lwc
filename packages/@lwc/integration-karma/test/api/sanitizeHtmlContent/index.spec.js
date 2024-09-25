@@ -57,7 +57,7 @@ it('does not call sanitizeHtmlContent when raw value does not change', () => {
     });
 });
 
-fit('replace the original attribute value with the returned value', () => {
+it('replace the original attribute value with the returned value', () => {
     const original = setSanitizeHtmlContentHookForTest(() => ALTERNATIVE_CONTENT);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });

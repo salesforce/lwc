@@ -59,6 +59,7 @@ import {
     VText,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
+import { createSanitizedHtmlContent, SanitizedHtmlContent } from './sanitized-html-content';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -727,13 +728,9 @@ export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook)
 }
 
 // [s]anitize [h]tml [c]ontent
-const isTrustedContent = Symbol('lwc-trusted-content');
-function shc(content: unknown): string {
-    const sanitized = sanitizeHtmlContentHook(content);
-    const object = ObjectCreate(null);
-    object[isTrustedContent] = true;
-    object[Symbol.toPrimitive] = () => sanitized;
-    return object;
+function shc(content: unknown): SanitizedHtmlContent {
+    const sanitizedString = sanitizeHtmlContentHook(content);
+    return createSanitizedHtmlContent(sanitizedString);
 }
 
 /**

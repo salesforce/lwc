@@ -14,7 +14,7 @@ import {
 } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 
-import { EmptyObject } from '../utils';
+import { EmptyObject, shouldSetProperty } from '../utils';
 import { VBaseElement, VStatic, VStaticPartElement } from '../vnodes';
 
 const ColonCharCode = 58;
@@ -51,7 +51,9 @@ export function patchAttributes(
             // Use kebabCaseToCamelCase directly because we don't want to set props like `ariaLabel` or `tabIndex`
             // on a custom element versus just using the more reliable attribute format.
             if (external && (propName = kebabCaseToCamelCase(key)) in elm!) {
-                setProperty(elm, propName, cur);
+                if (shouldSetProperty(propName, cur)) {
+                    setProperty(elm, propName, cur);
+                }
             } else if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, key, cur as string, XML_NAMESPACE);

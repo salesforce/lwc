@@ -18,6 +18,7 @@ import { logWarnOnce } from '../shared/logger';
 import { Stylesheet, Stylesheets } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
+import { isSanitizedHtmlContent } from './sanitized-html-content';
 
 type Callback = () => void;
 
@@ -139,4 +140,21 @@ export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
     }
 
     return ctorFormAssociated && apiFeatureEnabled;
+}
+
+export function shouldSetProperty(key: string, value: unknown): boolean {
+    // See W-16614337
+    if (key === 'innerHTML' || key === 'outerHTML') {
+        if (isSanitizedHtmlContent(value)) {
+            return true;
+        }
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.warn(
+                `Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`
+            );
+        }
+        return false;
+    }
+    return true;
 }

@@ -7,7 +7,7 @@
 import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
-import { EmptyObject } from '../utils';
+import { EmptyObject, shouldSetProperty } from '../utils';
 import { VBaseElement } from '../vnodes';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
@@ -66,7 +66,9 @@ export function patchProps(
                     );
                 }
             }
-            setProperty(elm!, key, cur);
+            if (shouldSetProperty(key, cur)) {
+                setProperty(elm!, key, cur);
+            }
         }
     }
 }
