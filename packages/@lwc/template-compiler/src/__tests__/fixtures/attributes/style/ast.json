@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 17,
+            "endLine": 18,
             "endColumn": 12,
             "start": 0,
-            "end": 545,
+            "end": 567,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 17,
+                "startLine": 18,
                 "startColumn": 1,
-                "endLine": 17,
+                "endLine": 18,
                 "endColumn": 12,
-                "start": 534,
-                "end": 545
+                "start": 556,
+                "end": 567
             }
         },
         "directives": [],
@@ -392,24 +392,24 @@
                     "startLine": 12,
                     "startColumn": 5,
                     "endLine": 12,
-                    "endColumn": 25,
+                    "endColumn": 22,
                     "start": 385,
-                    "end": 405,
+                    "end": 402,
                     "startTag": {
                         "startLine": 12,
                         "startColumn": 5,
                         "endLine": 12,
-                        "endColumn": 19,
+                        "endColumn": 16,
                         "start": 385,
-                        "end": 399
+                        "end": 396
                     },
                     "endTag": {
                         "startLine": 12,
-                        "startColumn": 19,
+                        "startColumn": 16,
                         "endLine": 12,
-                        "endColumn": 25,
-                        "start": 399,
-                        "end": 405
+                        "endColumn": 22,
+                        "start": 396,
+                        "end": 402
                     }
                 },
                 "attributes": [
@@ -418,15 +418,15 @@
                         "name": "style",
                         "value": {
                             "type": "Literal",
-                            "value": ""
+                            "value": true
                         },
                         "location": {
                             "startLine": 12,
                             "startColumn": 10,
                             "endLine": 12,
-                            "endColumn": 18,
+                            "endColumn": 15,
                             "start": 390,
-                            "end": 398
+                            "end": 395
                         }
                     }
                 ],
@@ -443,24 +443,24 @@
                     "startLine": 13,
                     "startColumn": 5,
                     "endLine": 13,
-                    "endColumn": 29,
-                    "start": 410,
-                    "end": 434,
+                    "endColumn": 25,
+                    "start": 407,
+                    "end": 427,
                     "startTag": {
                         "startLine": 13,
                         "startColumn": 5,
                         "endLine": 13,
-                        "endColumn": 23,
-                        "start": 410,
-                        "end": 428
+                        "endColumn": 19,
+                        "start": 407,
+                        "end": 421
                     },
                     "endTag": {
                         "startLine": 13,
-                        "startColumn": 23,
+                        "startColumn": 19,
                         "endLine": 13,
-                        "endColumn": 29,
-                        "start": 428,
-                        "end": 434
+                        "endColumn": 25,
+                        "start": 421,
+                        "end": 427
                     }
                 },
                 "attributes": [
@@ -469,15 +469,15 @@
                         "name": "style",
                         "value": {
                             "type": "Literal",
-                            "value": "    "
+                            "value": ""
                         },
                         "location": {
                             "startLine": 13,
                             "startColumn": 10,
                             "endLine": 13,
-                            "endColumn": 22,
-                            "start": 415,
-                            "end": 427
+                            "endColumn": 18,
+                            "start": 412,
+                            "end": 420
                         }
                     }
                 ],
@@ -494,24 +494,24 @@
                     "startLine": 14,
                     "startColumn": 5,
                     "endLine": 14,
-                    "endColumn": 40,
-                    "start": 439,
-                    "end": 474,
+                    "endColumn": 29,
+                    "start": 432,
+                    "end": 456,
                     "startTag": {
                         "startLine": 14,
                         "startColumn": 5,
                         "endLine": 14,
-                        "endColumn": 34,
-                        "start": 439,
-                        "end": 468
+                        "endColumn": 23,
+                        "start": 432,
+                        "end": 450
                     },
                     "endTag": {
                         "startLine": 14,
-                        "startColumn": 34,
+                        "startColumn": 23,
                         "endLine": 14,
-                        "endColumn": 40,
-                        "start": 468,
-                        "end": 474
+                        "endColumn": 29,
+                        "start": 450,
+                        "end": 456
                     }
                 },
                 "attributes": [
@@ -520,15 +520,15 @@
                         "name": "style",
                         "value": {
                             "type": "Literal",
-                            "value": ";;;;;;;;;;;;;;;"
+                            "value": "    "
                         },
                         "location": {
                             "startLine": 14,
                             "startColumn": 10,
                             "endLine": 14,
-                            "endColumn": 33,
-                            "start": 444,
-                            "end": 467
+                            "endColumn": 22,
+                            "start": 437,
+                            "end": 449
                         }
                     }
                 ],
@@ -545,24 +545,24 @@
                     "startLine": 15,
                     "startColumn": 5,
                     "endLine": 15,
-                    "endColumn": 32,
-                    "start": 479,
-                    "end": 506,
+                    "endColumn": 40,
+                    "start": 461,
+                    "end": 496,
                     "startTag": {
                         "startLine": 15,
                         "startColumn": 5,
                         "endLine": 15,
-                        "endColumn": 26,
-                        "start": 479,
-                        "end": 500
+                        "endColumn": 34,
+                        "start": 461,
+                        "end": 490
                     },
                     "endTag": {
                         "startLine": 15,
-                        "startColumn": 26,
+                        "startColumn": 34,
                         "endLine": 15,
-                        "endColumn": 32,
-                        "start": 500,
-                        "end": 506
+                        "endColumn": 40,
+                        "start": 490,
+                        "end": 496
                     }
                 },
                 "attributes": [
@@ -571,15 +571,15 @@
                         "name": "style",
                         "value": {
                             "type": "Literal",
-                            "value": "invalid"
+                            "value": ";;;;;;;;;;;;;;;"
                         },
                         "location": {
                             "startLine": 15,
                             "startColumn": 10,
                             "endLine": 15,
-                            "endColumn": 25,
-                            "start": 484,
-                            "end": 499
+                            "endColumn": 33,
+                            "start": 466,
+                            "end": 489
                         }
                     }
                 ],
@@ -596,24 +596,75 @@
                     "startLine": 16,
                     "startColumn": 5,
                     "endLine": 16,
-                    "endColumn": 27,
-                    "start": 511,
-                    "end": 533,
+                    "endColumn": 32,
+                    "start": 501,
+                    "end": 528,
                     "startTag": {
                         "startLine": 16,
                         "startColumn": 5,
                         "endLine": 16,
-                        "endColumn": 21,
-                        "start": 511,
-                        "end": 527
+                        "endColumn": 26,
+                        "start": 501,
+                        "end": 522
                     },
                     "endTag": {
                         "startLine": 16,
-                        "startColumn": 21,
+                        "startColumn": 26,
                         "endLine": 16,
+                        "endColumn": 32,
+                        "start": 522,
+                        "end": 528
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "invalid"
+                        },
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 10,
+                            "endLine": 16,
+                            "endColumn": 25,
+                            "start": 506,
+                            "end": 521
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 17,
+                    "startColumn": 5,
+                    "endLine": 17,
+                    "endColumn": 27,
+                    "start": 533,
+                    "end": 555,
+                    "startTag": {
+                        "startLine": 17,
+                        "startColumn": 5,
+                        "endLine": 17,
+                        "endColumn": 21,
+                        "start": 533,
+                        "end": 549
+                    },
+                    "endTag": {
+                        "startLine": 17,
+                        "startColumn": 21,
+                        "endLine": 17,
                         "endColumn": 27,
-                        "start": 527,
-                        "end": 533
+                        "start": 549,
+                        "end": 555
                     }
                 },
                 "attributes": [
@@ -625,12 +676,12 @@
                             "value": ":;"
                         },
                         "location": {
-                            "startLine": 16,
+                            "startLine": 17,
                             "startColumn": 10,
-                            "endLine": 16,
+                            "endLine": 17,
                             "endColumn": 20,
-                            "start": 516,
-                            "end": 526
+                            "start": 538,
+                            "end": 548
                         }
                     }
                 ],

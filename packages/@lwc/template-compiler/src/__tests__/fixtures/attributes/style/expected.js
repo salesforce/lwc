@@ -38,7 +38,6 @@ const stc6 = {
   key: 6,
 };
 const stc7 = {
-  styleDecls: [],
   key: 7,
 };
 const stc8 = {
@@ -57,6 +56,10 @@ const stc11 = {
   styleDecls: [],
   key: 11,
 };
+const stc12 = {
+  styleDecls: [],
+  key: 12,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -72,6 +75,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("div", stc9),
     api_element("div", stc10),
     api_element("div", stc11),
+    api_element("div", stc12),
   ];
   /*LWC compiler vX.X.X*/
 }
