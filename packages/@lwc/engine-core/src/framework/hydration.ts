@@ -26,12 +26,7 @@ import {
 import { logError, logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
-import {
-    cloneAndOmitKey,
-    parseStyleText,
-    shouldBeFormAssociated,
-    shouldSetProperty,
-} from './utils';
+import { cloneAndOmitKey, parseStyleText, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
@@ -66,6 +61,7 @@ import { hydrateStaticParts, traverseAndSetElements } from './modules/static-par
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
+import { safelySetProperty } from './sanitized-html-content';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -245,10 +241,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    const value = vnode.text ?? null;
-    if (shouldSetProperty(NODE_VALUE_PROP, value)) {
-        setProperty(node, NODE_VALUE_PROP, value);
-    }
+    safelySetProperty(setProperty, node as Element, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;

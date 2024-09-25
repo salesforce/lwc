@@ -1,10 +1,11 @@
-import { create as ObjectCreate, isNull, isObject, isTrue } from '@lwc/shared';
+import { create as ObjectCreate, isNull, isObject, isUndefined } from '@lwc/shared';
+import { logWarn } from '../shared/logger';
+import type { RendererAPI } from './renderer';
 
-const isSanitizedHtmlContentSymbol = Symbol('lwc-sanitized-html-content');
+const sanitizedHtmlContentSymbol = Symbol('lwc-get-sanitized-html-content');
 
 export type SanitizedHtmlContent = {
-    [isSanitizedHtmlContentSymbol]: true;
-    [Symbol.toPrimitive]: () => string;
+    [sanitizedHtmlContentSymbol]: unknown;
 };
 
 /**
@@ -13,15 +14,10 @@ export type SanitizedHtmlContent = {
  * @param sanitizedString
  * @returns SanitizedHtmlContent
  */
-export function createSanitizedHtmlContent(sanitizedString: string): SanitizedHtmlContent {
+export function createSanitizedHtmlContent(sanitizedString: unknown): SanitizedHtmlContent {
     return ObjectCreate(null, {
-        [isSanitizedHtmlContentSymbol]: {
-            value: true,
-            configurable: false,
-            writable: false,
-        },
-        [Symbol.toPrimitive]: {
-            value: () => sanitizedString,
+        [sanitizedHtmlContentSymbol]: {
+            value: sanitizedString,
             configurable: false,
             writable: false,
         },
@@ -29,11 +25,34 @@ export function createSanitizedHtmlContent(sanitizedString: string): SanitizedHt
 }
 
 /**
- * Return true if this is a wrapped SanitiziedHtmlContent object.
- * @param object
+ * Safely call setProperty on an Element while handling any SanitizedHtmlContent objects correctly
+ *
+ * @param setProperty - renderer.setProperty
+ * @param elm - Element
+ * @param key - key to set
+ * @param value -  value to set
  */
-export function isSanitizedHtmlContent(object: unknown): object is SanitizedHtmlContent {
-    return (
-        isObject(object) && !isNull(object) && isTrue((object as any)[isSanitizedHtmlContentSymbol])
-    );
+export function safelySetProperty(
+    setProperty: RendererAPI['setProperty'],
+    elm: Element,
+    key: string,
+    value: any
+) {
+    // See W-16614337
+    // we support setting innerHTML to `undefined` because it's inherently safe
+    if ((key === 'innerHTML' || key === 'outerHTML') && !isUndefined(value)) {
+        if (isObject(value) && !isNull(value) && sanitizedHtmlContentSymbol in value) {
+            // it's a SanitizedHtmlContent object
+            setProperty(elm, key, value[sanitizedHtmlContentSymbol]);
+        } else {
+            // not a SanitizedHtmlContent object
+            if (process.env.NODE_ENV !== 'production') {
+                logWarn(
+                    `Cannot set property "${key}". Instead, use lwc:inner-html or lwc:dom-manual.`
+                );
+            }
+        }
+    } else {
+        setProperty(elm, key, value);
+    }
 }
