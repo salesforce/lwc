@@ -1,12 +1,13 @@
 import _implicitStylesheets from "./class.css";
 import _implicitScopedStylesheets from "./class.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div class="foo${0}"${2}></div>`;
-const $fragment2 = parseFragment`<div class="foo bar${0}"${2}></div>`;
+const $fragment1 = parseFragment`<div${3}></div>`;
+const $fragment2 = parseFragment`<div class="foo${0}"${2}></div>`;
 const $fragment3 = parseFragment`<div class="foo bar${0}"${2}></div>`;
 const $fragment4 = parseFragment`<div class="foo bar${0}"${2}></div>`;
-const $fragment5 = parseFragment`<div${3}></div>`;
+const $fragment5 = parseFragment`<div class="foo bar${0}"${2}></div>`;
 const $fragment6 = parseFragment`<div${3}></div>`;
+const $fragment7 = parseFragment`<div${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [
@@ -16,6 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_static_fragment($fragment4, 7),
     api_static_fragment($fragment5, 9),
     api_static_fragment($fragment6, 11),
+    api_static_fragment($fragment7, 13),
   ];
   /*LWC compiler vX.X.X*/
 }

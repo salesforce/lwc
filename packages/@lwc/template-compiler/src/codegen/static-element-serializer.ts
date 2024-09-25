@@ -73,8 +73,12 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         needsScoping?: boolean;
     }) => {
         let v = typeof value === 'string' ? templateStringEscape(value) : value;
+        const isBooleanAttribute = typeof value === 'boolean';
 
         if (name === 'class') {
+            if (isBooleanAttribute) {
+                return;
+            }
             // ${0} maps to class token that will be appended to the string.
             // See buildParseFragmentFn for details.
             // The token is only needed when the class attribute is static.
@@ -92,6 +96,9 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             hasClassAttr = true;
         }
 
+        if (name === 'style' && isBooleanAttribute) {
+            return;
+        }
         if (name === 'style' && !hasExpression && typeof v === 'string') {
             v = normalizeStyleAttribute(v);
             if (v === '') {
