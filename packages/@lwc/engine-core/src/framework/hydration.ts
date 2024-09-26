@@ -61,7 +61,6 @@ import { hydrateStaticParts, traverseAndSetElements } from './modules/static-par
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
-import { safelySetProperty } from './sanitized-html-content';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -241,7 +240,9 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    safelySetProperty(setProperty, node as Element, NODE_VALUE_PROP, vnode.text ?? null);
+    // We only set the `nodeValue` property here (on a comment), so we don't need
+    // to sanitize the content as HTML using `safelySetProperty`
+    setProperty(node as Element, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;

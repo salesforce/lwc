@@ -179,8 +179,6 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
     };
 }
 
-createHCONFIG2JSPreprocessor.$inject = ['config', 'logger', 'emitter'];
-
 module.exports = {
     'preprocessor:hydration-tests': ['factory', createHCONFIG2JSPreprocessor],
 };
