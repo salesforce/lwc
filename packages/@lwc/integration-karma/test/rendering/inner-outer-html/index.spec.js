@@ -29,14 +29,20 @@ for (const whatter of ['inner', 'outer']) {
             expect(node.firstChild.nodeValue).toBe('original');
         }
 
-        const len = ids.filter(([_id, elm]) => !elm.hasAttribute('data-expect-no-warning')).length;
-        expect(consoleSpy).toHaveBeenCalledTimes(len);
+        if (process.env.NODE_ENV === 'production') {
+            expect(consoleSpy).not.toHaveBeenCalled();
+        } else {
+            const len = ids.filter(
+                ([_id, elm]) => !elm.hasAttribute('data-expect-no-warning')
+            ).length;
+            expect(consoleSpy).toHaveBeenCalledTimes(len);
 
-        const calls = consoleSpy.calls;
-        for (let i = 0; i < len; i += 1) {
-            expect(calls.argsFor(i)[0].message).toContain(
-                `Cannot set property "${whatter}HTML". Instead, use lwc:inner-html or lwc:dom-manual.`
-            );
+            const calls = consoleSpy.calls;
+            for (let i = 0; i < len; i += 1) {
+                expect(calls.argsFor(i)[0].message).toContain(
+                    `Cannot set property "${whatter}HTML". Instead, use lwc:inner-html or lwc:dom-manual.`
+                );
+            }
         }
     });
 }
