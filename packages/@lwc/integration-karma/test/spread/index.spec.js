@@ -32,11 +32,15 @@ describe('lwc:spread', () => {
     });
     it('should not override innerHTML from inner-html directive', () => {
         expect(innerHTMLChild.innerHTML).toEqual('');
-        expect(consoleSpy).toHaveBeenCalledTimes(1);
 
-        expect(consoleSpy.calls.argsFor(0)[0].message).toContain(
-            `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
-        );
+        if (process.env.NODE_ENV === 'production') {
+            expect(consoleSpy).not.toHaveBeenCalled();
+        } else {
+            expect(consoleSpy).toHaveBeenCalledTimes(1);
+            expect(consoleSpy.calls.argsFor(0)[0].message).toContain(
+                `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
+            );
+        }
     });
     it('should assign onclick', () => {
         simpleChild.click();
