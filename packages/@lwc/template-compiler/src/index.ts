@@ -25,6 +25,7 @@ export { Config } from './config';
 export { toPropertyName } from './shared/utils';
 export { kebabcaseToCamelcase } from './shared/naming';
 export { generateScopeTokens } from './scopeTokens';
+export { normalizeStyleAttribute } from './codegen/helpers';
 
 /**
  * Parses HTML markup into an AST

@@ -238,6 +238,10 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
     return styleMap;
 }
 
+/**
+ * Internal use only.
+ * @private
+ */
 export function normalizeStyleAttribute(style: string): string {
     const styleMap = parseStyleText(style);
 
