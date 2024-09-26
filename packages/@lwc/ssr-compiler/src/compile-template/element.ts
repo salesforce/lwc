@@ -19,6 +19,7 @@ import type {
     Property as IrProperty,
 } from '@lwc/template-compiler';
 import type {
+    BinaryExpression,
     BlockStatement as EsBlockStatement,
     Expression as EsExpression,
     Statement as EsStatement,
@@ -28,31 +29,47 @@ import type { Transformer } from './types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 const bConditionalLiveYield = esTemplateWithYield<EsBlockStatement>`
     {
+        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
         const attrOrPropValue = ${is.expression};
         const valueType = typeof attrOrPropValue;
         if (attrOrPropValue && (valueType === 'string' || valueType === 'boolean')) {
             yield ' ' + ${is.literal};
             if (valueType === 'string') {
-                yield '="' + htmlEscape(attrOrPropValue, true) + '"';
+                yield \`="\${prefix}\${htmlEscape(attrOrPropValue, true)}"\`;
             }
         }
     }
 `;
 
-function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStatement[] {
+const bStringLiteralYield = esTemplateWithYield<EsBlockStatement>`
+    {
+        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
+        yield ' ' + ${is.literal} + '="' + prefix + "${is.literal}" + '"'
+    }
+`;
+
+function yieldAttrOrPropLiteralValue(
+    name: string,
+    valueNode: IrLiteral,
+    isClass: boolean
+): EsStatement[] {
     const { value, type } = valueNode;
     if (typeof value === 'string') {
         const yieldedValue = name === 'style' ? cleanStyleAttrVal(value) : value;
-        return [bYield(b.literal(` ${name}="${yieldedValue}"`))];
+        return [bStringLiteralYield(b.literal(isClass), b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         return [bYield(b.literal(` ${name}`))];
     }
     throw new Error(`Unknown attr/prop literal: ${type}`);
 }
 
-function yieldAttrOrPropLiveValue(name: string, value: IrExpression): EsStatement[] {
+function yieldAttrOrPropLiveValue(
+    name: string,
+    value: IrExpression | BinaryExpression,
+    isClass: boolean
+): EsStatement[] {
     const instanceMemberRef = b.memberExpression(b.identifier('instance'), value as EsExpression);
-    return [bConditionalLiveYield(instanceMemberRef, b.literal(name))];
+    return [bConditionalLiveYield(b.literal(isClass), instanceMemberRef, b.literal(name))];
 }
 
 function reorderAttributes(
@@ -88,12 +105,21 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
         node.properties
     );
 
+    let hasClassAttribute = false;
     const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
+        const { name, value, type } = attr;
+
+        // For classes, these may need to be prefixed with the scope token
+        const isClass = type === 'Attribute' && name === 'class';
+        if (isClass) {
+            hasClassAttribute = true;
+        }
+
         cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-        if (attr.value.type === 'Literal') {
-            return yieldAttrOrPropLiteralValue(attr.name, attr.value);
+        if (value.type === 'Literal') {
+            return yieldAttrOrPropLiteralValue(name, value, isClass);
         } else {
-            return yieldAttrOrPropLiveValue(attr.name, attr.value);
+            return yieldAttrOrPropLiveValue(name, value, isClass);
         }
     });
 
@@ -103,6 +129,8 @@ export const Element: Transformer<IrElement> = function Element(node, cxt): EsSt
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        // If we haven't already prefixed the scope token to an existing class, add an explicit class here
+        ...(hasClassAttribute ? [] : [bYield(b.identifier('stylesheetScopeTokenClass'))]),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
         ...irChildrenToEs(node.children, cxt),

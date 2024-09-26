@@ -46,12 +46,19 @@ export type scopeTokens = {
     cssScopeTokens: string[];
 };
 
+/**
+ * Generate the scope tokens for a given component. Note that this API is NOT stable and should be
+ * considered internal to the LWC framework.
+ * @param filename - full filename, e.g. `path/to/x/foo/foo.js`
+ * @param namespace - namespace, e.g. 'x' for `x/foo/foo.js`
+ * @param componentName - component name, e.g. 'foo' for `x/foo/foo.js`
+ */
 export function generateScopeTokens(
     filename: string,
     namespace: string | undefined,
-    name: string | undefined
+    componentName: string | undefined
 ): scopeTokens {
-    const uniqueToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+    const uniqueToken = `${namespace}-${componentName}_${path.basename(filename, path.extname(filename))}`;
 
     // This scope token is all lowercase so that it works correctly in case-sensitive namespaces (e.g. SVG).
     // It is deliberately designed to discourage people from relying on it by appearing somewhat random.
