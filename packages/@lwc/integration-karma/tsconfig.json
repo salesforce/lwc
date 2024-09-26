@@ -1,0 +1,10 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "target": "ESNext",
+        "lib": ["ES2021", "DOM"]
+    },
+    "files": ["../../lwc/types.d.ts"],
+    "include": ["vitest-scripts"]
+}
