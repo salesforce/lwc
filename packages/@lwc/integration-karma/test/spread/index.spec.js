@@ -12,8 +12,9 @@ function setSanitizeHtmlContentHookForTest(impl) {
     return sanitizeHtmlContent;
 }
 describe('lwc:spread', () => {
-    let elm, simpleChild, overriddenChild, trackedChild, innerHTMLChild, originalHook;
+    let elm, simpleChild, overriddenChild, trackedChild, innerHTMLChild, originalHook, consoleSpy;
     beforeEach(() => {
+        consoleSpy = spyOn(console, 'warn');
         originalHook = setSanitizeHtmlContentHookForTest((x) => x);
         elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
@@ -29,8 +30,13 @@ describe('lwc:spread', () => {
     it('should render basic test', () => {
         expect(simpleChild.shadowRoot.querySelector('span').textContent).toEqual('Name: LWC');
     });
-    it('should override innerHTML from inner-html directive', () => {
-        expect(innerHTMLChild.innerHTML).toEqual('innerHTML from spread');
+    it('should not override innerHTML from inner-html directive', () => {
+        expect(innerHTMLChild.innerHTML).toEqual('');
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+
+        expect(consoleSpy.calls.argsFor(0)[0].message).toContain(
+            `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
+        );
     });
     it('should assign onclick', () => {
         simpleChild.click();

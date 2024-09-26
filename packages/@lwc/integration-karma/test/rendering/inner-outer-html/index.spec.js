@@ -34,7 +34,7 @@ for (const whatter of ['inner', 'outer']) {
 
         const calls = consoleSpy.calls;
         for (let i = 0; i < len; i += 1) {
-            expect(calls.argsFor(i)[0]).toBe(
+            expect(calls.argsFor(i)[0].message).toContain(
                 `Cannot set property "${whatter}HTML". Instead, use lwc:inner-html or lwc:dom-manual.`
             );
         }
