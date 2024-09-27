@@ -9,4 +9,8 @@ it('should render style containing newline - issue #4579', async () => {
 
     const div = elm.shadowRoot.querySelector('div');
     expect(div.style.color).toBe('yellow');
+
+    const span = elm.shadowRoot.querySelector('span');
+    expect(span.style.color).toBe('purple');
+    expect(span.style.backgroundColor).toBe('orange');
 });
