@@ -110,7 +110,7 @@ class ClassList implements DOMTokenList {
         _callbackfn: (value: string, key: number, parent: DOMTokenList) => void,
         _thisArg?: any
     ): void {
-        throw new Error('Method "void" not implemented.');
+        throw new Error('Method "forEach" not implemented.');
     }
     get length(): number {
         throw new Error('Property "length" not implemented.');
@@ -224,7 +224,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         _listener: EventListenerOrEventListenerObject,
         _options?: boolean | AddEventListenerOptions
     ): void {
-        throw new Error('Method "void" not implemented.');
+        throw new Error('Method "addEventListener" not implemented.');
     }
     attachInternals(): ElementInternals {
         throw new Error('Method "attachInternals" not implemented.');
