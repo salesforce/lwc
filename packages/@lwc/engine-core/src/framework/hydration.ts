@@ -719,7 +719,7 @@ function validateStyleAttr(
         // styleMap is used when style is set to static value.
         for (let i = 0, n = styleDecls.length; i < n; i++) {
             const [prop, value, important] = styleDecls[i];
-            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
+            expectedStyle.push(`${prop}: ${value + (important ? ' !important' : '')}`);
 
             const parsedPropValue = parsedVnodeStyle[prop];
 
