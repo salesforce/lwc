@@ -8,6 +8,14 @@ export type SanitizedHtmlContent = {
     [sanitizedHtmlContentSymbol]: unknown;
 };
 
+function isSanitizedHtmlContent(object: any): object is SanitizedHtmlContent {
+    return isObject(object) && !isNull(object) && sanitizedHtmlContentSymbol in object;
+}
+
+function unwrapIfNecessary(object: any) {
+    return isSanitizedHtmlContent(object) ? object[sanitizedHtmlContentSymbol] : object;
+}
+
 /**
  * Wrap a pre-sanitized string designated for `.innerHTML` via `lwc:inner-html`
  * as an object with a Symbol that only we have access to.
@@ -41,7 +49,7 @@ export function safelySetProperty(
     // See W-16614337
     // we support setting innerHTML to `undefined` because it's inherently safe
     if ((key === 'innerHTML' || key === 'outerHTML') && !isUndefined(value)) {
-        if (isObject(value) && !isNull(value) && sanitizedHtmlContentSymbol in value) {
+        if (isSanitizedHtmlContent(value)) {
             // it's a SanitizedHtmlContent object
             setProperty(elm, key, value[sanitizedHtmlContentSymbol]);
         } else {
@@ -55,4 +63,14 @@ export function safelySetProperty(
     } else {
         setProperty(elm, key, value);
     }
+}
+
+/**
+ * Given two objects (likely either a string or a SanitizedHtmlContent object), return true if their
+ * string values are equivalent.
+ * @param first
+ * @param second
+ */
+export function isSanitizedHtmlContentEqual(first: any, second: any) {
+    return unwrapIfNecessary(first) === unwrapIfNecessary(second);
 }

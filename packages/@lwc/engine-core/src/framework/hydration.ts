@@ -61,6 +61,7 @@ import { hydrateStaticParts, traverseAndSetElements } from './modules/static-par
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
+import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -312,7 +313,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         } = vnode;
         const { getProperty } = renderer;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-            if (getProperty(elm, 'innerHTML') === props.innerHTML) {
+            if (isSanitizedHtmlContentEqual(getProperty(elm, 'innerHTML'), props.innerHTML)) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 vnode.data = {
                     ...vnode.data,
