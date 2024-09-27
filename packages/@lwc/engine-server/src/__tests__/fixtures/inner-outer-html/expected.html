@@ -1,0 +1,88 @@
+<x-inner>
+  <template shadowrootmode="open">
+    <div data-expect-no-warning data-id="div-inner-static" inner-h-t-m-l="replaced">
+      original
+    </div>
+    <div data-expect-no-warning data-id="div-inner-computed" inner-h-t-m-l="injected">
+      original
+    </div>
+    <div data-id="div-inner-spread">
+      original
+    </div>
+    <x-component data-id="cmp-inner-static">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <x-component data-id="cmp-inner-computed">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <x-component data-id="cmp-inner-spread">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <omg-whatever data-id="external-inner-static" inner-h-t-m-l="replaced">
+      original
+    </omg-whatever>
+    <omg-whatever data-id="external-inner-computed" inner-h-t-m-l="injected">
+      original
+    </omg-whatever>
+    <omg-whatever data-id="external-inner-spread">
+      original
+    </omg-whatever>
+    <div data-expect-no-warning data-id="div-outer-static" outer-h-t-m-l="replaced">
+      original
+    </div>
+    <div data-expect-no-warning data-id="div-outer-computed" outer-h-t-m-l="injected">
+      original
+    </div>
+    <div data-id="div-outer-spread">
+      original
+    </div>
+    <x-component data-id="cmp-outer-static">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <x-component data-id="cmp-outer-computed">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <x-component data-id="cmp-outer-spread">
+      <template shadowrootmode="open">
+        <slot>
+        </slot>
+      </template>
+      original
+    </x-component>
+    <omg-whatever data-id="external-outer-static">
+      original
+    </omg-whatever>
+    <omg-whatever data-id="external-outer-computed">
+      original
+    </omg-whatever>
+    <omg-whatever data-id="external-outer-spread">
+      original
+    </omg-whatever>
+    <span>
+      lwc:inner-html
+    </span>
+    <p>
+      injected
+    </p>
+  </template>
+</x-inner>

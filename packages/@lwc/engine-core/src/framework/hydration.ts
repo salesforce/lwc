@@ -61,6 +61,7 @@ import { hydrateStaticParts, traverseAndSetElements } from './modules/static-par
 import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
+import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -240,7 +241,9 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     }
 
     const { setProperty } = renderer;
-    setProperty(node, NODE_VALUE_PROP, vnode.text ?? null);
+    // We only set the `nodeValue` property here (on a comment), so we don't need
+    // to sanitize the content as HTML using `safelySetProperty`
+    setProperty(node as Element, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;
@@ -310,7 +313,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         } = vnode;
         const { getProperty } = renderer;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-            if (getProperty(elm, 'innerHTML') === props.innerHTML) {
+            if (isSanitizedHtmlContentEqual(getProperty(elm, 'innerHTML'), props.innerHTML)) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 vnode.data = {
                     ...vnode.data,
