@@ -6,14 +6,13 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import { HTML_NAMESPACE, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
 import {
     type Attribute as IrAttribute,
     type Expression as IrExpression,
     type Element as IrElement,
     type Literal as IrLiteral,
     type Property as IrProperty,
-    normalizeStyleAttribute,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { irChildrenToEs } from './ir-to-es';

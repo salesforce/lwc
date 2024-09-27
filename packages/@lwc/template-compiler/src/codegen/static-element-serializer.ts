@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { HTML_NAMESPACE, htmlEscape, isVoidElement } from '@lwc/shared';
+import { HTML_NAMESPACE, htmlEscape, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -21,7 +21,6 @@ import {
     isText,
 } from '../shared/ast';
 import { hasDynamicText, isContiguousText, transformStaticChildren } from './static-element';
-import { normalizeStyleAttribute } from './helpers';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts

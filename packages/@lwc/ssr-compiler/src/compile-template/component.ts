@@ -6,11 +6,8 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import {
-    kebabcaseToCamelcase,
-    normalizeStyleAttribute,
-    toPropertyName,
-} from '@lwc/template-compiler';
+import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplateWithYield } from '../estemplate';
 import { isValidIdentifier } from './shared';
 import { TransformerContext } from './types';

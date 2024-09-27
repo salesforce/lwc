@@ -21,12 +21,13 @@ import {
     isAPIFeatureEnabled,
     isFalse,
     StringSplit,
+    parseStyleText,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
-import { cloneAndOmitKey, parseStyleText, shouldBeFormAssociated } from './utils';
+import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,

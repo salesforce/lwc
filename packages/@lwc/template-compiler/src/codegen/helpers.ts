@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, IMPORTANT_FLAG, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
@@ -215,45 +215,6 @@ function generateStylesheetTokens(codeGen: CodeGen): t.ExpressionStatement[] {
 
     return styleTokens;
 }
-
-const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
-const PROPERTY_DELIMITER = /:(.+)/s; // `/s` (dotAll) required to match styles across newlines, e.g. `color: \n red;`
-
-// Borrowed from Vue template compiler.
-// https://github.com/vuejs/vue/blob/531371b818b0e31a989a06df43789728f23dc4e8/src/platforms/web/util/style.js#L5-L16
-export function parseStyleText(cssText: string): { [name: string]: string } {
-    const styleMap: { [name: string]: string } = {};
-
-    const declarations = cssText.split(DECLARATION_DELIMITER);
-    for (const declaration of declarations) {
-        if (declaration) {
-            const [prop, value] = declaration.split(PROPERTY_DELIMITER);
-
-            if (prop !== undefined && value !== undefined) {
-                styleMap[prop.trim()] = value.trim();
-            }
-        }
-    }
-
-    return styleMap;
-}
-
-/**
- * Internal use only.
- * @private
- */
-export function normalizeStyleAttribute(style: string): string {
-    const styleMap = parseStyleText(style);
-
-    const styles = Object.entries(styleMap).map(([key, value]) => {
-        value = value.replace(IMPORTANT_FLAG, ' !important').trim();
-        return `${key}: ${value};`;
-    });
-
-    return styles.join(' ');
-}
-
-const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 
 // Given a map of CSS property keys to values, return an array AST like:
 // ['color', 'blue', false]    // { color: 'blue' }
