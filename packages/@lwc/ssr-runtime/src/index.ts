@@ -5,13 +5,36 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// To enable access to accurate DOM types in this file, uncomment the line below and comment out the
+// type stubs. This also adds DOM globals (e.g. window, document), so be careful!
+// Note: It's a "triple slash directive", must be exactly /// <reference lib="dom" />
+// /// <reference lib="dom" />
+type DOMTokenList = object;
+type HTMLElement = Record<string, unknown>;
+type EventListenerOrEventListenerObject = unknown;
+type AddEventListenerOptions = unknown;
+type ElementInternals = unknown;
+type DOMRect = unknown;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type HTMLCollectionOf<T> = unknown;
+type Element = unknown;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type NodeListOf<T> = unknown;
+type HTMLElementEventMap = unknown;
+type EventListenerOptions = unknown;
+type HTMLCollection = unknown;
+type ChildNode = unknown;
+type Document = unknown;
+type ShadowRoot = unknown;
+type CSSStyleDeclaration = unknown;
+
 const MULTI_SPACE = /\s+/g;
 
 type Attributes = Record<string, string | true>;
 
 type LightningElementConstructor = typeof LightningElement;
 
-class ClassList {
+class ClassList implements DOMTokenList {
     el: LightningElement;
 
     constructor(el: LightningElement) {
@@ -66,23 +89,77 @@ class ClassList {
         this.el.className = Array.from(set).join(' ');
         return set.has(classNameToToggle);
     }
+
+    get value(): string {
+        return this.el.className;
+    }
+
+    toString(): string {
+        return this.el.className;
+    }
+
+    // Stubs to satisfy DOMTokenList interface
+    [index: number]: never; // Can't implement arbitrary index getters without a proxy
+    item(_index: number): string | null {
+        throw new Error('Method "item" not implemented.');
+    }
+    supports(_token: string): boolean {
+        throw new Error('Method "supports" not implemented.');
+    }
+    forEach(
+        _callbackfn: (value: string, key: number, parent: DOMTokenList) => void,
+        _thisArg?: any
+    ): void {
+        throw new Error('Method "forEach" not implemented.');
+    }
+    get length(): number {
+        throw new Error('Property "length" not implemented.');
+    }
 }
 
-export class LightningElement {
+interface PropsAvailableAtConstruction {
+    tagName: string;
+}
+
+export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
 
     isConnected = false;
     className = '';
     // TODO [W-14977927]: protect internals from userland
-    __attrs?: Attributes;
-    __classList: ClassList | null = null;
+    private __attrs?: Attributes;
+    private __classList: ClassList | null = null;
+    // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
+    tagName!: string;
 
-    constructor(propsAvailableAtConstruction: Record<string, any>) {
+    constructor(
+        propsAvailableAtConstruction: PropsAvailableAtConstruction & Record<string, unknown>
+    ) {
         Object.assign(this, propsAvailableAtConstruction);
     }
 
+    // Props copied from HTMLElementTheGoodParts in @lwc/engine-core
+    accessKey?: string;
+    children?: HTMLCollection;
+    childNodes?: NodeListOf<ChildNode>;
+    dir?: string;
+    draggable?: boolean;
+    firstChild?: ChildNode | null;
+    firstElementChild?: Element | null;
+    hidden?: boolean;
+    id?: string;
+    lang?: string;
+    lastChild?: ChildNode | null;
+    lastElementChild?: Element | null;
+    ownerDocument?: Document;
+    shadowRoot?: ShadowRoot | null;
+    spellcheck?: boolean;
+    tabIndex?: number;
+    title?: string;
+    style?: CSSStyleDeclaration;
+
     // TODO [W-14977927]: protect internals from userland
-    __internal__setState(
+    private __internal__setState(
         props: Record<string, any>,
         reflectedProps: string[],
         attrs: Record<string, any>
@@ -125,6 +202,81 @@ export class LightningElement {
     getAttribute(attrName: string): string | null {
         const value = this.__attrs?.[attrName];
         return value === true ? '' : (value ?? null);
+    }
+
+    setAttribute(attrName: string, value: string): void {
+        // Not sure it's correct to initialize here if missing
+        if (!this.__attrs) this.__attrs = {};
+        this.__attrs[attrName] = value;
+    }
+
+    removeAttribute(attrName: string): void {
+        delete this.__attrs?.[attrName];
+    }
+
+    // -------------------------------------------------------------------------------- //
+    // Stubs to satisfy the HTMLElementTheGoodParts (from @lwc/engine-core) interface //
+    // The interface is not explicitly referenced here, so this may become outdated //
+    // -------------------------------------------------------------------------- //
+
+    addEventListener(
+        _type: string,
+        _listener: EventListenerOrEventListenerObject,
+        _options?: boolean | AddEventListenerOptions
+    ): void {
+        throw new Error('Method "addEventListener" not implemented.');
+    }
+    attachInternals(): ElementInternals {
+        throw new Error('Method "attachInternals" not implemented.');
+    }
+    dispatchEvent(_event: Event): boolean {
+        throw new Error('Method "dispatchEvent" not implemented.');
+    }
+    getAttributeNS(_namespace: string | null, _localName: string): string | null {
+        throw new Error('Method "getAttributeNS" not implemented.');
+    }
+    getBoundingClientRect(): DOMRect {
+        throw new Error('Method "getBoundingClientRect" not implemented.');
+    }
+    getElementsByClassName(_classNames: string): HTMLCollectionOf<Element> {
+        throw new Error('Method "getElementsByClassName" not implemented.');
+    }
+    getElementsByTagName(_qualifiedName: unknown): HTMLCollectionOf<Element> {
+        throw new Error('Method "getElementsByTagName" not implemented.');
+    }
+    hasAttribute(_qualifiedName: string): boolean {
+        throw new Error('Method "hasAttribute" not implemented.');
+    }
+    hasAttributeNS(_namespace: string | null, _localName: string): boolean {
+        throw new Error('Method "hasAttributeNS" not implemented.');
+    }
+    querySelector(_selectors: string): Element | null {
+        throw new Error('Method "querySelector" not implemented.');
+    }
+    querySelectorAll(_selectors: string): NodeListOf<Element> {
+        throw new Error('Method "querySelectorAll" not implemented.');
+    }
+    removeAttributeNS(_namespace: string | null, _localName: string): void {
+        throw new Error('Method "removeAttributeNS" not implemented.');
+    }
+    removeEventListener<K extends keyof HTMLElementEventMap>(
+        type: K,
+        listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+        options?: boolean | EventListenerOptions
+    ): void;
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | EventListenerOptions
+    ): void;
+    removeEventListener(_type: unknown, _listener: unknown, _options?: unknown): void {
+        throw new Error('Method "removeEventListener" not implemented.');
+    }
+    setAttributeNS(_namespace: string | null, _qualifiedName: string, _value: string): void {
+        throw new Error('Method "setAttributeNS" not implemented.');
+    }
+    toString(): string {
+        throw new Error('Method "toString" not implemented.');
     }
 }
 
