@@ -65,13 +65,20 @@ function consoleDevMatcherFactory(
     methodName: keyof Omit<Console, 'Console'>,
     expectInProd: boolean = false
 ) {
-    return function consoleDevMatcher(received: () => void, ...expected: ExpectedMessage[]) {
+    return function consoleDevMatcher(
+        received: () => void,
+        expected: ExpectedMessage | ExpectedMessage[]
+    ) {
         function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
             if (typeof expectedMessage === 'string') {
                 return message === expectedMessage;
             } else {
                 return expectedMessage.test(message);
             }
+        }
+
+        if (!Array.isArray(expected)) {
+            expected = [expected];
         }
 
         const spy = spyConsole();

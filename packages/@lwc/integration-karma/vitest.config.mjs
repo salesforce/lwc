@@ -21,10 +21,13 @@ export default defineConfig({
         name: 'lwc-integration-karma',
         include: ['test/**/*.spec.{js,ts}'],
         globals: true,
-        alias: {
-            'test-utils': path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
-            'x/test': './x/test/test.js',
-        },
+        alias: [
+            {
+                find: 'test-utils',
+                replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
+            },
+            { find: /^x\/(.*)/, replacement: './x/$1/$1.js' },
+        ],
         setupFiles: ['./vitest-helpers/test-setup.ts'],
         globalSetup: ['./vitest-helpers/global-setup.ts'],
         env: {
