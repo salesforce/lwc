@@ -1,5 +1,4 @@
 import { expect } from 'vitest';
-import type { MatchersObject, MatcherState, RawMatcherFn } from '@vitest/expect';
 
 function pass() {
     return {
@@ -17,49 +16,21 @@ function fail(message: string) {
 
 type ExpectedMessage = string | RegExp;
 
-function formatConsoleCall(args: any[]): string {
-    return args.map(String).join(' ');
-}
-
-type ConsoleMethods = keyof Omit<Console, 'Console'>;
-type ConsoleCalls = {
-    [K in ConsoleMethods]: any[];
-} & {
-    [key: string]: any[];
-};
-
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
 function spyConsole() {
     const originalConsole = window.console;
 
-    const calls: ConsoleCalls = {
+    const calls: { [key: string]: any[][] } = {
         log: [],
         warn: [],
         error: [],
         group: [],
         groupEnd: [],
-        dir: [],
-        assert: [],
-        clear: [],
-        count: [],
-        countReset: [],
-        debug: [],
-        dirxml: [],
-        groupCollapsed: [],
-        info: [],
-        table: [],
-        time: [],
-        timeEnd: [],
-        timeLog: [],
-        timeStamp: [],
-        trace: [],
-        profile: [],
-        profileEnd: [],
     };
 
-    // @ts-expect-error temporary override of console
     window.console = {
+        ...originalConsole,
         log: function () {
             calls.log.push(Array.prototype.slice.call(arguments));
         },
@@ -77,21 +48,23 @@ function spyConsole() {
         },
     };
 
-    function reset() {
-        window.console = originalConsole;
-    }
-
     return {
-        calls,
-        reset,
+        calls: calls,
+        reset: function () {
+            window.console = originalConsole;
+        },
     };
 }
 
+function formatConsoleCall(args: any[]) {
+    return args.map(String).join(' ');
+}
+
 // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-function consoleDevMatcherFactory<T extends MatcherState = MatcherState>(
+function consoleDevMatcherFactory(
     methodName: keyof Omit<Console, 'Console'>,
     expectInProd: boolean = false
-): RawMatcherFn<T> {
+) {
     return function consoleDevMatcher(received: () => void, ...expected: ExpectedMessage[]) {
         function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
             if (typeof expectedMessage === 'string') {
@@ -174,21 +147,16 @@ function consoleDevMatcherFactory<T extends MatcherState = MatcherState>(
 
 type ErrorListener = (callback: () => void) => unknown | undefined;
 
-function errorMatcherFactory<T extends MatcherState = MatcherState>(
-    errorListener: ErrorListener,
-    expectInProd: boolean = false
-): RawMatcherFn<T> {
-    return function errorMatcher(
-        received: () => void,
+function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean = false) {
+    return function toThrowError(
+        actual: () => void,
         errorCtor?: ErrorConstructor,
         ...expected: ExpectedMessage[]
     ) {
         const expectedErrorCtor = errorCtor ?? Error;
 
         function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
-            if (typeof expectedMessage === 'undefined') {
-                return true;
-            } else if (typeof expectedMessage === 'string') {
+            if (typeof expectedMessage === 'string') {
                 return message === expectedMessage;
             } else {
                 return expectedMessage.test(message);
@@ -199,48 +167,43 @@ function errorMatcherFactory<T extends MatcherState = MatcherState>(
             return error instanceof expectedErrorCtor;
         }
 
-        function matchError(error: unknown) {
-            return isError(error) && matchMessage((error as Error).message, expected[0]);
+        function matchError(error: unknown): boolean {
+            return isError(error) && matchMessage(error.message, expected[0]);
         }
 
-        function throwDescription(thrown: any) {
-            return `${thrown.name} with message "${thrown.message}"` as const;
+        function throwDescription(thrown: any): string {
+            return `${thrown.name} with message "${thrown.message}"`;
         }
 
-        const spy = spyConsole();
-        try {
-            received();
-        } finally {
-            spy.reset();
-        }
+        const thrown = errorListener(actual);
 
         if (!expectInProd && process.env.NODE_ENV === 'production') {
-            if (spy.calls.error.length !== 0) {
+            if (thrown !== undefined) {
                 return fail(
                     'Expected function not to throw an error in production mode, but it threw ' +
-                        throwDescription(spy.calls.error[0]) +
+                        throwDescription(thrown) +
                         '.'
                 );
             } else {
                 return pass();
             }
         } else {
-            if (spy.calls.error.length === 0) {
+            if (thrown === undefined) {
                 return fail(
                     'Expected function to throw an ' +
                         expectedErrorCtor.name +
-                        ' error in development mode "' +
+                        ' error in development mode"' +
                         (expected[0] ? 'with message ' + expected[0] : '') +
                         '".'
                 );
-            } else if (!matchError(spy.calls.error[0])) {
+            } else if (!matchError(thrown)) {
                 return fail(
                     'Expected function to throw an ' +
                         expectedErrorCtor.name +
                         ' error in development mode "' +
                         (expected[0] ? 'with message ' + expected[0] : '') +
                         '", but it threw ' +
-                        throwDescription(spy.calls.error[0]) +
+                        throwDescription(thrown) +
                         '.'
                 );
             } else {
@@ -248,7 +211,8 @@ function errorMatcherFactory<T extends MatcherState = MatcherState>(
             }
         }
     };
-    // return function toThrowError() {
+
+    // function toThrowError() {
     //     return {
     //         compare: function (
     //             actual: () => void,
@@ -407,13 +371,13 @@ const customMatchers = {
         windowErrorListener,
         true
     ),
-    toBeTrue(received, message = 'Expected value to be true') {
+    toBeTrue(received: boolean, message = 'Expected value to be true') {
         return received ? pass() : fail(message);
     },
-    toBeFalse(received, message = 'Expected value to be false') {
+    toBeFalse(received: boolean, message = 'Expected value to be false') {
         return !received ? pass() : fail(message);
     },
-} satisfies MatchersObject;
+};
 
 expect.extend(customMatchers);
 
@@ -424,6 +388,9 @@ interface CustomMatchers<R = unknown> {
     toLogError: (...expected: ExpectedMessage[]) => R;
     toLogWarningDev: (...expected: ExpectedMessage[]) => R;
     toThrowErrorDev: (errorCtor?: ErrorConstructor, ...expected: ExpectedMessage[]) => R;
+
+    toThrowCallbackReactionErrorDev: (...expected: ExpectedMessage[]) => R;
+    toThrowCallbackReactionError: (...expected: ExpectedMessage[]) => R;
 }
 
 declare module 'vitest' {

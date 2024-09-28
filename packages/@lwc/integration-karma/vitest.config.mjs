@@ -11,13 +11,7 @@ export default defineConfig({
         {
             ...createCustomRollupPlugin({
                 rootDir: 'test',
-                include: ['**/*.js', '**/*.ts'],
-                modules: [
-                    {
-                        name: 'x/publicProperties',
-                        path: 'test/api/getComponentDef/x/publicProperties/publicProperties.js',
-                    },
-                ],
+                include: ['test/**/*.spec.{js,ts}'],
             }),
             enforce: 'pre',
             apply: 'build',
@@ -30,7 +24,7 @@ export default defineConfig({
         alias: {
             'test-utils': path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
         },
-        setupFiles: ['./vitest-helpers/test-setup.ts', './vitest-helpers/test-matchers.ts'],
+        setupFiles: ['./vitest-helpers/test-setup.ts'],
         env: {
             NODE_ENV: 'test-karma-lwc',
         },

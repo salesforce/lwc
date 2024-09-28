@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Extend the Window interface to include the __lwcResetGlobalStylesheets property
-import '@lwc/engine-dom';
+import { vi } from 'vitest';
 
 declare global {
     interface Window {
@@ -44,6 +43,8 @@ beforeEach(function () {
     knownAdoptedStyleSheets = getAdoptedStyleSheets();
 });
 
+let consoleCallCount = 0;
+
 afterEach(function () {
     getChildren().forEach(function (child) {
         if (knownChildren!.indexOf(child) === -1) {
@@ -60,20 +61,17 @@ afterEach(function () {
     window.__lwcResetGlobalStylesheets();
     // Certain logs only appear once; we want to reset these between tests
     window.__lwcResetAlreadyLoggedMessages();
-});
 
-var consoleCallCount = 0;
+    consoleCallCount = 0;
+});
 
 // Patch console.error/console.warn, etc. so if it's called, we throw
 function patchConsole() {
-    const methods = ['error', 'warn'] as const;
-    methods.forEach(function (method) {
-        // eslint-disable-next-line no-console
-        var originalMethod = console[method];
-        // eslint-disable-next-line no-console
-        console[method] = function (...args) {
+    (['error', 'warn'] as const).forEach(function (method) {
+        var originalMethod = window.console[method];
+        window.console[method] = function () {
             consoleCallCount++;
-            return originalMethod.apply(this, args);
+            return originalMethod.apply(this, Array.from(arguments));
         };
     });
 }
@@ -131,3 +129,6 @@ afterAll(function () {
 vi.setConfig({
     testTimeout: 60000,
 });
+
+// Extend the Window interface to include the __lwcResetGlobalStylesheets property
+import './test-matchers';
