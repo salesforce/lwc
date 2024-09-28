@@ -667,6 +667,24 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCalls,
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
+        jasmine: {
+            ...jasmine,
+            createSpy() {
+                const spy = jasmine.createSpy();
+
+                spy.mockClear = function () {
+                    spy.calls.reset();
+                };
+
+                spy.mock = {
+                    get calls() {
+                        return spy.calls.allArgs();
+                    },
+                };
+
+                return spy;
+            },
+        },
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

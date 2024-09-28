@@ -5,10 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Extend the Window interface to include the __lwcResetGlobalStylesheets property
+import '@lwc/engine-dom';
+
+declare global {
+    interface Window {
+        __lwcResetGlobalStylesheets: () => void;
+        __lwcResetAlreadyLoggedMessages: () => void;
+    }
+}
+
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
-var knownChildren;
-var knownAdoptedStyleSheets;
+var knownChildren: any[] | undefined;
+var knownAdoptedStyleSheets: CSSStyleSheet[] | undefined;
 
 function getHeadChildren() {
     return Array.prototype.slice.apply(document.head.children);
@@ -26,7 +36,7 @@ function getAdoptedStyleSheets() {
 // <head> or <body>, plus any global <style>s or adopted style sheets.
 
 function getChildren() {
-    return [].concat(getHeadChildren()).concat(getBodyChildren());
+    return ([] as any[]).concat(getHeadChildren()).concat(getBodyChildren());
 }
 
 beforeEach(function () {
@@ -36,12 +46,12 @@ beforeEach(function () {
 
 afterEach(function () {
     getChildren().forEach(function (child) {
-        if (knownChildren.indexOf(child) === -1) {
+        if (knownChildren!.indexOf(child) === -1) {
             child.parentElement.removeChild(child);
         }
     });
     if (document.adoptedStyleSheets) {
-        document.adoptedStyleSheets = knownAdoptedStyleSheets;
+        document.adoptedStyleSheets = knownAdoptedStyleSheets!;
     }
     knownChildren = undefined;
     knownAdoptedStyleSheets = undefined;
@@ -56,13 +66,14 @@ var consoleCallCount = 0;
 
 // Patch console.error/console.warn, etc. so if it's called, we throw
 function patchConsole() {
-    ['error', 'warn'].forEach(function (method) {
+    const methods = ['error', 'warn'] as const;
+    methods.forEach(function (method) {
         // eslint-disable-next-line no-console
         var originalMethod = console[method];
         // eslint-disable-next-line no-console
-        console[method] = function () {
+        console[method] = function (...args) {
             consoleCallCount++;
-            return originalMethod.apply(this, arguments);
+            return originalMethod.apply(this, args);
         };
     });
 }
@@ -77,9 +88,9 @@ function throwIfConsoleCalled() {
 
 // Run some logic before all tests have run and after all tests have run to ensure that
 // no test dirtied the DOM with leftover elements
-var originalHeadChildren;
-var originalBodyChildren;
-var originalAdoptedStyleSheets;
+var originalHeadChildren: any[];
+var originalBodyChildren: any[];
+var originalAdoptedStyleSheets: any[];
 beforeAll(function () {
     originalHeadChildren = getHeadChildren();
     originalBodyChildren = getBodyChildren();
@@ -117,4 +128,6 @@ afterAll(function () {
 });
 
 // The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+vi.setConfig({
+    testTimeout: 60000,
+});

@@ -6,22 +6,23 @@
  */
 
 import * as lwc from 'lwc';
-import 'jasmine';
-import { type APIFeature, APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
+import { expect } from 'vitest';
 
-function pass() {
-    return {
-        pass: true,
-        message: '',
-    } as const;
-}
+export const jasmine = {
+    createSpy() {
+        const spy = vi.fn();
 
-function fail(message: string) {
-    return {
-        pass: false,
-        message,
-    } as const;
-}
+        const calls = {
+            allArgs() {
+                return spy.mock.calls;
+            },
+        };
+
+        Object.defineProperty(spy, 'calls', calls);
+
+        return spy;
+    },
+};
 
 type ConsoleMethods = keyof Omit<Console, 'Console'>;
 type ConsoleCalls = {
@@ -32,7 +33,7 @@ type ConsoleCalls = {
 
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
-function spyConsole() {
+export function spyConsole() {
     const originalConsole = window.console;
 
     const calls: ConsoleCalls = {
@@ -89,244 +90,390 @@ function spyConsole() {
     };
 }
 
-function formatConsoleCall(args: any[]): string {
-    return args.map(String).join(' ');
-}
+// function formatConsoleCall(args: any[]): string {
+//     return args.map(String).join(' ');
+// }
 
-type ExpectedMessage = string | RegExp;
+// type ExpectedMessage = string | RegExp;
 
-// TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-function consoleDevMatcherFactory(
-    methodName: keyof Omit<Console, 'Console'>,
-    expectInProd: boolean = false
-) {
-    return function consoleDevMatcher() {
-        return {
-            negativeCompare: function negativeCompare(actual: () => void) {
-                const spy = spyConsole();
-                try {
-                    actual();
-                } finally {
-                    spy.reset();
-                }
+// // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
+// function consoleDevMatcherFactory<T extends MatcherState = MatcherState>(
+//     methodName: keyof Omit<Console, 'Console'>,
+//     expectInProd: boolean = false
+// ): RawMatcherFn<T> {
+//     return function consoleDevMatcher(received: () => void, ...expected: ExpectedMessage[]) {
+//         function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
+//             if (typeof expectedMessage === 'string') {
+//                 return message === expectedMessage;
+//             } else {
+//                 return expectedMessage.test(message);
+//             }
+//         }
 
-                const callsArgs = spy.calls[methodName];
-                const formattedCalls = callsArgs
-                    .map(function (arg) {
-                        return '"' + formatConsoleCall(arg) + '"';
-                    })
-                    .join(', ');
+//         const spy = spyConsole();
+//         try {
+//             received();
+//         } finally {
+//             spy.reset();
+//         }
 
-                if (callsArgs.length === 0) {
-                    return pass();
-                }
-                return fail('Expect no message but received:\n' + formattedCalls);
-            },
-            compare: function compare(
-                actual: () => void,
-                expected: ExpectedMessage | ExpectedMessage[]
-            ) {
-                function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
-                    if (typeof expectedMessage === 'string') {
-                        return message === expectedMessage;
-                    } else {
-                        return expectedMessage.test(message);
-                    }
-                }
+//         const callsArgs = spy.calls[methodName];
+//         const formattedCalls = callsArgs
+//             .map(function (arg) {
+//                 return '"' + formatConsoleCall(arg) + '"';
+//             })
+//             .join(', ');
 
-                const expectedMessages = Array.isArray(expected) ? expected : [expected];
+//         if (!expectInProd && process.env.NODE_ENV === 'production') {
+//             if (callsArgs.length !== 0) {
+//                 return fail(
+//                     'Expected console.' +
+//                         methodName +
+//                         ' to never called in production mode, but it was called ' +
+//                         callsArgs.length +
+//                         ' with ' +
+//                         formattedCalls +
+//                         '.'
+//                 );
+//             } else {
+//                 return pass();
+//             }
+//         } else {
+//             if (callsArgs.length === 0) {
+//                 return fail(
+//                     'Expected console.' +
+//                         methodName +
+//                         ' to called with ' +
+//                         JSON.stringify(expected) +
+//                         ', but was never called.'
+//                 );
+//             } else {
+//                 if (callsArgs.length !== expected.length) {
+//                     return fail(
+//                         'Expected console.' +
+//                             methodName +
+//                             ' to be called ' +
+//                             expected.length +
+//                             ' time(s), but was called ' +
+//                             callsArgs.length +
+//                             ' time(s).'
+//                     );
+//                 }
+//                 for (let i = 0; i < callsArgs.length; i++) {
+//                     const callsArg = callsArgs[i];
+//                     const expectedMessage = expected[i];
+//                     const actualMessage = formatConsoleCall(callsArg);
+//                     if (!matchMessage(actualMessage, expectedMessage)) {
+//                         return fail(
+//                             'Expected console.' +
+//                                 methodName +
+//                                 ' to be called with "' +
+//                                 expectedMessage +
+//                                 '", but was called with "' +
+//                                 actualMessage +
+//                                 '".'
+//                         );
+//                     }
+//                 }
+//                 return pass();
+//             }
+//         }
 
-                if (typeof actual !== 'function') {
-                    throw new Error('Expected function to throw error.');
-                } else if (
-                    expectedMessages.some(function (message) {
-                        return typeof message !== 'string' && !(message instanceof RegExp);
-                    })
-                ) {
-                    throw new Error(
-                        'Expected a string or a RegExp to compare the thrown error against, or an array of such.'
-                    );
-                }
+//     }
 
-                const spy = spyConsole();
+//     //  function consoleDevMatcher() {
+//     //     return {
+//     //         negativeCompare: function negativeCompare(actual: () => void) {
+//     //             const spy = spyConsole();
+//     //             try {
+//     //                 actual();
+//     //             } finally {
+//     //                 spy.reset();
+//     //             }
 
-                try {
-                    actual();
-                } finally {
-                    spy.reset();
-                }
+//     //             const callsArgs = spy.calls[methodName];
+//     //             const formattedCalls = callsArgs
+//     //                 .map(function (arg) {
+//     //                     return '"' + formatConsoleCall(arg) + '"';
+//     //                 })
+//     //                 .join(', ');
 
-                const callsArgs = spy.calls[methodName];
-                const formattedCalls = callsArgs
-                    .map(function (callArgs) {
-                        return '"' + formatConsoleCall(callArgs) + '"';
-                    })
-                    .join(', ');
+//     //             if (callsArgs.length === 0) {
+//     //                 return pass();
+//     //             }
+//     //             return fail('Expect no message but received:\n' + formattedCalls);
+//     //         },
+//     //         compare: function compare(
+//     //             actual: () => void,
+//     //             expected: ExpectedMessage | ExpectedMessage[]
+//     //         ) {
+//     //             function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
+//     //                 if (typeof expectedMessage === 'string') {
+//     //                     return message === expectedMessage;
+//     //                 } else {
+//     //                     return expectedMessage.test(message);
+//     //                 }
+//     //             }
 
-                if (!expectInProd && process.env.NODE_ENV === 'production') {
-                    if (callsArgs.length !== 0) {
-                        return fail(
-                            'Expected console.' +
-                                methodName +
-                                ' to never called in production mode, but it was called ' +
-                                callsArgs.length +
-                                ' with ' +
-                                formattedCalls +
-                                '.'
-                        );
-                    } else {
-                        return pass();
-                    }
-                } else {
-                    if (callsArgs.length === 0) {
-                        return fail(
-                            'Expected console.' +
-                                methodName +
-                                ' to called with ' +
-                                JSON.stringify(expectedMessages) +
-                                ', but was never called.'
-                        );
-                    } else {
-                        if (callsArgs.length !== expectedMessages.length) {
-                            return fail(
-                                'Expected console.' +
-                                    methodName +
-                                    ' to be called ' +
-                                    expectedMessages.length +
-                                    ' time(s), but was called ' +
-                                    callsArgs.length +
-                                    ' time(s).'
-                            );
-                        }
-                        for (let i = 0; i < callsArgs.length; i++) {
-                            const callsArg = callsArgs[i];
-                            const expectedMessage = expectedMessages[i];
-                            const actualMessage = formatConsoleCall(callsArg);
-                            if (!matchMessage(actualMessage, expectedMessage)) {
-                                return fail(
-                                    'Expected console.' +
-                                        methodName +
-                                        ' to be called with "' +
-                                        expectedMessage +
-                                        '", but was called with "' +
-                                        actualMessage +
-                                        '".'
-                                );
-                            }
-                        }
-                        return pass();
-                    }
-                }
-            },
-        };
-    };
-}
+//     //             const expectedMessages = Array.isArray(expected) ? expected : [expected];
 
-type ErrorListener = (callback: () => void) => unknown | undefined;
+//     //             if (typeof actual !== 'function') {
+//     //                 throw new Error('Expected function to throw error.');
+//     //             } else if (
+//     //                 expectedMessages.some(function (message) {
+//     //                     return typeof message !== 'string' && !(message instanceof RegExp);
+//     //                 })
+//     //             ) {
+//     //                 throw new Error(
+//     //                     'Expected a string or a RegExp to compare the thrown error against, or an array of such.'
+//     //                 );
+//     //             }
 
-function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean = false) {
-    return function toThrowError() {
-        return {
-            compare: function (
-                actual: () => void,
-                errorCtor?: ErrorConstructor,
-                expectedMessage?: ExpectedMessage
-            ) {
-                const expectedErrorCtor = errorCtor ?? Error;
+//     //             const spy = spyConsole();
 
-                // if (typeof expectedMessage === 'undefined') {
-                //     if (typeof expectedErrorCtor === 'undefined') {
-                //         // 0 arguments provided
-                //         expectedMessage = undefined;
-                //         expectedErrorCtor = Error;
-                //     } else {
-                //         // 1 argument provided
-                //         expectedMessage = expectedErrorCtor;
-                //         expectedErrorCtor = Error;
-                //     }
-                // }
+//     //             try {
+//     //                 actual();
+//     //             } finally {
+//     //                 spy.reset();
+//     //             }
 
-                function matchMessage(message: string) {
-                    if (typeof expectedMessage === 'undefined') {
-                        return true;
-                    } else if (typeof expectedMessage === 'string') {
-                        return message === expectedMessage;
-                    } else {
-                        return expectedMessage.test(message);
-                    }
-                }
+//     //             const callsArgs = spy.calls[methodName];
+//     //             const formattedCalls = callsArgs
+//     //                 .map(function (callArgs) {
+//     //                     return '"' + formatConsoleCall(callArgs) + '"';
+//     //                 })
+//     //                 .join(', ');
 
-                function isError(error: unknown) {
-                    return error instanceof expectedErrorCtor;
-                }
+//     //             if (!expectInProd && process.env.NODE_ENV === 'production') {
+//     //                 if (callsArgs.length !== 0) {
+//     //                     return fail(
+//     //                         'Expected console.' +
+//     //                             methodName +
+//     //                             ' to never called in production mode, but it was called ' +
+//     //                             callsArgs.length +
+//     //                             ' with ' +
+//     //                             formattedCalls +
+//     //                             '.'
+//     //                     );
+//     //                 } else {
+//     //                     return pass();
+//     //                 }
+//     //             } else {
+//     //                 if (callsArgs.length === 0) {
+//     //                     return fail(
+//     //                         'Expected console.' +
+//     //                             methodName +
+//     //                             ' to called with ' +
+//     //                             JSON.stringify(expectedMessages) +
+//     //                             ', but was never called.'
+//     //                     );
+//     //                 } else {
+//     //                     if (callsArgs.length !== expectedMessages.length) {
+//     //                         return fail(
+//     //                             'Expected console.' +
+//     //                                 methodName +
+//     //                                 ' to be called ' +
+//     //                                 expectedMessages.length +
+//     //                                 ' time(s), but was called ' +
+//     //                                 callsArgs.length +
+//     //                                 ' time(s).'
+//     //                         );
+//     //                     }
+//     //                     for (let i = 0; i < callsArgs.length; i++) {
+//     //                         const callsArg = callsArgs[i];
+//     //                         const expectedMessage = expectedMessages[i];
+//     //                         const actualMessage = formatConsoleCall(callsArg);
+//     //                         if (!matchMessage(actualMessage, expectedMessage)) {
+//     //                             return fail(
+//     //                                 'Expected console.' +
+//     //                                     methodName +
+//     //                                     ' to be called with "' +
+//     //                                     expectedMessage +
+//     //                                     '", but was called with "' +
+//     //                                     actualMessage +
+//     //                                     '".'
+//     //                             );
+//     //                         }
+//     //                     }
+//     //                     return pass();
+//     //                 }
+//     //             }
+//     //         },
+//     //     };
+//     // };
+// }
 
-                function matchError(error: unknown) {
-                    return isError(error) && matchMessage(error.message);
-                }
+// type ErrorListener = (callback: () => void) => unknown | undefined;
 
-                function throwDescription(thrown: any) {
-                    return `${thrown.name} with message "${thrown.message}"` as const;
-                }
+// function errorMatcherFactory<T extends MatcherState = MatcherState>(errorListener: ErrorListener, expectInProd: boolean = false): RawMatcherFn<T> {
+//     return function errorMatcher(received: () => void, errorCtor?: ErrorConstructor, ...expected: ExpectedMessage[]) {
+//         const expectedErrorCtor = errorCtor ?? Error;
 
-                if (typeof actual !== 'function') {
-                    throw new Error('Expected function to throw error.');
-                } else if (
-                    expectedErrorCtor !== Error &&
-                    !(expectedErrorCtor.prototype instanceof Error)
-                ) {
-                    throw new Error('Expected an error constructor.');
-                } else if (
-                    typeof expectedMessage !== 'undefined' &&
-                    typeof expectedMessage !== 'string' &&
-                    !(expectedMessage instanceof RegExp)
-                ) {
-                    throw new Error(
-                        'Expected a string or a RegExp to compare the thrown error against.'
-                    );
-                }
+//         function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
+//             if (typeof expectedMessage === 'undefined') {
+//                 return true;
+//             } else if (typeof expectedMessage === 'string') {
+//                 return message === expectedMessage;
+//             } else {
+//                 return expectedMessage.test(message);
+//             }
+//         }
 
-                const thrown = errorListener(actual);
+//         function isError(error: unknown) {
+//             return error instanceof expectedErrorCtor;
+//         }
 
-                if (!expectInProd && process.env.NODE_ENV === 'production') {
-                    if (thrown !== undefined) {
-                        return fail(
-                            'Expected function not to throw an error in production mode, but it threw ' +
-                                throwDescription(thrown) +
-                                '.'
-                        );
-                    } else {
-                        return pass();
-                    }
-                } else {
-                    if (thrown === undefined) {
-                        return fail(
-                            'Expected function to throw an ' +
-                                expectedErrorCtor.name +
-                                ' error in development mode"' +
-                                (expectedMessage ? 'with message ' + expectedMessage : '') +
-                                '".'
-                        );
-                    } else if (!matchError(thrown)) {
-                        return fail(
-                            'Expected function to throw an ' +
-                                expectedErrorCtor.name +
-                                ' error in development mode "' +
-                                (expectedMessage ? 'with message ' + expectedMessage : '') +
-                                '", but it threw ' +
-                                throwDescription(thrown) +
-                                '.'
-                        );
-                    } else {
-                        return pass();
-                    }
-                }
-            },
-        };
-    };
-}
+//         function matchError(error: unknown) {
+//             return isError(error) && matchMessage((error as Error).message, expected[0]);
+//         }
+
+//         function throwDescription(thrown: any) {
+//             return `${thrown.name} with message "${thrown.message}"` as const;
+//         }
+
+//         const spy = spyConsole();
+//         try {
+//             received();
+//         } finally {
+//             spy.reset();
+//         }
+
+//         if (!expectInProd && process.env.NODE_ENV === 'production') {
+//             if (spy.calls.error.length !== 0) {
+//                 return fail(
+//                     'Expected function not to throw an error in production mode, but it threw ' +
+//                         throwDescription(spy.calls.error[0]) +
+//                         '.'
+//                 );
+//             } else {
+//                 return pass();
+//             }
+//         } else {
+//             if (spy.calls.error.length === 0) {
+//                 return fail(
+//                     'Expected function to throw an ' +
+//                         expectedErrorCtor.name +
+//                         ' error in development mode "' +
+//                         (expected[0] ? 'with message ' + expected[0] : '') +
+//                         '".'
+//                 );
+//             } else if (!matchError(spy.calls.error[0])) {
+//                 return fail(
+//                     'Expected function to throw an ' +
+//                         expectedErrorCtor.name +
+//                         ' error in development mode "' +
+//                         (expected[0] ? 'with message ' + expected[0] : '') +
+//                         '", but it threw ' +
+//                         throwDescription(spy.calls.error[0]) +
+//                         '.'
+//                 );
+//             } else {
+//                 return pass();
+//             }
+//         }
+//     };
+//     // return function toThrowError() {
+//     //     return {
+//     //         compare: function (
+//     //             actual: () => void,
+//     //             errorCtor?: ErrorConstructor,
+//     //             expectedMessage?: ExpectedMessage
+//     //         ) {
+//     //             const expectedErrorCtor = errorCtor ?? Error;
+
+//     //             // if (typeof expectedMessage === 'undefined') {
+//     //             //     if (typeof expectedErrorCtor === 'undefined') {
+//     //             //         // 0 arguments provided
+//     //             //         expectedMessage = undefined;
+//     //             //         expectedErrorCtor = Error;
+//     //             //     } else {
+//     //             //         // 1 argument provided
+//     //             //         expectedMessage = expectedErrorCtor;
+//     //             //         expectedErrorCtor = Error;
+//     //             //     }
+//     //             // }
+
+//     //             function matchMessage(message: string) {
+//     //                 if (typeof expectedMessage === 'undefined') {
+//     //                     return true;
+//     //                 } else if (typeof expectedMessage === 'string') {
+//     //                     return message === expectedMessage;
+//     //                 } else {
+//     //                     return expectedMessage.test(message);
+//     //                 }
+//     //             }
+
+//     //             function isError(error: unknown) {
+//     //                 return error instanceof expectedErrorCtor;
+//     //             }
+
+//     //             function matchError(error: unknown) {
+//     //                 return isError(error) && matchMessage(error.message);
+//     //             }
+
+//     //             function throwDescription(thrown: any) {
+//     //                 return `${thrown.name} with message "${thrown.message}"` as const;
+//     //             }
+
+//     //             if (typeof actual !== 'function') {
+//     //                 throw new Error('Expected function to throw error.');
+//     //             } else if (
+//     //                 expectedErrorCtor !== Error &&
+//     //                 !(expectedErrorCtor.prototype instanceof Error)
+//     //             ) {
+//     //                 throw new Error('Expected an error constructor.');
+//     //             } else if (
+//     //                 typeof expectedMessage !== 'undefined' &&
+//     //                 typeof expectedMessage !== 'string' &&
+//     //                 !(expectedMessage instanceof RegExp)
+//     //             ) {
+//     //                 throw new Error(
+//     //                     'Expected a string or a RegExp to compare the thrown error against.'
+//     //                 );
+//     //             }
+
+//     //             const thrown = errorListener(actual);
+
+//     //             if (!expectInProd && process.env.NODE_ENV === 'production') {
+//     //                 if (thrown !== undefined) {
+//     //                     return fail(
+//     //                         'Expected function not to throw an error in production mode, but it threw ' +
+//     //                             throwDescription(thrown) +
+//     //                             '.'
+//     //                     );
+//     //                 } else {
+//     //                     return pass();
+//     //                 }
+//     //             } else {
+//     //                 if (thrown === undefined) {
+//     //                     return fail(
+//     //                         'Expected function to throw an ' +
+//     //                             expectedErrorCtor.name +
+//     //                             ' error in development mode"' +
+//     //                             (expectedMessage ? 'with message ' + expectedMessage : '') +
+//     //                             '".'
+//     //                     );
+//     //                 } else if (!matchError(thrown)) {
+//     //                     return fail(
+//     //                         'Expected function to throw an ' +
+//     //                             expectedErrorCtor.name +
+//     //                             ' error in development mode "' +
+//     //                             (expectedMessage ? 'with message ' + expectedMessage : '') +
+//     //                             '", but it threw ' +
+//     //                             throwDescription(thrown) +
+//     //                             '.'
+//     //                     );
+//     //                 } else {
+//     //                     return pass();
+//     //                 }
+//     //             }
+//     //         },
+//     //     };
+//     // };
+// }
 
 // Listen for errors thrown directly by the callback
-function directErrorListener(callback: () => void) {
+export function directErrorListener(callback: () => void) {
     try {
         callback();
     } catch (error) {
@@ -335,7 +482,7 @@ function directErrorListener(callback: () => void) {
 }
 
 // Listen for errors using window.addEventListener('error')
-function windowErrorListener(callback: () => void) {
+export function windowErrorListener(callback: () => void) {
     let error: unknown;
     function onError(event: ErrorEvent) {
         event.preventDefault(); // don't log the error
@@ -363,33 +510,33 @@ function windowErrorListener(callback: () => void) {
 // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
 //    only be caught with window.addEventListener('error')
 //      - Note native lifecycle callbacks are all thrown asynchronously.
-function customElementCallbackReactionErrorListener(callback: () => void) {
+export function customElementCallbackReactionErrorListener(callback: () => void) {
     return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         ? directErrorListener(callback)
         : windowErrorListener(callback);
 }
 
-const customMatchers = {
-    toLogErrorDev: consoleDevMatcherFactory('error'),
-    toLogError: consoleDevMatcherFactory('error', true),
-    toLogWarningDev: consoleDevMatcherFactory('warn'),
-    toThrowErrorDev: errorMatcherFactory(directErrorListener),
-    toThrowCallbackReactionErrorDev: errorMatcherFactory(
-        customElementCallbackReactionErrorListener
-    ),
-    toThrowCallbackReactionError: errorMatcherFactory(
-        customElementCallbackReactionErrorListener,
-        true
-    ),
-    toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode: errorMatcherFactory(
-        windowErrorListener,
-        true
-    ),
-} as const;
+// const customMatchers = {
+//     toLogErrorDev: consoleDevMatcherFactory('error'),
+//     toLogError: consoleDevMatcherFactory('error', true),
+//     toLogWarningDev: consoleDevMatcherFactory('warn'),
+//     toThrowErrorDev: errorMatcherFactory(directErrorListener),
+//     toThrowCallbackReactionErrorDev: errorMatcherFactory(
+//         customElementCallbackReactionErrorListener
+//     ),
+//     toThrowCallbackReactionError: errorMatcherFactory(
+//         customElementCallbackReactionErrorListener,
+//         true
+//     ),
+//     toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode: errorMatcherFactory(
+//         windowErrorListener,
+//         true
+//     ),
+// } satisfies MatchersObject;
 
-beforeAll(function () {
-    jasmine.addMatchers(customMatchers);
-});
+// beforeAll(function () {
+//     expect.extend(customMatchers);
+// });
 
 type AttachDispatcher = typeof lwc.__unstable__ReportingControl.attachDispatcher;
 type ReportingDispatcher = Parameters<AttachDispatcher>[0];
@@ -399,9 +546,9 @@ type ReportingEventId = Parameters<ReportingDispatcher>[0];
  * @param dispatcher
  * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
  */
-function attachReportingControlDispatcher(
+export function attachReportingControlDispatcher(
     dispatcher: ReportingDispatcher,
-    runtimeEvents: ReportingEventId[]
+    runtimeEvents: ReportingEventId[keyof ReportingEventId][]
 ) {
     lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
         if (!runtimeEvents || runtimeEvents.includes(eventName)) {
@@ -410,11 +557,11 @@ function attachReportingControlDispatcher(
     });
 }
 
-function detachReportingControlDispatcher() {
+export function detachReportingControlDispatcher() {
     lwc.__unstable__ReportingControl.detachDispatcher();
 }
 
-function extractDataIds(root: Element) {
+export function extractDataIds(root: Element) {
     const nodes: Record<string, Node> = {};
 
     function processElement(elm: Element) {
@@ -456,7 +603,7 @@ function extractDataIds(root: Element) {
     return nodes;
 }
 
-function extractShadowDataIds(shadowRoot: ShadowRoot) {
+export function extractShadowDataIds(shadowRoot: ShadowRoot) {
     const nodes: Record<string, Node> = {};
 
     // Add the shadow root here even if they don't have [data-id] attributes. This reference is
@@ -481,30 +628,30 @@ function extractShadowDataIds(shadowRoot: ShadowRoot) {
 }
 
 let register: Record<string, CustomElementConstructor> = {};
-function load(id: string) {
+export function load(id: string) {
     return Promise.resolve(register[id]);
 }
 
-function registerForLoad(name: string, Ctor: CustomElementConstructor) {
+export function registerForLoad(name: string, Ctor: CustomElementConstructor) {
     register[name] = Ctor;
 }
-function clearRegister() {
+export function clearRegister() {
     register = {};
 }
 
 // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
 // filters this node.
-function getHostChildNodes(host: Node) {
+export function getHostChildNodes(host: Node) {
     return Array.prototype.slice.call(host.childNodes).filter(function (n) {
         return !(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'));
     });
 }
 
-function isSyntheticShadowRootInstance(sr: ShadowRoot) {
+export function isSyntheticShadowRootInstance(sr: ShadowRoot) {
     return Boolean(sr && (sr as any).synthetic);
 }
 
-function isNativeShadowRootInstance(sr: ShadowRoot) {
+export function isNativeShadowRootInstance(sr: ShadowRoot) {
     return Boolean(sr && !(sr as any).synthetic);
 }
 
@@ -522,20 +669,20 @@ lwc.setHooks({
     },
 });
 
-function getHooks() {
+export function getHooks() {
     return {
         sanitizeHtmlContent: sanitizeHtmlContentHook,
     };
 }
 
-function setHooks(hooks: OverridableHooksDef) {
+export function setHooks(hooks: OverridableHooksDef) {
     if (hooks.sanitizeHtmlContent) {
         sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
     }
 }
 
 // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
-const ariaPropertiesMapping = {
+export const ariaPropertiesMapping = {
     ariaAutoComplete: 'aria-autocomplete',
     ariaChecked: 'aria-checked',
     ariaCurrent: 'aria-current',
@@ -591,7 +738,7 @@ const ariaPropertiesMapping = {
 } as const;
 
 // See the README for @lwc/aria-reflection
-const nonStandardAriaProperties = [
+export const nonStandardAriaProperties = [
     'ariaActiveDescendant',
     'ariaControls',
     'ariaDescribedBy',
@@ -604,7 +751,7 @@ const nonStandardAriaProperties = [
 
 // These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
 // prototypes in https://github.com/salesforce/lwc/pull/3702
-const nonPolyfilledAriaProperties = [
+export const nonPolyfilledAriaProperties = [
     'ariaColIndexText',
     'ariaBrailleLabel',
     'ariaBrailleRoleDescription',
@@ -612,11 +759,11 @@ const nonPolyfilledAriaProperties = [
     'ariaRowIndexText',
 ] as const;
 
-const ariaProperties = Object.keys(ariaPropertiesMapping);
-const ariaAttributes = Object.values(ariaPropertiesMapping);
+export const ariaProperties = Object.keys(ariaPropertiesMapping);
+export const ariaAttributes = Object.values(ariaPropertiesMapping);
 
 // Keep traversing up the prototype chain until a property descriptor is found
-function getPropertyDescriptor(object: unknown, prop: PropertyKey) {
+export function getPropertyDescriptor(object: unknown, prop: PropertyKey) {
     do {
         const descriptor = Object.getOwnPropertyDescriptor(object, prop);
         if (descriptor) {
@@ -626,18 +773,18 @@ function getPropertyDescriptor(object: unknown, prop: PropertyKey) {
     } while (object);
 }
 
-const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
+export const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
 
 // Designed for hydration tests, this helper asserts certain error/warn console messages were logged
-function createExpectConsoleCallsFunc(devOnly: boolean) {
+export function createExpectConsoleCallsFunc(devOnly: boolean) {
     return (consoleCalls: ConsoleCalls, methods: ConsoleCalls) => {
         for (const [method, matchers] of Object.entries(methods)) {
             const calls = consoleCalls[method];
             if (devOnly && process.env.NODE_ENV === 'production') {
                 // assume no console errors/warnings in production
-                expect(calls).toHaveSize(0);
+                expect(calls).toHaveLength(0);
             } else {
-                expect(calls).toHaveSize(matchers.length);
+                expect(calls).toHaveLength(matchers.length);
                 for (let i = 0; i < matchers.length; i++) {
                     const matcher = matchers[i];
                     const call = calls[i][0];
@@ -653,13 +800,13 @@ function createExpectConsoleCallsFunc(devOnly: boolean) {
     };
 }
 
-const expectConsoleCalls = createExpectConsoleCallsFunc(false);
-const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
+export const expectConsoleCalls = createExpectConsoleCallsFunc(false);
+export const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
 
 // Utility to handle unhandled rejections or errors without allowing Jasmine to handle them first.
 // Captures both onunhandledrejection and onerror events, since you might want both depending on
 // native vs synthetic lifecycle timing differences.
-function catchUnhandledRejectionsAndErrors(
+export function catchUnhandledRejectionsAndErrors(
     onUnhandledRejectionOrError: (arg0: ErrorEvent) => void
 ) {
     let originalOnError: OnErrorEventHandler;
@@ -694,23 +841,37 @@ function catchUnhandledRejectionsAndErrors(
     });
 }
 
-const apiVersionNumber = process.env.API_VERSION
-    ? parseInt(process.env.API_VERSION, 10)
-    : undefined;
-const apiVersion = getAPIVersionFromNumber(apiVersionNumber);
+const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 0;
 
 // These values are based on the API versions in @lwc/shared/api-version
-const apiFeatures = {
-    LOWERCASE_SCOPE_TOKENS: apiVersion >= APIVersion.V59_246_WINTER_24,
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS: apiVersion >= APIVersion.V60_248_SPRING_24,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS: apiVersion >= APIVersion.V60_248_SPRING_24,
-    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION: apiVersion >= APIVersion.V60_248_SPRING_24,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE: apiVersion >= APIVersion.V61_250_SUMMER_24,
-    USE_LIGHT_DOM_SLOT_FORWARDING: apiVersion >= APIVersion.V61_250_SUMMER_24,
-    ENABLE_THIS_DOT_HOST_ELEMENT: apiVersion >= APIVersion.V62_252_WINTER_25,
-    ENABLE_THIS_DOT_STYLE: apiVersion >= APIVersion.V62_252_WINTER_25,
-    TEMPLATE_CLASS_NAME_OBJECT_BINDING: apiVersion >= APIVersion.V62_252_WINTER_25,
-} as Partial<Record<keyof typeof APIFeature, boolean>>;
+
+export const LOWERCASE_SCOPE_TOKENS = apiVersion >= 59;
+export const USE_COMMENTS_FOR_FRAGMENT_BOOKENDS = apiVersion >= 60;
+export const USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS = apiVersion >= 60;
+export const DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION = apiVersion >= 60;
+export const ENABLE_ELEMENT_INTERNALS_AND_FACE = apiVersion >= 61;
+export const USE_LIGHT_DOM_SLOT_FORWARDING = apiVersion >= 61;
+export const ENABLE_THIS_DOT_HOST_ELEMENT = apiVersion >= 62;
+export const ENABLE_THIS_DOT_STYLE = apiVersion >= 62;
+export const TEMPLATE_CLASS_NAME_OBJECT_BINDING = apiVersion >= 62;
+
+// const apiVersionNumber = process.env.API_VERSION
+//     ? parseInt(process.env.API_VERSION, 10)
+//     : undefined;
+// const apiVersion = getAPIVersionFromNumber(apiVersionNumber);
+
+// // These values are based on the API versions in @lwc/shared/api-version
+// const apiFeatures = {
+//     LOWERCASE_SCOPE_TOKENS: apiVersion >= APIVersion.V59_246_WINTER_24,
+//     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS: apiVersion >= APIVersion.V60_248_SPRING_24,
+//     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS: apiVersion >= APIVersion.V60_248_SPRING_24,
+//     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION: apiVersion >= APIVersion.V60_248_SPRING_24,
+//     ENABLE_ELEMENT_INTERNALS_AND_FACE: apiVersion >= APIVersion.V61_250_SUMMER_24,
+//     USE_LIGHT_DOM_SLOT_FORWARDING: apiVersion >= APIVersion.V61_250_SUMMER_24,
+//     ENABLE_THIS_DOT_HOST_ELEMENT: apiVersion >= APIVersion.V62_252_WINTER_25,
+//     ENABLE_THIS_DOT_STYLE: apiVersion >= APIVersion.V62_252_WINTER_25,
+//     TEMPLATE_CLASS_NAME_OBJECT_BINDING: apiVersion >= APIVersion.V62_252_WINTER_25,
+// } as Partial<Record<keyof typeof APIFeature, boolean>>;
 
 const testUtils = {
     clearRegister,
@@ -737,12 +898,15 @@ const testUtils = {
     expectConsoleCalls,
     expectConsoleCallsDev,
     catchUnhandledRejectionsAndErrors,
-    ...apiFeatures,
 } as const;
 
 declare global {
     interface Window {
         TestUtils: typeof testUtils;
+    }
+
+    interface ProcessEnv {
+        API_VERSION: number;
     }
 }
 

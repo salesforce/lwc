@@ -3,9 +3,19 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "noEmit": true,
+        "allowJs": true,
         "target": "ESNext",
-        "lib": ["ES2015.Promise", "DOM"]
+        "lib": ["ES2015.Promise", "DOM"],
+        "types": ["vitest/globals", "@vitest/browser/providers/playwright"],
+        "paths": {
+            "test-utils": ["./vitest-helpers/test-utils.ts"]
+        }
     },
     "files": ["../../lwc/types.d.ts"],
-    "include": ["vitest-scripts", "vitest-helpers"]
+    "include": [
+        "vitest-scripts/**/*.ts",
+        "vitest-helpers/*.ts",
+        "test/**/*.spec.ts",
+        "test/**/*.spec.js"
+    ]
 }

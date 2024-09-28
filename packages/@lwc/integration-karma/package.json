@@ -24,6 +24,7 @@
         "@lwc/rollup-plugin": "8.1.0",
         "@lwc/synthetic-shadow": "8.1.0",
         "@types/jasmine": "^5.1.4",
+        "@types/karma-jasmine": "^4.0.5",
         "@vitest/browser": "^2.1.1",
         "chokidar": "^4.0.0",
         "istanbul-lib-coverage": "^3.2.2",
