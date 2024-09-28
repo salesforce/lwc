@@ -11,7 +11,7 @@ export default defineConfig({
         {
             ...createCustomRollupPlugin({
                 rootDir: 'test',
-                include: ['test/**/*.spec.{js,ts}'],
+                include: ['**/*.{js,ts}'],
             }),
             enforce: 'pre',
             apply: 'build',
@@ -23,8 +23,10 @@ export default defineConfig({
         globals: true,
         alias: {
             'test-utils': path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
+            'x/test': './x/test/test.js',
         },
         setupFiles: ['./vitest-helpers/test-setup.ts'],
+        globalSetup: ['./vitest-helpers/global-setup.ts'],
         env: {
             NODE_ENV: 'test-karma-lwc',
         },

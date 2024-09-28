@@ -9,11 +9,11 @@
  * This transformation is inspired from the karma-rollup-transform:
  * https://github.com/jlmakes/karma-rollup-preprocessor/blob/master/lib/index.js
  */
-'use strict';
 
-import { dirname, relative, sep } from 'path';
-import { rollup, RollupCache, SourceMap } from 'rollup';
-import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
+// import { dirname, relative, sep } from 'path';
+// import { rollup, RollupCache, SourceMap } from 'rollup';
+
+import lwcRollupPlugin, { type RollupLwcOptions } from '@lwc/rollup-plugin';
 
 import options from '../shared/options';
 const {
@@ -21,110 +21,112 @@ const {
     API_VERSION,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
 } = options;
-import Watcher from './Watcher';
+//import Watcher from './Watcher';
 
-function createPreprocessor(
-    config: { basePath: any },
-    emitter: { _fileList: { changeFile: (arg0: string, arg1: boolean) => void } },
-    logger: { create: (arg0: string) => any }
-) {
-    const { basePath } = config;
+import type { Plugin } from 'vitest/config';
 
-    const log = logger.create('preprocessor-lwc');
-    const watcher = new Watcher(config, emitter, log);
+// function createPreprocessor(
+//     config: { basePath: any },
+//     emitter: { _fileList: { changeFile: (arg0: string, arg1: boolean) => void } },
+//     logger: { create: (arg0: string) => any }
+// ) {
+//     const { basePath } = config;
 
-    // Cache reused between each compilation to speed up the compilation time.
-    let cache: RollupCache | undefined;
+//     const log = logger.create('preprocessor-lwc');
+//     const watcher = new Watcher(config, emitter, log);
 
-    return async (
-        content: any,
-        file: { path: string; sourceMap: SourceMap },
-        done: (arg0: unknown, arg1: string | null) => void
-    ) => {
-        const input = file.path;
+//     // Cache reused between each compilation to speed up the compilation time.
+//     let cache: RollupCache | undefined;
 
-        const suiteDir = dirname(input);
+//     return async (
+//         content: any,
+//         file: { path: string; sourceMap: SourceMap },
+//         done: (arg0: unknown, arg1: string | null) => void
+//     ) => {
+//         const input = file.path;
 
-        // Wrap all the tests into a describe block with the file structure name
-        // This avoids needing to manually write `describe()` for every file.
-        // Also add an empty test because otherwise Jasmine complains about empty describe()s:
-        // https://github.com/jasmine/jasmine/pull/1742
-        const ancestorDirectories = relative(basePath, suiteDir).split(sep);
-        const intro =
-            ancestorDirectories.map((tag) => `describe("${tag}", function () {`).join('\n') +
-            `\nxit("empty test", () => { /* empty */ });\n`;
-        const outro = ancestorDirectories.map(() => `});`).join('\n');
+//         const suiteDir = dirname(input);
 
-        // TODO [#3370]: remove experimental template expression flag
-        const experimentalComplexExpressions = suiteDir.includes('template-expressions');
-        const customLwcRollupPlugin = createCustomRollupPlugin({ experimentalComplexExpressions });
+//         // Wrap all the tests into a describe block with the file structure name
+//         // This avoids needing to manually write `describe()` for every file.
+//         // Also add an empty test because otherwise Jasmine complains about empty describe()s:
+//         // https://github.com/jasmine/jasmine/pull/1742
+//         const ancestorDirectories = relative(basePath, suiteDir).split(sep);
+//         const intro =
+//             ancestorDirectories.map((tag) => `describe("${tag}", function () {`).join('\n') +
+//             `\nxit("empty test", () => { /* empty */ });\n`;
+//         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
-        const plugins = [customLwcRollupPlugin];
+//         // TODO [#3370]: remove experimental template expression flag
+//         const experimentalComplexExpressions = suiteDir.includes('template-expressions');
+//         const customLwcRollupPlugin = createCustomRollupPlugin({ experimentalComplexExpressions });
 
-        try {
-            const bundle = await rollup({
-                input,
-                plugins,
-                cache,
+//         const plugins = [customLwcRollupPlugin];
 
-                // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
-                // globally in the page before running the tests.
-                external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
+//         try {
+//             const bundle = await rollup({
+//                 input,
+//                 plugins,
+//                 cache,
 
-                onwarn(warning, warn) {
-                    // Ignore warnings from our own Rollup plugin
-                    if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
-                        warn(warning);
-                    }
-                },
-            });
+//                 // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
+//                 // globally in the page before running the tests.
+//                 external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
 
-            watcher.watchSuite(input, bundle.watchFiles);
+//                 onwarn(warning, warn) {
+//                     // Ignore warnings from our own Rollup plugin
+//                     if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
+//                         warn(warning);
+//                     }
+//                 },
+//             });
 
-            cache = bundle.cache;
+//             watcher.watchSuite(input, bundle.watchFiles);
 
-            const { output } = await bundle.generate({
-                format: 'iife',
-                // Sourcemaps don't work with Istanbul coverage
-                sourcemap: process.env.COVERAGE ? false : 'inline',
+//             cache = bundle.cache;
 
-                // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
-                // referenced from the window object.
-                globals: {
-                    lwc: 'LWC',
-                    'wire-service': 'WireService',
-                    'test-utils': 'TestUtils',
-                },
+//             const { output } = await bundle.generate({
+//                 format: 'iife',
+//                 // Sourcemaps don't work with Istanbul coverage
+//                 sourcemap: process.env.COVERAGE ? false : 'inline',
 
-                intro,
-                outro,
-            });
+//                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
+//                 // referenced from the window object.
+//                 globals: {
+//                     lwc: 'LWC',
+//                     'wire-service': 'WireService',
+//                     'test-utils': 'TestUtils',
+//                 },
 
-            const { code, map } = output[0];
+//                 intro,
+//                 outro,
+//             });
 
-            if (map) {
-                // We need to assign the source to the original file so Karma can source map the error in the console. Add
-                // also adding the source map inline for browser debugging.
+//             const { code, map } = output[0];
 
-                file.sourceMap = map;
-            }
+//             if (map) {
+//                 // We need to assign the source to the original file so Karma can source map the error in the console. Add
+//                 // also adding the source map inline for browser debugging.
 
-            done(null, code);
-        } catch (error: any) {
-            const location = relative(basePath, file.path);
-            log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
+//                 file.sourceMap = map;
+//             }
 
-            if (process.env.KARMA_MODE === 'watch') {
-                log.error('Ignoring error in watch mode');
-                done(null, content); // just pass the untransformed content in for now
-            } else {
-                done(error, null);
-            }
-        }
-    };
-}
+//             done(null, code);
+//         } catch (error: any) {
+//             const location = relative(basePath, file.path);
+//             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
 
-createPreprocessor.$inject = ['config', 'emitter', 'logger'];
+//             if (process.env.KARMA_MODE === 'watch') {
+//                 log.error('Ignoring error in watch mode');
+//                 done(null, content); // just pass the untransformed content in for now
+//             } else {
+//                 done(error, null);
+//             }
+//         }
+//     };
+// }
+
+// createPreprocessor.$inject = ['config', 'emitter', 'logger'];
 
 // export default { 'preprocessor:lwc': ['factory', createPreprocessor] };
 
@@ -156,7 +158,11 @@ export default function createCustomRollupPlugin(defaultOptions: RollupLwcOption
 
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
-        transform(src: any, id: string) {
+        resolveId(source, importer, options) {
+            // @ts-expect-error: resolveId is optional
+            defaultRollupPlugin.resolveId!.call(this, source, importer, options);
+        },
+        transform(code, id, _options) {
             let rollupPluginToUse = defaultRollupPlugin;
             const match = id.match(/useApiVersion(\d+)/);
             if (match) {
@@ -168,10 +174,12 @@ export default function createCustomRollupPlugin(defaultOptions: RollupLwcOption
                 }
                 rollupPluginToUse = perApiVersionPlugin;
             }
-            // @ts-expect-error: transform is not yet typed
-            return rollupPluginToUse.transform.call(this, src, id);
+
+            const transformToUse = rollupPluginToUse.transform!;
+            // @ts-expect-error: transform is optional
+            transformToUse.call(this, code, id);
         },
-    };
+    } satisfies Plugin;
 
     return customLwcRollupPlugin;
 }
