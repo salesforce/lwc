@@ -6,16 +6,7 @@
  */
 
 export { expect, describe, vi } from 'vitest';
-
-vi.mock(import('lwc'), async (importOriginal) => {
-    const lwc = await importOriginal();
-    lwc.setHooks({
-        sanitizeHtmlContent: function (content) {
-            return sanitizeHtmlContentHook(content);
-        },
-    });
-    return lwc;
-});
+import * as lwc from 'lwc';
 
 export function expectComposedPath(
     event: Event,
@@ -48,6 +39,7 @@ export const jasmine = {
 };
 
 type ConsoleMethods = keyof Omit<Console, 'Console'>;
+
 type ConsoleCalls = {
     [K in ConsoleMethods]: any[];
 } & {
@@ -801,7 +793,7 @@ export const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
 // Captures both onunhandledrejection and onerror events, since you might want both depending on
 // native vs synthetic lifecycle timing differences.
 export function catchUnhandledRejectionsAndErrors(
-    onUnhandledRejectionOrError: (arg0: ErrorEvent) => void
+    onUnhandledRejectionOrError: (event: ErrorEvent) => void
 ) {
     let originalOnError: OnErrorEventHandler;
 
@@ -834,8 +826,6 @@ export function catchUnhandledRejectionsAndErrors(
         window.onerror = originalOnError;
     });
 }
-
-export const spyOn = vi.spyOn;
 
 const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 63;
 
@@ -873,9 +863,6 @@ type AttachDispatcher = typeof import('lwc').__unstable__ReportingControl.attach
 type ReportingDispatcher = Parameters<AttachDispatcher>[0];
 type ReportingEventId = Parameters<ReportingDispatcher>[0];
 
-import lwc from 'lwc';
-
-vi.mock(import('lwc'), { spy: true });
 /**
  *
  * @param dispatcher

@@ -10,12 +10,12 @@
  * script is generated based the config, and served as the first file Karma should run.
  */
 
-'use strict';
-
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { resolve } from 'path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import options from '../shared/options';
+import type { GlobalSetupContext } from 'vitest/node';
+
 const {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
@@ -26,6 +26,7 @@ const {
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
 } = options;
+
 const DIST_DIR = resolve(__dirname, '../../dist');
 const ENV_FILENAME = resolve(DIST_DIR, 'env.js');
 
@@ -63,8 +64,18 @@ function initEnv(files: { pattern: string }[]) {
     });
 }
 
-initEnv.$inject = ['config.files'];
+export default function setup(_context: GlobalSetupContext) {
+    initEnv([]);
+}
 
-export default {
-    'framework:env': ['factory', initEnv],
-};
+//   declare module 'vitest' {
+//     export interface ProvidedContext {
+//       wsPort: number
+//     }
+//   }
+
+// initEnv.$inject = ['config.files'];
+
+// export default {
+//     'framework:env': ['factory', initEnv],
+// };

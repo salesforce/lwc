@@ -5,14 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-'use strict';
+import { resolve, join } from 'node:path';
 
-import { resolve, join } from 'path';
+import karmaPluginLwc from '../../karma-plugins/lwc';
+import karmaPluginEnv from '../../karma-plugins/env';
+import karmaPluginTransformFramework from '../../karma-plugins/transform-framework';
+import options from '../../shared/options';
 
-import karmaPluginLwc from '../../karma-plugins/lwc.js';
-import karmaPluginEnv from '../../karma-plugins/env.js';
-import karmaPluginTransformFramework from '../../karma-plugins/transform-framework.js';
-import options from '../../shared/options.js';
 const {
     GREP,
     COVERAGE,
@@ -20,10 +19,10 @@ const {
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     DISABLE_SYNTHETIC,
 } = options;
-import utils from '../utils.js';
+import utils from '../utils';
 const { createPattern } = utils;
 
-const BASE_DIR = resolve(__dirname, '../../../test');
+export const BASE_DIR = resolve(__dirname, '../../../test');
 const COVERAGE_DIR = resolve(__dirname, '../../../coverage');
 
 const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
@@ -62,13 +61,21 @@ function getFiles() {
     ];
 }
 
+export type Config = {
+    client: { args: any };
+    preprocessors: { [x: string]: string[] };
+    reporters: string[];
+    plugins: string[];
+    coverageReporter: { dir: string; reporters: { type: string }[] };
+};
+
 /**
  * More details here:
  * https://karma-runner.github.io/3.0/config/configuration-file.html
  * @param config
  */
-export default (config: any) => {
-    config.set({
+export default (config: Config) => {
+    Object.assign(config, {
         basePath: BASE_DIR,
         files: getFiles(),
 
@@ -114,4 +121,6 @@ export default (config: any) => {
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }
+
+    return {};
 };

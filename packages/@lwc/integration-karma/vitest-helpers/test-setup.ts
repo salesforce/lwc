@@ -4,10 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import * as lwc from 'lwc';
 import { vi } from 'vitest';
 
+vi.stubGlobal('LWC', { ...lwc });
+vi.stubGlobal('spyOn', vi.spyOn);
+
 declare global {
+    var LWC: typeof lwc;
+    var spyOn: typeof vi.spyOn;
+
     interface Window {
         __lwcResetGlobalStylesheets: () => void;
         __lwcResetAlreadyLoggedMessages: () => void;

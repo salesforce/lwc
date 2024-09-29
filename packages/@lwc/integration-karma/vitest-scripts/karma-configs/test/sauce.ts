@@ -13,11 +13,11 @@ const { getSauceConfig } = utils;
 import options from '../../shared/options';
 const { LEGACY_BROWSERS } = options;
 
-import localConfig from './base.js';
+import localConfig, { type Config } from './base.js';
 
 const SAUCE_BROWSERS = [...(LEGACY_BROWSERS ? LEGACY_SAUCE_BROWSERS : STANDARD_SAUCE_BROWSERS)];
 
-export default (config: { set?: any; reporters: any; plugins: any }) => {
+export default (config: Config) => {
     localConfig(config);
 
     if (SAUCE_BROWSERS.length === 0) {
@@ -29,5 +29,5 @@ export default (config: { set?: any; reporters: any; plugins: any }) => {
         browsers: SAUCE_BROWSERS,
     });
 
-    config.set(sauceConfig);
+    Object.assign(config, sauceConfig);
 };
