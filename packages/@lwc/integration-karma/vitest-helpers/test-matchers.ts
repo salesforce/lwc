@@ -204,6 +204,9 @@ function customElementCallbackReactionErrorListener(callback: Callback) {
     return errorListener(callback);
 }
 
+const getNormalizedFunctionAsString = (fn: { toString: () => string }) =>
+    fn.toString().replace(/(\s|\n)/g, '');
+
 expect.extend({
     toLogErrorDev: consoleDevMatcherFactory('error'),
     toLogError: consoleDevMatcherFactory('error', true),
@@ -226,6 +229,26 @@ expect.extend({
     toBeFalse(received: boolean, message = 'Expected value to be false') {
         return !received ? pass() : fail(message);
     },
+    toEqualWireSettings(actual, expected) {
+        Object.keys(actual).forEach((currentKey) => {
+            const normalizedActual = Object.assign({}, actual[currentKey], {
+                config: getNormalizedFunctionAsString(actual[currentKey].config),
+            });
+
+            const normalizedExpected = Object.assign({}, expected[currentKey], {
+                config: getNormalizedFunctionAsString(
+                    expected[currentKey].config || function () {}
+                ),
+            });
+
+            expect(normalizedActual).toEqual(normalizedExpected);
+        });
+
+        return {
+            pass: true,
+            message: () => '',
+        };
+    },
 });
 
 interface CustomMatchers<R = unknown> {
@@ -239,6 +262,7 @@ interface CustomMatchers<R = unknown> {
 
     toThrowCallbackReactionErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
     toThrowCallbackReactionError: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+    toEqualWireSettings: (actual: any, expected: any) => R;
 }
 
 declare module 'vitest' {
