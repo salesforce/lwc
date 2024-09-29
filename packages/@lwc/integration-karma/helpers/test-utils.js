@@ -642,6 +642,24 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
     };
 
+    /**
+     * Returns a promise that resolves with the composed path of the event.
+     * @param {Event} event - The event to be dispatched and whose composed path is to be resolved.
+     * @param {EventTarget} target - The target to which the event listener is added.
+     * @param {EventTarget} dispatcher - The dispatcher that dispatches the event.
+     * @returns {Promise<EventTarget[]>} A promise that resolves with the composed path of the event.
+     */
+    async function expectComposedPath(event, target, dispatcher = target) {
+        const composedPath = await new Promise((resolve) => {
+            target.addEventListener(event.type, (event) => {
+                resolve(event.composedPath());
+            });
+            dispatcher.dispatchEvent(event);
+        });
+
+        return composedPath;
+    }
+
     return {
         clearRegister,
         extractDataIds,
@@ -668,6 +686,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
         spyOn,
+        expectComposedPath,
         jasmine: {
             ...jasmine,
             createSpy() {

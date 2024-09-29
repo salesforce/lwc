@@ -20,6 +20,7 @@ export default defineConfig({
     test: {
         name: 'lwc-integration-karma',
         include: ['test/**/*.spec.{js,ts}'],
+        exclude: ['**/__screenshots__/**'],
         globals: true,
         alias: [
             {
@@ -29,7 +30,6 @@ export default defineConfig({
             { find: /^x\/(.*)/, replacement: './x/$1/$1' },
         ],
         setupFiles: ['./vitest-helpers/test-setup.ts'],
-        globalSetup: ['./vitest-helpers/global-setup.ts'],
         env: {
             NODE_ENV: 'test-karma-lwc',
             NATIVE_SHADOW: 'true',

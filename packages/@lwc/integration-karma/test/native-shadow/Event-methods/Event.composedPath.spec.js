@@ -1,23 +1,7 @@
 import { createElement } from 'lwc';
 import Synthetic from 'x/synthetic';
 
-/**
- * Returns a promise that resolves with the composed path of the event.
- * @param {Event} event - The event to be dispatched and whose composed path is to be resolved.
- * @param {EventTarget} target - The target to which the event listener is added.
- * @param {EventTarget} dispatcher - The dispatcher that dispatches the event.
- * @returns {Promise<EventTarget[]>} A promise that resolves with the composed path of the event.
- */
-async function expectComposedPath(event, target, dispatcher = target) {
-    const composedPath = await new Promise((resolve) => {
-        target.addEventListener(event.type, (event) => {
-            resolve(event.composedPath());
-        });
-        dispatcher.dispatchEvent(event);
-    });
-
-    return composedPath;
-}
+import { expectComposedPath } from 'test-utils';
 
 describe('[W-9846457] event access when using native shadow dom', () => {
     let nativeParent;

@@ -8,6 +8,20 @@
 import * as lwc from 'lwc';
 export { expect, describe } from 'vitest';
 
+export function expectComposedPath(
+    event: Event,
+    target: EventTarget,
+    dispatcher: EventTarget = target
+): Promise<EventTarget[]> {
+    return new Promise((resolve) => {
+        target.addEventListener(event.type, (event) => {
+            resolve(event.composedPath());
+        });
+
+        dispatcher.dispatchEvent(event);
+    });
+}
+
 export const jasmine = {
     createSpy() {
         const spy = vi.fn();
@@ -843,7 +857,7 @@ export function catchUnhandledRejectionsAndErrors(
 
 export const spyOn = vi.spyOn;
 
-const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 0;
+const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 63;
 
 // These values are based on the API versions in @lwc/shared/api-version
 
