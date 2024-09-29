@@ -5,8 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import * as lwc from 'lwc';
-export { expect, describe } from 'vitest';
+export { expect, describe, vi } from 'vitest';
+
+vi.mock(import('lwc'), async (importOriginal) => {
+    const lwc = await importOriginal();
+    lwc.setHooks({
+        sanitizeHtmlContent: function (content) {
+            return sanitizeHtmlContentHook(content);
+        },
+    });
+    return lwc;
+});
 
 export function expectComposedPath(
     event: Event,
@@ -552,29 +561,6 @@ export function customElementCallbackReactionErrorListener(callback: () => void)
 //     expect.extend(customMatchers);
 // });
 
-type AttachDispatcher = typeof lwc.__unstable__ReportingControl.attachDispatcher;
-type ReportingDispatcher = Parameters<AttachDispatcher>[0];
-type ReportingEventId = Parameters<ReportingDispatcher>[0];
-/**
- *
- * @param dispatcher
- * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
- */
-export function attachReportingControlDispatcher(
-    dispatcher: ReportingDispatcher,
-    runtimeEvents: ReportingEventId[keyof ReportingEventId][]
-) {
-    lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
-        if (!runtimeEvents || runtimeEvents.includes(eventName)) {
-            dispatcher(eventName, payload);
-        }
-    });
-}
-
-export function detachReportingControlDispatcher() {
-    lwc.__unstable__ReportingControl.detachDispatcher();
-}
-
 export function extractDataIds(root: Element) {
     const nodes: Record<string, Node> = {};
 
@@ -669,19 +655,13 @@ export function isNativeShadowRootInstance(sr: ShadowRoot) {
     return Boolean(sr && !(sr as any).synthetic);
 }
 
-type OverridableHooksDef = Parameters<typeof lwc.setHooks>[0];
+type OverridableHooksDef = Parameters<typeof import('lwc').setHooks>[0];
 type SanitizeHtmlContentHook = OverridableHooksDef['sanitizeHtmlContent'];
 
 // Providing overridable hooks for tests
 let sanitizeHtmlContentHook: SanitizeHtmlContentHook = function () {
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
-
-lwc.setHooks({
-    sanitizeHtmlContent: function (content) {
-        return sanitizeHtmlContentHook(content);
-    },
-});
 
 export function getHooks() {
     return {
@@ -888,6 +868,33 @@ export const TEMPLATE_CLASS_NAME_OBJECT_BINDING = apiVersion >= 62;
 //     ENABLE_THIS_DOT_STYLE: apiVersion >= APIVersion.V62_252_WINTER_25,
 //     TEMPLATE_CLASS_NAME_OBJECT_BINDING: apiVersion >= APIVersion.V62_252_WINTER_25,
 // } as Partial<Record<keyof typeof APIFeature, boolean>>;
+
+type AttachDispatcher = typeof import('lwc').__unstable__ReportingControl.attachDispatcher;
+type ReportingDispatcher = Parameters<AttachDispatcher>[0];
+type ReportingEventId = Parameters<ReportingDispatcher>[0];
+
+import lwc from 'lwc';
+
+vi.mock(import('lwc'), { spy: true });
+/**
+ *
+ * @param dispatcher
+ * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
+ */
+export function attachReportingControlDispatcher(
+    dispatcher: ReportingDispatcher,
+    runtimeEvents: ReportingEventId[keyof ReportingEventId][]
+) {
+    lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
+        if (!runtimeEvents || runtimeEvents.includes(eventName)) {
+            dispatcher(eventName, payload);
+        }
+    });
+}
+
+export function detachReportingControlDispatcher() {
+    lwc.__unstable__ReportingControl.detachDispatcher();
+}
 
 const testUtils = {
     clearRegister,
