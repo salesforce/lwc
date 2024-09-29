@@ -1,6 +1,24 @@
 import { createElement } from 'lwc';
 import Synthetic from 'x/synthetic';
 
+/**
+ * Returns a promise that resolves with the composed path of the event.
+ * @param {Event} event - The event to be dispatched and whose composed path is to be resolved.
+ * @param {EventTarget} target - The target to which the event listener is added.
+ * @param {EventTarget} dispatcher - The dispatcher that dispatches the event.
+ * @returns {Promise<EventTarget[]>} A promise that resolves with the composed path of the event.
+ */
+async function expectComposedPath(event, target, dispatcher = target) {
+    const composedPath = await new Promise((resolve) => {
+        target.addEventListener(event.type, (event) => {
+            resolve(event.composedPath());
+        });
+        dispatcher.dispatchEvent(event);
+    });
+
+    return composedPath;
+}
+
 describe('[W-9846457] event access when using native shadow dom', () => {
     let nativeParent;
     let nativeChild;
@@ -25,47 +43,49 @@ describe('[W-9846457] event access when using native shadow dom', () => {
         document.removeEventListener('test', noop, true);
     });
 
-    it('should handle composed bubbling events (nested child)', (done) => {
-        nativeChild.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                nativeChild.shadowRoot,
-                nativeChild,
-                nativeParent.shadowRoot,
-                nativeParent,
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ]);
-            done();
-        });
+    it('should handle composed bubbling events (nested child)', async () => {
+        const event = new CustomEvent('test', { composed: true, bubbles: true });
 
-        nativeChild.shadowRoot.dispatchEvent(
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
+        // const composedPath = await new Promise((resolve) => {
+        //     nativeChild.addEventListener(event.type, (event) => {
+        //         resolve(event.composedPath());
+        //     });
+
+        //     nativeChild.shadowRoot.dispatchEvent(event);
+        // });
+
+        const composedPath = await expectComposedPath(event, nativeChild, nativeChild.shadowRoot);
+
+        expect(composedPath).toEqual([
+            nativeChild.shadowRoot,
+            nativeChild,
+            nativeParent.shadowRoot,
+            nativeParent,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
     });
 
-    it('should handle composed bubbling events (root parent)', (done) => {
-        nativeParent.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                nativeChild.shadowRoot,
-                nativeChild,
-                nativeParent.shadowRoot,
-                nativeParent,
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ]);
-            done();
-        });
+    it('should handle composed bubbling events (root parent)', async () => {
+        const event = new CustomEvent('test', { composed: true, bubbles: true });
 
-        nativeChild.shadowRoot.dispatchEvent(
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
+        const composedPath = await expectComposedPath(event, nativeParent, nativeChild.shadowRoot);
+
+        expect(composedPath).toEqual([
+            nativeChild.shadowRoot,
+            nativeChild,
+            nativeParent.shadowRoot,
+            nativeParent,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
     });
 
-    it('should handle composed bubbling events (native element)', (done) => {
+    it('should handle composed bubbling events (native element)', async () => {
         const div = document.createElement('div');
         const span = document.createElement('span');
 
@@ -73,23 +93,22 @@ describe('[W-9846457] event access when using native shadow dom', () => {
         shadowRoot.appendChild(span);
         document.body.appendChild(div);
 
-        div.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                span,
-                div.shadowRoot,
-                div,
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ]);
-            done();
-        });
+        const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        const composedPath = await expectComposedPath(event, div, span);
+
+        expect(composedPath).toEqual([
+            span,
+            div.shadowRoot,
+            div,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
     });
 
-    it('should handle composed bubbling events (synthetic above native)', (done) => {
+    it('should handle composed bubbling events (synthetic above native)', async () => {
         const synthetic = createElement('x-synthetic', { is: Synthetic });
         const div = document.createElement('div');
 
@@ -125,15 +144,14 @@ describe('[W-9846457] event access when using native shadow dom', () => {
             ];
         }
 
-        synthetic.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual(expected);
-            done();
-        });
+        const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        div.shadowRoot.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        const composedPath = await expectComposedPath(event, synthetic, div.shadowRoot);
+
+        expect(composedPath).toEqual(expected);
     });
 
-    it('should handle composed bubbling events (native above synthetic)', (done) => {
+    it('should handle composed bubbling events (native above synthetic)', async () => {
         const synthetic = createElement('x-synthetic', { is: Synthetic });
         const native = document.createElement('div');
 
@@ -151,10 +169,47 @@ describe('[W-9846457] event access when using native shadow dom', () => {
 
         document.body.appendChild(native);
 
-        synthetic.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                synthetic.shadowRoot,
-                synthetic,
+        const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+        const composedPath = await new Promise((resolve) => {
+            synthetic.addEventListener(event.type, (event) => {
+                resolve(event.composedPath());
+            });
+
+            synthetic.shadowRoot.dispatchEvent(event);
+        });
+
+        expect(composedPath).toEqual([
+            synthetic.shadowRoot,
+            synthetic,
+            native.shadowRoot,
+            native,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
+    });
+});
+
+describe('Event.composedPath() method', () => {
+    describe('dispatched on shadow root', () => {
+        it('{bubbles: true, composed: true}', async () => {
+            const native = document.createElement('x-native-name-unique-to-this-test-1');
+            native.attachShadow({ mode: 'open' });
+            document.body.appendChild(native);
+
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+            const composedPath = await new Promise((resolve) => {
+                native.shadowRoot.addEventListener(event.type, (event) => {
+                    resolve(event.composedPath());
+                });
+
+                native.shadowRoot.dispatchEvent(event);
+            });
+
+            expect(composedPath).toEqual([
                 native.shadowRoot,
                 native,
                 document.body,
@@ -162,61 +217,34 @@ describe('[W-9846457] event access when using native shadow dom', () => {
                 document,
                 window,
             ]);
-            done();
-        });
-
-        synthetic.shadowRoot.dispatchEvent(
-            new CustomEvent('test', { bubbles: true, composed: true })
-        );
-    });
-});
-
-describe('Event.composedPath() method', () => {
-    describe('dispatched on shadow root', () => {
-        it('{bubbles: true, composed: true}', (done) => {
-            const native = document.createElement('x-native-name-unique-to-this-test-1');
-            native.attachShadow({ mode: 'open' });
-            document.body.appendChild(native);
-
-            native.shadowRoot.addEventListener('test', (event) => {
-                expect(event.composedPath()).toEqual([
-                    native.shadowRoot,
-                    native,
-                    document.body,
-                    document.documentElement,
-                    document,
-                    window,
-                ]);
-                done();
-            });
-
-            native.shadowRoot.dispatchEvent(
-                new CustomEvent('test', { bubbles: true, composed: true })
-            );
         });
     });
     describe('dispatched on shadowed element', () => {
-        it('{bubbles: true, composed: true}', (done) => {
+        it('{bubbles: true, composed: true}', async () => {
             const native = document.createElement('x-native-name-unique-to-this-test-2');
             const span = document.createElement('span');
             const sr = native.attachShadow({ mode: 'open' });
             sr.appendChild(span);
             document.body.appendChild(native);
 
-            native.shadowRoot.addEventListener('test', (event) => {
-                expect(event.composedPath()).toEqual([
-                    span,
-                    native.shadowRoot,
-                    native,
-                    document.body,
-                    document.documentElement,
-                    document,
-                    window,
-                ]);
-                done();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+            const composedPath = await new Promise((resolve) => {
+                native.shadowRoot.addEventListener(event.type, (event) => {
+                    resolve(event.composedPath());
+                });
+                span.dispatchEvent(event);
             });
 
-            span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+            expect(composedPath).toEqual([
+                span,
+                native.shadowRoot,
+                native,
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ]);
         });
     });
 });

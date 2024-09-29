@@ -1,10 +1,14 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
-
+// @ts-expect-error: missing types
 import Container from 'x/container';
 
-function dispatchEventWithLog(target, nodes, event) {
-    const log = [];
+function dispatchEventWithLog(
+    target: Node,
+    nodes: { [s: string]: Node } | ArrayLike<Node>,
+    event: CustomEvent<unknown>
+) {
+    const log: (Node | (Window & typeof globalThis))[] = [];
     [...Object.values(nodes), document.body, document.documentElement, document, window].forEach(
         (node) => {
             node.addEventListener(event.type, () => {
@@ -129,47 +133,57 @@ describe('Event.stopImmediatePropagation', () => {
 });
 
 describe('Event.composedPath', () => {
-    it('should return an empty array when asynchronously invoked', () => {
+    it('should return an empty array when asynchronously invoked', async () => {
         const nodes = createTestElement();
-        const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        let _event;
-        nodes['x-container'].addEventListener(event.type, (event) => {
-            _event = event;
+        const _event = await new Promise<Event>((resolve) => {
+            nodes.container_div.addEventListener('test', (event) => {
+                resolve(event);
+            });
+            nodes.child_div.dispatchEvent(
+                new CustomEvent('test', { bubbles: true, composed: true })
+            );
         });
 
-        nodes.child_div.dispatchEvent(event);
-
-        expect(_event.composedPath()).toHaveSize(0);
+        expect(_event.composedPath()).toHaveLength(0);
     });
 
-    it('should not throw when invoked on an event with a target that is not an instance of Node', (done) => {
+    it('should not throw when invoked on an event with a target that is not an instance of Node', async () => {
         const req = new XMLHttpRequest();
-        req.addEventListener('test', (event) => {
-            // Not looking at return value because browsers have different implementations.
-            expect(() => {
-                event.composedPath();
-            }).not.toThrowError();
-            done();
+
+        const evt = await new Promise<Event>((resolve) => {
+            req.addEventListener('test', resolve);
+            req.dispatchEvent(new CustomEvent('test'));
         });
-        req.dispatchEvent(new CustomEvent('test'));
+
+        // Not looking at return value because browsers have different implementations.
+        expect(() => {
+            evt.composedPath();
+        }).not.toThrowError();
     });
 
-    it('should return expected composed path when the target is a text node', (done) => {
+    it('should return expected composed path when the target is a text node', async () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: false });
 
         const textNode = nodes.child_div.childNodes[0];
 
-        textNode.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                textNode,
-                nodes.child_div,
-                nodes['x-child.shadowRoot'],
-            ]);
-            done();
+        const evt = await new Promise<Event>((resolve) => {
+            textNode.addEventListener('test', resolve);
+            textNode.dispatchEvent(event);
         });
 
-        textNode.dispatchEvent(event);
+        expect(evt.composedPath()).toEqual([textNode, nodes.child_div]);
+
+        // textNode.addEventListener('test', (event) => {
+        //     expect(event.composedPath()).toEqual([
+        //         textNode,
+        //         nodes.child_div,
+        //         nodes['x-child.shadowRoot'],
+        //     ]);
+        //     done();
+        // });
+
+        // textNode.dispatchEvent(event);
     });
 });

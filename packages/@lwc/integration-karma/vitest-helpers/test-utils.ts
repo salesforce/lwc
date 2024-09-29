@@ -6,7 +6,7 @@
  */
 
 import * as lwc from 'lwc';
-import { expect } from 'vitest';
+export { expect, describe } from 'vitest';
 
 export const jasmine = {
     createSpy() {
@@ -840,6 +840,8 @@ export function catchUnhandledRejectionsAndErrors(
         window.onerror = originalOnError;
     });
 }
+
+export const spyOn = vi.spyOn;
 
 const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 0;
 

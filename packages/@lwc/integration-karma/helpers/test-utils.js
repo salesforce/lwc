@@ -667,6 +667,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCalls,
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
+        spyOn,
         jasmine: {
             ...jasmine,
             createSpy() {

@@ -169,7 +169,12 @@ export default function createCustomRollupPlugin(defaultOptions: RollupLwcOption
                 const apiVersion = parseInt(match[1], 10);
                 let perApiVersionPlugin = rollupPluginsPerApiVersion.get(apiVersion);
                 if (!perApiVersionPlugin) {
-                    perApiVersionPlugin = createRollupPlugin({ apiVersion });
+                    perApiVersionPlugin = createRollupPlugin({
+                        apiVersion,
+                        // modules: [
+                        //     { dir: '.' }
+                        // ]
+                    });
                     rollupPluginsPerApiVersion.set(apiVersion, perApiVersionPlugin);
                 }
                 rollupPluginToUse = perApiVersionPlugin;

@@ -1,4 +1,5 @@
-import { expect } from 'vitest';
+import { vi, expect } from 'vitest';
+import type { RawMatcherFn } from '@vitest/expect';
 
 function pass() {
     return {
@@ -16,170 +17,93 @@ function fail(message: string) {
 
 type ExpectedMessage = string | RegExp;
 
-// TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
-// anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
-function spyConsole() {
-    const originalConsole = window.console;
-
-    const calls: { [key: string]: any[][] } = {
-        log: [],
-        warn: [],
-        error: [],
-        group: [],
-        groupEnd: [],
-    };
-
-    window.console = {
-        ...originalConsole,
-        log: function () {
-            calls.log.push(Array.prototype.slice.call(arguments));
-        },
-        warn: function () {
-            calls.warn.push(Array.prototype.slice.call(arguments));
-        },
-        error: function () {
-            calls.error.push(Array.prototype.slice.call(arguments));
-        },
-        group: function () {
-            calls.group.push(Array.prototype.slice.call(arguments));
-        },
-        groupEnd: function () {
-            calls.groupEnd.push(Array.prototype.slice.call(arguments));
-        },
-    };
-
-    return {
-        calls: calls,
-        reset: function () {
-            window.console = originalConsole;
-        },
-    };
+function expectMessage(actual: string) {
+    return (expected: ExpectedMessage) =>
+        typeof expected === 'string' ? actual === expected : expected.test(actual);
 }
 
-function formatConsoleCall(args: any[]) {
-    return args.map(String).join(' ');
+function formatConsoleCall(values: unknown[]) {
+    return values
+        .map((value) => {
+            if (typeof value === 'string') {
+                return value;
+            } else {
+                return String(value);
+            }
+        })
+        .join(' ');
 }
 
 // TODO [#869]: Improve lookup logWarning doesn't use console.group anymore.
-function consoleDevMatcherFactory(
-    methodName: keyof Omit<Console, 'Console'>,
-    expectInProd: boolean = false
-) {
-    return function consoleDevMatcher(
-        received: () => void,
-        expected: ExpectedMessage | ExpectedMessage[]
-    ) {
-        function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
-            if (typeof expectedMessage === 'string') {
-                return message === expectedMessage;
-            } else {
-                return expectedMessage.test(message);
-            }
+function consoleDevMatcherFactory(methodName: 'error' | 'warn', expectInProd: boolean = false) {
+    return function (received: () => void, ...expected: ExpectedMessage[]) {
+        const spy = vi.spyOn(console, methodName).withImplementation(() => {}, received);
+
+        if (!expectInProd && process.env.NODE_ENV === 'production' && spy.mock.calls.length > 0) {
+            return fail(
+                `Expected console.${methodName}() not to be called in production mode, but it was called with the following messages:\n` +
+                    spy.mock.calls.map((call) => formatConsoleCall(call)).join('\n')
+            );
         }
 
-        if (!Array.isArray(expected)) {
-            expected = [expected];
-        }
+        const pass = spy.mock.calls.some((call) => {
+            const message = formatConsoleCall(call);
+            return expected.flat().some(expectMessage(message));
+        });
 
-        const spy = spyConsole();
-        try {
-            received();
-        } finally {
-            spy.reset();
-        }
+        return {
+            pass,
+            message: () => {
+                const message = spy.mock.calls.map((call) => formatConsoleCall(call)).join('\n');
 
-        const callsArgs = spy.calls[methodName];
-        const formattedCalls = callsArgs
-            .map(function (arg) {
-                return '"' + formatConsoleCall(arg) + '"';
-            })
-            .join(', ');
-
-        if (!expectInProd && process.env.NODE_ENV === 'production') {
-            if (callsArgs.length !== 0) {
-                return fail(
-                    'Expected console.' +
-                        methodName +
-                        ' to never called in production mode, but it was called ' +
-                        callsArgs.length +
-                        ' with ' +
-                        formattedCalls +
-                        '.'
-                );
-            } else {
-                return pass();
-            }
-        } else {
-            if (callsArgs.length === 0) {
-                return fail(
-                    'Expected console.' +
-                        methodName +
-                        ' to called with ' +
-                        JSON.stringify(expected) +
-                        ', but was never called.'
-                );
-            } else {
-                if (callsArgs.length !== expected.length) {
-                    return fail(
-                        'Expected console.' +
-                            methodName +
-                            ' to be called ' +
-                            expected.length +
-                            ' time(s), but was called ' +
-                            callsArgs.length +
-                            ' time(s).'
-                    );
-                }
-                for (let i = 0; i < callsArgs.length; i++) {
-                    const callsArg = callsArgs[i];
-                    const expectedMessage = expected[i];
-                    const actualMessage = formatConsoleCall(callsArg);
-                    if (!matchMessage(actualMessage, expectedMessage)) {
-                        return fail(
-                            'Expected console.' +
-                                methodName +
-                                ' to be called with "' +
-                                expectedMessage +
-                                '", but was called with "' +
-                                actualMessage +
-                                '".'
-                        );
-                    }
-                }
-                return pass();
-            }
-        }
+                return pass
+                    ? ''
+                    : `${
+                          `Expected console.${methodName}() to be called with one of the following messages:\n` +
+                          expected.map((message) => `  - ${message}`).join('\n')
+                      }\n\nCalls:\n${message}`;
+            },
+        };
     };
 }
 
-type ErrorListener = (callback: () => void) => unknown | undefined;
+type Callback = () => void;
+type ErrorListener = (callback: Callback) => Error | undefined;
 
-function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean = false) {
-    return function toThrowError(
-        actual: () => void,
-        errorCtor?: ErrorConstructor,
-        ...expected: ExpectedMessage[]
+function errorMatcherFactory(errorListener: ErrorListener, expectInProd?: boolean): RawMatcherFn {
+    return function (
+        actual: Callback,
+        expectedErrorCtor: ErrorConstructor,
+        expectedMessage?: ExpectedMessage
     ) {
-        const expectedErrorCtor = errorCtor ?? Error;
-
-        function matchMessage(message: string, expectedMessage: ExpectedMessage): boolean {
-            if (typeof expectedMessage === 'string') {
+        function matchMessage(message: string) {
+            if (typeof expectedMessage === 'undefined') {
+                return true;
+            } else if (typeof expectedMessage === 'string') {
                 return message === expectedMessage;
             } else {
                 return expectedMessage.test(message);
             }
         }
 
-        function isError(error: unknown) {
-            return error instanceof expectedErrorCtor;
+        function matchError(error: unknown) {
+            return error instanceof expectedErrorCtor && matchMessage(error.message);
         }
 
-        function matchError(error: unknown): boolean {
-            return isError(error) && matchMessage(error.message, expected[0]);
+        function throwDescription(thrown: { name: string; message: string }) {
+            return thrown.name + ' with message "' + thrown.message + '"';
         }
 
-        function throwDescription(thrown: any): string {
-            return `${thrown.name} with message "${thrown.message}"`;
+        if (typeof actual !== 'function') {
+            throw new Error('Expected function to throw error.');
+        } else if (expectedErrorCtor !== Error && !(expectedErrorCtor.prototype instanceof Error)) {
+            throw new Error('Expected an error constructor.');
+        } else if (
+            typeof expectedMessage !== 'undefined' &&
+            typeof expectedMessage !== 'string' &&
+            !(expectedMessage instanceof RegExp)
+        ) {
+            throw new Error('Expected a string or a RegExp to compare the thrown error against.');
         }
 
         const thrown = errorListener(actual);
@@ -200,7 +124,7 @@ function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean
                     'Expected function to throw an ' +
                         expectedErrorCtor.name +
                         ' error in development mode"' +
-                        (expected[0] ? 'with message ' + expected[0] : '') +
+                        (expectedMessage ? 'with message ' + expectedMessage : '') +
                         '".'
                 );
             } else if (!matchError(thrown)) {
@@ -208,7 +132,7 @@ function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean
                     'Expected function to throw an ' +
                         expectedErrorCtor.name +
                         ' error in development mode "' +
-                        (expected[0] ? 'with message ' + expected[0] : '') +
+                        (expectedMessage ? 'with message ' + expectedMessage : '') +
                         '", but it threw ' +
                         throwDescription(thrown) +
                         '.'
@@ -218,118 +142,20 @@ function errorMatcherFactory(errorListener: ErrorListener, expectInProd: boolean
             }
         }
     };
-
-    // function toThrowError() {
-    //     return {
-    //         compare: function (
-    //             actual: () => void,
-    //             errorCtor?: ErrorConstructor,
-    //             expectedMessage?: ExpectedMessage
-    //         ) {
-    //             const expectedErrorCtor = errorCtor ?? Error;
-
-    //             // if (typeof expectedMessage === 'undefined') {
-    //             //     if (typeof expectedErrorCtor === 'undefined') {
-    //             //         // 0 arguments provided
-    //             //         expectedMessage = undefined;
-    //             //         expectedErrorCtor = Error;
-    //             //     } else {
-    //             //         // 1 argument provided
-    //             //         expectedMessage = expectedErrorCtor;
-    //             //         expectedErrorCtor = Error;
-    //             //     }
-    //             // }
-
-    //             function matchMessage(message: string) {
-    //                 if (typeof expectedMessage === 'undefined') {
-    //                     return true;
-    //                 } else if (typeof expectedMessage === 'string') {
-    //                     return message === expectedMessage;
-    //                 } else {
-    //                     return expectedMessage.test(message);
-    //                 }
-    //             }
-
-    //             function isError(error: unknown) {
-    //                 return error instanceof expectedErrorCtor;
-    //             }
-
-    //             function matchError(error: unknown) {
-    //                 return isError(error) && matchMessage(error.message);
-    //             }
-
-    //             function throwDescription(thrown: any) {
-    //                 return `${thrown.name} with message "${thrown.message}"` as const;
-    //             }
-
-    //             if (typeof actual !== 'function') {
-    //                 throw new Error('Expected function to throw error.');
-    //             } else if (
-    //                 expectedErrorCtor !== Error &&
-    //                 !(expectedErrorCtor.prototype instanceof Error)
-    //             ) {
-    //                 throw new Error('Expected an error constructor.');
-    //             } else if (
-    //                 typeof expectedMessage !== 'undefined' &&
-    //                 typeof expectedMessage !== 'string' &&
-    //                 !(expectedMessage instanceof RegExp)
-    //             ) {
-    //                 throw new Error(
-    //                     'Expected a string or a RegExp to compare the thrown error against.'
-    //                 );
-    //             }
-
-    //             const thrown = errorListener(actual);
-
-    //             if (!expectInProd && process.env.NODE_ENV === 'production') {
-    //                 if (thrown !== undefined) {
-    //                     return fail(
-    //                         'Expected function not to throw an error in production mode, but it threw ' +
-    //                             throwDescription(thrown) +
-    //                             '.'
-    //                     );
-    //                 } else {
-    //                     return pass();
-    //                 }
-    //             } else {
-    //                 if (thrown === undefined) {
-    //                     return fail(
-    //                         'Expected function to throw an ' +
-    //                             expectedErrorCtor.name +
-    //                             ' error in development mode"' +
-    //                             (expectedMessage ? 'with message ' + expectedMessage : '') +
-    //                             '".'
-    //                     );
-    //                 } else if (!matchError(thrown)) {
-    //                     return fail(
-    //                         'Expected function to throw an ' +
-    //                             expectedErrorCtor.name +
-    //                             ' error in development mode "' +
-    //                             (expectedMessage ? 'with message ' + expectedMessage : '') +
-    //                             '", but it threw ' +
-    //                             throwDescription(thrown) +
-    //                             '.'
-    //                     );
-    //                 } else {
-    //                     return pass();
-    //                 }
-    //             }
-    //         },
-    //     };
-    // };
 }
 
-function directErrorListener(callback: () => void) {
+function directErrorListener(callback: Callback) {
     try {
         callback();
     } catch (error) {
-        return error;
+        return error as Error;
     }
 }
 
 // Listen for errors using window.addEventListener('error')
-function windowErrorListener(callback: () => void) {
-    let error: unknown;
+function windowErrorListener(callback: Callback) {
+    let error: Error | undefined;
+
     function onError(event: ErrorEvent) {
         event.preventDefault(); // don't log the error
         error = event.error;
@@ -347,6 +173,7 @@ function windowErrorListener(callback: () => void) {
         window.onerror = originalOnError;
         window.removeEventListener('error', onError);
     }
+
     return error;
 }
 
@@ -356,13 +183,15 @@ function windowErrorListener(callback: () => void) {
 // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
 //    only be caught with window.addEventListener('error')
 //      - Note native lifecycle callbacks are all thrown asynchronously.
-function customElementCallbackReactionErrorListener(callback: () => void) {
-    return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-        ? directErrorListener(callback)
-        : windowErrorListener(callback);
+function customElementCallbackReactionErrorListener(callback: Callback) {
+    const errorListener = lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+        ? directErrorListener
+        : windowErrorListener;
+
+    return errorListener(callback);
 }
 
-const customMatchers = {
+expect.extend({
     toLogErrorDev: consoleDevMatcherFactory('error'),
     toLogError: consoleDevMatcherFactory('error', true),
     toLogWarningDev: consoleDevMatcherFactory('warn'),
@@ -384,20 +213,19 @@ const customMatchers = {
     toBeFalse(received: boolean, message = 'Expected value to be false') {
         return !received ? pass() : fail(message);
     },
-};
-
-expect.extend(customMatchers);
+});
 
 interface CustomMatchers<R = unknown> {
-    // toThrowErrorWithCode: (received: any, ctor: any, message?: string) => R;
-    // toThrowErrorWithType: (received: any, ctor: any, message?: string) => R;
-    toLogErrorDev: (...expected: ExpectedMessage[]) => R;
-    toLogError: (...expected: ExpectedMessage[]) => R;
-    toLogWarningDev: (...expected: ExpectedMessage[]) => R;
-    toThrowErrorDev: (errorCtor?: ErrorConstructor, ...expected: ExpectedMessage[]) => R;
+    toLogErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+    toLogError: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+    toLogWarningDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+    toThrowErrorDev: (
+        errorCtor: ErrorConstructor,
+        expected: ExpectedMessage | ExpectedMessage[]
+    ) => R;
 
-    toThrowCallbackReactionErrorDev: (...expected: ExpectedMessage[]) => R;
-    toThrowCallbackReactionError: (...expected: ExpectedMessage[]) => R;
+    toThrowCallbackReactionErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+    toThrowCallbackReactionError: (expected: ExpectedMessage | ExpectedMessage[]) => R;
 }
 
 declare module 'vitest' {

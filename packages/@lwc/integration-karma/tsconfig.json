@@ -5,6 +5,7 @@
         "noEmit": true,
         "allowJs": true,
         "target": "ESNext",
+        "strict": true,
         "lib": ["ES2015.Promise", "DOM"],
         "types": ["vitest/globals", "@vitest/browser/providers/playwright"],
         "paths": {

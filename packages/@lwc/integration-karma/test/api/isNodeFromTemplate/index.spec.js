@@ -1,6 +1,8 @@
 import { createElement, isNodeFromTemplate } from 'lwc';
 import Test from 'x/test';
 
+import { spyOn } from 'test-utils';
+
 function testNonNodes(type, obj) {
     it(`should return false if the passed object if a ${type}`, () => {
         expect(isNodeFromTemplate(obj)).toBe(false);

@@ -26,12 +26,13 @@ export default defineConfig({
                 find: 'test-utils',
                 replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
             },
-            { find: /^x\/(.*)/, replacement: './x/$1/$1.js' },
+            { find: /^x\/(.*)/, replacement: './x/$1/$1' },
         ],
         setupFiles: ['./vitest-helpers/test-setup.ts'],
         globalSetup: ['./vitest-helpers/global-setup.ts'],
         env: {
             NODE_ENV: 'test-karma-lwc',
+            NATIVE_SHADOW: 'true',
         },
         browser: {
             enabled: true,
