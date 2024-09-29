@@ -86,12 +86,25 @@ function errorMatcherFactory(errorListener: ErrorListener, expectInProd?: boolea
             }
         }
 
-        function matchError(error: unknown) {
+        function matchError(error: Error) {
             return error instanceof expectedErrorCtor && matchMessage(error.message);
         }
 
-        function throwDescription(thrown: { name: string; message: string }) {
+        function throwDescription(thrown: Error) {
             return thrown.name + ' with message "' + thrown.message + '"';
+        }
+
+        if (typeof expectedMessage === 'undefined') {
+            if (typeof expectedErrorCtor === 'undefined') {
+                // 0 arguments provided
+                expectedMessage = undefined;
+                expectedErrorCtor = Error;
+            } else {
+                // 1 argument provided
+                // @ts-expect-error Error is always defined
+                expectedMessage = expectedErrorCtor;
+                expectedErrorCtor = Error;
+            }
         }
 
         if (typeof actual !== 'function') {

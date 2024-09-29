@@ -29,7 +29,7 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
         },
         resolveId(source, importer, _options) {
             if (!importer) {
-                return null;
+                return;
             }
 
             if (importer.endsWith('.spec.js')) {

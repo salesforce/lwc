@@ -22,22 +22,6 @@ export function expectComposedPath(
     });
 }
 
-export const jasmine = {
-    createSpy() {
-        const spy = vi.fn();
-
-        const calls = {
-            allArgs() {
-                return spy.mock.calls;
-            },
-        };
-
-        Object.defineProperty(spy, 'calls', calls);
-
-        return spy;
-    },
-};
-
 type ConsoleMethods = keyof Omit<Console, 'Console'>;
 
 type ConsoleCalls = {

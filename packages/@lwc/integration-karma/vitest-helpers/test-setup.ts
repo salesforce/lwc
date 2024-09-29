@@ -10,9 +10,28 @@ import { vi } from 'vitest';
 vi.stubGlobal('LWC', { ...lwc });
 vi.stubGlobal('spyOn', vi.spyOn);
 
+export function createSpy() {
+    const spy = vi.fn();
+
+    const calls = {
+        allArgs() {
+            return spy.mock.calls;
+        },
+    };
+
+    Object.defineProperty(spy, 'calls', calls);
+
+    return spy;
+}
+
+vi.stubGlobal('jasmine', { createSpy });
+
 declare global {
     var LWC: typeof lwc;
     var spyOn: typeof vi.spyOn;
+    var jasmine: {
+        createSpy: typeof createSpy;
+    };
 
     interface Window {
         __lwcResetGlobalStylesheets: () => void;
