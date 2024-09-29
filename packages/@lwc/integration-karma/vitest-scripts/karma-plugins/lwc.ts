@@ -5,166 +5,49 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { Plugin } from 'vitest/config';
+import path from 'path';
+import rollupPluginLwc from '@lwc/rollup-plugin';
+import type { Plugin } from 'vitest/config';
 
-// const PACKAGE_ROOT = path.resolve(__dirname, '../../');
-
-export interface Config {
+export type VitestLwcOptions = {
     dir: string;
-}
+};
 
-export interface Context {
-    dir: string;
-    entries: fs.Dirent[];
-}
-
-function loadContext({ dir }: Config): Context {
-    if (path.isAbsolute(dir)) {
-        throw new Error('dir must be a relative path');
-    }
-
-    if (!fs.existsSync(dir)) {
-        throw new Error(`dir does not exist: ${dir}`);
-    }
-
-    const stats = fs.statSync(dir);
-
-    if (!stats.isDirectory()) {
-        throw new Error(`dir must be a directory: ${dir}`);
-    }
-
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    if (!entries.length) {
-        throw new Error(`dir is empty: ${dir}`);
-    }
-
-    return {
-        dir,
-        entries,
-    };
-}
-
-export interface SpecFile {
-    name: string;
-    dirname: string;
-    resolveModule(moduleImport: ModuleImport): string;
-}
-
-export interface ModuleFile {
-    id: string;
-    name: string;
-    namespace: string;
-    resolveModule(moduleImport: ModuleImport): string;
-}
-
-export interface ModuleImport {
-    source: string;
-    name: string;
-    namespace: string;
-}
-
-export interface ModuleInstance extends ModuleImport {
-    root: string;
-    path: string;
-}
-
-export default function (config: Config): Plugin {
-    const context = loadContext(config);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    context;
-
-    function isSpecFile(name: string): SpecFile | undefined {
-        if (!name.endsWith('.spec.js') && !name.endsWith('.spec.ts')) {
-            return;
-        }
-
-        const dirname = path.dirname(name);
-
-        return {
-            name,
-            dirname,
-            resolveModule(moduleImport: ModuleImport) {
-                const { namespace, name } = moduleImport;
-                return path.resolve(this.dirname, namespace, name, name + '.js');
-            },
-        };
-    }
-
-    const isModuleFile = (filepath: string) => {
-        if (['.js', '.ts'].some((ext) => filepath.endsWith(ext))) {
-            const [namespace, name] = filepath.split('/').slice(-2);
-
-            return {
-                id: filepath,
-                name,
-                namespace,
-                resolveModule(moduleImport: ModuleImport) {
-                    const { namespace, name } = moduleImport;
-                    return path.resolve(this.namespace, namespace, name, name + '.js');
-                },
-            } as ModuleFile;
-        }
-    };
-
-    const isModuleImport = (source: string) => {
-        const parts = source.split('/');
-
-        if (parts.length !== 2) {
-            return;
-        }
-
-        const [namespace, name] = parts;
-
-        if (!namespace || !name) {
-            return;
-        }
-
-        // const path = path.resolve(config.dir, namespace, name, name + '.js');
-
-        return {
-            source,
-            namespace,
-            name,
-        } as ModuleImport;
-    };
+export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
+    const rollupPlugin = rollupPluginLwc({
+        rootDir: pluginOptions.dir,
+        include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
+    });
 
     return {
         name: 'vitest-plugin-lwc',
+        enforce: 'post',
+
+        buildStart(options) {
+            // @ts-expect-error rollupPlugin is not defined
+            return rollupPlugin.buildStart!.call(this, options);
+        },
         resolveId(source, importer, _options) {
             if (!importer) {
-                return;
+                return null;
             }
 
-            const moduleImport = isModuleImport(source);
-
-            if (!moduleImport) {
-                return;
+            if (importer.endsWith('.spec.js')) {
+                rollupPlugin.api.updateOptions({
+                    rootDir: path.parse(importer).dir,
+                });
             }
 
-            const specFile = isSpecFile(importer);
-
-            if (specFile) {
-                return specFile.resolveModule(moduleImport);
-            }
-
-            const moduleFile = isModuleFile(importer);
-
-            if (moduleFile) {
-                return moduleFile.resolveModule(moduleImport);
-            }
+            // @ts-expect-error rollupPlugin is not defined
+            return rollupPlugin.resolveId!.call(this, source, importer);
         },
         load(id, _options) {
-            if (isModuleFile(id)) {
-                return fs.readFileSync(id, 'utf-8');
-            }
+            // @ts-expect-error rollupPlugin is not defined
+            return rollupPlugin.load!.call(this, id);
         },
         transform(code, id, _options) {
-            if (isModuleFile(id)) {
-                return code;
-            }
+            // @ts-expect-error rollupPlugin is not defined
+            return rollupPlugin.transform!.call(this, code, id);
         },
     };
 }

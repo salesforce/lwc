@@ -356,6 +356,14 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             const rollupMap = map as SourceMapInput;
             return { code, map: rollupMap };
         },
+        api: {
+            updateOptions(options: { rootDir: string; modules?: ModuleRecord[] }) {
+                rootDir = options.rootDir;
+                const { modules: newModules = [] } = options;
+
+                modules = [...newModules, ...DEFAULT_MODULES, { dir: options.rootDir }];
+            },
+        },
     };
 }
 
