@@ -22,7 +22,7 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
     const rollupPlugin = rollupPluginLwc({
         rootDir: pluginOptions.dir,
         include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
-        apiVersion: 63,
+        apiVersion: 62,
     });
 
     return {
@@ -43,9 +43,15 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
             if (importerPath.base.endsWith('.spec.js')) {
                 rollupPlugin.api.updateOptions({
                     rootDir: importerPath.dir,
-                    experimentalComplexExpressions:
-                        importerPath.dir.includes('template-expressions'),
-                    apiVersion: 63,
+                    ...(importerPath.dir.includes('template-expressions')
+                        ? {
+                              experimentalComplexExpressions: true,
+                              apiVersion: 63,
+                          }
+                        : {
+                              experimentalComplexExpressions: false,
+                              apiVersion: 62,
+                          }),
                 });
             }
 

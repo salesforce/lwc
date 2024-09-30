@@ -712,24 +712,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         catchUnhandledRejectionsAndErrors,
         spyOn,
         expectComposedPath,
-        jasmine: {
-            ...jasmine,
-            createSpy() {
-                const spy = jasmine.createSpy();
-
-                spy.mockClear = function () {
-                    spy.calls.reset();
-                };
-
-                spy.mock = {
-                    get calls() {
-                        return spy.calls.allArgs();
-                    },
-                };
-
-                return spy;
-            },
-        },
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

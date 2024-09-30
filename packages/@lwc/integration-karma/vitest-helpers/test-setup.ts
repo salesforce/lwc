@@ -20,6 +20,7 @@ export function createSpy() {
     };
 
     Object.defineProperty(spy, 'calls', calls);
+    Object.defineProperty(spy, 'mockClear', vi.fn());
 
     return spy;
 }

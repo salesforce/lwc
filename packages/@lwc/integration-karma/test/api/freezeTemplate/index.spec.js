@@ -1,10 +1,6 @@
 import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 
-import {
-    attachReportingControlDispatcher,
-    detachReportingControlDispatcher,
-    jasmine,
-} from 'test-utils';
+import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 describe('freezeTemplate', () => {
     const dispatcher = jasmine.createSpy();

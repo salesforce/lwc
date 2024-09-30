@@ -21,11 +21,14 @@ export default defineConfig((_env) => {
             include: ['**/*.spec.{js,ts}'],
             exclude: ['**/__screenshots__/**'],
             globals: true,
-
             alias: [
                 {
                     find: 'test-utils',
                     replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
+                },
+                {
+                    find: '/@id/@lwc/resources/empty_css.css',
+                    replacement: '@lwc/resources/empty_css.css',
                 },
             ],
             setupFiles: ['./vitest-helpers/test-setup.ts'],
