@@ -7,8 +7,9 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplateWithYield } from '../estemplate';
-import { cleanStyleAttrVal, isValidIdentifier } from './shared';
+import { isValidIdentifier } from './shared';
 import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
 
@@ -46,7 +47,9 @@ function getChildAttrsOrProps(
         const key = isValidIdentifier(attr.name) ? b.identifier(attr.name) : b.literal(attr.name);
         if (attr.value.type === 'Literal' && typeof attr.value.value === 'string') {
             const value =
-                attr.name === 'style' ? cleanStyleAttrVal(attr.value.value) : attr.value.value;
+                attr.name === 'style'
+                    ? normalizeStyleAttribute(attr.value.value)
+                    : attr.value.value;
             return b.property('init', key, b.literal(value));
         } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
             return b.property('init', key, b.literal(attr.value.value));

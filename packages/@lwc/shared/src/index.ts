@@ -17,5 +17,6 @@ export * from './html-escape';
 export * from './namespaces';
 export * from './meta';
 export * from './static-part-tokens';
+export * from './style';
 
 export { assert };

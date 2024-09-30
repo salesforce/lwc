@@ -16,13 +16,6 @@ export const bImportHtmlEscape = esTemplate<EsImportDeclaration>`
 `;
 export const importHtmlEscapeKey = 'import:htmlEscape';
 
-export function cleanStyleAttrVal(styleAttrVal: string): string {
-    if (styleAttrVal.endsWith(';')) {
-        styleAttrVal = styleAttrVal.slice(0, -1);
-    }
-    return styleAttrVal.trim();
-}
-
 // This is a mostly-correct regular expression will only match if the entire string
 // provided is a valid ECMAScript identifier. Its imperfections lie in the fact that
 // it will match strings like "export" when "export" is actually a reserved keyword

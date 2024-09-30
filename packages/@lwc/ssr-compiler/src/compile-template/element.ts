@@ -6,18 +6,18 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import { HTML_NAMESPACE, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
+import {
+    type Attribute as IrAttribute,
+    type Expression as IrExpression,
+    type Element as IrElement,
+    type Literal as IrLiteral,
+    type Property as IrProperty,
+} from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { irChildrenToEs } from './ir-to-es';
-import { bImportHtmlEscape, importHtmlEscapeKey, cleanStyleAttrVal } from './shared';
+import { bImportHtmlEscape, importHtmlEscapeKey } from './shared';
 
-import type {
-    Attribute as IrAttribute,
-    Expression as IrExpression,
-    Element as IrElement,
-    Literal as IrLiteral,
-    Property as IrProperty,
-} from '@lwc/template-compiler';
 import type {
     BinaryExpression,
     BlockStatement as EsBlockStatement,
@@ -55,7 +55,7 @@ function yieldAttrOrPropLiteralValue(
 ): EsStatement[] {
     const { value, type } = valueNode;
     if (typeof value === 'string') {
-        const yieldedValue = name === 'style' ? cleanStyleAttrVal(value) : value;
+        const yieldedValue = name === 'style' ? normalizeStyleAttribute(value) : value;
         return [bStringLiteralYield(b.literal(isClass), b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         return [bYield(b.literal(` ${name}`))];

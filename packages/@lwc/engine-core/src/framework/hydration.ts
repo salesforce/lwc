@@ -21,12 +21,13 @@ import {
     isAPIFeatureEnabled,
     isFalse,
     StringSplit,
+    parseStyleText,
 } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
 import { RendererAPI } from './renderer';
-import { cloneAndOmitKey, parseStyleText, shouldBeFormAssociated } from './utils';
+import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
@@ -718,7 +719,7 @@ function validateStyleAttr(
         // styleMap is used when style is set to static value.
         for (let i = 0, n = styleDecls.length; i < n; i++) {
             const [prop, value, important] = styleDecls[i];
-            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
+            expectedStyle.push(`${prop}: ${value + (important ? ' !important' : '')};`);
 
             const parsedPropValue = parsedVnodeStyle[prop];
 
@@ -735,7 +736,7 @@ function validateStyleAttr(
             nodesAreCompatible = false;
         }
 
-        vnodeStyle = ArrayJoin.call(expectedStyle, ';');
+        vnodeStyle = ArrayJoin.call(expectedStyle, ' ');
     }
 
     if (!nodesAreCompatible) {

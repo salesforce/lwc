@@ -23,7 +23,7 @@ export default {
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [
-                '[LWC error]: Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: red;border-color: red important!" but found "background-color: red; border-color: red"',
+                '[LWC error]: Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: red; border-color: red !important;" but found "background-color: red; border-color: red;".',
                 'Hydration completed with errors.',
             ],
         });

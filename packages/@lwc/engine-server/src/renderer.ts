@@ -328,7 +328,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
         (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
-    const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
+    const serializedProperty = `${name}: ${value}${important ? ' !important' : ''};`;
 
     if (isUndefined(styleAttribute)) {
         element[HostAttributesKey].push({
@@ -337,7 +337,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
             value: serializedProperty,
         });
     } else {
-        styleAttribute.value += `; ${serializedProperty}`;
+        styleAttribute.value += ` ${serializedProperty}`;
     }
 }
 
