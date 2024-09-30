@@ -175,10 +175,17 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return value === true ? '' : (value ?? null);
     }
 
-    setAttribute(attrName: string, value: string): void {
+    setAttribute(attrName: string, value: string | null): void {
         // Not sure it's correct to initialize here if missing
-        if (!this.__attrs) this.__attrs = {};
-        this.__attrs[attrName] = value;
+        if (!this.__attrs) {
+            this.__attrs = {};
+        }
+
+        if (value === null) {
+            delete this.__attrs[attrName];
+        } else {
+            this.__attrs[attrName] = value;
+        }
     }
 
     hasAttribute(attrName: string): boolean {
