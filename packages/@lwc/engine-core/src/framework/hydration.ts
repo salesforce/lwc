@@ -189,7 +189,7 @@ function getValidationPredicate(
         !isValidArray
     ) {
         logWarn(
-            'Validation opt out must be `true` or an array of attributes that should not be validated.'
+            '`validationOptOut` must be `true` or an array of attributes that should not be validated.'
         );
     }
 
