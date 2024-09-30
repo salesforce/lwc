@@ -11,13 +11,13 @@
 // stub types. Switch them back when you're done to validate that you're not accidentally using
 // DOM globals. IMPORTANT: The comment below is a "triple slash directive", it must start with ///
 // and be located before import statements.
-/// <reference lib="dom" />
+// /// <reference lib="dom" />
 
-// type DOMTokenList = object;
-// type EventListenerOrEventListenerObject = unknown;
-// type AddEventListenerOptions = unknown;
-// type EventListenerOptions = unknown;
-// type ShadowRoot = unknown;
+type DOMTokenList = object;
+type EventListenerOrEventListenerObject = unknown;
+type AddEventListenerOptions = unknown;
+type EventListenerOptions = unknown;
+type ShadowRoot = unknown;
 
 const MULTI_SPACE = /\s+/g;
 
