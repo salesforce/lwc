@@ -24,13 +24,17 @@ export function createSpy() {
     return spy;
 }
 
-vi.stubGlobal('jasmine', { createSpy });
+vi.stubGlobal('jasmine', {
+    createSpy,
+    objectContaining: expect.objectContaining,
+});
 
 declare global {
     var LWC: typeof lwc;
     var spyOn: typeof vi.spyOn;
     var jasmine: {
         createSpy: typeof createSpy;
+        objectContaining: typeof expect.objectContaining;
     };
 
     interface Window {

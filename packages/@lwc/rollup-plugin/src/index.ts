@@ -155,7 +155,13 @@ function transformWarningToRollupLog(
 export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
-    let { rootDir, modules = [] } = pluginOptions;
+    let {
+        rootDir,
+        modules = [], // TODO [#3370]: remove experimental template expression flag
+        experimentalComplexExpressions,
+        apiVersion,
+    } = pluginOptions;
+
     const {
         targetSSR,
         stylesheetConfig,
@@ -165,10 +171,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicDirective,
         enableDynamicComponents,
         enableLightningWebSecurityTransforms,
-        // TODO [#3370]: remove experimental template expression flag
-        experimentalComplexExpressions,
         disableSyntheticShadowSupport,
-        apiVersion,
     } = pluginOptions;
 
     return {
@@ -357,11 +360,27 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             return { code, map: rollupMap };
         },
         api: {
-            updateOptions(options: { rootDir: string; modules?: ModuleRecord[] }) {
+            updateOptions(options: {
+                rootDir: string;
+                modules?: ModuleRecord[];
+                experimentalComplexExpressions?: boolean;
+                apiVersion?: number;
+            }) {
                 rootDir = options.rootDir;
-                const { modules: newModules = [] } = options;
 
-                modules = [...newModules, ...DEFAULT_MODULES, { dir: options.rootDir }];
+                modules = [
+                    ...(options.modules ?? []),
+                    ...DEFAULT_MODULES,
+                    { dir: options.rootDir },
+                ];
+
+                if (options.experimentalComplexExpressions !== undefined) {
+                    experimentalComplexExpressions = options.experimentalComplexExpressions;
+                }
+
+                if (options.apiVersion !== undefined) {
+                    apiVersion = options.apiVersion;
+                }
             },
         },
     };
