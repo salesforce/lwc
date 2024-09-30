@@ -7,13 +7,12 @@
 import {
     isUndefined,
     ArrayJoin,
+    arrayEvery,
     assert,
     keys,
     isNull,
     isArray,
-    arrayEvery,
     ArrayFilter,
-    ArrayIncludes,
     isTrue,
     isString,
     StringToLowerCase,
@@ -167,34 +166,48 @@ function getValidationPredicate(
     renderer: RendererAPI,
     optOutStaticProp: string[] | true | undefined
 ): AttrValidationPredicate {
-    // `data-lwc-host-mutated` is a special attribute added by the SSR engine itself,
-    // which does the same thing as an explicit `static validationOptOut = ['attr1', 'attr2']`.
+    // `data-lwc-host-mutated` is a special attribute added by the SSR engine itself, which automatically detects
+    // host mutations during `connectedCallback`.
     const hostMutatedValue = renderer.getAttribute(elm, 'data-lwc-host-mutated');
-    if (isString(hostMutatedValue)) {
-        const mutatedAttrValues = new Set(StringSplit.call(hostMutatedValue, / /));
-        return (attrName: string) => !mutatedAttrValues.has(attrName);
-    }
+    const detectedHostMutations = isString(hostMutatedValue)
+        ? new Set(StringSplit.call(hostMutatedValue, / /))
+        : undefined;
 
-    if (isUndefined(optOutStaticProp)) {
-        return (_attrName: string) => true;
-    }
     // If validationOptOut is true, no attributes will be checked for correctness
     // and the runtime will assume VDOM attrs and DOM attrs are in sync.
-    if (isTrue(optOutStaticProp)) {
-        return (_attrName: string) => false;
-    }
-    // If validationOptOut is an array of strings, attributes specified in the
-    // array will be "opted out". Attributes not specified in the array will still
-    // be validated.
-    if (isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString)) {
-        return (attrName: string) => !ArrayIncludes.call(optOutStaticProp, attrName);
-    }
-    if (process.env.NODE_ENV !== 'production') {
+    const fullOptOut = isTrue(optOutStaticProp);
+
+    // If validationOptOut is an array of strings, attributes specified in the array will be "opted out". Attributes
+    // not specified in the array will still be validated.
+    const conditionalOptOut = isArray(optOutStaticProp) ? new Set(optOutStaticProp) : undefined;
+
+    if (
+        process.env.NODE_ENV !== 'production' &&
+        !isUndefined(optOutStaticProp) &&
+        !isTrue(optOutStaticProp) &&
+        !(isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString))
+    ) {
         logWarn(
             'Validation opt out must be `true` or an array of attributes that should not be validated.'
         );
     }
-    return (_attrName: string) => true;
+
+    return (attrName: string) => {
+        // Component wants to opt out of all validation
+        if (fullOptOut) {
+            return false;
+        }
+        // Mutations were automatically detected and should be ignored
+        if (!isUndefined(detectedHostMutations) && detectedHostMutations.has(attrName)) {
+            return false;
+        }
+        // Component explicitly wants to opt out of certain validations, regardless of auto-detection
+        if (!isUndefined(conditionalOptOut) && conditionalOptOut.has(attrName)) {
+            return false;
+        }
+        // Attribute must be validated
+        return true;
+    };
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
