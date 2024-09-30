@@ -5,28 +5,19 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// To enable access to accurate DOM types in this file, uncomment the line below and comment out the
-// type stubs. This also adds DOM globals (e.g. window, document), so be careful!
-// Note: It's a "triple slash directive", must be exactly /// <reference lib="dom" />
+// At runtime, we don't have access to the DOM, so we don't want TypeScript to allow accessing DOM
+// globals. However, we're mimicking DOM functionality here, so we *do* want access to DOM types.
+// To access the real DOM types when writing new code, uncomment the line below and comment out the
+// stub types. Switch them back when you're done to validate that you're not accidentally using
+// DOM globals. IMPORTANT: The comment below is a "triple slash directive", it must start with ///
+// and be located before import statements.
 // /// <reference lib="dom" />
+
 type DOMTokenList = object;
-type HTMLElement = Record<string, unknown>;
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
-type ElementInternals = unknown;
-type DOMRect = unknown;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type HTMLCollectionOf<T> = unknown;
-type Element = unknown;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type NodeListOf<T> = unknown;
-type HTMLElementEventMap = unknown;
 type EventListenerOptions = unknown;
-type HTMLCollection = unknown;
-type ChildNode = unknown;
-type Document = unknown;
 type ShadowRoot = unknown;
-type CSSStyleDeclaration = unknown;
 
 const MULTI_SPACE = /\s+/g;
 
@@ -138,26 +129,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
         Object.assign(this, propsAvailableAtConstruction);
     }
 
-    // Props copied from HTMLElementTheGoodParts in @lwc/engine-core
-    accessKey?: string;
-    children?: HTMLCollection;
-    childNodes?: NodeListOf<ChildNode>;
-    dir?: string;
-    draggable?: boolean;
-    firstChild?: ChildNode | null;
-    firstElementChild?: Element | null;
-    hidden?: boolean;
-    id?: string;
-    lang?: string;
-    lastChild?: ChildNode | null;
-    lastElementChild?: Element | null;
-    ownerDocument?: Document;
-    shadowRoot?: ShadowRoot | null;
-    spellcheck?: boolean;
-    tabIndex?: number;
-    title?: string;
-    style?: CSSStyleDeclaration;
-
     // TODO [W-14977927]: protect internals from userland
     private __internal__setState(
         props: Record<string, any>,
@@ -204,14 +175,99 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return value === true ? '' : (value ?? null);
     }
 
-    setAttribute(attrName: string, value: string): void {
+    setAttribute(attrName: string, value: string | null): void {
         // Not sure it's correct to initialize here if missing
-        if (!this.__attrs) this.__attrs = {};
-        this.__attrs[attrName] = value;
+        if (!this.__attrs) {
+            this.__attrs = {};
+        }
+
+        if (value === null) {
+            delete this.__attrs[attrName];
+        } else {
+            this.__attrs[attrName] = value;
+        }
+    }
+
+    hasAttribute(attrName: string): boolean {
+        return Boolean(this.__attrs && attrName in this.__attrs);
     }
 
     removeAttribute(attrName: string): void {
         delete this.__attrs?.[attrName];
+    }
+
+    addEventListener(
+        _type: string,
+        _listener: EventListenerOrEventListenerObject,
+        _options?: boolean | AddEventListenerOptions
+    ): void {
+        // noop
+    }
+
+    removeEventListener(
+        _type: string,
+        _listener: EventListenerOrEventListenerObject,
+        _options?: boolean | EventListenerOptions
+    ): void {
+        // noop
+    }
+
+    // ----------------------------------------------------------- //
+    // Props/methods explicitly not available in this environment  //
+    // Getters are named "get*" for parity with @lwc/engine-server //
+    // ----------------------------------------------------------- //
+
+    get children(): never {
+        throw new TypeError('"getChildren" is not supported in this environment');
+    }
+    get childNodes(): never {
+        throw new TypeError('"getChildNodes" is not supported in this environment');
+    }
+    get firstChild(): never {
+        throw new TypeError('"getFirstChild" is not supported in this environment');
+    }
+    get firstElementChild(): never {
+        throw new TypeError('"getFirstElementChild" is not supported in this environment');
+    }
+    get hostElement(): never {
+        // Intentionally different to match @lwc/engine-*core*
+        throw new TypeError('"this.hostElement" is not supported in this environment');
+    }
+    get lastChild(): never {
+        throw new TypeError('"getLastChild" is not supported in this environment');
+    }
+    get lastElementChild(): never {
+        throw new TypeError('"getLastElementChild" is not supported in this environment');
+    }
+    get ownerDocument(): never {
+        // Intentionally not "get*" to match @lwc/engine-server
+        throw new TypeError('"ownerDocument" is not supported in this environment');
+    }
+    get style(): never {
+        // Intentionally not "get*" to match @lwc/engine-server
+        throw new TypeError('"style" is not supported in this environment');
+    }
+
+    attachInternals(): never {
+        throw new TypeError('"attachInternals" is not supported in this environment');
+    }
+    dispatchEvent(_event: Event): never {
+        throw new TypeError('"dispatchEvent" is not supported in this environment');
+    }
+    getBoundingClientRect(): never {
+        throw new TypeError('"getBoundingClientRect" is not supported in this environment');
+    }
+    getElementsByClassName(_classNames: string): never {
+        throw new TypeError('"getElementsByClassName" is not supported in this environment');
+    }
+    getElementsByTagName(_qualifiedName: unknown): never {
+        throw new TypeError('"getElementsByTagName" is not supported in this environment');
+    }
+    querySelector(_selectors: string): never {
+        throw new TypeError('"querySelector" is not supported in this environment');
+    }
+    querySelectorAll(_selectors: string): never {
+        throw new TypeError('"querySelectorAll" is not supported in this environment');
     }
 
     // -------------------------------------------------------------------------------- //
@@ -219,64 +275,28 @@ export class LightningElement implements PropsAvailableAtConstruction {
     // The interface is not explicitly referenced here, so this may become outdated //
     // -------------------------------------------------------------------------- //
 
-    addEventListener(
-        _type: string,
-        _listener: EventListenerOrEventListenerObject,
-        _options?: boolean | AddEventListenerOptions
-    ): void {
-        throw new Error('Method "addEventListener" not implemented.');
-    }
-    attachInternals(): ElementInternals {
-        throw new Error('Method "attachInternals" not implemented.');
-    }
-    dispatchEvent(_event: Event): boolean {
-        throw new Error('Method "dispatchEvent" not implemented.');
-    }
+    accessKey?: string;
+    dir?: string;
+    draggable?: boolean;
+    hidden?: boolean;
+    id?: string;
+    lang?: string;
+    shadowRoot?: ShadowRoot | null;
+    spellcheck?: boolean;
+    tabIndex?: number;
+    title?: string;
+
     getAttributeNS(_namespace: string | null, _localName: string): string | null {
         throw new Error('Method "getAttributeNS" not implemented.');
-    }
-    getBoundingClientRect(): DOMRect {
-        throw new Error('Method "getBoundingClientRect" not implemented.');
-    }
-    getElementsByClassName(_classNames: string): HTMLCollectionOf<Element> {
-        throw new Error('Method "getElementsByClassName" not implemented.');
-    }
-    getElementsByTagName(_qualifiedName: unknown): HTMLCollectionOf<Element> {
-        throw new Error('Method "getElementsByTagName" not implemented.');
-    }
-    hasAttribute(_qualifiedName: string): boolean {
-        throw new Error('Method "hasAttribute" not implemented.');
     }
     hasAttributeNS(_namespace: string | null, _localName: string): boolean {
         throw new Error('Method "hasAttributeNS" not implemented.');
     }
-    querySelector(_selectors: string): Element | null {
-        throw new Error('Method "querySelector" not implemented.');
-    }
-    querySelectorAll(_selectors: string): NodeListOf<Element> {
-        throw new Error('Method "querySelectorAll" not implemented.');
-    }
     removeAttributeNS(_namespace: string | null, _localName: string): void {
         throw new Error('Method "removeAttributeNS" not implemented.');
     }
-    removeEventListener<K extends keyof HTMLElementEventMap>(
-        type: K,
-        listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
-        options?: boolean | EventListenerOptions
-    ): void;
-    removeEventListener(
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | EventListenerOptions
-    ): void;
-    removeEventListener(_type: unknown, _listener: unknown, _options?: unknown): void {
-        throw new Error('Method "removeEventListener" not implemented.');
-    }
     setAttributeNS(_namespace: string | null, _qualifiedName: string, _value: string): void {
         throw new Error('Method "setAttributeNS" not implemented.');
-    }
-    toString(): string {
-        throw new Error('Method "toString" not implemented.');
     }
 }
 
