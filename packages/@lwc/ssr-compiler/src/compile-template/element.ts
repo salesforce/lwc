@@ -6,7 +6,13 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { HTML_NAMESPACE, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
+import {
+    HTML_NAMESPACE,
+    isVoidElement,
+    normalizeStyleAttribute,
+    StringReplace,
+    StringTrim,
+} from '@lwc/shared';
 import {
     type Attribute as IrAttribute,
     type Expression as IrExpression,
@@ -55,7 +61,15 @@ function yieldAttrOrPropLiteralValue(
 ): EsStatement[] {
     const { value, type } = valueNode;
     if (typeof value === 'string') {
-        const yieldedValue = name === 'style' ? normalizeStyleAttribute(value) : value;
+        let yieldedValue: string;
+        if (name === 'style') {
+            yieldedValue = normalizeStyleAttribute(value);
+        } else if (name === 'class') {
+            // @ts-expect-error weird indirection results in wrong overload being picked up
+            yieldedValue = StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+        } else {
+            yieldedValue = value;
+        }
         return [bStringLiteralYield(b.literal(isClass), b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         return [bYield(b.literal(` ${name}`))];
