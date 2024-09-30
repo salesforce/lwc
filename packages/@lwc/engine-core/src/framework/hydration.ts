@@ -179,13 +179,14 @@ function getValidationPredicate(
 
     // If validationOptOut is an array of strings, attributes specified in the array will be "opted out". Attributes
     // not specified in the array will still be validated.
-    const conditionalOptOut = isArray(optOutStaticProp) ? new Set(optOutStaticProp) : undefined;
+    const isValidArray = isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString);
+    const conditionalOptOut = isValidArray ? new Set(optOutStaticProp) : undefined;
 
     if (
         process.env.NODE_ENV !== 'production' &&
         !isUndefined(optOutStaticProp) &&
         !isTrue(optOutStaticProp) &&
-        !(isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString))
+        !isValidArray
     ) {
         logWarn(
             'Validation opt out must be `true` or an array of attributes that should not be validated.'
