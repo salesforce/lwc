@@ -3,7 +3,7 @@ import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 describe('freezeTemplate', () => {
-    let dispatcher = jasmine.createSpy();
+    let dispatcher;
 
     beforeEach(() => {
         dispatcher = jasmine.createSpy();
@@ -56,7 +56,6 @@ describe('freezeTemplate', () => {
             /Mutating the "stylesheetTokens" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
-        // @ts-expect-error stylesheetTokens is deprecated
         expect(template.stylesheetTokens).toEqual({
             hostAttribute: 'newToken-host',
             shadowAttribute: 'newToken',
