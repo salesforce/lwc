@@ -13,6 +13,8 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
+export { validateStyleTextContents } from './validate-style-text-contents';
+
 type DOMTokenList = object;
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;

@@ -18,9 +18,14 @@ import type {
     Statement as EsStatement,
     Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
+    ImportDeclaration as EsImportDeclaration,
 } from 'estree';
 
 const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
+
+const bStyleValidationImport = esTemplate<EsImportDeclaration>`
+    import { validateStyleTextContents } from '@lwc/ssr-runtime';
+`;
 
 const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
@@ -40,7 +45,9 @@ const bExportTemplate = esTemplate<
                 const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
                 const useNativeDirPseudoclass = true;
                 yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
-                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                validateStyleTextContents(styleContents);
+                yield styleContents;
                 yield '</style>';
             }
         }
@@ -76,6 +83,7 @@ export default function compileTemplate(src: string, filename: string) {
 
     const moduleBody = [
         ...hoisted,
+        bStyleValidationImport(),
         bExportTemplate(
             astShadowModeBool,
             optimizeAdjacentYieldStmts(statements),
