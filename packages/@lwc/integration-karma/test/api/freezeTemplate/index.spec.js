@@ -3,10 +3,10 @@ import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 describe('freezeTemplate', () => {
-    const dispatcher = jasmine.createSpy();
+    let dispatcher = jasmine.createSpy();
 
     beforeEach(() => {
-        dispatcher.mockClear();
+        dispatcher = jasmine.createSpy();
         attachReportingControlDispatcher(dispatcher, ['StylesheetMutation', 'TemplateMutation']);
     });
 
@@ -30,7 +30,7 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.stylesheetToken).toEqual('newToken');
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheetToken' }],
         ]);
     });
@@ -61,7 +61,7 @@ describe('freezeTemplate', () => {
             hostAttribute: 'newToken-host',
             shadowAttribute: 'newToken',
         });
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheetTokens' }],
         ]);
     });
@@ -86,7 +86,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
@@ -123,7 +123,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(stylesheet);
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
@@ -144,7 +144,7 @@ describe('freezeTemplate', () => {
         }).toLogWarningDev(
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
@@ -165,7 +165,9 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.slots).toBe(newSlots);
-        expect(dispatcher.mock.calls).toEqual([['TemplateMutation', { propertyName: 'slots' }]]);
+        expect(dispatcher.calls.allArgs()).toEqual([
+            ['TemplateMutation', { propertyName: 'slots' }],
+        ]);
     });
 
     it('should warn when setting tmpl.renderMOde', () => {
@@ -182,7 +184,7 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.renderMode).toBe(undefined);
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['TemplateMutation', { propertyName: 'renderMode' }],
         ]);
     });
@@ -199,7 +201,7 @@ describe('freezeTemplate', () => {
         }).toLogWarningDev(
             /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
         );
-        expect(dispatcher.mock.calls).toEqual([
+        expect(dispatcher.calls.allArgs()).toEqual([
             ['StylesheetMutation', { propertyName: '$scoped$' }],
         ]);
     });

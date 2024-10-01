@@ -13,14 +13,13 @@ vi.stubGlobal('spyOn', vi.spyOn);
 export function createSpy() {
     const spy = vi.fn();
 
-    const calls = {
-        allArgs() {
-            return spy.mock.calls;
+    Object.defineProperty(spy, 'calls', {
+        value: {
+            allArgs() {
+                return spy.mock.calls;
+            },
         },
-    };
-
-    Object.defineProperty(spy, 'calls', calls);
-    Object.defineProperty(spy, 'mockClear', vi.fn());
+    });
 
     return spy;
 }
