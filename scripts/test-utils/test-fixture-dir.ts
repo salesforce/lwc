@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as glob from 'glob';
+import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
@@ -27,6 +28,28 @@ function getTestFunc(dirname: string) {
         throw new Error(`Cannot have both .only and .skip in ${relpath}`);
     }
     return isOnly ? test.only : isSkip ? test.skip : test;
+}
+
+export interface TestFixtureConfig extends StyleCompilerConfig {
+    description?: string;
+    name?: string;
+    namespace?: string;
+    props?: Record<string, string | string[]>;
+}
+
+/** Loads the the contents of the `config.json` in the provided directory, if present. */
+function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | undefined {
+    const filepath = path.join(dirname, 'config.json');
+    let contents: string;
+    try {
+        contents = fs.readFileSync(filepath, 'utf8');
+    } catch (err) {
+        if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+            return undefined;
+        }
+        throw err;
+    }
+    return JSON.parse(contents);
 }
 
 /**
@@ -50,12 +73,13 @@ function getTestFunc(dirname: string) {
  *   }
  * )
  */
-export function testFixtureDir(
+export function testFixtureDir<T extends TestFixtureConfig>(
     config: { pattern: string; root: string },
     testFn: (options: {
         src: string;
         filename: string;
         dirname: string;
+        config?: T;
     }) => TestFixtureOutput | Promise<TestFixtureOutput>
 ) {
     if (typeof config !== 'object' || config === null) {
@@ -79,14 +103,16 @@ export function testFixtureDir(
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureName = path.relative(root, filename);
+        const fixtureConfig = getFixtureConfig<T>(dirname);
+        const description = fixtureConfig?.description ?? path.relative(root, filename);
         const tester = getTestFunc(dirname);
 
-        tester(fixtureName, async () => {
+        tester(description, async () => {
             const outputs = await testFn({
                 src,
                 filename,
                 dirname,
+                config: fixtureConfig,
             });
 
             if (typeof outputs !== 'object' || outputs === null) {

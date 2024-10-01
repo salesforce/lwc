@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'fs';
 import path from 'path';
 
 import { rollup } from 'rollup';
@@ -77,16 +76,7 @@ function testFixtures() {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/index.js',
         },
-        async ({ filename, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
-
-            let config: any = {};
-            if (fs.existsSync(configPath)) {
-                // Using require() to read JSON, rather than load a module
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
-                config = require(configPath);
-            }
-
+        async ({ filename, dirname, config }) => {
             const compiledFixturePath = await compileFixture({
                 input: filename,
                 dirname,
@@ -111,7 +101,7 @@ function testFixtures() {
                 result = lwcEngineServer!.renderComponent(
                     module!.tagName,
                     module!.default,
-                    config.props || {}
+                    config?.props ?? {}
                 );
             } catch (_err: any) {
                 err = _err.message;
