@@ -18,7 +18,11 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
         rootDir: pluginOptions.dir,
         include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
         enableDynamicComponents: true,
-        apiVersion: 62,
+        experimentalDynamicComponent: {
+            loader: 'test-utils',
+            // @ts-expect-error experimentalDynamicComponent is not defined
+            strict: true,
+        },
     });
 
     return {
@@ -39,15 +43,8 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
             if (importerPath.base.endsWith('.spec.js')) {
                 rollupPlugin.api.updateOptions({
                     rootDir: importerPath.dir,
-                    ...(importerPath.dir.includes('template-expressions')
-                        ? {
-                              experimentalComplexExpressions: true,
-                              apiVersion: 63,
-                          }
-                        : {
-                              experimentalComplexExpressions: false,
-                              apiVersion: 62,
-                          }),
+                    experimentalComplexExpressions:
+                        importerPath.dir.includes('template-expressions'),
                 });
             }
 
