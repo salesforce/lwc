@@ -30,14 +30,6 @@ describe('[W-9846457] event access when using native shadow dom', () => {
     it('should handle composed bubbling events (nested child)', async () => {
         const event = new CustomEvent('test', { composed: true, bubbles: true });
 
-        // const composedPath = await new Promise((resolve) => {
-        //     nativeChild.addEventListener(event.type, (event) => {
-        //         resolve(event.composedPath());
-        //     });
-
-        //     nativeChild.shadowRoot.dispatchEvent(event);
-        // });
-
         const composedPath = await expectComposedPath(event, nativeChild, nativeChild.shadowRoot);
 
         expect(composedPath).toEqual([
