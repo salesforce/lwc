@@ -16,6 +16,8 @@ packages/@lwc/integration-tests/errorShots/
 packages/@lwc/integration-tests/results/
 packages/@lwc/integration-tests/.env
 
+packages/@lwc/integration-karma/**/__screenshots__/
+
 # custom node_modules for testing
 !packages/@lwc/module-resolver/src/__tests__/**/node_modules/
 !packages/@lwc/rollup-plugin/src/__tests__/**/node_modules/
