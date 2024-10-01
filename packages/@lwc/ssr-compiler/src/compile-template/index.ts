@@ -9,9 +9,10 @@ import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
-import { templateIrToEsTree } from './ir-to-es';
+import { getStylesheetImports } from '../compile-js/stylesheets';
+import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { optimizeAdjacentYieldStmts } from './shared';
-
+import { templateIrToEsTree } from './ir-to-es';
 import type {
     Node as EsNode,
     Statement as EsStatement,
@@ -25,30 +26,34 @@ const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
     [EsLiteral, EsStatement[], EsLiteral]
 >`
-    export default async function* tmpl(props, attrs, slotted, Cmp, instance, stylesheets) {
+    export default async function* tmpl(props, attrs, slotted, Cmp, instance) {
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
-
-        for (const stylesheet of stylesheets ?? []) {
-            // TODO
-            const token = null;
-            const useActualHostSelector = true;
-            const useNativeDirPseudoclass = null;
-            yield '<style type="text/css">';
-            yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-            yield '</style>';
+        
+        if (defaultStylesheets || defaultScopedStylesheets) {
+            // Flatten all stylesheets infinitely and concatenate
+            const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
+    
+            for (const stylesheet of stylesheets) {
+                const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
+                const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
+                const useNativeDirPseudoclass = true;
+                yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
+                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                yield '</style>';
+            }
         }
 
         ${is.statement};
 
         if (!${isBool} && Cmp.renderMode !== 'light') {
-            yield '</template>'
+            yield '</template>';
         }
     }
 `;
 
-export default function compileTemplate(src: string, _filename: string) {
+export default function compileTemplate(src: string, filename: string) {
     const { root, warnings } = parse(src);
     if (!root || warnings.length) {
         for (const warning of warnings) {
@@ -78,6 +83,11 @@ export default function compileTemplate(src: string, _filename: string) {
         ),
     ];
     const program = b.program(moduleBody, 'module');
+
+    addScopeTokenDeclarations(program, filename);
+
+    const stylesheetImports = getStylesheetImports(filename);
+    program.body.unshift(...stylesheetImports);
 
     return {
         code: generate(program, {}),

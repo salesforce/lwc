@@ -30,11 +30,12 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
         instance.isConnected = true;
         instance.connectedCallback?.();
+        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
+        yield tmplFn.stylesheetScopeTokenHostClass ?? '';
         yield *__renderAttrs(attrs)
         yield '>';
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
-        yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance, defaultStylesheets);
+        yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
         yield \`</\${tagName}>\`;
     }
 `;

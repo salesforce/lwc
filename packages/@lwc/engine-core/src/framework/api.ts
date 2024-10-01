@@ -59,6 +59,7 @@ import {
     VText,
 } from './vnodes';
 import { getComponentRegisteredName } from './component';
+import { createSanitizedHtmlContent, SanitizedHtmlContent } from './sanitized-html-content';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -727,8 +728,9 @@ export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook)
 }
 
 // [s]anitize [h]tml [c]ontent
-function shc(content: unknown): string {
-    return sanitizeHtmlContentHook(content);
+function shc(content: unknown): SanitizedHtmlContent {
+    const sanitizedString = sanitizeHtmlContentHook(content);
+    return createSanitizedHtmlContent(sanitizedString);
 }
 
 /**

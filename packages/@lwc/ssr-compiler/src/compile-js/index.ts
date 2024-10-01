@@ -12,7 +12,7 @@ import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
-import { addStylesheetImports, catalogStaticStylesheets, catalogStyleImport } from './stylesheets';
+import { catalogStaticStylesheets, catalogStyleImport } from './stylesheets';
 import { addGenerateMarkupExport } from './generate-markup';
 
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
@@ -145,8 +145,15 @@ export default function compileJS(src: string, filename: string) {
         };
     }
 
+    if (state.cssExplicitImports || state.staticStylesheetIds) {
+        throw new Error(
+            `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
+                '  \n'
+            )}`
+        );
+    }
+
     addGenerateMarkupExport(ast, state, filename);
-    addStylesheetImports(ast, state, filename);
 
     return {
         code: generate(ast, {}),

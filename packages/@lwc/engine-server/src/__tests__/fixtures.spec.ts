@@ -52,7 +52,11 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         ],
         onwarn({ message, code }) {
             // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
-            if (!message.includes('LWC1187') && code !== 'CIRCULAR_DEPENDENCY') {
+            const shouldIgnoreWarning =
+                message.includes('LWC1187') ||
+                message.includes('-h-t-m-l') ||
+                code === 'CIRCULAR_DEPENDENCY';
+            if (!shouldIgnoreWarning) {
                 throw new Error(message);
             }
         },

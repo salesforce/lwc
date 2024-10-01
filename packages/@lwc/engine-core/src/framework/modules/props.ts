@@ -9,6 +9,7 @@ import { logWarn } from '../../shared/logger';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
+import { safelySetProperty } from '../sanitized-html-content';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
@@ -66,7 +67,7 @@ export function patchProps(
                     );
                 }
             }
-            setProperty(elm!, key, cur);
+            safelySetProperty(setProperty, elm!, key, cur);
         }
     }
 }

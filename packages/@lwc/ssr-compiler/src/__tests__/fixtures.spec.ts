@@ -82,19 +82,28 @@ function testFixtures() {
 
             const module = (await import(compiledFixturePath)) as FixtureModule;
 
+            let result;
             try {
-                const result = await serverSideRenderComponent(
+                result = await serverSideRenderComponent(
                     module!.tagName,
                     module!.generateMarkup,
                     config.props || {}
                 );
+            } catch (err: any) {
+                return {
+                    'error.txt': err.message,
+                    'expected.html': '',
+                };
+            }
+
+            try {
                 return {
                     'expected.html': formatHTML(result),
                     'error.txt': '',
                 };
-            } catch (err: any) {
+            } catch (_err: any) {
                 return {
-                    'error.txt': err.message,
+                    'error.txt': `Test helper could not format HTML:\n\n${result}`,
                     'expected.html': '',
                 };
             }

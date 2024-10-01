@@ -6,7 +6,13 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
+import {
+    isBooleanAttribute,
+    SVG_NAMESPACE,
+    LWC_VERSION_COMMENT,
+    isUndefined,
+    parseStyleText,
+} from '@lwc/shared';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -70,7 +76,6 @@ import {
     objectToAST,
     shouldFlatten,
     parseClassNames,
-    parseStyleText,
     hasIdAttribute,
     styleMapToStyleDeclsAST,
 } from './helpers';

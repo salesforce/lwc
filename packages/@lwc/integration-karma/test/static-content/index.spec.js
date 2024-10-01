@@ -464,13 +464,24 @@ describe('static content optimization with attribute', () => {
     it('preserves static values', () => {
         const {
             staticAttr,
-            staticStyle,
-            staticClass,
             staticAttrNested,
-            staticStyleNested,
+            staticClass,
+            staticClassBoolean,
+            staticClassEmpty,
             staticClassNested,
+            staticClassSpaces,
+            staticClassTab,
+            staticClassTabs,
             staticCombined,
             staticCombinedNested,
+            staticStyle,
+            staticStyleBoolean,
+            staticStyleEmpty,
+            staticStyleInvalid,
+            staticStyleNested,
+            staticStyleSpaces,
+            staticStyleTab,
+            staticStyleTabs,
         } = nodes;
 
         // styles
@@ -479,6 +490,12 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'color: red;' },
             { cmp: staticStyleNested, expected: 'color: white;' },
             { cmp: staticCombinedNested, expected: 'color: orange;' },
+            { cmp: staticStyleBoolean, expected: null },
+            { cmp: staticStyleEmpty, expected: null },
+            { cmp: staticStyleInvalid, expected: null },
+            { cmp: staticStyleSpaces, expected: null },
+            { cmp: staticStyleTab, expected: null },
+            { cmp: staticStyleTabs, expected: null },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
 
         // class
@@ -487,6 +504,11 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'combined class' },
             { cmp: staticClassNested, expected: 'static nested class' },
             { cmp: staticCombinedNested, expected: 'static combined nested' },
+            { cmp: staticClassBoolean, expected: null },
+            { cmp: staticClassEmpty, expected: null },
+            { cmp: staticClassSpaces, expected: null },
+            { cmp: staticClassTab, expected: null },
+            { cmp: staticClassTabs, expected: null },
         ].forEach(verifyClassAppliedCorrectly);
 
         // attributes
