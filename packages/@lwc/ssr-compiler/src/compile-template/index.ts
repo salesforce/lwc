@@ -13,6 +13,7 @@ import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
+import type { TransformOptions } from '../shared';
 import type {
     Node as EsNode,
     Statement as EsStatement,
@@ -53,7 +54,7 @@ const bExportTemplate = esTemplate<
     }
 `;
 
-export default function compileTemplate(src: string, filename: string) {
+export default function compileTemplate(src: string, filename: string, options: TransformOptions) {
     const { root, warnings } = parse(src);
     if (!root || warnings.length) {
         for (const warning of warnings) {
@@ -84,7 +85,7 @@ export default function compileTemplate(src: string, filename: string) {
     ];
     const program = b.program(moduleBody, 'module');
 
-    addScopeTokenDeclarations(program, filename);
+    addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
     const stylesheetImports = getStylesheetImports(filename);
     program.body.unshift(...stylesheetImports);
