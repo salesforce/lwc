@@ -116,23 +116,5 @@ afterAll(function () {
     throwIfConsoleCalled();
 });
 
-const { createSpy } = jasmine;
-
-jasmine.createSpy = function () {
-    const spy = createSpy();
-
-    spy.mockClear = function () {
-        spy.calls.reset();
-    };
-
-    spy.mock = {
-        get calls() {
-            return spy.calls.allArgs();
-        },
-    };
-
-    return spy;
-};
-
 // The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;

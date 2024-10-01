@@ -27,6 +27,7 @@ export function createSpy() {
 vi.stubGlobal('jasmine', {
     createSpy,
     objectContaining: expect.objectContaining,
+    arrayWithExactContents: expect.arrayContaining,
 });
 
 declare global {
@@ -35,6 +36,7 @@ declare global {
     var jasmine: {
         createSpy: typeof createSpy;
         objectContaining: typeof expect.objectContaining;
+        arrayWithExactContents: typeof expect.arrayContaining;
     };
 
     interface Window {
