@@ -26,13 +26,8 @@ export default defineConfig((_env) => {
                     find: 'test-utils',
                     replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
                 },
-                {
-                    find: '/@id/@lwc/resources/empty_css.css',
-                    replacement: '@lwc/resources/empty_css.css',
-                },
             ],
             setupFiles: ['./vitest-helpers/test-setup.ts'],
-            css: false,
             env: {
                 NODE_ENV: 'test-karma-lwc',
                 NATIVE_SHADOW: 'true',

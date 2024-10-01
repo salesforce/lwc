@@ -13,11 +13,6 @@ export type VitestLwcOptions = {
     dir: string;
 };
 
-const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
-const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
-const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
-const EMPTY_IMPLICIT_CSS_CONTENT = 'export default ""';
-
 export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
     const rollupPlugin = rollupPluginLwc({
         rootDir: pluginOptions.dir,
@@ -71,38 +66,28 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
                         return path.join(rootDir, namespace, name, `${name}.html`);
                     }
                 }
-
-                // if (source.endsWith('.css?scoped=true')) {
-                //     const css = source.replace('?scoped=true', '');
-
-                //     if (css.endsWith('.scoped.css')) {
-                //         return css.replace('.scoped.css', '.css');
-                //     } else {
-                //         return css;
-                //     }
-                // }
-
-                // if (source.endsWith('.scoped.css')) {
-                //     return source.replace('.scoped.css', '.css');
-                // }
             }
 
             // @ts-expect-error rollupPlugin is not defined
-            return rollupPlugin.resolveId!.call(this, source, importer);
+            const id = rollupPlugin.resolveId!.call(this, source, importer);
+
+            if (id) {
+                if (id === '@lwc/resources/empty_css.css') {
+                    return id + '?inline';
+                } else if (id.endsWith('.css')) {
+                    return id + '?inline';
+                }
+                return id;
+            }
         },
         load(id, _options) {
-            if (id === IMPLICIT_DEFAULT_HTML_PATH) {
-                return EMPTY_IMPLICIT_HTML_CONTENT;
-            }
-
-            if (id === IMPLICIT_DEFAULT_CSS_PATH) {
-                return EMPTY_IMPLICIT_CSS_CONTENT;
-            }
-
             // @ts-expect-error rollupPlugin is not defined
             return rollupPlugin.load!.call(this, id);
         },
         transform(code, id, _options) {
+            if (id.endsWith('.css')) {
+                return code;
+            }
             // @ts-expect-error rollupPlugin is not defined
             return rollupPlugin.transform!.call(this, code, id);
         },
