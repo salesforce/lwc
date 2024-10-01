@@ -17,6 +17,7 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
     const rollupPlugin = rollupPluginLwc({
         rootDir: pluginOptions.dir,
         include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
+        enableDynamicComponents: true,
         apiVersion: 62,
     });
 
