@@ -16,7 +16,7 @@ export type VitestLwcOptions = {
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
-const EMPTY_IMPLICIT_CSS_CONTENT = '';
+const EMPTY_IMPLICIT_CSS_CONTENT = 'export default ""';
 
 export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
     const rollupPlugin = rollupPluginLwc({

@@ -32,6 +32,7 @@ export default defineConfig((_env) => {
                 },
             ],
             setupFiles: ['./vitest-helpers/test-setup.ts'],
+            css: false,
             env: {
                 NODE_ENV: 'test-karma-lwc',
                 NATIVE_SHADOW: 'true',
