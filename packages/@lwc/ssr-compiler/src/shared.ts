@@ -55,3 +55,8 @@ export interface IHoistImport {
 export interface IHoistInstantiation {
     kind: 'hoistInstantiation';
 }
+
+export interface TransformOptions {
+    name?: string;
+    namespace?: string;
+}

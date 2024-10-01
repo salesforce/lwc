@@ -7,10 +7,7 @@
 
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
-
-// Unused for now, so it doesn't really matter...
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface TransformOptions {}
+import { TransformOptions } from './shared';
 
 export interface CompilationResult {
     code: string;
@@ -29,8 +26,8 @@ export function compileComponentForSSR(
 export function compileTemplateForSSR(
     src: string,
     filename: string,
-    _options: TransformOptions
+    options: TransformOptions
 ): CompilationResult {
-    const { code } = compileTemplate(src, filename);
+    const { code } = compileTemplate(src, filename, options);
     return { code, map: undefined };
 }
