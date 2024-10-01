@@ -257,7 +257,7 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
     return attribute ? attribute.value : null;
 }
 
-function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
+function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
     reportMutation(element, name);
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
@@ -274,7 +274,7 @@ function setAttribute(element: E, name: string, value: string, namespace: string
             value: String(value),
         });
     } else {
-        attribute.value = value;
+        attribute.value = String(value);
     }
 }
 
