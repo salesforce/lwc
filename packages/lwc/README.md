@@ -75,3 +75,7 @@ This is equivalent to:
 ```js
 import { renderComponent } from '@lwc/engine-server';
 ```
+
+## Experimental Packages
+
+The `@lwc/ssr-compiler` and `@lwc/ssr-runtime` packages are still considered experimental, and may break without notice.
