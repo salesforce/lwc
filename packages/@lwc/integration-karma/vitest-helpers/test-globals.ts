@@ -66,9 +66,12 @@ vi.stubGlobal('jasmine', {
     arrayWithExactContents: expect.arrayContaining,
 });
 
+vi.stubGlobal('xit', it.skip);
+
 declare global {
     var LWC: typeof lwc;
     var spyOn: typeof vi.spyOn;
+    var xit: typeof it.skip;
     var jasmine: {
         createSpy: typeof createSpy;
         any: typeof expect.any;
