@@ -8,19 +8,20 @@ describe('Event.target', () => {
         document.removeEventListener('test', globalListener);
     });
 
-    it('should retarget', (done) => {
-        const container = createElement('x-container', { is: Container });
-        document.body.appendChild(container);
+    it('should retarget', () =>
+        new Promise((done) => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
 
-        const child = container.shadowRoot.querySelector('x-child');
-        child.addEventListener('test', (event) => {
-            expect(event.target).toEqual(child);
-            done();
-        });
+            const child = container.shadowRoot.querySelector('x-child');
+            child.addEventListener('test', (event) => {
+                expect(event.target).toEqual(child);
+                done();
+            });
 
-        const div = child.shadowRoot.querySelector('div');
-        div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-    });
+            const div = child.shadowRoot.querySelector('div');
+            div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        }));
 
     it('should patch the prototype instead of the instance', () => {
         const container = createElement('x-container', { is: Container });
@@ -59,20 +60,21 @@ describe('Event.target', () => {
         expect(event.target).toEqual(container);
     });
 
-    it('should retarget when accessed in a document event listener', (done) => {
-        const container = createElement('x-container', { is: Container });
-        document.body.appendChild(container);
+    it('should retarget when accessed in a document event listener', () =>
+        new Promise((done) => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
 
-        globalListener = (event) => {
-            expect(event.target).toEqual(container);
-            done();
-        };
-        document.addEventListener('test', globalListener);
+            globalListener = (event) => {
+                expect(event.target).toEqual(container);
+                done();
+            };
+            document.addEventListener('test', globalListener);
 
-        const child = container.shadowRoot.querySelector('x-child');
-        const div = child.shadowRoot.querySelector('div');
-        div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-    });
+            const child = container.shadowRoot.querySelector('x-child');
+            const div = child.shadowRoot.querySelector('div');
+            div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        }));
 
     if (!process.env.NATIVE_SHADOW) {
         describe('legacy behavior', () => {
@@ -81,39 +83,41 @@ describe('Event.target', () => {
                 spyOn(console, 'warn');
             });
 
-            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', (done) => {
-                const container = createElement('x-container', { is: Container });
-                document.body.appendChild(container);
+            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', () =>
+                new Promise((done) => {
+                    const container = createElement('x-container', { is: Container });
+                    document.body.appendChild(container);
 
-                const child = container.shadowRoot.querySelector('x-child');
-                const span = child.appendSpanAndReturn();
+                    const child = container.shadowRoot.querySelector('x-child');
+                    const span = child.appendSpanAndReturn();
 
-                container.addEventListener('test', (event) => {
-                    expect(event.target).toEqual(container);
-                    setTimeout(() => {
+                    container.addEventListener('test', (event) => {
+                        expect(event.target).toEqual(container);
+                        setTimeout(() => {
+                            expect(event.target).toEqual(span);
+                            done();
+                        });
+                    });
+
+                    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+                }));
+
+            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed in a document event listener [W-6626752]', () =>
+                new Promise((done) => {
+                    const container = createElement('x-container', { is: Container });
+                    document.body.appendChild(container);
+
+                    const child = container.shadowRoot.querySelector('x-child');
+                    const span = child.appendSpanAndReturn();
+
+                    globalListener = (event) => {
                         expect(event.target).toEqual(span);
                         done();
-                    });
-                });
+                    };
+                    document.addEventListener('test', globalListener);
 
-                span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-            });
-
-            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed in a document event listener [W-6626752]', (done) => {
-                const container = createElement('x-container', { is: Container });
-                document.body.appendChild(container);
-
-                const child = container.shadowRoot.querySelector('x-child');
-                const span = child.appendSpanAndReturn();
-
-                globalListener = (event) => {
-                    expect(event.target).toEqual(span);
-                    done();
-                };
-                document.addEventListener('test', globalListener);
-
-                span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-            });
+                    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+                }));
         });
     }
 });
