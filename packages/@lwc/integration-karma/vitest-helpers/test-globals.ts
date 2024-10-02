@@ -3,6 +3,12 @@ import { vi } from 'vitest';
 
 vi.stubGlobal('LWC', { ...lwc });
 
+vi.stubGlobal('process', {
+    env: {
+        NATIVE_SHADOW: true,
+    },
+});
+
 export function spyOn(obj: any, methodName: string) {
     const spy = vi.spyOn(obj, methodName);
 
