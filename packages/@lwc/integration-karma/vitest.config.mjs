@@ -37,7 +37,7 @@ export default defineConfig((_env) => {
                 headless: true,
                 name: 'chromium',
                 provider: 'playwright',
-                providerOptions: {},
+                providerOptions: { launch: { devtools: true } },
             },
         },
     };
