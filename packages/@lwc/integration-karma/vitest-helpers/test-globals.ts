@@ -33,6 +33,11 @@ export function spyOn(obj: any, methodName: string) {
             allArgs() {
                 return spy.mock.calls;
             },
+            mostRecent() {
+                return {
+                    args: spy.mock.lastCall,
+                };
+            },
             count() {
                 return spy.mock.calls.length;
             },
