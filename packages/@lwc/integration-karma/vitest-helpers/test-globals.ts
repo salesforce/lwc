@@ -14,6 +14,9 @@ export function spyOn(obj: any, methodName: string) {
             callFake(fn: any) {
                 return spy.mockImplementation(fn);
             },
+            callThrough() {
+                return spy.mockRestore();
+            },
         },
     });
 
