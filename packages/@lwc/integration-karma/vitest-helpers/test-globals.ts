@@ -74,9 +74,9 @@ export function createSpy() {
 
 vi.stubGlobal('jasmine', {
     createSpy,
-    any: expect.any,
-    objectContaining: expect.objectContaining,
-    arrayWithExactContents: expect.arrayContaining,
+    any: (constructor: unknown) => expect.any(constructor),
+    objectContaining: <T = any>(o: T) => expect.objectContaining(o),
+    arrayWithExactContents: <T = unknown>(expected: Array<T>) => expect.arrayContaining(expected),
 });
 
 vi.stubGlobal('xit', it.skip);
