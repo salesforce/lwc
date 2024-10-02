@@ -34,6 +34,7 @@ export default defineConfig((_env) => {
             },
             browser: {
                 enabled: true,
+                headless: true,
                 name: 'chromium',
                 provider: 'playwright',
                 providerOptions: {},
