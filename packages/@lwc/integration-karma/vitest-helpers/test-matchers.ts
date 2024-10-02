@@ -229,6 +229,12 @@ expect.extend({
     toBeFalse(received: boolean, message = 'Expected value to be false') {
         return !received ? pass() : fail(message);
     },
+    toHaveSize(received: { length: number }, size: number) {
+        return received.length === size
+            ? pass()
+            : fail(`Expected object to have size ${size}, but it has size ${received.length}.`);
+    },
+
     toEqualWireSettings(actual, expected) {
         Object.keys(actual).forEach((currentKey) => {
             const normalizedActual = Object.assign({}, actual[currentKey], {
@@ -262,6 +268,9 @@ interface CustomMatchers<R = unknown> {
 
     toThrowCallbackReactionErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
     toThrowCallbackReactionError: (expected: ExpectedMessage | ExpectedMessage[]) => R;
+
+    toHaveSize: (size: number) => R;
+
     toEqualWireSettings: (actual: any, expected: any) => R;
 }
 
