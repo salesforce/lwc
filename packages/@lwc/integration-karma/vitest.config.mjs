@@ -21,6 +21,7 @@ export default defineConfig((_env) => {
             include: ['**/*.spec.{js,ts}'],
             exclude: ['**/__screenshots__/**'],
             globals: true,
+            passWithNoTests: true,
             alias: [
                 {
                     find: 'test-utils',
@@ -35,6 +36,7 @@ export default defineConfig((_env) => {
             browser: {
                 enabled: true,
                 headless: true,
+                screenshotFailures: false,
                 name: 'chromium',
                 provider: 'playwright',
                 providerOptions: { launch: { devtools: true } },

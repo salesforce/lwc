@@ -13,7 +13,7 @@
         "sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js",
         "test:browser": "vitest --config=./vitest.config.mjs",
-        "test:browser:debug": "vitest --config=./vitest.config.mjs --inspect --inspect-brk --no-file-parallelism --browser.headless=false"
+        "test:browser:debug": "vitest --config=./vitest.config.mjs --inspect --no-file-parallelism --browser.headless=false"
     },
     "//": {
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
