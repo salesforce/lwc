@@ -224,10 +224,10 @@ expect.extend({
         true
     ),
     toBeTrue(received: boolean, message = 'Expected value to be true') {
-        return received ? pass() : fail(message);
+        return received === true ? pass() : fail(message);
     },
     toBeFalse(received: boolean, message = 'Expected value to be false') {
-        return !received ? pass() : fail(message);
+        return received === false ? pass() : fail(message);
     },
     toHaveSize(received: { length: number }, size: number) {
         return received.length === size

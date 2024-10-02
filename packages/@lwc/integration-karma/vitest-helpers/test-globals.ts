@@ -9,6 +9,8 @@ vi.stubGlobal('process', {
     },
 });
 
+lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
+
 export function spyOn(obj: any, methodName: string) {
     const spy = vi.spyOn(obj, methodName);
 
