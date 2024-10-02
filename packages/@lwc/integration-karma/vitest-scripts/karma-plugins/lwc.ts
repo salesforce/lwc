@@ -54,16 +54,6 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
                 rollupPlugin.api.updateOptions({
                     rootDir,
                 });
-
-                // namespace/name
-                if (!source.startsWith('.') && !source.startsWith('/')) {
-                    const sourceParts = source.split('/');
-
-                    if (sourceParts.length === 2) {
-                        const [namespace, name] = sourceParts;
-                        return path.join(rootDir, namespace, name, `${name}.html`);
-                    }
-                }
             }
 
             // @ts-expect-error rollupPlugin is not defined
