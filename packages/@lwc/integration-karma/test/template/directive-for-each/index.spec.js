@@ -97,7 +97,7 @@ describe('null/undefined values', () => {
             } else {
                 expect(spy.calls.error.length).toBe(1);
                 // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-                expect(spy.calls.error[0]).toMatch(/It must be an array-like object/);
+                expect(`${spy.calls.error[0]}`).toMatch(/It must be an array-like object/);
             }
         });
     });

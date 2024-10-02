@@ -25,7 +25,7 @@ const expectLogs = (regexes) => {
         const args = logger.calls.allArgs();
         expect(args.length).toBe(regexes.length);
         for (let i = 0; i < args.length; i++) {
-            expect(args[i][0]).toMatch(regexes[i]);
+            expect(`${args[i][0]}`).toMatch(regexes[i]);
         }
     }
 };
@@ -42,7 +42,7 @@ if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             expectLogs([
                 /Element <x-component> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-component' }],
             ]);
         });
