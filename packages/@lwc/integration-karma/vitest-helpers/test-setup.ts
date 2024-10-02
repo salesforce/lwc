@@ -23,6 +23,23 @@ export function spyOn(obj: any, methodName: string) {
         },
     });
 
+    Object.defineProperty(spy, 'calls', {
+        value: {
+            allArgs() {
+                return spy.mock.calls;
+            },
+            count() {
+                return spy.mock.calls.length;
+            },
+            argsFor(index: number) {
+                return spy.mock.calls[index];
+            },
+            reset() {
+                return spy.mockClear();
+            },
+        },
+    });
+
     return spy;
 }
 
