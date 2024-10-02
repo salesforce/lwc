@@ -2,7 +2,7 @@
 import { LightningElement, api, wire, track } from 'lwc';
 import WireAdapter from '../../../wire-adapter';
 
-// Everything else can be imported in a helper, so we mush check in the helper
+// Everything else can be imported in a helper, so we must check in the helper
 import '../../../imports';
 
 export default class extends LightningElement {
