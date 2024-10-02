@@ -73,11 +73,13 @@ vi.stubGlobal('jasmine', {
 });
 
 vi.stubGlobal('xit', it.skip);
+vi.stubGlobal('xdescribe', describe.skip);
 
 declare global {
     var LWC: typeof lwc;
     var spyOn: typeof vi.spyOn;
     var xit: typeof it.skip;
+    var xdescribe: typeof describe.skip;
     var jasmine: {
         createSpy: typeof createSpy;
         any: typeof expect.any;
