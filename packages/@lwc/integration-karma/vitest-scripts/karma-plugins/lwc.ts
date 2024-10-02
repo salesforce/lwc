@@ -46,9 +46,7 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
                     experimentalComplexExpressions:
                         importerPath.dir.includes('template-expressions'),
                 });
-            }
-
-            if (importerPath.ext === '.html') {
+            } else if (importerPath.ext === '.html' || importerPath.ext === '.js') {
                 const rootDir = path.resolve(importerPath.dir, '../..');
 
                 rollupPlugin.api.updateOptions({
