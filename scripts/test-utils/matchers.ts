@@ -113,14 +113,17 @@ function toMatchFile(this: MatcherState, receivedContent: string, filename: stri
 
 import 'vitest';
 
-// interface CustomMatchers<R = unknown> {
-//     toMatchFile: (receivedContent: string, filename?: string) => R;
-// }
+interface CustomMatchers<R = unknown> {
+    toMatchFile: (receivedContent: string, filename?: string) => R;
+}
 
-// declare module 'vitest' {
-//     interface Assertion<T = any> extends CustomMatchers<T> {}
-//     interface AsymmetricMatchersContaining extends CustomMatchers {}
-// }
+declare module 'vitest' {
+    // False positives -- these add `CustomMatchers` to the interfaces used by vitest
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface Assertion<T = any> extends CustomMatchers<T> {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
 
 // Register vitest matcher.
 expect.extend({ toMatchFile });

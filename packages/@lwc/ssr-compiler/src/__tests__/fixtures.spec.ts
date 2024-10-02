@@ -1,11 +1,9 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import fs from 'fs';
 import path from 'path';
 
 import { vi } from 'vitest';
@@ -65,16 +63,7 @@ function testFixtures() {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
         },
-        async ({ filename, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
-
-            let config: any = {};
-            if (fs.existsSync(configPath)) {
-                // Using require() to read JSON, rather than load a module
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
-                config = require(configPath);
-            }
-
+        async ({ filename, dirname, config }) => {
             const compiledFixturePath = await compileFixture({
                 input: filename,
                 dirname,
@@ -87,7 +76,7 @@ function testFixtures() {
                 result = await serverSideRenderComponent(
                     module!.tagName,
                     module!.generateMarkup,
-                    config.props || {}
+                    config?.props ?? {}
                 );
             } catch (err: any) {
                 return {

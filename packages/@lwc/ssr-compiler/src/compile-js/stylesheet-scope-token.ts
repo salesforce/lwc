@@ -4,22 +4,6 @@ import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
 import type { BlockStatement, ExportNamedDeclaration, Program, VariableDeclaration } from 'estree';
 
-function generateStylesheetScopeToken(filename: string) {
-    // FIXME: we should be getting the namespace/name from the config options,
-    // since these actually come from the component filename, not the template filename.
-    const split = filename.split('/');
-    const namespace = split.at(-3)!;
-    const baseName = split.at(-1)!;
-
-    const componentName = baseName.replace(/\.[^.]+$/, '');
-    const {
-        // FIXME: handle legacy scope token for older API versions
-        scopeToken,
-    } = generateScopeTokens(filename, namespace, componentName);
-
-    return scopeToken;
-}
-
 const bStylesheetTokenDeclaration = esTemplate<VariableDeclaration>`
     const stylesheetScopeToken = '${is.literal}';
 `;
@@ -44,8 +28,13 @@ const tmplAssignmentBlock = esTemplate<BlockStatement>`
     ${is.identifier}.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
 `;
 
-export function addScopeTokenDeclarations(program: Program, filename: string) {
-    const scopeToken = generateStylesheetScopeToken(filename);
+export function addScopeTokenDeclarations(
+    program: Program,
+    filename: string,
+    namespace: string | undefined,
+    componentName: string | undefined
+) {
+    const { scopeToken } = generateScopeTokens(filename, namespace, componentName);
 
     program.body.unshift(
         bStylesheetTokenDeclaration(b.literal(scopeToken)),

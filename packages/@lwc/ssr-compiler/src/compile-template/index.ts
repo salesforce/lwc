@@ -13,14 +13,20 @@ import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
+import type { TransformOptions } from '../shared';
 import type {
     Node as EsNode,
     Statement as EsStatement,
     Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
+    ImportDeclaration as EsImportDeclaration,
 } from 'estree';
 
 const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
+
+const bStyleValidationImport = esTemplate<EsImportDeclaration>`
+    import { validateStyleTextContents } from '@lwc/ssr-runtime';
+`;
 
 const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
@@ -40,7 +46,9 @@ const bExportTemplate = esTemplate<
                 const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
                 const useNativeDirPseudoclass = true;
                 yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
-                yield stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+                validateStyleTextContents(styleContents);
+                yield styleContents;
                 yield '</style>';
             }
         }
@@ -53,7 +61,7 @@ const bExportTemplate = esTemplate<
     }
 `;
 
-export default function compileTemplate(src: string, filename: string) {
+export default function compileTemplate(src: string, filename: string, options: TransformOptions) {
     const { root, warnings } = parse(src);
     if (!root || warnings.length) {
         for (const warning of warnings) {
@@ -76,6 +84,7 @@ export default function compileTemplate(src: string, filename: string) {
 
     const moduleBody = [
         ...hoisted,
+        bStyleValidationImport(),
         bExportTemplate(
             astShadowModeBool,
             optimizeAdjacentYieldStmts(statements),
@@ -84,7 +93,7 @@ export default function compileTemplate(src: string, filename: string) {
     ];
     const program = b.program(moduleBody, 'module');
 
-    addScopeTokenDeclarations(program, filename);
+    addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
     const stylesheetImports = getStylesheetImports(filename);
     program.body.unshift(...stylesheetImports);

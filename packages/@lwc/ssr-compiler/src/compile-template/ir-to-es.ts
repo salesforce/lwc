@@ -33,6 +33,7 @@ const transformers: Record<string, Transformer> = {
     Root: Root as Transformer<IrNode>,
     Text: Text as Transformer<IrNode>,
     Element: Element as Transformer<IrNode>,
+    ExternalComponent: Element as Transformer<IrNode>,
     ForEach: ForEach as Transformer<IrNode>,
     If: If as Transformer<IrNode>,
     IfBlock: IfBlock as Transformer<IrNode>,
