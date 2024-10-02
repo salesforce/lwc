@@ -138,26 +138,27 @@ describe('error boundary', () => {
         });
     });
 
-    it('should render alternative view if child throws during self rehydration cycle', (done) => {
-        const elm = createElement('x-boundary-child-self-rehydrate-throw', {
-            is: XBoundaryChildSelfRehydrateThrow,
-        });
-        document.body.appendChild(elm);
+    it('should render alternative view if child throws during self rehydration cycle', () =>
+        new Promise((done) => {
+            const elm = createElement('x-boundary-child-self-rehydrate-throw', {
+                is: XBoundaryChildSelfRehydrateThrow,
+            });
+            document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('x-child-self-rehydrate-throw');
-        child.incrementCounter();
+            const child = elm.shadowRoot.querySelector('x-child-self-rehydrate-throw');
+            child.incrementCounter();
 
-        // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
-        // the alternative view
-        setTimeout(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
+            // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
+            // the alternative view
+            setTimeout(() => {
+                const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
 
-            expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
+                expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
+                expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
 
-            done();
-        });
-    });
+                done();
+            });
+        }));
 
     it('should fail to unmount alternative offender when root element is not a boundary', () => {
         const elm = createElement('x-boundary-alternative-view-throw', {
