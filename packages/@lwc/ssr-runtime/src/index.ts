@@ -19,11 +19,10 @@ type DOMTokenList = object;
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
 type EventListenerOptions = unknown;
-type ShadowRoot = unknown;
 
 const MULTI_SPACE = /\s+/g;
 
-type Attributes = Record<string, string | true>;
+type Attributes = Record<string, string>;
 
 type LightningElementConstructor = typeof LightningElement;
 
@@ -172,22 +171,23 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.__classList = new ClassList(this));
     }
 
-    getAttribute(attrName: string): string | null {
-        const value = this.__attrs?.[attrName];
-        return value === true ? '' : (value ?? null);
+    get shadowRoot(): null {
+        // From within the component instance, the shadowRoot is always reported as "closed".
+        // Authors should rely on this.template instead.
+        return null;
     }
 
-    setAttribute(attrName: string, value: string | null): void {
+    getAttribute(attrName: string): string | null {
+        return this.__attrs && attrName in this.__attrs ? this.__attrs[attrName] : null;
+    }
+
+    setAttribute(attrName: string, value: string): void {
         // Not sure it's correct to initialize here if missing
         if (!this.__attrs) {
             this.__attrs = {};
         }
 
-        if (value === null) {
-            delete this.__attrs[attrName];
-        } else {
-            this.__attrs[attrName] = value;
-        }
+        this.__attrs[attrName] = String(value);
     }
 
     hasAttribute(attrName: string): boolean {
@@ -212,6 +212,74 @@ export class LightningElement implements PropsAvailableAtConstruction {
         _options?: boolean | EventListenerOptions
     ): void {
         // noop
+    }
+
+    // -------------------------------------------------- //
+    // Global HTML attributes that get reflected as props //
+    // -------------------------------------------------- //
+
+    public get accessKey(): string | null {
+        return this.getAttribute('accessKey');
+    }
+    public set accessKey(value: string) {
+        this.setAttribute('accessKey', value);
+    }
+    public get dir(): string | null {
+        return this.getAttribute('dir');
+    }
+    public set dir(value: string) {
+        this.setAttribute('dir', value);
+    }
+    public get draggable(): string | null {
+        return this.getAttribute('draggable');
+    }
+    public set draggable(value: string) {
+        this.setAttribute('draggable', value);
+    }
+    public get hidden(): string | null {
+        return this.getAttribute('hidden');
+    }
+    public set hidden(value: string) {
+        this.setAttribute('hidden', value);
+    }
+    public get id(): string | null {
+        return this.getAttribute('hidden');
+    }
+    public set id(value: string) {
+        this.setAttribute('hidden', value);
+    }
+    public get lang(): string | null {
+        return this.getAttribute('lang');
+    }
+    public set lang(value: string) {
+        this.setAttribute('lang', value);
+    }
+    public get spellcheck(): boolean {
+        // value can be "true", "false", or null (unset); if unset, defaults to true
+        return this.getAttribute('spellcheck') !== 'false';
+    }
+    public set spellcheck(value: string) {
+        // Everything gets coerced into 'true' or 'false'
+        this.setAttribute('spellcheck', String(Boolean(value)));
+    }
+    public get tabIndex(): number {
+        const value = this.getAttribute('tabindex');
+        if (value === null) return -1;
+        const number = Number(value);
+        return Number.isNaN(number) ? -1 : number;
+    }
+    public set tabIndex(value: string) {
+        let number = Number(value);
+        if (Number.isNaN(number)) {
+            number = 0;
+        }
+        this.setAttribute('tabindex', String(number));
+    }
+    public get title(): string | null {
+        return this.getAttribute('title');
+    }
+    public set title(value: string) {
+        this.setAttribute('title', value);
     }
 
     // ----------------------------------------------------------- //
@@ -272,21 +340,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
         throw new TypeError('"querySelectorAll" is not supported in this environment');
     }
 
-    // -------------------------------------------------------------------------------- //
-    // Stubs to satisfy the HTMLElementTheGoodParts (from @lwc/engine-core) interface //
-    // The interface is not explicitly referenced here, so this may become outdated //
-    // -------------------------------------------------------------------------- //
-
-    accessKey?: string;
-    dir?: string;
-    draggable?: boolean;
-    hidden?: boolean;
-    id?: string;
-    lang?: string;
-    shadowRoot?: ShadowRoot | null;
-    spellcheck?: boolean;
-    tabIndex?: number;
-    title?: string;
+    // ------------------------------------------------------------------------------ //
+    // Stubs to satisfy the HTMLElementTheGoodParts interface (from @lwc/engine-core) //
+    // ------------------------------------------------------------------------------ //
 
     getAttributeNS(_namespace: string | null, _localName: string): string | null {
         throw new Error('Method "getAttributeNS" not implemented.');
