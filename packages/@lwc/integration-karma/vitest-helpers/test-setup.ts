@@ -8,7 +8,22 @@ import * as lwc from 'lwc';
 import { vi } from 'vitest';
 
 vi.stubGlobal('LWC', { ...lwc });
-vi.stubGlobal('spyOn', vi.spyOn);
+
+export function spyOn(obj: any, methodName: string) {
+    const spy = vi.spyOn(obj, methodName);
+
+    Object.defineProperty(spy, 'and', {
+        value: {
+            returnValue(value: any) {
+                return spy.mockReturnValue(value);
+            },
+        },
+    });
+
+    return spy;
+}
+
+vi.stubGlobal('spyOn', spyOn);
 
 export function createSpy() {
     const spy = vi.fn();
