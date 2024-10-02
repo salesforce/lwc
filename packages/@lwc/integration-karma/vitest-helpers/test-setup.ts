@@ -36,6 +36,9 @@ export function createSpy() {
             allArgs() {
                 return spy.mock.calls;
             },
+            reset() {
+                return spy.mockClear();
+            },
         },
     });
 
