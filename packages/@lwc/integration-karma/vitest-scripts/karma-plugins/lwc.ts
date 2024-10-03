@@ -73,41 +73,10 @@ function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
 export const vitestPluginCss = (_pluginOptions: VitestLwcOptions): Plugin => ({
     name: 'patch-css-modules',
     enforce: 'pre',
-    configResolved: (config) => {
-        const viteCssPostPluginIndex = config.plugins.findIndex(
-            (plugin) => plugin.name === 'vite:css-post'
-        );
-
-        if (viteCssPostPluginIndex === -1) {
-            throw new Error('vite:css-post plugin not found');
-        }
-
-        const viteCssPostPlugin = config.plugins[viteCssPostPluginIndex]!;
-
-        const { transform } = viteCssPostPlugin;
-
-        if (typeof transform !== 'function') {
-            throw new Error('vite:css-post plugin transform is not a function');
-        }
-
-        viteCssPostPlugin.transform = function (code: string, id: string, options) {
-            if (id === '@lwc/resources/empty_css.css') {
-                return {
-                    code: 'export default ""',
-                    map: null,
-                };
-            }
-
-            if (id.endsWith('.css')) {
-                return;
-            }
-
-            if (id.endsWith('.css?scoped=true')) {
-                return;
-            }
-
-            return Reflect.apply(transform, this, [code, id, options]);
-        };
+    configResolved(config) {
+        const plugins = config.plugins;
+        patchViteCssPlugin(plugins);
+        patchViteCssPostPlugin(plugins);
     },
 });
 
@@ -115,3 +84,73 @@ export default (pluginOptions: VitestLwcOptions) => [
     vitestPluginCss(pluginOptions),
     vitestPluginLwc(pluginOptions),
 ];
+
+function patchViteCssPlugin(plugins: readonly Plugin<any>[]) {
+    const viteCssPluginIndex = plugins.findIndex((plugin) => plugin.name === 'vite:css');
+
+    if (viteCssPluginIndex === -1) {
+        throw new Error('vite:css plugin not found');
+    }
+
+    const viteCssPlugin = plugins[viteCssPluginIndex]!;
+
+    const { transform } = viteCssPlugin;
+
+    if (typeof transform !== 'function') {
+        throw new Error('vite:css plugin transform is not a function');
+    }
+
+    viteCssPlugin.transform = function (code: string, id: string, options) {
+        if (id === '@lwc/resources/empty_css.css') {
+            return {
+                code: 'export default ""',
+                map: null,
+            };
+        }
+
+        if (id.endsWith('.css')) {
+            return;
+        }
+
+        if (id.endsWith('.css?scoped=true')) {
+            return;
+        }
+
+        return Reflect.apply(transform, this, [code, id, options]);
+    };
+}
+
+function patchViteCssPostPlugin(plugins: readonly Plugin<any>[]) {
+    const viteCssPostPluginIndex = plugins.findIndex((plugin) => plugin.name === 'vite:css-post');
+
+    if (viteCssPostPluginIndex === -1) {
+        throw new Error('vite:css-post plugin not found');
+    }
+
+    const viteCssPostPlugin = plugins[viteCssPostPluginIndex]!;
+
+    const { transform } = viteCssPostPlugin;
+
+    if (typeof transform !== 'function') {
+        throw new Error('vite:css-post plugin transform is not a function');
+    }
+
+    viteCssPostPlugin.transform = function (code: string, id: string, options) {
+        if (id === '@lwc/resources/empty_css.css') {
+            return {
+                code: 'export default ""',
+                map: null,
+            };
+        }
+
+        if (id.endsWith('.css')) {
+            return;
+        }
+
+        if (id.endsWith('.css?scoped=true')) {
+            return;
+        }
+
+        return Reflect.apply(transform, this, [code, id, options]);
+    };
+}

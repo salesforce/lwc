@@ -100,6 +100,7 @@ declare global {
     };
 
     interface Window {
+        __lwcResetWarnedOnVersionMismatch: () => void;
         __lwcResetGlobalStylesheets: () => void;
         __lwcResetAlreadyLoggedMessages: () => void;
     }

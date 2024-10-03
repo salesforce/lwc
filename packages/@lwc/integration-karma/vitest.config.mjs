@@ -11,7 +11,7 @@ export default defineConfig((_env) => {
 
     return {
         plugins: [
-            lwcTestPlugin({
+            ...lwcTestPlugin({
                 dir,
             }),
         ],
