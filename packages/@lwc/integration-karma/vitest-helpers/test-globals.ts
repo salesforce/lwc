@@ -65,6 +65,9 @@ export function createSpy() {
             allArgs() {
                 return spy.mock.calls;
             },
+            count() {
+                return spy.mock.calls.length;
+            },
             reset() {
                 return spy.mockClear();
             },
