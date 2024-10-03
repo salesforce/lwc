@@ -88,7 +88,7 @@ props.forEach((prop) => {
                         } else {
                             // dev mode
                             expect(logger).toHaveBeenCalledTimes(1);
-                            expect(logger.calls.allArgs()[0]).toMatch(
+                            expect(`${logger.calls.allArgs()[0]}`).toMatch(
                                 new RegExp(
                                     `Mutating the "${prop}" property on a template is deprecated`
                                 )
