@@ -23,7 +23,7 @@ type ShadowRoot = unknown;
 
 const MULTI_SPACE = /\s+/g;
 
-type Attributes = Record<string, string | true>;
+type Attributes = Record<string, string | null>;
 
 type LightningElementConstructor = typeof LightningElement;
 
@@ -120,7 +120,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     isConnected = false;
     className = '';
     // TODO [W-14977927]: protect internals from userland
-    private __attrs?: Attributes;
+    private __attrs!: Attributes;
     private __classList: ClassList | null = null;
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
@@ -173,21 +173,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     getAttribute(attrName: string): string | null {
-        const value = this.__attrs?.[attrName];
-        return value === true ? '' : (value ?? null);
+        return this.__attrs[attrName] ?? null;
     }
 
     setAttribute(attrName: string, value: string | null): void {
-        // Not sure it's correct to initialize here if missing
-        if (!this.__attrs) {
-            this.__attrs = {};
-        }
-
-        if (value === null) {
-            delete this.__attrs[attrName];
-        } else {
-            this.__attrs[attrName] = value;
-        }
+        this.__attrs[attrName] = String(value);
     }
 
     hasAttribute(attrName: string): boolean {
@@ -195,7 +185,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     removeAttribute(attrName: string): void {
-        delete this.__attrs?.[attrName];
+        this.__attrs[attrName] = null;
     }
 
     addEventListener(
