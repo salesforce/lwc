@@ -12,8 +12,10 @@
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js",
-        "test:browser": "vitest --config=./vitest.config.mjs",
-        "test:browser:debug": "vitest --config=./vitest.config.mjs --inspect --no-file-parallelism --browser.headless=false"
+        "test:browser": "vitest --config=./vitest.config.mjs --dir=test",
+        "test:browser:debug": "vitest --config=./vitest.config.mjs --inspect --no-file-parallelism --browser.headless=false",
+        "hydration:browser": "vitest --config=./vitest.config.mjs --dir=test-hydration",
+        "hydration:browser:debug": "vitest --config=./vitest.config.mjs --inspect --no-file-parallelism --browser.headless=false --dir=test-hydration"
     },
     "//": {
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"

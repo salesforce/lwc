@@ -6,18 +6,13 @@ import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig((_env) => {
-    const dir = 'test';
     // const basePath = path.resolve(__dirname, dir)
 
     return {
-        plugins: [
-            ...lwcTestPlugin({
-                dir,
-            }),
-        ],
+        plugins: lwcTestPlugin(),
         test: {
             name: 'lwc-integration-karma',
-            dir,
+            dir: 'test',
             include: ['**/*.spec.{js,ts}'],
             exclude: ['**/__screenshots__/**'],
             globals: true,

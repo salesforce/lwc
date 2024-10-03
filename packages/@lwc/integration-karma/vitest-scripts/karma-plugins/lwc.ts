@@ -9,26 +9,38 @@ import path from 'path';
 import rollupPluginLwc from '@lwc/rollup-plugin';
 import type { Plugin } from 'vitest/config';
 
-export type VitestLwcOptions = {
-    dir: string;
-};
-
-function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
-    const rollupPlugin = rollupPluginLwc({
-        rootDir: pluginOptions.dir,
-        include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
-        enableDynamicComponents: true,
-        experimentalDynamicComponent: {
-            loader: 'test-utils',
-            // @ts-expect-error experimentalDynamicComponent is not defined
-            strict: true,
-        },
-    });
+function vitestPluginLwc(): Plugin {
+    let rollupPlugin: Plugin<any> | undefined;
 
     return {
         name: 'vitest-plugin-lwc',
         enforce: 'post',
+        configResolved(config) {
+            const { test } = config;
 
+            if (test === undefined) {
+                throw new Error('vitest-plugin-lwc requires a test config');
+            }
+
+            const { dir } = test;
+
+            if (dir === undefined) {
+                throw new Error('vitest-plugin-lwc requires a test dir');
+            }
+
+            rollupPlugin = rollupPluginLwc({
+                rootDir: dir,
+                include: ['**/*.spec.js', '**/*.js', '**/*.html', '**/*.css'].map((pattern) =>
+                    path.join(dir, pattern)
+                ),
+                enableDynamicComponents: true,
+                experimentalDynamicComponent: {
+                    loader: 'test-utils',
+                    // @ts-expect-error experimentalDynamicComponent is not defined
+                    strict: true,
+                },
+            });
+        },
         buildStart(options) {
             // @ts-expect-error rollupPlugin is not defined
             return rollupPlugin.buildStart!.call(this, options);
@@ -41,7 +53,7 @@ function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
             const importerPath = path.parse(importer);
 
             if (importerPath.base.endsWith('.spec.js')) {
-                rollupPlugin.api.updateOptions({
+                rollupPlugin!.api.updateOptions({
                     rootDir: importerPath.dir,
                     experimentalComplexExpressions:
                         importerPath.dir.includes('template-expressions'),
@@ -49,15 +61,13 @@ function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
             } else if (importerPath.ext === '.html' || importerPath.ext === '.js') {
                 const rootDir = path.resolve(importerPath.dir, '../..');
 
-                rollupPlugin.api.updateOptions({
+                rollupPlugin!.api.updateOptions({
                     rootDir,
                 });
             }
 
             // @ts-expect-error rollupPlugin is not defined
-            const id = rollupPlugin.resolveId!.call(this, source, importer);
-
-            return id;
+            return rollupPlugin.resolveId!.call(this, source, importer);
         },
         load(id, _options) {
             // @ts-expect-error rollupPlugin is not defined
@@ -70,29 +80,26 @@ function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
     };
 }
 
-export const vitestPluginCss = (_pluginOptions: VitestLwcOptions): Plugin => ({
-    name: 'patch-css-modules',
-    enforce: 'pre',
-    configResolved(config) {
-        const plugins = config.plugins;
-        patchViteCssPlugin(plugins);
-        patchViteCssPostPlugin(plugins);
-    },
-});
+function vitestPluginCss(): Plugin {
+    return {
+        name: 'vitest-plugin-css',
+        enforce: 'pre',
+        configResolved(config) {
+            const plugins = config.plugins;
+            patchViteCssPlugin(plugins);
+            patchViteCssPostPlugin(plugins);
+        },
+    };
+}
 
-export default (pluginOptions: VitestLwcOptions) => [
-    vitestPluginCss(pluginOptions),
-    vitestPluginLwc(pluginOptions),
-];
+export default () => [vitestPluginCss(), vitestPluginLwc()];
 
 function patchViteCssPlugin(plugins: readonly Plugin<any>[]) {
-    const viteCssPluginIndex = plugins.findIndex((plugin) => plugin.name === 'vite:css');
+    const viteCssPlugin = plugins.find((plugin) => plugin.name === 'vite:css');
 
-    if (viteCssPluginIndex === -1) {
+    if (viteCssPlugin === undefined) {
         throw new Error('vite:css plugin not found');
     }
-
-    const viteCssPlugin = plugins[viteCssPluginIndex]!;
 
     const { transform } = viteCssPlugin;
 
@@ -121,13 +128,11 @@ function patchViteCssPlugin(plugins: readonly Plugin<any>[]) {
 }
 
 function patchViteCssPostPlugin(plugins: readonly Plugin<any>[]) {
-    const viteCssPostPluginIndex = plugins.findIndex((plugin) => plugin.name === 'vite:css-post');
+    const viteCssPostPlugin = plugins.find((plugin) => plugin.name === 'vite:css-post');
 
-    if (viteCssPostPluginIndex === -1) {
+    if (viteCssPostPlugin === undefined) {
         throw new Error('vite:css-post plugin not found');
     }
-
-    const viteCssPostPlugin = plugins[viteCssPostPluginIndex]!;
 
     const { transform } = viteCssPostPlugin;
 
