@@ -233,7 +233,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
     get hostElement(): never {
         // Intentionally different to match @lwc/engine-*core*
-        throw new TypeError('"this.hostElement" is not supported in this environment');
+        throw new TypeError('this.hostElement is not supported in this environment');
     }
     get lastChild(): never {
         throw new TypeError('"getLastChild" is not supported in this environment');
