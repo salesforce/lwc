@@ -102,6 +102,10 @@ export const vitestPluginCss = (_pluginOptions: VitestLwcOptions): Plugin => ({
                 return;
             }
 
+            if (id.endsWith('.css?scoped=true')) {
+                return;
+            }
+
             return Reflect.apply(transform, this, [code, id, options]);
         };
     },
