@@ -263,7 +263,7 @@ export function getHooks() {
     };
 }
 
-LWC.setHooks({
+lwc.setHooks({
     sanitizeHtmlContent: function (content) {
         return sanitizeHtmlContentHook(content);
     },

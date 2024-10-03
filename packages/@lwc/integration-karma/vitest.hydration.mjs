@@ -2,18 +2,19 @@
 
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
-import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
+import lwcHydrationTestPlugin from './vitest-scripts/karma-plugins/hydration-tests';
+
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig((_env) => {
     // const basePath = path.resolve(__dirname, dir)
 
     return {
-        plugins: lwcTestPlugin(),
+        plugins: [lwcHydrationTestPlugin()],
         test: {
             name: 'lwc-integration-karma',
-            dir: 'test',
-            include: ['**/*.spec.{js,ts}'],
+            dir: 'test-hydration',
+            include: ['**/*.spec.js'],
             exclude: ['**/__screenshots__/**'],
             globals: true,
             passWithNoTests: true,

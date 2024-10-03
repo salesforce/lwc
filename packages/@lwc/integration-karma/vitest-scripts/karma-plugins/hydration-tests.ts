@@ -4,31 +4,25 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { join, dirname, relative, sep } from 'node:path';
+import path from 'node:path';
 import { Script, createContext } from 'node:vm';
 import { access } from 'node:fs/promises';
 import { format } from 'node:util';
 import { InputOption, rollup, RollupCache } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import ssr, { setHooks } from '@lwc/engine-server';
+import ssr, { renderComponent } from '@lwc/engine-server';
 import Watcher from './Watcher.js';
 import type { PathLike } from 'fs';
 
 const context = {
     LWC: ssr,
     moduleOutput: null,
-};
-
-setHooks({
-    sanitizeHtmlContent(content) {
-        return content as string;
-    },
-});
+} as { LWC: typeof ssr; moduleOutput: ReturnType<typeof renderComponent> | null };
 
 let guid = 0;
 const COMPONENT_UNDER_TEST = 'main';
 
-const TEMPLATE = `
+export const TEMPLATE = `
     (function (hydrateTest) {
         const ssrRendered = %s;
         // Component code, set as Main
@@ -45,7 +39,7 @@ const TEMPLATE = `
 `;
 
 // Like `fs.existsSync` but async
-async function exists(path: PathLike) {
+export async function exists(path: PathLike) {
     try {
         await access(path);
         return true;
@@ -58,7 +52,7 @@ let cache: RollupCache | undefined;
 
 async function getCompiledModule(dirName: string) {
     const bundle = await rollup({
-        input: join(dirName, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
+        input: path.join(dirName, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
         plugins: [
             lwcRollupPlugin({
                 modules: [
@@ -103,7 +97,7 @@ async function getCompiledModule(dirName: string) {
     return { code, watchFiles };
 }
 
-function getSsrCode(moduleCode: string, testConfig: string) {
+export function getSsrCode(moduleCode: string, testConfig: string) {
     const script = new Script(
         `
         ${testConfig};
@@ -118,7 +112,7 @@ function getSsrCode(moduleCode: string, testConfig: string) {
     return context.moduleOutput;
 }
 
-async function getTestModuleCode(input: InputOption) {
+export async function getTestModuleCode(input: InputOption) {
     const bundle = await rollup({
         input,
         external: ['lwc', 'test-utils', '@test/loader'],
@@ -156,9 +150,9 @@ function createHCONFIG2JSPreprocessor(
         done: (arg0: unknown, arg1: string | null) => void
     ) => {
         const filePath = file.path;
-        const suiteDir = dirname(filePath);
+        const suiteDir = path.dirname(filePath);
         // Wrap all the tests into a describe block with the file stricture name
-        const describeTitle = relative(basePath, suiteDir).split(sep).join(' ');
+        const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
         try {
             const { code: testCode, watchFiles: testWatchFiles } =
@@ -166,7 +160,7 @@ function createHCONFIG2JSPreprocessor(
             const { code: componentDef, watchFiles: componentWatchFiles } =
                 await getCompiledModule(suiteDir);
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
-            const onlyFileExists = await exists(join(suiteDir, '.only'));
+            const onlyFileExists = await exists(path.join(suiteDir, '.only'));
 
             const ssrOutput = getSsrCode(componentDef, testCode);
 
@@ -181,7 +175,7 @@ function createHCONFIG2JSPreprocessor(
             );
             done(null, newContent);
         } catch (error: any) {
-            const location = relative(basePath, filePath);
+            const location = path.relative(basePath, filePath);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
 
             done(error, null);
@@ -191,6 +185,39 @@ function createHCONFIG2JSPreprocessor(
 
 createHCONFIG2JSPreprocessor.$inject = ['config', 'logger', 'emitter'];
 
-export default {
-    'preprocessor:hydration-tests': ['factory', createHCONFIG2JSPreprocessor],
-};
+import type { Plugin } from 'vitest/config';
+
+export default function BrowserCommands(): Plugin {
+    const basePath = __dirname;
+    return {
+        name: 'vitest-plugin-lwc-hydrate',
+        async transform(code, id, _options) {
+            if (id.endsWith('index.spec.js')) {
+                const suiteDir = path.dirname(id);
+                const filePath = path.join(suiteDir, 'index.spec.js');
+                // Wrap all the tests into a describe block with the file stricture name
+                const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
+
+                const { code: testCode } = await getTestModuleCode(filePath);
+
+                const { code: componentDef } = await getCompiledModule(suiteDir);
+
+                const ssrOutput = getSsrCode(componentDef, testCode);
+
+                const onlyFileExists = await exists(path.join(suiteDir, '.only'));
+                // watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
+
+                const newContent = format(
+                    TEMPLATE,
+                    JSON.stringify(ssrOutput),
+                    componentDef,
+                    testCode,
+                    onlyFileExists ? 'fdescribe' : 'describe',
+                    JSON.stringify(describeTitle)
+                );
+
+                return newContent;
+            }
+        },
+    };
+}
