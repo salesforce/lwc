@@ -5,40 +5,24 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
-import { Script, createContext } from 'node:vm';
+import vm from 'node:vm';
 import fs from 'node:fs/promises';
-import util from 'node:util';
 import { InputOption, rollup, RollupCache } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import ssr, { renderComponent } from '@lwc/engine-server';
+import ssr from '@lwc/engine-server';
 import type { PathLike } from 'fs';
 import type { Plugin } from 'vitest/config';
 
-const context = {
+const context: vm.Context = {
     LWC: ssr,
     moduleOutput: null,
-} as { LWC: typeof ssr; moduleOutput: ReturnType<typeof renderComponent> | null };
+};
 
 let guid = 0;
+
 const COMPONENT_UNDER_TEST = 'main';
 
-export const TEMPLATE = `
-    function testSuite(hydrateTest) {
-        const ssrRendered = %s;
-        // Component code, set as Main
-        %s;
-        // Test config, set as config
-        %s;
-        
-        %s(%s, () => {
-            it('test', () => {
-                return hydrateTest.runTest(ssrRendered, Main, config);
-            })
-        });
-    }
-    
-    testSuite(window.HydrateTest);
-`;
+const basePath = path.resolve(__dirname, '../../test-hydration');
 
 // Like `fs.existsSync` but async
 export async function exists(path: PathLike) {
@@ -99,28 +83,14 @@ async function getCompiledModule(dirName: string) {
     return { code, watchFiles };
 }
 
-export function getSsrCode(moduleCode: string, testConfig: string) {
-    const script = new Script(
-        `
-        ${testConfig};
-        config = config || {};
-        ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
-    );
-
-    createContext(context);
-    script.runInContext(context);
-
-    return context.moduleOutput;
-}
-
-export async function getTestModuleCode(input: InputOption) {
+async function getTestModuleCode(input: InputOption) {
     const bundle = await rollup({
         input,
         external: ['lwc', 'test-utils', '@test/loader'],
     });
 
     const { watchFiles } = bundle;
+
     cache = bundle.cache;
 
     const { output } = await bundle.generate({
@@ -137,22 +107,25 @@ export async function getTestModuleCode(input: InputOption) {
     return { code, watchFiles };
 }
 
-export default function BrowserCommands(): Plugin {
-    return {
-        name: 'vitest-plugin-lwc-hydrate',
-        async load(id, _options) {
-            if (id.endsWith('index.spec.js')) {
-                return await loadTest(id);
-            }
-        },
-    };
+function getSsrCode(moduleCode: string, testConfig: string) {
+    const script = new vm.Script(
+        `
+        ${testConfig};
+        config = config || {};
+        ${moduleCode};
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
+    );
+
+    vm.createContext(context);
+    script.runInContext(context);
+
+    return context.moduleOutput;
 }
 
-async function loadTest(id: string) {
-    const suiteDir = path.dirname(id);
-    const filePath = path.join(suiteDir, 'index.spec.js');
+async function loadTest(filePath: string) {
+    const suiteDir = path.dirname(filePath);
     // Wrap all the tests into a describe block with the file stricture name
-    const describeTitle = path.relative(__dirname, suiteDir).split(path.sep).join(' ');
+    const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
     const [{ code: testCode }, { code: componentDef }] = await Promise.all([
         getTestModuleCode(filePath),
@@ -161,16 +134,30 @@ async function loadTest(id: string) {
 
     const ssrOutput = getSsrCode(componentDef, testCode);
 
-    const onlyFileExists = await exists(path.join(suiteDir, '.only'));
-    // watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
-    const newContent = util.format(
-        TEMPLATE,
-        JSON.stringify(ssrOutput),
-        componentDef,
-        testCode,
-        onlyFileExists ? 'describe.only' : 'describe',
-        JSON.stringify(describeTitle)
-    );
+    const ssrRendered = JSON.stringify(ssrOutput);
 
-    return newContent;
+    return `
+import { runTest } from 'test-hydrate';
+
+const ssrRendered = ${ssrRendered};
+// Component code, set as Main
+${componentDef};
+// Test config, set as config
+${testCode};
+
+it('${describeTitle}', () => {
+    return runTest(ssrRendered, Main, config);
+});
+    `;
+}
+
+export default function vitestPluginLwcHydrate(): Plugin {
+    return {
+        name: 'vitest-plugin-lwc-hydrate',
+        async load(id, _options) {
+            if (id.endsWith('index.spec.js')) {
+                return await loadTest(id);
+            }
+        },
+    };
 }
