@@ -1,11 +1,13 @@
 import * as lwc from 'lwc';
 import { vi } from 'vitest';
+import { LWC_VERSION } from '@lwc/shared';
 
 vi.stubGlobal('LWC', { ...lwc });
 
 vi.stubGlobal('process', {
     env: {
         NATIVE_SHADOW: true,
+        LWC_VERSION,
     },
 });
 
