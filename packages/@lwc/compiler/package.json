@@ -44,9 +44,9 @@
     "dependencies": {
         "@babel/core": "7.25.7",
         "@babel/plugin-transform-async-generator-functions": "7.25.7",
-        "@babel/plugin-transform-async-to-generator": "7.24.7",
+        "@babel/plugin-transform-async-to-generator": "7.25.7",
         "@babel/plugin-transform-class-properties": "7.25.7",
-        "@babel/plugin-transform-object-rest-spread": "7.24.7",
+        "@babel/plugin-transform-object-rest-spread": "7.25.7",
         "@locker/babel-plugin-transform-unforgeables": "0.22.0",
         "@lwc/babel-plugin-component": "8.1.2",
         "@lwc/errors": "8.1.2",
