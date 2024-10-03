@@ -13,7 +13,7 @@ export type VitestLwcOptions = {
     dir: string;
 };
 
-export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
+function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin {
     const rollupPlugin = rollupPluginLwc({
         rootDir: pluginOptions.dir,
         include: ['test/**/*.spec.js', 'test/**/*.js', 'test/**/*.html', 'test/**/*.css'],
@@ -57,25 +57,57 @@ export default function vitestPluginLwc(pluginOptions: VitestLwcOptions): Plugin
             // @ts-expect-error rollupPlugin is not defined
             const id = rollupPlugin.resolveId!.call(this, source, importer);
 
-            if (id) {
-                if (id === '@lwc/resources/empty_css.css') {
-                    return id + '?inline';
-                } else if (id.endsWith('.css')) {
-                    return id + '?inline';
-                }
-                return id;
-            }
+            return id;
         },
         load(id, _options) {
             // @ts-expect-error rollupPlugin is not defined
             return rollupPlugin.load!.call(this, id);
         },
         transform(code, id, _options) {
-            if (id.endsWith('.css')) {
-                return code;
-            }
             // @ts-expect-error rollupPlugin is not defined
             return rollupPlugin.transform!.call(this, code, id);
         },
     };
 }
+
+export const vitestPluginCss = (_pluginOptions: VitestLwcOptions): Plugin => ({
+    name: 'patch-css-modules',
+    enforce: 'pre',
+    configResolved: (config) => {
+        const viteCssPostPluginIndex = config.plugins.findIndex(
+            (plugin) => plugin.name === 'vite:css-post'
+        );
+
+        if (viteCssPostPluginIndex === -1) {
+            throw new Error('vite:css-post plugin not found');
+        }
+
+        const viteCssPostPlugin = config.plugins[viteCssPostPluginIndex]!;
+
+        const { transform } = viteCssPostPlugin;
+
+        if (typeof transform !== 'function') {
+            throw new Error('vite:css-post plugin transform is not a function');
+        }
+
+        viteCssPostPlugin.transform = function (code: string, id: string, options) {
+            if (id === '@lwc/resources/empty_css.css') {
+                return {
+                    code: 'export default ""',
+                    map: null,
+                };
+            }
+
+            if (id.endsWith('.css')) {
+                return;
+            }
+
+            return Reflect.apply(transform, this, [code, id, options]);
+        };
+    },
+});
+
+export default (pluginOptions: VitestLwcOptions) => [
+    vitestPluginCss(pluginOptions),
+    vitestPluginLwc(pluginOptions),
+];
