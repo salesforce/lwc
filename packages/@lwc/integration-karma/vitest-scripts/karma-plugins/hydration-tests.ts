@@ -13,6 +13,14 @@ import ssr from '@lwc/engine-server';
 import type { PathLike } from 'fs';
 import type { Plugin } from 'vitest/config';
 
+try {
+    ssr.setHooks({
+        sanitizeHtmlContent: (content) => `${content}`,
+    });
+} catch (_e) {
+    // ignore
+}
+
 const context: vm.Context = {
     LWC: ssr,
     moduleOutput: null,
