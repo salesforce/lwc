@@ -52,7 +52,11 @@ function getChildAttrsOrProps(
                     : attr.value.value;
             return b.property('init', key, b.literal(value));
         } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
-            return b.property('init', key, b.literal(attr.value.value));
+            return b.property(
+                'init',
+                key,
+                b.literal(attr.type === 'Attribute' ? '' : attr.value.value)
+            );
         } else if (attr.value.type === 'Identifier' || attr.value.type === 'MemberExpression') {
             const propValue = expressionIrToEs(attr.value, cxt);
             return b.property('init', key, propValue);
