@@ -300,12 +300,10 @@ export function* renderAttrs(attrs: Attributes) {
         return;
     }
     for (const [key, val] of Object.entries(attrs)) {
-        if (val) {
-            if (typeof val === 'string') {
-                yield ` ${key}="${escapeAttrVal(val)}"`;
-            } else {
-                yield ` ${key}`;
-            }
+        if (typeof val === 'string') {
+            yield val === '' ? ` ${key}` : ` ${key}="${escapeAttrVal(val)}"`;
+        } else if (val === null) {
+            return '';
         }
     }
 }
