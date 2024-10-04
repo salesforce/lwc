@@ -22,10 +22,6 @@ export default defineConfig((_env) => {
                     find: 'test-utils',
                     replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
                 },
-                {
-                    find: 'test-hydrate',
-                    replacement: path.resolve(__dirname, 'vitest-helpers/test-hydrate.ts'),
-                },
             ],
             setupFiles: ['./vitest-helpers/test-setup.ts'],
             env: {

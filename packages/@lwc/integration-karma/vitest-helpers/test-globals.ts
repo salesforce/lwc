@@ -1,9 +1,9 @@
 import * as lwc from 'lwc';
 import { vi } from 'vitest';
 import { LWC_VERSION } from '@lwc/shared';
-import * as testHydrate from 'test-hydrate';
+
 vi.stubGlobal('LWC', { ...lwc });
-vi.stubGlobal('HydrateTest', testHydrate);
+
 vi.stubGlobal('process', {
     env: {
         NATIVE_SHADOW: true,
