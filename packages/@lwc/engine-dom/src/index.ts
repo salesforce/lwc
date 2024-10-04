@@ -40,13 +40,13 @@ export {
 
 // Engine-core public types ------------------------------------------------------------------------
 export type {
-    DataCallback,
     WireAdapter,
     WireAdapterConstructor,
     WireConfigValue,
     WireContextValue,
     WireContextConsumer,
     WireContextProvider,
+    WireDataCallback,
     Template,
 } from '@lwc/engine-core';
 
