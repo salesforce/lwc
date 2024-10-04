@@ -40,6 +40,7 @@ export {
 
 // Engine-core public types ------------------------------------------------------------------------
 export type {
+    DataCallback,
     WireAdapter,
     WireAdapterConstructor,
     WireConfigValue,
