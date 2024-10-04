@@ -519,9 +519,7 @@ const testUtils = {
 } as const;
 
 declare global {
-    interface Window {
-        TestUtils: typeof testUtils;
-    }
+    var TestUtils: typeof testUtils;
 
     interface ProcessEnv {
         API_VERSION: number;

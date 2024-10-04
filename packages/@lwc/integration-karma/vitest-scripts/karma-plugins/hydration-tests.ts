@@ -107,13 +107,14 @@ async function getTestModuleCode(input: InputOption) {
     return { code, watchFiles };
 }
 
-function getSsrCode(moduleCode: string, testConfig: string) {
+function getSsrCode(filename: string, moduleCode: string, testConfig: string) {
     const script = new vm.Script(
         `
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`,
+        { filename }
     );
 
     vm.createContext(context);
@@ -132,7 +133,7 @@ async function loadTest(filePath: string) {
         getCompiledModule(suiteDir),
     ]);
 
-    const ssrOutput = getSsrCode(componentDef, testCode);
+    const ssrOutput = getSsrCode(filePath, componentDef, testCode);
 
     const ssrRendered = JSON.stringify(ssrOutput);
 

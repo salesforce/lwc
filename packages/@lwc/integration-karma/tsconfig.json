@@ -19,6 +19,6 @@
         "vitest-helpers/*.ts",
         "test/**/*.spec.ts",
         "test/**/*.spec.js",
-        "test-hydration/**/*.spec.ts"
+        "test-hydration/**/*.spec.js"
     ]
 }
