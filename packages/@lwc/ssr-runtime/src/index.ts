@@ -172,20 +172,29 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.__classList = new ClassList(this));
     }
 
-    getAttribute(attrName: string): string | null {
-        return this.__attrs[attrName] ?? null;
+    #setAttribute(attrName: string, attrValue: string | null): void {
+        this.__attrs[attrName] = attrValue;
     }
 
-    setAttribute(attrName: string, value: string | null): void {
-        this.__attrs[attrName] = String(value);
+    setAttribute(attrName: string, attrValue: unknown): void {
+        this.#setAttribute(attrName, String(attrValue));
     }
 
-    hasAttribute(attrName: string): boolean {
-        return Boolean(this.__attrs && attrName in this.__attrs);
+    getAttribute(attrName: unknown): string | null {
+        if (this.hasAttribute(attrName)) {
+            return this.__attrs[attrName as string];
+        }
+        return null;
+    }
+
+    hasAttribute(attrName: unknown): boolean {
+        return typeof attrName === 'string' && typeof this.__attrs[attrName] === 'string';
     }
 
     removeAttribute(attrName: string): void {
-        this.__attrs[attrName] = null;
+        if (this.hasAttribute(attrName)) {
+            this.#setAttribute(attrName, null);
+        }
     }
 
     addEventListener(
@@ -299,11 +308,12 @@ export function* renderAttrs(attrs: Attributes) {
     if (!attrs) {
         return;
     }
-    for (const [key, val] of Object.entries(attrs)) {
-        if (typeof val === 'string') {
-            yield val === '' ? ` ${key}` : ` ${key}="${escapeAttrVal(val)}"`;
-        } else if (val === null) {
-            return '';
+    for (const attrName in attrs) {
+        const attrVal = attrs[attrName];
+        if (typeof attrVal === 'string') {
+            yield attrVal === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrVal)}"`;
+        } else if (attrVal === null) {
+            yield '';
         }
     }
 }
