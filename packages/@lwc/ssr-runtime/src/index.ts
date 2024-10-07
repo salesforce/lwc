@@ -13,6 +13,7 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
+export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
 
 type DOMTokenList = object;
