@@ -33,8 +33,7 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield *__renderAttrs(attrs)
-        yield *__mutationTracker.renderMutatedAttrs(instance)
+        yield *__renderAttrs(instance, attrs)
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
         yield \`</\${tagName}>\`;
@@ -42,11 +41,7 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
 `;
 
 const bInsertFallbackTmplImport = esTemplate<ImportDeclaration>`
-    import {
-        fallbackTmpl as __fallbackTmpl,
-        mutationTracker as __mutationTracker,
-        renderAttrs as __renderAttrs,
-    } from '@lwc/ssr-runtime';
+    import { fallbackTmpl as __fallbackTmpl, renderAttrs as __renderAttrs } from '@lwc/ssr-runtime';
 `;
 
 const bCreateReflectedPropArr = esTemplate<ExpressionStatement>`

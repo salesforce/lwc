@@ -116,8 +116,8 @@ interface PropsAvailableAtConstruction {
 }
 
 class MutationTracker {
-    mutationMap = new WeakMap<InstanceType<typeof LightningElement>, Set<string>>();
-    add(instance: InstanceType<typeof LightningElement>, attrName: string): void {
+    mutationMap = new WeakMap<LightningElement, Set<string>>();
+    add(instance: LightningElement, attrName: string): void {
         let mutatedAttrs = this.mutationMap.get(instance);
         if (!mutatedAttrs) {
             mutatedAttrs = new Set();
@@ -125,7 +125,7 @@ class MutationTracker {
         }
         mutatedAttrs.add(attrName.toLowerCase());
     }
-    renderMutatedAttrs(instance: InstanceType<typeof LightningElement>): string {
+    renderMutatedAttrs(instance: LightningElement): string {
         const mutatedAttrs = this.mutationMap.get(instance);
         if (mutatedAttrs) {
             return ` data-lwc-host-mutated="${[...mutatedAttrs].sort().join(' ')}"`;
@@ -223,6 +223,10 @@ export class LightningElement implements PropsAvailableAtConstruction {
             // corresponding properties so we can't simply `delete`. Instead,
             // we use `null` when we want to remove.
             this.#setAttribute(attrName, null);
+        } else {
+            // This interprets the removal of a non-existing attribute as an
+            // attribute mutation. We may want to revisit this.
+            mutationTracker.add(this, attrName);
         }
     }
 
@@ -333,7 +337,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
 const escapeAttrVal = (attrVal: string) =>
     attrVal.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 
-export function* renderAttrs(attrs: Attributes) {
+export function* renderAttrs(instance: LightningElement, attrs: Attributes) {
     if (!attrs) {
         return;
     }
@@ -345,14 +349,7 @@ export function* renderAttrs(attrs: Attributes) {
             yield '';
         }
     }
-}
-
-export function* renderMutatedAttrs(attrNames: string[]) {
-    if (attrNames.length) {
-        yield ` data-lwc-host-mutated="${attrNames.join(' ')}"`;
-    } else {
-        yield '';
-    }
+    yield mutationTracker.renderMutatedAttrs(instance);
 }
 
 export function* fallbackTmpl(
