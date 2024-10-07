@@ -58,21 +58,43 @@ function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttr
     //
     // The props object will be kept up-to-date with any new values set on the corresponding
     // property name in the component instance.
-    const reflectedAttrGetters: Property[] = reflectedPropNames.map((propName) =>
-        b.property(
-            'get',
-            b.literal(AriaPropNameToAttrNameMap[propName]),
-            b.functionExpression(
-                null,
-                [],
-                b.blockStatement([
-                    b.returnStatement(
-                        b.memberExpression(b.identifier('props'), b.identifier(propName))
-                    ),
-                ])
+    const reflectedAttrAccessors: Property[] = [];
+    for (const propName of reflectedPropNames) {
+        reflectedAttrAccessors.push(
+            b.property(
+                'get',
+                b.literal(AriaPropNameToAttrNameMap[propName]),
+                b.functionExpression(
+                    null,
+                    [],
+                    b.blockStatement([
+                        b.returnStatement(
+                            b.callExpression(b.identifier('String'), [
+                                b.memberExpression(b.identifier('props'), b.identifier(propName)),
+                            ])
+                        ),
+                    ])
+                )
+            ),
+            b.property(
+                'set',
+                b.literal(AriaPropNameToAttrNameMap[propName]),
+                b.functionExpression(
+                    null,
+                    [b.identifier('val')],
+                    b.blockStatement([
+                        b.expressionStatement(
+                            b.assignmentExpression(
+                                '=',
+                                b.memberExpression(b.identifier('props'), b.identifier(propName)),
+                                b.identifier('val')
+                            )
+                        ),
+                    ])
+                )
             )
-        )
-    );
+        );
+    }
 
     // This mutates the `attrs` object, adding the reflected aria attributes that have been
     // detected. Example:
@@ -87,7 +109,7 @@ function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttr
         b.assignmentExpression(
             '=',
             b.identifier('attrs'),
-            b.objectExpression([b.spreadElement(b.identifier('attrs')), ...reflectedAttrGetters])
+            b.objectExpression([b.spreadElement(b.identifier('attrs')), ...reflectedAttrAccessors])
         )
     );
 }
