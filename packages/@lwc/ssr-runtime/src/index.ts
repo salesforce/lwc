@@ -13,6 +13,7 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
+import { htmlPropertyToAttribute } from '@lwc/shared';
 export { validateStyleTextContents } from './validate-style-text-contents';
 
 type DOMTokenList = object;
@@ -114,6 +115,28 @@ interface PropsAvailableAtConstruction {
     tagName: string;
 }
 
+class MutationTracker {
+    mutationMap = new WeakMap<LightningElement, Set<string>>();
+    add(instance: LightningElement, attrName: string): void {
+        let mutatedAttrs = this.mutationMap.get(instance);
+        if (!mutatedAttrs) {
+            mutatedAttrs = new Set();
+            this.mutationMap.set(instance, mutatedAttrs);
+        }
+        mutatedAttrs.add(attrName.toLowerCase());
+    }
+    renderMutatedAttrs(instance: LightningElement): string {
+        const mutatedAttrs = this.mutationMap.get(instance);
+        if (mutatedAttrs) {
+            return ` data-lwc-host-mutated="${[...mutatedAttrs].sort().join(' ')}"`;
+        } else {
+            return '';
+        }
+    }
+}
+
+export const mutationTracker = new MutationTracker();
+
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
 
@@ -149,6 +172,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
                 },
                 set(newValue) {
                     props[reflectedPropName] = newValue;
+                    mutationTracker.add(this, htmlPropertyToAttribute(reflectedPropName));
                 },
                 enumerable: true,
             });
@@ -161,6 +185,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
             set(newVal) {
                 props.class = newVal;
                 attrs.class = newVal;
+                mutationTracker.add(this, 'class');
             },
         });
     }
@@ -172,20 +197,37 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.__classList = new ClassList(this));
     }
 
-    getAttribute(attrName: string): string | null {
-        return this.__attrs[attrName] ?? null;
+    #setAttribute(attrName: string, attrValue: string | null): void {
+        this.__attrs[attrName] = attrValue;
+        mutationTracker.add(this, attrName);
     }
 
-    setAttribute(attrName: string, value: string | null): void {
-        this.__attrs[attrName] = String(value);
+    setAttribute(attrName: string, attrValue: unknown): void {
+        this.#setAttribute(attrName, String(attrValue));
     }
 
-    hasAttribute(attrName: string): boolean {
-        return Boolean(this.__attrs && attrName in this.__attrs);
+    getAttribute(attrName: unknown): string | null {
+        if (this.hasAttribute(attrName)) {
+            return this.__attrs[attrName as string];
+        }
+        return null;
+    }
+
+    hasAttribute(attrName: unknown): boolean {
+        return typeof attrName === 'string' && typeof this.__attrs[attrName] === 'string';
     }
 
     removeAttribute(attrName: string): void {
-        this.__attrs[attrName] = null;
+        if (this.hasAttribute(attrName)) {
+            // Reflected attributes use accessor methods to update their
+            // corresponding properties so we can't simply `delete`. Instead,
+            // we use `null` when we want to remove.
+            this.#setAttribute(attrName, null);
+        } else {
+            // This interprets the removal of a non-existing attribute as an
+            // attribute mutation. We may want to revisit this.
+            mutationTracker.add(this, attrName);
+        }
     }
 
     addEventListener(
@@ -295,17 +337,19 @@ export class LightningElement implements PropsAvailableAtConstruction {
 const escapeAttrVal = (attrVal: string) =>
     attrVal.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 
-export function* renderAttrs(attrs: Attributes) {
+export function* renderAttrs(instance: LightningElement, attrs: Attributes) {
     if (!attrs) {
         return;
     }
-    for (const [key, val] of Object.entries(attrs)) {
-        if (typeof val === 'string') {
-            yield val === '' ? ` ${key}` : ` ${key}="${escapeAttrVal(val)}"`;
-        } else if (val === null) {
-            return '';
+    for (const attrName of Object.getOwnPropertyNames(attrs)) {
+        const attrVal = attrs[attrName];
+        if (typeof attrVal === 'string') {
+            yield attrVal === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrVal)}"`;
+        } else if (attrVal === null) {
+            yield '';
         }
     }
+    yield mutationTracker.renderMutatedAttrs(instance);
 }
 
 export function* fallbackTmpl(

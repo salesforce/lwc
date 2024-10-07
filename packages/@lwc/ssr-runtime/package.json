@@ -43,5 +43,7 @@
             }
         }
     },
-    "dependencies": {}
+    "dependencies": {
+        "@lwc/shared": "8.1.3"
+    }
 }
