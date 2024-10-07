@@ -193,6 +193,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     removeAttribute(attrName: string): void {
         if (this.hasAttribute(attrName)) {
+            // Reflected attributes use accessor methods to update their
+            // corresponding properties so we can't simply `delete`. Instead,
+            // we use `null` when we want to remove.
             this.#setAttribute(attrName, null);
         }
     }
@@ -308,7 +311,7 @@ export function* renderAttrs(attrs: Attributes) {
     if (!attrs) {
         return;
     }
-    for (const attrName in attrs) {
+    for (const attrName of Object.getOwnPropertyNames(attrs)) {
         const attrVal = attrs[attrName];
         if (typeof attrVal === 'string') {
             yield attrVal === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrVal)}"`;
