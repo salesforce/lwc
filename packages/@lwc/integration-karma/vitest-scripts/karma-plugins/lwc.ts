@@ -5,157 +5,124 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-import rollupPluginLwc from '@lwc/rollup-plugin';
+/**
+ * This transformation is inspired from the karma-rollup-transform:
+ * https://github.com/jlmakes/karma-rollup-preprocessor/blob/master/lib/index.js
+ */
+
+import path from 'node:path';
+import { rollup, type RollupCache } from 'rollup';
+import lwcRollupPlugin, { type RollupLwcOptions } from '@lwc/rollup-plugin';
+
+import {
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    API_VERSION,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+} from '../shared/options';
+
 import type { Plugin as VitestPlugin } from 'vitest/config';
-import type { Plugin as RollupPlugin } from 'rollup';
-function vitestPluginLwc(): VitestPlugin {
-    let rollupPlugin: RollupPlugin<any> | undefined;
+
+export default function lwcPreprocessor(): VitestPlugin {
+    let cache: RollupCache | undefined;
+
+    const filter = (id: string) => id.endsWith('.spec.js');
 
     return {
-        name: 'vitest-plugin-lwc',
-        enforce: 'post',
-        configResolved(config) {
-            const { test } = config;
-
-            if (test === undefined) {
-                throw new Error('vitest-plugin-lwc requires a test config');
-            }
-
-            const { dir } = test;
-
-            if (dir === undefined) {
-                throw new Error('vitest-plugin-lwc requires a test dir');
-            }
-
-            rollupPlugin = rollupPluginLwc({
-                rootDir: dir,
-                include: ['**/*.spec.js', '**/*.js', '**/*.html', '**/*.css'].map((pattern) =>
-                    path.join(dir, pattern)
-                ),
-                enableDynamicComponents: true,
-                experimentalDynamicComponent: {
-                    loader: 'test-utils',
-                    // @ts-expect-error experimentalDynamicComponent is not defined
-                    strict: true,
-                },
-            });
-        },
-        buildStart(options) {
-            // @ts-expect-error rollupPlugin is not defined
-            return rollupPlugin.buildStart!.call(this, options);
-        },
-        resolveId(source, importer, _options) {
-            if (!importer) {
+        name: 'vitest-plugin-lwc-preprocessor',
+        enforce: 'pre',
+        async load(id: string) {
+            if (!filter(id)) {
                 return;
             }
 
-            const importerPath = path.parse(importer);
+            const suiteDir = path.dirname(id);
 
-            if (importerPath.base.endsWith('.spec.js')) {
-                rollupPlugin!.api.updateOptions({
-                    rootDir: importerPath.dir,
-                    experimentalComplexExpressions:
-                        importerPath.dir.includes('template-expressions'),
+            // TODO [#3370]: remove experimental template expression flag
+            const experimentalComplexExpressions = suiteDir.includes('template-expressions');
+
+            const createRollupPlugin = (options?: RollupLwcOptions) => {
+                return lwcRollupPlugin({
+                    // Sourcemaps don't work with Istanbul coverage
+                    sourcemap: !process.env.COVERAGE,
+                    experimentalDynamicComponent: {
+                        loader: 'test-utils',
+                        // @ts-expect-error experimentalDynamicComponent is not defined
+                        strict: true,
+                    },
+                    enableDynamicComponents: true,
+                    experimentalComplexExpressions,
+                    enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+                    disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+                    apiVersion: API_VERSION,
+                    ...options,
                 });
-            } else if (importerPath.ext === '.html' || importerPath.ext === '.js') {
-                const rootDir = path.resolve(importerPath.dir, '../..');
-
-                rollupPlugin!.api.updateOptions({
-                    rootDir,
-                });
-            }
-
-            // @ts-expect-error rollupPlugin is not defined
-            return rollupPlugin.resolveId!.call(this, source, importer);
-        },
-        load(id, _options) {
-            // @ts-expect-error rollupPlugin is not defined
-            return rollupPlugin.load!.call(this, id);
-        },
-        transform(code, id, _options) {
-            // @ts-expect-error rollupPlugin is not defined
-            return rollupPlugin.transform!.call(this, code, id);
-        },
-    };
-}
-
-function vitestPluginCss(): VitestPlugin {
-    return {
-        name: 'vitest-plugin-css',
-        enforce: 'pre',
-        configResolved(config) {
-            const plugins = config.plugins;
-            patchViteCssPlugin(plugins);
-            patchViteCssPostPlugin(plugins);
-        },
-    };
-}
-
-export default () => [vitestPluginCss(), vitestPluginLwc()];
-
-function patchViteCssPlugin(plugins: readonly VitestPlugin[]) {
-    const viteCssPlugin = plugins.find((plugin) => plugin.name === 'vite:css');
-
-    if (viteCssPlugin === undefined) {
-        throw new Error('vite:css plugin not found');
-    }
-
-    const { transform } = viteCssPlugin;
-
-    if (typeof transform !== 'function') {
-        throw new Error('vite:css plugin transform is not a function');
-    }
-
-    viteCssPlugin.transform = function (code: string, id: string, options) {
-        if (id === '@lwc/resources/empty_css.css') {
-            return {
-                code: 'export default ""',
-                map: null,
             };
-        }
 
-        if (id.endsWith('.css')) {
-            return;
-        }
+            const defaultRollupPlugin = createRollupPlugin();
 
-        if (id.endsWith('.css?scoped=true')) {
-            return;
-        }
+            // Override the LWC Rollup plugin to specify an API version based on the file path
+            // This allows for individual components to have individual API versions
+            // without needing to have a separate Rollup bundle/chunk for each one
+            const rollupPluginsPerApiVersion = new Map();
 
-        return Reflect.apply(transform, this, [code, id, options]);
-    };
-}
-
-function patchViteCssPostPlugin(plugins: readonly VitestPlugin[]) {
-    const viteCssPostPlugin = plugins.find((plugin) => plugin.name === 'vite:css-post');
-
-    if (viteCssPostPlugin === undefined) {
-        throw new Error('vite:css-post plugin not found');
-    }
-
-    const { transform } = viteCssPostPlugin;
-
-    if (typeof transform !== 'function') {
-        throw new Error('vite:css-post plugin transform is not a function');
-    }
-
-    viteCssPostPlugin.transform = function (code: string, id: string, options) {
-        if (id === '@lwc/resources/empty_css.css') {
-            return {
-                code: 'export default ""',
-                map: null,
+            const customLwcRollupPlugin = {
+                ...defaultRollupPlugin,
+                transform(src: any, id: string) {
+                    let rollupPluginToUse = defaultRollupPlugin;
+                    const match = id.match(/useApiVersion(\d+)/);
+                    if (match) {
+                        const apiVersion = parseInt(match[1], 10);
+                        let perApiVersionPlugin = rollupPluginsPerApiVersion.get(apiVersion);
+                        if (!perApiVersionPlugin) {
+                            perApiVersionPlugin = createRollupPlugin({ apiVersion });
+                            rollupPluginsPerApiVersion.set(apiVersion, perApiVersionPlugin);
+                        }
+                        rollupPluginToUse = perApiVersionPlugin;
+                    }
+                    // @ts-expect-error transform is not defined
+                    return rollupPluginToUse.transform!.call(this, src, id);
+                },
             };
-        }
 
-        if (id.endsWith('.css')) {
-            return;
-        }
+            const plugins = [customLwcRollupPlugin];
 
-        if (id.endsWith('.css?scoped=true')) {
-            return;
-        }
+            const bundle = await rollup({
+                input: id,
+                plugins,
+                cache,
 
-        return Reflect.apply(transform, this, [code, id, options]);
+                // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
+                // globally in the page before running the tests.
+                external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
+
+                onwarn(warning, warn) {
+                    // Ignore warnings from our own Rollup plugin
+                    if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
+                        warn(warning);
+                    }
+                },
+            });
+
+            cache = bundle.cache;
+
+            const { output } = await bundle.generate({
+                format: 'iife',
+                // Sourcemaps don't work with Istanbul coverage
+                sourcemap: process.env.COVERAGE ? false : 'inline',
+
+                // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
+                // referenced from the window object.
+                globals: {
+                    lwc: 'LWC',
+                    'wire-service': 'WireService',
+                    'test-utils': 'TestUtils',
+                },
+
+                // intro,
+                // outro,
+            });
+
+            return output[0];
+        },
     };
 }
