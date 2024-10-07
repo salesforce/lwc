@@ -10,7 +10,7 @@
  * It also converts some process.env.NODE_ENV code; see below.
  */
 
-import MagicString, { type SourceMap } from 'magic-string';
+import MagicString from 'magic-string';
 import { init, parse } from 'es-module-lexer';
 import { type Plugin as VitestPlugin } from 'vitest/config';
 
@@ -33,21 +33,14 @@ export default function transformFramework(): VitestPlugin {
     return {
         name: 'vite-lwc-transform-framework-plugin',
         enforce: 'pre',
-        async transform(content, id) {
+        async transform(code, id) {
             if (!id.endsWith('?iife')) {
                 return null;
             }
 
-            const file = {
-                path: id,
-                sourceMap: null as SourceMap | null,
-            };
-
-            const input = file.path;
-
-            const iifeName = getIifeName(input);
+            const iifeName = getIifeName(id);
             // Strip sourcemap for now since we can't get index.js.map to actually work in either Karma or Istanbul
-            const magicString = new MagicString(content.replace(/\/\/# sourceMappingURL=\S+/, ''));
+            const magicString = new MagicString(code.replace(/\/\/# sourceMappingURL=\S+/, ''));
 
             /**
              * This transformation replaces `process.env.NODE_ENV === 'test-karma-lwc'` with `true`.
@@ -84,7 +77,7 @@ export default function transformFramework(): VitestPlugin {
 
             await init;
 
-            const exportees = parse(content)[1].map((_) => ({ variable: _.ln, alias: _.n }));
+            const exportees = parse(code)[1].map((_) => ({ variable: _.ln, alias: _.n }));
 
             for (const { variable, alias } of exportees) {
                 if (variable !== alias) {
@@ -96,19 +89,10 @@ export default function transformFramework(): VitestPlugin {
             magicString.prepend(`${iifeName ? `var ${iifeName} = ` : ''}(function () {`);
             magicString.append('})();');
 
-            let code = magicString.toString();
-
-            // Sourcemaps don't work with Istanbul coverage
-            if (!process.env.COVERAGE) {
-                // We need to assign the source to the original file so Karma can source map the error in the console.
-                // also adding the source map inline for browser debugging.
-                const map = magicString.generateMap();
-                code += '\n//# sourceMappingURL=' + map.toUrl();
-
-                file.sourceMap = map;
-            }
-
-            return code;
+            return {
+                code: magicString.toString(),
+                map: magicString.generateMap(),
+            };
         },
-    } satisfies VitestPlugin;
+    };
 }
