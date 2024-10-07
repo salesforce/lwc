@@ -31,7 +31,7 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
 }
 
 const bForOfYieldFrom = esTemplate<EsForOfStatement, [EsIdentifier, EsExpression, EsStatement[]]>`
-    for (let ${is.identifier} of toIteratorDirective(${is.expression} ?? {})) {
+    for (let ${is.identifier} of toIteratorDirective(${is.expression} ?? [])) {
         ${is.statement};
     }
 `;
