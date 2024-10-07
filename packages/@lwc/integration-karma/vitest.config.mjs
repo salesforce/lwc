@@ -1,15 +1,17 @@
 // @ts-check
 
-import { defineConfig } from 'vitest/config';
+import { defineConfig, configDefaults } from 'vitest/config';
+
+import transformFramework from './vitest-scripts/karma-plugins/transform-framework';
 import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
 
 export default defineConfig({
-    plugins: [lwcTestPlugin()],
+    plugins: [transformFramework(), lwcTestPlugin()],
     test: {
         name: 'lwc-integration-karma',
         dir: 'test',
         include: ['**/*.spec.{js,ts}'],
-        exclude: ['**/__screenshots__/**'],
+        exclude: [...configDefaults.exclude, '**/__screenshots__/**'],
         globals: true,
         passWithNoTests: true,
         setupFiles: ['./vitest-helpers/test-setup.ts'],
@@ -23,7 +25,11 @@ export default defineConfig({
             screenshotFailures: false,
             name: 'chromium',
             provider: 'playwright',
-            testerScripts: [{}],
+            testerScripts: [
+                {
+                    src: '@lwc/engine-dom/dist/index.js?iife',
+                },
+            ],
             providerOptions: { launch: { devtools: true } },
         },
     },

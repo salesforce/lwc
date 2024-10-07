@@ -10,9 +10,9 @@
  * It also converts some process.env.NODE_ENV code; see below.
  */
 
-import MagicString from 'magic-string';
+import MagicString, { type SourceMap } from 'magic-string';
 import { init, parse } from 'es-module-lexer';
-import type { Plugin } from 'vitest/config';
+import { type Plugin as VitestPlugin } from 'vitest/config';
 
 function getIifeName(filename: string | string[]) {
     if (filename.includes('@lwc/engine-dom')) {
@@ -29,15 +29,18 @@ function getIifeName(filename: string | string[]) {
     throw new Error(`Unknown framework filename, not sure which IIFE name to use: ${filename}`);
 }
 
-export default function transformFramework(): Plugin {
+export default function transformFramework(): VitestPlugin {
     return {
         name: 'vite-lwc-transform-framework-plugin',
-        enforce: 'post',
-        apply: 'build',
-        async transform(content, id, _options) {
+        enforce: 'pre',
+        async transform(content, id) {
+            if (!id.endsWith('?iife')) {
+                return null;
+            }
+
             const file = {
                 path: id,
-                sourceMap: this.getCombinedSourcemap(),
+                sourceMap: null as SourceMap | null,
             };
 
             const input = file.path;
@@ -104,7 +107,8 @@ export default function transformFramework(): Plugin {
 
                 file.sourceMap = map;
             }
+
             return code;
         },
-    } satisfies Plugin;
+    } satisfies VitestPlugin;
 }
