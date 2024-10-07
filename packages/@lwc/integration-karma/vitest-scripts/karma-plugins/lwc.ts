@@ -7,10 +7,10 @@
 
 import path from 'path';
 import rollupPluginLwc from '@lwc/rollup-plugin';
-import type { Plugin } from 'vitest/config';
-
-function vitestPluginLwc(): Plugin {
-    let rollupPlugin: Plugin<any> | undefined;
+import type { Plugin as VitestPlugin } from 'vitest/config';
+import type { Plugin as RollupPlugin } from 'rollup';
+function vitestPluginLwc(): VitestPlugin {
+    let rollupPlugin: RollupPlugin<any> | undefined;
 
     return {
         name: 'vitest-plugin-lwc',
@@ -80,7 +80,7 @@ function vitestPluginLwc(): Plugin {
     };
 }
 
-function vitestPluginCss(): Plugin {
+function vitestPluginCss(): VitestPlugin {
     return {
         name: 'vitest-plugin-css',
         enforce: 'pre',
@@ -94,7 +94,7 @@ function vitestPluginCss(): Plugin {
 
 export default () => [vitestPluginCss(), vitestPluginLwc()];
 
-function patchViteCssPlugin(plugins: readonly Plugin<any>[]) {
+function patchViteCssPlugin(plugins: readonly VitestPlugin[]) {
     const viteCssPlugin = plugins.find((plugin) => plugin.name === 'vite:css');
 
     if (viteCssPlugin === undefined) {
@@ -127,7 +127,7 @@ function patchViteCssPlugin(plugins: readonly Plugin<any>[]) {
     };
 }
 
-function patchViteCssPostPlugin(plugins: readonly Plugin<any>[]) {
+function patchViteCssPostPlugin(plugins: readonly VitestPlugin[]) {
     const viteCssPostPlugin = plugins.find((plugin) => plugin.name === 'vite:css-post');
 
     if (viteCssPostPlugin === undefined) {

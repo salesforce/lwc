@@ -2321,6 +2321,18 @@
   version "0.0.0"
   uid ""
 
+"@mswjs/interceptors@^0.35.8":
+  version "0.35.9"
+  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.35.9.tgz#1e1488ff2f333683d374eccc8c0f4d5d851c6d3d"
+  integrity sha512-SSnyl/4ni/2ViHKkiZb8eajA/eN1DNFaHjhGiLUdZvDz6PKF4COSf/17xqSz64nOo2Ia29SA6B2KNCsyCbVmaQ==
+  dependencies:
+    "@open-draft/deferred-promise" "^2.2.0"
+    "@open-draft/logger" "^0.3.0"
+    "@open-draft/until" "^2.0.0"
+    is-node-process "^1.2.0"
+    outvariant "^1.4.3"
+    strict-event-emitter "^0.5.1"
+
 "@napi-rs/wasm-runtime@0.2.4", "@napi-rs/wasm-runtime@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.4.tgz#d27788176f250d86e498081e3c5ff48a17606918"
@@ -3693,6 +3705,14 @@
     "@typescript-eslint/types" "8.7.0"
     eslint-visitor-keys "^3.4.3"
 
+"@typescript-eslint/visitor-keys@8.8.0":
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-8.8.0.tgz#f93965abd38c82a1a1f5574290a50d02daf1cd2e"
+  integrity sha512-8mq51Lx6Hpmd7HnA2fcHQo3YgfX1qbccxQOgZcb4tvasu//zXRaA1j5ZRFeCw/VRAdFi4mRM9DnZw0Nu0Q2d1g==
+  dependencies:
+    "@typescript-eslint/types" "8.8.0"
+    eslint-visitor-keys "^3.4.3"
+
 "@vitest/browser@^2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@vitest/browser/-/browser-2.1.2.tgz#beaedb20118215b37466b320d6786b08601866b5"
@@ -3707,14 +3727,6 @@
     sirv "^2.0.4"
     tinyrainbow "^1.2.0"
     ws "^8.18.0"
-
-"@typescript-eslint/visitor-keys@8.8.0":
-  version "8.8.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-8.8.0.tgz#f93965abd38c82a1a1f5574290a50d02daf1cd2e"
-  integrity sha512-8mq51Lx6Hpmd7HnA2fcHQo3YgfX1qbccxQOgZcb4tvasu//zXRaA1j5ZRFeCw/VRAdFi4mRM9DnZw0Nu0Q2d1g==
-  dependencies:
-    "@typescript-eslint/types" "8.8.0"
-    eslint-visitor-keys "^3.4.3"
 
 "@vitest/coverage-v8@^2.1.2":
   version "2.1.2"
