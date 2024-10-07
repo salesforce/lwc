@@ -33,7 +33,7 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield *__renderAttrs(attrs)
+        yield *__renderAttrs(instance, attrs)
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
         yield \`</\${tagName}>\`;
