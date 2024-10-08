@@ -1,4 +1,9 @@
-// @ts-check
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
 // @ts-expect-error CJS module; TS can't detect that it has a default export
@@ -9,6 +14,14 @@ import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
+import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
+
+// convert filepath to eslint glob
+const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
+
+// Workaround for plugin schema validation failing in eslint v9
+// Ref: https://github.com/Stuk/eslint-plugin-header/issues/57#issuecomment-2378485611
+header.rules.header.meta.schema = false;
 
 export default tseslint.config(
     // ------------- //
@@ -50,17 +63,23 @@ export default tseslint.config(
         },
 
         rules: {
-            '@typescript-eslint/no-unused-vars': [
-                'error',
-                {
-                    argsIgnorePattern: '^_',
-                    caughtErrorsIgnorePattern: '^_',
-                    destructuredArrayIgnorePattern: '^_',
-                },
-            ],
-
+            // Rules without config, sorted alphabetically by namespace, then rule
+            '@lwc/lwc-internal/no-invalid-todo': 'error',
+            '@typescript-eslint/no-base-to-string': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-redundant-type-constituents': 'off',
+            '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            '@typescript-eslint/restrict-template-expressions': 'off',
+            '@typescript-eslint/unbound-method': 'off',
             'block-scoped-var': 'error',
             'no-alert': 'error',
+            // Deprecated, replace with rule in eslint-plugin-n when removed
             'no-buffer-constructor': 'error',
             'no-console': 'error',
             'no-eval': 'error',
@@ -70,8 +89,47 @@ export default tseslint.config(
             'no-iterator': 'error',
             'no-lone-blocks': 'error',
             'no-proto': 'error',
-            'no-new-require': 'error',
+            'no-self-compare': 'error',
+            'no-undef-init': 'error',
+            'no-useless-computed-key': 'error',
+            'no-useless-return': 'error',
+            // Deprecated, replace with rule in @stylistic/eslint-plugin-js when removed
+            'template-curly-spacing': 'error',
+            yoda: 'error',
 
+            // Rule with config, sorted alphabetically by namespace, then rule
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                },
+            ],
+            'import/order': [
+                'error',
+                {
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        'parent',
+                        'index',
+                        'sibling',
+                        'object',
+                        'type',
+                    ],
+                },
+            ],
+            'no-restricted-imports': [
+                'error',
+                {
+                    name: '@lwc/features',
+                    importNames: ['lwcRuntimeFlags', 'runtimeFlags', 'default'],
+                    message:
+                        'Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead.',
+                },
+            ],
             'no-restricted-properties': [
                 'error',
                 {
@@ -128,12 +186,6 @@ export default tseslint.config(
                     message: 'Use the bare global lwcRuntimeFlags instead.',
                 },
             ],
-
-            'no-self-compare': 'error',
-            'no-undef-init': 'error',
-            'no-useless-computed-key': 'error',
-            'no-useless-return': 'error',
-
             'prefer-const': [
                 'error',
                 {
@@ -141,49 +193,6 @@ export default tseslint.config(
                     ignoreReadBeforeAssign: true,
                 },
             ],
-
-            'template-curly-spacing': 'error',
-            yoda: 'error',
-            '@lwc/lwc-internal/no-invalid-todo': 'error',
-
-            'import/order': [
-                'error',
-                {
-                    groups: [
-                        'builtin',
-                        'external',
-                        'internal',
-                        'parent',
-                        'index',
-                        'sibling',
-                        'object',
-                        'type',
-                    ],
-                },
-            ],
-
-            'no-restricted-imports': [
-                'error',
-                {
-                    name: '@lwc/features',
-                    importNames: ['lwcRuntimeFlags', 'runtimeFlags', 'default'],
-                    message:
-                        'Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead.',
-                },
-            ],
-
-            '@typescript-eslint/no-unsafe-enum-comparison': 'off',
-            '@typescript-eslint/unbound-method': 'off',
-            '@typescript-eslint/no-base-to-string': 'off',
-            '@typescript-eslint/restrict-template-expressions': 'off',
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-redundant-type-constituents': 'off',
-            '@typescript-eslint/no-unsafe-member-access': 'off',
-            '@typescript-eslint/no-unsafe-call': 'off',
-            '@typescript-eslint/no-unsafe-assignment': 'off',
-            '@typescript-eslint/no-unsafe-return': 'off',
-            '@typescript-eslint/no-unsafe-argument': 'off',
-            '@typescript-eslint/no-unnecessary-type-assertion': 'off',
         },
     },
     {
@@ -245,6 +254,30 @@ export default tseslint.config(
     // ---------------------- //
     // Package-specific rules //
     // ---------------------- //
+    {
+        files: PUBLIC_PACKAGES,
+        ignores: PUBLIC_PACKAGES.map((path) => `${path}/vitest.config.mjs`),
+        rules: {
+            'header/header': [
+                'error',
+                'block',
+                [
+                    '',
+                    {
+                        pattern:
+                            '^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$',
+                        // This copyright text should match the text used in the rollup config
+                        template: ` * Copyright (c) ${new Date().getFullYear()}, Salesforce, Inc.`,
+                    },
+                    ' * All rights reserved.',
+                    ' * SPDX-License-Identifier: MIT',
+                    ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
+                    ' ',
+                ],
+                1 /* newline after header */,
+            ],
+        },
+    },
     {
         files: [
             'packages/@lwc/engine-core/**',
