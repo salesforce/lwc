@@ -46,6 +46,7 @@ export type {
     WireContextValue,
     WireContextConsumer,
     WireContextProvider,
+    WireDataCallback,
     Template,
 } from '@lwc/engine-core';
 
