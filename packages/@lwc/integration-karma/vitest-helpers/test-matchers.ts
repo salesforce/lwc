@@ -230,9 +230,13 @@ expect.extend({
         return received === false ? pass() : fail(message);
     },
     toHaveSize(received: { length: number }, size: number) {
-        return received.length === size
-            ? pass()
-            : fail(`Expected object to have size ${size}, but it has size ${received.length}.`);
+        const { isNot } = this;
+        const to = isNot ? 'not to' : 'to';
+        return {
+            pass: received.length === size,
+            message: () =>
+                `Expected array ${to} have size ${size}, but received ${received.length}`,
+        };
     },
 
     toEqualWireSettings(actual, expected) {

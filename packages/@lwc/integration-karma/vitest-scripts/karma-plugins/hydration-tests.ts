@@ -22,10 +22,10 @@ try {
     // ignore
 }
 
-const context: vm.Context = {
+const context = {
     LWC: ssr,
-    moduleOutput: null,
-};
+    moduleOutput: null as string | null,
+} as const satisfies vm.Context;
 
 let guid = 0;
 
@@ -155,6 +155,7 @@ export default function vitestPluginLwcHydrate(): Plugin {
                 magicString.prepend(`const ssrRendered = ${ssrRendered};`);
                 magicString.prepend(`${moduleOutput.code};`);
                 magicString.prepend(`import { runTest } from 'test-hydrate';`);
+                magicString.prepend(`import { expect } from 'vitest';`);
                 magicString.append(
                     `it('${describeTitle}', () => { return runTest(ssrRendered, Main, config); });`
                 );
