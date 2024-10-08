@@ -1,4 +1,9 @@
-// @ts-check
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
 // @ts-expect-error CJS module; TS can't detect that it has a default export
@@ -9,6 +14,14 @@ import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
+import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
+
+// convert filepath to eslint glob
+const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
+
+// Workaround for plugin schema validation failing in eslint v9
+// Ref: https://github.com/Stuk/eslint-plugin-header/issues/57#issuecomment-2378485611
+header.rules.header.meta.schema = false;
 
 export default tseslint.config(
     // ------------- //
@@ -66,6 +79,7 @@ export default tseslint.config(
             '@typescript-eslint/unbound-method': 'off',
             'block-scoped-var': 'error',
             'no-alert': 'error',
+            // Deprecated, replace with rule in eslint-plugin-n when removed
             'no-buffer-constructor': 'error',
             'no-console': 'error',
             'no-eval': 'error',
@@ -74,12 +88,12 @@ export default tseslint.config(
             'no-extra-label': 'error',
             'no-iterator': 'error',
             'no-lone-blocks': 'error',
-            'no-new-require': 'error',
             'no-proto': 'error',
             'no-self-compare': 'error',
             'no-undef-init': 'error',
             'no-useless-computed-key': 'error',
             'no-useless-return': 'error',
+            // Deprecated, replace with rule in @stylistic/eslint-plugin-js when removed
             'template-curly-spacing': 'error',
             yoda: 'error',
 
@@ -240,6 +254,30 @@ export default tseslint.config(
     // ---------------------- //
     // Package-specific rules //
     // ---------------------- //
+    {
+        files: PUBLIC_PACKAGES,
+        ignores: PUBLIC_PACKAGES.map((path) => `${path}/vitest.config.mjs`),
+        rules: {
+            'header/header': [
+                'error',
+                'block',
+                [
+                    '',
+                    {
+                        pattern:
+                            '^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$',
+                        // This copyright text should match the text used in the rollup config
+                        template: ` * Copyright (c) ${new Date().getFullYear()}, Salesforce, Inc.`,
+                    },
+                    ' * All rights reserved.',
+                    ' * SPDX-License-Identifier: MIT',
+                    ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
+                    ' ',
+                ],
+                2 /* newlines after comment */,
+            ],
+        },
+    },
     {
         files: [
             'packages/@lwc/engine-core/**',
