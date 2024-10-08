@@ -274,7 +274,7 @@ export default tseslint.config(
                     ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
                     ' ',
                 ],
-                2 /* newlines after comment */,
+                1 /* newline after header */,
             ],
         },
     },
