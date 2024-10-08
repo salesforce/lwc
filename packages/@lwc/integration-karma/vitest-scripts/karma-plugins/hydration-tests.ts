@@ -10,6 +10,7 @@ import fs from 'node:fs/promises';
 import { InputOption, rollup, RollupCache } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import ssr from '@lwc/engine-server';
+import MagicString from 'magic-string';
 import type { PathLike } from 'fs';
 import type { Plugin } from 'vitest/config';
 
@@ -80,6 +81,7 @@ async function getCompiledModule(dirName: string) {
     const { output } = await bundle.generate({
         format: 'iife',
         name: 'Main',
+        compact: true,
         globals: {
             lwc: 'LWC',
             'test-utils': 'TestUtils',
@@ -97,12 +99,11 @@ async function getTestModuleCode(input: InputOption) {
         external: ['lwc', 'test-utils', '@test/loader'],
     });
 
-    const { watchFiles } = bundle;
-
     cache = bundle.cache;
 
     const { output } = await bundle.generate({
         format: 'iife',
+        compact: true,
         globals: {
             lwc: 'LWC',
             'test-utils': 'TestUtils',
@@ -110,9 +111,7 @@ async function getTestModuleCode(input: InputOption) {
         name: 'config',
     });
 
-    const { code } = output[0];
-
-    return { code, watchFiles };
+    return output[0];
 }
 
 function getSsrCode(filename: string, moduleCode: string, testConfig: string) {
@@ -131,41 +130,42 @@ function getSsrCode(filename: string, moduleCode: string, testConfig: string) {
     return context.moduleOutput;
 }
 
-async function loadTest(filePath: string) {
-    const suiteDir = path.dirname(filePath);
-    // Wrap all the tests into a describe block with the file stricture name
-    const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
-
-    const [{ code: testCode }, { code: componentDef }] = await Promise.all([
-        getTestModuleCode(filePath),
-        getCompiledModule(suiteDir),
-    ]);
-
-    const ssrOutput = getSsrCode(filePath, componentDef, testCode);
-
-    const ssrRendered = JSON.stringify(ssrOutput);
-
-    return `
-import { runTest } from 'test-hydrate';
-
-const ssrRendered = ${ssrRendered};
-// Component code, set as Main
-${componentDef};
-// Test config, set as config
-${testCode};
-
-it('${describeTitle}', () => {
-    return runTest(ssrRendered, Main, config);
-});
-    `;
-}
-
 export default function vitestPluginLwcHydrate(): Plugin {
     return {
         name: 'vitest-plugin-lwc-hydrate',
-        async load(id, _options) {
+        async transform(code, id, _options) {
             if (id.endsWith('index.spec.js')) {
-                return await loadTest(id);
+                const suiteDir = path.dirname(id);
+                // Wrap all the tests into a describe block with the file stricture name
+                const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
+
+                const [testOutput, moduleOutput] = await Promise.all([
+                    getTestModuleCode(id),
+                    getCompiledModule(suiteDir),
+                ]);
+
+                const ssrOutput = getSsrCode(id, testOutput.code, moduleOutput.code);
+
+                const ssrRendered = JSON.stringify(ssrOutput);
+
+                const magicString = new MagicString(testOutput.code, {
+                    filename: id,
+                });
+
+                magicString.prepend(`const ssrRendered = ${ssrRendered};`);
+                magicString.prepend(`${moduleOutput.code};`);
+                magicString.prepend(`import { runTest } from 'test-hydrate';`);
+                magicString.append(
+                    `it('${describeTitle}', () => { return runTest(ssrRendered, Main, config); });`
+                );
+
+                const code = magicString.toString();
+                const map = magicString.generateMap({ hires: true });
+
+                return {
+                    code,
+                    map,
+                };
             }
         },
     };
