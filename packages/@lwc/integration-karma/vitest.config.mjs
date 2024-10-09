@@ -17,6 +17,8 @@ export default defineConfig({
         env: {
             NODE_ENV: 'test-karma-lwc',
             NATIVE_SHADOW: 'true',
+            ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
+                process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
         },
         browser: {
             enabled: true,
@@ -28,6 +30,11 @@ export default defineConfig({
                 {
                     src: '@lwc/engine-dom/dist/index.js?iife',
                 },
+                process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
+                    ? {
+                          src: '@lwc/aria-reflection/dist/index.js?iife',
+                      }
+                    : {},
             ],
             providerOptions: { launch: { devtools: true } },
         },

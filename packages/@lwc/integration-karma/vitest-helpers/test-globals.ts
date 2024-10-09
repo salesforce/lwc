@@ -12,6 +12,8 @@ vi.stubGlobal('WireService', { ...wireService });
 vi.stubGlobal('process', {
     env: {
         NATIVE_SHADOW: true,
+        ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
+            process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL === '1',
         LWC_VERSION,
     },
 });
