@@ -51,7 +51,9 @@ const transformers: Transformers = {
     IfBlock,
     Root,
     Text,
-    ElseifBlock: IfBlock,
+    // lwc:elseif cannot exist without an lwc:if (IfBlock); this gets handled by that transformer
+    ElseifBlock: defaultTransformer,
+    // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
     Slot: defaultTransformer,
@@ -70,7 +72,7 @@ export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext)
 }
 
 export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): EsStatement[] {
-    const transformer = (transformers[node.type] as Transformer<T>) ?? defaultTransformer;
+    const transformer = transformers[node.type] as Transformer<T>;
     return transformer(node, cxt);
 }
 

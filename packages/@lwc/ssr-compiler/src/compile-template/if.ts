@@ -19,9 +19,17 @@ import type {
 import type { BlockStatement as EsBlockStatement, IfStatement as EsIfStatement } from 'estree';
 import type { Transformer, TransformerContext } from './types';
 
+function bYieldComment(text = '') {
+    return b.expressionStatement(b.yieldExpression(b.literal(`<!--${text}-->`)));
+}
+
 function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
     return b.blockStatement(
-        optimizeAdjacentYieldStmts(childNodes.flatMap((childNode) => irToEs(childNode, cxt)))
+        optimizeAdjacentYieldStmts([
+            bYieldComment(),
+            ...childNodes.flatMap((childNode) => irToEs(childNode, cxt)),
+            bYieldComment(),
+        ])
     );
 }
 
