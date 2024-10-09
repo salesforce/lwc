@@ -54,7 +54,7 @@ describe('compiler version mismatch', () => {
         it('template', () => {
             function tmpl() {
                 return [];
-                /*LWC compiler v123.456.789*/
+                /*!/*LWC compiler v123.456.789*/
             }
 
             expect(() => {
@@ -88,7 +88,7 @@ describe('compiler version mismatch', () => {
             tmpl.stylesheets = [
                 function stylesheet() {
                     return '';
-                    /*LWC compiler v123.456.789*/
+                    /*!/*LWC compiler v123.456.789*/
                 },
             ];
             registerTemplate(tmpl);
@@ -125,7 +125,7 @@ describe('compiler version mismatch', () => {
             // deliberately using a function rather than a class so @lwc/babel-plugin-component doesn't add a comment
             function CustomElement() {
                 return LightningElement.apply(this, arguments);
-                /*LWC compiler v123.456.789*/
+                /*!/*LWC compiler v123.456.789*/
             }
 
             Object.setPrototypeOf(CustomElement, LightningElement);
