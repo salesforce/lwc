@@ -31,10 +31,15 @@ function getTestFunc(dirname: string) {
 }
 
 export interface TestFixtureConfig extends StyleCompilerConfig {
+    /** Human-readable test description. A proxy for `test(description, ...)`. */
     description?: string;
+    /** Component name. */
     name?: string;
+    /** Component namespace. */
     namespace?: string;
+    /** Props to provide to the top-level component. */
     props?: Record<string, string | string[]>;
+    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
     ssrFiles?: {
         error?: string;
         expected?: string;
