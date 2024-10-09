@@ -1,0 +1,21 @@
+<template>
+    <template lwc:if={isFalse}>
+        I am not rendered.
+    </template>
+    <template lwc:elseif={isTrue}>
+        I am rendered.
+    </template>
+    <template lwc:else>
+        I am also not rendered.
+    </template>
+
+    <template lwc:if={isFalse}>
+        I am not rendered.
+    </template>
+    <template lwc:elseif={isFalse}>
+        I, too, do not render.
+    </template>
+    <template lwc:else>
+        Render me!
+    </template>
+</template>
