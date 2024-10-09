@@ -36,11 +36,9 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             lwcRollupPlugin({
                 targetSSR: true,
                 enableDynamicComponents: true,
-                modules: [
-                    {
-                        dir: modulesDir,
-                    },
-                ],
+                // TODO [#3331]: remove usage of lwc:dynamic in 246
+                experimentalDynamicDirective: true,
+                modules: [{ dir: modulesDir }],
             }),
         ],
         onwarn(warning) {
@@ -64,13 +62,21 @@ function testFixtures() {
             pattern: '**/index.js',
         },
         async ({ filename, dirname, config }) => {
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-            });
-
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
             const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+
+            let compiledFixturePath;
+            try {
+                compiledFixturePath = await compileFixture({
+                    input: filename,
+                    dirname,
+                });
+            } catch (err: any) {
+                return {
+                    [errorFile]: `SSR compilation error:\n${err.message}`,
+                    [expectedFile]: '',
+                };
+            }
 
             const module = (await import(compiledFixturePath)) as FixtureModule;
 

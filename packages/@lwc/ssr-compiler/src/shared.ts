@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+
 export type Expression = string;
 
 export type Instruction =
@@ -56,7 +58,4 @@ export interface IHoistInstantiation {
     kind: 'hoistInstantiation';
 }
 
-export interface TransformOptions {
-    name?: string;
-    namespace?: string;
-}
+export type TransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
