@@ -23,14 +23,14 @@ function bYieldComment(text = '') {
     return b.expressionStatement(b.yieldExpression(b.literal(`<!--${text}-->`)));
 }
 
-function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
-    return b.blockStatement(
-        optimizeAdjacentYieldStmts([
-            bYieldComment(),
-            ...childNodes.flatMap((childNode) => irToEs(childNode, cxt)),
-            bYieldComment(),
-        ])
-    );
+function bBlockStatement(
+    childNodes: IrChildNode[],
+    cxt: TransformerContext,
+    insertComments: boolean
+): EsBlockStatement {
+    let statements = childNodes.flatMap((childNode) => irToEs(childNode, cxt));
+    if (insertComments) statements = [bYieldComment(), ...statements, bYieldComment()];
+    return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
 
 export const If: Transformer<IrIf> = function If(node, cxt) {
@@ -43,7 +43,7 @@ export const If: Transformer<IrIf> = function If(node, cxt) {
         expressionIrToEs(condition, cxt)
     );
 
-    return [b.ifStatement(comparison, bBlockStatement(children, cxt))];
+    return [b.ifStatement(comparison, bBlockStatement(children, cxt, false))];
 };
 
 function bIfStatement(
@@ -55,7 +55,7 @@ function bIfStatement(
     let elseBlock = null;
     if (elseNode) {
         if (elseNode.type === 'ElseBlock') {
-            elseBlock = bBlockStatement(elseNode.children, cxt);
+            elseBlock = bBlockStatement(elseNode.children, cxt, true);
         } else {
             elseBlock = bIfStatement(elseNode, cxt);
         }
@@ -63,7 +63,7 @@ function bIfStatement(
 
     return b.ifStatement(
         expressionIrToEs(condition, cxt),
-        bBlockStatement(children, cxt),
+        bBlockStatement(children, cxt, true),
         elseBlock
     );
 }
