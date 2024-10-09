@@ -4,7 +4,6 @@ import { defineConfig, configDefaults } from 'vitest/config';
 
 import transformFramework from './vitest-scripts/karma-plugins/transform-framework';
 import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
-
 export default defineConfig({
     plugins: [transformFramework(), lwcTestPlugin()],
     test: {

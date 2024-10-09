@@ -30,7 +30,7 @@ export default function lwcPreprocessor(): VitestPlugin {
     return {
         name: 'vitest-plugin-lwc-preprocessor',
         enforce: 'pre',
-        async load(id: string) {
+        async transform(_code, id) {
             if (!filter(id)) {
                 return;
             }
@@ -80,7 +80,12 @@ export default function lwcPreprocessor(): VitestPlugin {
                         rollupPluginToUse = perApiVersionPlugin;
                     }
                     // @ts-expect-error transform is not defined
-                    return rollupPluginToUse.transform!.call(this, src, id);
+                    const { code, map } = rollupPluginToUse.transform!.call(this, src, id);
+
+                    return {
+                        code: code.replace('/*LWC compiler v', '/*!/*LWC compiler v'),
+                        map,
+                    };
                 },
             };
 
@@ -122,7 +127,12 @@ export default function lwcPreprocessor(): VitestPlugin {
                 // outro,
             });
 
-            return output[0];
+            const { code, map } = output[0];
+
+            return {
+                code: code.replace('/*LWC compiler v', '/*!/*LWC compiler v'),
+                map,
+            };
         },
     };
 }
