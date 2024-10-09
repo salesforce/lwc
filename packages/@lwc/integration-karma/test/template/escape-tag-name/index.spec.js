@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Component from 'x/component';
 
 // Browsers treat tag names containing the \ (backslash) character differently
@@ -18,19 +17,15 @@ import Component from 'x/component';
 //
 // Since using backslashes in attribute names is fairly useless, we do not attempt to smooth out this difference.
 
-let caughtError;
-
-catchUnhandledRejectionsAndErrors((error) => {
-    caughtError = error;
-});
-
-afterEach(() => {
-    caughtError = undefined;
-});
-
 it('should render tag names with proper escaping', async () => {
     const elm = createElement('x-component', { is: Component });
-    document.body.appendChild(elm);
+    let caughtError;
+
+    try {
+        document.body.appendChild(elm);
+    } catch (error) {
+        caughtError = error;
+    }
 
     await Promise.resolve();
 

@@ -19,6 +19,7 @@ export default defineConfig({
             NATIVE_SHADOW: 'true',
             ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
                 process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+            DISABLE_STATIC_CONTENT_OPTIMIZATION: process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION,
         },
         browser: {
             enabled: true,

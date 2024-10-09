@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-'use strict';
-
 import { HIGHEST_API_VERSION } from '@lwc/shared';
 
 // Helpful error. Remove after a few months.
