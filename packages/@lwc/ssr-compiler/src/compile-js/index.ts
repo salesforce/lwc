@@ -141,7 +141,7 @@ export default function compileJS(src: string, filename: string) {
         // file in question is likely not an LWC. With this v1 implementation,
         // we'll just return the original source.
         return {
-            code: src,
+            code: generate(ast, {}),
         };
     }
 
