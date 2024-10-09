@@ -35,6 +35,10 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
     name?: string;
     namespace?: string;
     props?: Record<string, string | string[]>;
+    ssrFiles?: {
+        error?: string;
+        expected?: string;
+    };
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */

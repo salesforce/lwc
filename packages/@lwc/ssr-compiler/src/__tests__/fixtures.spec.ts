@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
 
+import path from 'node:path';
 import { vi } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
@@ -69,6 +69,9 @@ function testFixtures() {
                 dirname,
             });
 
+            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
+            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+
             const module = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
@@ -80,20 +83,20 @@ function testFixtures() {
                 );
             } catch (err: any) {
                 return {
-                    'error.txt': err.message,
-                    'expected.html': '',
+                    [errorFile]: err.message,
+                    [expectedFile]: '',
                 };
             }
 
             try {
                 return {
-                    'expected.html': formatHTML(result),
-                    'error.txt': '',
+                    [errorFile]: '',
+                    [expectedFile]: formatHTML(result),
                 };
             } catch (_err: any) {
                 return {
-                    'error.txt': `Test helper could not format HTML:\n\n${result}`,
-                    'expected.html': '',
+                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
+                    [expectedFile]: '',
                 };
             }
         }
