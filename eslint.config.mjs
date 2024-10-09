@@ -255,8 +255,12 @@ export default tseslint.config(
     // Package-specific rules //
     // ---------------------- //
     {
+        // All published files must have a copyright header
         files: PUBLIC_PACKAGES,
-        ignores: PUBLIC_PACKAGES.map((path) => `${path}/vitest.config.mjs`),
+        ignores: PUBLIC_PACKAGES.flatMap((pkg) => [
+            `${pkg}/vitest.config.mjs`,
+            `${pkg}/src/__tests__/**`,
+        ]),
         rules: {
             'header/header': [
                 'error',
