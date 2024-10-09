@@ -60,6 +60,6 @@ function bIfStatement(
     );
 }
 
-export const IfBlock: Transformer<IrIfBlock> = function IfBlock(node, cxt) {
+export const IfBlock: Transformer<IrIfBlock | IrElseifBlock> = function IfBlock(node, cxt) {
     return [bIfStatement(node, cxt)];
 };

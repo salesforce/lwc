@@ -51,7 +51,7 @@ const transformers: Transformers = {
     IfBlock,
     Root,
     Text,
-    ElseifBlock: defaultTransformer,
+    ElseifBlock: IfBlock,
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
     Slot: defaultTransformer,
