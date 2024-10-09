@@ -15,8 +15,10 @@
 
 import { htmlPropertyToAttribute } from '@lwc/shared';
 import { ClassList } from './class-list';
+import { MutationTracker } from './mutation-tracker';
 
-export { ClassList };
+export { ClassList } from './class-list';
+export { MutationTracker } from './mutation-tracker';
 export { validateStyleTextContents } from './validate-style-text-contents';
 
 type EventListenerOrEventListenerObject = unknown;
@@ -30,26 +32,6 @@ type LightningElementConstructor = typeof LightningElement;
 
 interface PropsAvailableAtConstruction {
     tagName: string;
-}
-
-class MutationTracker {
-    mutationMap = new WeakMap<LightningElement, Set<string>>();
-    add(instance: LightningElement, attrName: string): void {
-        let mutatedAttrs = this.mutationMap.get(instance);
-        if (!mutatedAttrs) {
-            mutatedAttrs = new Set();
-            this.mutationMap.set(instance, mutatedAttrs);
-        }
-        mutatedAttrs.add(attrName.toLowerCase());
-    }
-    renderMutatedAttrs(instance: LightningElement): string {
-        const mutatedAttrs = this.mutationMap.get(instance);
-        if (mutatedAttrs) {
-            return ` data-lwc-host-mutated="${[...mutatedAttrs].sort().join(' ')}"`;
-        } else {
-            return '';
-        }
-    }
 }
 
 export const mutationTracker = new MutationTracker();
