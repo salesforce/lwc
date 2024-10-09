@@ -14,6 +14,8 @@ vi.stubGlobal('process', {
         NATIVE_SHADOW: true,
         ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
             process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL === '1',
+        ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION:
+            process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION === '1',
         LWC_VERSION,
     },
 });

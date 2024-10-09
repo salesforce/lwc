@@ -29,6 +29,7 @@ export default defineConfig({
         env: {
             NODE_ENV: 'test-karma-lwc',
             NATIVE_SHADOW: 'true',
+            ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
         },
         browser: {
             enabled: true,
@@ -36,6 +37,13 @@ export default defineConfig({
             screenshotFailures: false,
             name: 'chromium',
             provider: 'playwright',
+            testerScripts: [
+                process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
+                    ? {
+                          src: '@lwc/synthetic-shadow/dist/index.js?iife',
+                      }
+                    : {},
+            ],
             providerOptions: { launch: { devtools: true } },
         },
     },
