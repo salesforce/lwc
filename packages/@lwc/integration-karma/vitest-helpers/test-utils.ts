@@ -6,7 +6,6 @@
  */
 
 export { expect, describe, vi } from 'vitest';
-import * as lwc from 'lwc';
 
 export function expectComposedPath(
     event: Event,
@@ -252,6 +251,9 @@ export function isNativeShadowRootInstance(sr: ShadowRoot) {
 type OverridableHooksDef = Parameters<typeof import('lwc').setHooks>[0];
 type SanitizeHtmlContentHook = OverridableHooksDef['sanitizeHtmlContent'];
 
+//
+let isOverriden = false;
+
 // Providing overridable hooks for tests
 let sanitizeHtmlContentHook: SanitizeHtmlContentHook = function () {
     throw new Error('sanitizeHtmlContent hook must be implemented.');
@@ -263,13 +265,16 @@ export function getHooks() {
     };
 }
 
-lwc.setHooks({
-    sanitizeHtmlContent: function (content) {
-        return sanitizeHtmlContentHook(content);
-    },
-});
-
 export function setHooks(hooks: OverridableHooksDef) {
+    if (!isOverriden) {
+        LWC.setHooks({
+            sanitizeHtmlContent: function (content) {
+                return sanitizeHtmlContentHook(content);
+            },
+        });
+        isOverriden = true;
+    }
+
     if (hooks.sanitizeHtmlContent) {
         sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
     }
@@ -480,7 +485,7 @@ export function attachReportingControlDispatcher(
     dispatcher: ReportingDispatcher,
     runtimeEvents: ReportingEventId[keyof ReportingEventId][]
 ) {
-    lwc.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
+    LWC.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
         if (!runtimeEvents || runtimeEvents.includes(eventName)) {
             dispatcher(eventName, payload);
         }
@@ -488,7 +493,7 @@ export function attachReportingControlDispatcher(
 }
 
 export function detachReportingControlDispatcher() {
-    lwc.__unstable__ReportingControl.detachDispatcher();
+    LWC.__unstable__ReportingControl.detachDispatcher();
 }
 
 const testUtils = {
