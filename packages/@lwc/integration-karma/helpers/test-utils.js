@@ -327,8 +327,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             : windowErrorListener(callback);
     }
 
-    const getNormalizedFunctionAsString = (fn) => fn.toString().replace(/(\s|\n)/g, '');
-
     const customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
         toLogError: consoleDevMatcherFactory('error', true),
@@ -345,29 +343,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             windowErrorListener,
             true
         ),
-        toEqualWireSettings: function () {
-            return {
-                compare: function (actual, expected) {
-                    Object.keys(actual).forEach((currentKey) => {
-                        const normalizedActual = Object.assign({}, actual[currentKey], {
-                            config: getNormalizedFunctionAsString(actual[currentKey].config),
-                        });
-
-                        const normalizedExpected = Object.assign({}, expected[currentKey], {
-                            config: getNormalizedFunctionAsString(
-                                expected[currentKey].config || function () {}
-                            ),
-                        });
-
-                        expect(normalizedActual).toEqual(normalizedExpected);
-                    });
-
-                    return {
-                        pass: true,
-                    };
-                },
-            };
-        },
     };
 
     beforeAll(function () {

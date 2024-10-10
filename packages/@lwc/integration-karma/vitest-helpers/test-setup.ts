@@ -5,7 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import './test-globals';
-import './test-matchers';
+import customMatchers from './test-matchers';
+
+expect.extend(customMatchers);
 
 // Global beforeEach/afterEach/etc logic to run before and after each test
 

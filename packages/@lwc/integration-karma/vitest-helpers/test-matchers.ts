@@ -1,5 +1,4 @@
-import { vi, expect } from 'vitest';
-import type { RawMatcherFn } from '@vitest/expect';
+import type { MatchersObject, RawMatcherFn } from '@vitest/expect';
 
 function pass() {
     return {
@@ -204,10 +203,7 @@ function customElementCallbackReactionErrorListener(callback: Callback) {
     return errorListener(callback);
 }
 
-const getNormalizedFunctionAsString = (fn: { toString: () => string }) =>
-    fn.toString().replace(/(\s|\n)/g, '');
-
-expect.extend({
+const customMatchers = {
     toLogErrorDev: consoleDevMatcherFactory('error'),
     toLogError: consoleDevMatcherFactory('error', true),
     toLogWarningDev: consoleDevMatcherFactory('warn'),
@@ -238,28 +234,9 @@ expect.extend({
                 `Expected array ${to} have size ${size}, but received ${received.length}`,
         };
     },
+} as const satisfies MatchersObject;
 
-    toEqualWireSettings(actual, expected) {
-        Object.keys(actual).forEach((currentKey) => {
-            const normalizedActual = Object.assign({}, actual[currentKey], {
-                config: getNormalizedFunctionAsString(actual[currentKey].config),
-            });
-
-            const normalizedExpected = Object.assign({}, expected[currentKey], {
-                config: getNormalizedFunctionAsString(
-                    expected[currentKey].config || function () {}
-                ),
-            });
-
-            expect(normalizedActual).toEqual(normalizedExpected);
-        });
-
-        return {
-            pass: true,
-            message: () => '',
-        };
-    },
-});
+export default customMatchers;
 
 interface CustomMatchers<R = unknown> {
     toLogErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;
