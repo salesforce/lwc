@@ -76,7 +76,16 @@ type TestConfig = {
     clientProps?: any;
 };
 
-export function runTest(ssrRendered: string, Component: any, testConfig: TestConfig) {
+export function runTest(
+    ssrRendered: string,
+    Component: any,
+    testConfig: TestConfig,
+    error: Error | null
+) {
+    if (error) {
+        throw error;
+    }
+
     const container = appendTestTarget(ssrRendered);
     // @ts-expect-error querySelector is not defined
     const selector = container.firstChild.tagName.toLowerCase();

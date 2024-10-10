@@ -76,6 +76,7 @@ async function getCompiledModule(dirName: string) {
     });
 
     const { watchFiles } = bundle;
+
     cache = bundle.cache;
 
     const { output } = await bundle.generate({
@@ -99,6 +100,8 @@ async function getTestModuleCode(input: InputOption) {
         external: ['lwc', 'test-utils', '@test/loader'],
     });
 
+    const { watchFiles } = bundle;
+
     cache = bundle.cache;
 
     const { output } = await bundle.generate({
@@ -111,7 +114,9 @@ async function getTestModuleCode(input: InputOption) {
         name: 'config',
     });
 
-    return output[0];
+    const { code } = output[0];
+
+    return { code, watchFiles };
 }
 
 function getSsrCode(filename: string, moduleCode: string, testConfig: string) {
@@ -125,7 +130,12 @@ function getSsrCode(filename: string, moduleCode: string, testConfig: string) {
     );
 
     vm.createContext(context);
-    script.runInContext(context);
+
+    try {
+        script.runInContext(context, { displayErrors: true, filename });
+    } catch (error) {
+        return error;
+    }
 
     return context.moduleOutput;
 }
@@ -153,6 +163,9 @@ export default function vitestPluginLwcHydrate(): Plugin {
 
             return config;
         },
+        shouldTransformCachedModule(_options) {
+            return true;
+        },
 
         async transform(code, id, _options) {
             if (id.endsWith('index.spec.js')) {
@@ -165,20 +178,36 @@ export default function vitestPluginLwcHydrate(): Plugin {
                     getCompiledModule(suiteDir),
                 ]);
 
-                const ssrOutput = getSsrCode(id, testOutput.code, moduleOutput.code);
-
-                const ssrRendered = JSON.stringify(ssrOutput);
+                for (const file of moduleOutput.watchFiles) {
+                    this.addWatchFile(file);
+                }
+                for (const file of testOutput.watchFiles) {
+                    this.addWatchFile(file);
+                }
 
                 const magicString = new MagicString(testOutput.code, {
                     filename: id,
                 });
+
+                const ssrOutput = getSsrCode(id, testOutput.code, moduleOutput.code);
+                const ssrRendered = JSON.stringify(ssrOutput);
+
+                if (ssrOutput instanceof Error) {
+                    const serializedError = JSON.stringify(
+                        ssrOutput,
+                        Object.getOwnPropertyNames(ssrOutput)
+                    );
+                    magicString.prepend(`const error = ${serializedError};`);
+                } else {
+                    magicString.prepend(`const error = null;`);
+                }
 
                 magicString.prepend(`const ssrRendered = ${ssrRendered};`);
                 magicString.prepend(`${moduleOutput.code};`);
                 magicString.prepend(`import { runTest } from 'test-hydrate';`);
                 magicString.prepend(`import { expect } from 'vitest';`);
                 magicString.append(
-                    `it('${describeTitle}', () => { return runTest(ssrRendered, Main, config); });`
+                    `it('${describeTitle}', () => { return runTest(ssrRendered, Main, config, error); });`
                 );
 
                 const code = magicString.toString();
