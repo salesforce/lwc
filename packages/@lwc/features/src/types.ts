@@ -69,6 +69,12 @@ export interface FeatureFlagMap {
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+
+    /**
+     * If true, enable the slot forwarding fix. This fix is a backport of
+     * https://github.com/salesforce/lwc/pull/4452 and already exists in spring25.
+     */
+    ENABLE_SLOT_FORWARDING_FIX: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
