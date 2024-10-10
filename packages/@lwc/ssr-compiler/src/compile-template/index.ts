@@ -7,13 +7,17 @@
 
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
-import { parse } from '@lwc/template-compiler';
+import {
+    ElementDirective,
+    parse,
+    Root,
+    type Config as TemplateCompilerConfig,
+} from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
-import type { TransformOptions } from '../shared';
 import type {
     Node as EsNode,
     Statement as EsStatement,
@@ -61,18 +65,62 @@ const bExportTemplate = esTemplate<
     }
 `;
 
-export default function compileTemplate(src: string, filename: string, options: TransformOptions) {
-    const { root, warnings } = parse(src);
+function templateUsesDirective(root: Root, target: ElementDirective['name']): boolean {
+    return root.children.some(function hasDirective(child) {
+        return (
+            ('directives' in child && child.directives.some((dir) => dir.name === target)) ||
+            ('children' in child && child.children.some(hasDirective))
+        );
+    });
+}
+
+export default function compileTemplate(
+    src: string,
+    filename: string,
+    // Technically this is @lwc/compiler's TransformOptions, but we can't use that without
+    // introducing a circular dependency. @lwc/template-compiler's options are close enough.
+    options: TemplateCompilerConfig
+) {
+    const { root, warnings } = parse(src, {
+        // `options` is from @lwc/compiler, and may have flags that @lwc/template-compiler doesn't
+        // know about, so we must explicitly extract the relevant props.
+        name: options.name,
+        namespace: options.namespace,
+        customRendererConfig: options.customRendererConfig,
+        experimentalComputedMemberExpression: options.experimentalComputedMemberExpression,
+        experimentalComplexExpressions: options.experimentalComplexExpressions,
+        enableDynamicComponents: options.enableDynamicComponents,
+        preserveHtmlComments: options.preserveHtmlComments,
+        enableStaticContentOptimization: options.enableStaticContentOptimization,
+        instrumentation: options.instrumentation,
+        apiVersion: options.apiVersion,
+        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        // TODO [#3331]: remove usage of lwc:dynamic in 246
+        experimentalDynamicDirective: options.experimentalDynamicDirective,
+    });
     if (!root || warnings.length) {
+        let fatal = !root;
         for (const warning of warnings) {
             // eslint-disable-next-line no-console
             console.error('Cannot compile:', warning.message);
+            if (warning.level === 0 /* fatal */ || warning.level === 1 /* error */) {
+                fatal = true;
+            }
         }
-        throw new Error('Template compilation failure; see warnings in the console.');
+        // || !root is just used here to make TypeScript happy
+        if (fatal || !root) {
+            throw new Error('Template compilation failure; see warnings in the console.');
+        }
+    }
+
+    if (templateUsesDirective(root, 'Dynamic')) {
+        throw new Error(
+            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
+        );
     }
 
     const tmplRenderMode =
-        root!.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
+        root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
         'shadow';
     const astShadowModeBool = tmplRenderMode === 'light' ? b.literal(true) : b.literal(false);
 
