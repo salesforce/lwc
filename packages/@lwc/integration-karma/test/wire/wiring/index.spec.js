@@ -233,33 +233,34 @@ describe('wiring', () => {
                 });
         });
 
-        it('should trigger component rerender when field is updated', (done) => {
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
-            document.body.appendChild(elm);
+        it('should trigger component rerender when field is updated', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+                document.body.appendChild(elm);
 
-            void Promise.resolve()
-                .then(() => Promise.resolve()) // In this tick, the config is injected.
-                .then(() => {
-                    // Now the component have re-rendered.
-                    const staticValue = elm.shadowRoot.querySelector('.static');
-                    const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
-
-                    expect(staticValue.textContent).toBe('1,2,3');
-                    expect(dynamicValue.textContent).toBe('');
-
-                    elm.setDynamicParamSource('modified value');
-
-                    setTimeout(() => {
+                void Promise.resolve()
+                    .then(() => Promise.resolve()) // In this tick, the config is injected.
+                    .then(() => {
+                        // Now the component have re-rendered.
                         const staticValue = elm.shadowRoot.querySelector('.static');
                         const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
 
                         expect(staticValue.textContent).toBe('1,2,3');
-                        expect(dynamicValue.textContent).toBe('modified value');
+                        expect(dynamicValue.textContent).toBe('');
 
-                        done();
-                    }, 5);
-                });
-        });
+                        elm.setDynamicParamSource('modified value');
+
+                        setTimeout(() => {
+                            const staticValue = elm.shadowRoot.querySelector('.static');
+                            const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
+
+                            expect(staticValue.textContent).toBe('1,2,3');
+                            expect(dynamicValue.textContent).toBe('modified value');
+
+                            resolve();
+                        }, 5);
+                    });
+            }));
 
         it('should not call update when component is disconnected.', () => {
             const spy = [];

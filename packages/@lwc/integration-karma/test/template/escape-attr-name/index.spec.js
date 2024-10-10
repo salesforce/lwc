@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import BooleanValue from 'x/booleanValue';
 import StringValue from 'x/stringValue';
 
@@ -19,15 +18,15 @@ import StringValue from 'x/stringValue';
 //
 // Since using backticks in attribute names is fairly useless, we do not attempt to smooth out this difference.
 
-let caughtError;
+// let caughtError;
 
-catchUnhandledRejectionsAndErrors((error) => {
-    caughtError = error;
-});
+// catchUnhandledRejectionsAndErrors((error) => {
+//     caughtError = error;
+// });
 
-afterEach(() => {
-    caughtError = undefined;
-});
+// afterEach(() => {
+//     caughtError = undefined;
+// });
 
 const scenarios = [
     {
@@ -47,8 +46,14 @@ const scenarios = [
 scenarios.forEach(({ name, expectedValue, Ctor, tagName }) => {
     describe(name, () => {
         it('should render attr names with proper escaping', async () => {
+            let caughtError;
             const elm = createElement(tagName, { is: Ctor });
-            document.body.appendChild(elm);
+
+            try {
+                document.body.appendChild(elm);
+            } catch (error) {
+                caughtError = error;
+            }
 
             await Promise.resolve();
             if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
