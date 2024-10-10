@@ -71,7 +71,8 @@ export interface FeatureFlagMap {
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
 
     /**
-     * If true, enable the slot forwarding fix.
+     * If true, enable the slot forwarding fix. This fix is a backport of
+     * https://github.com/salesforce/lwc/pull/4452 and already exists in spring25.
      */
     ENABLE_SLOT_FORWARDING_FIX: FeatureFlagValue;
 }
