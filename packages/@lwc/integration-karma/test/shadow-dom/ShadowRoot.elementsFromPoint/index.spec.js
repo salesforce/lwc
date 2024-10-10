@@ -95,7 +95,12 @@ describe('elementsFromPoint', () => {
                 const rootNode = element.getRootNode();
                 const x = left + width / 2;
                 const y = top + height / 2;
-                testElementsFromPoint(rootNode, x, y, [...expectedElements, elm, body, html]);
+                try {
+                    testElementsFromPoint(rootNode, x, y, [...expectedElements, elm, body, html]);
+                } catch (error) {
+                    Error.captureStackTrace(error, test);
+                    throw error;
+                }
             }
 
             test(elm, []);
@@ -124,7 +129,15 @@ describe('elementsFromPoint', () => {
             };
 
             function test(element, expectedElements) {
-                testElementsFromPoint(element.getRootNode(), 50, 50, [...expectedElements, html]);
+                try {
+                    testElementsFromPoint(element.getRootNode(), 50, 50, [
+                        ...expectedElements,
+                        html,
+                    ]);
+                } catch (error) {
+                    Error.captureStackTrace(error, test);
+                    throw error;
+                }
             }
 
             test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
