@@ -105,6 +105,10 @@ export default function lwcPreprocessor(): VitestPlugin {
                 },
             });
 
+            for (const watchFile of bundle.watchFiles) {
+                this.addWatchFile(watchFile);
+            }
+
             cache = bundle.cache;
 
             const { output } = await bundle.generate({
