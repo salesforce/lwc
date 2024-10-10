@@ -7,7 +7,12 @@
 
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
-import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+import {
+    ElementDirective,
+    parse,
+    Root,
+    type Config as TemplateCompilerConfig,
+} from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
@@ -60,6 +65,15 @@ const bExportTemplate = esTemplate<
     }
 `;
 
+function templateUsesDirective(root: Root, target: ElementDirective['name']): boolean {
+    return root.children.some(function hasDirective(child) {
+        return (
+            ('directives' in child && child.directives.some((dir) => dir.name === target)) ||
+            ('children' in child && child.children.some(hasDirective))
+        );
+    });
+}
+
 export default function compileTemplate(
     src: string,
     filename: string,
@@ -67,12 +81,6 @@ export default function compileTemplate(
     // introducing a circular dependency. @lwc/template-compiler's options are close enough.
     options: TemplateCompilerConfig
 ) {
-    if (options.experimentalDynamicDirective) {
-        throw new Error(
-            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
-        );
-    }
-
     const { root, warnings } = parse(src, {
         // `options` is from @lwc/compiler, and may have flags that @lwc/template-compiler doesn't
         // know about, so we must explicitly extract the relevant props.
@@ -87,6 +95,8 @@ export default function compileTemplate(
         instrumentation: options.instrumentation,
         apiVersion: options.apiVersion,
         disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        // TODO [#3331]: remove usage of lwc:dynamic in 246
+        experimentalDynamicDirective: options.experimentalDynamicDirective,
     });
     if (!root || warnings.length) {
         let fatal = !root;
@@ -103,8 +113,14 @@ export default function compileTemplate(
         }
     }
 
+    if (templateUsesDirective(root, 'Dynamic')) {
+        throw new Error(
+            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
+        );
+    }
+
     const tmplRenderMode =
-        root!.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
+        root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
         'shadow';
     const astShadowModeBool = tmplRenderMode === 'light' ? b.literal(true) : b.literal(false);
 
