@@ -297,8 +297,10 @@ function s(
                         // now) is the one that needs to own the clone. Whereas if a reactivity change higher in the
                         // tree causes the slotter to unmount, then the slottable will also unmount. So using the
                         // current VM works either way.
-                        if (isVCustomElement(vnode)) {
-                            addVNodeToChildLWC(clonedVNode as VCustomElement);
+                        if (lwcRuntimeFlags.ENABLE_SLOT_FORWARDING_FIX) {
+                            if (isVCustomElement(vnode)) {
+                                addVNodeToChildLWC(clonedVNode as VCustomElement);
+                            }
                         }
                     }
                     // If the slot content is standard type, the content is static, no additional

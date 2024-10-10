@@ -69,6 +69,11 @@ export interface FeatureFlagMap {
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+
+    /**
+     * If true, enable the slot forwarding fix.
+     */
+    ENABLE_SLOT_FORWARDING_FIX: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

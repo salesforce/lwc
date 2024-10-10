@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
 
 import SlotForwarding from 'x/slotForwarding';
@@ -13,11 +13,13 @@ const resetTimingBuffer = () => {
 };
 
 beforeEach(() => {
+    setFeatureFlagForTest('ENABLE_SLOT_FORWARDING_FIX', true);
     window.timingBuffer = [];
     resetId();
 });
 
 afterEach(() => {
+    setFeatureFlagForTest('ENABLE_SLOT_FORWARDING_FIX', false);
     delete window.timingBuffer;
 });
 
