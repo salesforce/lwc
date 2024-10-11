@@ -236,7 +236,7 @@ const customMatchers = {
     },
 } as const satisfies MatchersObject;
 
-export default customMatchers;
+expect.extend(customMatchers);
 
 interface CustomMatchers<R = unknown> {
     toLogErrorDev: (expected: ExpectedMessage | ExpectedMessage[]) => R;

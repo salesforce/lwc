@@ -1,14 +1,3 @@
-/*
- * Copyright (c) 2023, Salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-import './test-globals';
-import customMatchers from './test-matchers';
-
-expect.extend(customMatchers);
-
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
 var knownChildren: any[] | undefined;
@@ -38,8 +27,6 @@ beforeEach(function () {
     knownAdoptedStyleSheets = getAdoptedStyleSheets();
 });
 
-let consoleCallCount = 0;
-
 afterEach(function () {
     getChildren().forEach(function (child) {
         if (knownChildren!.indexOf(child) === -1) {
@@ -56,39 +43,18 @@ afterEach(function () {
     window.__lwcResetGlobalStylesheets();
     // Certain logs only appear once; we want to reset these between tests
     window.__lwcResetAlreadyLoggedMessages();
-
-    consoleCallCount = 0;
 });
-
-// Patch console.error/console.warn, etc. so if it's called, we throw
-function patchConsole() {
-    (['error', 'warn'] as const).forEach(function (method) {
-        var originalMethod = window.console[method];
-        window.console[method] = function () {
-            consoleCallCount++;
-            return originalMethod.apply(this, Array.from(arguments));
-        };
-    });
-}
-
-function throwIfConsoleCalled() {
-    if (consoleCallCount) {
-        throw new Error(
-            'Expected console not to be called, but was called ' + consoleCallCount + ' time(s)'
-        );
-    }
-}
 
 // Run some logic before all tests have run and after all tests have run to ensure that
 // no test dirtied the DOM with leftover elements
 var originalHeadChildren: any[];
 var originalBodyChildren: any[];
 var originalAdoptedStyleSheets: any[];
+
 beforeAll(function () {
     originalHeadChildren = getHeadChildren();
     originalBodyChildren = getBodyChildren();
     originalAdoptedStyleSheets = getAdoptedStyleSheets();
-    patchConsole();
 });
 
 // Throwing an Error in afterAll will cause a non-zero exit code
@@ -116,13 +82,4 @@ afterAll(function () {
             );
         }
     });
-
-    throwIfConsoleCalled();
 });
-
-// The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
-vi.setConfig({
-    testTimeout: 60000,
-});
-
-// Extend the Window interface to include the __lwcResetGlobalStylesheets property

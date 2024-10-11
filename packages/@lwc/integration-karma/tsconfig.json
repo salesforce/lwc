@@ -4,6 +4,7 @@
         "esModuleInterop": true,
         "noEmit": true,
         "allowJs": true,
+        "module": "ESNext",
         "target": "ESNext",
         "strict": true,
         "lib": ["ES2015.Promise", "DOM"],
@@ -19,6 +20,7 @@
         "vitest-helpers/*.ts",
         "test/**/*.spec.ts",
         "test/**/*.spec.js",
-        "test-hydration/**/*.spec.js"
+        "test-hydration/**/*.spec.js",
+        "vitest-setup/**/*.ts"
     ]
 }

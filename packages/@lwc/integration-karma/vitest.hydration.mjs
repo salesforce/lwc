@@ -14,6 +14,7 @@ export default defineConfig({
         include: ['**/*.spec.js'],
         exclude: ['**/__screenshots__/**'],
         globals: true,
+        silent: true,
         passWithNoTests: true,
         alias: [
             {
@@ -25,7 +26,7 @@ export default defineConfig({
                 replacement: path.resolve(__dirname, 'vitest-helpers/test-hydrate.ts'),
             },
         ],
-        setupFiles: ['./vitest-helpers/test-setup.ts'],
+        setupFiles: ['./vitest-setup/index.ts'],
         env: {
             NODE_ENV: 'test-karma-lwc',
             ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
@@ -36,6 +37,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             screenshotFailures: false,
+            ui: false,
             name: 'chromium',
             provider: 'playwright',
             providerOptions: { launch: { devtools: true } },

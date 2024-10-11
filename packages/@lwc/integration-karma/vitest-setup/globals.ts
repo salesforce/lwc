@@ -3,7 +3,7 @@ import * as wireService from '@lwc/wire-service';
 import { vi } from 'vitest';
 import { LWC_VERSION } from '@lwc/shared';
 
-import * as testUtils from './test-utils';
+import * as testUtils from 'test-utils';
 
 vi.stubGlobal('LWC', { ...lwc });
 vi.stubGlobal('TestUtils', { ...testUtils });
