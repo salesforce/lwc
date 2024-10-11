@@ -19,6 +19,7 @@ import {
     type Element as IrElement,
     type Literal as IrLiteral,
     type Property as IrProperty,
+    ExternalComponent as IrExternalComponent,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { irChildrenToEs } from './ir-to-es';
@@ -113,7 +114,10 @@ function reorderAttributes(
     );
 }
 
-export const Element: Transformer<IrElement> = function Element(node, cxt): EsStatement[] {
+export const Element: Transformer<IrElement | IrExternalComponent> = function Element(
+    node,
+    cxt
+): EsStatement[] {
     const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes(
         node.attributes,
         node.properties
