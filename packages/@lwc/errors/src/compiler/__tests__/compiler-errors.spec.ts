@@ -62,14 +62,6 @@ class CustomError extends Error {
     }
 }
 
-function checkErrorEquality(actual: CompilerError, expected: CompilerError) {
-    expect(actual).toEqual(expected);
-    expect(actual.code).toEqual(expected.code);
-    expect(actual.level).toEqual(expected.level);
-    expect(actual.filename).toEqual(expected.filename);
-    expect(actual.location).toEqual(expected.location);
-}
-
 describe('error handling', () => {
     describe('generate compiler diagnostic', () => {
         it('generates a compiler diagnostic when config is null', () => {
@@ -106,18 +98,17 @@ describe('error handling', () => {
         it('generates a compiler error when config is null', () => {
             const target = new CompilerError(4, 'LWC4: Test Error {0} with message {1}');
 
-            checkErrorEquality(generateCompilerError(ERROR_INFO), target);
+            expect(generateCompilerError(ERROR_INFO)).toEqual(target);
         });
         it('generates a compiler error based on the provided error info', () => {
             const args = ['arg1', 10];
             const target = new CompilerError(4, 'LWC4: Test Error arg1 with message 10');
 
-            checkErrorEquality(
+            expect(
                 generateCompilerError(ERROR_INFO, {
                     messageArgs: args,
-                }),
-                target
-            );
+                })
+            ).toEqual(target);
         });
 
         it('formats an error string properly', () => {
@@ -154,7 +145,7 @@ describe('error handling', () => {
     describe('normalizeToCompilerError', () => {
         it('preserves existing compiler error', () => {
             const error = new CompilerError(100, 'LWC100: test err');
-            checkErrorEquality(normalizeToCompilerError(GENERIC_ERROR, error), error);
+            expect(normalizeToCompilerError(GENERIC_ERROR, error)).toEqual(error);
         });
 
         it('adds origin info to an existing compiler error', () => {
@@ -171,13 +162,12 @@ describe('error handling', () => {
                 DEFAULT_LOCATION
             );
 
-            checkErrorEquality(
+            expect(
                 normalizeToCompilerError(GENERIC_ERROR, oldError, {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
-                }),
-                target
-            );
+                })
+            ).toEqual(target);
         });
 
         it('normalizes a given error into a compiler error', () => {
@@ -190,7 +180,7 @@ describe('error handling', () => {
             );
 
             const normalized = normalizeToCompilerError(GENERIC_ERROR, error);
-            checkErrorEquality(normalized, target);
+            expect(normalized).toEqual(target);
         });
 
         it('adds additional origin info into the normalized error if provided', () => {
@@ -202,13 +192,12 @@ describe('error handling', () => {
                 DEFAULT_LOCATION
             );
 
-            checkErrorEquality(
+            expect(
                 normalizeToCompilerError(GENERIC_ERROR, error, {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
-                }),
-                target
-            );
+                })
+            ).toEqual(target);
         });
 
         it('ignores the fallback errorInfo when an error code already exists on the error', () => {
@@ -225,13 +214,12 @@ describe('error handling', () => {
             });
             target.message = `CustomError: ${target.message}`;
 
-            checkErrorEquality(
+            expect(
                 normalizeToCompilerError(GENERIC_ERROR, error, {
                     filename: 'test.js',
                     location: DEFAULT_LOCATION,
-                }),
-                target
-            );
+                })
+            ).toEqual(target);
         });
     });
 
