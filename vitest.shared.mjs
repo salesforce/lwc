@@ -1,8 +1,11 @@
+import inspector from 'node:inspector';
 import { defineConfig } from 'vitest/config';
 import pkg from './package.json';
 
 export default defineConfig({
     test: {
+        // Don't time out if we detect a debugger attached
+        testTimeout: inspector.url() ? Number.MAX_SAFE_INTEGER : undefined,
         globals: true,
         include: ['**/*.{test,spec}.{mjs,js,ts}'],
         snapshotFormat: {
