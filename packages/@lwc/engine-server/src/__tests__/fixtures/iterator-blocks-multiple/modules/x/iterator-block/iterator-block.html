@@ -1,0 +1,19 @@
+<template>
+    <ul>
+        <template iterator:it={list}>
+            <li key={it.value}>
+                <div if:true={it.first} class="list-first"></div>
+                {it.index} - {it.value}
+                <div if:true={it.last} class="list-last"></div>
+            </li>
+        </template>
+
+        <template iterator:thing={other}>
+            <li key={thing.value}>
+                <div if:true={thing.first} class="first-list"></div>
+                {thing.value} -- {thing.index}
+                <div if:true={thing.last} class="last-list"></div>
+            </li>
+        </template>
+    </ul>
+</template>
