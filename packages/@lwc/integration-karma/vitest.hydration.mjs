@@ -15,7 +15,6 @@ export default defineConfig({
         exclude: ['**/__screenshots__/**'],
         globals: true,
         silent: true,
-        passWithNoTests: true,
         alias: [
             {
                 find: 'test-utils',
