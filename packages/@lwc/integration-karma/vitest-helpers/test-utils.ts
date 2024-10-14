@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { HIGHEST_API_VERSION } from '@lwc/shared';
+
 export function expectComposedPath(
     event: Event,
     target: EventTarget,
@@ -438,7 +440,9 @@ export function catchUnhandledRejectionsAndErrors(
     });
 }
 
-const apiVersion = process.env.API_VERSION ? parseInt(process.env.API_VERSION, 10) : 63;
+const apiVersion = process.env.API_VERSION
+    ? parseInt(process.env.API_VERSION, 10)
+    : HIGHEST_API_VERSION;
 
 // These values are based on the API versions in @lwc/shared/api-version
 
