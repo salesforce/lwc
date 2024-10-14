@@ -12,7 +12,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 export default defineConfig({
     plugins: [configPlugin(), transformFramework(), lwcTestPlugin()],
     test: {
-        name: 'lwc-integration-karma:test',
+        name: 'lwc-karma:test',
         dir: 'test',
         include: ['**/*.spec.{js,ts}'],
         exclude: [...configDefaults.exclude, '**/__screenshots__/**'],

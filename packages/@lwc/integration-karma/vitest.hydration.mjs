@@ -9,7 +9,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 export default defineConfig({
     plugins: [configPlugin(), lwcHydrationTestPlugin()],
     test: {
-        name: 'lwc-integration-karma:test-hydration',
+        name: 'lwc-karma:test-hydration',
         dir: 'test-hydration',
         include: ['**/*.spec.js'],
         exclude: ['**/__screenshots__/**'],
