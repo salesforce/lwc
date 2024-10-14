@@ -2,14 +2,11 @@
 
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
-import lwcHydrationTestPlugin from './vitest-plugins/hydration-tests';
-import configPlugin from './vitest-plugins/config';
-import transformFramework from './vitest-plugins/transform-framework';
-
+import plugins from './vitest-plugins';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
-    plugins: [configPlugin(), transformFramework(), lwcHydrationTestPlugin()],
+    plugins: plugins('test-hydration'),
     test: {
         name: 'lwc-karma:test-hydration',
         dir: 'test-hydration',

@@ -3,14 +3,12 @@
 import path from 'node:path';
 import { defineConfig, configDefaults } from 'vitest/config';
 
-import transformFramework from './vitest-plugins/transform-framework';
-import lwcTestPlugin from './vitest-plugins/lwc';
-import configPlugin from './vitest-plugins/config';
+import plugins from './vitest-plugins';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
-    plugins: [configPlugin(), transformFramework(), lwcTestPlugin()],
+    plugins: plugins('test'),
     test: {
         name: 'lwc-karma:test',
         dir: 'test',
@@ -22,8 +20,8 @@ export default defineConfig({
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
             NODE_ENV: 'development',
-            NODE_ENV_FOR_TEST: process.env.NODE_ENV_FOR_TEST,
             NATIVE_SHADOW: 'true',
+            NODE_ENV_FOR_TEST: process.env.NODE_ENV_FOR_TEST,
             ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
                 process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
             DISABLE_STATIC_CONTENT_OPTIMIZATION: process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION,
