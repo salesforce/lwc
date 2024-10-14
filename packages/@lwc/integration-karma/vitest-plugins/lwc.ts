@@ -17,7 +17,9 @@ import lwcRollupPlugin, { type RollupLwcOptions } from '@lwc/rollup-plugin';
 import {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     API_VERSION,
-} from '../vitest-scripts/shared/options';
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    COVERAGE,
+} from './shared/options';
 
 import type { Plugin as VitestPlugin } from 'vitest/config';
 
@@ -42,7 +44,7 @@ export default function lwcPreprocessor(): VitestPlugin {
             const createRollupPlugin = (options?: RollupLwcOptions) => {
                 return lwcRollupPlugin({
                     // Sourcemaps don't work with Istanbul coverage
-                    sourcemap: !process.env.COVERAGE,
+                    sourcemap: !COVERAGE,
                     experimentalDynamicComponent: {
                         loader: 'test-utils',
                         // @ts-expect-error experimentalDynamicComponent is not defined
@@ -50,8 +52,7 @@ export default function lwcPreprocessor(): VitestPlugin {
                     },
                     enableDynamicComponents: true,
                     experimentalComplexExpressions,
-                    enableStaticContentOptimization:
-                        !process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION,
+                    enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
                     disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
                     apiVersion: API_VERSION,
                     ...options,
@@ -113,7 +114,7 @@ export default function lwcPreprocessor(): VitestPlugin {
             const { output } = await bundle.generate({
                 format: 'iife',
                 // Sourcemaps don't work with Istanbul coverage
-                sourcemap: process.env.COVERAGE ? false : 'inline',
+                sourcemap: COVERAGE ? false : 'inline',
 
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
                 // referenced from the window object.

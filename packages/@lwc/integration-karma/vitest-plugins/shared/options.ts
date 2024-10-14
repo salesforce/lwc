@@ -13,10 +13,13 @@ if (process.env.NATIVE_SHADOW) {
 }
 
 export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
+
 export const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
+
 export const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(
     process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
 );
+
 export const ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL = Boolean(
     process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
 );
@@ -30,12 +33,16 @@ export const ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION = Boolean(
     process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
 );
 export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
+
 export const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
+
 export const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
     process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
 );
+
+export const COVERAGE = Boolean(process.env.COVERAGE);
 
 export const baseOptions = {
     API_VERSION,
@@ -48,7 +55,7 @@ export const baseOptions = {
     LEGACY_BROWSERS,
     NODE_ENV_FOR_TEST,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-};
+} as const;
 
 /** Unique directory name that encodes the flags that the tests were executed with. */
 export const COVERAGE_DIR_FOR_OPTIONS =
@@ -57,19 +64,11 @@ export const COVERAGE_DIR_FOR_OPTIONS =
         .map(([key, val]) => `${key}=${val}`)
         .join('/') || 'no-options';
 
-export default {
-    // Test configuration
-    ...baseOptions,
-    GREP: process.env.GREP,
-    COVERAGE: Boolean(process.env.COVERAGE),
-    COVERAGE_DIR_FOR_OPTIONS,
+export const GREP = process.env.GREP;
 
-    // Sauce labs
-    SAUCE_USERNAME: process.env.SAUCE_USERNAME,
-    SAUCE_ACCESS_KEY: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY,
-    SAUCE_TUNNEL_ID: process.env.SAUCE_TUNNEL_ID,
+export const SAUCE_USERNAME = process.env.SAUCE_USERNAME;
+export const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+export const SAUCE_TUNNEL_ID = process.env.SAUCE_TUNNEL_ID;
 
-    // CI
-    IS_CI: Boolean(process.env.CI),
-    GITHUB_RUN_ID: process.env.GITHUB_RUN_ID,
-};
+export const IS_CI = Boolean(process.env.CI);
+export const GITHUB_RUN_ID = process.env.GITHUB_RUN_ID;

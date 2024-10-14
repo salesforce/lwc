@@ -1,3 +1,9 @@
+import {
+    COVERAGE,
+    COVERAGE_DIR_FOR_OPTIONS,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
+} from './shared/options';
 import type { Plugin } from 'vitest/config';
 
 export default function vitestPluginLwcConfig(): Plugin {
@@ -13,15 +19,23 @@ export default function vitestPluginLwcConfig(): Plugin {
                 throw new Error('Expected browser configuration');
             }
 
+            config.test.coverage = {
+                enabled: COVERAGE,
+                reportsDirectory: 'coverage' + '/' + COVERAGE_DIR_FOR_OPTIONS,
+                reportOnFailure: true,
+                allowExternal: true,
+                exclude: ['**/@lwc/integration-karma/**'],
+            };
+
             config.test.browser.testerScripts ??= [];
 
-            if (process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION) {
+            if (ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION) {
                 config.test.browser.testerScripts.push({
                     src: '@lwc/synthetic-shadow/dist/index.js',
                 });
             }
 
-            if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
+            if (ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                 config.test.browser.testerScripts.push({
                     src: '@lwc/aria-reflection/dist/index.js',
                 });

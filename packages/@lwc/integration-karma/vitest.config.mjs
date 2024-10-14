@@ -20,7 +20,6 @@ export default defineConfig({
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
             NODE_ENV: 'development',
-            NATIVE_SHADOW: 'true',
             NODE_ENV_FOR_TEST: process.env.NODE_ENV_FOR_TEST,
             ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
                 process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
