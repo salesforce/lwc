@@ -24,7 +24,20 @@ vi.stubGlobal('process', {
 
 lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
 
-export function spyOn(obj: any, methodName: string) {
+type Procedure = (...args: any[]) => any;
+type Methods<T> = keyof {
+    [K in keyof T as T[K] extends Procedure ? K : never]: T[K];
+};
+
+type Classes<T> = {
+    [K in keyof T]: T[K] extends new (...args: any[]) => any ? K : never;
+}[keyof T] &
+    (string | symbol);
+
+export function spyOn<T, M extends Classes<Required<T>> | Methods<Required<T>>>(
+    obj: T,
+    methodName: M
+) {
     const spy = vi.spyOn(obj, methodName);
 
     Object.defineProperty(spy, 'and', {

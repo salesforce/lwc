@@ -153,11 +153,11 @@ export default function vitestPluginLwcHydrate(): Plugin {
                 throw new Error('Expected browser configuration');
             }
 
-            config.test.browser.testerScripts = config.test.browser.testerScripts || [];
+            config.test.browser.testerScripts ??= [];
 
             if (process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION) {
                 config.test.browser.testerScripts.push({
-                    src: '@lwc/synthetic-shadow/dist/index.js?iife',
+                    src: '@lwc/synthetic-shadow/dist/index.js',
                 });
             }
 
@@ -166,7 +166,6 @@ export default function vitestPluginLwcHydrate(): Plugin {
         shouldTransformCachedModule(_options) {
             return true;
         },
-
         async transform(code, id, _options) {
             if (id.endsWith('index.spec.js')) {
                 const suiteDir = path.dirname(id);
