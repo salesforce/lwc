@@ -3,9 +3,9 @@
 import path from 'node:path';
 import { defineConfig, configDefaults } from 'vitest/config';
 
-import transformFramework from './vitest-scripts/karma-plugins/transform-framework';
-import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
-import configPlugin from './vitest-scripts/karma-plugins/config';
+import transformFramework from './vitest-plugins/transform-framework';
+import lwcTestPlugin from './vitest-plugins/lwc';
+import configPlugin from './vitest-plugins/config';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 

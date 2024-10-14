@@ -14,7 +14,10 @@ import path from 'node:path';
 import { rollup, type RollupCache } from 'rollup';
 import lwcRollupPlugin, { type RollupLwcOptions } from '@lwc/rollup-plugin';
 
-import { DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER, API_VERSION } from '../shared/options';
+import {
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    API_VERSION,
+} from '../vitest-scripts/shared/options';
 
 import type { Plugin as VitestPlugin } from 'vitest/config';
 

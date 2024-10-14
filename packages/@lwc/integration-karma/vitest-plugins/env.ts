@@ -13,7 +13,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import options from '../shared/options';
+import options from '../vitest-scripts/shared/options';
 import type { GlobalSetupContext } from 'vitest/node';
 
 const {

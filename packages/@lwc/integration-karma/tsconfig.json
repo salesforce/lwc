@@ -16,6 +16,7 @@
     },
     "files": ["../../lwc/types.d.ts"],
     "include": [
+        "vitest-plugins/**/*.ts",
         "vitest-scripts/**/*.ts",
         "vitest-helpers/*.ts",
         "test/**/*.spec.ts",

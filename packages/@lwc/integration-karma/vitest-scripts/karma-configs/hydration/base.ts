@@ -12,9 +12,9 @@ import { resolve } from 'path';
 import options from '../../shared/options';
 const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION, GREP, COVERAGE, COVERAGE_DIR_FOR_OPTIONS } = options;
 
-import karmaPluginHydrationTests from '../../karma-plugins/hydration-tests';
-import karmaPluginEnv from '../../karma-plugins/env';
-import karmaPluginTransformFramework from '../../karma-plugins/transform-framework.js';
+import karmaPluginHydrationTests from '../../../vitest-plugins/hydration-tests';
+import karmaPluginEnv from '../../../vitest-plugins/env';
+import karmaPluginTransformFramework from '../../../vitest-plugins/transform-framework.js';
 import utils from '../utils';
 const { createPattern } = utils;
 

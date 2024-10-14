@@ -1,8 +1,9 @@
-import { Plugin } from 'vitest/config';
+import type { Plugin } from 'vitest/config';
 
 export default function vitestPluginLwcConfig(): Plugin {
     return {
         name: 'vitest-plugin-lwc-config',
+        enforce: 'pre',
         config(config) {
             if (!config.test) {
                 throw new Error('Expected test configuration');

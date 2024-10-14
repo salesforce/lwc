@@ -2,8 +2,8 @@
 
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
-import lwcHydrationTestPlugin from './vitest-scripts/karma-plugins/hydration-tests';
-import configPlugin from './vitest-scripts/karma-plugins/config';
+import lwcHydrationTestPlugin from './vitest-plugins/hydration-tests';
+import configPlugin from './vitest-plugins/config';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({

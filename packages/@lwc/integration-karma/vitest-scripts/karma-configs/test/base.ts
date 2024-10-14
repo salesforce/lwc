@@ -7,9 +7,9 @@
 
 import { resolve, join } from 'node:path';
 
-import karmaPluginLwc from '../../karma-plugins/lwc';
-import karmaPluginEnv from '../../karma-plugins/env';
-import karmaPluginTransformFramework from '../../karma-plugins/transform-framework';
+import karmaPluginLwc from '../../../vitest-plugins/lwc';
+import karmaPluginEnv from '../../../vitest-plugins/env';
+import karmaPluginTransformFramework from '../../../vitest-plugins/transform-framework';
 import options from '../../shared/options';
 
 const {
