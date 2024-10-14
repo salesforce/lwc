@@ -11,6 +11,7 @@ vi.stubGlobal('WireService', { ...wireService });
 
 vi.stubGlobal('process', {
     env: {
+        NODE_ENV: process.env.NODE_ENV_FOR_TEST || process.env.NODE_ENV,
         NATIVE_SHADOW: true,
         ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
             process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL === '1',

@@ -4,10 +4,12 @@ import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import lwcHydrationTestPlugin from './vitest-plugins/hydration-tests';
 import configPlugin from './vitest-plugins/config';
+import transformFramework from './vitest-plugins/transform-framework';
+
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
-    plugins: [configPlugin(), lwcHydrationTestPlugin()],
+    plugins: [configPlugin(), transformFramework(), lwcHydrationTestPlugin()],
     test: {
         name: 'lwc-karma:test-hydration',
         dir: 'test-hydration',
@@ -27,7 +29,7 @@ export default defineConfig({
         ],
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
-            NODE_ENV: 'test-karma-lwc',
+            NODE_ENV: 'development',
             ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION: process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
             DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
                 process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,

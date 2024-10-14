@@ -21,7 +21,8 @@ export default defineConfig({
         silent: true,
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
-            NODE_ENV: 'test-karma-lwc',
+            NODE_ENV: 'development',
+            NODE_ENV_FOR_TEST: process.env.NODE_ENV_FOR_TEST,
             NATIVE_SHADOW: 'true',
             ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL:
                 process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,

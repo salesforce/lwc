@@ -30,15 +30,22 @@ function getIifeName(filename: string | string[]) {
 }
 
 export default function transformFramework(): VitestPlugin {
+    const filter = (id: string) => {
+        return [
+            '@lwc/engine-dom',
+            '@lwc/wire-service',
+            '@lwc/synthetic-shadow',
+            '@lwc/aria-reflection',
+        ].some((name) => id.includes(name));
+    };
     return {
         name: 'vite-lwc-transform-framework-plugin',
         enforce: 'pre',
         async transform(code, id) {
-            if (!id.endsWith('?iife')) {
+            if (!filter(id)) {
                 return null;
             }
 
-            const iifeName = getIifeName(id);
             // Strip sourcemap for now since we can't get index.js.map to actually work in either Karma or Istanbul
             const magicString = new MagicString(code.replace(/\/\/# sourceMappingURL=\S+/, ''));
 
@@ -72,22 +79,26 @@ export default function transformFramework(): VitestPlugin {
             // pad to keep things pretty in Istanbul coverage HTML
             magicString.replaceAll(replacee, 'true'.padEnd(replacee.length, ' '));
 
-            // Convert ESM to IIFE. Change `export { foo as bar }` to `return { bar: foo }`
-            magicString.replace(/\bexport \{/, 'return {');
+            if (id.endsWith('?iife')) {
+                // Convert ESM to IIFE. Change `export { foo as bar }` to `return { bar: foo }`
+                magicString.replace(/\bexport \{/, 'return {');
 
-            await init;
+                await init;
 
-            const exportees = parse(code)[1].map((_) => ({ variable: _.ln, alias: _.n }));
+                const exportees = parse(code)[1].map((_) => ({ variable: _.ln, alias: _.n }));
 
-            for (const { variable, alias } of exportees) {
-                if (variable !== alias) {
-                    magicString.replace(`${variable} as ${alias}`, `${alias}: ${variable}`);
+                for (const { variable, alias } of exportees) {
+                    if (variable !== alias) {
+                        magicString.replace(`${variable} as ${alias}`, `${alias}: ${variable}`);
+                    }
                 }
-            }
 
-            // Wrap in an IIFE. Note we explicitly don't add newlines, since that would mess up Istanbul's coverage report
-            magicString.prepend(`${iifeName ? `var ${iifeName} = ` : ''}(function () {`);
-            magicString.append('})();');
+                const iifeName = getIifeName(id);
+
+                // Wrap in an IIFE. Note we explicitly don't add newlines, since that would mess up Istanbul's coverage report
+                magicString.prepend(`${iifeName ? `var ${iifeName} = ` : ''}(function () {`);
+                magicString.append('})();');
+            }
 
             return {
                 code: magicString.toString(),
