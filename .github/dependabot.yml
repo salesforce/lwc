@@ -7,6 +7,10 @@ updates:
       directory: '/' # Location of package manifests
       schedule:
           interval: 'weekly'
+      ignore:
+          # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
+          # language features from a version newer than our downstream users have installed
+          - dependency-name: typescript
       groups:
           babel:
               patterns:
