@@ -5,7 +5,7 @@ class Test extends LightningElement {
   interface;
   ["a"] = 0;
   [`${PREFIX}Field`] = "prefixed field";
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   fields: ["interface"]

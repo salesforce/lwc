@@ -70,7 +70,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ),
     api_custom_element("x-foo", _xFoo, stc3, [api_text("integer value")]),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

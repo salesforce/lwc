@@ -1,7 +1,7 @@
 import _tmpl from "./test.html";
 import { LightningElement as Component, registerComponent as _registerComponent } from "lwc";
 class Test extends Component {
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 const __lwc_component_class_internal = _registerComponent(Test, {
   tmpl: _tmpl,

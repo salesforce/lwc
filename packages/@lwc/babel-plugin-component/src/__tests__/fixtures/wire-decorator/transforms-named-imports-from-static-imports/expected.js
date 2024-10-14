@@ -4,7 +4,7 @@ import importedValue from "ns/module";
 import { getFoo } from "data-service";
 class Test extends LightningElement {
   wiredProp;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

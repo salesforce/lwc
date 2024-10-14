@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ]),
     api_text(api_dynamic_text($cmp.lastOutterSibling)),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

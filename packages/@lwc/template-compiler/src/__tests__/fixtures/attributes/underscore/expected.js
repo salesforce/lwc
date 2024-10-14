@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_custom_element("x-button", _xButton, stc2),
     api_custom_element("x-button", _xButton, stc3),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -10,7 +10,7 @@ class Test extends LightningElement {
   };
   someMethod() {}
   wiredProp;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicProps: {

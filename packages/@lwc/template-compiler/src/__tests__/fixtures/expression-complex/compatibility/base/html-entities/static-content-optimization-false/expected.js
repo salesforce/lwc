@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("p", stc0, [api_text("foo&bar")]),
     api_element("p", stc1, [api_text("const { foo } = bar;")]),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

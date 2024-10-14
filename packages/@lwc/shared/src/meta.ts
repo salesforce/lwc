@@ -7,5 +7,5 @@
 // Increment whenever the LWC template compiler changes
 
 export const LWC_VERSION = process.env.LWC_VERSION as string;
-export const LWC_VERSION_COMMENT = `LWC compiler v${LWC_VERSION}`;
+export const LWC_VERSION_COMMENT = `!/*LWC compiler v${LWC_VERSION}`;
 export const LWC_VERSION_COMMENT_REGEX = /\/\*LWC compiler v([\d.]+)\*\/\s*}/;

@@ -49,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ),
     ]),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

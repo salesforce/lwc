@@ -2,7 +2,7 @@ import { registerDecorators as _registerDecorators, LightningElement, registerCo
 import _tmpl from "./test.html";
 class Test extends LightningElement {
   foo() {}
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicMethods: ["foo"]

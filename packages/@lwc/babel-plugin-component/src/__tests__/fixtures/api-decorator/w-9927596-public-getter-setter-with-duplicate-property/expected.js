@@ -4,7 +4,7 @@ class Text extends LightningElement {
   foo = 1;
   get foo() {}
   set foo(value) {}
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Text, {
   publicProps: {

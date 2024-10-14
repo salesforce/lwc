@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(0, [api_text("Conditional Text")], 0)
       : api_fragment(0, [api_text("Else!")], 0),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

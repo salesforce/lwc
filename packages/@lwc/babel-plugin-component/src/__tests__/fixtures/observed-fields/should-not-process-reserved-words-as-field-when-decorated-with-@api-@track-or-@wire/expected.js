@@ -5,7 +5,7 @@ class Test extends LightningElement {
   static;
   for;
   function;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicProps: {

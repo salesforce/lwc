@@ -4,7 +4,7 @@ class Test extends LightningElement {
   interface;
   static foo = 3;
   static baz = 1;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   fields: ["interface"]

@@ -4,7 +4,7 @@ import notScoped from './stylesheet.css';
 import scoped from "./stylesheet.scoped.css?scoped=true";
 const __lwc_component_class_internal = _registerComponent(class extends LightningElement {
   static stylesheets = [notScoped, scoped];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }, {
   tmpl: _tmpl,
   sel: "lwc-test",

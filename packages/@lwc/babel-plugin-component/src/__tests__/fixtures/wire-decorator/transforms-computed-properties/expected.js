@@ -5,7 +5,7 @@ const symbol = Symbol.for("key");
 class Test extends LightningElement {
   wiredIdentifier;
   wiredPrimitives;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

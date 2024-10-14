@@ -3,6 +3,6 @@ function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var hostSelector = token ? ("[" + token + "-host]") : "";
   var suffixToken = token ? ("-" + token) : "";
   return "[dir=\"rtl\"]" + shadowSelector + " test" + shadowSelector + " {order: 0;}";
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default [stylesheet];

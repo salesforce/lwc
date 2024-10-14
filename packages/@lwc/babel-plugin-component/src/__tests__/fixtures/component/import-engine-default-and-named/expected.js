@@ -4,7 +4,7 @@ import lwc, { LightningElement, registerComponent as _registerComponent } from '
 // eslint-disable-next-line no-console
 console.log(lwc);
 const __lwc_component_class_internal = _registerComponent(class extends LightningElement {
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }, {
   tmpl: _tmpl,
   sel: "lwc-test",

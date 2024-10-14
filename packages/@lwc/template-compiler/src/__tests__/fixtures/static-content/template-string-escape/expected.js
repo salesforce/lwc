@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(1, null, "Escape $" + api_dynamic_text($cmp.me)),
     ]),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

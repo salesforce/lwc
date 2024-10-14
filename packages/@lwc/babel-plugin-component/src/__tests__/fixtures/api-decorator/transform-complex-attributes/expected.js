@@ -14,7 +14,7 @@ class Text extends LightningElement {
   static get ctorGet() {
     return 1;
   }
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Text, {
   publicProps: {

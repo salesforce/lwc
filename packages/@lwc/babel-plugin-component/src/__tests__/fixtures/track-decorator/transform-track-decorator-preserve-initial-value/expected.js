@@ -4,7 +4,7 @@ class Test extends LightningElement {
   record = {
     value: "test"
   };
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   track: {

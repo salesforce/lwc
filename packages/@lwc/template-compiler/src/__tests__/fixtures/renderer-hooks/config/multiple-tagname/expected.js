@@ -47,7 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_static_fragment($fragment2, 7), api_static_fragment($fragment3, 9)]
     ),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

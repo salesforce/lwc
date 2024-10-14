@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(7, stc3, null),
     ]),
   ];
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.hasRefs = true;

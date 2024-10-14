@@ -3,7 +3,7 @@ import _tmpl from "./test.html";
 import MyCoolMixin from './mixin.js';
 class MyElement extends MyCoolMixin {
   foo;
-  /*LWC compiler vX.X.X*/
+  /*!/*LWC compiler vX.X.X*/
 }
 _registerDecorators(MyElement, {
   publicProps: {
