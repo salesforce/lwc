@@ -5,11 +5,12 @@ import { defineConfig, configDefaults } from 'vitest/config';
 
 import transformFramework from './vitest-scripts/karma-plugins/transform-framework';
 import lwcTestPlugin from './vitest-scripts/karma-plugins/lwc';
+import configPlugin from './vitest-scripts/karma-plugins/config';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
-    plugins: [transformFramework(), lwcTestPlugin()],
+    plugins: [configPlugin(), transformFramework(), lwcTestPlugin()],
     test: {
         name: 'lwc-integration-karma',
         dir: 'test',
@@ -43,11 +44,6 @@ export default defineConfig({
                 {
                     src: '@lwc/engine-dom/dist/index.js?iife',
                 },
-                process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
-                    ? {
-                          src: '@lwc/aria-reflection/dist/index.js?iife',
-                      }
-                    : {},
             ],
             providerOptions: { launch: { devtools: true } },
         },
