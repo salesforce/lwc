@@ -8,6 +8,13 @@
 export { ClassList } from './class-list';
 export { LightningElement, LightningElementConstructor } from './lightning-element';
 export { MutationTracker } from './mutation-tracker';
-export { fallbackTmpl, GenerateMarkupFn, renderAttrs, serverSideRenderComponent } from './render';
+// renderComponent is an alias for serverSideRenderComponent
+export {
+    fallbackTmpl,
+    GenerateMarkupFn,
+    renderAttrs,
+    serverSideRenderComponent,
+    serverSideRenderComponent as renderComponent,
+} from './render';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
