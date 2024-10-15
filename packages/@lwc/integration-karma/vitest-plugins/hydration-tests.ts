@@ -50,6 +50,7 @@ async function getCompiledModule(dirName: string) {
         input: path.join(dirName, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
         plugins: [
             lwcRollupPlugin({
+                sourcemap: 'inline',
                 modules: [
                     {
                         dir: dirName,
@@ -82,6 +83,7 @@ async function getCompiledModule(dirName: string) {
     const { output } = await bundle.generate({
         format: 'iife',
         name: 'Main',
+        sourcemap: 'inline',
         compact: true,
         globals: {
             lwc: 'LWC',
@@ -106,6 +108,7 @@ async function getTestModuleCode(input: InputOption) {
 
     const { output } = await bundle.generate({
         format: 'iife',
+        sourcemap: 'inline',
         compact: true,
         globals: {
             lwc: 'LWC',

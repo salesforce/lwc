@@ -18,7 +18,6 @@ import {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     API_VERSION,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
-    COVERAGE,
 } from './shared/options';
 
 import type { Plugin as VitestPlugin } from 'vitest/config';
@@ -44,7 +43,7 @@ export default function lwcPreprocessor(): VitestPlugin {
             const createRollupPlugin = (options?: RollupLwcOptions) => {
                 return lwcRollupPlugin({
                     // Sourcemaps don't work with Istanbul coverage
-                    sourcemap: !COVERAGE,
+                    sourcemap: 'inline',
                     experimentalDynamicComponent: {
                         loader: 'test-utils',
                         // @ts-expect-error experimentalDynamicComponent is not defined
@@ -114,7 +113,7 @@ export default function lwcPreprocessor(): VitestPlugin {
             const { output } = await bundle.generate({
                 format: 'iife',
                 // Sourcemaps don't work with Istanbul coverage
-                sourcemap: COVERAGE ? false : 'inline',
+                sourcemap: 'inline',
 
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
                 // referenced from the window object.

@@ -47,7 +47,7 @@ export default function transformFramework(): VitestPlugin {
             }
 
             // Strip sourcemap for now since we can't get index.js.map to actually work in either Karma or Istanbul
-            const magicString = new MagicString(code.replace(/\/\/# sourceMappingURL=\S+/, ''));
+            const magicString = new MagicString(code);
 
             /**
              * This transformation replaces `process.env.NODE_ENV === 'test-karma-lwc'` with `true`.
