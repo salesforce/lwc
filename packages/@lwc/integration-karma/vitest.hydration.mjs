@@ -36,6 +36,7 @@ export default defineConfig({
             exclude: ['**/@lwc/integration-karma/**'],
             allowExternal: true,
             reportOnFailure: true,
+            excludeAfterRemap: true,
         },
         browser: {
             api: {
