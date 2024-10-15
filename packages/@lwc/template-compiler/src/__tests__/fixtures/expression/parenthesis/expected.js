@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(1, null, api_dynamic_text($cmp.foo.bar)),
     ]),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

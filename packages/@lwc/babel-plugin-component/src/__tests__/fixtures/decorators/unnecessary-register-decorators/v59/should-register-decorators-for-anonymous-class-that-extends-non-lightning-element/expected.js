@@ -3,7 +3,7 @@ import { registerDecorators as _registerDecorators, registerComponent as _regist
 import MyCoolMixin from './mixin.js';
 const foo = _registerDecorators(class extends MyCoolMixin {
   foo;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }, {
   publicProps: {
     foo: {

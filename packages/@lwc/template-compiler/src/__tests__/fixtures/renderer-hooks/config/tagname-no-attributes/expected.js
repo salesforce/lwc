@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_text("Should also get custom renderer")]
     ),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

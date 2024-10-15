@@ -41,7 +41,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       $slotset
     ),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["", "slotname1", "slotname2"];

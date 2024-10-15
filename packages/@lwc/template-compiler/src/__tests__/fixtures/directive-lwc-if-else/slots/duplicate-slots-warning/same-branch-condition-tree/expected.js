@@ -33,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         )
       : api_fragment(0, [api_text("Alternative Text")], 0),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["nested-slot"];

@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     $cmp.isTrue ? api_static_fragment($fragment1, 1) : null,
     !$cmp.isTrue2 ? api_static_fragment($fragment2, 3) : null,
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

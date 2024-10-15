@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_deprecated_dynamic_component("x-foo", $cmp.dynamicCtor, stc1),
     api_dynamic_component($cmp.ctor, stc2),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

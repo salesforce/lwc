@@ -15,7 +15,7 @@ class Test extends LightningElement {
   set b(value) {
     this._b = value;
   }
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicProps: {

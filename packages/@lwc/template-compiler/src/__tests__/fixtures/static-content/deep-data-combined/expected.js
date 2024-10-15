@@ -48,7 +48,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_static_part(7, null, "dynamic text " + api_dynamic_text($cmp.bar)),
     ]),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.hasRefs = true;

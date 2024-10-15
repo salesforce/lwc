@@ -56,7 +56,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           )
         : null,
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["outside-slot"];

@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     !$cmp.truthyValue ? api_comment(" HTML comment inside if:false ") : null,
     !$cmp.truthyValue ? api_static_fragment($fragment2, 3) : null,
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

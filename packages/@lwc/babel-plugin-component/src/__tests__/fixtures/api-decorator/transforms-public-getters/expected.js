@@ -4,7 +4,7 @@ class Test extends LightningElement {
   get publicGetter() {
     return 1;
   }
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   publicProps: {

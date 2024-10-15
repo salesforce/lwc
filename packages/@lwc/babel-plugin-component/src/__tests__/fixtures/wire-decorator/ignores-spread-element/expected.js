@@ -6,7 +6,7 @@ const spreadMe = {
 };
 class Test extends LightningElement {
   wiredProp;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

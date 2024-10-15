@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_fragment(0, [api_static_fragment($fragment1, 2)], 0)
       : api_fragment(0, [api_dynamic_component($cmp.trackedProp.foo, stc0)], 0),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

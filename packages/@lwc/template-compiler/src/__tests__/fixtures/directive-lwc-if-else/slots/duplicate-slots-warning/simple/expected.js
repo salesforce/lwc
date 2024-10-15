@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot("conditional-slot", stc5, stc3, $slotset),
     ]),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["conditional-slot"];

@@ -3,7 +3,7 @@ import _tmpl from "./test.html";
 import { Foo } from "data-service";
 class Test extends LightningElement {
   wiredProp;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

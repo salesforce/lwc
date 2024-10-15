@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     stc0,
     $slotset
   );
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = [""];

@@ -4,7 +4,7 @@ import { getFoo } from "data-service";
 class Test extends LightningElement {
   wired1;
   wired2;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

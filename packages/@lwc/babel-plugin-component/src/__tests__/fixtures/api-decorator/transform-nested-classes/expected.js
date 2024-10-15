@@ -4,7 +4,7 @@ class Outer extends LightningElement {
   outer;
   a = _registerDecorators2(class extends LightningElement {
     innerA;
-    /*!/*LWC compiler vX.X.X*/
+    /*@preserve LWC compiler vX.X.X*/
   }, {
     publicProps: {
       innerA: {
@@ -12,7 +12,7 @@ class Outer extends LightningElement {
       }
     }
   });
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Outer, {
   publicProps: {

@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_custom_element("x-pert", _xPert, stc1, [api_text("foo foo")]),
     ]),
   ];
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

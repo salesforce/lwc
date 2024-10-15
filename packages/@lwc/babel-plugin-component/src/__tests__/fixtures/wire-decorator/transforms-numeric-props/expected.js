@@ -4,7 +4,7 @@ import { getFoo } from "data-service";
 class Test extends LightningElement {
   // Did you know numeric literals can be used as property keys? This becomes "123"!
   wiredProp;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
   wire: {

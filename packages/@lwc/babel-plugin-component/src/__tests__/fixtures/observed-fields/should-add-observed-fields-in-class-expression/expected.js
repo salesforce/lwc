@@ -10,7 +10,7 @@ const Test = _registerDecorators(class extends LightningElement {
   };
   someMethod() {}
   wiredProp;
-  /*!/*LWC compiler vX.X.X*/
+  /*@preserve LWC compiler vX.X.X*/
 }, {
   publicProps: {
     label: {
