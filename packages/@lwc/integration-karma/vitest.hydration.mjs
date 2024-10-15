@@ -32,7 +32,15 @@ export default defineConfig({
                 process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         },
         isolate: false,
+        coverage: {
+            exclude: ['**/@lwc/integration-karma/**'],
+            allowExternal: true,
+            reportOnFailure: true,
+        },
         browser: {
+            api: {
+                port: 5175,
+            },
             enabled: true,
             isolate: false,
             headless: true,

@@ -1,9 +1,8 @@
 import {
-    COVERAGE,
-    COVERAGE_DIR_FOR_OPTIONS,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
     ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
 } from './shared/options';
+
 import type { Plugin } from 'vitest/config';
 
 export default function vitestPluginLwcConfig(): Plugin {
@@ -18,14 +17,6 @@ export default function vitestPluginLwcConfig(): Plugin {
             if (!config.test.browser) {
                 throw new Error('Expected browser configuration');
             }
-
-            config.test.coverage = {
-                enabled: COVERAGE,
-                reportsDirectory: 'coverage' + '/' + COVERAGE_DIR_FOR_OPTIONS,
-                reportOnFailure: true,
-                allowExternal: true,
-                exclude: ['**/@lwc/integration-karma/**'],
-            };
 
             config.test.browser.testerScripts ??= [];
 
