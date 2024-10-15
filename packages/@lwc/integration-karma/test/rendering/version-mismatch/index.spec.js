@@ -8,12 +8,14 @@ import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStyles
 describe('compiler version mismatch', () => {
     describe('stamped with version number', () => {
         it('component', () => {
-            expect(Component.toString()).toContain(`/*LWC compiler v${process.env.LWC_VERSION}*/`);
+            expect(Component.toString()).toContain(
+                `/*@preserve LWC compiler v${process.env.LWC_VERSION}*/`
+            );
         });
 
         it('component with prop', () => {
             expect(ComponentWithProp.toString()).toContain(
-                `/*LWC compiler v${process.env.LWC_VERSION}*/`
+                `/*@preserve LWC compiler v${process.env.LWC_VERSION}*/`
             );
         });
 
@@ -23,7 +25,7 @@ describe('compiler version mismatch', () => {
             });
 
             expect(elm.template.toString()).toContain(
-                `/*LWC compiler v${process.env.LWC_VERSION}*/`
+                `/*@preserve LWC compiler v${process.env.LWC_VERSION}*/`
             );
         });
 
@@ -33,7 +35,7 @@ describe('compiler version mismatch', () => {
             });
 
             expect(elm.template.stylesheets[0].toString()).toContain(
-                `/*LWC compiler v${process.env.LWC_VERSION}*/`
+                `/*@preserve LWC compiler v${process.env.LWC_VERSION}*/`
             );
         });
     });
@@ -54,7 +56,7 @@ describe('compiler version mismatch', () => {
         it('template', () => {
             function tmpl() {
                 return [];
-                /*LWC compiler v123.456.789*/
+                /*@preserve LWC compiler v123.456.789*/
             }
 
             expect(() => {
@@ -88,7 +90,7 @@ describe('compiler version mismatch', () => {
             tmpl.stylesheets = [
                 function stylesheet() {
                     return '';
-                    /*LWC compiler v123.456.789*/
+                    /*@preserve LWC compiler v123.456.789*/
                 },
             ];
             registerTemplate(tmpl);
@@ -125,7 +127,7 @@ describe('compiler version mismatch', () => {
             // deliberately using a function rather than a class so @lwc/babel-plugin-component doesn't add a comment
             function CustomElement() {
                 return LightningElement.apply(this, arguments);
-                /*LWC compiler v123.456.789*/
+                /*@preserve LWC compiler v123.456.789*/
             }
 
             Object.setPrototypeOf(CustomElement, LightningElement);
