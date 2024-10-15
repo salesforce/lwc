@@ -266,7 +266,7 @@ describe('register', () => {
     it('accepts function as adapter id', () => {
         function adapterId() {}
         function adapterFactory() {}
-        register(adapterId, adapterFactory);
+        expect(() => register(adapterId, adapterFactory)).not.toThrow();
     });
 
     it('throws when adapter id is not truthy', () => {
