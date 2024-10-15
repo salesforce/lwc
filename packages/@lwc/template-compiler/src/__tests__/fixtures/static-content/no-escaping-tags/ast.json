@@ -214,55 +214,20 @@
                 "listeners": [],
                 "children": [
                     {
-                        "type": "Element",
-                        "name": "p",
-                        "namespace": "http://www.w3.org/1999/xhtml",
-                        "location": {
-                            "startLine": 14,
-                            "startColumn": 9,
-                            "endLine": 14,
-                            "endColumn": 97,
-                            "start": 313,
-                            "end": 401,
-                            "startTag": {
-                                "startLine": 14,
-                                "startColumn": 9,
-                                "endLine": 14,
-                                "endColumn": 12,
-                                "start": 313,
-                                "end": 316
-                            },
-                            "endTag": {
-                                "startLine": 14,
-                                "startColumn": 93,
-                                "endLine": 14,
-                                "endColumn": 97,
-                                "start": 397,
-                                "end": 401
-                            }
+                        "type": "Text",
+                        "raw": "<p>It seems your browser does not support frames or is configured to not allow them.</p>",
+                        "value": {
+                            "type": "Literal",
+                            "value": "<p>It seems your browser does not support frames or is configured to not allow them.</p>"
                         },
-                        "attributes": [],
-                        "properties": [],
-                        "directives": [],
-                        "listeners": [],
-                        "children": [
-                            {
-                                "type": "Text",
-                                "raw": "It seems your browser does not support frames or is configured to not allow them.",
-                                "value": {
-                                    "type": "Literal",
-                                    "value": "It seems your browser does not support frames or is configured to not allow them."
-                                },
-                                "location": {
-                                    "startLine": 14,
-                                    "startColumn": 12,
-                                    "endLine": 14,
-                                    "endColumn": 93,
-                                    "start": 316,
-                                    "end": 397
-                                }
-                            }
-                        ]
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 15,
+                            "endLine": 15,
+                            "endColumn": 5,
+                            "start": 304,
+                            "end": 406
+                        }
                     }
                 ]
             }
