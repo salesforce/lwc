@@ -17,10 +17,14 @@ import type {
     Program,
     ImportDeclaration,
     Property,
+    SimpleLiteral,
+    SimpleCallExpression,
+    Identifier,
+    MemberExpression,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
+const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
         ${isNullableOf(is.expressionStatement)};
@@ -38,15 +42,15 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
         yield \`</\${tagName}>\`;
     }
-`;
+`<ExportNamedDeclaration>;
 
-const bInsertFallbackTmplImport = esTemplate<ImportDeclaration>`
+const bInsertFallbackTmplImport = esTemplate`
     import { fallbackTmpl as __fallbackTmpl, renderAttrs as __renderAttrs } from '@lwc/ssr-runtime';
-`;
+`<ImportDeclaration>;
 
-const bCreateReflectedPropArr = esTemplate<ExpressionStatement>`
+const bCreateReflectedPropArr = esTemplate`
     const __REFLECTED_PROPS__ = ${is.arrayExpression};
-`;
+`<ExpressionStatement>;
 
 function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttrNameMap)[]) {
     // This will build getter properties for each reflected property. It'll look
@@ -135,12 +139,22 @@ export function addGenerateMarkupExport(
 
     const classIdentifier = b.identifier(state.lwcClassName!);
     const renderCall = hasRenderMethod
-        ? b.callExpression(b.memberExpression(b.identifier('instance'), b.identifier('render')), [])
+        ? (b.callExpression(
+              b.memberExpression(b.identifier('instance'), b.identifier('render')),
+              []
+          ) as SimpleCallExpression & {
+              callee: MemberExpression & { property: Identifier & { name: 'render' } };
+          })
         : b.identifier('tmpl');
 
     if (!tmplExplicitImports) {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
-        program.body.unshift(bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath)));
+        program.body.unshift(
+            bImportDeclaration(
+                b.identifier('tmpl'),
+                b.literal(defaultTmplPath) as SimpleLiteral & { value: string }
+            )
+        );
     }
 
     let attrsAugmentation: ExpressionStatement | null = null;

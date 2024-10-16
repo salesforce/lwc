@@ -24,14 +24,14 @@ import type {
 } from '@lwc/template-compiler';
 import type { Transformer } from './types';
 
-const bYieldFromChildGenerator = esTemplateWithYield<EsBlockStatement>`
+const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
         const childSlottedContentGenerators = {};
         yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerators);
     }
-`;
+`<EsBlockStatement>;
 
 const bImportGenerateMarkup = (localName: string, importPath: string) =>
     b.importDeclaration(

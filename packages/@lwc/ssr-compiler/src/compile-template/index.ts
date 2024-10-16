@@ -20,22 +20,19 @@ import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
     Node as EsNode,
-    Statement as EsStatement,
-    Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
     ImportDeclaration as EsImportDeclaration,
+    SimpleLiteral,
 } from 'estree';
 
-const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
+const isBool = (node: EsNode | null | undefined): node is SimpleLiteral & { value: boolean } =>
+    is.literal(node) && typeof node.value === 'boolean';
 
-const bStyleValidationImport = esTemplate<EsImportDeclaration>`
+const bStyleValidationImport = esTemplate`
     import { validateStyleTextContents } from '@lwc/ssr-runtime';
-`;
+`<EsImportDeclaration>;
 
-const bExportTemplate = esTemplate<
-    EsExportDefaultDeclaration,
-    [EsLiteral, EsStatement[], EsLiteral]
->`
+const bExportTemplate = esTemplate`
     export default async function* tmpl(props, attrs, slotted, Cmp, instance) {
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -63,7 +60,7 @@ const bExportTemplate = esTemplate<
             yield '</template>';
         }
     }
-`;
+`<EsExportDefaultDeclaration>;
 
 function templateUsesDirective(root: Root, target: ElementDirective['name']): boolean {
     return root.children.some(function hasDirective(child) {
@@ -122,7 +119,9 @@ export default function compileTemplate(
     const tmplRenderMode =
         root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
         'shadow';
-    const astShadowModeBool = tmplRenderMode === 'light' ? b.literal(true) : b.literal(false);
+    const astShadowModeBool = b.literal(tmplRenderMode === 'light') as SimpleLiteral & {
+        value: boolean;
+    };
 
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
