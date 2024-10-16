@@ -77,7 +77,10 @@ type AttrValidationPredicate = (attrName: string) => boolean;
 // what they're doing" and wants to ignore hydration mismatches for the entire element and all its descendants. This is
 // mostly designed for `<style>` deduplication, i.e. replacing `<style>`s with `<link rel=stylesheet>`s.
 function shouldIgnoreAllMismatches(elm: Node, renderer: RendererAPI) {
-    return !isNull(renderer.getAttribute(elm, 'data-lwc-ignore-hydration-mismatch'));
+    return (
+        renderer.getProperty(elm, 'nodeType') === EnvNodeTypes.ELEMENT &&
+        !isNull(renderer.getAttribute(elm, 'data-lwc-ignore-hydration-mismatch'))
+    );
 }
 
 // flag indicating if the hydration recovered from the DOM mismatch
