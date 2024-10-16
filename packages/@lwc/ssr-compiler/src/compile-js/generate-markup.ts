@@ -39,7 +39,7 @@ const bGenerateMarkup = esTemplate`
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
         yield *__renderAttrs(instance, attrs)
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
+        yield* tmplFn(props, attrs, slotted, ${1}, instance);
         yield \`</\${tagName}>\`;
     }
 `<ExportNamedDeclaration>;
@@ -167,7 +167,5 @@ export function addGenerateMarkupExport(
 
     program.body.unshift(bInsertFallbackTmplImport());
     program.body.push(bCreateReflectedPropArr(reflectedPropArr));
-    program.body.push(
-        bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall, classIdentifier)
-    );
+    program.body.push(bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall));
 }

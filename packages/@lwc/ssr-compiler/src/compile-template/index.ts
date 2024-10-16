@@ -56,7 +56,7 @@ const bExportTemplate = esTemplate`
 
         ${is.statement};
 
-        if (!${isBool} && Cmp.renderMode !== 'light') {
+        if (!${0} && Cmp.renderMode !== 'light') {
             yield '</template>';
         }
     }
@@ -132,11 +132,7 @@ export default function compileTemplate(
     const moduleBody = [
         ...hoisted,
         bStyleValidationImport(),
-        bExportTemplate(
-            astShadowModeBool,
-            optimizeAdjacentYieldStmts(statements),
-            astShadowModeBool
-        ),
+        bExportTemplate(astShadowModeBool, optimizeAdjacentYieldStmts(statements)),
     ];
     const program = b.program(moduleBody, 'module');
 

@@ -23,12 +23,12 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 
 const bYieldEscapedString = esTemplateWithYield`
     const ${is.identifier} = ${is.expression};
-    if (typeof ${is.identifier} === 'string') {
-        yield (${is.literal} && ${is.identifier} === '') ? '\\u200D' : htmlEscape(${is.identifier});
-    } else if (typeof ${is.identifier} === 'number') {
-        yield ${is.identifier}.toString();
+    if (typeof ${0} === 'string') {
+        yield (${is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
+    } else if (typeof ${0} === 'number') {
+        yield ${0}.toString();
     } else {
-        yield ${is.identifier} ? htmlEscape(${is.identifier}.toString()) : '\\u200D';
+        yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
     }
 `<EsStatement[]>;
 
@@ -50,16 +50,5 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
     cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
 
     const tempVariable = b.identifier(cxt.getUniqueVar());
-    return bYieldEscapedString(
-        tempVariable,
-        valueToYield,
-        tempVariable,
-        isIsolatedTextNode,
-        tempVariable,
-        tempVariable,
-        tempVariable,
-        tempVariable,
-        tempVariable,
-        tempVariable
-    );
+    return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);
 };
