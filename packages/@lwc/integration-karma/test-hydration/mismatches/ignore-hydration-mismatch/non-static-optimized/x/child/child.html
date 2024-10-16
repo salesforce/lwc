@@ -1,0 +1,5 @@
+<template>
+    <!-- Normally we would not _literally_ put this attribute in an HTML template, but this is just for the test -->
+    <!-- `lwc:spread` disables static content optimization -->
+    <div data-lwc-ignore-hydration-mismatch={isSsr} lwc:spread={fake}>isSSR:{isSsr}</div>
+</template>
