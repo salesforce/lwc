@@ -14,6 +14,7 @@ import type {
     FunctionDeclaration as EsFunctionDeclaration,
     Statement as EsStatement,
 } from 'estree';
+import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
@@ -39,15 +40,21 @@ type ValidatorPlaceholder<T extends EsNode | null> =
  * Converts the validators and refs used in the template to the list of paramters required by the
  * created template function. Removes back references to previous slots from the list.
  */
-type ToReplacementParameters<T extends unknown[]> = T extends [infer Head, ...infer Rest]
-    ? Head extends Validator<infer T>
-        ? // If it's a validator, extract the validated type
-          [T | T[], ...ToReplacementParameters<Rest>]
-        : Head extends typeof NO_VALIDATION
-          ? // If it's NO_VALIDATION, use `unknown`
-            [unknown, ...ToReplacementParameters<Rest>]
-          : // If it's a back ref, just drop it
-            ToReplacementParameters<Rest>
+type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, ...infer Rest]
+    ? // `Checker` is estree's validator type, and has overloads that mess with inferencing
+      Head extends Checker<infer C>
+        ? [C | C[], ...ToReplacementParameters<Rest>]
+        : Head extends Validator<infer V>
+          ? // If it's a validator, extract the validated type
+            null extends V
+              ? // Avoid `(V | null)[]` if it's nullable
+                [V | (V & {})[], ...ToReplacementParameters<Rest>]
+              : [V | V[], ...ToReplacementParameters<Rest>]
+          : Head extends typeof NO_VALIDATION
+            ? // If it's NO_VALIDATION, use `unknown`
+              [unknown, ...ToReplacementParameters<Rest>]
+            : // If it's a back ref, just drop it
+              ToReplacementParameters<Rest>
     : [];
 
 const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
