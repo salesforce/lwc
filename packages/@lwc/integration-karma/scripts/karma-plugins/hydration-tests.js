@@ -101,6 +101,31 @@ async function getCompiledModule(dirName) {
     return { code, watchFiles };
 }
 
+function throwOnUnexpectedConsoleCalls(runnable) {
+    // The console is shared between the VM and the main realm. Here we ensure that known warnings
+    // are ignored and any others cause an explicit error.
+    const methods = ['error', 'warn', 'log', 'info'];
+    const originals = {};
+    for (const method of methods) {
+        originals[method] = console[method];
+        console[method] = function (error) {
+            if (
+                method === 'warn' &&
+                /Cannot set property "(inner|outer)HTML"/.test(error?.message)
+            ) {
+                return;
+            }
+
+            throw new Error(`Unexpected console.${method} call: ${error}`);
+        };
+    }
+    try {
+        runnable();
+    } finally {
+        Object.assign(console, originals);
+    }
+}
+
 function getSsrCode(moduleCode, testConfig) {
     const script = new vm.Script(
         `
@@ -110,8 +135,10 @@ function getSsrCode(moduleCode, testConfig) {
         moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
     );
 
-    vm.createContext(context);
-    script.runInContext(context);
+    throwOnUnexpectedConsoleCalls(() => {
+        vm.createContext(context);
+        script.runInContext(context);
+    });
 
     return context.moduleOutput;
 }
