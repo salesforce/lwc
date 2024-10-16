@@ -57,29 +57,37 @@ interface TraversalState {
     replacementNodes: Array<EsNode | EsNode[] | null>;
 }
 
+const getReplacementNode = (
+    state: TraversalState,
+    placeholderId: string,
+    nodeType: string
+): EsNode | EsNode[] | null => {
+    const key = Number(placeholderId.slice(PLACEHOLDER_PREFIX.length));
+    const nodeCount = state.replacementNodes.length;
+    if (key >= nodeCount) {
+        throw new Error(
+            `Cannot use index ${key} when only ${nodeCount} values have been provided.`
+        );
+    }
+
+    const validateReplacement = state.placeholderToValidator.get(key);
+    const replacementNode = state.replacementNodes[key];
+    if (
+        validateReplacement &&
+        !(Array.isArray(replacementNode)
+            ? replacementNode.every(validateReplacement)
+            : validateReplacement(replacementNode))
+    ) {
+        throw new Error(`Validation failed for templated node of type ${nodeType}`);
+    }
+
+    return replacementNode;
+};
+
 const visitors: Visitors<TraversalState> = {
     Identifier(path, state) {
         if (path.node?.name.startsWith(PLACEHOLDER_PREFIX)) {
-            const key = Number(path.node.name.slice(PLACEHOLDER_PREFIX.length));
-            const validateReplacement = state.placeholderToValidator.get(key);
-            const replacementNode = state.replacementNodes[key];
-
-            if (key > state.replacementNodes.length) {
-                throw new Error(
-                    `Cannot re-use index ${key} when only ${
-                        state.replacementNodes.length
-                    } values have been provided.`
-                );
-            }
-
-            if (
-                validateReplacement &&
-                !(Array.isArray(replacementNode)
-                    ? replacementNode.every(validateReplacement)
-                    : validateReplacement(replacementNode))
-            ) {
-                throw new Error(`Validation failed for templated node of type ${path.node.type}`);
-            }
+            const replacementNode = getReplacementNode(state, path.node.name, path.node.type);
 
             if (replacementNode === null) {
                 path.remove();
@@ -103,22 +111,12 @@ const visitors: Visitors<TraversalState> = {
             typeof path.node?.value === 'string' &&
             path.node.value.startsWith(PLACEHOLDER_PREFIX)
         ) {
-            const key = Number(path.node.value.slice(PLACEHOLDER_PREFIX.length));
-
-            if (key > state.replacementNodes.length) {
-                throw new Error(
-                    `Cannot re-use index ${key} when only ${
-                        state.replacementNodes.length
-                    } values have been provided.`
-                );
-            }
-
-            const validateReplacement = state.placeholderToValidator.get(key);
-            const replacementNode = state.replacementNodes[key] as EsNode;
-
-            if (validateReplacement && !validateReplacement(replacementNode)) {
-                throw new Error(`Validation failed for templated node of type ${path.node.type}`);
-            }
+            // A literal can only be replaced with a single node
+            const replacementNode = getReplacementNode(
+                state,
+                path.node.value,
+                path.node.type
+            ) as EsNode;
 
             path.replaceWith(replacementNode);
         }
