@@ -38,5 +38,5 @@ type NullableChecker<T extends Node> = (node: Node | null | undefined) => node i
 
 /** Extends a validator to return `true` if the node is `null`. */
 export function isNullableOf<T extends Node>(validator: Checker<T>): NullableChecker<T> {
-    return (node: Node | null | undefined) => node === null || validator(node);
+    return (node: Node | null | undefined): node is T | null => node === null || validator(node);
 }
