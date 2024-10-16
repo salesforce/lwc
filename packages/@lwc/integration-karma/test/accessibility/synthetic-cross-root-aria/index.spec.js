@@ -41,15 +41,16 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
             targetElm = elm.shadowRoot.querySelector('x-aria-target');
         });
 
-        const usePropertyAccessValues = [false];
+        const usePropertyAccessValues = [false].map((value) => ({ value }));
 
         // It doesn't make sense to test setting e.g. `elm.ariaLabelledBy` if the global
         // polyfill is not applied
-        if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-            usePropertyAccessValues.push(true);
-        }
+        usePropertyAccessValues.push({
+            value: true,
+            suite: describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL),
+        });
 
-        usePropertyAccessValues.forEach((usePropertyAccess) => {
+        usePropertyAccessValues.forEach(({ value: usePropertyAccess, suite = describe }) => {
             const expectedMessages = [
                 ...(usePropertyAccess ? [expectedMessageForNonStandardAria] : []),
                 expectedMessageForCrossRoot,
@@ -89,7 +90,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                 );
             }
 
-            describe(usePropertyAccess ? 'property' : 'attribute', () => {
+            suite(usePropertyAccess ? 'property' : 'attribute', () => {
                 beforeEach(() => {
                     elm.usePropertyAccess = usePropertyAccess;
                     return Promise.resolve();

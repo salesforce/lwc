@@ -9,8 +9,8 @@ import { createElement } from 'lwc';
 
 import Component from 'x/component';
 
-function testAriaProperty(property, attribute) {
-    describe(property, () => {
+function testAriaProperty(property, attribute, suite = describe) {
+    suite(property, () => {
         let dispatcher;
 
         beforeEach(() => {
@@ -122,13 +122,13 @@ function testAriaProperty(property, attribute) {
         const falsyValuesThatRemove = [];
 
         // Falsy values that are *not* treated as removing the attribute when set
-        const falsyValuesThatDoNotRemove = [0, false, '', NaN];
+        const falsyValuesThatDoNotRemove = [0, false, '', NaN].map((value) => ({ value }));
 
         // TODO [#3284]: The spec and our polyfill are inconsistent with WebKit/Chromium on setting undefined
         // Here we detect the native WebKit/Chromium behavior and either align with that or our polyfill
         // See also: https://github.com/w3c/aria/issues/1858
         const isNative = Object.getOwnPropertyDescriptor(Element.prototype, property)
-            .set.toString()
+            ?.set.toString()
             .includes('[native code]');
 
         // This test is just in case Chromium/WebKit/Firefox change their behavior
@@ -138,31 +138,35 @@ function testAriaProperty(property, attribute) {
             return div[property] === null;
         };
 
-        if (isNative) {
-            if (settingValueRemoves(undefined)) {
-                // Native Webkit/Chromium – setting undefined is treated the same as null
-                falsyValuesThatRemove.push(undefined);
-            } else {
-                falsyValuesThatDoNotRemove.push(undefined);
-            }
-            if (settingValueRemoves(null)) {
-                // As of this writing, Firefox is inconsistent with Chromium/WebKit and treats setting undefined/null
-                // as setting a string value: https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
-                falsyValuesThatRemove.push(null);
-            } else {
-                falsyValuesThatDoNotRemove.push(null);
-            }
-        } else {
-            // Our polyfill - null removes
-            falsyValuesThatRemove.push(null);
-            // Our polyfill – setting undefined is not treated like null
-            falsyValuesThatDoNotRemove.push(undefined);
-        }
+        // Native Webkit/Chromium – setting undefined is treated the same as null
+        falsyValuesThatRemove.push({
+            value: undefined,
+            test: it.runIf(isNative && settingValueRemoves(undefined)),
+        });
+        falsyValuesThatDoNotRemove.push({
+            value: undefined,
+            test: it.runIf(isNative && !settingValueRemoves(undefined)),
+        });
+        // As of this writing, Firefox is inconsistent with Chromium/WebKit and treats setting undefined/null
+        // as setting a string value: https://bugzilla.mozilla.org/show_bug.cgi?id=1853209
+        falsyValuesThatRemove.push({
+            value: null,
+            test: it.runIf(isNative && settingValueRemoves(null)),
+        });
+        falsyValuesThatDoNotRemove.push({
+            value: null,
+            test: it.runIf(isNative && !settingValueRemoves(null)),
+        });
+
+        // Our polyfill - null removes
+        falsyValuesThatRemove.push({ value: null, test: it.skipIf(isNative) });
+        // Our polyfill – setting undefined is not treated like null
+        falsyValuesThatDoNotRemove.push({ value: undefined, test: it.skipIf(isNative) });
 
         const prettyPrint = (value) => (value === '' ? 'the empty string' : '' + value);
 
-        falsyValuesThatRemove.forEach((value) => {
-            it(`should remove the attribute if the property is set to ${prettyPrint(
+        falsyValuesThatRemove.forEach(({ value, test = it }) => {
+            test(`should remove the attribute if the property is set to ${prettyPrint(
                 value
             )}`, () => {
                 const el = document.createElement('div');
@@ -177,8 +181,8 @@ function testAriaProperty(property, attribute) {
             });
         });
 
-        falsyValuesThatDoNotRemove.forEach((value) => {
-            it(`should not remove the attribute if the property is set to ${prettyPrint(
+        falsyValuesThatDoNotRemove.forEach(({ value, test = it }) => {
+            test(`should not remove the attribute if the property is set to ${prettyPrint(
                 value
             )}`, () => {
                 const el = document.createElement('div');
@@ -197,16 +201,17 @@ function testAriaProperty(property, attribute) {
 }
 
 // These tests don't make sense if the global polyfill is not loaded
-if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-    for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
-        // Don't test aria props that we don't globally polyfill, or which aren't supported by this browser
-        if (
-            !nonPolyfilledAriaProperties.includes(ariaProperty) ||
-            ariaProperty in Element.prototype
-        ) {
-            testAriaProperty(ariaProperty, ariaAttribute);
-        }
-    }
+for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
+    // Don't test aria props that we don't globally polyfill, or which aren't supported by this browser
+    testAriaProperty(
+        ariaProperty,
+        ariaAttribute,
+        describe.runIf(
+            process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL &&
+                (!nonPolyfilledAriaProperties.includes(ariaProperty) ||
+                    ariaProperty in Element.prototype)
+        )
+    );
 }
 
 describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
