@@ -14,8 +14,8 @@ import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
+import vitest from '@vitest/eslint-plugin';
 import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
-
 // convert filepath to eslint glob
 const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
 
@@ -39,6 +39,7 @@ export default tseslint.config(
             '@lwc/lwc-internal': lwcInternal,
             import: fixupPluginRules(_import),
             header,
+            vitest,
         },
 
         linterOptions: {
@@ -242,6 +243,13 @@ export default tseslint.config(
             'jest/no-focused-tests': 'error',
             'jest/valid-expect': 'error',
             'jest/valid-expect-in-promise': 'error',
+        },
+    },
+    {
+        files: ['**/__tests__/**'],
+        ignores: ['packages/@lwc/integration-karma/**'],
+        rules: {
+            ...vitest.configs.recommended.rules,
         },
     },
     {

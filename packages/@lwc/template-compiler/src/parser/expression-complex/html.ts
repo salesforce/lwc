@@ -183,7 +183,6 @@ class TemplateHtmlTokenizer extends Tokenizer {
             // coming later in an unquoted attr value should not be considered
             // the beginning of a template expression.
             this.checkedAttrs.add(this.currentAttr);
-            // @ts-expect-error private method
             super._stateAttributeValueUnquoted(codePoint);
         }
     }
@@ -222,7 +221,6 @@ class TemplateHtmlTokenizer extends Tokenizer {
             this.currentToken = null;
             this.currentCharacterToken = null;
         } else {
-            // @ts-expect-error private method
             super._stateData(codePoint);
         }
     }
