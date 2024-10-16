@@ -27,16 +27,6 @@ describe('assert', () => {
         });
     });
 
-    describe('#isFalse()', () => {
-        it('should throw error that includes custom message', () => {
-            expect(() => assert.isFalse(true, 'foo bar')).toThrowError(/foo bar/);
-        });
-
-        it('should not throw error for true', () => {
-            expect(() => assert.isFalse(false, 'foo bar')).not.toThrow();
-        });
-    });
-
     describe('#fail()', () => {
         it('should throw error that includes custom message', () => {
             expect(() => assert.fail('foo bar')).toThrowError(/foo bar/);

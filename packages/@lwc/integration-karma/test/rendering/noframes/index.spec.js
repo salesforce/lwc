@@ -12,13 +12,19 @@ it('renders noframes correctly - W-16784305', async () => {
     } = elm;
 
     expect(childNodes.length).toBe(1);
-    expect(childNodes[0].tagName).toBe('SECTION');
-    expect(childNodes[0].childNodes.length).toBe(1);
-    expect(childNodes[0].childNodes[0].tagName).toBe('NOFRAMES');
-    expect(childNodes[0].childNodes[0].childNodes.length).toBe(1);
-    expect(childNodes[0].childNodes[0].childNodes[0].tagName).toBe('DIV');
-    expect(childNodes[0].childNodes[0].childNodes[0].childNodes.length).toBe(0);
-    expect(childNodes[0].childNodes[0].childNodes[0].getAttribute('class')).toBe(
-        '</noframes><span>whee</span>'
-    );
+
+    const section = childNodes[0];
+    expect(section.tagName).toBe('SECTION');
+    expect(section.childNodes.length).toBe(3);
+
+    const [first, second, third] = section.childNodes;
+
+    expect(first.tagName).toBe('NOFRAMES');
+    expect(first.textContent).toBe('<div class="');
+
+    expect(second.tagName).toBe('SPAN');
+    expect(second.textContent).toBe('whee');
+
+    expect(third.nodeType).toBe(Node.TEXT_NODE);
+    expect(third.nodeValue).toBe('"></div> </noframes>');
 });

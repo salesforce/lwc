@@ -6,7 +6,7 @@
  */
 import { transform } from '../index';
 
-describe('playground test for debugging ', () => {
+describe('playground test for debugging', () => {
     it('examples', () => {
         const src = `
             @import "@foo/test";
