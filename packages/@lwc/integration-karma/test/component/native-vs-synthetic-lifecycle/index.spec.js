@@ -63,21 +63,21 @@ describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-child' }],
             ]);
         });
+
+        // This only applies to synthetic custom element lifecycle, because that's the case
+        // where we monkey-patch the global `Element.prototype.insertBefore`.
+        it('should log a warning when insertBefore is called with fewer than 2 arguments', () => {
+            const div = document.createElement('div');
+            const span = document.createElement('span');
+
+            expect(() => {
+                div.insertBefore(span);
+            }).toLogWarningDev(
+                /insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported./
+            );
+        });
     }
 );
-
-// This only applies to synthetic custom element lifecycle, because that's the case
-// where we monkey-patch the global `Element.prototype.insertBefore`.
-it('should log a warning when insertBefore is called with fewer than 2 arguments', () => {
-    const div = document.createElement('div');
-    const span = document.createElement('span');
-
-    expect(() => {
-        div.insertBefore(span);
-    }).toLogWarningDev(
-        /insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported./
-    );
-});
 
 // native lifecycle mode
 describe.skipIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
